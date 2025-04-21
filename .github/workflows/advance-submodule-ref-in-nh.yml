@@ -1,0 +1,18 @@
+name: Trigger NH Sync
+
+on:
+  pull_request:
+    branches:
+      - master
+    types: [closed]
+
+jobs:
+  sync-nh:
+    if: github.event.pull_request.merged == true
+    uses: nexthop-ai/nh/.github/workflows/update-submodule-pointer.yml@main
+    with:
+      superproject_repo: nexthop-ai/nh
+      submodule_repo: nexthop-ai/fboss
+      submodule_path: private-fboss
+    secrets:
+      GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}

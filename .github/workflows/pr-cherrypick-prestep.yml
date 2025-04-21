@@ -1,0 +1,19 @@
+name: Pre Cherry Pick
+
+on:
+  pull_request_target:
+    types:
+      - closed
+      - labeled
+    branches:
+      - master
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  pre-cherry-pick:
+    uses: nexthop-ai/nh/.github/workflows/pr-cherrypick-prestep.yml@main
+    secrets:
+      GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}

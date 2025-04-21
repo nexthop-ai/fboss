@@ -1,0 +1,29 @@
+name: NH PR Checker
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+
+jobs:
+  ci-pr-checker:
+    name: NH PR Checker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate PR Title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "Checking PR title to contain DevRev issue number or [action]..."
+          if [[ -n "$PR_TITLE" ]]; then
+            if [[ "$PR_TITLE" =~ ^ISS-[0-9]+.* || "$PR_TITLE" =~ ^NO-ISS.* || "$PR_TITLE" =~ ^\[action.* ]]; then
+              echo "PR title '$PR_TITLE' is valid."
+            else
+              echo "PR title '$PR_TITLE' does not match the required format: 'ISS-X', 'NO-ISS', or '[action]'."
+              exit 1
+            fi
+          else
+            echo "Not in a PR"
+          fi
