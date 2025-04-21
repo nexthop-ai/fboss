@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
 jobs:
   Other-Services-Build:
+    if: github.repository_owner == 'facebook'
     runs-on: 32-core-ubuntu
     steps:
       - run: echo "Confirming hardware specications:"; sudo lscpu

@@ -16,6 +16,7 @@ on:
     - cron: '36 1,13,16,19,22 * * *'
 jobs:
   Platform-Services-Build:
+    if: github.repository_owner == 'facebook'
     runs-on: 32-core-ubuntu
     steps:
       - run: echo "Confirming hardware specications:"; sudo lscpu
@@ -51,6 +52,7 @@ jobs:
           # Explicitly set the retention at the object level
           retention-days: 14
   Platform-Services-Test:
+    if: github.repository_owner == 'facebook'
     runs-on: ubuntu-latest
     needs: Platform-Services-Build
     steps:

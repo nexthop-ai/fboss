@@ -8,6 +8,7 @@ on:
 
 jobs:
   clang-format-check:
+    if: github.repository_owner == 'facebook'
     runs-on: ubuntu-latest
 
     steps:

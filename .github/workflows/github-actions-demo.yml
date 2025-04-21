@@ -3,6 +3,7 @@ run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push, workflow_dispatch]
 jobs:
   Explore-GitHub-Actions:
+    if: github.repository_owner == 'facebook'
     runs-on: 32-core-ubuntu
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
