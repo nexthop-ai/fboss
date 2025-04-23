@@ -1,0 +1,11 @@
+name: PR Title Check
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+
+jobs:
+  pr-title-check:
+    uses: nexthop-ai/nh/.github/workflows/pr-title-check.reusable.yml@main

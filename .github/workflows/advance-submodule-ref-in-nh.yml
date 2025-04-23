@@ -3,7 +3,8 @@ name: Trigger NH Sync
 on:
   pull_request:
     branches:
-      - master
+      - main
+      - '20*'
     types: [closed]
 
 jobs:
