@@ -6,7 +6,7 @@ on:
       - closed
       - labeled
     branches:
-      - master
+      - main
 
 permissions:
   pull-requests: write
