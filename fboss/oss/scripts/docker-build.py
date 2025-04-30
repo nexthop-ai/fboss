@@ -216,7 +216,7 @@ def run_fboss_build(
         if ":" not in ev:
             cmd_args.extend(["-e", f"{ev}=1"])
         elif ev.count(":") == 1:
-            cmd_args.extend(["-e", ev])
+            cmd_args.extend(["-e", ev.replace(":", "=")])
         else:
             errMsg = f"Ignoring environment variable string {ev} as it does not match a supported pattern."
             print(errMsg, file=sys.stderr)
