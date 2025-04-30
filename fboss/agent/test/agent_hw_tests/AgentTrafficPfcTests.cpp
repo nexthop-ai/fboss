@@ -1,5 +1,6 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
+#include <fmt/ranges.h> // Needed for fmt::join
 #include <folly/MapUtil.h>
 
 #include "fboss/agent/AgentFeatures.h"

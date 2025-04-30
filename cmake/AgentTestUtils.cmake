@@ -248,6 +248,8 @@ target_link_libraries(trap_packet_utils
   platform_config_cpp2
   switch_config_cpp2
   switch_state_cpp2
+  fsdb_oper_cpp2
+  multiswitch_ctrl_cpp2
 )
 
 add_library(stats_test_utils
