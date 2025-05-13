@@ -12,6 +12,7 @@
 
 #include <netinet/icmp6.h>
 #include "fboss/agent/AgentFeatures.h"
+#include "fboss/agent/AsicUtils.h"
 #include "fboss/agent/FbossHwUpdateError.h"
 #include "fboss/agent/NeighborUpdater.h"
 #include "fboss/agent/TxPacket.h"
@@ -20,10 +21,10 @@
 #include "fboss/agent/test/ResourceLibUtil.h"
 #include "fboss/agent/test/TestUtils.h"
 #include "fboss/agent/test/TrunkUtils.h"
-#include "fboss/agent/test/utils/AsicUtils.h"
 #include "fboss/agent/test/utils/ConfigUtils.h"
 #include "fboss/agent/test/utils/L2LearningUpdateObserverUtil.h"
 #include "fboss/agent/test/utils/MacTestUtils.h"
+#include "fboss/agent/test/utils/NeighborTestUtils.h"
 #include "fboss/agent/test/utils/PacketTestUtils.h"
 #include "fboss/lib/CommonUtils.h"
 
@@ -158,14 +159,23 @@ class AgentNeighborResolutionTest : public AgentHwTest {
                           ->modify(kVlanID, &state);
     }
 
-    if (neighborTable->getEntryIf(addr)) {
+    auto reachableNeighborState = NeighborState::REACHABLE;
+    if (auto existingEntry = neighborTable->getEntryIf(addr)) {
       neighborTable->updateEntry(
-          addr, mac, port, kIntfID, NeighborState::REACHABLE, lookupClass);
+          addr, mac, port, kIntfID, reachableNeighborState, lookupClass);
+      if (getSw()->needL2EntryForNeighbor()) {
+        state = utility::NeighborTestUtils::updateMacEntryForUpdatedNbrEntry(
+            state, kVlanID, existingEntry, neighborTable->getEntryIf(addr));
+      }
     } else {
       neighborTable->addEntry(addr, mac, port, kIntfID);
       // Update entry to add classid if any
       neighborTable->updateEntry(
-          addr, mac, port, kIntfID, NeighborState::REACHABLE, lookupClass);
+          addr, mac, port, kIntfID, reachableNeighborState, lookupClass);
+      if (getSw()->needL2EntryForNeighbor()) {
+        state = utility::NeighborTestUtils::addMacEntryForNewNbrEntry(
+            state, kVlanID, neighborTable->getEntryIf(addr));
+      }
     }
     return state;
   }
@@ -226,7 +236,7 @@ class AgentMacLearningAndNeighborResolutionTest
   cfg::SwitchConfig initialConfig(
       const AgentEnsemble& ensemble) const override {
     auto hwAsics = ensemble.getSw()->getHwAsicTable()->getL3Asics();
-    auto asic = utility::checkSameAndGetAsic(hwAsics);
+    auto asic = checkSameAndGetAsic(hwAsics);
     auto inConfig = utility::oneL3IntfNPortConfig(
         ensemble.getSw()->getPlatformMapping(),
         asic,
@@ -479,6 +489,14 @@ class AgentMacLearningAndNeighborResolutionTest
                                 ->getNode(kVlanID)
                                 ->template getNeighborEntryTable<AddrT>()
                                 ->modify(kVlanID, &newState);
+          }
+
+          // Prune MAC entry accordingly
+          auto oldEntry = neighborTable->getEntryIf(ip);
+          if (getSw()->needL2EntryForNeighbor() && oldEntry &&
+              oldEntry->isReachable()) {
+            newState = utility::NeighborTestUtils::pruneMacEntryForDelNbrEntry(
+                newState, kVlanID, oldEntry);
           }
 
           neighborTable->removeEntry(ip);

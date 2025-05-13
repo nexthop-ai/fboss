@@ -200,7 +200,7 @@ int hwAgentMain(
         updateStats,
         hwAgent->getPlatform()->getHwSwitch(),
         thriftSyncer.get()));
-    auto timeInterval = std::chrono::seconds(1);
+    auto timeInterval = std::chrono::seconds(FLAGS_update_stats_interval_s);
     fs->addFunction(callback, timeInterval, "updateStats");
     fs->start();
     XLOG(DBG2) << "Started background thread: UpdateStatsThread";
@@ -208,7 +208,11 @@ int hwAgentMain(
 
   std::vector<std::shared_ptr<apache::thrift::AsyncProcessorFactory>>
       handlers{};
-  handlers.push_back(hwAgent->getPlatform()->createHandler());
+  if (auto handler = hwAgent->getPlatform()->createHandler()) {
+    handlers.push_back(handler);
+  } else {
+    XLOG(FATAL) << "handler does not exist for platform";
+  }
   if (FLAGS_thrift_test_utils_thrift_handler || FLAGS_hw_agent_for_testing) {
     // Add HwTestThriftHandler to the thrift server
     auto testUtilsHandler = utility::createHwTestThriftHandler(

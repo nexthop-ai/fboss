@@ -18,7 +18,7 @@
 
 namespace facebook::fboss {
 
-struct CmdShowFabricReachabilityTraits : public BaseCommandTraits {
+struct CmdShowFabricReachabilityTraits : public ReadCommandTraits {
   using ParentCmd = CmdShowFabric;
   static constexpr utils::ObjectArgTypeId ObjectArgTypeId =
       utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_SWITCH_NAME_LIST;
@@ -35,40 +35,20 @@ class CmdShowFabricReachability : public CmdHandler<
   RetType queryClient(
       const HostInfo& hostInfo,
       const ObjectArgType& queriedSwitchNames) {
-    std::map<std::string, std::vector<std::string>> reachabilityMatrix;
-
-    if (queriedSwitchNames.empty()) {
-      throw std::runtime_error(
-          "Please provide the list of switch name(s) to query reachability.");
-    }
     std::vector<std::string> switchNames;
-    switchNames.reserve(queriedSwitchNames.size());
-    for (const auto& queriedSwitchName : queriedSwitchNames) {
-      switchNames.push_back(utils::removeFbDomains(queriedSwitchName));
+    if (queriedSwitchNames.size()) {
+      switchNames.reserve(queriedSwitchNames.size());
+      for (const auto& queriedSwitchName : queriedSwitchNames) {
+        switchNames.push_back(utils::removeFbDomains(queriedSwitchName));
+      }
     }
 
-    // FbossHwCtrl thrift endpoint is available whether or not multi_switch
-    // feature is enabled. Leverage it.
-    // Collecting such information from HwAgent is more efficient, and thus
-    // preferred as SwSwitch call would just be a passthrough.
-    auto hwAgentQueryFn =
-        [&reachabilityMatrix, &switchNames](
-            apache::thrift::Client<facebook::fboss::FbossHwCtrl>& client) {
-          std::map<std::string, std::vector<std::string>> reachability;
-          client.sync_getHwSwitchReachability(reachability, switchNames);
-          for (auto& [switchName, reachablePorts] : reachability) {
-            reachabilityMatrix[switchName].insert(
-                reachabilityMatrix[switchName].end(),
-                reachablePorts.begin(),
-                reachablePorts.end());
-          }
-        };
-    utils::runOnAllHwAgents(hostInfo, hwAgentQueryFn);
-
+    auto reachabilityMatrix =
+        utils::getCachedSwSwitchReachabilityInfo(hostInfo, switchNames);
     return createModel(reachabilityMatrix);
   }
 
-  RetType createModel(
+  static RetType createModel(
       std::map<std::string, std::vector<std::string>>& reachabilityMatrix) {
     RetType model;
     for (auto& [switchName, reachability] : reachabilityMatrix) {
@@ -82,7 +62,7 @@ class CmdShowFabricReachability : public CmdHandler<
     return model;
   }
 
-  void printOutput(const RetType& model, std::ostream& out = std::cout) {
+  static void printOutput(const RetType& model, std::ostream& out = std::cout) {
     Table table;
     table.setHeader({
         "Switch Name",

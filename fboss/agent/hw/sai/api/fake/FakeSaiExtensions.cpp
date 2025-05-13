@@ -96,7 +96,7 @@ SaiSwitchTraits::Attributes::AttributeAclFieldListWrapper::operator()() {
 }
 
 std::optional<sai_attr_id_t> SaiSwitchTraits::Attributes::
-    AttributeEgressPoolAvaialableSizeIdWrapper::operator()() {
+    AttributeEgressPoolAvailableSizeIdWrapper::operator()() {
   return SAI_SWITCH_ATTR_DEFAULT_EGRESS_BUFFER_POOL_SHARED_SIZE;
 }
 
@@ -328,6 +328,11 @@ SaiSwitchTraits::egressNonFabricCellUnpackError() {
 }
 
 const std::vector<sai_stat_id_t>& SaiSwitchTraits::egressParityCellError() {
+  static const std::vector<sai_stat_id_t> stats;
+  return stats;
+}
+
+const std::vector<sai_stat_id_t>& SaiSwitchTraits::ddpPacketError() {
   static const std::vector<sai_stat_id_t> stats;
   return stats;
 }
@@ -635,6 +640,16 @@ SaiSwitchTraits::Attributes::AttributeTcRateLimitList::operator()() {
 std::optional<sai_attr_id_t> SaiSwitchTraits::Attributes::
     AttributePfcTcDldTimerGranularityInterval::operator()() {
   return std::nullopt;
+}
+
+std::optional<sai_attr_id_t>
+SaiSwitchTraits::Attributes::AttributeNumberOfPipes::operator()() {
+  return SAI_SWITCH_ATTR_NUMBER_OF_PIPES;
+}
+
+std::optional<sai_attr_id_t>
+SaiSwitchTraits::Attributes::AttributePipelineObjectList::operator()() {
+  return SAI_SWITCH_ATTR_PIPELINE_OBJECTS;
 }
 
 } // namespace facebook::fboss

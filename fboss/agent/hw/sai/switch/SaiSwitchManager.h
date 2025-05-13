@@ -36,6 +36,10 @@ class SaiManagerTable;
 class SaiPlatform;
 class StateDelta;
 
+#if defined(BRCM_SAI_SDK_DNX_GTE_12_0)
+using SaiSwitchPipeline = SaiObjectWithCounters<SaiSwitchPipelineTraits>;
+#endif
+
 class SaiSwitchManager {
   static constexpr auto kBitsPerByte = 8;
 
@@ -156,6 +160,9 @@ class SaiSwitchManager {
   SaiManagerTable* managerTable_;
   const SaiPlatform* platform_;
   std::unique_ptr<SaiSwitchObj> switch_;
+#if defined(BRCM_SAI_SDK_DNX_GTE_12_0)
+  std::vector<std::shared_ptr<SaiSwitchPipeline>> switchPipelines_;
+#endif
   std::optional<PortSaiId> cpuPort_;
   std::optional<PortSaiId> cpuRecyclePort_;
   std::shared_ptr<SaiHash> ecmpV4Hash_;
@@ -187,5 +194,10 @@ void fillHwSwitchCreditStats(
 void fillHwSwitchErrorStats(
     const folly::F14FastMap<sai_stat_id_t, uint64_t>& counterId2Value,
     HwSwitchDropStats& switchDropStats);
+void fillHwSwitchPipelineStats(
+    const folly::F14FastMap<sai_stat_id_t, uint64_t>& counterId2Value,
+    int idx,
+    HwSwitchPipelineStats& switchPipelineStats);
 void publishSwitchWatermarks(HwSwitchWatermarkStats& watermarkStats);
+void publishSwitchWPipelineStats(HwSwitchPipelineStats& pipelineStats);
 } // namespace facebook::fboss

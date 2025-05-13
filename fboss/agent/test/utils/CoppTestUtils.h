@@ -14,7 +14,6 @@
 #include "fboss/agent/hw/gen-cpp2/hardware_stats_types.h"
 #include "fboss/agent/hw/switch_asics/HwAsic.h"
 #include "fboss/agent/state/Interface.h"
-#include "fboss/agent/test/utils/AsicUtils.h"
 #include "fboss/agent/types.h"
 
 #include <folly/IPAddress.h>
@@ -169,11 +168,6 @@ void setPortQueueMaxDynamicSharedBytes(
 void setTTLZeroCpuConfig(
     const std::vector<const HwAsic*>& asics,
     cfg::SwitchConfig& config);
-
-void addTrafficCounter(
-    cfg::SwitchConfig* config,
-    const std::string& counterName,
-    std::optional<std::vector<cfg::CounterType>> counterTypes);
 
 cfg::MatchAction getToQueueAction(
     const HwAsic* hwAsic,

@@ -135,6 +135,11 @@ void fillHwSwitchDropStats(
       case SAI_SWITCH_STAT_IN_CONFIGURED_DROP_REASONS_6_DROPPED_PKTS:
         dropStats.ingressPacketPipelineRejectDrops() = val;
         break;
+#if defined(BRCM_SAI_SDK_DNX_GTE_12_0)
+      case SAI_SWITCH_STAT_TC0_RATE_LIMIT_DROPPED_PACKETS:
+        dropStats.tc0RateLimitDrops() = val;
+        break;
+#endif
       default:
         throw FbossError("Unexpected configured counter id: ", counterId);
     }
@@ -163,6 +168,9 @@ void fillHwSwitchDropStats(
       case SAI_SWITCH_STAT_OUT_CONFIGURED_DROP_REASONS_0_DROPPED_PKTS:
       case SAI_SWITCH_STAT_OUT_CONFIGURED_DROP_REASONS_1_DROPPED_PKTS:
       case SAI_SWITCH_STAT_OUT_CONFIGURED_DROP_REASONS_2_DROPPED_PKTS:
+#if defined(BRCM_SAI_SDK_DNX_GTE_12_0)
+      case SAI_SWITCH_STAT_TC0_RATE_LIMIT_DROPPED_PACKETS:
+#endif
         fillAsicSpecificCounter(counterId, value, asicType, hwSwitchDropStats);
         break;
       default:
@@ -192,7 +200,8 @@ SaiSwitchManager::SaiSwitchManager(
         swId);
     // Load all switch attributes
     switch_ = std::make_unique<SaiSwitchObj>(newSwitchId);
-    if (switchType != cfg::SwitchType::FABRIC) {
+    if (switchType != cfg::SwitchType::FABRIC &&
+        switchType != cfg::SwitchType::PHY) {
       if (!FLAGS_skip_setting_src_mac) {
         switch_->setOptionalAttribute(
             SaiSwitchTraits::Attributes::SrcMac{platform->getLocalMac()});
@@ -244,6 +253,38 @@ SaiSwitchManager::SaiSwitchManager(
   if (platform_->getAsic()->isSupported(HwAsic::Feature::CPU_PORT)) {
     initCpuPort();
   }
+#if defined(BRCM_SAI_SDK_DNX_GTE_12_0)
+  // load switch pipeline sai ids
+  int numPipelines = SaiApiTable::getInstance()->switchApi().getAttribute(
+      switch_->adapterKey(), SaiSwitchTraits::Attributes::NumberOfPipes{});
+  std::vector<sai_object_id_t> pipelineList;
+  pipelineList.resize(numPipelines);
+  SaiSwitchTraits::Attributes::PipelineObjectList pipelineListAttribute{
+      pipelineList};
+  auto pipelineSaiIdList = SaiApiTable::getInstance()->switchApi().getAttribute(
+      switch_->adapterKey(), pipelineListAttribute);
+  if (pipelineSaiIdList.size() == 0) {
+    throw FbossError("no pipeline exists");
+  }
+  std::vector<SwitchPipelineSaiId> pipelineSaiIds;
+  pipelineSaiIds.reserve(pipelineSaiIdList.size());
+  std::transform(
+      pipelineSaiIdList.begin(),
+      pipelineSaiIdList.end(),
+      std::back_inserter(pipelineSaiIds),
+      [](sai_object_id_t pipelineId) -> SwitchPipelineSaiId {
+        return SwitchPipelineSaiId(pipelineId);
+      });
+  // create switch  pipeline sai objects
+  for (auto pipelineSaiId : pipelineSaiIds) {
+    std::shared_ptr switchPipeline =
+        std::make_shared<SaiSwitchPipeline>(pipelineSaiId);
+    switchPipeline->setOwnedByAdapter(true);
+    XLOG(DBG2) << "loaded switch pipeline sai object " << pipelineSaiId
+               << " with idx " << switchPipeline->adapterHostKey().value();
+    switchPipelines_.push_back(switchPipeline);
+  }
+#endif
   isMplsQosSupported_ = isMplsQoSMapSupported();
 }
 
@@ -808,6 +849,9 @@ const std::vector<sai_stat_id_t>& SaiSwitchManager::supportedDropStats() const {
           SAI_SWITCH_STAT_IN_CONFIGURED_DROP_REASONS_4_DROPPED_PKTS,
           SAI_SWITCH_STAT_IN_CONFIGURED_DROP_REASONS_5_DROPPED_PKTS,
           SAI_SWITCH_STAT_IN_CONFIGURED_DROP_REASONS_6_DROPPED_PKTS,
+#if defined(BRCM_SAI_SDK_DNX_GTE_12_0)
+          SAI_SWITCH_STAT_TC0_RATE_LIMIT_DROPPED_PACKETS,
+#endif
       };
       stats.insert(
           stats.end(),
@@ -843,6 +887,13 @@ const std::vector<sai_stat_id_t>& SaiSwitchManager::supportedErrorStats()
         stats.end(),
         SaiSwitchTraits::egressParityCellError().begin(),
         SaiSwitchTraits::egressParityCellError().end());
+  }
+  if (platform_->getAsic()->isSupported(
+          HwAsic::Feature::DRAM_DATAPATH_PACKET_ERROR_STATS)) {
+    stats.insert(
+        stats.end(),
+        SaiSwitchTraits::ddpPacketError().begin(),
+        SaiSwitchTraits::ddpPacketError().end());
   }
   return stats;
 }
@@ -998,6 +1049,9 @@ void SaiSwitchManager::updateStats(bool updateWatermarks) {
     switchDropStats_.ingressPacketPipelineRejectDrops() =
         switchDropStats_.ingressPacketPipelineRejectDrops().value_or(0) +
         dropStats.ingressPacketPipelineRejectDrops().value_or(0);
+    switchDropStats_.tc0RateLimitDrops() =
+        switchDropStats_.tc0RateLimitDrops().value_or(0) +
+        dropStats.tc0RateLimitDrops().value_or(0);
   }
   auto errorDropStats = supportedErrorStats();
   if (errorDropStats.size()) {
@@ -1017,6 +1071,9 @@ void SaiSwitchManager::updateStats(bool updateWatermarks) {
     switchDropStats_.rqpParityErrorDrops() =
         switchDropStats_.rqpParityErrorDrops().value_or(0) +
         errorStats.rqpParityErrorDrops().value_or(0);
+    switchDropStats_.dramDataPathPacketError() =
+        switchDropStats_.dramDataPathPacketError().value_or(0) +
+        errorStats.dramDataPathPacketError().value_or(0);
   }
 
   if (switchDropStats.size() || errorDropStats.size()) {

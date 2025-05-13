@@ -174,6 +174,8 @@ enum PortProfileID {
   PROFILE_50G_2_NRZ_RS528_OPTICAL = 48,
   PROFILE_100G_1_PAM4_NOFEC_COPPER = 49,
   PROFILE_800G_8_PAM4_RS544X2N_COPPER = 50,
+  PROFILE_400G_2_PAM4_RS544X2N_OPTICAL = 51,
+  PROFILE_800G_4_PAM4_RS544X2N_OPTICAL = 52,
 }
 
 enum Scope {
@@ -412,13 +414,8 @@ struct MirrorOnDropEventConfig {
 
 struct MirrorOnDropReport {
   1: string name;
-  /*
-   * Possible options as below:
-   * 1. Recycle port: MOD packets will be injected back into the pipeline via recycle port.
-   * 2. Eventor port: MOD packets will be injected back into the pipeline via eventor port. Provides the option to pack multiple MOD packets.
-   * 3. Front panel Ethernet port: MOD packets will be forwarded out of the specified port.
-   */
-  2: i32 mirrorPortId;
+  // Deprecated, use mirrorPort.
+  2: optional i32 mirrorPortId;
   // Source IP will be populated based on switch IP at runtime, so not configurable.
   3: i16 localSrcPort;
   4: string collectorIp;
@@ -438,6 +435,16 @@ struct MirrorOnDropReport {
   11: map<byte, MirrorOnDropEventConfig> modEventToConfigMap;
   // Aging interval (how often to send packets) for each aging group in usecs.
   12: map<MirrorOnDropAgingGroup, i32> agingGroupAgingIntervalUsecs;
+  /*
+   * Currently only supports using a MirrorEgressPort in MirrorDestination. Possible options are:
+   *
+   * 1. Recycle port: MOD packets will be injected back into the pipeline via recycle port.
+   * 2. Eventor port: MOD packets will be injected back into the pipeline via eventor port. Provides the option to pack multiple MOD packets.
+   * 3. Front panel Ethernet port: Not supported.
+   *
+   * If neither mirrorPortId or mirrorPort is specified, agent will attempt to pick the first local scoped recycle port.
+   */
+  13: optional MirrorDestination mirrorPort;
 }
 
 /**

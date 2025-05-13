@@ -12,11 +12,11 @@
 #include <memory>
 
 #include "fboss/agent/AgentFeatures.h"
+#include "fboss/agent/AsicUtils.h"
 #include "fboss/agent/FbossError.h"
 #include "fboss/agent/SwSwitch.h"
 #include "fboss/agent/test/TestEnsembleIf.h"
 #include "fboss/agent/test/utils/AclTestUtils.h"
-#include "fboss/agent/test/utils/AsicUtils.h"
 #include "fboss/agent/test/utils/PortTestUtils.h"
 #include "fboss/agent/test/utils/VoqTestUtils.h"
 #include "fboss/lib/config/PlatformConfigUtils.h"
@@ -1171,40 +1171,6 @@ cfg::SwitchConfig twoL3IntfConfig(
   return config;
 }
 
-void addMatcher(
-    cfg::SwitchConfig* config,
-    const std::string& matcherName,
-    const cfg::MatchAction& matchAction) {
-  cfg::MatchToAction action = cfg::MatchToAction();
-  *action.matcher() = matcherName;
-  *action.action() = matchAction;
-  cfg::TrafficPolicyConfig egressTrafficPolicy;
-  if (auto dataPlaneTrafficPolicy = config->dataPlaneTrafficPolicy()) {
-    egressTrafficPolicy = *dataPlaneTrafficPolicy;
-  }
-  auto curNumMatchActions = egressTrafficPolicy.matchToAction()->size();
-  egressTrafficPolicy.matchToAction()->resize(curNumMatchActions + 1);
-  egressTrafficPolicy.matchToAction()[curNumMatchActions] = action;
-  config->dataPlaneTrafficPolicy() = egressTrafficPolicy;
-}
-
-void delMatcher(cfg::SwitchConfig* config, const std::string& matcherName) {
-  if (auto dataPlaneTrafficPolicy = config->dataPlaneTrafficPolicy()) {
-    auto& matchActions = *dataPlaneTrafficPolicy->matchToAction();
-    matchActions.erase(
-        std::remove_if(
-            matchActions.begin(),
-            matchActions.end(),
-            [&](cfg::MatchToAction const& matchAction) {
-              if (*matchAction.matcher() == matcherName) {
-                return true;
-              }
-              return false;
-            }),
-        matchActions.end());
-  }
-}
-
 bool isRswPlatform(PlatformType type) {
   switch (type) {
     case PlatformType::PLATFORM_WEDGE:
@@ -1327,6 +1293,9 @@ UplinkDownlinkPair getAllUplinkDownlinkPorts(
   }
 
   auto begin = masterPorts.begin();
+  CHECK_GE(masterPorts.size(), ecmpWidth)
+      << "Not enough ports with subnet in config. Need  " << ecmpWidth
+      << " ports, but found only " << masterPorts.size();
   auto mid = masterPorts.begin() + ecmpWidth;
   auto end = masterPorts.end();
   return std::pair(PortList(begin, mid), PortList(mid, end));
