@@ -2,11 +2,11 @@
 
 #include "fboss/agent/test/AgentHwTest.h"
 
+#include "fboss/agent/AsicUtils.h"
 #include "fboss/agent/packet/PktFactory.h"
 #include "fboss/agent/packet/PktUtil.h"
 #include "fboss/agent/test/EcmpSetupHelper.h"
 #include "fboss/agent/test/utils/AclTestUtils.h"
-#include "fboss/agent/test/utils/AsicUtils.h"
 #include "fboss/agent/test/utils/ConfigUtils.h"
 #include "fboss/agent/test/utils/MirrorTestUtils.h"
 #include "fboss/agent/test/utils/PacketSnooper.h"
@@ -120,7 +120,8 @@ class AgentMirroringTest : public AgentHwTest {
 
   template <typename T = AddrT>
   void resolveMirror(const std::string& mirrorName) {
-    utility::EcmpSetupAnyNPorts<AddrT> ecmpHelper(getProgrammedState());
+    utility::EcmpSetupAnyNPorts<AddrT> ecmpHelper(
+        getProgrammedState(), getSw()->needL2EntryForNeighbor());
     auto trafficPort = getTrafficPort(*getAgentEnsemble());
     auto mirrorToPort = getMirrorToPort(*getAgentEnsemble());
     EXPECT_EQ(trafficPort, ecmpHelper.nhop(0).portDesc.phyPortID());
@@ -129,8 +130,9 @@ class AgentMirroringTest : public AgentHwTest {
     applyNewState([&](const std::shared_ptr<SwitchState>& in) {
       boost::container::flat_set<PortDescriptor> nhopPorts{
           PortDescriptor(mirrorToPort)};
-      return utility::EcmpSetupAnyNPorts<AddrT>(in).resolveNextHops(
-          in, nhopPorts);
+      return utility::EcmpSetupAnyNPorts<AddrT>(
+                 in, getSw()->needL2EntryForNeighbor())
+          .resolveNextHops(in, nhopPorts);
     });
     getSw()->getUpdateEvb()->runInFbossEventBaseThreadAndWait([] {});
     auto mirror = getSw()->getState()->getMirrors()->getNodeIf(mirrorName);
@@ -751,7 +753,7 @@ class AgentErspanIngressSamplingTest
 
   void configureTrapAcl(cfg::SwitchConfig* config) {
     auto ensemble = this->getAgentEnsemble();
-    auto asic = utility::checkSameAndGetAsic(ensemble->getL3Asics());
+    auto asic = checkSameAndGetAsic(ensemble->getL3Asics());
     if (asic->isSupported(HwAsic::Feature::SAI_ACL_ENTRY_SRC_PORT_QUALIFIER)) {
       utility::configureTrapAcl(
           asic, *config, this->getMirrorToPort(*ensemble));
@@ -847,7 +849,7 @@ TYPED_TEST(AgentErspanIngressSamplingTest, SamplePacketFormat) {
         // Intentionally dumping to develop deep packet inspection
         XLOG(INFO) << PktUtil::hexDump(buf.value().get());
         auto ensemble = this->getAgentEnsemble();
-        auto asic = utility::checkSameAndGetAsic(ensemble->getL3Asics());
+        auto asic = checkSameAndGetAsic(ensemble->getL3Asics());
         if (asic->getAsicType() == cfg::AsicType::ASIC_TYPE_CHENAB) {
           folly::io::Cursor cursor(buf.value().get());
           cursor += 14; // skip ethernet header

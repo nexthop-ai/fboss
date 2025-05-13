@@ -115,13 +115,15 @@ std::shared_ptr<SwitchState> publishAndApplyConfig(
     const std::shared_ptr<SwitchState>& state,
     const cfg::SwitchConfig* config,
     const Platform* platform,
-    RoutingInformationBase* rib = nullptr);
+    RoutingInformationBase* rib = nullptr,
+    PlatformMapping* platformMapping = nullptr);
 
 std::shared_ptr<SwitchState> publishAndApplyConfig(
     const std::shared_ptr<SwitchState>& state,
     cfg::SwitchConfig* config,
     const Platform* platform,
-    RoutingInformationBase* rib = nullptr);
+    RoutingInformationBase* rib = nullptr,
+    PlatformMapping* platformMapping = nullptr);
 
 /*
  * Create a SwSwitch for testing purposes, with the specified initial state.
@@ -296,7 +298,8 @@ cfg::SwitchConfig testConfigFabricSwitch(
  * 1-20, will yield the same SwitchState as that returned by testStateA().
  */
 cfg::SwitchConfig testConfigA(
-    cfg::SwitchType switchType = cfg::SwitchType::NPU);
+    cfg::SwitchType switchType = cfg::SwitchType::NPU,
+    cfg::AsicType asicType = cfg::AsicType::ASIC_TYPE_MOCK);
 
 cfg::SwitchConfig testConfigB();
 /*

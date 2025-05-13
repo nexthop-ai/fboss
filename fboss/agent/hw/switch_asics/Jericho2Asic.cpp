@@ -94,7 +94,8 @@ bool Jericho2Asic::isSupported(Feature feature) const {
     case HwAsic::Feature::L3_INTF_MTU:
     case HwAsic::Feature::CPU_QUEUE_WATERMARK_STATS:
     case HwAsic::Feature::BUFFER_POOL_HEADROOM_WATERMARK:
-    case HwAsic::Feature::SAI_SET_TC_FOR_USER_DEFINED_TRAP:
+    case HwAsic::Feature::SAI_SET_TC_WITH_USER_DEFINED_TRAP_CPU_ACTION:
+    case HwAsic::Feature::EGRESS_POOL_AVAILABLE_SIZE_ATTRIBUTE_SUPPORTED:
       return true;
     case HwAsic::Feature::UDF_HASH_FIELD_QUERY:
     case HwAsic::Feature::IN_PAUSE_INCREMENTS_DISCARDS:
@@ -208,6 +209,9 @@ bool Jericho2Asic::isSupported(Feature feature) const {
     case HwAsic::Feature::FEC_ERROR_DETECT_ENABLE:
     case HwAsic::Feature::SAI_HOST_MISS_TRAP:
     case HwAsic::Feature::CPU_TX_PACKET_REQUIRES_VLAN_TAG:
+    case HwAsic::Feature::DRAM_DATAPATH_PACKET_ERROR_STATS:
+    case HwAsic::Feature::SWITCH_ASIC_SDK_HEALTH_NOTIFY:
+    case HwAsic::Feature::VENDOR_SWITCH_CONGESTION_MANAGEMENT_ERRORS:
       return false;
   }
   return false;

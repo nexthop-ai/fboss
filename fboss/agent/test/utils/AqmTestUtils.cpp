@@ -10,16 +10,21 @@
 
 #include "fboss/agent/test/utils/AqmTestUtils.h"
 
+#include <cstdint>
 #include <tuple>
+
+#include <gtest/gtest.h>
 
 #include "fboss/agent/FbossError.h"
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
+#include "fboss/agent/hw/gen-cpp2/hardware_stats_constants.h"
 #include "fboss/agent/hw/switch_asics/HwAsic.h"
+#include "fboss/agent/if/gen-cpp2/AgentHwTestCtrl.h"
+#include "fboss/agent/if/gen-cpp2/AgentHwTestCtrlAsyncClient.h"
 #include "fboss/agent/test/TestEnsembleIf.h"
 #include "fboss/agent/test/utils/PortTestUtils.h"
+#include "fboss/agent/types.h"
 #include "fboss/lib/CommonUtils.h"
-
-#include <gtest/gtest.h>
 
 namespace {
 static constexpr auto kJerichoWordSize{16};
@@ -176,6 +181,29 @@ double getAlphaFromScalingFactor(
   return pow(2, powof);
 }
 
+uint32_t getQueueLimitBytes(
+    const HwAsic* asic,
+    std::shared_ptr<apache::thrift::Client<utility::AgentHwTestCtrl>> client,
+    std::optional<cfg::MMUScalingFactor> queueScalingFactor) {
+  uint32_t queueLimitBytes{0};
+  if (queueScalingFactor.has_value()) {
+    // Dynamic queue limit for this platform!
+    double alpha = getAlphaFromScalingFactor(asic, queueScalingFactor.value());
+    uint32_t sharedPoolLimitBytes{0};
+    if (asic->isSupported(
+            HwAsic::Feature::EGRESS_POOL_AVAILABLE_SIZE_ATTRIBUTE_SUPPORTED)) {
+      sharedPoolLimitBytes = client->sync_getEgressSharedPoolLimitBytes();
+    } else {
+      sharedPoolLimitBytes = asic->getMMUSizeBytes();
+    }
+    queueLimitBytes =
+        static_cast<uint32_t>(sharedPoolLimitBytes * alpha / (1 + alpha));
+  } else {
+    queueLimitBytes = asic->getStaticQueueLimitBytes();
+  }
+  return queueLimitBytes;
+}
+
 HwPortStats sendPacketsWithQueueBuildup(
     std::function<void(PortID port, int numPacketsToSend)> sendPktsFn,
     TestEnsembleIf* ensemble,
@@ -189,7 +217,26 @@ HwPortStats sendPacketsWithQueueBuildup(
                                const HwPortStats& before) -> int64_t {
     return getOutPackets(after) - getOutPackets(before);
   };
-  const HwPortStats statsAtStart = ensemble->getLatestPortStats(port);
+  // TODO(T222156403): Move getLatestPortStats retry logic from AgentHwTest to
+  // AgentEnsemble. This retry logic won't be needed once the same logic is
+  // moved.
+  auto getLatestPortStats = [&](PortID port) -> HwPortStats {
+    // Stats collection from SwSwitch is async, wait for stats
+    // being available before returning here.
+    HwPortStats portStats;
+    checkWithRetry(
+        [&]() {
+          portStats = ensemble->getLatestPortStats(port);
+          // Check collect timestamp is valid
+          return *portStats.timestamp__ref() !=
+              hardware_stats_constants::STAT_UNINITIALIZED();
+        },
+        120,
+        std::chrono::milliseconds(1000),
+        " fetch port stats");
+    return portStats;
+  };
+  const HwPortStats statsAtStart = getLatestPortStats(port);
   HwPortStats prevStats = statsAtStart;
   // Disable TX to allow queue to build up
   utility::setCreditWatchdogAndPortTx(ensemble, port, false);
@@ -200,7 +247,7 @@ HwPortStats sendPacketsWithQueueBuildup(
   int totalPacketsSent = numPackets / 2;
 
   auto getStatsIncrement = [&]() {
-    const HwPortStats newStats = ensemble->getLatestPortStats(port);
+    const HwPortStats newStats = getLatestPortStats(port);
     int64_t netOut = getOutPacketDelta(newStats, statsAtStart);
     int64_t newOut = getOutPacketDelta(newStats, prevStats);
     prevStats = newStats;

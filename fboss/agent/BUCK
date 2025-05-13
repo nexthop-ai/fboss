@@ -629,6 +629,7 @@ cpp_library(
     srcs = ["ApplyThriftConfig.cpp"],
     exported_deps = [
         ":agent_features",
+        ":asic_utils",
         ":core",
         ":fboss-error",
         ":hw_asic_table",
@@ -703,16 +704,18 @@ cpp_library(
 )
 
 cpp_library(
-    name = "ecmp_consolidator",
+    name = "ecmp_resource_manager",
     srcs = [
-        "EcmpGroupConsolidator.cpp",
+        "EcmpResourceManager.cpp",
     ],
     exported_deps = [
         ":fib_helpers",
         "//fboss/agent/state:state",
+        "//fboss/lib:ref_map",
     ],
     exported_external_deps = [
         "gflags",
+        ("boost", None, "boost_container"),
     ],
 )
 
@@ -816,6 +819,7 @@ cpp_library(
         ":build_info_wrapper",
         ":constants",
         ":dhcpv4_options_of_interest",
+        ":ecmp_resource_manager",
         ":fboss-error",
         ":fboss-types",
         ":fboss_event_base",
@@ -1657,13 +1661,13 @@ cpp_library(
     exported_deps = [
         ":agent_dir_util",
         ":async_logger",
-        ":fboss-error",
         ":hw_asic_table",
         ":switch_state-cpp2-types",
         ":utils",
         "//fboss/agent/rib:standalone_rib",
         "//fboss/agent/state:state",
         "//fboss/lib:common_file_utils",
+        "//fboss/lib:warm_boot_file_utils",
         "//folly:file_util",
         "//folly/logging:logging",
     ],
