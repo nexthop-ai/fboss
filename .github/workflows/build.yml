@@ -1,0 +1,70 @@
+name: Nexthop Manual Build
+
+# Manually trigger build
+on:
+  workflow_dispatch:
+    inputs:
+      organization:
+        description: 'Organization'
+        required: true
+        default: 'nexthop-ai'
+      branch:
+        description: 'Branch Name'
+        required: true
+        default: 'main'
+      platform:
+        description: 'Platform'
+        required: true
+        type: choice
+        options:
+          - broadcom
+          - mellanox
+          - vs
+        default: broadcom
+      target:
+        description: 'Target'
+        required: false
+        default: default
+        type: choice
+        options:
+          - aboot
+          - default
+      keep_vm:
+        description: 'Keep VM after build'
+        required: false
+        type: boolean
+        default: false
+      nh_options:
+        description: 'Additional build options'
+        required: false
+        type: string
+        default: ''
+      build_debug:
+        description: "Build with debugging symbols and tools"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  build-image:
+    uses: nexthop-ai/nh/.github/workflows/build.reusable.yml@timn.build.reusable
+    with:
+      # For PR events: use PR branch name
+      # For workflow_dispatch: use the input branch name
+      organization: ${{ github.event.inputs.organization || 'nexthop-ai' }}
+      repo: nh/private-fboss
+      branch: ${{ github.event.inputs.branch || github.head_ref || github.ref_name }}
+      platform: ${{ github.event.inputs.platform || 'broadcom' }}
+      target: ${{ github.event.inputs.target || 'default' }}
+      keep_vm: ${{ github.event.inputs.keep_vm != null && fromJson(github.event.inputs.keep_vm) || false }}
+      nh_options: ${{ github.event.inputs.nh_options || '' }}
+      build_debug: ${{ github.event.inputs.build_debug != null || false}}
+      jobs: 16
+      vm_size: 16-128
+    name: Build Image
+
+  build-summary:
+    needs: build-image
+    uses: nexthop-ai/nh/.github/workflows/build-summary.reusable.yml@main
+    if: ${{ always() }}
+    name: Build Summary
