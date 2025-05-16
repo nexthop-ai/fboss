@@ -39,15 +39,10 @@ on:
         required: false
         type: string
         default: ''
-      build_debug:
-        description: "Build with debugging symbols and tools"
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   build-image:
-    uses: nexthop-ai/nh/.github/workflows/build.reusable.yml@timn.build.reusable
+    uses: nexthop-ai/nh/.github/workflows/build.reusable.yml@main
     with:
       # For PR events: use PR branch name
       # For workflow_dispatch: use the input branch name
@@ -58,7 +53,7 @@ jobs:
       target: ${{ github.event.inputs.target || 'default' }}
       keep_vm: ${{ github.event.inputs.keep_vm != null && fromJson(github.event.inputs.keep_vm) || false }}
       nh_options: ${{ github.event.inputs.nh_options || '' }}
-      build_debug: ${{ github.event.inputs.build_debug != null || false}}
+      build_debug: false
       jobs: 16
       vm_size: 16-128
     name: Build Image
