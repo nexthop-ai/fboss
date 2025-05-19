@@ -39,6 +39,14 @@ on:
         required: false
         type: string
         default: ''
+      build_debug:
+        # We have to have this option because nexis passes it in, and if the
+        # option isn't here then triggering the workflow will silently fail.
+        description: "Not used in FBOSS"
+        required: false
+        type: boolean
+        default: false
+
 
 jobs:
   build-image:
