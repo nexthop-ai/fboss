@@ -59,9 +59,10 @@ std::vector<std::pair<int64_t, std::string>> deviceToQueryInputCapacity(
   return switchIDAndName2Query;
 }
 
-std::map<std::string, std::set<std::string>> getNeighborFabricPortsToSelf(
+std::unordered_map<std::string, std::set<std::string>>
+getNeighborFabricPortsToSelf(
     const std::map<int32_t, PortInfoThrift>& myPortInfo) {
-  std::map<std::string, std::set<std::string>> switchNameToPorts;
+  std::unordered_map<std::string, std::set<std::string>> switchNameToPorts;
   for (const auto& [_, portInfo] : myPortInfo) {
     if (portInfo.portType() == cfg::PortType::FABRIC_PORT) {
       if (portInfo.expectedNeighborReachability()->size() != 1) {
@@ -108,6 +109,53 @@ std::map<std::string, std::string> getPortToNeighbor(
     }
   }
   return portToNeighbor;
+}
+
+std::vector<InputBalanceResult> checkInputBalanceSingleStage(
+    const std::vector<std::string>& dstSwitchNames,
+    const std::unordered_map<
+        std::string,
+        std::unordered_map<std::string, std::vector<std::string>>>&
+        inputCapacity,
+    const std::unordered_map<std::string, std::vector<std::string>>&
+        outputCapacity) {
+  std::vector<InputBalanceResult> inputBalanceResult;
+  for (const auto& dstSwitch : dstSwitchNames) {
+    auto outputCapacityIter = outputCapacity.find(dstSwitch);
+    if (outputCapacityIter == outputCapacity.end()) {
+      throw std::runtime_error(
+          "No output capacity data for switch " + dstSwitch);
+    }
+
+    for (const auto& [neighborSwitch, neighborReachability] : inputCapacity) {
+      if (neighborSwitch == dstSwitch) {
+        continue;
+      }
+
+      auto neighborReachIter = neighborReachability.find(dstSwitch);
+      if (neighborReachIter == neighborReachability.end()) {
+        throw std::runtime_error(
+            "No input capacity data for switch " + dstSwitch +
+            " from neighbor " + neighborSwitch);
+      }
+
+      bool balanced =
+          neighborReachIter->second.size() <= outputCapacityIter->second.size();
+
+      InputBalanceResult result;
+      result.destinationSwitch = dstSwitch;
+      result.sourceSwitch = neighborSwitch;
+      result.balanced = balanced;
+
+      if (!balanced) {
+        result.inputCapacity = neighborReachIter->second;
+        result.outputCapacity = outputCapacityIter->second;
+        // TODO(zecheng): Add input/output link failure
+      }
+      inputBalanceResult.push_back(result);
+    }
+  }
+  return inputBalanceResult;
 }
 
 } // namespace facebook::fboss::utility

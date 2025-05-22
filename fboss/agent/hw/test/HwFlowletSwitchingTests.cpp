@@ -921,7 +921,7 @@ TEST_F(HwArsFlowletTest, VerifyFlowletConfigRemoval) {
   verifyAcrossWarmBoots(setup, verify);
 }
 
-TEST_F(HwArsTest, VerifyGetEcmpDetails) {
+TEST_F(HwArsFlowletTest, VerifyGetEcmpDetails) {
   if (this->skipTest()) {
 #if defined(GTEST_SKIP)
     GTEST_SKIP();
@@ -933,6 +933,10 @@ TEST_F(HwArsTest, VerifyGetEcmpDetails) {
 
   auto verify = [&]() {
     auto cfg = initialConfig();
+    updateFlowletConfigs(
+        cfg, cfg::SwitchingMode::FLOWLET_QUALITY, kFlowletTableSize2);
+    updatePortFlowletConfigName(cfg);
+    applyNewConfig(cfg);
     verifyConfig(cfg);
 
     // start a new thread to verify the ecmp details
@@ -1033,7 +1037,7 @@ TEST_F(HwArsFlowletTest, VerifyEcmpFlowletSwitchingEnable) {
   verifyAcrossWarmBoots(setup, verify);
 }
 
-TEST_F(HwArsTest, ValidateEcmpDetailsThread) {
+TEST_F(HwArsFlowletTest, ValidateEcmpDetailsThread) {
   if (this->skipTest()) {
 #if defined(GTEST_SKIP)
     GTEST_SKIP();
@@ -1051,6 +1055,10 @@ TEST_F(HwArsTest, ValidateEcmpDetailsThread) {
 
   auto verify = [&]() {
     auto cfg = initialConfig();
+    updateFlowletConfigs(
+        cfg, cfg::SwitchingMode::FLOWLET_QUALITY, kFlowletTableSize2);
+    updatePortFlowletConfigName(cfg);
+    applyNewConfig(cfg);
     auto portFlowletConfig =
         getPortFlowletConfig(kScalingFactor1(), kLoadWeight1, kQueueWeight1);
 
@@ -1087,7 +1095,7 @@ TEST_F(HwArsTest, ValidateEcmpDetailsThread) {
   verifyAcrossWarmBoots(setup, verify);
 }
 
-TEST_F(HwArsTest, ValidateFlowletStatsThread) {
+TEST_F(HwArsFlowletTest, ValidateFlowletStatsThread) {
   if (this->skipTest() ||
       (getPlatform()->getAsic()->getAsicType() ==
        cfg::AsicType::ASIC_TYPE_FAKE)) {
@@ -1107,6 +1115,10 @@ TEST_F(HwArsTest, ValidateFlowletStatsThread) {
 
   auto verify = [&]() {
     auto cfg = initialConfig();
+    updateFlowletConfigs(
+        cfg, cfg::SwitchingMode::FLOWLET_QUALITY, kFlowletTableSize2);
+    updatePortFlowletConfigName(cfg);
+    applyNewConfig(cfg);
     auto portFlowletConfig =
         getPortFlowletConfig(kScalingFactor1(), kLoadWeight1, kQueueWeight1);
 
@@ -1153,20 +1165,17 @@ TEST_F(HwArsFlowletTest, VerifySkipEcmpFlowletSwitchingEnable) {
     return;
   }
 
-  // This test setup static ECMP and update the static ECMP to DLB
-  // without port flowlet config and verify it
+  // This test verifies ability to configure ECMP groups without port config
   auto setup = [&]() {
     auto cfg = getDefaultConfig();
+    updateFlowletConfigs(cfg);
     applyNewConfig(cfg);
     resolveNextHopsAddRoute(kMaxLinks);
   };
 
   auto verify = [&]() {
     auto cfg = getDefaultConfig();
-    // Modify the flowlet config to convert ECMP to DLB
-    // without the flowlet port config
     updateFlowletConfigs(cfg);
-    applyNewConfig(cfg);
     // verify the flowlet config is not programmed in ECMP for TH3
     // since egress is not updated with port flowlet config
     // and the flowlet config is programmed in ECMP for TH4

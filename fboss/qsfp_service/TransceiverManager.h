@@ -37,6 +37,12 @@
 #include <map>
 #include <vector>
 
+#ifndef IS_OSS
+#if __has_feature(address_sanitizer)
+#include <sanitizer/lsan_interface.h>
+#endif
+#endif
+
 #define MODULE_LOG(level, Module, tcvrID) \
   XLOG(level) << Module << " tcvrID:" << tcvrID << ": "
 
@@ -212,6 +218,18 @@ class TransceiverManager {
 
   PhyManager* getPhyManager() {
     return phyManager_.get();
+  }
+
+  void releasePhyManager() {
+    if (phyManager_) {
+      // Suppressing ASAN warnings as this is expected behavior
+      __attribute__((unused)) auto* leakedPhyManager = phyManager_.release();
+#ifndef IS_OSS
+#if __has_feature(address_sanitizer)
+      folly::lsan_ignore_object(leakedPhyManager);
+#endif
+#endif
+    }
   }
 
   /*
@@ -608,6 +626,10 @@ class TransceiverManager {
       const;
 
   std::map<std::string, FirmwareUpgradeData> triggerAllOpticsFwUpgrade();
+
+  // portName to MediaInterfaceCode map
+  void getPortMediaInterface(
+      std::map<std::string, MediaInterfaceCode>& portMediaInterface);
 
  protected:
   /*

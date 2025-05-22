@@ -854,6 +854,9 @@ std::shared_ptr<SwitchState> SaiSwitch::stateChangedImplLocked(
         &SaiVlanManager::changeVlan,
         &SaiVlanManager::addVlan,
         &SaiVlanManager::removeVlan);
+  } else {
+    // Only DNX asics support switch reachability function
+    processPortStateChangedForSwitchReachability(delta, lockPolicy);
   }
 
   {
@@ -1649,6 +1652,40 @@ void SaiSwitch::processSwitchSettingsDrainStateChange(
   }
 }
 
+void SaiSwitch::processPortStateChangedForSwitchReachabilityLocked(
+    const std::lock_guard<std::mutex>& /*lock*/,
+    const StateDelta& delta) {
+  DeltaFunctions::forEachChanged(
+      delta.getPortsDelta(), [&](const auto& oldPort, const auto& newPort) {
+        if ((newPort->getPortType() == cfg::PortType::FABRIC_PORT) &&
+            (newPort->getActiveState() != oldPort->getActiveState())) {
+          // Forcing a switch reachability get from SAI/SDK once the
+          // port active state change handling is complete to ensure
+          // the switch reachability data is updated. This is needed
+          // as there are some cases like the one captured in
+          // CS00012399424, where a rechability change notification
+          // is not sent to NOS when port active state changes.
+          XLOG(DBG2) << "Port active state change on " << newPort->getName()
+                     << " triggering switch reachability get!";
+          setSwitchReachabilityChangePending();
+          return;
+        }
+      });
+}
+
+template <typename LockPolicyT>
+void SaiSwitch::processPortStateChangedForSwitchReachability(
+    const StateDelta& delta,
+    const LockPolicyT& lockPolicy) {
+  const auto portsDelta = delta.getPortsDelta();
+  const auto& oldPorts = portsDelta.getOld();
+  const auto& newPorts = portsDelta.getNew();
+  if (oldPorts != newPorts) {
+    processPortStateChangedForSwitchReachabilityLocked(
+        lockPolicy.lock(), delta);
+  }
+}
+
 bool SaiSwitch::isValidStateUpdate(const StateDelta& delta) const {
   std::lock_guard<std::mutex> lock(saiSwitchMutex_);
   return isValidStateUpdateLocked(lock, delta);
@@ -2327,6 +2364,28 @@ void SaiSwitch::linkStateChangedCallbackTopHalf(
       });
 }
 
+void SaiSwitch::syncPortLinkState(PortID portId) {
+  linkStateBottomHalfEventBase_.runInFbossEventBaseThread(
+      [this, portId = portId]() mutable {
+        linkStateChangedBottomHalf(portId);
+      });
+}
+void SaiSwitch::linkStateChangedBottomHalf(const PortID& portId) {
+  // Query SDK for port oper state using portId
+  auto handle = managerTable_->portManager().getPortHandle(portId);
+  auto saiPortId = handle->port->adapterKey();
+  auto portOperStatus = SaiApiTable::getInstance()->portApi().getAttribute(
+      saiPortId, SaiPortTraits::Attributes::OperStatus{});
+
+  std::vector<sai_port_oper_status_notification_t> portStatus{};
+  sai_port_oper_status_notification_t notification{};
+  notification.port_id = saiPortId;
+  notification.port_state = static_cast<sai_port_oper_status_t>(portOperStatus);
+  portStatus.push_back(notification);
+
+  linkStateChangedCallbackBottomHalf(portStatus);
+}
+
 void SaiSwitch::linkStateChangedCallbackBottomHalf(
     std::vector<sai_port_oper_status_notification_t> operStatus) {
   std::map<PortID, bool> swPortId2Status;
@@ -2521,13 +2580,6 @@ void SaiSwitch::txReadyStatusChangeOrFwIsolateCallbackBottomHalf(
 
   callback_->linkActiveStateChangedOrFwIsolated(
       port2IsActive, fwIsolated, numActiveFabricPortsAtFwIsolate);
-
-  // Forcing a switch reachability get from SAI/SDK once port
-  // active state change handling is complete to ensure the
-  // switch reachability data is consistent with port active
-  // state which is still an issue in S486672.
-  // TODO: Remove this once root cause of mismatch is identified.
-  setSwitchReachabilityChangePending();
 #endif
 }
 
@@ -2550,10 +2602,10 @@ std::set<PortID> SaiSwitch::getFabricReachabilityPortIds(
     const std::vector<sai_object_id_t>& switchIdAndFabricPortSaiIds) const {
   int64_t switchId = switchIdAndFabricPortSaiIds.at(0);
   if (switchIdAndFabricPortSaiIds.size() > 1) {
-    XLOG(DBG2) << "SwitchID " << switchId << " reachable over "
+    XLOG(DBG4) << "SwitchID " << switchId << " reachable over "
                << switchIdAndFabricPortSaiIds.size() - 1 << " ports!";
   } else if (switchIdAndFabricPortSaiIds.size() == 1) {
-    XLOG(DBG2) << "SwitchID " << switchId << " unreachable over fabric!";
+    XLOG(DBG4) << "SwitchID " << switchId << " unreachable over fabric!";
   }
   // Index 0 has switchId and indices 1 onwards has fabric port SAI id,
   // need to find the PortID associated with these fabric port SAI ids.
@@ -3965,8 +4017,21 @@ std::optional<L2Entry> SaiSwitch::getL2Entry(
     XLOG(ERR) << "Missing bridge port attribute in FDB event";
     return std::nullopt;
   }
-  auto portOrLagSaiId = SaiApiTable::getInstance()->bridgeApi().getAttribute(
-      fdbEvent.bridgePortSaiId, SaiBridgePortTraits::Attributes::PortId{});
+
+  // We could recive learn event when bridge port is not present.
+  // Ignore SDK error. Refer D74672820 for details.
+  sai_object_id_t portOrLagSaiId = SAI_NULL_OBJECT_ID;
+  try {
+    portOrLagSaiId = SaiApiTable::getInstance()->bridgeApi().getAttribute(
+        fdbEvent.bridgePortSaiId, SaiBridgePortTraits::Attributes::PortId{});
+  } catch (const SaiApiError& e) {
+    if (e.getSaiStatus() == SAI_STATUS_ITEM_NOT_FOUND) {
+      XLOG(ERR)
+          << "Bridge port is not found in SDK, may be we deleted it during port re-create";
+      return std::nullopt;
+    }
+    throw;
+  }
 
   L2Entry::L2EntryType entryType{L2Entry::L2EntryType::L2_ENTRY_TYPE_PENDING};
   auto mac = fromSaiMacAddress(fdbEvent.fdbEntry.mac_address);
@@ -4652,6 +4717,11 @@ AclStats SaiSwitch::getAclStats() const {
 HwSwitchWatermarkStats SaiSwitch::getSwitchWatermarkStats() const {
   std::lock_guard<std::mutex> lk(saiSwitchMutex_);
   return managerTable_->switchManager().getSwitchWatermarkStats();
+}
+
+HwSwitchPipelineStats SaiSwitch::getSwitchPipelineStats() const {
+  std::lock_guard<std::mutex> lk(saiSwitchMutex_);
+  return managerTable_->switchManager().getSwitchPipelineStats();
 }
 
 /*
