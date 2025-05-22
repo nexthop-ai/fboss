@@ -65,7 +65,36 @@ std::vector<StateDelta> BaseEcmpResourceManagerTest::consolidate(
    * Assert that EcmpResourceMgr leaves the ports state untouched
    */
   EXPECT_NE(state_->getPorts()->getPortIf("port1"), nullptr);
+  {
+    // Assert restoration from current state results in no
+    // overflow and the route backup group state matches
+    auto newConsolidator = makeResourceMgr();
+    auto restoreDeltas = newConsolidator->reconstructFromSwitchState(state_);
+    EXPECT_EQ(restoreDeltas.size(), 1);
+    auto restoredState = restoreDeltas.back().newState();
+    auto newFib6 = cfib(restoredState);
+    for (const auto& [_, origRoute] : std::as_const(*cfib(state_))) {
+      auto newRoute = newFib6->getRouteIf(origRoute->prefix());
+      EXPECT_EQ(newRoute->isResolved(), origRoute->isResolved());
+      CHECK(origRoute->isResolved());
+      EXPECT_EQ(
+          newRoute->getForwardInfo().getOverrideEcmpSwitchingMode(),
+          origRoute->getForwardInfo().getOverrideEcmpSwitchingMode());
+    }
+  }
   return deltas;
+}
+void BaseEcmpResourceManagerTest::failUpdate(
+    const std::shared_ptr<SwitchState>& state) {
+  failUpdate(state, state_);
+}
+
+void BaseEcmpResourceManagerTest::failUpdate(
+    const std::shared_ptr<SwitchState>& state,
+    const std::shared_ptr<SwitchState>& failTo) {
+  StateDelta delta(state_, state);
+  auto deltas = consolidator_->consolidate(delta);
+  consolidator_->updateFailed(failTo);
 }
 
 void BaseEcmpResourceManagerTest::assertDeltasForOverflow(
@@ -149,8 +178,9 @@ void BaseEcmpResourceManagerTest::assertDeltasForOverflow(
         consolidator_->getMaxPrimaryEcmpGroups());
   };
 
+  auto idx = 1;
   for (const auto& delta : deltas) {
-    XLOG(DBG2) << " Processing delta";
+    XLOG(DBG2) << " Processing delta #" << idx++;
     forEachChangedRoute<folly::IPAddressV6>(
         delta,
         [=](RouterID /*rid*/, const auto& oldRoute, const auto& newRoute) {
@@ -185,6 +215,7 @@ void BaseEcmpResourceManagerTest::assertDeltasForOverflow(
         });
   }
 }
+
 RouteV6::Prefix BaseEcmpResourceManagerTest::nextPrefix() const {
   auto newState = state_->clone();
   auto fib6 = fib(newState);
@@ -204,6 +235,16 @@ void BaseEcmpResourceManagerTest::SetUp() {
   state_ = std::make_shared<SwitchState>();
   state_->getPorts()->modify(&state_);
   registerPort(state_, PortID(1), "port1", hwMatcher());
+  auto switchSettings = std::make_shared<SwitchSettings>();
+  state_->getSwitchSettings()->addNode(
+      hwMatcher().matcherString(), switchSettings);
+  auto flowletSwitchingConfig = std::make_shared<FlowletSwitchingConfig>();
+  if (consolidator_->getBackupEcmpSwitchingMode()) {
+    flowletSwitchingConfig->setBackupSwitchingMode(
+        *consolidator_->getBackupEcmpSwitchingMode());
+  }
+  switchSettings->setFlowletSwitchingConfig(flowletSwitchingConfig);
+  EXPECT_EQ(state_->getFlowletSwitchingConfig(), flowletSwitchingConfig);
   auto fibContainer =
       std::make_shared<ForwardingInformationBaseContainer>(RouterID(0));
   auto mfib = std::make_shared<MultiSwitchForwardingInformationBaseMap>();
@@ -254,5 +295,45 @@ TEST_F(BaseEcmpResourceManagerTest, noFibsDelta) {
   EXPECT_EQ(deltas.begin()->newState(), newState);
   EXPECT_NE(
       deltas.begin()->newState()->getPorts()->getPortIf("port2"), nullptr);
+}
+
+TEST_F(BaseEcmpResourceManagerTest, addClassId) {
+  auto oldState = state_;
+  auto newState = oldState->clone();
+  auto fib6 = fib(newState);
+  auto newRoute = fib6->cbegin()->second->clone();
+  newRoute->updateClassID(cfg::AclLookupClass::DST_CLASS_L3_LOCAL_2);
+  fib6->updateNode(newRoute);
+  auto deltas = consolidate(newState);
+  EXPECT_EQ(deltas.size(), 1);
+  EXPECT_EQ(deltas.begin()->oldState(), oldState);
+  auto postUpdateRoute =
+      cfib(deltas.begin()->newState())->getRouteIf(newRoute->prefix());
+  EXPECT_NE(postUpdateRoute, nullptr);
+  EXPECT_EQ(
+      postUpdateRoute->getClassID(), cfg::AclLookupClass::DST_CLASS_L3_LOCAL_2);
+}
+
+TEST_F(BaseEcmpResourceManagerTest, addCounterId) {
+  auto oldState = state_;
+  auto newState = oldState->clone();
+  auto fib6 = fib(newState);
+  auto newRoute = fib6->cbegin()->second->clone();
+  const auto& nhopEntry = newRoute->getForwardInfo();
+  std::optional<RouteCounterID> counterId("42");
+  RouteNextHopEntry newNhopEntry(
+      nhopEntry.getNextHopSet(),
+      nhopEntry.getAdminDistance(),
+      counterId,
+      nhopEntry.getClassID());
+  newRoute->setResolved(newNhopEntry);
+  fib6->updateNode(newRoute);
+  auto deltas = consolidate(newState);
+  EXPECT_EQ(deltas.size(), 1);
+  EXPECT_EQ(deltas.begin()->oldState(), oldState);
+  auto postUpdateRoute =
+      cfib(deltas.begin()->newState())->getRouteIf(newRoute->prefix());
+  EXPECT_NE(postUpdateRoute, nullptr);
+  EXPECT_EQ(postUpdateRoute->getForwardInfo().getCounterID(), counterId);
 }
 } // namespace facebook::fboss

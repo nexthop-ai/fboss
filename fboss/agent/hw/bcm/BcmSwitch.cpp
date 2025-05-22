@@ -965,6 +965,8 @@ HwInitResult BcmSwitch::initImpl(
   setupToCpuEgress();
   portTable_->initPorts(&pcfg, warmBoot);
 
+  egressManager_->init();
+
   // initialize UDF module
   udfManager_->init();
   bstStatsMgr_->startBufferStatCollection();
@@ -3237,6 +3239,10 @@ HwSwitchWatermarkStats BcmSwitch::getSwitchWatermarkStats() const {
   return stats;
 }
 
+HwSwitchPipelineStats BcmSwitch::getSwitchPipelineStats() const {
+  return HwSwitchPipelineStats{};
+}
+
 bcm_if_t BcmSwitch::getDropEgressId() const {
   return platform_->getAsic()->getDefaultDropEgressID();
 }
@@ -4259,6 +4265,8 @@ void BcmSwitch::syncLinkStates() {
     }
   });
 }
+
+void BcmSwitch::syncPortLinkState(PortID /*port*/) {}
 
 CpuPortStats BcmSwitch::getCpuPortStats() const {
   CpuPortStats cpuPortStats;

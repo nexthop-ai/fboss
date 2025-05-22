@@ -6,6 +6,7 @@ on:
       - fboss/lib/platform_mapping_v2/**
 jobs:
   Platform-Mapping-Generation-Build:
+    if: github.repository_owner == 'facebook'
     runs-on: 32-core-ubuntu
     steps:
       - run: echo "Confirming hardware specications:"; sudo lscpu
@@ -41,6 +42,7 @@ jobs:
           # Explicitly set the retention at the object level
           retention-days: 14
   Platform-Mapping-Generation-Verification:
+    if: github.repository_owner == 'facebook'
     runs-on: ubuntu-latest
     needs: Platform-Mapping-Generation-Build
     steps:

@@ -421,6 +421,7 @@ class BcmSwitch : public BcmSwitchIf {
   }
 
   HwSwitchWatermarkStats getSwitchWatermarkStats() const override;
+  HwSwitchPipelineStats getSwitchPipelineStats() const override;
   HwFlowletStats getHwFlowletStats() const override;
 
   HwResourceStats getResourceStats() const override;
@@ -642,6 +643,7 @@ class BcmSwitch : public BcmSwitchIf {
   }
 
   void syncLinkStates() override;
+  void syncPortLinkState(PortID port) override;
 
   // no concept of link active states in BcmSwitch
   void syncLinkActiveStates() override {}

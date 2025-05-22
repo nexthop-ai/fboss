@@ -8,6 +8,7 @@
  *
  */
 #pragma once
+#include "fboss/agent/AgentFeatures.h"
 #include "fboss/agent/state/Route.h"
 #include "fboss/agent/state/RouteNextHopEntry.h"
 #include "fboss/agent/state/StateDelta.h"
@@ -55,10 +56,6 @@ class NextHopGroupInfo {
 };
 
 class EcmpResourceManager {
-  // Keep some buffer from HW limit for make before break
-  // nature of ECMP.
-  static auto constexpr kEcmpMakeBeforeBreakBuffer = 2;
-
  public:
   explicit EcmpResourceManager(
       uint32_t maxHwEcmpGroups,
@@ -66,10 +63,13 @@ class EcmpResourceManager {
       std::optional<cfg::SwitchingMode> backupEcmpGroupType = std::nullopt)
       // We keep a buffer of 2 for transient increment in ECMP groups when
       // pushing updates down to HW
-      : maxEcmpGroups_(maxHwEcmpGroups - kEcmpMakeBeforeBreakBuffer),
+      : maxEcmpGroups_(
+            maxHwEcmpGroups -
+            FLAGS_ecmp_resource_manager_make_before_break_buffer),
         compressionPenaltyThresholdPct_(compressionPenaltyThresholdPct),
         backupEcmpGroupType_(backupEcmpGroupType) {
-    CHECK_GT(maxHwEcmpGroups, kEcmpMakeBeforeBreakBuffer);
+    CHECK_GT(
+        maxHwEcmpGroups, FLAGS_ecmp_resource_manager_make_before_break_buffer);
     CHECK_EQ(compressionPenaltyThresholdPct_, 0)
         << " Group compression algo is WIP";
   }
@@ -78,6 +78,8 @@ class EcmpResourceManager {
   using NextHops2GroupId = std::map<RouteNextHopSet, NextHopGroupId>;
 
   std::vector<StateDelta> consolidate(const StateDelta& delta);
+  std::vector<StateDelta> reconstructFromSwitchState(
+      const std::shared_ptr<SwitchState>& curState);
   const auto& getNhopsToId() const {
     return nextHopGroup2Id_;
   }
@@ -92,6 +94,11 @@ class EcmpResourceManager {
   }
 
  private:
+  template <typename AddrT>
+  bool routesEqual(
+      const std::shared_ptr<Route<AddrT>>& oldRoute,
+      const std::shared_ptr<Route<AddrT>>& newRoute) const;
+
   struct ConsolidationPenalty {
     int maxPenalty() const;
     int avgPenalty() const;
@@ -100,9 +107,13 @@ class EcmpResourceManager {
   struct PreUpdateState {
     std::map<NextHopGroupIds, ConsolidationPenalty> mergedGroups;
     std::map<RouteNextHopSet, NextHopGroupId> nextHopGroup2Id;
+    std::optional<cfg::SwitchingMode> backupEcmpGroupType;
   };
   struct InputOutputState {
-    InputOutputState(uint32_t _nonBackupEcmpGroupsCnt, const StateDelta& _in);
+    InputOutputState(
+        uint32_t _nonBackupEcmpGroupsCnt,
+        const StateDelta& _in,
+        const PreUpdateState& _groupIdCache = PreUpdateState());
     template <typename AddrT>
     void addOrUpdateRoute(
         RouterID rid,
@@ -128,15 +139,35 @@ class EcmpResourceManager {
      */
     uint32_t nonBackupEcmpGroupsCnt;
     std::vector<StateDelta> out;
+    PreUpdateState groupIdCache;
   };
+  std::optional<InputOutputState> handleFlowletSwitchConfigDelta(
+      const StateDelta& delta);
+  std::vector<StateDelta> consolidateImpl(
+      const StateDelta& delta,
+      InputOutputState* inOutState);
+  void reclaimEcmpGroups(InputOutputState* inOutState);
   std::set<NextHopGroupId> createOptimalMergeGroupSet();
+  template <typename AddrT>
+  std::shared_ptr<NextHopGroupInfo> updateForwardingInfoAndInsertDelta(
+      RouterID rid,
+      const std::shared_ptr<Route<AddrT>>& route,
+      NextHops2GroupId::iterator nhops2IdItr,
+      bool ecmpDemandExceeded,
+      InputOutputState* inOutState);
+  template <typename AddrT>
+  std::shared_ptr<NextHopGroupInfo> updateForwardingInfoAndInsertDelta(
+      RouterID rid,
+      const std::shared_ptr<Route<AddrT>>& route,
+      std::shared_ptr<NextHopGroupInfo>& grpInfo,
+      bool ecmpDemandExceeded,
+      InputOutputState* inOutState);
   template <typename AddrT>
   std::shared_ptr<NextHopGroupInfo> ecmpGroupDemandExceeded(
       RouterID rid,
       const std::shared_ptr<Route<AddrT>>& route,
       NextHops2GroupId::iterator nhops2IdItr,
       InputOutputState* inOutState);
-  template <typename AddrT>
   void processRouteUpdates(
       const StateDelta& delta,
       InputOutputState* inOutState);
@@ -164,10 +195,15 @@ class EcmpResourceManager {
       bool isUpdate,
       InputOutputState* inOutState);
   static uint32_t constexpr kMinNextHopGroupId = 1;
+  NextHopGroupId findCachedOrNewIdForNhops(
+      const RouteNextHopSet& nhops,
+      const InputOutputState& inOutState) const;
   NextHopGroupId findNextAvailableId() const;
   NextHops2GroupId nextHopGroup2Id_;
   StdRefMap<NextHopGroupId, NextHopGroupInfo> nextHopGroupIdToInfo_;
-  std::unordered_map<folly::CIDRNetwork, std::shared_ptr<NextHopGroupInfo>>
+  std::unordered_map<
+      std::pair<RouterID, folly::CIDRNetwork>,
+      std::shared_ptr<NextHopGroupInfo>>
       prefixToGroupInfo_;
   std::map<NextHopGroupIds, ConsolidationPenalty> mergedGroups_;
   std::map<NextHopGroupIds, ConsolidationPenalty> candidateMergeGroups_;
