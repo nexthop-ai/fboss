@@ -162,8 +162,8 @@ Once you verify the successful bring-up of `qsfp_service` and `wedge_agent` usin
 
 #### Agent-Specific Code Changes
 
-1. Add a `SaiPLATFORMPlatformPort` [header file](https://www.internalfb.com/code/fbsource/fbcode/fboss/agent/platforms/sai/SaiBcmMontblancPlatformPort.h) and [source file](https://www.internalfb.com/code/fbsource/fbcode/fboss/agent/platforms/sai/SaiBcmMontblancPlatformPort.cpp) for your platform.
-2. Add a `SaiPLATFORMPlatform` [header file](https://www.internalfb.com/code/fbsource/fbcode/fboss/agent/platforms/sai/SaiBcmMontblancPlatform.h) and [source file](https://www.internalfb.com/code/fbsource/fbcode/fboss/agent/platforms/sai/SaiBcmMontblancPlatform.cpp) for your platform.
+1. Add a `SaiPLATFORMPlatformPort` [header file](https://github.com/facebook/fboss/blob/main/fboss/agent/platforms/sai/SaiBcmMontblancPlatformPort.h) and [source file](https://github.com/facebook/fboss/blob/main/fboss/agent/platforms/sai/SaiBcmMontblancPlatformPort.cpp) for your platform.
+2. Add a `SaiPLATFORMPlatform` [header file](https://github.com/facebook/fboss/blob/main/fboss/agent/platforms/sai/SaiBcmMontblancPlatform.h) and [source file](https://github.com/facebook/fboss/blob/main/fboss/agent/platforms/sai/SaiBcmMontblancPlatform.cpp) for your platform.
 3. Add a new entry to [initPorts()](https://github.com/facebook/fboss/blob/main/fboss/agent/platforms/sai/SaiPlatform.cpp) using your `SaiPLATFORMPlatformPort` from earlier.
 4. Add a new entry to [chooseSaiPlatform()](https://github.com/facebook/fboss/blob/main/fboss/agent/platforms/sai/SaiPlatformInit.cpp) using your `SaiPLATFORMPlatformPort` from earlier.
 5. Add a new `AgentPlatformsCommonPLATFORM.cmake` file for your platform ([example](https://github.com/facebook/fboss/blob/main/cmake/AgentPlatformsCommonMontblanc.cmake)). Then, add this library name to `sai_platform` link libraries [here](https://github.com/facebook/fboss/blob/main/cmake/AgentPlatformsSai.cmake#L104).
