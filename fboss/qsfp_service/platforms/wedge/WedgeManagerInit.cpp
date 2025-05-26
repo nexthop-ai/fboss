@@ -18,6 +18,7 @@
 #include "fboss/agent/platforms/common/minipack3n/Minipack3NPlatformMapping.h"
 #include "fboss/agent/platforms/common/montblanc/MontblancPlatformMapping.h"
 #include "fboss/agent/platforms/common/morgan800cc/Morgan800ccPlatformMapping.h"
+#include "fboss/agent/platforms/common/nh4010/Nh4010PlatformMapping.h"
 #include "fboss/agent/platforms/common/tahan800bc/Tahan800bcPlatformMapping.h"
 #include "fboss/lib/bsp/BspGenericSystemContainer.h"
 #include "fboss/lib/bsp/janga800bic/Janga800bicBspPlatformMapping.h"
@@ -29,6 +30,7 @@
 #include "fboss/lib/bsp/minipack3n/Minipack3NBspPlatformMapping.h"
 #include "fboss/lib/bsp/montblanc/MontblancBspPlatformMapping.h"
 #include "fboss/lib/bsp/morgan800cc/Morgan800ccBspPlatformMapping.h"
+#include "fboss/lib/bsp/nh4010/Nh4010BspPlatformMapping.h"
 #include "fboss/lib/bsp/tahan800bc/Tahan800bcBspPlatformMapping.h"
 #include "fboss/lib/platforms/PlatformProductInfo.h"
 #include "fboss/qsfp_service/platforms/wedge/BspWedgeManager.h"
@@ -243,6 +245,20 @@ std::unique_ptr<WedgeManager> createTahan800bcWedgeManager(
           ? std::make_unique<Tahan800bcPlatformMapping>()
           : std::make_unique<Tahan800bcPlatformMapping>(platformMappingStr),
       PlatformType::PLATFORM_TAHAN800BC);
+}
+
+std::unique_ptr<WedgeManager> createNh4010WedgeManager(
+    const std::string& platformMappingStr) {
+  auto systemContainer =
+      BspGenericSystemContainer<Nh4010BspPlatformMapping>::getInstance()
+          .get();
+  return std::make_unique<BspWedgeManager>(
+      systemContainer,
+      std::make_unique<BspTransceiverApi>(systemContainer),
+      platformMappingStr.empty()
+          ? std::make_unique<Nh4010PlatformMapping>()
+          : std::make_unique<Nh4010PlatformMapping>(platformMappingStr),
+      PlatformType::PLATFORM_NH4010);
 }
 } // namespace fboss
 } // namespace facebook

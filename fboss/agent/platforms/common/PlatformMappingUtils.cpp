@@ -32,6 +32,7 @@
 #include "fboss/agent/platforms/common/minipack3n/Minipack3NPlatformMapping.h"
 #include "fboss/agent/platforms/common/montblanc/MontblancPlatformMapping.h"
 #include "fboss/agent/platforms/common/morgan800cc/Morgan800ccPlatformMapping.h"
+#include "fboss/agent/platforms/common/nh4010/Nh4010PlatformMapping.h"
 #include "fboss/agent/platforms/common/tahan800bc/Tahan800bcPlatformMapping.h"
 #include "fboss/agent/platforms/common/wedge100/Wedge100PlatformMapping.h"
 #include "fboss/agent/platforms/common/wedge40/Wedge40PlatformMapping.h"
@@ -183,6 +184,10 @@ std::unique_ptr<PlatformMapping> initPlatformMapping(PlatformType type) {
       return platformMappingStr.empty()
           ? std::make_unique<Icecube800bcPlatformMapping>()
           : std::make_unique<Icecube800bcPlatformMapping>(platformMappingStr);
+    case PlatformType::PLATFORM_NH4010:
+      return platformMappingStr.empty()
+          ? std::make_unique<Nh4010PlatformMapping>()
+          : std::make_unique<Nh4010PlatformMapping>(platformMappingStr);
     case PlatformType::PLATFORM_FAKE_SAI: {
       std::vector<int> controllingPorts = getFakeSaiControllingPortIDs();
       return std::make_unique<FakeTestPlatformMapping>(controllingPorts);

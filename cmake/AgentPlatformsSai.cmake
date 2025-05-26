@@ -68,6 +68,8 @@ add_library(sai_platform
   fboss/agent/platforms/sai/SaiYangraPlatformPort.cpp
   fboss/agent/platforms/sai/SaiMinipack3NPlatformPort.cpp
   fboss/agent/platforms/sai/SaiBcmIcecube800bcPlatformPort.cpp
+  fboss/agent/platforms/sai/SaiNh4010Platform.cpp
+  fboss/agent/platforms/sai/SaiNh4010PlatformPort.cpp
 )
 
 target_link_libraries(sai_platform
@@ -105,6 +107,7 @@ target_link_libraries(sai_platform
   janga800bic_platform_mapping
   tahan800bc_platform_mapping
   icecube800bc_platform_mapping
+  nh4010_platform_mapping
   led_structs_types_cpp2
   led_mapping_cpp2
 )

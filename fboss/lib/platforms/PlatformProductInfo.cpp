@@ -184,6 +184,8 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_TAHAN800BC;
     } else if (modelName.find("ICEPACK-TH6") == 0) {
       type_ = PlatformType::PLATFORM_ICECUBE800BC;
+    } else if (modelName.find("NH-4010") == 0) {
+      type_ = PlatformType::PLATFORM_NH4010;
     } else {
       throw FbossError("invalid model name " + modelName);
     }
@@ -246,6 +248,8 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_YANGRA;
     } else if (FLAGS_mode == "minipack3n") {
       type_ = PlatformType::PLATFORM_MINIPACK3N;
+    } else if (FLAGS_mode == "nh4010") {
+      type_ = PlatformType::PLATFORM_NH4010;
     } else {
       throw std::runtime_error("invalid mode " + FLAGS_mode);
     }
