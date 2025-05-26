@@ -323,8 +323,9 @@ HwInitResult SaiSwitch::initImpl(
   {
     HwWriteBehaviorRAII writeBehavior{behavior};
     if (bootType_ != BootType::WARM_BOOT) {
-      stateChangedImpl(
-          StateDelta(std::make_shared<SwitchState>(), ret.switchState));
+      std::vector<StateDelta> deltas;
+      deltas.emplace_back(std::make_shared<SwitchState>(), ret.switchState);
+      stateChangedImpl(deltas);
     }
   }
   return ret;
@@ -680,9 +681,27 @@ bool SaiSwitch::l2LearningModeChangeProhibited() const {
 }
 
 std::shared_ptr<SwitchState> SaiSwitch::stateChangedImpl(
-    const StateDelta& delta) {
+    const std::vector<StateDelta>& deltas) {
   FineGrainedLockPolicy lockPolicy(saiSwitchMutex_);
-  return stateChangedImplLocked(delta, lockPolicy);
+
+  // This is unlikely to happen but if it does, return current state
+  if (deltas.size() == 0) {
+    return getProgrammedState();
+  }
+  int count = 1;
+  std::shared_ptr<SwitchState> appliedState{nullptr};
+  for (const auto& delta : deltas) {
+    appliedState = stateChangedImplLocked(delta, lockPolicy);
+    // if the current delta fails to apply, return the last successful state
+    // HwSwitchHandler would rollback based on the response
+    if (*appliedState != *delta.newState()) {
+      XLOG(DBG2) << "Failed to apply " << count << " delta in  "
+                 << deltas.size() << " deltas";
+      return appliedState;
+    }
+    count++;
+  }
+  return appliedState;
 }
 
 template <typename LockPolicyT>
@@ -3687,6 +3706,16 @@ bool SaiSwitch::sendPacketOutOfPortSync(
     XLOG(ERR) << "Failed to send packet on invalid port: " << portID;
     return false;
   }
+
+  // We should never send packets directly out of eventor port. Doing so may
+  // trigger SDK or HW bugs.
+  if (managerTable_->portManager().getPortType(portID) ==
+      cfg::PortType::EVENTOR_PORT) {
+    XLOG_EVERY_MS(WARNING, 5000)
+        << "Rejecting packet sent to EVENTOR_PORT: " << portID;
+    return false;
+  }
+
   /* Strip vlan tag with pipeline bypass, for all asic types. */
   getSwitchStats()->txSent();
   folly::io::Cursor cursor(pkt->buf());
@@ -4890,6 +4919,15 @@ void SaiSwitch::switchAsicSdkHealthNotificationTopHalf(
 
 void SaiSwitch::switchAsicSdkHealthNotificationBottomHalf(
     SaiHealthNotification saiHealthNotification) {
+  if (saiHealthNotification.asicError()) {
+    getSwitchStats()->asicError();
+  }
+  if (saiHealthNotification.corrParityError()) {
+    getSwitchStats()->corrParityError();
+  }
+  if (saiHealthNotification.uncorrParityError()) {
+    getSwitchStats()->uncorrParityError();
+  }
   switch (saiHealthNotification.getSeverity()) {
     case SAI_SWITCH_ASIC_SDK_HEALTH_SEVERITY_FATAL:
       XLOGF(FATAL, "{}", saiHealthNotification);
@@ -4903,7 +4941,6 @@ void SaiSwitch::switchAsicSdkHealthNotificationBottomHalf(
       XLOGF(INFO, "{}", saiHealthNotification);
       break;
   }
-  /* TODO(pshaikh) : process saiHealthNotification to set parity error */
 }
 #endif
 

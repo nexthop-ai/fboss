@@ -187,7 +187,7 @@ class HwEnsembleMultiSwitchThriftHandler
       return;
     }
     // return empty delta if cancelled
-    operDelta.operDelta() = fsdb::OperDelta();
+    operDelta.operDeltas() = {fsdb::OperDelta()};
     return;
   }
 
@@ -397,9 +397,10 @@ fsdb::OperDelta HwSwitchEnsemble::applyUpdate(
     const fsdb::OperDelta& operDelta,
     const std::lock_guard<std::mutex>& /*lock*/,
     bool transaction) {
+  std::vector<fsdb::OperDelta> operDeltas = {operDelta};
   auto resultOperDelta = transaction
-      ? getHwSwitch()->stateChangedTransaction(operDelta)
-      : getHwSwitch()->stateChanged(operDelta);
+      ? getHwSwitch()->stateChangedTransaction(operDeltas)
+      : getHwSwitch()->stateChanged(operDeltas);
   return resultOperDelta;
 }
 

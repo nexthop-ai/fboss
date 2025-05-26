@@ -1233,12 +1233,14 @@ cpp_library(
     name = "packet",
     srcs = [
         "Packet.cpp",
+        "TxPacket.cpp",
     ],
     headers = [
         "Packet.h",
         "RxPacket.h",
         "SwRxPacket.h",
         "TxPacket.h",
+        "TxPacketObserver.h",
     ],
     exported_deps = [
         ":fboss-types",
@@ -1380,6 +1382,7 @@ cpp_library(
         ":packet",
         ":stats",
         "//fboss/agent/if:multiswitch_ctrl-cpp2-services",
+        "//fboss/agent/state:state",
     ],
 )
 

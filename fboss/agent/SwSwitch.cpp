@@ -1333,12 +1333,14 @@ void SwSwitch::init(
   }
   initialState->publish();
   auto emptyState = std::make_shared<SwitchState>();
+  auto origInitialState = initialState;
   emptyState->publish();
+  std::vector<StateDelta> deltas;
   if (ecmpResourceManager_) {
-    std::vector<StateDelta> deltas;
     deltas = ecmpResourceManager_->reconstructFromSwitchState(initialState);
-    CHECK_EQ(deltas.size(), 1);
     initialState = deltas.back().newState();
+  } else {
+    deltas.emplace_back(emptyState, initialState);
   }
   const auto initialStateDelta = StateDelta(emptyState, initialState);
 
@@ -1350,10 +1352,10 @@ void SwSwitch::init(
         "This should not happen given the state was previously applied, ",
         "but possible if calculation or threshold changes across warmboot.");
   }
-  multiHwSwitchHandler_->stateChanged(
-      initialStateDelta, false, hwWriteBehavior);
+  multiHwSwitchHandler_->stateChanged(deltas, false, hwWriteBehavior);
   if (ecmpResourceManager_) {
     ecmpResourceManager_->updateDone();
+    updateRibEcmpOverrides(StateDelta(origInitialState, initialState));
   }
   // For cold boot there will be discripancy between applied state and state
   // that exists in hardware. this discrepancy is until config is applied, after
@@ -1846,6 +1848,7 @@ SwSwitch::applyUpdate(
   // Check that we are starting from what has been already applied
   DCHECK_EQ(oldState, getAppliedState());
   auto newDesiredState = newState;
+  auto origDesiredState = newDesiredState;
   auto start = std::chrono::steady_clock::now();
   XLOG(DBG2) << "Updating state: old_gen=" << oldState->getGeneration()
              << " new_gen=" << newDesiredState->getGeneration();
@@ -1856,8 +1859,8 @@ SwSwitch::applyUpdate(
     XLOG(DBG2) << " Agent exiting before all updates could be applied";
     return std::make_pair(oldState, newDesiredState);
   }
+  std::vector<StateDelta> deltas;
   if (ecmpResourceManager_) {
-    std::vector<StateDelta> deltas;
     try {
       deltas = ecmpResourceManager_->consolidate(
           StateDelta(oldState, newDesiredState));
@@ -1865,10 +1868,9 @@ SwSwitch::applyUpdate(
       XLOG(DBG2) << " Ecmp resource manager rejected update: " << e.what();
       return std::make_pair(oldState, newDesiredState);
     }
-    // TODO allow for > 1 deltas once switch handlers, HwSwitch are
-    // able to handle these.
-    CHECK_EQ(deltas.size(), 1);
     newDesiredState = deltas.back().newState();
+  } else {
+    deltas.emplace_back(oldState, newDesiredState);
   }
 
   StateDelta delta(oldState, newDesiredState);
@@ -1894,7 +1896,7 @@ SwSwitch::applyUpdate(
   // undesirable.  So far I don't think this brief discrepancy should cause
   // major issues.
   try {
-    newAppliedState = stateChanged(delta, isTransaction);
+    newAppliedState = stateChanged(deltas, isTransaction);
   } catch (const std::exception& ex) {
     // Notify the hw_ of the crash so it can execute any device specific
     // tasks before we fatal. An example would be to dump the current hw
@@ -1910,6 +1912,9 @@ SwSwitch::applyUpdate(
 
     dumpBadStateUpdate(oldState, newDesiredState);
     XLOG(FATAL) << "encountered a fatal error: " << folly::exceptionStr(ex);
+  }
+  if (ecmpResourceManager_ && newAppliedState != oldState) {
+    updateRibEcmpOverrides(StateDelta(origDesiredState, newAppliedState));
   }
 
   setStateInternal(newAppliedState);
@@ -1928,6 +1933,51 @@ SwSwitch::applyUpdate(
 
   XLOG(DBG0) << "Update state took " << duration.count() << "us";
   return std::make_pair(newAppliedState, newDesiredState);
+}
+
+void SwSwitch::updateRibEcmpOverrides(const StateDelta& delta) {
+  std::map<
+      RouterID,
+      std::map<folly::CIDRNetwork, std::optional<cfg::SwitchingMode>>>
+      rid2prefix2SwitchingMode;
+
+  forEachChangedRoute(
+      delta,
+      [&rid2prefix2SwitchingMode](
+          RouterID rid, const auto& oldRoute, const auto& newRoute) {
+        if (!newRoute->isResolved()) {
+          return;
+        }
+        if (!oldRoute->isResolved()) {
+          if (newRoute->getForwardInfo()
+                  .getOverrideEcmpSwitchingMode()
+                  .has_value()) {
+            rid2prefix2SwitchingMode[rid][newRoute->prefix().toCidrNetwork()] =
+                newRoute->getForwardInfo().getOverrideEcmpSwitchingMode();
+          }
+        } else {
+          // both are resolved
+          if (oldRoute->getForwardInfo().getOverrideEcmpSwitchingMode() !=
+              newRoute->getForwardInfo().getOverrideEcmpSwitchingMode()) {
+            rid2prefix2SwitchingMode[rid][newRoute->prefix().toCidrNetwork()] =
+                newRoute->getForwardInfo().getOverrideEcmpSwitchingMode();
+          }
+        }
+      },
+      [&rid2prefix2SwitchingMode](RouterID rid, const auto& newRoute) {
+        if (newRoute->isResolved() &&
+            newRoute->getForwardInfo()
+                .getOverrideEcmpSwitchingMode()
+                .has_value()) {
+          rid2prefix2SwitchingMode[rid][newRoute->prefix().toCidrNetwork()] =
+              newRoute->getForwardInfo().getOverrideEcmpSwitchingMode();
+        }
+      },
+      [&rid2prefix2SwitchingMode](RouterID /*rid*/, const auto& /*oldRoute*/) {
+      });
+  for (const auto& [rid, prefixes] : rid2prefix2SwitchingMode) {
+    getRouteUpdater().programEcmpSwitchingModeAsync(rid, prefixes);
+  }
 }
 
 void SwSwitch::dumpBadStateUpdate(

@@ -202,15 +202,13 @@ std::pair<fsdb::OperDelta, HwSwitchStateUpdateStatus>
 MonolithicHwSwitchHandler::stateChanged(
     const std::vector<fsdb::OperDelta>& deltas,
     bool transaction,
+    const std::shared_ptr<SwitchState>& /*oldState*/,
     const std::shared_ptr<SwitchState>& /*newState*/,
     const HwWriteBehavior& hwWriteBehavior) {
-  // TODO (ravi) until HwSwitch support vector delta processing
-  CHECK_LE(deltas.size(), 1);
-  auto& delta = deltas.back();
   auto operResult = transaction
       ? hw_->stateChangedTransaction(
-            delta, HwWriteBehaviorRAII(hwWriteBehavior))
-      : hw_->stateChanged(delta, HwWriteBehaviorRAII(hwWriteBehavior));
+            deltas, HwWriteBehaviorRAII(hwWriteBehavior))
+      : hw_->stateChanged(deltas, HwWriteBehaviorRAII(hwWriteBehavior));
   /*
    * For monolithic, return success for update since SwSwitch should not
    * do rollback for partial update failure. In monolithic SwSwitch
