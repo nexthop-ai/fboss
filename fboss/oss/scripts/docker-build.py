@@ -2,6 +2,7 @@
 # Copyright 2004-present Facebook. All Rights Reserved.
 
 import argparse
+import json
 import os
 import re
 import shlex
@@ -22,6 +23,7 @@ OPT_ARG_NUM_JOBS = "--num-jobs"
 OPT_ARG_SCHEDULE_TYPE = "--schedule-type"
 OPT_ARG_EXTRAS_DIR = "--extras-dir"
 OPT_ARG_CACHE_CONFIG = "--cache-config"
+OPT_ARG_EXTRA_CMAKE_DEFINES = "--extra-cmake-defines"
 
 FBOSS_IMAGE_NAME = "fboss_image"
 FBOSS_CONTAINER_NAME = "FBOSS_BUILD_CONTAINER"
@@ -186,6 +188,17 @@ def parse_args():
             "Cache config passed to getdeps.py."
         ),
     )
+    parser.add_argument(
+        OPT_ARG_EXTRA_CMAKE_DEFINES,
+        type=str,
+        required=False,
+        help=(
+            "Extra cmake defines passed to getdeps.py: "
+            "Input json map that contains extra cmake defines to be used "
+            "when compiling the current project and all its deps. "
+            'e.g: \'{"CMAKE_CXX_FLAGS": "--bla"}\''
+        ),
+    )
 
     return parser.parse_args()
 
@@ -242,6 +255,7 @@ def run_fboss_build(
     schedule_type: Optional[str],
     cache_config: Optional[str],
     extras_dir: Optional[str],
+    extra_cmake_defines: Optional[str],
 ):
     cmd_args = ["sudo", "docker", "run"]
     # Add build environment variables, if any.
@@ -263,16 +277,23 @@ def run_fboss_build(
     if docker_output:
         cmd_args.append("-it")
     if extras_dir:
-        cmd_args.extend(["-v", f"{extras_dir}:/var/extras:ro"])
+        cmd_args.extend(["-v", f"{extras_dir}:/var/extras:rw"])
     # Add args for docker container name
     cmd_args.append(f"--name={FBOSS_CONTAINER_NAME}")
     # Add args for image name
     cmd_args.append(f"{FBOSS_IMAGE_NAME}:latest")
     # Add build command args
+    extra_defines = {
+        "CMAKE_BUILD_TYPE": "MinSizeRel",
+        "CMAKE_CXX_STANDARD": "20"
+    }
+    if extra_cmake_defines:
+        for k, v in json.loads(extra_cmake_defines).items():
+            extra_defines[k] = v
     build_cmd = [
         "./build/fbcode_builder/getdeps.py",
         "build",
-        '--extra-cmake-defines={"CMAKE_BUILD_TYPE": "MinSizeRel", "CMAKE_CXX_STANDARD": "20"}',
+        f"--extra-cmake-defines={json.dumps(extra_defines)}",
         "--scratch-path",
         f"{CONTAINER_SCRATCH_PATH}",
     ]
@@ -346,6 +367,7 @@ def main():
         args.schedule_type,
         args.cache_config,
         args.extras_dir,
+        args.extra_cmake_defines,
     )
 
     cleanup_fboss_build_container()

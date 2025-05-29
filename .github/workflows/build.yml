@@ -62,8 +62,8 @@ jobs:
       keep_vm: ${{ github.event.inputs.keep_vm != null && fromJson(github.event.inputs.keep_vm) || false }}
       nh_options: ${{ github.event.inputs.nh_options || '' }}
       build_debug: false
-      jobs: 16
-      vm_size: 16-128
+      jobs: 32
+      vm_size: 32-256
     name: Build Image
 
   build-summary:
