@@ -45,10 +45,12 @@ inline HwSwitchMatcher hwMatcher() {
   return HwSwitchMatcher(std::unordered_set<SwitchID>({SwitchID(0)}));
 }
 
+cfg::SwitchConfig onePortPerIntfConfig(int numIntfs);
+
 class BaseEcmpResourceManagerTest : public ::testing::Test {
  public:
   RouteNextHopSet defaultNhops() const {
-    return makeNextHops(54);
+    return makeNextHops(20);
   }
   using NextHopGroupId = EcmpResourceManager::NextHopGroupId;
   std::vector<StateDelta> consolidate(
@@ -67,7 +69,7 @@ class BaseEcmpResourceManagerTest : public ::testing::Test {
     return std::make_shared<EcmpResourceManager>(kEcmpGroupHwLimit);
   };
   virtual int numStartRoutes() const {
-    return 10;
+    return 5;
   }
   void assertDeltasForOverflow(const std::vector<StateDelta>& deltas) const;
   std::shared_ptr<SwitchState> state_;

@@ -34,11 +34,11 @@ class MockHwSwitch : public HwSwitch {
   MOCK_METHOD3(initImpl, HwInitResult(Callback*, BootType, bool));
   MOCK_METHOD1(
       stateChangedImpl,
-      std::shared_ptr<SwitchState>(const StateDelta& delta));
+      std::shared_ptr<SwitchState>(const std::vector<StateDelta>& deltas));
   MOCK_METHOD2(
       stateChangedTransaction,
       std::shared_ptr<SwitchState>(
-          const StateDelta& delta,
+          const std::vector<StateDelta>& deltas,
           const HwWriteBehaviorRAII&));
   MOCK_CONST_METHOD0(reconstructSwitchState, std::shared_ptr<SwitchState>());
 

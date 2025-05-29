@@ -17,13 +17,12 @@ namespace facebook::fboss {
 RouteNextHopSet makeNextHops(int n) {
   CHECK_LT(n, 255);
   RouteNextHopSet h;
-  const InterfaceID kRandomInterfaceId{1};
   for (int i = 0; i < n; i++) {
     std::stringstream ss;
     ss << std::hex << i + 1;
-    auto ipStr = "100::" + ss.str();
+    auto ipStr = folly::sformat("2400:db00:2110:{}::2", i);
     h.emplace(ResolvedNextHop(
-        folly::IPAddress(ipStr), kRandomInterfaceId, UCMP_DEFAULT_WEIGHT));
+        folly::IPAddress(ipStr), InterfaceID(i + 1), UCMP_DEFAULT_WEIGHT));
   }
   return h;
 }
@@ -44,6 +43,36 @@ std::shared_ptr<RouteV6> makeRoute(
   rt->setResolved(nhopEntry);
   rt->publish();
   return rt;
+}
+
+cfg::SwitchConfig onePortPerIntfConfig(int numIntfs) {
+  cfg::SwitchConfig cfg;
+  cfg.ports()->resize(numIntfs);
+  cfg.vlans()->resize(numIntfs);
+  cfg.interfaces()->resize(numIntfs);
+  int idBegin = 1;
+  for (int p = 0; p < numIntfs; ++p) {
+    auto id = p + idBegin;
+    cfg.ports()[p].logicalID() = id;
+    cfg.ports()[p].name() = folly::to<std::string>("port", id);
+    cfg.ports()[p].speed() = cfg::PortSpeed::TWENTYFIVEG;
+    cfg.ports()[p].profileID() =
+        cfg::PortProfileID::PROFILE_25G_1_NRZ_CL74_COPPER;
+    cfg.vlans()[p].id() = id;
+    cfg.vlans()[p].name() = folly::to<std::string>("Vlan", id);
+    cfg.vlans()[p].intfID() = id;
+    cfg.interfaces()[p].intfID() = id;
+    cfg.interfaces()[p].routerID() = 0;
+    cfg.interfaces()[p].vlanID() = id;
+    cfg.interfaces()[p].name() = folly::to<std::string>("interface", id);
+    cfg.interfaces()[p].mac() = "00:02:00:00:00:01";
+    cfg.interfaces()[p].mtu() = 9000;
+    cfg.interfaces()[p].ipAddresses()->resize(1);
+    cfg.interfaces()[p].ipAddresses()[0] =
+        folly::sformat("2400:db00:2110:{}::1/64", p);
+  }
+  cfg.flowletSwitchingConfig() = cfg::FlowletSwitchingConfig();
+  return cfg;
 }
 
 std::vector<StateDelta> BaseEcmpResourceManagerTest::consolidate(
@@ -76,10 +105,11 @@ std::vector<StateDelta> BaseEcmpResourceManagerTest::consolidate(
     for (const auto& [_, origRoute] : std::as_const(*cfib(state_))) {
       auto newRoute = newFib6->getRouteIf(origRoute->prefix());
       EXPECT_EQ(newRoute->isResolved(), origRoute->isResolved());
-      CHECK(origRoute->isResolved());
-      EXPECT_EQ(
-          newRoute->getForwardInfo().getOverrideEcmpSwitchingMode(),
-          origRoute->getForwardInfo().getOverrideEcmpSwitchingMode());
+      if (origRoute->isResolved()) {
+        EXPECT_EQ(
+            newRoute->getForwardInfo().getOverrideEcmpSwitchingMode(),
+            origRoute->getForwardInfo().getOverrideEcmpSwitchingMode());
+      }
     }
   }
   return deltas;
