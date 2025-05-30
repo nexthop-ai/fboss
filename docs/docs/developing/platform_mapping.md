@@ -74,7 +74,7 @@ This config file contains vendor-specific configurations that are included in th
 | **PORT_SPEED** | Speed for the port (MBPS). | [enum values](https://github.com/facebook/fboss/blob/main/fboss/agent/switch_config.thrift) |
 | **LOGICAL_PORTID** | Unique portID associated to a port within a chip. | Range: >=0 |
 | **GLOBAL_PORTID** | Unique portID associated to a port across the chips. For example - if there are two NPUs each with 100 ports, logical_portIDs range from 1-100 on both NPUs whereas global_portID ranges from 1-200. | Range: >=0 |
-| **MEDIA_TYPE** | If the column is empty, the setting will be applied for both copper and optic media type. | COPPER, OPTIC, (empty) |
+| **MEDIA_TYPE** | If the column is empty, the setting will be applied for both copper and optic media type. | COPPER, OPTICAL, (empty) |
 | **CABLE_LENGTH** | Length of the cable in meters the setting needs to be applied for – only applicable for copper media type. If the column is empty, the setting will be applied for all copper cable lengths. | Range: >=0, (empty) |
 | **A/Z_INTERFACE_TYPE** | Interface type of connection. | [enum names](https://github.com/facebook/fboss/blob/main/fboss/lib/phy/phy.thrift#L79) |
 
