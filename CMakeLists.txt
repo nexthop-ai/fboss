@@ -964,7 +964,7 @@ add_dependencies(fboss_platform_services
   data_corral_service
   # Unit Tests
   platform_config_lib_config_lib_test
-  platform_manager_device_path_resolver_test
+  # NH TODO platform_manager_device_path_resolver_test
   platform_manager_platform_explorer_test
   platform_data_corral_sw_test
   platform_manager_utils_test

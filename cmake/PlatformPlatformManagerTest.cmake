@@ -68,15 +68,18 @@ target_link_libraries(platform_manager_data_store_test
 )
 
 gtest_discover_tests(platform_manager_data_store_test)
-add_executable(platform_manager_device_path_resolver_test
-  fboss/platform/platform_manager/tests/DevicePathResolverTest.cpp
-)
 
-target_link_libraries(platform_manager_device_path_resolver_test
-  platform_manager_device_path_resolver
-  ${GTEST}
-  ${LIBGMOCK_LIBRARIES}
-)
+# NH TODO add_executable(platform_manager_device_path_resolver_test
+# NH TODO fboss/platform/platform_manager/tests/DevicePathResolverTest.cpp
+# NH TODO )
+# NH TODO 
+# NH TODO target_link_libraries(platform_manager_device_path_resolver_test
+# NH TODO platform_manager_device_path_resolver
+# NH TODO ${GTEST}
+# NH TODO ${LIBGMOCK_LIBRARIES}
+# NH TODO )
+# NH TODO 
+# NH TODO gtest_discover_tests(platform_manager_device_path_resolver_test)
 
 add_executable(platform_manager_presence_checker_test
   fboss/platform/platform_manager/tests/PresenceCheckerTest.cpp

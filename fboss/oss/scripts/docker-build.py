@@ -256,6 +256,7 @@ def run_fboss_build(
     cache_config: Optional[str],
     extras_dir: Optional[str],
     extra_cmake_defines: Optional[str],
+    build: bool = True,
 ):
     cmd_args = ["sudo", "docker", "run"]
     # Add build environment variables, if any.
@@ -278,40 +279,45 @@ def run_fboss_build(
         cmd_args.append("-it")
     if extras_dir:
         cmd_args.extend(["-v", f"{extras_dir}:/var/extras:rw"])
+    if not build:
+        cmd_args.extend(["-v", f"{os.path.abspath('.')}:/var/FBOSS/fboss"])
     # Add args for docker container name
     cmd_args.append(f"--name={FBOSS_CONTAINER_NAME}")
     # Add args for image name
     cmd_args.append(f"{FBOSS_IMAGE_NAME}:latest")
     # Add build command args
-    extra_defines = {
-        "CMAKE_BUILD_TYPE": "MinSizeRel",
-        "CMAKE_CXX_STANDARD": "20"
-    }
-    if extra_cmake_defines:
-        for k, v in json.loads(extra_cmake_defines).items():
-            extra_defines[k] = v
-    build_cmd = [
-        "./build/fbcode_builder/getdeps.py",
-        "build",
-        f"--extra-cmake-defines={json.dumps(extra_defines)}",
-        "--scratch-path",
-        f"{CONTAINER_SCRATCH_PATH}",
-    ]
-    if num_jobs is not None:
-        build_cmd.append("--num-jobs")
-        build_cmd.append(str(num_jobs))
-    if use_system_deps:
-        build_cmd.append("--allow-system-packages")
-    if target is not None:
-        build_cmd.append("--cmake-target")
-        build_cmd.append(target)
-    if use_local:
-        build_cmd.extend(["--src-dir", "."])
-    if schedule_type:
-        build_cmd.extend(["--schedule-type", schedule_type])
-    if cache_config:
-        build_cmd.extend(["--cache-config", cache_config])
-    build_cmd.append("fboss")
+    if build:
+        extra_defines = {
+            "CMAKE_BUILD_TYPE": "MinSizeRel",
+            "CMAKE_CXX_STANDARD": "20"
+        }
+        if extra_cmake_defines:
+            for k, v in json.loads(extra_cmake_defines).items():
+                extra_defines[k] = v
+        build_cmd = [
+            "./build/fbcode_builder/getdeps.py",
+            "build",
+            f"--extra-cmake-defines={json.dumps(extra_defines)}",
+            "--scratch-path",
+            f"{CONTAINER_SCRATCH_PATH}",
+        ]
+        if num_jobs is not None:
+            build_cmd.append("--num-jobs")
+            build_cmd.append(str(num_jobs))
+        if use_system_deps:
+            build_cmd.append("--allow-system-packages")
+        if target is not None:
+            build_cmd.append("--cmake-target")
+            build_cmd.append(target)
+        if use_local:
+            build_cmd.extend(["--src-dir", "."])
+        if schedule_type:
+            build_cmd.extend(["--schedule-type", schedule_type])
+        if cache_config:
+            build_cmd.extend(["--cache-config", cache_config])
+        build_cmd.append("fboss")
+    else:
+        build_cmd = ["bash"]
     cmd_args.extend(build_cmd)
     build_cp = subprocess.run(cmd_args)
     if build_cp.returncode != 0:
