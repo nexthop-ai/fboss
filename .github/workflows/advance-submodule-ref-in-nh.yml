@@ -17,3 +17,4 @@ jobs:
       submodule_path: fboss
     secrets:
       GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+      GH_TOKEN_PR_APPROVER: ${{ secrets.NEXTHOP_ORG_GHA_PAT }}
