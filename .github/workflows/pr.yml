@@ -19,8 +19,10 @@ jobs:
       branch: ${{ github.head_ref }}
       platform: broadcom
       target: default
+      user: ${{ github.event_name == 'pull_request' && github.event.pull_request.user.login || github.event_name == 'workflow_dispatch' && github.actor }}
       keep_vm: false
       nh_options: ''
+      build-type: user
       build_debug: false
       jobs: 16
       vm_size: 16-128
