@@ -176,6 +176,7 @@ enum PortProfileID {
   PROFILE_800G_8_PAM4_RS544X2N_COPPER = 50,
   PROFILE_400G_2_PAM4_RS544X2N_OPTICAL = 51,
   PROFILE_800G_4_PAM4_RS544X2N_OPTICAL = 52,
+  PROFILE_200G_1_PAM4_RS544X2N_OPTICAL = 53,
 }
 
 enum Scope {
@@ -836,6 +837,16 @@ enum QueueScheduling {
   // For certain queue types (viz. Fabric port queues) scheduling details are
   // not exposed for programming.
   INTERNAL = 1000,
+}
+
+enum HighLowPriority {
+  PRIORITY_LOW = 0,
+  PRIORITY_HIGH = 1,
+}
+
+union SchedulingParam {
+  1: HighLowPriority spPriority;
+  2: i16 wrrWeight;
 }
 
 // Detection based on average queue length in bytes with two thresholds.
@@ -1900,6 +1911,8 @@ struct SwitchSettings {
   // Number of sflow samples to pack in a single packet being sent out
   30: optional byte numberOfSflowSamplesPerPacket;
   31: optional map<i32, i32> tcToRateLimitKbps;
+  // PFC watchdog timer granularity which can be 1ms, 10ms or 100ms.
+  32: optional i32 pfcWatchdogTimerGranularityMsec;
 }
 
 // Global buffer pool
@@ -2027,6 +2040,11 @@ struct DsfNode {
   // as part of config for other nodes to bootstrap
   // communication to this node
   14: optional i32 inbandPortId;
+  // Prioritization between credit requests from different remote DSF nodes, default no priorization
+  15: QueueScheduling scheduling = QueueScheduling.INTERNAL;
+  // If strict priority, using spPriority
+  // If weighted round robin, use wrrWeight
+  16: optional SchedulingParam schedulingParam;
 }
 
 /**

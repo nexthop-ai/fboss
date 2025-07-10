@@ -2,12 +2,12 @@
 # Copyright 2004-present Facebook. All Rights Reserved.
 #
 
-namespace py neteng.fboss.production_features
-namespace py3 neteng.fboss
-namespace py.asyncio neteng.fboss.asyncio.production_features
-namespace cpp2 facebook.fboss.production_features
-namespace go neteng.fboss.production_features
-namespace php fboss_production_features
+namespace py neteng.fboss.test.production_features
+namespace py3 neteng.fboss.test
+namespace py.asyncio neteng.fboss.test.asyncio.production_features
+namespace cpp2 facebook.fboss.test.production_features
+namespace go neteng.fboss.test.production_features
+namespace php fboss_test_production_features
 
 enum ProductionFeature {
   VOQ = 0,
@@ -90,6 +90,9 @@ enum ProductionFeature {
   COPP_SCHEDULER = 77,
   ECMP_RANDOM_SPRAY = 78,
   PTP_TC_PROVISIONING_TIME_HW_VALIDATION = 79,
+  PFC_WATCHDOG_GRANULARITY = 80,
+  ARS_FLOWLET = 81,
+  ARS_SPRAY = 82,
   # production feature which is present on all platforms, keep it at the end
   HW_SWITCH = 65536,
 }

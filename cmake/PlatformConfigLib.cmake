@@ -43,6 +43,7 @@ target_link_libraries(cross_config_validator
   sensor_config_cpp2
   platform_manager_config_validator
   sensor_service_config_validator
+  weutil_config_cpp2
   ${RE2}
 )
 
@@ -52,6 +53,7 @@ add_executable(platform_config_lib_config_generator
 
 target_link_libraries(platform_config_lib_config_generator
   cross_config_validator
+  bsp_tests_config_cpp2
   led_manager_config_types_cpp2
   fan_service_config_validator
   fan_service_cpp2
@@ -63,6 +65,7 @@ target_link_libraries(platform_config_lib_config_generator
   data_corral_service_config_validator
   sensor_config_cpp2
   weutil_config_cpp2
+  weutil_config_validator
   Folly::folly
 )
 

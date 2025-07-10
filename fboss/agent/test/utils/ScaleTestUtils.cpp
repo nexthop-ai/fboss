@@ -15,13 +15,6 @@
 namespace facebook::fboss::utility {
 const int kMaxEcmpGroups = 5000;
 
-uint32_t getMaxDlbEcmpGroups(const std::vector<const HwAsic*>& asics) {
-  auto asic = checkSameAndGetAsic(asics);
-  auto maxDlbGroups = asic->getMaxDlbEcmpGroups();
-  CHECK(maxDlbGroups.has_value());
-  return maxDlbGroups.value();
-}
-
 uint32_t getMaxEcmpGroups(const std::vector<const HwAsic*>& asics) {
   auto asic = checkSameAndGetAsic(asics);
   auto maxEcmpGroups = asic->getMaxEcmpGroups();
@@ -38,7 +31,8 @@ uint32_t getMaxUcmpMembers(const std::vector<const HwAsic*>& asics) {
   auto asic = checkSameAndGetAsic(asics);
   auto maxUcmpMembers = asic->getMaxEcmpMembers();
   CHECK(maxUcmpMembers.has_value());
-  if (asic->getAsicType() == cfg::AsicType::ASIC_TYPE_TOMAHAWK4) {
+  if (asic->getAsicType() == cfg::AsicType::ASIC_TYPE_TOMAHAWK4 ||
+      asic->getAsicType() == cfg::AsicType::ASIC_TYPE_TOMAHAWK5) {
     return maxUcmpMembers.value() / 4;
   }
   return maxUcmpMembers.value();

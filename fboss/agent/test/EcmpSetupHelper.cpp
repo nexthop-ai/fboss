@@ -102,11 +102,23 @@ boost::container::flat_set<PortDescriptor> getSingleVlanOrRoutedCabledPorts(
       }
     }
   } else {
-    for (const auto& vlanTable : std::as_const(*sw->getState()->getVlans())) {
-      for (auto [id, vlan] : std::as_const(*vlanTable.second)) {
-        auto memberPorts = vlan->getPorts();
-        if (memberPorts.size() == 1) {
-          ports.insert(PortDescriptor{PortID(memberPorts.begin()->first)});
+    for (const auto& intfTable :
+         std::as_const(*sw->getState()->getInterfaces())) {
+      for (const auto& intf : std::as_const(*intfTable.second)) {
+        if (intf.second->getType() == cfg::InterfaceType::PORT) {
+          auto port =
+              sw->getState()->getPorts()->getNodeIf(intf.second->getPortID());
+          if (port->getPortType() != cfg::PortType::INTERFACE_PORT) {
+            continue;
+          }
+          ports.insert(PortDescriptor{port->getID()});
+        } else if (intf.second->getType() == cfg::InterfaceType::VLAN) {
+          auto vlan =
+              sw->getState()->getVlans()->getNode(intf.second->getVlanID());
+          auto memberPorts = vlan->getPorts();
+          if (memberPorts.size() == 1) {
+            ports.insert(PortDescriptor{PortID(memberPorts.begin()->first)});
+          }
         }
       }
     }
@@ -373,7 +385,10 @@ BaseEcmpSetupHelper<AddrT, NextHopT>::unresolveNextHop(
     const NextHopT& nhop,
     bool useLinkLocal) const {
   auto intfID = portDesc2Interface_.find(nhop.portDesc)->second;
-  auto intf = inputState->getInterfaces()->getNode(intfID);
+  auto intf = inputState->getInterfaces()->getNodeIf(intfID);
+  if (intf == nullptr) {
+    intf = inputState->getRemoteInterfaces()->getNodeIf(intfID);
+  }
   switch (intf->getType()) {
     case cfg::InterfaceType::VLAN:
       return unresolveVlanRifNextHop(inputState, nhop, intf, useLinkLocal);

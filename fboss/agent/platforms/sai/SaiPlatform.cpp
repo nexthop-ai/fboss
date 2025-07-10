@@ -61,11 +61,6 @@ DEFINE_bool(
     false,
     "Enable new delay drop congestion threshold in CGM");
 
-DEFINE_int32(
-    pfc_watchdog_timer_granularity_msec,
-    10,
-    "PFC watchdog timer granularity which can be 1ms, 10ms or 100ms");
-
 namespace {
 
 std::unordered_map<std::string, std::string> kSaiProfileValues;
@@ -312,8 +307,6 @@ void SaiPlatform::initSaiProfileValues() {
   auto vendorProfileValues = getSaiProfileVendorExtensionValues();
   kSaiProfileValues.insert(
       vendorProfileValues.begin(), vendorProfileValues.end());
-  kSaiProfileValues.insert(std::make_pair(
-      "SAI_SDK_LOG_CONFIG_FILE", "/root/res/config/sai_sdk_log_config.json"));
 }
 
 void SaiPlatform::initImpl(uint32_t hwFeaturesDesired) {
@@ -775,6 +768,48 @@ SaiSwitchTraits::CreateAttributes SaiPlatform::getSwitchAttributes(
     maxLocalSystemPortId = 184;
     maxSystemPorts = 22136;
     maxVoqs = 65284;
+  } else if (FLAGS_dsf_single_stage_r192_f40_e32) {
+    // Total System Ports in the cluster
+    // =================================
+    //
+    // 1 Global recycle port
+    // 1 Management port
+    // RDSW: 36 x 400G NIF ports. Thus, 1 + 1 + 36 = 38 ports.
+    // EDSW: 18 x 800G NIF ports. Thus, 1 + 1 + 18 = 20 ports.
+    //
+    // 4 CPU (1 per core) + 4 Recycle (1 per core) + 1 eventor +
+    // 160 Fabric link monitoring + 16 hyerports = 185
+    // Thus, Max local system PortID (starting 0) = 184.
+    //
+    // Max System Ports = 185 + (38 x 192) + (20 x 32) = 8121.
+    //
+    // System Port ID assignment
+    // =========================
+    //   Local Ports
+    //   -----------
+    //      [0-3]: CPU ports
+    //      [4-7]: Recycle ports
+    //          8: Eventor port
+    //    [9-168]: 160 Fabric link monitoring ports (in the future)
+    //  [169-184]: 16 Hyper ports (in the future)
+    //
+    //   The above assignment is same for ALL the RDSWs, EDSWs.
+    //
+    //   Global Ports for RDSW 1, base offset 184
+    //   ----------------------------------------
+    //        185: Recycle port for inband
+    //        186: Management port
+    //  [187-222]: One for each of the 36 x 400G NIF ports
+    //
+    //   Global Ports for EDSW 1, base offset 7480
+    //   -----------------------------------------
+    //        7481: Recycle port for inband
+    //        7482: Management port
+    //  [7483-7500: One for each of the 16 x 800G NIF ports
+    maxSystemPortId = 8120;
+    maxLocalSystemPortId = 184;
+    maxSystemPorts = 8121;
+    maxVoqs = 8121 * 8;
   } else {
     maxSystemPortId = 6143;
     maxLocalSystemPortId = -1;
@@ -797,24 +832,28 @@ SaiSwitchTraits::CreateAttributes SaiPlatform::getSwitchAttributes(
   }
 
   std::optional<SaiSwitchTraits::Attributes::PfcTcDldTimerGranularityInterval>
-      pfcWatchdogTimerGranularyMap;
+      pfcWatchdogTimerGranularityMap;
 #if defined(BRCM_SAI_SDK_XGS) && defined(BRCM_SAI_SDK_GTE_11_0)
-  // We need to set the watchdog granularity to an appropriate value, otherwise
-  // the default granularity in SAI/SDK may be incompatible with the requested
-  // watchdog intervals. Auto-derivation is being requested in CS00012393810.
-  std::vector<sai_map_t> mapToValueList(
-      cfg::switch_config_constants::PFC_PRIORITY_VALUE_MAX() + 1);
-  for (int pri = 0;
-       pri <= cfg::switch_config_constants::PFC_PRIORITY_VALUE_MAX();
-       pri++) {
-    sai_map_t mapping{};
-    mapping.key = pri;
-    mapping.value = FLAGS_pfc_watchdog_timer_granularity_msec;
-    mapToValueList.at(pri) = mapping;
+  if (getAsic()->isSupported(HwAsic::Feature::PFC_WATCHDOG_TIMER_GRANULARITY)) {
+    // We need to set the watchdog granularity to an appropriate value,
+    // otherwise the default granularity in SAI/SDK may be incompatible with the
+    // requested watchdog intervals. Auto-derivation is being requested in
+    // CS00012393810.
+    std::vector<sai_map_t> mapToValueList(
+        cfg::switch_config_constants::PFC_PRIORITY_VALUE_MAX() + 1);
+    for (int pri = 0;
+         pri <= cfg::switch_config_constants::PFC_PRIORITY_VALUE_MAX();
+         pri++) {
+      sai_map_t mapping{};
+      mapping.key = pri;
+      mapping.value =
+          switchSettings->pfcWatchdogTimerGranularityMsec().value_or(10);
+      mapToValueList.at(pri) = mapping;
+    }
+    pfcWatchdogTimerGranularityMap =
+        SaiSwitchTraits::Attributes::PfcTcDldTimerGranularityInterval{
+            mapToValueList};
   }
-  pfcWatchdogTimerGranularyMap =
-      SaiSwitchTraits::Attributes::PfcTcDldTimerGranularityInterval{
-          mapToValueList};
 #endif
 
   return {
@@ -881,6 +920,9 @@ SaiSwitchTraits::CreateAttributes SaiPlatform::getSwitchAttributes(
 #if SAI_API_VERSION >= SAI_VERSION(1, 14, 0)
       std::nullopt, // ARS profile
 #endif
+#if SAI_API_VERSION >= SAI_VERSION(1, 16, 0)
+      std::nullopt, // PTP mode
+#endif
       std::nullopt, // ReachabilityGroupList
       delayDropCongThreshold, // Delay Drop Cong Threshold
       fabricLLFC,
@@ -903,8 +945,10 @@ SaiSwitchTraits::CreateAttributes SaiPlatform::getSwitchAttributes(
       std::nullopt, // SDK Register dump log path
       std::nullopt, // Firmware Object list
       std::nullopt, // tc rate limit list
-      pfcWatchdogTimerGranularyMap, // PFC watchdog timer granularity
+      pfcWatchdogTimerGranularityMap, // PFC watchdog timer granularity
       std::nullopt, // disable sll and hll timeout
+      std::nullopt, // credit request profile scheduler mode
+      std::nullopt, // module id to credit request profile param list
   };
 }
 

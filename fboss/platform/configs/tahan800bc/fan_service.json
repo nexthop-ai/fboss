@@ -18,35 +18,35 @@
         "accessType": "ACCESS_TYPE_QSFP"
       },
       "portList": [],
-      "aggregationType": "OPTIC_AGGREGATION_TYPE_PID",
+      "aggregationType": "OPTIC_AGGREGATION_TYPE_INCREMENTAL_PID",
       "pidSettings": {
         "OPTIC_TYPE_800_GENERIC": {
-          "kp": -4,
-          "ki": -0.06,
+          "kp": 2,
+          "ki": 0.6,
           "kd": 0,
           "setPoint": 76.0,
           "posHysteresis": 0.0,
           "negHysteresis": 2.0
         },
         "OPTIC_TYPE_400_GENERIC": {
-          "kp": -4,
-          "ki": -0.06,
+          "kp": 2,
+          "ki": 0.6,
           "kd": 0,
           "setPoint": 76.0,
           "posHysteresis": 0.0,
           "negHysteresis": 2.0
         },
         "OPTIC_TYPE_200_GENERIC": {
-          "kp": -4,
-          "ki": -0.06,
+          "kp": 2,
+          "ki": 0.6,
           "kd": 0,
           "setPoint": 76.0,
           "posHysteresis": 0.0,
           "negHysteresis": 2.0
         },
         "OPTIC_TYPE_100_GENERIC": {
-          "kp": -4,
-          "ki": -0.06,
+          "kp": 2,
+          "ki": 0.6,
           "kd": 0,
           "setPoint": 76.0,
           "posHysteresis": 0.0,
@@ -158,7 +158,7 @@
       }
     },
     {
-      "sensorName": "POWER_BRICK1_TEMP1",
+      "sensorName": "PDB_POWER_BRICK1_TEMP1",
       "access": {
         "accessType": "ACCESS_TYPE_THRIFT"
       },
@@ -197,7 +197,7 @@
       }
     },
     {
-      "sensorName": "POWER_BRICK2_TEMP1",
+      "sensorName": "PDB_POWER_BRICK2_TEMP1",
       "access": {
         "accessType": "ACCESS_TYPE_THRIFT"
       },
@@ -240,7 +240,7 @@
     "numOvertempSensorForShutdown": 1,
     "conditions": [
       {
-        "sensorName": "TAHAN_SMB_TH5_TEMP",
+        "sensorName": "SMB_TH5_TEMP",
         "overtempThreshold": 110.0,
         "slidingWindowSize": 1
       }
@@ -528,8 +528,8 @@
         "SMB_U77_INLET_LEFT_BOT_LM75_TEMP",
         "CPU_UNCORE_TEMP",
         "SMB_E1S_SSD_TEMP",
-        "POWER_BRICK1_TEMP1",
-        "POWER_BRICK2_TEMP1",
+        "PDB_POWER_BRICK1_TEMP1",
+        "PDB_POWER_BRICK2_TEMP1",
         "qsfp_group_1"
       ],
       "fanNames": [

@@ -59,9 +59,9 @@ class AgentMirrorOnDropTest
     return config;
   }
 
-  std::vector<production_features::ProductionFeature>
-  getProductionFeaturesVerified() const override {
-    return {production_features::ProductionFeature::MIRROR_ON_DROP};
+  std::vector<ProductionFeature> getProductionFeaturesVerified()
+      const override {
+    return {ProductionFeature::MIRROR_ON_DROP};
   }
 
   void setCmdLineFlagOverrides() const override {
@@ -356,9 +356,9 @@ class AgentMirrorOnDropTest
         folly::IOBuf::wrapBufferAsValue(content.data(), content.size());
     folly::io::Cursor cursor(&contentBuf);
 
-    if (portType == cfg::PortType::EVENTOR_PORT) {
-      // When mirroring through eventor port, an extra 12 byte eventor header
-      // will be added after MOD header.
+    if (portType == cfg::PortType::EVENTOR_PORT &&
+        cursor.totalLength() == 140) {
+      // On 12.x, a 12-byte eventor header is added before MOD header.
       cursor.skip(12); // eventor sequence number, timestamp, sample
     }
 
@@ -436,11 +436,11 @@ class AgentMirrorOnDropMtuTest : public AgentMirrorOnDropTest {
     return config;
   }
 
-  std::vector<production_features::ProductionFeature>
-  getProductionFeaturesVerified() const override {
+  std::vector<ProductionFeature> getProductionFeaturesVerified()
+      const override {
     return {
-        production_features::ProductionFeature::MIRROR_ON_DROP,
-        production_features::ProductionFeature::PORT_MTU_ERROR_TRAP,
+        ProductionFeature::MIRROR_ON_DROP,
+        ProductionFeature::PORT_MTU_ERROR_TRAP,
     };
   }
 };

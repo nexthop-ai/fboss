@@ -227,6 +227,7 @@ enum MediaInterfaceCode {
   DR4_800G = 22,
   DR4_2x800G = 23,
   DR1_200G = 24,
+  FR4_LPO_2x400G = 25,
 }
 
 // The extended specification compliance code of the transceiver module.
@@ -419,6 +420,7 @@ struct VdmPerfMonitorPortSideStats {
   10: optional i16 fecTailMax;
   11: optional i16 fecTailCurr;
   12: optional i16 maxSupportedFecTail;
+  13: map<i32, FlagLevels> lanePam4MPIFlags;
 }
 
 struct VdmPerfMonitorStats {
@@ -554,6 +556,7 @@ struct TcvrState {
   25: bool fwUpgradeInProgress;
   26: set<string> interfaces;
   27: string tcvrName;
+  28: bool lpoModule;
 }
 
 struct TcvrStats {
@@ -806,6 +809,30 @@ enum TransceiverStateMachineState {
   INACTIVE = 7,
   UPGRADING = 8,
   TRANSCEIVER_READY = 9,
+}
+
+enum TransceiverStateMachineEvent {
+  TCVR_EV_EVENT_DETECT_TRANSCEIVER = 0,
+  TCVR_EV_RESET_TRANSCEIVER = 1,
+  TCVR_EV_REMOVE_TRANSCEIVER = 2,
+  TCVR_EV_READ_EEPROM = 3,
+  TCVR_EV_ALL_PORTS_DOWN = 4,
+  TCVR_EV_PORT_UP = 5,
+  // NOTE: Such event is never invoked in our code yet
+  TCVR_EV_TRIGGER_UPGRADE = 6,
+  // NOTE: Such event is never invoked in our code yet
+  TCVR_EV_FORCED_UPGRADE = 7,
+  TCVR_EV_AGENT_SYNC_TIMEOUT = 8,
+  TCVR_EV_BRINGUP_DONE = 9,
+  TCVR_EV_REMEDIATE_DONE = 10,
+  TCVR_EV_PROGRAM_IPHY = 11,
+  TCVR_EV_PROGRAM_XPHY = 12,
+  TCVR_EV_PROGRAM_TRANSCEIVER = 13,
+  TCVR_EV_RESET_TO_DISCOVERED = 14,
+  TCVR_EV_RESET_TO_NOT_PRESENT = 15,
+  TCVR_EV_REMEDIATE_TRANSCEIVER = 16,
+  TCVR_EV_PREPARE_TRANSCEIVER = 17,
+  TCVR_EV_UPGRADE_FIRMWARE = 18,
 }
 
 struct SwitchDeploymentInfo {

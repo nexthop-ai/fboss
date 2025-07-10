@@ -136,8 +136,8 @@ class AgentEnsemble : public TestEnsembleIf {
       PortID port,
       bool up,
       cfg::PortType portType,
-      std::optional<phy::LinkFaultStatus> iPhyFaultStatus =
-          std::nullopt) override {
+      std::optional<phy::LinkFaultStatus> iPhyFaultStatus = std::nullopt,
+      std::optional<AggregatePortID> aggPortId = std::nullopt) override {
     if (linkToggler_ &&
         getSw()->getSwitchRunState() >= SwitchRunState::CONFIGURED) {
       linkToggler_->linkStateChanged(port, up);
@@ -320,6 +320,22 @@ class AgentEnsemble : public TestEnsembleIf {
   std::map<std::string, int64_t> getFb303CountersByRegex(
       const PortID& portId,
       const std::string& regex);
+
+  /**
+   * Retrieves monitoring counters that match a given regex pattern for a
+   * specific switch.
+   *
+   * @details
+   * Works in both mono-switch and multi-switch environments.
+   * @param regex The regex pattern to match against the counter names.
+   * @param switchID The ID of the switch for which to retrieve counters.
+   *
+   * @return A map of counter names to their respective values that match the
+   * regex pattern.
+   */
+  std::map<std::string, int64_t> getFb303RegexCounters(
+      const std::string& regex,
+      const SwitchID& switchID);
 
   /**
    * Retrieves the value of a specific fb303 counter for a given switch.

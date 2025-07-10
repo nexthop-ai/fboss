@@ -14,6 +14,9 @@
 
 #include <thrift/lib/cpp/util/EnumUtils.h>
 
+using std::lock_guard;
+using std::mutex;
+
 namespace {}
 
 namespace facebook {
@@ -461,7 +464,7 @@ std::string Sff8472Module::getSfpString(Sff8472Field field) const {
   return validateQsfpString(value) ? value : "UNKNOWN";
 }
 
-Vendor Sff8472Module::getVendorInfo() {
+Vendor Sff8472Module::getVendorInfo() const {
   Vendor vendor = Vendor();
   vendor.name() = getSfpString(Sff8472Field::VENDOR_NAME);
   vendor.oui() = getSfpString(Sff8472Field::VENDOR_OUI);
@@ -488,6 +491,7 @@ void Sff8472Module::remediateFlakyTransceiver(
 
 bool Sff8472Module::tcvrPortStateSupported(
     TransceiverPortState& portState) const {
+  lock_guard<std::mutex> g(qsfpModuleMutex_);
   if (portState.transmitterTech != getQsfpTransmitterTechnology()) {
     return false;
   }

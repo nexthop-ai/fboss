@@ -34,6 +34,8 @@ jobs:
           --no-docker-output
           --no-system-deps
           --local
+          --num-jobs
+          24
       - name: Package FBOSS binaries and library dependencies
         run: >
           sudo

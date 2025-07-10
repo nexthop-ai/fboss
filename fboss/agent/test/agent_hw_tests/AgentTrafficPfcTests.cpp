@@ -47,12 +47,16 @@ static const std::vector<int> kLossyPgIds{0};
 // This hardcoded map needs to be updated when a different port is chosen.
 // The map stores a string because the register won't fit in any integer type.
 // See CS00012321021 for details.
+// TODO (maxgg): Use HwLogicalPortId insetad of PortIds, as that is being used
+// for computing register's value.
 static const std::map<std::tuple<int, int>, std::string>
     kRegValToForcePfcTxForPriorityOnPortDnx = {
         // Single-stage: portID=8, port_first_phy=0, core_first_phy=0
         {std::make_tuple(8, 2), "0x4"},
         // Dual-stage: portID=1, port_first_phy=8, core_first_phy=0
         {std::make_tuple(1, 2), "0x40000000000000000"},
+        // Janga: portID=3, port_first_phy=8, core_first_phy=0 P1842843423
+        {std::make_tuple(3, 2), "0x40000000000000000"},
 };
 
 struct TrafficTestParams {
@@ -91,6 +95,10 @@ void waitPfcCounterIncrease(
     XLOG(DBG0) << facebook::fboss::utility::pfcStatsString(portStats);
 
     EXPECT_EVENTUALLY_GT(txPfcCtr, 0);
+
+    // inDiscards is tracked in software, so inDiscards + sum(inPfc) isn't
+    // necessarily equal to inDiscardsRaw after warmboot. Just check for <=.
+    EXPECT_EVENTUALLY_LE(*portStats.inDiscards_(), *portStats.inDiscardsRaw_());
 
     // TODO(maxgg): CS00012381334 - Rx counters not incrementing on TH5
     // However we know PFC is working as long as TX PFC is being generated, so
@@ -294,9 +302,9 @@ class AgentTrafficPfcTest : public AgentHwTest {
     return config;
   }
 
-  std::vector<production_features::ProductionFeature>
-  getProductionFeaturesVerified() const override {
-    return {production_features::ProductionFeature::PFC};
+  std::vector<ProductionFeature> getProductionFeaturesVerified()
+      const override {
+    return {ProductionFeature::PFC};
   }
 
   std::string portDesc(const PortID& portId) {
@@ -386,11 +394,14 @@ class AgentTrafficPfcTest : public AgentHwTest {
         auto ingressDropRaw = *portStats.inDiscardsRaw_();
         uint64_t ingressCongestionDiscards = 0;
         std::string ingressCongestionDiscardLog{};
-        // In congestion discard stats is supported in native impl
-        // and in sai platforms with HwAsic::Feature enabled.
+        // In congestion discard stats is always supported on native. On SAI
+        // it requires either the SAI_PORT_IN_CONGESTION_DISCARDS or
+        // INGRESS_PRIORITY_GROUP_DROPPED_PACKETS feature.
         bool isIngressCongestionDiscardsSupported =
             isSupportedOnAllAsics(
                 HwAsic::Feature::INGRESS_PRIORITY_GROUP_DROPPED_PACKETS) ||
+            isSupportedOnAllAsics(
+                HwAsic::Feature::SAI_PORT_IN_CONGESTION_DISCARDS) ||
             !getAgentEnsemble()->isSai();
         if (isIngressCongestionDiscardsSupported) {
           ingressCongestionDiscards = *portStats.inCongestionDiscards_();
@@ -403,11 +414,16 @@ class AgentTrafficPfcTest : public AgentHwTest {
         EXPECT_EVENTUALLY_GT(ingressDropRaw, 0);
         if (isIngressCongestionDiscardsSupported) {
           EXPECT_EVENTUALLY_GT(ingressCongestionDiscards, 0);
-          // Ingress congestion discards should be less than
-          // the total packets received on this port.
-          uint64_t inPackets = *portStats.inUnicastPkts_() +
-              *portStats.inMulticastPkts_() + *portStats.inBroadcastPkts_();
-          EXPECT_EVENTUALLY_LT(ingressCongestionDiscards, inPackets);
+
+          // In packet counters not supported in EDB loopback on TH5.
+          if (checkSameAndGetAsicType(getAgentEnsemble()->getCurrentConfig()) !=
+              facebook::fboss::cfg::AsicType::ASIC_TYPE_TOMAHAWK5) {
+            // Ingress congestion discards should be less than
+            // the total packets received on this port.
+            uint64_t inPackets = *portStats.inUnicastPkts_() +
+                *portStats.inMulticastPkts_() + *portStats.inBroadcastPkts_();
+            EXPECT_EVENTUALLY_LT(ingressCongestionDiscards, inPackets);
+          }
         }
       }
       for (auto [switchId, asic] : getAsics()) {
@@ -784,21 +800,18 @@ class AgentTrafficPfcWatchdogTest : public AgentTrafficPfcTest {
       // Disable Tx on the outbound port so that queues will build up.
       utility::setCreditWatchdogAndPortTx(
           getAgentEnsemble(), txOffPortId, false);
-      pumpTraffic(kLosslessTrafficClass, kLosslessPriority, {port}, {ip});
-      validatePfcCounterIncrement(port, kLosslessPriority);
-    }
-  }
 
-  void validatePfcCounterIncrement(const PortID& port, const int pfcPriority) {
-    // CS00012381334 - MAC loopback doesn't work on TH5 and Rx PFC counters
-    // doesn't increase. Tx counters should work for all platforms.
-    int txPfcCtrOld =
-        folly::get_default(*getLatestPortStats(port).outPfc_(), pfcPriority, 0);
-    WITH_RETRIES_N_TIMED(3, std::chrono::milliseconds(1000), {
-      int txPfcCtrNew = folly::get_default(
-          *getLatestPortStats(port).outPfc_(), pfcPriority, 0);
-      EXPECT_EVENTUALLY_GT(txPfcCtrNew, txPfcCtrOld);
-    });
+      // CS00012381334 - MAC loopback doesn't work on TH5 and Rx PFC counters
+      // doesn't increase. Tx counters should work for all platforms.
+      auto txPfcCtrOld = folly::get_default(
+          *getLatestPortStats(port).outPfc_(), kLosslessPriority, 0);
+      pumpTraffic(kLosslessTrafficClass, kLosslessPriority, {port}, {ip});
+      WITH_RETRIES_N_TIMED(5, std::chrono::milliseconds(1000), {
+        auto txPfcCtrNew = folly::get_default(
+            *getLatestPortStats(port).outPfc_(), kLosslessPriority, 0);
+        EXPECT_EVENTUALLY_GT(txPfcCtrNew, txPfcCtrOld);
+      });
+    }
   }
 
   std::tuple<int, int> getPfcDeadlockCounters(const PortID& portId) {
@@ -819,6 +832,24 @@ class AgentTrafficPfcWatchdogTest : public AgentTrafficPfcTest {
     };
   }
 
+  std::tuple<int, int> getSwitchPfcDeadlockCounters() {
+    auto detectionCtrName = getAgentEnsemble()->isSai()
+        ? "pfc_deadlock_detection_count.sum"
+        : "pfc_deadlock_detection.sum";
+    auto recoveryCtrName = getAgentEnsemble()->isSai()
+        ? "pfc_deadlock_recovery_count.sum"
+        : "pfc_deadlock_recovery.sum";
+    int deadlockCtr = 0;
+    int recoveryCtr = 0;
+    for (auto [switchId, asic] : getAsics()) {
+      deadlockCtr +=
+          getAgentEnsemble()->getFb303Counter(detectionCtrName, switchId);
+      recoveryCtr +=
+          getAgentEnsemble()->getFb303Counter(recoveryCtrName, switchId);
+    }
+    return {deadlockCtr, recoveryCtr};
+  }
+
   void validatePfcWatchdogCountersIncrement(
       const PortID& portId,
       const uint64_t& deadlockCtrBefore,
@@ -829,6 +860,19 @@ class AgentTrafficPfcWatchdogTest : public AgentTrafficPfcTest {
                  << " recoveryCtr = " << recoveryCtr;
       EXPECT_EVENTUALLY_GT(deadlockCtr, deadlockCtrBefore);
       EXPECT_EVENTUALLY_GT(recoveryCtr, recoveryCtrBefore);
+    });
+  }
+
+  void validateGlobalPfcWatchdogCountersIncrement(
+      const uint64_t& globalDeadlockCtrBefore,
+      const uint64_t& globalRecoveryCtrBefore) {
+    WITH_RETRIES_N_TIMED(10, std::chrono::milliseconds(1000), {
+      auto [globalDeadlockCtr, globalRecoveryCtr] =
+          getSwitchPfcDeadlockCounters();
+      XLOG(DBG0) << "Global deadlockCtr = " << globalDeadlockCtr
+                 << " recoveryCtr = " << globalRecoveryCtr;
+      EXPECT_EVENTUALLY_GT(globalDeadlockCtr, globalDeadlockCtrBefore);
+      EXPECT_EVENTUALLY_GT(globalRecoveryCtr, globalRecoveryCtrBefore);
     });
   }
 
@@ -909,9 +953,13 @@ TEST_F(AgentTrafficPfcWatchdogTest, PfcWatchdogDetection) {
   auto verify = [&]() {
     auto [deadlockCtrBefore, recoveryCtrBefore] =
         getPfcDeadlockCounters(portId);
+    auto [globalDeadlockBefore, globalRecoveryBefore] =
+        getSwitchPfcDeadlockCounters();
     triggerPfcDeadlockDetection(portId, txOffPortId, ip);
     validatePfcWatchdogCountersIncrement(
         portId, deadlockCtrBefore, recoveryCtrBefore);
+    validateGlobalPfcWatchdogCountersIncrement(
+        globalDeadlockBefore, globalRecoveryBefore);
     cleanupPfcDeadlockDetectionTrigger(txOffPortId);
   };
   verifyAcrossWarmBoots(setup, verify);

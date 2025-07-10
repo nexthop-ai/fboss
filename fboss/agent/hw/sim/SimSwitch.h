@@ -83,11 +83,19 @@ class SimSwitch : public HwSwitch {
     return HwSwitchPipelineStats{};
   }
 
+  HwSwitchTemperatureStats getSwitchTemperatureStats() const override {
+    return HwSwitchTemperatureStats{};
+  }
+
   HwResourceStats getResourceStats() const override {
     return HwResourceStats{};
   }
 
   std::vector<EcmpDetails> getAllEcmpDetails() const override {
+    return {};
+  }
+
+  std::map<int, cfg::PortState> getSysPortShelState() const override {
     return {};
   }
 
@@ -97,6 +105,10 @@ class SimSwitch : public HwSwitch {
 
   bool getArsExhaustionStatus() override {
     return false;
+  }
+
+  cfg::SwitchingMode getFwdSwitchingMode(const RouteNextHopEntry&) override {
+    return cfg::SwitchingMode::FIXED_ASSIGNMENT;
   }
 
   void resetTxCount() {

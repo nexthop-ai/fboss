@@ -114,6 +114,7 @@ cpp_library(
         "facebook/LogThriftCall.cpp",
     ],
     exported_deps = [
+        "//fboss/agent:stats",
         "//folly:conv",
         "//folly:range",
         "//folly/futures:core",
@@ -293,6 +294,20 @@ cpp_library(
         "//folly/concurrency:concurrent_hash_map",
         "//folly/io/async:async_base",
         "//folly/logging:logging",
+    ],
+)
+
+cpp_library(
+    name = "thrift_method_rate_limit",
+    srcs = [
+        "ThriftMethodRateLimit.cpp",
+    ],
+    headers = [
+        "ThriftMethodRateLimit.h",
+    ],
+    exported_deps = [
+        "//folly:token_bucket",
+        "//thrift/lib/cpp2/server:preprocess_functions",
     ],
 )
 

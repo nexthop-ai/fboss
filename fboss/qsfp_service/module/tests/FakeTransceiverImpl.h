@@ -145,6 +145,11 @@ class Cmis2x400GFr4LiteTransceiver : public FakeTransceiverImpl {
   explicit Cmis2x400GFr4LiteTransceiver(int module, TransceiverManager* mgr);
 };
 
+class Cmis2x400GFr4LpoTransceiver : public FakeTransceiverImpl {
+ public:
+  explicit Cmis2x400GFr4LpoTransceiver(int module, TransceiverManager* mgr);
+};
+
 class Cmis2x400GDr4Transceiver : public FakeTransceiverImpl {
  public:
   explicit Cmis2x400GDr4Transceiver(int module, TransceiverManager* mgr);
@@ -157,6 +162,13 @@ class SffCwdm4TempTransceiver : public FakeTransceiverImpl {
 
   // Set the temperature value in the lower page
   void setTemperature(double tempValue);
+};
+
+class Cmis2x400GFr4WithMpiAlarmsTransceiver : public Cmis2x400GFr4Transceiver {
+ public:
+  explicit Cmis2x400GFr4WithMpiAlarmsTransceiver(
+      int module,
+      TransceiverManager* mgr);
 };
 
 class Cmis400GDr4Transceiver : public FakeTransceiverImpl {

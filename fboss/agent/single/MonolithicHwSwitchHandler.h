@@ -135,12 +135,16 @@ class MonolithicHwSwitchHandler : public HwSwitchHandler {
 
   HwSwitchPipelineStats getSwitchPipelineStats() const;
 
+  HwSwitchTemperatureStats getSwitchTemperatureStats() const;
+
   void getHwStats(multiswitch::HwSwitchStats& hwStats) const;
 
   state::SwitchState reconstructSwitchState() override {
     throw FbossError(
         "reconstructSwitchState Not implemented in MultiSwitchHwSwitchHandler");
   }
+
+  void initialStateApplied();
 
  private:
   Platform* platform_;

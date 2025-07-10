@@ -339,7 +339,7 @@ GlobalSensors SffModule::getSensorInfo() {
   return info;
 }
 
-Vendor SffModule::getVendorInfo() {
+Vendor SffModule::getVendorInfo() const {
   Vendor vendor = Vendor();
   *vendor.name() = getQsfpString(SffField::VENDOR_NAME);
   *vendor.oui() = getQsfpString(SffField::VENDOR_OUI);
@@ -1501,6 +1501,7 @@ void SffModule::overwriteChannelControlSettings() {
 }
 
 bool SffModule::tcvrPortStateSupported(TransceiverPortState& portState) const {
+  lock_guard<std::mutex> g(qsfpModuleMutex_);
   if (portState.transmitterTech != getQsfpTransmitterTechnology()) {
     return false;
   }

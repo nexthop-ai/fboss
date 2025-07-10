@@ -258,12 +258,10 @@ class HwSwitch {
   virtual std::vector<EcmpDetails> getAllEcmpDetails() const = 0;
   virtual HwSwitchWatermarkStats getSwitchWatermarkStats() const = 0;
   virtual HwSwitchPipelineStats getSwitchPipelineStats() const = 0;
+  virtual HwSwitchTemperatureStats getSwitchTemperatureStats() const = 0;
   virtual HwResourceStats getResourceStats() const = 0;
-
-  // TODO delete this after ECMP resource manager rolled out to backend
-  virtual cfg::SwitchingMode getFwdSwitchingMode(const RouteNextHopEntry&) {
-    throw FbossError("getFwdSwitchingMode not supported on SAI");
-  }
+  virtual std::map<int, cfg::PortState> getSysPortShelState() const = 0;
+  virtual cfg::SwitchingMode getFwdSwitchingMode(const RouteNextHopEntry&) = 0;
 
   /*
    * Get latest device watermark bytes
@@ -404,10 +402,10 @@ class HwSwitch {
 
   virtual std::vector<FirmwareInfo> getAllFirmwareInfo() const = 0;
 
+  virtual void initialStateApplied() = 0;
+
  protected:
   void setProgrammedState(const std::shared_ptr<SwitchState>& state);
-
-  virtual void initialStateApplied() = 0;
 
  private:
   HwInitResult initLightImpl(Callback* callback, bool failHwCallsOnWarmboot);

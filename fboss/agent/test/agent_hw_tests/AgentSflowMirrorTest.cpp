@@ -30,7 +30,7 @@
 #include "fboss/agent/SflowShimUtils.h"
 
 DEFINE_int32(sflow_test_rate, 90000, "sflow sampling rate for hw test");
-constexpr uint16_t kTimeoutSecs = 10;
+constexpr uint16_t kTimeoutSecs = 1;
 
 const std::string kSflowMirror = "sflow_mirror";
 
@@ -41,12 +41,12 @@ class AgentSflowMirrorTest : public AgentHwTest {
  public:
   // Index in the sample ports where data traffic is expected!
   const int kDataTrafficPortIndex{0};
-  std::vector<production_features::ProductionFeature>
-  getProductionFeaturesVerified() const override {
+  std::vector<ProductionFeature> getProductionFeaturesVerified()
+      const override {
     if constexpr (std::is_same_v<AddrT, folly::IPAddressV4>) {
-      return {production_features::ProductionFeature::SFLOWv4_SAMPLING};
+      return {ProductionFeature::SFLOWv4_SAMPLING};
     } else {
-      return {production_features::ProductionFeature::SFLOWv6_SAMPLING};
+      return {ProductionFeature::SFLOWv6_SAMPLING};
     }
   }
 
@@ -65,6 +65,11 @@ class AgentSflowMirrorTest : public AgentHwTest {
         getPortsForSampling(ensemble.masterLogicalInterfacePortIds(), asic);
     if (asic->isSupported(HwAsic::Feature::EVENTOR_PORT_FOR_SFLOW)) {
       utility::addEventorVoqConfig(&cfg, cfg::StreamType::UNICAST);
+      for (auto& port : *cfg.ports()) {
+        if (port.portType() == cfg::PortType::EVENTOR_PORT) {
+          port.maxFrameSize() = 1600; // Guard against large packets
+        }
+      }
     }
     utility::setTTLZeroCpuConfig(ensemble.getL3Asics(), cfg);
     return cfg;
@@ -656,16 +661,16 @@ class AgentSflowMirrorTest : public AgentHwTest {
 template <typename AddrT>
 class AgentSflowMirrorUntruncateTest : public AgentSflowMirrorTest<AddrT> {
  public:
-  std::vector<production_features::ProductionFeature>
-  getProductionFeaturesVerified() const override {
+  std::vector<ProductionFeature> getProductionFeaturesVerified()
+      const override {
     if constexpr (std::is_same_v<AddrT, folly::IPAddressV4>) {
       return {
-          production_features::ProductionFeature::SFLOWv4_SAMPLING,
-          production_features::ProductionFeature::UNTRUNCATED_SFLOW};
+          ProductionFeature::SFLOWv4_SAMPLING,
+          ProductionFeature::UNTRUNCATED_SFLOW};
     } else {
       return {
-          production_features::ProductionFeature::SFLOWv6_SAMPLING,
-          production_features::ProductionFeature::UNTRUNCATED_SFLOW};
+          ProductionFeature::SFLOWv6_SAMPLING,
+          ProductionFeature::UNTRUNCATED_SFLOW};
     }
   }
 
@@ -677,16 +682,16 @@ class AgentSflowMirrorUntruncateTest : public AgentSflowMirrorTest<AddrT> {
 template <typename AddrT>
 class AgentSflowMirrorTruncateTest : public AgentSflowMirrorTest<AddrT> {
  public:
-  std::vector<production_features::ProductionFeature>
-  getProductionFeaturesVerified() const override {
+  std::vector<ProductionFeature> getProductionFeaturesVerified()
+      const override {
     if constexpr (std::is_same_v<AddrT, folly::IPAddressV4>) {
       return {
-          production_features::ProductionFeature::SFLOWv4_SAMPLING,
-          production_features::ProductionFeature::MIRROR_PACKET_TRUNCATION};
+          ProductionFeature::SFLOWv4_SAMPLING,
+          ProductionFeature::MIRROR_PACKET_TRUNCATION};
     } else {
       return {
-          production_features::ProductionFeature::SFLOWv6_SAMPLING,
-          production_features::ProductionFeature::MIRROR_PACKET_TRUNCATION};
+          ProductionFeature::SFLOWv6_SAMPLING,
+          ProductionFeature::MIRROR_PACKET_TRUNCATION};
     }
   }
 
@@ -700,12 +705,12 @@ class AgentSflowMirrorTruncateTest : public AgentSflowMirrorTest<AddrT> {
 class AgentSflowMirrorAddressFamilySwitchingTest
     : public AgentSflowMirrorTruncateTest<folly::IPAddressV4> {
  public:
-  std::vector<production_features::ProductionFeature>
-  getProductionFeaturesVerified() const override {
+  std::vector<ProductionFeature> getProductionFeaturesVerified()
+      const override {
     return {
-        production_features::ProductionFeature::SFLOWv4_SAMPLING,
-        production_features::ProductionFeature::SFLOWv6_SAMPLING,
-        production_features::ProductionFeature::MIRROR_PACKET_TRUNCATION};
+        ProductionFeature::SFLOWv4_SAMPLING,
+        ProductionFeature::SFLOWv6_SAMPLING,
+        ProductionFeature::MIRROR_PACKET_TRUNCATION};
   }
 };
 
@@ -714,20 +719,20 @@ class AgentSflowMirrorOnTrunkTest : public AgentSflowMirrorTruncateTest<AddrT> {
  public:
   using AgentSflowMirrorTest<AddrT>::getPortsForSampling;
 
-  std::vector<production_features::ProductionFeature>
-  getProductionFeaturesVerified() const override {
+  std::vector<ProductionFeature> getProductionFeaturesVerified()
+      const override {
     if constexpr (std::is_same_v<AddrT, folly::IPAddressV4>) {
       return {
-          production_features::ProductionFeature::SFLOWv4_SAMPLING,
-          production_features::ProductionFeature::LAG,
-          production_features::ProductionFeature::MIRROR_PACKET_TRUNCATION,
-          production_features::ProductionFeature::LAG_MIRRORING};
+          ProductionFeature::SFLOWv4_SAMPLING,
+          ProductionFeature::LAG,
+          ProductionFeature::MIRROR_PACKET_TRUNCATION,
+          ProductionFeature::LAG_MIRRORING};
     } else {
       return {
-          production_features::ProductionFeature::SFLOWv6_SAMPLING,
-          production_features::ProductionFeature::LAG,
-          production_features::ProductionFeature::MIRROR_PACKET_TRUNCATION,
-          production_features::ProductionFeature::LAG_MIRRORING};
+          ProductionFeature::SFLOWv6_SAMPLING,
+          ProductionFeature::LAG,
+          ProductionFeature::MIRROR_PACKET_TRUNCATION,
+          ProductionFeature::LAG_MIRRORING};
     }
   }
 
@@ -754,12 +759,11 @@ class AgentSflowMirrorOnTrunkTest : public AgentSflowMirrorTruncateTest<AddrT> {
 class AgentSflowMirrorWithLineRateTrafficTest
     : public AgentSflowMirrorTruncateTest<folly::IPAddressV6> {
  public:
-  std::vector<production_features::ProductionFeature>
-  getProductionFeaturesVerified() const override {
+  std::vector<ProductionFeature> getProductionFeaturesVerified()
+      const override {
     auto productionFeatures = AgentSflowMirrorTruncateTest<
         folly::IPAddressV6>::getProductionFeaturesVerified();
-    productionFeatures.push_back(
-        production_features::ProductionFeature::LINERATE_SFLOW);
+    productionFeatures.push_back(ProductionFeature::LINERATE_SFLOW);
     return productionFeatures;
   }
 
@@ -768,9 +772,10 @@ class AgentSflowMirrorWithLineRateTrafficTest
     // VerifySflowEgressCongestionShort is also used in n-warmboot tests, where
     // we want to test basic fabric port init.
     FLAGS_hide_fabric_ports = false;
-    // Test that neighbor advertisements won't cause eventor port to get stuck
-    // (CS00012404377).
+    // Test that neighbor advertisements or stray packets won't cause eventor
+    // port to get stuck (CS00012404377).
     FLAGS_disable_neighbor_updates = false;
+    FLAGS_allow_eventor_send_packet = true;
   }
 
   static const int kLosslessPriority{2};
@@ -851,7 +856,7 @@ class AgentSflowMirrorWithLineRateTrafficTest
     verifyAcrossWarmBoots(setup, verify);
   }
 
- private:
+ protected:
   static void sendPacket(
       facebook::fboss::AgentEnsemble* ensemble,
       const folly::IPAddressV6& dstIp) {
@@ -950,12 +955,11 @@ class AgentSflowMirrorTruncateWithSamplesPackingTestV6
     : public AgentSflowMirrorTruncateTest<folly::IPAddressV6> {
  public:
   const int kNumSflowSamplesPacked{4};
-  std::vector<production_features::ProductionFeature>
-  getProductionFeaturesVerified() const override {
+  std::vector<ProductionFeature> getProductionFeaturesVerified()
+      const override {
     auto productionFeatures = AgentSflowMirrorTruncateTest<
         folly::IPAddressV6>::getProductionFeaturesVerified();
-    productionFeatures.push_back(
-        production_features::ProductionFeature::SFLOW_SAMPLES_PACKING);
+    productionFeatures.push_back(ProductionFeature::SFLOW_SAMPLES_PACKING);
     return productionFeatures;
   }
 
@@ -1070,6 +1074,121 @@ TEST_F(
     VerifySflowEgressCongestionShort) {
   // Test fewer iterations as we will be using this in an n-warmboot test.
   this->testSflowEgressCongestion(1);
+}
+
+class AgentSflowMirrorEventorTest
+    : public AgentSflowMirrorWithLineRateTrafficTest {
+  std::vector<ProductionFeature> getProductionFeaturesVerified()
+      const override {
+    auto productionFeatures = AgentSflowMirrorWithLineRateTrafficTest::
+        getProductionFeaturesVerified();
+    productionFeatures.push_back(
+        ProductionFeature::SFLOW_SAMPLES_PACKING); // implies eventor port
+    return productionFeatures;
+  }
+
+  void setCmdLineFlagOverrides() const override {
+    AgentSflowMirrorWithLineRateTrafficTest::setCmdLineFlagOverrides();
+    // Prevent neighbor advertisement traffic from generating stray packets.
+    FLAGS_disable_neighbor_updates = true;
+  }
+
+ protected:
+  void setSflowTruncation(bool truncate) {
+    // Set truncation using shell command, since this is not supported by SDK.
+    std::string out;
+    for (int core = 0; core < 4; ++core) {
+      for (const auto& [switchId, _] : getAsics()) {
+        getAgentEnsemble()->runDiagCommand(
+            fmt::format(
+                "dbal entry commit table=SNIF_COMMAND_TABLE core_id={} "
+                "snif_command_id=1 SNIF_TYPE=STATISTICAL_SAMPLE CROP_ENABLE={}\n",
+                core,
+                truncate ? "1" : "0"),
+            out,
+            switchId);
+      }
+    }
+  }
+
+  // Verify that packet count on a port remains constant for several iterations.
+  void verifyNoTrafficOnPort(PortID portId, int iterations = 5) {
+    auto statsBefore = getLatestPortStats(portId);
+    int count = 0;
+    WITH_RETRIES({
+      auto statsAfter = getLatestPortStats(portId);
+      XLOG(DBG0) << "Port " << portId
+                 << " outPackets: " << *statsAfter.outUnicastPkts_();
+      if (*statsBefore.outUnicastPkts_() == *statsAfter.outUnicastPkts_()) {
+        ++count;
+      } else {
+        // Reset the count.
+        statsBefore = statsAfter;
+        count = 0;
+      }
+      EXPECT_EVENTUALLY_GE(count, iterations);
+    });
+  }
+
+  // Stop traffic on ports by removing neighbor and adding it back.
+  void stopTrafficOnAllPorts() {
+    auto intfMac = utility::getMacForFirstInterfaceWithPorts(
+        getAgentEnsemble()->getProgrammedState());
+    utility::EcmpSetupTargetedPorts6 ecmpHelper(
+        getAgentEnsemble()->getProgrammedState(),
+        getAgentEnsemble()->getSw()->needL2EntryForNeighbor(),
+        intfMac);
+    for (auto portId : masterLogicalInterfacePortIds()) {
+      applyNewState([&](const std::shared_ptr<SwitchState>& in) {
+        return ecmpHelper.unresolveNextHops(in, {PortDescriptor(portId)});
+      });
+    }
+    verifyNoTrafficOnPort(masterLogicalInterfacePortIds()[0], 3 /*iterations*/);
+    for (auto portId : masterLogicalInterfacePortIds()) {
+      applyNewState([&](const std::shared_ptr<SwitchState>& in) {
+        return ecmpHelper.resolveNextHops(in, {PortDescriptor(portId)});
+      });
+    }
+  }
+};
+
+TEST_F(AgentSflowMirrorEventorTest, VerifyEventorMtu) {
+  constexpr int kNumPorts = 1;
+  const PortID trafficLoopPortId = masterLogicalInterfacePortIds()[0];
+  const PortID eventorPortId =
+      masterLogicalPortIds({cfg::PortType::EVENTOR_PORT})[0];
+
+  auto setup = [=, this]() {
+    auto config = initialConfig(*getAgentEnsemble());
+    configureMirrorWithSampling(config, 1 /*sampleRate*/);
+    utility::setTTLZeroCpuConfig(getAgentEnsemble()->getL3Asics(), config);
+    applyNewConfig(config);
+    resolveRouteForMirrorDestination();
+    utility::setupEcmpDataplaneLoopOnAllPorts(getAgentEnsemble());
+  };
+  auto verify = [=, this]() {
+    // Turn off truncation, then start traffic loops on a port. We don't expect
+    // sFlow egress traffic because packets should be blocked by MTU.
+    setSflowTruncation(false);
+    utility::createTrafficOnMultiplePorts(
+        getAgentEnsemble(), kNumPorts, sendPacket, 1 /*desiredPctLineRate*/);
+    verifyNoTrafficOnPort(eventorPortId);
+
+    // Stop traffic before changing truncation setting.
+    stopTrafficOnAllPorts();
+    verifyNoTrafficOnPort(trafficLoopPortId);
+
+    // Turn truncation back on and start traffic again. We expect sFlow to work
+    // now, i.e. eventor port should not be broken by previous large packets.
+    setSflowTruncation(true);
+    utility::createTrafficOnMultiplePorts(
+        getAgentEnsemble(), kNumPorts, sendPacket, 1 /*desiredPctLineRate*/);
+    verifySflowEgressPortNotStuck(3 /* iterations */);
+
+    // Turn off traffic so that truncation can be changed after warmboot.
+    stopTrafficOnAllPorts();
+  };
+  verifyAcrossWarmBoots(setup, verify);
 }
 
 TEST_F(AgentSflowMirrorAddressFamilySwitchingTest, MoveToV6) {

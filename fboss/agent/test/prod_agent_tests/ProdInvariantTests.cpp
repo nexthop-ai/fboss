@@ -12,14 +12,11 @@
 #include "fboss/agent/ThriftHandler.h"
 #include "fboss/agent/gen-cpp2/validated_shell_commands_constants.h"
 #include "fboss/agent/hw/test/ConfigFactory.h"
-#include "fboss/agent/hw/test/HwTestAclUtils.h"
 #include "fboss/agent/hw/test/HwTestCoppUtils.h"
 #include "fboss/agent/hw/test/HwTestPacketUtils.h"
-#include "fboss/agent/hw/test/HwTestProdConfigUtils.h"
 #include "fboss/agent/hw/test/LoadBalancerUtils.h"
 #include "fboss/agent/hw/test/ProdConfigFactory.h"
 #include "fboss/agent/hw/test/dataplane_tests/HwTestQosUtils.h"
-#include "fboss/agent/state/Port.h"
 #include "fboss/agent/state/SwitchState.h"
 #include "fboss/agent/test/EcmpSetupHelper.h"
 #include "fboss/agent/test/utils/AclTestUtils.h"
@@ -163,15 +160,20 @@ void ProdInvariantTest::setupConfigFlag() {
   ensemble->reloadPlatformConfig();
 }
 
-void ProdInvariantTest::sendTraffic() {
+void ProdInvariantTest::sendTraffic(int numPackets) {
   auto mac = utility::getInterfaceMac(
       getSw()->getState(), getSw()->getState()->getVlans()->getFirstVlanID());
+  std::optional<PortID> portId = std::nullopt;
+  int hopLimit = 255;
   utility::pumpTraffic(
       true,
       utility::getAllocatePktFn(getSw()),
       utility::getSendPktFunc(getSw()),
       mac,
-      getSw()->getState()->getVlans()->getFirstVlanID());
+      getSw()->getState()->getVlans()->getFirstVlanID(),
+      portId,
+      hopLimit,
+      numPackets);
 }
 
 PortID ProdInvariantTest::getDownlinkPort() {
@@ -221,14 +223,14 @@ void ProdInvariantTest::verifyCopp() {
   std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
-void ProdInvariantTest::verifyLoadBalancing() {
+void ProdInvariantTest::verifyLoadBalancing(int numPackets) {
   AgentEnsemble* ensemble = getAgentEnsemble();
   std::function<std::map<PortID, HwPortStats>(const std::vector<PortID>&)>
       getPortStatsFn = [&](const std::vector<PortID>& portIds) {
         return ensemble->getLatestPortStats(portIds);
       };
   utility::pumpTrafficAndVerifyLoadBalanced(
-      [=]() { sendTraffic(); },
+      [=]() { sendTraffic(numPackets); },
       [=]() {
         auto ports = std::make_unique<std::vector<int32_t>>();
         auto ecmpPortIds = getEcmpPortIds();
@@ -240,7 +242,7 @@ void ProdInvariantTest::verifyLoadBalancing() {
       [=]() {
         return utility::isLoadBalanced(
             ecmpPorts_,
-            std::vector<NextHopWeight>(kEcmpWidth, 1),
+            std::vector<NextHopWeight>(ecmpPorts_.size(), 1),
             getPortStatsFn,
             25);
       });
@@ -608,7 +610,7 @@ class ProdInvariantRtswTest : public ProdInvariantTest {
         [=, this]() {
           return utility::isLoadBalanced(
               ecmpPorts_,
-              std::vector<NextHopWeight>(kEcmpWidth, 1),
+              std::vector<NextHopWeight>(ecmpPorts_.size(), 1),
               getPortStatsFn,
               kLbDeviation);
         });
@@ -725,6 +727,25 @@ TEST_F(ProdInvariantFtswTest, verifyInvariants) {
 }
 
 class ProdInvariantStswTest : public ProdInvariantRtswTest {
+ protected:
+  void SetUp() override {
+    AgentEnsembleTest::SetUp();
+    AgentEnsemble* ensemble = getAgentEnsemble();
+    // Spine switches do not have uplinks. They are highest in our spine leaf
+    // hierarchy.
+    auto ecmpDownlinkPorts = utility::getAllUplinkDownlinkPorts(
+                                 getSw()->getPlatformType(),
+                                 initialConfig(*ensemble),
+                                 kEcmpWidth,
+                                 is_mmu_lossless_mode())
+                                 .second;
+    for (auto& downlinkPort : ecmpDownlinkPorts) {
+      ecmpPorts_.emplace_back(downlinkPort);
+    }
+    setupAgentTestEcmp(ecmpPorts_);
+    XLOG(DBG2) << "ProdInvariantTest setup done";
+  }
+
  public:
   ProdInvariantStswTest() {
     set_mmu_lossless(true);
@@ -736,7 +757,7 @@ TEST_F(ProdInvariantStswTest, verifyInvariants) {
   auto verify = [&]() {
     verifyAcl();
     verifyCopp();
-    verifyLoadBalancing();
+    verifyLoadBalancing(30000);
     verifyDscpToQueueMapping();
     verifySafeDiagCommands();
     verifyThriftHandler();

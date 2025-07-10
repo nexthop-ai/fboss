@@ -11,7 +11,6 @@
 #include "fboss/agent/hw/test/HwSwitchEnsemble.h"
 #include "fboss/agent/test/utils/PacketSendUtils.h"
 
-#include "fboss/agent/AgentConfig.h"
 #include "fboss/agent/AlpmUtils.h"
 #include "fboss/agent/ApplyThriftConfig.h"
 #include "fboss/agent/EncapIndexAllocator.h"
@@ -22,7 +21,6 @@
 #include "fboss/agent/SwRxPacket.h"
 #include "fboss/agent/SwSwitch.h"
 #include "fboss/agent/SwSwitchWarmBootHelper.h"
-#include "fboss/agent/SwitchStats.h"
 #include "fboss/agent/TxPacket.h"
 #include "fboss/agent/TxPacketUtils.h"
 #include "fboss/agent/hw/switch_asics/HwAsic.h"
@@ -419,7 +417,8 @@ void HwSwitchEnsemble::linkStateChanged(
     PortID port,
     bool up,
     cfg::PortType portType,
-    std::optional<phy::LinkFaultStatus> /* iPhyFaultStatus */) {
+    std::optional<phy::LinkFaultStatus> /* iPhyFaultStatus */,
+    std::optional<AggregatePortID> /* aggPortId */) {
   if (getHwSwitch()->getRunState() < SwitchRunState::INITIALIZED) {
     return;
   }

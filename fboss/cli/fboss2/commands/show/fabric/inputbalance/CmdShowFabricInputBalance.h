@@ -65,47 +65,144 @@ class CmdShowFabricInputBalance : public CmdHandler<
     fbossCtrlClient->sync_getDsfNodes(dsfNodeMap);
     bool isDualStage = utility::isDualStage(dsfNodeMap);
 
-    // TODO(zecheng): Support for dual stage. Starting with single stage for
-    // now.
-    CHECK(!isDualStage);
-
-    std::vector<int64_t> fabricSwitchIDs;
-    for (const auto& [switchId, switchInfo] : switchIdToSwitchInfo) {
-      if (switchInfo.switchType() == cfg::SwitchType::FABRIC) {
-        fabricSwitchIDs.push_back(switchId);
-      }
-    }
-
-    auto deviceToQueryInputCapacity =
-        utility::deviceToQueryInputCapacity(fabricSwitchIDs, dsfNodeMap);
-
-    if (deviceToQueryInputCapacity.empty()) {
-      throw std::runtime_error(
-          "Failed to find devices to query input capacity");
-    }
-
     std::map<int32_t, facebook::fboss::PortInfoThrift> myPortInfo;
     fbossCtrlClient->sync_getAllPortInfo(myPortInfo);
-    auto neighborName2Ports = utility::getNeighborFabricPortsToSelf(myPortInfo);
-
-    auto neighborReachability = getNeighborReachability(
-        deviceToQueryInputCapacity, neighborName2Ports, dstSwitchName);
+    auto neighborToPorts = utility::getNeighborFabricPortsToSelf(myPortInfo);
+    auto neighborToLinkFailure = utility::getNeighborToLinkFailure(myPortInfo);
+    auto portToVirtualDevice = utility::getPortToVirtualDeviceId(myPortInfo);
     auto selfReachability =
         utils::getCachedSwSwitchReachabilityInfo(hostInfo, dstSwitchName);
 
-    auto inputBalanceResult = utility::checkInputBalanceSingleStage(
-        dstSwitchName, neighborReachability, selfReachability);
+    if (!isDualStage) {
+      std::vector<int64_t> fabricSwitchIDs;
+      for (const auto& [switchId, switchInfo] : switchIdToSwitchInfo) {
+        if (switchInfo.switchType() == cfg::SwitchType::FABRIC) {
+          fabricSwitchIDs.push_back(switchId);
+        }
+      }
 
-    return createModel();
+      auto devicesToQueryInputCapacity =
+          utility::devicesToQueryInputCapacity(fabricSwitchIDs, dsfNodeMap);
+      if (devicesToQueryInputCapacity.empty()) {
+        throw std::runtime_error(
+            "Failed to find devices to query input capacity");
+      }
+
+      auto neighborReachability = getNeighborReachability(
+          devicesToQueryInputCapacity, neighborToPorts, dstSwitchName);
+
+      return createModel(utility::checkInputBalanceSingleStage(
+          dstSwitchName,
+          neighborReachability,
+          selfReachability,
+          neighborToLinkFailure,
+          portToVirtualDevice,
+          true /* verbose */));
+    } else {
+      auto switchID = switchIdToSwitchInfo.begin()->first;
+      auto dsfNode = dsfNodeMap.at(switchID);
+
+      if (!dsfNode.fabricLevel().has_value()) {
+        throw std::runtime_error(
+            "Failed to find fabric level for device " + hostInfo.getName());
+      }
+
+      std::vector<utility::InputBalanceResult> inputBalanceResult;
+      auto nameToDsfNode = utility::switchNameToDsfNode(dsfNodeMap);
+      if (dsfNode.fabricLevel() == 2) {
+        // Dual stage SDSW
+        auto clusterIDToFabricDevices =
+            utility::groupFabricDevicesByCluster(nameToDsfNode);
+        // TODO(zecheng): Handle dst switches in different clusters.
+        auto dstClusterID = *nameToDsfNode.at(dstSwitchName.at(0)).clusterId();
+
+        for (const auto& [clusterID, fabricDevices] :
+             clusterIDToFabricDevices) {
+          if (clusterID != dstClusterID) {
+            auto neighborReachability = getNeighborReachability(
+                fabricDevices, neighborToPorts, dstSwitchName);
+            auto result = utility::checkInputBalanceDualStage(
+                utility::InputBalanceDestType::DUAL_STAGE_SDSW_INTER,
+                dstSwitchName,
+                neighborReachability,
+                selfReachability,
+                neighborToLinkFailure,
+                portToVirtualDevice,
+                nameToDsfNode,
+                true /* verbose */);
+            inputBalanceResult.insert(
+                inputBalanceResult.end(), result.begin(), result.end());
+          }
+        }
+      } else {
+        // Dual stage FDSW - for now only check inter-zone destination.
+        auto localClusterID = dsfNodeMap.at(switchID).clusterId();
+        CHECK(localClusterID.has_value());
+        auto localRDSW = utility::getInterfaceDevicesInCluster(
+            nameToDsfNode, localClusterID.value());
+        auto neighborReachability =
+            getNeighborReachability(localRDSW, neighborToPorts, dstSwitchName);
+
+        return createModel(utility::checkInputBalanceDualStage(
+            utility::InputBalanceDestType::DUAL_STAGE_FDSW_INTER,
+            dstSwitchName,
+            neighborReachability,
+            selfReachability,
+            neighborToLinkFailure,
+            portToVirtualDevice,
+            nameToDsfNode,
+            true /* verbose */));
+      }
+
+      return createModel(inputBalanceResult);
+    }
   }
 
-  RetType createModel() {
-    // TODO(zecheng): Create model for input balance
-    return {};
+  RetType createModel(
+      const std::vector<utility::InputBalanceResult>& inputBalanceResults) {
+    RetType ret;
+    std::vector<cli::InputBalanceEntry> entries;
+
+    for (const auto& result : inputBalanceResults) {
+      cli::InputBalanceEntry entry;
+      entry.destinationSwitchName() = result.destinationSwitch;
+      entry.sourceSwitchName() = result.sourceSwitch;
+      entry.virtualDeviceID() = result.virtualDeviceID;
+      entry.balanced() = result.balanced;
+      entry.inputCapacity() = result.inputCapacity.value();
+      entry.outputCapacity() = result.outputCapacity.value();
+      entry.inputLinkFailure() = result.inputLinkFailure.value();
+      entry.outputLinkFailure() = result.outputLinkFailure.value();
+      entries.push_back(entry);
+    }
+    ret.inputBalanceEntry() = entries;
+    return ret;
   }
 
   void printOutput(const RetType& model, std::ostream& out = std::cout) {
-    // TODO(zecheng): Print output of input balance
+    Table table;
+    table.setHeader({
+        "Destination",
+        "Source",
+        "VirtualDeviceID",
+        "Balanced",
+        "InputCapacity",
+        "OutputCapacity",
+        "InputLinkFailure",
+        "OutputLinkFailure",
+    });
+    for (const auto& entry : *model.inputBalanceEntry()) {
+      table.addRow(
+          {*entry.destinationSwitchName(),
+           folly::join(" ", *entry.sourceSwitchName()),
+           folly::to<std::string>(*entry.virtualDeviceID()),
+           *entry.balanced() ? "True" : "False",
+           folly::join(" ", *entry.inputCapacity()),
+           folly::join(" ", *entry.outputCapacity()),
+           folly::join(" ", *entry.inputLinkFailure()),
+           folly::join(" ", *entry.outputLinkFailure())});
+    }
+    out << table << std::endl;
   }
 
  private:
@@ -115,9 +212,10 @@ class CmdShowFabricInputBalance : public CmdHandler<
       std::string,
       std::unordered_map<std::string, std::vector<std::string>>>
   getNeighborReachability(
-      std::vector<std::pair<int64_t, std::string>> deviceToQueryInputCapacity,
-      const std::unordered_map<std::string, std::set<std::string>>&
-          neighborName2Ports,
+      const std::vector<std::string>& devicesToQueryInputCapacity,
+      const std::unordered_map<
+          std::string,
+          std::unordered_map<std::string, std::string>>& neighborName2Ports,
       const std::vector<std::string>& dstSwitchNames) {
     std::unordered_map<
         std::string,
@@ -128,15 +226,15 @@ class CmdShowFabricInputBalance : public CmdHandler<
         std::shared_future<
             std::unordered_map<std::string, std::vector<std::string>>>>
         neighborReachabilityFutureMap;
-    for (const auto& [switchId, switchName] : deviceToQueryInputCapacity) {
-      neighborReachabilityFutureMap[switchName] = std::async(
+    for (const auto& switchToQuery : devicesToQueryInputCapacity) {
+      neighborReachabilityFutureMap[switchToQuery] = std::async(
           std::launch::async,
           &utils::getCachedSwSwitchReachabilityInfo,
-          HostInfo(switchName),
+          HostInfo(switchToQuery),
           dstSwitchNames);
     }
 
-    for (const auto& [switchName, neighborReachabilityFuture] :
+    for (const auto& [neighborName, neighborReachabilityFuture] :
          neighborReachabilityFutureMap) {
       auto neighborReachabilityMap = neighborReachabilityFuture.get();
       std::unordered_map<std::string, std::vector<std::string>>
@@ -145,13 +243,20 @@ class CmdShowFabricInputBalance : public CmdHandler<
         std::vector<std::string> filteredPorts;
         for (const auto& port : ports) {
           // Filter ports that are not connected to the source switch
-          if (neighborName2Ports.at(switchName).contains(port)) {
-            filteredPorts.push_back(port);
+          auto neighbor2PortIter = neighborName2Ports.find(neighborName);
+          if (neighbor2PortIter == neighborName2Ports.end()) {
+            throw std::runtime_error(
+                "Unable to find Neighbor " + neighborName +
+                " in neighborName2Ports.");
+          }
+          auto portIter = neighbor2PortIter->second.find(port);
+          if (portIter != neighbor2PortIter->second.end()) {
+            filteredPorts.push_back(portIter->second);
           }
         }
         filteredReachabilityMap[dstSwitch] = std::move(filteredPorts);
       }
-      neighborReachability[switchName] = std::move(filteredReachabilityMap);
+      neighborReachability[neighborName] = std::move(filteredReachabilityMap);
     }
     return neighborReachability;
   }
