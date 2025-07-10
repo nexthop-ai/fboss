@@ -68,12 +68,11 @@ target_link_libraries(platform_manager_data_store_test
 )
 
 gtest_discover_tests(platform_manager_data_store_test)
-<<<<<<< HEAD
-=======
+
 add_executable(platform_manager_device_path_resolver_test
   fboss/platform/platform_manager/tests/DevicePathResolverTest.cpp
 )
->>>>>>> upstream/main
+gtest_discover_tests(platform_manager_device_path_resolver_test)
 
 # NH TODO add_executable(platform_manager_device_path_resolver_test
 # NH TODO fboss/platform/platform_manager/tests/DevicePathResolverTest.cpp
