@@ -11,6 +11,7 @@ on:
     - cron: '0 0 * * 1'
 jobs:
   export-debian-docker-image:
+    if: github.repository_owner == 'facebook'
     runs-on: ubuntu-latest
     steps:
       - name: Clean workspace
