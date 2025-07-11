@@ -157,7 +157,7 @@ ci_sandcastle(
             },
             {
                 "name": "Run Configo Sync Command",
-                "shell": "buck2 run --flagfile fbcode//mode/opt fbcode//fboss/lib/platform_mapping_v2/facebook:gen -- --make-configerator-changes",
+                "shell": "buck2 run --flagfile fbcode//mode/opt fbcode//fboss/lib/platform_mapping_v2/facebook:gen -- --make-configerator-changes --add-fbcode-dependency",
             },
         ],
     },
@@ -171,4 +171,12 @@ ci_sandcastle(
     ],
     command = "SandcastleUniversalCommand",
     oncall = "fboss_optics_phy",
+)
+
+python_binary(
+    name = "generate_agent_config_from_asic_config",
+    srcs = ["generate_agent_config_from_asic_config.py"],
+    labels = ["autodeps2_generated"],
+    main_module = "fboss.lib.platform_mapping_v2.generate_agent_config_from_asic_config",
+    deps = [],
 )

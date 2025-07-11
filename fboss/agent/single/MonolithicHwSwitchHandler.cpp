@@ -100,6 +100,10 @@ HwSwitchPipelineStats MonolithicHwSwitchHandler::getSwitchPipelineStats()
     const {
   return hw_->getSwitchPipelineStats();
 }
+HwSwitchTemperatureStats MonolithicHwSwitchHandler::getSwitchTemperatureStats()
+    const {
+  return hw_->getSwitchTemperatureStats();
+}
 
 void MonolithicHwSwitchHandler::updateAllPhyInfo() {
   hw_->updateAllPhyInfo();
@@ -198,6 +202,10 @@ bool MonolithicHwSwitchHandler::needL2EntryForNeighbor(
   return hw_->needL2EntryForNeighbor();
 }
 
+void MonolithicHwSwitchHandler::initialStateApplied() {
+  hw_->initialStateApplied();
+}
+
 std::pair<fsdb::OperDelta, HwSwitchStateUpdateStatus>
 MonolithicHwSwitchHandler::stateChanged(
     const std::vector<fsdb::OperDelta>& deltas,
@@ -247,6 +255,8 @@ void MonolithicHwSwitchHandler::getHwStats(
   hwStats.fabricReachabilityStats() = getFabricReachabilityStats();
   hwStats.switchWatermarkStats() = getSwitchWatermarkStats();
   hwStats.switchPipelineStats() = getSwitchPipelineStats();
+  hwStats.switchTemperatureStats() = getSwitchTemperatureStats();
+
   if (auto hwSwitchStats = getSwitchStats()) {
     hwStats.hwAsicErrors() = hwSwitchStats->getHwAsicErrors();
   }
@@ -260,6 +270,7 @@ void MonolithicHwSwitchHandler::getHwStats(
   hwStats.fb303GlobalStats() = hw_->getSwitchStats()->getAllFb303Stats();
   hwStats.hwResourceStats() = hw_->getResourceStats();
   hwStats.arsExhausted() = hw_->getArsExhaustionStatus();
+  hwStats.sysPortShelState() = hw_->getSysPortShelState();
 }
 
 } // namespace facebook::fboss

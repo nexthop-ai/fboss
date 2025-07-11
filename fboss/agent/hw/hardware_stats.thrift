@@ -6,6 +6,7 @@ namespace py.asyncio neteng.fboss.asyncio.hardware_stats
 namespace php fboss_hw
 
 include "fboss/mka_service/if/mka_structs.thrift"
+include "thrift/annotation/cpp.thrift"
 
 const i64 STAT_UNINITIALIZED = -1;
 
@@ -286,6 +287,8 @@ struct HwAsicErrors {
   58: optional i64 fabricControlPathErrors;
   59: optional i64 fabricDataPathErrors;
   60: optional i64 cpuErrors;
+  // ASIC reset errors
+  61: optional i64 asicSoftResetErrors;
 }
 
 struct HwTeFlowStats {
@@ -382,6 +385,11 @@ struct HwSwitchPipelineStats {
   8: map<i16, i64> globalDrops = {};
 }
 
+struct HwSwitchTemperatureStats {
+  1: map<string, i64> timeStamp = {};
+  2: map<string, float> value = {};
+}
+
 struct HwSwitchFb303GlobalStats {
   1: i64 tx_pkt_allocated;
   2: i64 tx_pkt_freed;
@@ -431,6 +439,7 @@ struct HwSwitchFb303GlobalStats {
   33: optional i64 rqp_parity_error;
   34: i64 fabric_connectivity_bogus;
   35: optional i64 interrupt_masked_events;
+  36: optional i64 asic_revision;
 }
 
 struct HwFlowletStats {
@@ -440,4 +449,33 @@ struct HwFlowletStats {
 
 struct AclStats {
   1: map<string, i64> statNameToCounterMap;
+}
+
+struct HwHighFrequencyPfcStats {
+  1: optional i64 inPfc;
+  2: optional i64 outPfc;
+}
+
+struct HwHighFrequencyPortStats {
+  1: map<i16, HwHighFrequencyPfcStats> pfcStats = {};
+  3: map<i16, i64> queueWatermarkBytes = {};
+  4: map<i16, i64> pgSharedWatermarkBytes = {};
+}
+
+struct HwHighFrequencyStats {
+  1: i64 timestampUs = STAT_UNINITIALIZED;
+  @cpp.Type{template = "folly::F14FastMap"}
+  2: map<string, HwHighFrequencyPortStats> portStats;
+  3: map<i16, i64> itmPoolSharedWatermarkBytes = {};
+}
+
+struct HwRouterInterfaceStats {
+  1: i64 inBytes_;
+  2: i64 inPkts_;
+  3: i64 outBytes_;
+  4: i64 outPkts_;
+  5: i64 inErrorBytes_;
+  6: i64 inErrorPkts_;
+  7: i64 outErrorBytes_;
+  8: i64 outErrorPkts_;
 }

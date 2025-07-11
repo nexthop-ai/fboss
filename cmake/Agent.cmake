@@ -9,6 +9,7 @@ add_library(setup_thrift
 )
 
 target_link_libraries(setup_thrift
+  load_agent_config
   Folly::folly
   FBThrift::thriftcpp2
 )
@@ -117,6 +118,7 @@ target_link_libraries(voq_utils
   switch_config_cpp2
   agent_features
   switch_asics
+  state
 )
 
 target_link_libraries(address_utils
@@ -296,6 +298,7 @@ add_library(
 
 target_link_libraries(
   agent_fsdb_sync_manager
+  agent_info_cpp2
   fsdb_syncer
   hwswitch_matcher
   state
@@ -365,6 +368,7 @@ set(core_libs
   phy_snapshot_manager
   build_info_wrapper
   ecmp_resource_manager
+  thrift_method_rate_limit
 )
 
 target_link_libraries(core ${core_libs})

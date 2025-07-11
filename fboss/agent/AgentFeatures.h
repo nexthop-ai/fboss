@@ -57,6 +57,7 @@ DECLARE_bool(force_init_fp);
 DECLARE_bool(flowletSwitchingEnable);
 DECLARE_bool(enable_ecmp_random_spray);
 DECLARE_bool(dlbResourceCheckEnable);
+DECLARE_bool(use_full_dlb_scale);
 DECLARE_bool(disable_neighbor_solicitation);
 DECLARE_bool(disable_looped_fabric_ports);
 DECLARE_bool(detect_wrong_fabric_connections);
@@ -73,6 +74,7 @@ DECLARE_int32(fboss_event_base_queue_limit);
 DECLARE_bool(dual_stage_rdsw_3q_2q);
 DECLARE_bool(dual_stage_edsw_3q_2q);
 DECLARE_bool(dual_stage_3q_2q_qos);
+DECLARE_bool(janga_test);
 
 bool isDualStage3Q2QMode();
 bool isDualStage3Q2QQos();
@@ -89,6 +91,7 @@ DECLARE_int32(max_neighbors_to_block);
 
 DECLARE_bool(link_stress_test);
 DECLARE_int32(ecmp_resource_percentage);
+DECLARE_int32(ars_resource_percentage);
 DECLARE_int32(switch_index_for_testing);
 DECLARE_uint32(counter_refresh_interval);
 
@@ -105,3 +108,5 @@ DECLARE_int32(ecmp_resource_manager_make_before_break_buffer);
 DECLARE_int32(update_stats_interval_s);
 DECLARE_bool(update_route_with_dlb_type);
 DECLARE_int32(agent_exit_delay_s);
+
+DECLARE_bool(dsf_single_stage_r192_f40_e32);

@@ -18,6 +18,8 @@
 #include "fboss/agent/hw/sai/switch/SaiAclTableGroupManager.h"
 #include "fboss/agent/hw/sai/switch/SaiBufferManager.h"
 #include "fboss/agent/hw/sai/switch/SaiManagerTable.h"
+#include "fboss/agent/hw/sai/switch/SaiPortManager.h"
+#include "fboss/agent/hw/sai/switch/SaiPortUtils.h"
 #include "fboss/agent/hw/sai/switch/SaiUdfManager.h"
 #include "fboss/agent/hw/switch_asics/HwAsic.h"
 #include "fboss/agent/hw/switch_asics/Jericho3Asic.h"
@@ -170,6 +172,24 @@ void fillHwSwitchDropStats(
         break;
       default:
         throw FbossError("Got unexpected switch counter id: ", counterId);
+    }
+  }
+}
+
+void fillHwSwitchTemperatureStats(
+    const folly::F14FastMap<sai_attr_id_t, sai_attribute_value_t>& attrId2Value,
+    HwSwitchTemperatureStats& hwSwitchTemperatureStats) {
+  for (auto attrIdAndValue : attrId2Value) {
+    auto [attrId, value] = attrIdAndValue;
+    if (attrId == SAI_SWITCH_ATTR_TEMP_LIST) {
+      for (uint32_t i = 0; i < value.s32list.count; i++) {
+        auto sensorName = std::to_string(i);
+        hwSwitchTemperatureStats.timeStamp()->insert(
+            {sensorName,
+             std::chrono::system_clock::now().time_since_epoch().count()});
+        hwSwitchTemperatureStats.value()->insert(
+            {sensorName, value.s32list.list[i]});
+      }
     }
   }
 }
@@ -784,6 +804,10 @@ sai_object_id_t SaiSwitchManager::getDefaultVlanAdapterKey() const {
 
 void SaiSwitchManager::setPtpTcEnabled(bool ptpEnable) {
   isPtpTcEnabled_ = ptpEnable;
+#if SAI_API_VERSION >= SAI_VERSION(1, 16, 0)
+  auto ptpMode = utility::getSaiPortPtpMode(ptpEnable);
+  switch_->setOptionalAttribute(SaiSwitchTraits::Attributes::PtpMode{ptpMode});
+#endif
 }
 
 std::optional<bool> SaiSwitchManager::getPtpTcEnabled() {
@@ -855,6 +879,20 @@ const std::vector<sai_stat_id_t>& SaiSwitchManager::supportedDropStats() const {
     }
   }
   return stats;
+}
+
+const std::vector<sai_attr_id_t>& SaiSwitchManager::supportedTemperatureStats()
+    const {
+  static std::vector<sai_stat_id_t> stats;
+  if (platform_->getAsic()->isSupported(
+          HwAsic::Feature::TEMPERATURE_MONITORING)) {
+    stats = {
+        SAI_SWITCH_ATTR_MAX_NUMBER_OF_TEMP_SENSORS, SAI_SWITCH_ATTR_TEMP_LIST};
+    return stats;
+  } else {
+    stats = {};
+    return stats;
+  }
 }
 
 const std::vector<sai_stat_id_t>& SaiSwitchManager::supportedErrorStats()
@@ -1081,6 +1119,54 @@ const HwSwitchPipelineStats SaiSwitchManager::getHwSwitchPipelineStats(
   return switchPipelineStats;
 }
 
+const HwSwitchTemperatureStats SaiSwitchManager::getHwSwitchTemperatureStats()
+    const {
+  // Get temperature stats
+  HwSwitchTemperatureStats switchTemperatureStats;
+  if (!supportedTemperatureStats().empty()) {
+    folly::F14FastMap<sai_attr_id_t, sai_attribute_value_t> attrValues;
+    for (auto attrId : supportedTemperatureStats()) {
+      try {
+        if (attrId == SAI_SWITCH_ATTR_MAX_NUMBER_OF_TEMP_SENSORS) {
+          auto NumTemperatureSensors =
+              SaiApiTable::getInstance()->switchApi().getAttribute(
+                  switch_->adapterKey(),
+                  SaiSwitchTraits::Attributes::NumTemperatureSensors{});
+          sai_attribute_value_t value;
+          value.u8 = NumTemperatureSensors;
+          attrValues[attrId] = value;
+        } else if (attrId == SAI_SWITCH_ATTR_TEMP_LIST) {
+          auto NumTemperatureSensors =
+              SaiApiTable::getInstance()->switchApi().getAttribute(
+                  switch_->adapterKey(),
+                  SaiSwitchTraits::Attributes::NumTemperatureSensors{});
+          std::vector<sai_int32_t> temperatureList;
+          XLOG(DBG5) << "# temperature sensor: " << NumTemperatureSensors;
+          temperatureList.resize(NumTemperatureSensors);
+          SaiSwitchTraits::Attributes::AsicTemperatureList
+              temperatureListAttribute{temperatureList};
+
+          auto temperatureU32List =
+              SaiApiTable::getInstance()->switchApi().getAttribute(
+                  switch_->adapterKey(), temperatureListAttribute);
+
+          sai_attribute_value_t value;
+          value.u32list.count = temperatureU32List.size();
+          value.u32list.list =
+              reinterpret_cast<uint32_t*>(temperatureU32List.data());
+
+          attrValues[attrId] = value;
+          fillHwSwitchTemperatureStats(attrValues, switchTemperatureStats);
+        }
+      } catch (const std::exception& ex) {
+        XLOG(ERR) << "Failed to get temperature attribute " << attrId << ": "
+                  << ex.what();
+      }
+    }
+  }
+  return switchTemperatureStats;
+}
+
 void SaiSwitchManager::updateStats(bool updateWatermarks) {
   auto switchDropStats = supportedDropStats();
   if (switchDropStats.size()) {
@@ -1172,6 +1258,7 @@ void SaiSwitchManager::updateStats(bool updateWatermarks) {
     switchWatermarkStats_ = getHwSwitchWatermarkStats();
     publishSwitchWatermarks(switchWatermarkStats_);
   }
+  switchTemperatureStats_ = getHwSwitchTemperatureStats();
   switchPipelineStats_ = getHwSwitchPipelineStats(updateWatermarks);
   publishSwitchPipelineStats(switchPipelineStats_);
 }
@@ -1275,7 +1362,7 @@ void SaiSwitchManager::setSramGlobalFreePercentXonTh(
 
 void SaiSwitchManager::setLinkFlowControlCreditTh(
     uint16_t linkFlowControlThreshold) {
-#if defined(BRCM_SAI_SDK_DNX_GTE_11_0)
+#if defined(BRCM_SAI_SDK_DNX_GTE_11_0) && !defined(BRCM_SAI_SDK_DNX_GTE_13_0)
   switch_->setOptionalAttribute(
       SaiSwitchTraits::Attributes::FabricCllfcTxCreditTh{
           linkFlowControlThreshold});
@@ -1375,4 +1462,82 @@ void SaiSwitchManager::setTcRateLimitList(
       SaiSwitchTraits::Attributes::TcRateLimitList{mapToValueList});
 #endif
 }
+
+bool SaiSwitchManager::isPtpTcEnabled() const {
+  bool ptpTcEnabled =
+      isPtpTcEnabled_.has_value() ? isPtpTcEnabled_.value() : false;
+#if SAI_API_VERSION >= SAI_VERSION(1, 16, 0)
+  ptpTcEnabled &=
+      (GET_OPT_ATTR(Switch, PtpMode, switch_->attributes()) ==
+       utility::getSaiPortPtpMode(true));
+#endif
+  ptpTcEnabled &= managerTable_->portManager().isPtpTcEnabled();
+  return ptpTcEnabled;
+}
+
+void SaiSwitchManager::setPfcWatchdogTimerGranularity(
+    int pfcWatchdogTimerGranularityMsec) {
+#if defined(BRCM_SAI_SDK_XGS) && defined(BRCM_SAI_SDK_GTE_11_0)
+  if (platform_->getAsic()->isSupported(
+          HwAsic::Feature::PFC_WATCHDOG_TIMER_GRANULARITY)) {
+    // We need to set the watchdog granularity to an appropriate value,
+    // otherwise the default granularity in SAI/SDK may be incompatible with
+    // the requested watchdog intervals. Auto-derivation is being requested in
+    // CS00012393810.
+    std::vector<sai_map_t> mapToValueList(
+        cfg::switch_config_constants::PFC_PRIORITY_VALUE_MAX() + 1);
+    for (int pri = 0;
+         pri <= cfg::switch_config_constants::PFC_PRIORITY_VALUE_MAX();
+         pri++) {
+      sai_map_t mapping{};
+      mapping.key = pri;
+      mapping.value = pfcWatchdogTimerGranularityMsec;
+      mapToValueList.at(pri) = mapping;
+    }
+    switch_->setOptionalAttribute(
+        SaiSwitchTraits::Attributes::PfcTcDldTimerGranularityInterval{
+            mapToValueList});
+  }
+#endif
+}
+
+void SaiSwitchManager::setCreditRequestProfileSchedulerMode(
+    cfg::QueueScheduling scheduling) {
+#if defined(BRCM_SAI_SDK_DNX_GTE_12_0)
+  sai_scheduling_type_t type;
+  if (scheduling == cfg::QueueScheduling::STRICT_PRIORITY) {
+    type = SAI_SCHEDULING_TYPE_STRICT;
+  } else if (scheduling == cfg::QueueScheduling::DEFICIT_ROUND_ROBIN) {
+    type = SAI_SCHEDULING_TYPE_DWRR;
+  }
+  // TODO(daiweix): properly disable the feature from SP or WRR back to INTERNAL
+  if (scheduling != cfg::QueueScheduling::INTERNAL) {
+    switch_->setOptionalAttribute(
+        SaiSwitchTraits::Attributes::CreditRequestProfileSchedulerMode{type});
+  }
+#endif
+}
+
+void SaiSwitchManager::setModuleIdToCreditRequestProfileParam(
+    const std::optional<std::map<int32_t, int32_t>>&
+        moduleIdToCreditRequestProfileParam) {
+#if defined(BRCM_SAI_SDK_DNX_GTE_12_0)
+  std::vector<sai_map_t> mapToValueList;
+  if (moduleIdToCreditRequestProfileParam) {
+    for (const auto& [moduleId, param] : *moduleIdToCreditRequestProfileParam) {
+      sai_map_t mapping{};
+      mapping.key = moduleId;
+      mapping.value = param;
+      mapToValueList.push_back(mapping);
+    }
+  }
+  // TODO(daiweix): properly disable the feature from SP or WRR back to INTERNAL
+  if (!mapToValueList.empty()) {
+    switch_->setOptionalAttribute(
+        SaiSwitchTraits::Attributes::ModuleIdToCreditRequestProfileParamList{
+            mapToValueList});
+  }
+#endif
+}
+
 } // namespace facebook::fboss

@@ -22,6 +22,7 @@ struct LinkEvent {
   2: bool up;
   3: optional phy.LinkFaultStatus iPhyLinkFaultStatus;
   4: switch_config.PortType portType;
+  5: optional i32 aggPortId;
 }
 
 struct LinkActiveEvent {
@@ -108,6 +109,10 @@ struct HwSwitchStats {
   16: hardware_stats.HwSwitchWatermarkStats switchWatermarkStats;
   17: bool arsExhausted;
   18: hardware_stats.HwSwitchPipelineStats switchPipelineStats;
+  19: map<i32, switch_config.PortState> sysPortShelState;
+  20: hardware_stats.HwSwitchTemperatureStats switchTemperatureStats;
+  @cpp.Type{template = "folly::F14FastMap"}
+  21: map<string, hardware_stats.HwRouterInterfaceStats> hwRouterInterfaceStats;
 }
 
 service MultiSwitchCtrl {

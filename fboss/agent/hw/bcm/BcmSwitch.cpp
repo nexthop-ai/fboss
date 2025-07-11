@@ -9,17 +9,21 @@
  */
 #include "fboss/agent/hw/bcm/BcmSwitch.h"
 
-#include <boost/cast.hpp>
-#include <boost/filesystem/operations.hpp>
+#include <algorithm>
 #include <fstream>
+#include <iterator>
 #include <map>
+#include <mutex>
 #include <optional>
 #include <unordered_set>
 #include <utility>
 
+#include <boost/cast.hpp>
+#include <boost/filesystem/operations.hpp>
 #include <folly/Conv.h>
 #include <folly/FileUtil.h>
 #include <folly/Memory.h>
+#include <folly/Synchronized.h>
 #include <folly/hash/Hash.h>
 #include <folly/logging/xlog.h>
 
@@ -27,6 +31,7 @@
 #include "fboss/agent/FbossError.h"
 #include "fboss/agent/FibHelpers.h"
 #include "fboss/agent/LacpTypes.h"
+#include "fboss/agent/LoadBalancerUtils.h"
 #include "fboss/agent/SwSwitch.h"
 #include "fboss/agent/SwitchStats.h"
 #include "fboss/agent/Utils.h"
@@ -51,6 +56,7 @@
 #include "fboss/agent/hw/bcm/BcmFieldProcessorUtils.h"
 #include "fboss/agent/hw/bcm/BcmHost.h"
 #include "fboss/agent/hw/bcm/BcmHostKey.h"
+#include "fboss/agent/hw/bcm/BcmHostUtils.h"
 #include "fboss/agent/hw/bcm/BcmIngressFieldProcessorFlexCounter.h"
 #include "fboss/agent/hw/bcm/BcmIntf.h"
 #include "fboss/agent/hw/bcm/BcmLabelMap.h"
@@ -91,8 +97,10 @@
 #include "fboss/agent/hw/bcm/PacketTraceUtils.h"
 #include "fboss/agent/hw/bcm/RxUtils.h"
 #include "fboss/agent/hw/bcm/gen-cpp2/packettrace_types.h"
+#include "fboss/agent/hw/gen-cpp2/hardware_stats_types.h"
 #include "fboss/agent/hw/mock/MockRxPacket.h"
 #include "fboss/agent/hw/switch_asics/HwAsic.h"
+#include "fboss/agent/if/gen-cpp2/highfreq_types.h"
 #include "fboss/agent/state/AclEntry.h"
 #include "fboss/agent/state/AggregatePort.h"
 #include "fboss/agent/state/ArpEntry.h"
@@ -105,29 +113,23 @@
 #include "fboss/agent/state/InterfaceMap.h"
 #include "fboss/agent/state/LoadBalancer.h"
 #include "fboss/agent/state/LoadBalancerMap.h"
-#include "fboss/agent/state/UdfGroup.h"
-#include "fboss/agent/state/UdfPacketMatcher.h"
-
 #include "fboss/agent/state/NodeMapDelta.h"
 #include "fboss/agent/state/Port.h"
 #include "fboss/agent/state/PortMap.h"
 #include "fboss/agent/state/Route.h"
-#include "fboss/agent/state/TeFlowEntry.h"
-#include "fboss/agent/state/TransceiverMap.h"
-
 #include "fboss/agent/state/SflowCollector.h"
 #include "fboss/agent/state/SflowCollectorMap.h"
 #include "fboss/agent/state/StateDelta.h"
 #include "fboss/agent/state/SwitchState-defs.h"
 #include "fboss/agent/state/SwitchState.h"
+#include "fboss/agent/state/TeFlowEntry.h"
+#include "fboss/agent/state/TransceiverMap.h"
+#include "fboss/agent/state/UdfGroup.h"
+#include "fboss/agent/state/UdfPacketMatcher.h"
 #include "fboss/agent/state/Vlan.h"
 #include "fboss/agent/state/VlanMap.h"
 #include "fboss/agent/state/VlanMapDelta.h"
 #include "fboss/agent/types.h"
-
-#include "fboss/agent/hw/bcm/BcmHostUtils.h"
-
-#include "fboss/agent/LoadBalancerUtils.h"
 
 extern "C" {
 #include <bcm/link.h>
@@ -1003,6 +1005,10 @@ HwInitResult BcmSwitch::initImpl(
 
   macTable_ = std::make_unique<BcmMacTable>(this);
 
+  // Initialize the high frequency stats thread
+  highFreqStatsThread_ = std::make_unique<folly::FunctionScheduler>();
+  highFreqStatsThread_->setThreadName(kHighFreqStatsThreadName_);
+
   ret.bootTime =
       duration_cast<duration<float>>(steady_clock::now() - begin).count();
   ret.switchState->publish();
@@ -1395,6 +1401,13 @@ void BcmSwitch::setEcmpDynamicRandomSeed(int ecmpRandomSeed) {
 
 void BcmSwitch::processFlowletSwitchingConfigChanges(const StateDelta& delta) {
   const auto flowletSwitchingDelta = delta.getFlowletSwitchingConfigDelta();
+  const auto& newFlowletSwitching = flowletSwitchingDelta.getNew();
+
+  egressManager_->processFlowletSwitchingConfigChanged(newFlowletSwitching);
+}
+
+void BcmSwitch::processEcmpForArsChanges(const StateDelta& delta) {
+  const auto flowletSwitchingDelta = delta.getFlowletSwitchingConfigDelta();
   const auto& oldFlowletSwitching = flowletSwitchingDelta.getOld();
   const auto& newFlowletSwitching = flowletSwitchingDelta.getNew();
   // process change in the flowlet switching config
@@ -1447,12 +1460,12 @@ void BcmSwitch::processFlowletSwitchingConfigChanges(const StateDelta& delta) {
     // Update All egress first for flowlet config add or update
     // This ordering is needed otherwise SDK fails for TH3
     egressManager_->updateAllEgressForFlowletSwitching();
-    egressManager_->processFlowletSwitchingConfigChanged(newFlowletSwitching);
+    writableMultiPathNextHopTable()->updateEcmpsForFlowletSwitching();
   } else if (oldFlowletSwitching && !newFlowletSwitching) {
     XLOG(DBG2) << "Flowlet switching config is removed";
     setEcmpDynamicRandomSeed(0);
     // Update All ecmps first for flowlet config removal
-    egressManager_->processFlowletSwitchingConfigChanged(newFlowletSwitching);
+    writableMultiPathNextHopTable()->updateEcmpsForFlowletSwitching();
     egressManager_->updateAllEgressForFlowletSwitching();
   }
 }
@@ -1489,7 +1502,7 @@ std::shared_ptr<SwitchState> BcmSwitch::stateChangedImpl(
   for (const auto& delta : deltas) {
     appliedState = stateChangedImplLocked(delta, lock);
     // if the current delta fails to apply, return the last successful state
-    if (*appliedState != *delta.newState()) {
+    if (appliedState != delta.newState()) {
       XLOG(DBG2) << "Failed to apply " << count << " delta in  "
                  << deltas.size() << " deltas";
       appliedState->publish();
@@ -1551,6 +1564,9 @@ std::shared_ptr<SwitchState> BcmSwitch::stateChangedImplLocked(
   // before neighbor/route delta programming of egress objects
   // after warm boot for TH3
   processPortFlowletConfigAdd(delta);
+
+  // Process Flowlet config changes
+  processFlowletSwitchingConfigChanges(delta);
 
   // remove all routes to be deleted
   processRemovedRoutes(delta);
@@ -1659,8 +1675,8 @@ std::shared_ptr<SwitchState> BcmSwitch::stateChangedImplLocked(
   processAddedPorts(delta);
   processChangedPorts(delta);
 
-  // Process Flowlet config changes
-  processFlowletSwitchingConfigChanges(delta);
+  // Process all ECMP groups with new ARS config
+  processEcmpForArsChanges(delta);
 
   // delete any removed mirrors after processing port and acl changes
   forEachRemoved(
@@ -3183,6 +3199,19 @@ TeFlowStats BcmSwitch::getTeFlowStats() const {
   return teFlowTable_->getFlowStats();
 }
 
+HwHighFrequencyStats BcmSwitch::getHighFrequencyStats() {
+  HwHighFrequencyStats stats{};
+  stats.timestampUs() = std::chrono::duration_cast<std::chrono::microseconds>(
+                            std::chrono::steady_clock::now().time_since_epoch())
+                            .count();
+  portTable_->populateHighFrequencyPortStats(
+      highFreqStatsThreadConfig_.statsConfig()->portStatsConfig().value(),
+      *stats.portStats());
+  bstStatsMgr_->populateHighFrequencyBstStats(
+      highFreqStatsThreadConfig_.statsConfig().value(), stats);
+  return stats;
+}
+
 std::vector<EcmpDetails> BcmSwitch::getAllEcmpDetails() const {
   return multiPathNextHopStatsManager_->getAllEcmpDetails();
 }
@@ -3257,6 +3286,10 @@ HwSwitchWatermarkStats BcmSwitch::getSwitchWatermarkStats() const {
 
 HwSwitchPipelineStats BcmSwitch::getSwitchPipelineStats() const {
   return HwSwitchPipelineStats{};
+}
+
+HwSwitchTemperatureStats BcmSwitch::getSwitchTemperatureStats() const {
+  return HwSwitchTemperatureStats{};
 }
 
 bcm_if_t BcmSwitch::getDropEgressId() const {
@@ -4307,6 +4340,116 @@ std::shared_ptr<SwitchState> BcmSwitch::reconstructSwitchState() const {
 
 HwResourceStats BcmSwitch::getResourceStats() const {
   return bcmStatUpdater_->getHwTableStats();
+}
+
+HwHighFrequencyStats BcmSwitch::zeroHighFrequencyStatsTimestamp(
+    const HwHighFrequencyStats& stats) {
+  HwHighFrequencyStats zeroed = stats;
+  zeroed.timestampUs() = 0;
+  return zeroed;
+}
+
+bool BcmSwitch::hasHighFrequencyStatsChanged(
+    const HwHighFrequencyStats& statsA,
+    const HwHighFrequencyStats& statsB) {
+  return zeroHighFrequencyStatsTimestamp(statsA) ==
+      zeroHighFrequencyStatsTimestamp(statsB);
+}
+
+void BcmSwitch::collectHighFrequencyStats() {
+  auto endTime = std::chrono::steady_clock::now() +
+      std::chrono::microseconds(highFreqStatsThreadConfig_.schedulerConfig()
+                                    ->statsCollectionDurationInMicroseconds()
+                                    .value());
+  while (std::chrono::steady_clock::now() < endTime) {
+    for (int i = 0; i < 2; ++i) {
+      HwHighFrequencyStats stats = getHighFrequencyStats();
+      {
+        auto wlock = highFreqStatsData_.wlock();
+        if (wlock->empty() ||
+            !hasHighFrequencyStatsChanged(wlock->back(), stats)) {
+          if (wlock->size() >= kHighFreqStatsDataMaxSize_) {
+            wlock->pop_front();
+          }
+          wlock->emplace_back(std::move(stats));
+        }
+      }
+    }
+    if (std::chrono::steady_clock::now() >= endTime) {
+      break;
+    }
+    std::this_thread::sleep_for(
+        std::chrono::microseconds(highFreqStatsThreadConfig_.schedulerConfig()
+                                      ->statsWaitDurationInMicroseconds()
+                                      .value()));
+  }
+}
+
+void BcmSwitch::updateHighFrequencyStatsThreadConfig(
+    const HighFrequencyStatsCollectionConfig& config) {
+  highFreqStatsThreadConfig_ = config;
+  auto schedulerConfig = highFreqStatsThreadConfig_.schedulerConfig();
+  if (schedulerConfig->statsWaitDurationInMicroseconds().value() <
+      kHfMinWaitDurationUs_) {
+    schedulerConfig->statsWaitDurationInMicroseconds() = kHfMinWaitDurationUs_;
+  }
+  if (schedulerConfig->statsCollectionDurationInMicroseconds().value() >
+      kHfMaxCollectionDurationUs_) {
+    schedulerConfig->statsCollectionDurationInMicroseconds() =
+        kHfMaxCollectionDurationUs_;
+  }
+}
+
+void BcmSwitch::startHighFrequencyStatsThread(
+    const HighFrequencyStatsCollectionConfig& config) {
+  std::lock_guard<std::mutex> lock(lock_);
+  updateHighFrequencyStatsThreadConfig(config);
+  highFreqStatsThread_->cancelFunctionAndWait(kHighFreqStatsFunctionName_);
+  // Use addFunctionOnce instead of using periodic function scheduling to allow
+  // for the thread to terminate after collection duration.
+  highFreqStatsThread_->addFunctionOnce(
+      [&]() { collectHighFrequencyStats(); }, kHighFreqStatsFunctionName_);
+  highFreqStatsThread_->start();
+}
+
+void BcmSwitch::stopHighFrequencyStatsThread() {
+  std::lock_guard<std::mutex> lock(lock_);
+  highFreqStatsThread_->shutdown();
+}
+
+void BcmSwitch::getHighFrequencyTimeseriesStats(
+    std::vector<HwHighFrequencyStats>& stats,
+    const std::unique_ptr<GetHighFrequencyStatsOptions>& options) const {
+  {
+    auto rlock = highFreqStatsData_.rlock();
+    auto begin = rlock->begin();
+    auto end = rlock->end();
+    if (options->beginTimestampUs().has_value()) {
+      begin = std::lower_bound(
+          begin,
+          end,
+          options->beginTimestampUs().value(),
+          [](const HwHighFrequencyStats& stats, int64_t timestamp) {
+            return stats.timestampUs().value() < timestamp;
+          });
+    }
+    if (options->endTimestampUs().has_value()) {
+      end = std::upper_bound(
+          begin,
+          end,
+          options->endTimestampUs().value(),
+          [](int64_t timestamp, const HwHighFrequencyStats& stats) {
+            return timestamp <= stats.timestampUs().value();
+          });
+    }
+    int64_t length{std::min(
+        std::distance(begin, end), std::max(options->limit().value(), 0l))};
+    if (options->beginTimestampUs().has_value()) {
+      stats = std::vector<HwHighFrequencyStats>(begin, begin + length);
+    } else {
+      stats = std::vector<HwHighFrequencyStats>(end - length, end);
+    }
+  }
 }
 
 } // namespace facebook::fboss

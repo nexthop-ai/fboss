@@ -20,6 +20,7 @@ add_library(log_thrift_call
 target_link_libraries(log_thrift_call
   Folly::folly
   FBThrift::thriftcpp2
+  stats
 )
 
 add_library(alert_logger
@@ -130,6 +131,15 @@ add_library(thread_heartbeat
 
 target_link_libraries(thread_heartbeat
   Folly::folly
+)
+
+add_library(thrift_method_rate_limit
+  fboss/lib/ThriftMethodRateLimit.cpp
+)
+
+target_link_libraries(thrift_method_rate_limit
+  Folly::folly
+  FBThrift::thriftcpp2
 )
 
 add_library(pci_device

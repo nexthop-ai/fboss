@@ -407,6 +407,16 @@ struct SaiSwitchTraits {
         sai_uint32_t,
         SaiIntDefault<sai_uint32_t>>;
 #endif
+    using AsicTemperatureList = SaiAttribute<
+        EnumType,
+        SAI_SWITCH_ATTR_TEMP_LIST,
+        std::vector<sai_int32_t>,
+        SaiU32ListDefault>;
+    using NumTemperatureSensors = SaiAttribute<
+        EnumType,
+        SAI_SWITCH_ATTR_MAX_NUMBER_OF_TEMP_SENSORS,
+        sai_uint8_t,
+        SaiS8ListDefault>;
     /* extension attributes */
     struct AttributeLedIdWrapper {
       std::optional<sai_attr_id_t> operator()();
@@ -572,6 +582,13 @@ struct SaiSwitchTraits {
         SAI_SWITCH_ATTR_ARS_PROFILE,
         SaiObjectIdT,
         SaiObjectIdDefault>;
+#endif
+#if SAI_API_VERSION >= SAI_VERSION(1, 16, 0)
+    using PtpMode = SaiAttribute<
+        EnumType,
+        SAI_SWITCH_ATTR_PORT_PTP_MODE,
+        sai_int32_t,
+        SaiIntDefault<sai_int32_t>>;
 #endif
     struct AttributeReachabilityGroupList {
       std::optional<sai_attr_id_t> operator()();
@@ -758,6 +775,47 @@ struct SaiSwitchTraits {
         bool,
         AttributeDisableSllAndHllTimeout,
         SaiBoolDefaultFalse>;
+    struct AttributeAsicRevision {
+      std::optional<sai_attr_id_t> operator()();
+    };
+    using AsicRevision =
+        SaiExtensionAttribute<sai_uint32_t, AttributeAsicRevision>;
+    struct AttributeCreditRequestProfileSchedulerMode {
+      std::optional<sai_attr_id_t> operator()();
+    };
+    using CreditRequestProfileSchedulerMode = SaiExtensionAttribute<
+        sai_uint32_t,
+        AttributeCreditRequestProfileSchedulerMode,
+        SaiIntDefault<sai_uint32_t>>;
+    struct AttributeModuleIdToCreditRequestProfileParamList {
+      std::optional<sai_attr_id_t> operator()();
+    };
+    using ModuleIdToCreditRequestProfileParamList = SaiExtensionAttribute<
+        std::vector<sai_map_t>,
+        AttributeModuleIdToCreditRequestProfileParamList,
+        SaiListDefault<sai_map_list_t>>;
+    //
+    struct AttributeTriggerSimulatedEccCorrectableError {
+      std::optional<sai_attr_id_t> operator()();
+    };
+    using TriggerSimulatedEccCorrectableError = SaiExtensionAttribute<
+        bool,
+        AttributeTriggerSimulatedEccCorrectableError>;
+    //
+
+    struct AttributeTriggerSimulatedEccUnCorrectableError {
+      std::optional<sai_attr_id_t> operator()();
+    };
+    using TriggerSimulatedEccUnCorrectableError = SaiExtensionAttribute<
+        bool,
+        AttributeTriggerSimulatedEccUnCorrectableError>;
+    //
+    struct AttributeDefaultCpuEgressBufferPool {
+      std::optional<sai_attr_id_t> operator()();
+    };
+    using DefaultCpuEgressBufferPool = SaiExtensionAttribute<
+        sai_object_id_t,
+        AttributeDefaultCpuEgressBufferPool>;
   };
   using AdapterKey = SwitchSaiId;
   using AdapterHostKey = std::monostate;
@@ -827,6 +885,9 @@ struct SaiSwitchTraits {
 #if SAI_API_VERSION >= SAI_VERSION(1, 14, 0)
       std::optional<Attributes::ArsProfile>,
 #endif
+#if SAI_API_VERSION >= SAI_VERSION(1, 16, 0)
+      std::optional<Attributes::PtpMode>,
+#endif
       std::optional<Attributes::ReachabilityGroupList>,
       std::optional<Attributes::DelayDropCongThreshold>,
       std::optional<Attributes::FabricLinkLayerFlowControlThreshold>,
@@ -850,7 +911,9 @@ struct SaiSwitchTraits {
       std::optional<Attributes::FirmwareObjectList>,
       std::optional<Attributes::TcRateLimitList>,
       std::optional<Attributes::PfcTcDldTimerGranularityInterval>,
-      std::optional<Attributes::DisableSllAndHllTimeout>>;
+      std::optional<Attributes::DisableSllAndHllTimeout>,
+      std::optional<Attributes::CreditRequestProfileSchedulerMode>,
+      std::optional<Attributes::ModuleIdToCreditRequestProfileParamList>>;
 
 #if SAI_API_VERSION >= SAI_VERSION(1, 12, 0)
   static constexpr std::array<sai_stat_id_t, 3> CounterIdsToRead = {
@@ -992,6 +1055,9 @@ SAI_ATTRIBUTE_NAME(Switch, VoqLatencyMaxLevel2Ns)
 #if SAI_API_VERSION >= SAI_VERSION(1, 14, 0)
 SAI_ATTRIBUTE_NAME(Switch, ArsProfile)
 #endif
+#if SAI_API_VERSION >= SAI_VERSION(1, 16, 0)
+SAI_ATTRIBUTE_NAME(Switch, PtpMode)
+#endif
 SAI_ATTRIBUTE_NAME(Switch, ReachabilityGroupList)
 SAI_ATTRIBUTE_NAME(Switch, FabricLinkLayerFlowControlThreshold)
 SAI_ATTRIBUTE_NAME(Switch, SramFreePercentXoffTh)
@@ -1019,6 +1085,15 @@ SAI_ATTRIBUTE_NAME(Switch, PfcTcDldTimerGranularityInterval)
 SAI_ATTRIBUTE_NAME(Switch, NumberOfPipes)
 SAI_ATTRIBUTE_NAME(Switch, PipelineObjectList)
 SAI_ATTRIBUTE_NAME(Switch, DisableSllAndHllTimeout)
+SAI_ATTRIBUTE_NAME(Switch, AsicRevision)
+SAI_ATTRIBUTE_NAME(Switch, CreditRequestProfileSchedulerMode)
+SAI_ATTRIBUTE_NAME(Switch, ModuleIdToCreditRequestProfileParamList)
+SAI_ATTRIBUTE_NAME(Switch, AsicTemperatureList)
+SAI_ATTRIBUTE_NAME(Switch, NumTemperatureSensors)
+
+SAI_ATTRIBUTE_NAME(Switch, TriggerSimulatedEccCorrectableError)
+SAI_ATTRIBUTE_NAME(Switch, TriggerSimulatedEccUnCorrectableError)
+SAI_ATTRIBUTE_NAME(Switch, DefaultCpuEgressBufferPool)
 
 template <>
 struct SaiObjectHasStats<SaiSwitchTraits> : public std::true_type {};
@@ -1136,6 +1211,9 @@ class SwitchApi : public SaiApi<SwitchApi> {
       sai_vendor_switch_event_notification_fn event_notify_cb) const;
 #endif
 
+  void registerSwitchHardResetNotifyCallback(
+      const SwitchSaiId& id,
+      sai_pointer_t event_notify_cb) const;
   void unregisterRxCallback(SwitchSaiId switch_id) const {
     registerRxCallback(switch_id, nullptr);
   }
@@ -1165,6 +1243,9 @@ class SwitchApi : public SaiApi<SwitchApi> {
     registerVendorSwitchEventNotifyCallback(id, nullptr);
   }
 #endif
+  void unregisterSwitchHardResetNotifyCallback(const SwitchSaiId& id) const {
+    registerSwitchHardResetNotifyCallback(id, nullptr);
+  }
 
 #if SAI_API_VERSION >= SAI_VERSION(1, 13, 0)
   void registerSwitchAsicSdkHealthEventCallback(
