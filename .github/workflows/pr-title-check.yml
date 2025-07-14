@@ -10,3 +10,5 @@ on:
 jobs:
   pr-title-check:
     uses: nexthop-ai/nh/.github/workflows/pr-title-check.reusable.yml@main
+    with:
+      require_iss: false
