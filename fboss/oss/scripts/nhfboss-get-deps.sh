@@ -3,7 +3,7 @@
 # Run inside the build container
 pushd /var/FBOSS/fboss >/dev/null
 
-common_options='--allow-system-packages --scratch-path /var/FBOSS/tmp_bld_dir --src-dir . fboss'
+common_options='--allow-system-packages --scratch-path /var/FBOSS/tmp_bld_dir --src-dir . --extra-cmake-defines {"CMAKE_C_COMPILER_LAUNCHER":"sccache","CMAKE_CXX_COMPILER_LAUNCHER":"sccache"} fboss'
 ./build/fbcode_builder/getdeps.py install-system-deps --recursive $common_options
 ./build/fbcode_builder/getdeps.py build --only-deps $common_options
 

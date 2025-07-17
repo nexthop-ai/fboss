@@ -11,11 +11,14 @@ proc = subprocess.run(["docker", "ps", "-a"], capture_output=True)
 if proc.returncode == 0 and "FBOSS_BUILD_CONTAINER" not in proc.stdout.decode():
     branch_name = subprocess.run("git status | awk '/On branch/ {print $3}'", shell=True,
                                  capture_output=True).stdout.decode().strip()
+    extra_cmake_defines='{"CMAKE_C_COMPILER_LAUNCHER":"sccache","CMAKE_CXX_COMPILER_LAUNCHER":"sccache"}',
     docker_build.run_fboss_build(scratch_path=os.path.expandvars("$HOME/work/fboss_build-" +
                                                                  branch_name), target=None,
-                                 docker_output=True, use_system_deps=True, env_vars=[],
+                                 docker_output=True, use_system_deps=True,
+                                 env_vars=["SCCACHE_DIR:/var/extras/sccache", "SCCACHE_CACHE_SIZE:30G"],
                                  use_local=True, num_jobs=None, schedule_type=None,
-                                 cache_config=None, extras_dir=os.path.abspath("../"), build=False)
+                                 cache_config=None, extras_dir=os.path.expandvars("$HOME/work/caches"),
+                                 extra_cmake_defines=extra_cmake_defines, build=False)
 else:
     proc = subprocess.run(["docker", "ps"], capture_output=True)
     if proc.returncode == 0 and "FBOSS_BUILD_CONTAINER" not in proc.stdout.decode():
