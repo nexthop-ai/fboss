@@ -344,7 +344,8 @@ std::string errorType(sai_switch_error_type_t type) {
   return folly::sformat("Unknown error type: {} ", static_cast<int>(type));
 }
 
-#if defined BRCM_SAI_SDK_GTE_11_0
+// NH TODO #if defined BRCM_SAI_SDK_GTE_11_0
+#if defined(BRCM_SAI_SDK_DNX_GTE_11_7)
 bool isIreErrorType(sai_switch_error_type_t type) {
   switch (type) {
     case SAI_SWITCH_ERROR_TYPE_IRE_ECC:
