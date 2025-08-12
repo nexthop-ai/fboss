@@ -1,0 +1,121 @@
+{
+  "___COMMENT___": "NH-4010 Platform Manager Configuration",
+  "platformName": "NH-4010",
+  "rootPmUnitName": "SCM",
+  "rootSlotType": "SCM_SLOT",
+  "slotTypeConfigs": {
+    "SCM_SLOT": {
+      "numOutgoingI2cBuses": 7,
+      "idpromConfig": {
+        "busName": "NH FPGA fbiob_10ee.7011.10ee.0007 I2C Master 6",
+        "address": "0x50",
+        "kernelDeviceName": "24c64"
+      }
+    }
+  },
+  "pmUnitConfigs": {
+    "SCM": {
+      "pluggedInSlotType": "SCM_SLOT",
+      "pciDeviceConfigs": [
+        {
+          "pmUnitScopedName": "SCM_IOB",
+          "vendorId": "0x10ee",
+          "deviceId": "0x7011",
+          "i2cAdapterConfigs": [
+            {
+              "fpgaIpBlockConfig": {
+                "pmUnitScopedName": "SCM_IOB_I2C_0",
+                "deviceName": "i2c_master",
+                "csrOffset": "0x40000"
+              }
+            },
+            {
+              "fpgaIpBlockConfig": {
+                "pmUnitScopedName": "SCM_IOB_I2C_1",
+                "deviceName": "i2c_master",
+                "csrOffset": "0x40200"
+              }
+            },
+            {
+              "fpgaIpBlockConfig": {
+                "pmUnitScopedName": "SCM_IOB_I2C_2",
+                "deviceName": "i2c_master",
+                "csrOffset": "0x40400"
+              }
+            },
+            {
+              "fpgaIpBlockConfig": {
+                "pmUnitScopedName": "SCM_IOB_I2C_3",
+                "deviceName": "i2c_master",
+                "csrOffset": "0x40600"
+              }
+            },
+            {
+              "fpgaIpBlockConfig": {
+                "pmUnitScopedName": "SCM_IOB_I2C_4",
+                "deviceName": "i2c_master",
+                "csrOffset": "0x40800"
+              }
+            },
+            {
+              "fpgaIpBlockConfig": {
+                "pmUnitScopedName": "SCM_IOB_I2C_5",
+                "deviceName": "i2c_master",
+                "csrOffset": "0x40a00"
+              }
+            }
+          ]
+        }
+      ],
+      "i2cDeviceConfigs": [
+        {
+          "busName": "SCM_IOB_I2C_1",
+          "address": "0x18",
+          "kernelDeviceName": "ad525x_dpot",
+          "pmUnitScopedName": "NVGPIO_0"
+        },
+        {
+          "busName": "SCM_IOB_I2C_2",
+          "address": "0x18",
+          "kernelDeviceName": "ad525x_dpot",
+          "pmUnitScopedName": "NVGPIO_1"
+        },
+        {
+          "busName": "SCM_IOB_I2C_3",
+          "address": "0x41",
+          "kernelDeviceName": "adm1266",
+          "pmUnitScopedName": "DPM"
+        },
+        {
+          "busName": "SCM_IOB_I2C_4",
+          "address": "0x61",
+          "kernelDeviceName": "raa229621",
+          "pmUnitScopedName": "SVI_VR"
+        }
+      ]
+    }
+  },
+  "i2cAdaptersFromCpu": [
+    "Synopsys DesignWare I2C adapter",
+    "SMBus PIIX4 adapter port 0 at 0b00",
+    "SMBus PIIX4 adapter port 2 at 0b00",
+    "SMBus PIIX4 adapter port 1 at 0b20",
+    "NH FPGA fbiob_10ee.7011.10ee.0007 I2C Master 6"
+  ],
+  "symbolicLinkToDevicePath": {
+    "/run/devmap/eeproms/SCM_EEPROM": "/[IDPROM]",
+    "/run/devmap/sensors/NVGPIO_0": "/[NVGPIO_0]",
+    "/run/devmap/sensors/NVGPIO_1": "/[NVGPIO_1]",
+    "/run/devmap/sensors/DPM": "/[DPM]",
+    "/run/devmap/sensors/SVI_VR": "/[SVI_VR]",
+    "/run/devmap/fpgas/SCM_IOB": "/[SCM_IOB]",
+    "/run/devmap/i2c-busses/SCM_IOB_I2C_0": "/[SCM_IOB_I2C_0]",
+    "/run/devmap/i2c-busses/SCM_IOB_I2C_1": "/[SCM_IOB_I2C_1]",
+    "/run/devmap/i2c-busses/SCM_IOB_I2C_2": "/[SCM_IOB_I2C_2]",
+    "/run/devmap/i2c-busses/SCM_IOB_I2C_3": "/[SCM_IOB_I2C_3]",
+    "/run/devmap/i2c-busses/SCM_IOB_I2C_4": "/[SCM_IOB_I2C_4]",
+    "/run/devmap/i2c-busses/SCM_IOB_I2C_5": "/[SCM_IOB_I2C_5]"
+  },
+  "bspKmodsRpmName": "nh_bsp_kmods",
+  "bspKmodsRpmVersion": "1.0.0-1"
+}
