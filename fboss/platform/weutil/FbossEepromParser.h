@@ -29,6 +29,14 @@ class FbossEepromParser {
       const unsigned char* buffer,
       const int readCount);
 
+  // ONIE TlvInfo format parsing method
+  FbossEepromInterface parseEepromBlobTLVOnie(
+      const unsigned char* buffer,
+      const int readCount);
+
+  // Helper method to check if EEPROM data is in ONIE TlvInfo format
+  bool isOnieTlvInfoFormat(const unsigned char* buffer, int readCount);
+
   std::string parseLeUint(int len, unsigned char* ptr);
   std::string parseBeUint(int len, unsigned char* ptr);
   std::string parseLeHex(int len, unsigned char* ptr);
@@ -37,6 +45,7 @@ class FbossEepromParser {
   std::string parseMac(int len, unsigned char* ptr);
   std::string parseDate(int len, unsigned char* ptr);
   uint16_t calculateCrc16(const uint8_t* buffer, size_t len);
+  uint32_t calculateCrc32(const uint8_t* buffer, size_t len);
 
   std::string eepromPath_;
   uint16_t offset_;

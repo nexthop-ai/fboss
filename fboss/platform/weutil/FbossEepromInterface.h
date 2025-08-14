@@ -55,4 +55,7 @@ class FbossEepromInterface {
   int version_{0};
 };
 
+// Use version 1000 for ONIE format (first 1000 versions reserved for FBOSS)
+constexpr int kOnieEepromVersion = 1000;
+
 } // namespace facebook::fboss::platform
