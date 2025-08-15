@@ -7,10 +7,11 @@
     "SCM_SLOT": {
       "numOutgoingI2cBuses": 7,
       "idpromConfig": {
-        "busName": "NH FPGA fbiob_10ee.7011.10ee.0007 I2C Master 6",
+        "busName": "FPGA 0000:03:00.0 I2C Adapter #6",
         "address": "0x50",
         "kernelDeviceName": "24c64"
-      }
+      },
+      "pmUnitName": "SCM"
     }
   },
   "pmUnitConfigs": {
@@ -21,6 +22,8 @@
           "pmUnitScopedName": "SCM_IOB",
           "vendorId": "0x10ee",
           "deviceId": "0x7011",
+	      "subSystemVendorId": "0x10ee",
+	      "subSystemDeviceId": "0x0007",
           "i2cAdapterConfigs": [
             {
               "fpgaIpBlockConfig": {
@@ -100,7 +103,7 @@
     "SMBus PIIX4 adapter port 0 at 0b00",
     "SMBus PIIX4 adapter port 2 at 0b00",
     "SMBus PIIX4 adapter port 1 at 0b20",
-    "NH FPGA fbiob_10ee.7011.10ee.0007 I2C Master 6"
+    "FPGA 0000:03:00.0 I2C Adapter #6"
   ],
   "symbolicLinkToDevicePath": {
     "/run/devmap/eeproms/SCM_EEPROM": "/[IDPROM]",
@@ -116,6 +119,7 @@
     "/run/devmap/i2c-busses/SCM_IOB_I2C_4": "/[SCM_IOB_I2C_4]",
     "/run/devmap/i2c-busses/SCM_IOB_I2C_5": "/[SCM_IOB_I2C_5]"
   },
+  "chassisEepromDevicePath": "/[IDPROM]",
   "bspKmodsRpmName": "nh_bsp_kmods",
   "bspKmodsRpmVersion": "1.0.0-1"
 }
