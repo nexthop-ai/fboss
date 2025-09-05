@@ -9,9 +9,7 @@
  */
 #include "fboss/agent/HwSwitchThriftClientTable.h"
 
-#include <folly/IPAddress.h>
 #include <folly/logging/xlog.h>
-#include <netinet/in.h>
 #include <thrift/lib/cpp2/async/PooledRequestChannel.h>
 #include <thrift/lib/cpp2/async/ReconnectingRequestChannel.h>
 #include <thrift/lib/cpp2/async/RetryingRequestChannel.h>
@@ -171,6 +169,18 @@ std::vector<FirmwareInfo> HwSwitchThriftClientTable::getAllFirmwareInfo(
     return std::vector<FirmwareInfo>();
   }
   return firmwareInfoList;
+}
+
+std::string HwSwitchThriftClientTable::getHwDebugDump(SwitchID switchId) {
+  auto client = getClient(switchId);
+  std::string out{};
+  try {
+    client->sync_getHwDebugDump(out);
+  } catch (const std::exception& ex) {
+    XLOG(ERR) << "Failed to get hardware debug dump : " << switchId
+              << " error: " << ex.what();
+  }
+  return out;
 }
 
 } // namespace facebook::fboss

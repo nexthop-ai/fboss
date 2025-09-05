@@ -114,7 +114,8 @@ SaiSystemPortManager::attributesFromSwSystemPort(
       true /*enabled*/,
       qosTcToQueueMap,
       std::nullopt /* shelPktDstEnable */,
-      tcRateLimitExclude};
+      tcRateLimitExclude,
+      std::nullopt /* pushQueueEnable */};
 }
 
 SystemPortSaiId SaiSystemPortManager::addSystemPort(
@@ -190,7 +191,8 @@ void SaiSystemPortManager::configureQueues(
         std::make_pair(newPortQueue->getID(), newPortQueue->getStreamType());
     auto queueHandle = getQueueHandle(swId, saiQueueConfig);
     DCHECK(queueHandle);
-    managerTable_->queueManager().changeQueue(queueHandle, *newPortQueue);
+    managerTable_->queueManager().changeQueue(
+        queueHandle, *newPortQueue, nullptr, systemPort->getPortType());
 
     auto queueName = newPortQueue->getName()
         ? *newPortQueue->getName()

@@ -67,8 +67,6 @@ DECLARE_bool(enable_balanced_input_mode);
 DECLARE_int32(hw_agent_connection_timeout_ms);
 DECLARE_bool(qgroup_guarantee_enable);
 DECLARE_bool(skip_buffer_reservation);
-// TODO(zecheng): Remove this once firmware support is ready
-DECLARE_bool(conditional_entropy_cpu_seed_test_only);
 DECLARE_bool(fix_lossless_mode_per_pg);
 DECLARE_int32(fboss_event_base_queue_limit);
 DECLARE_bool(dual_stage_rdsw_3q_2q);
@@ -82,6 +80,7 @@ DECLARE_bool(enable_hw_update_protection);
 DECLARE_int32(max_l2_entries);
 DECLARE_int32(max_ndp_entries);
 DECLARE_int32(max_arp_entries);
+DECLARE_bool(enforce_resource_hw_limits);
 
 DECLARE_bool(fw_drained_unrecoverable_error);
 DECLARE_int32(neighbhor_resource_percentage);
@@ -110,3 +109,8 @@ DECLARE_bool(update_route_with_dlb_type);
 DECLARE_int32(agent_exit_delay_s);
 
 DECLARE_bool(dsf_single_stage_r192_f40_e32);
+
+DECLARE_bool(enable_high_frequency_stats_polling);
+DECLARE_bool(dsf_headroom_pool_size_multiplication_factor_fix);
+DECLARE_bool(ignore_asic_hard_reset_notification);
+DECLARE_bool(cleanup_probed_kernel_data);

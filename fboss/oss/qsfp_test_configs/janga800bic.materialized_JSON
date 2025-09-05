@@ -160,7 +160,7 @@
           "versions": [
             {
               "fwType": 1,
-              "version": "3.9"
+              "version": "3.12"
             }
           ]
       },
@@ -168,7 +168,23 @@
           "versions": [
             {
               "fwType": 1,
-              "version": "3.9"
+              "version": "3.12"
+            }
+          ]
+      },
+      "EOLO-168HG-02-9B": {
+          "versions": [
+            {
+              "fwType": 1,
+              "version": "3.12"
+            }
+          ]
+      },
+      "EOLO-168HG-02-9T": {
+          "versions": [
+            {
+              "fwType": 1,
+              "version": "3.12"
             }
           ]
       },
@@ -264,11 +280,27 @@
           "versions": [
             {
               "fwType": 1,
-              "version": "2.6"
+              "version": "2.9"
             }
           ]
       },
       "FTCE4717E1PCB-FB": {
+          "versions": [
+            {
+              "fwType": 1,
+              "version": "1.16"
+            }
+          ]
+      },
+      "FTCE4717E1PCBFB1": {
+          "versions": [
+            {
+              "fwType": 1,
+              "version": "1.16"
+            }
+          ]
+      },
+      "FTCE4717E1PCBFB3": {
           "versions": [
             {
               "fwType": 1,
@@ -316,7 +348,7 @@
           "versions": [
             {
               "fwType": 1,
-              "version": "234.146"
+              "version": "234.147"
             }
           ]
       },
@@ -460,7 +492,15 @@
           "versions": [
             {
               "fwType": 1,
-              "version": "103.133"
+              "version": "103.137"
+            }
+          ]
+      },
+      "T-OL8CNT-NFB": {
+          "versions": [
+            {
+              "fwType": 1,
+              "version": "103.137"
             }
           ]
       },
@@ -468,7 +508,15 @@
           "versions": [
             {
               "fwType": 1,
-              "version": "103.133"
+              "version": "103.137"
+            }
+          ]
+      },
+      "T-OL8CNT-NFM": {
+          "versions": [
+            {
+              "fwType": 1,
+              "version": "103.137"
             }
           ]
       }

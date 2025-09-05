@@ -81,6 +81,7 @@ DEFINE_bool(
     allow_eventor_send_packet,
     false,
     "A test-only flag to allow sending packets directly out of the eventor");
+DEFINE_int32(sflow_egress_port_id, 0, "Force sflow to egress from a port");
 
 namespace facebook::fboss {
 
@@ -948,7 +949,6 @@ cfg::SwitchDrainState computeActualSwitchDrainState(
       break;
     case cfg::SwitchDrainState::DRAINED_DUE_TO_ASIC_ERROR:
       throw FbossError("Valid desired DRAINED states are {DRAINED, UNDRAINED}");
-      break;
   }
 
   return newSwitchDrainState;
@@ -1018,13 +1018,13 @@ uint32_t getRemotePortOffset(const PlatformType platformType) {
       return 0;
     case PlatformType::PLATFORM_MERU800BIA:
     case PlatformType::PLATFORM_MERU800BIAB:
+    case PlatformType::PLATFORM_MERU800BIAC:
     case PlatformType::PLATFORM_JANGA800BIC:
       return 1024;
 
     default:
       return 0;
   }
-  return 0;
 }
 
 std::string runShellCmd(const std::string& cmd) {
@@ -1223,6 +1223,42 @@ std::optional<VlanID> getDefaultTxVlanId(
     throw FbossError("default tx vlan not found");
   }
   return vlanId;
+}
+
+InterfaceID getInterfaceIDForPort(
+    PortID portID,
+    const std::shared_ptr<SwitchState>& state) {
+  auto port = state->getPorts()->getNodeIf(portID);
+  if (!port) {
+    throw FbossError("Port ", portID, " not found");
+  }
+
+  for (const auto& [_, intfMap] : std::as_const(*state->getInterfaces())) {
+    for (const auto& intfIter : std::as_const(*intfMap)) {
+      const auto& intf = intfIter.second;
+      switch (intf->getType()) {
+        case cfg::InterfaceType::SYSTEM_PORT: {
+          auto sysPortID = intf->getSystemPortID();
+          CHECK(sysPortID.has_value());
+          if (portID == getPortID(sysPortID.value(), state)) {
+            return intf->getID();
+          }
+        } break;
+        case cfg::InterfaceType::VLAN:
+          if (intf->getVlanID() == port->getIngressVlan()) {
+            return intf->getID();
+          }
+          break;
+        case cfg::InterfaceType::PORT:
+          if (intf->getPortID() == portID) {
+            return intf->getID();
+          }
+          break;
+      }
+    }
+  }
+
+  throw FbossError("Interface not found for port ", portID);
 }
 
 } // namespace facebook::fboss

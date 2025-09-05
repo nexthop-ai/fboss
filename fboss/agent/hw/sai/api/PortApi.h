@@ -403,6 +403,15 @@ struct SaiPortTraits {
         sai_uint32_t,
         SaiIntDefault<sai_uint32_t>>;
 #endif
+    struct AttributeArsLinkState {
+      std::optional<sai_attr_id_t> operator()();
+    };
+#if SAI_API_VERSION >= SAI_VERSION(1, 16, 0) && defined(BRCM_SAI_SDK_XGS)
+    using ArsLinkState = SaiExtensionAttribute<
+        sai_int32_t,
+        AttributeArsLinkState,
+        SaiIntDefault<sai_int32_t>>;
+#endif
     using AutoNegotiationMode = SaiAttribute<
         EnumType,
         SAI_PORT_ATTR_AUTO_NEG_MODE,
@@ -461,6 +470,41 @@ struct SaiPortTraits {
     using FecErrorDetectEnable = SaiExtensionAttribute<
         bool,
         AttributeFecErrorDetectEnable,
+        SaiBoolDefaultFalse>;
+    struct AttributeFabricSystemPort {
+      std::optional<sai_attr_id_t> operator()();
+    };
+    using FabricSystemPort = SaiExtensionAttribute<
+        sai_object_id_t,
+        AttributeFabricSystemPort,
+        SaiObjectIdDefault>;
+    struct AttributeStaticModuleId {
+      std::optional<sai_attr_id_t> operator()();
+    };
+    using StaticModuleId = SaiExtensionAttribute<
+        sai_uint32_t,
+        AttributeStaticModuleId,
+        SaiIntDefault<sai_uint32_t>>;
+    struct AttributePgDropStatus {
+      std::optional<sai_attr_id_t> operator()();
+    };
+    using PgDropStatus = SaiExtensionAttribute<
+        std::vector<sai_map_t>,
+        AttributePgDropStatus,
+        SaiListDefault<sai_map_list_t>>;
+    struct AttributeIsHyperPortMember {
+      std::optional<sai_attr_id_t> operator()();
+    };
+    using IsHyperPortMember = SaiExtensionAttribute<
+        bool,
+        AttributeIsHyperPortMember,
+        SaiBoolDefaultFalse>;
+    struct AttributeHyperPortMemberList {
+      std::optional<sai_attr_id_t> operator()();
+    };
+    using HyperPortMemberList = SaiExtensionAttribute<
+        std::vector<sai_object_id_t>,
+        AttributeHyperPortMemberList,
         SaiBoolDefaultFalse>;
   };
   using AdapterKey = PortSaiId;
@@ -567,6 +611,9 @@ struct SaiPortTraits {
       std::optional<Attributes::ArsPortLoadPastWeight>,
       std::optional<Attributes::ArsPortLoadFutureWeight>,
 #endif
+#if SAI_API_VERSION >= SAI_VERSION(1, 16, 0) && defined(BRCM_SAI_SDK_XGS)
+      std::optional<Attributes::ArsLinkState>,
+#endif
       std::optional<Attributes::ReachabilityGroup>,
       std::optional<Attributes::CondEntropyRehashEnable>,
       std::optional<Attributes::CondEntropyRehashPeriodUS>,
@@ -575,7 +622,9 @@ struct SaiPortTraits {
 #if defined(CHENAB_SAI_SDK)
       std::optional<Attributes::AutoNegotiationMode>,
 #endif
-      std::optional<Attributes::FecErrorDetectEnable>>;
+      std::optional<Attributes::FecErrorDetectEnable>,
+      std::optional<Attributes::FabricSystemPort>,
+      std::optional<Attributes::StaticModuleId>>;
   static constexpr std::array<sai_stat_id_t, 16> CounterIdsToRead = {
       SAI_PORT_STAT_IF_IN_OCTETS,
       SAI_PORT_STAT_IF_IN_UCAST_PKTS,
@@ -623,6 +672,10 @@ struct SaiPortTraits {
       SAI_PORT_STAT_PFC_7_ON2OFF_RX_PKTS,
   };
   static constexpr std::array<sai_stat_id_t, 0> CounterIdsToReadAndClear = {};
+  static const std::vector<sai_stat_id_t>& macTxDataQueueMinWatermarkStats();
+  static const std::vector<sai_stat_id_t>& macTxDataQueueMaxWatermarkStats();
+  static const std::vector<sai_stat_id_t>& fabricControlRxPacketStats();
+  static const std::vector<sai_stat_id_t>& fabricControlTxPacketStats();
 };
 
 SAI_ATTRIBUTE_NAME(Port, HwLaneList)
@@ -726,12 +779,20 @@ SAI_ATTRIBUTE_NAME(Port, ArsPortLoadScalingFactor)
 SAI_ATTRIBUTE_NAME(Port, ArsPortLoadPastWeight)
 SAI_ATTRIBUTE_NAME(Port, ArsPortLoadFutureWeight)
 #endif
+#if SAI_API_VERSION >= SAI_VERSION(1, 16, 0) && defined(BRCM_SAI_SDK_XGS)
+SAI_ATTRIBUTE_NAME(Port, ArsLinkState)
+#endif
 SAI_ATTRIBUTE_NAME(Port, ReachabilityGroup)
 SAI_ATTRIBUTE_NAME(Port, CondEntropyRehashEnable)
 SAI_ATTRIBUTE_NAME(Port, CondEntropyRehashPeriodUS)
 SAI_ATTRIBUTE_NAME(Port, CondEntropyRehashSeed)
 SAI_ATTRIBUTE_NAME(Port, ShelEnable)
 SAI_ATTRIBUTE_NAME(Port, FecErrorDetectEnable)
+SAI_ATTRIBUTE_NAME(Port, FabricSystemPort)
+SAI_ATTRIBUTE_NAME(Port, StaticModuleId)
+SAI_ATTRIBUTE_NAME(Port, PgDropStatus)
+SAI_ATTRIBUTE_NAME(Port, IsHyperPortMember)
+SAI_ATTRIBUTE_NAME(Port, HyperPortMemberList)
 
 #if defined(CHENAB_SAI_SDK)
 SAI_ATTRIBUTE_NAME(Port, AutoNegotiationMode)

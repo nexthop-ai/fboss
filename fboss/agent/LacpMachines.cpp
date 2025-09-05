@@ -363,7 +363,6 @@ void ReceiveMachine::timeoutExpired() noexcept {
       case ReceiveState::INITIALIZED:
       case ReceiveState::DEFAULTED:
         throw LACPError("invalid transition to ", state_);
-        break;
     }
   } catch (...) {
     std::exception_ptr e = std::current_exception();
@@ -453,7 +452,6 @@ void PeriodicTransmissionMachine::beginNextPeriod() {
       break;
     case PeriodicState::TX:
       throw LACPError("invalid transition to ", state_);
-      break;
   }
 }
 
@@ -486,10 +484,22 @@ PeriodicTransmissionMachine::determineTransmissionRate() {
       (partnerInfo.state & LacpState::LACP_ACTIVE) == 0) {
     return PeriodicState::NONE;
   }
+  // If last LACPDU transmission was unsuccessful, we should not
+  // wait for SLOW interval to transmit again, instead we should
+  // transmit immediately. This will help in faster convergence
+  // durin warmboot
+  if (!controller_.getLacpLastTransmissionResult()) {
+    return PeriodicState::FAST;
+  }
 
   return controller_.partnerInfo().state & LacpState::SHORT_TIMEOUT
       ? PeriodicState::FAST
       : PeriodicState::SLOW;
+}
+
+std::chrono::seconds PeriodicTransmissionMachine::getCurrentTransmissionPeriod()
+    const {
+  return state_ == PeriodicState::FAST ? SHORT_PERIOD : LONG_PERIOD;
 }
 
 const std::chrono::seconds TransmitMachine::TX_REPLENISH_RATE(1);
@@ -534,14 +544,20 @@ void TransmitMachine::ntt(LACPDU lacpdu) {
 
   auto outPort = controller_.portID();
   if (!servicer_->transmit(lacpdu, outPort)) {
+    isLastTransmissionSuccessful_ = false;
     return;
   }
+  isLastTransmissionSuccessful_ = true;
 
   XLOG(DBG4) << "TransmitMachine[" << controller_.portID() << "]: " << "TX("
              << lacpdu.describe() << ")";
 
   --transmissionsLeft_;
   XLOG(DBG4) << transmissionsLeft_ << " transmissions left";
+}
+
+bool TransmitMachine::getLacpLastTransmissionResult() const {
+  return isLastTransmissionSuccessful_;
 }
 
 const std::chrono::seconds MuxMachine::AGGREGATE_WAIT_DURATION(2);

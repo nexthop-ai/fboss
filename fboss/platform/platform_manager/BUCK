@@ -30,6 +30,16 @@ thrift_library(
 )
 
 thrift_library(
+    name = "platform_manager_validators",
+    languages = [
+        "cpp2",
+    ],
+    thrift_srcs = {
+        "platform_manager_validators.thrift": [],
+    },
+)
+
+thrift_library(
     name = "platform_manager_service",
     languages = [
         "cpp2",
@@ -42,6 +52,7 @@ thrift_library(
         ":platform_manager_snapshot",
         "//fboss/platform/weutil/if:eeprom_contents",
         "//thrift/annotation:cpp",
+        "//thrift/annotation:hack",
         "//thrift/annotation:thrift",
     ],
 )
@@ -55,6 +66,7 @@ cpp_library(
         "fbsource//third-party/range-v3:range-v3",
         ":i2c_misc",
         ":platform_manager_config-cpp2-types",
+        ":platform_manager_validators-cpp2-types",
         "//folly/logging:logging",
     ],
     exported_external_deps = [
@@ -93,6 +105,7 @@ cpp_library(
         ":i2c_explorer",
         ":platform_manager_config-cpp2-types",
         ":utils",
+        "//fb303:service_data",
         "//fboss/platform/helpers:platform_fs_utils",
         "//folly:file_util",
         "//folly:string",

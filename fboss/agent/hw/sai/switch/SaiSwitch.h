@@ -127,6 +127,9 @@ class SaiSwitch : public HwSwitch {
 
   std::map<int, cfg::PortState> getSysPortShelState() const override;
 
+  folly::F14FastMap<std::string, HwRouterInterfaceStats>
+  getRouterInterfaceStats() const override;
+
   HwResourceStats getResourceStats() const override;
 
   uint64_t getDeviceWatermarkBytes() const override;
@@ -201,6 +204,10 @@ class SaiSwitch : public HwSwitch {
 
   SaiManagerTable* managerTable();
 
+  bool getRollbackInProgress_() {
+    return rollbackInProgress_;
+  }
+
   /*
    * This method is not thread safe, it should only be used
    * from the SAI adapter's rx callback caller thread.
@@ -260,6 +267,8 @@ class SaiSwitch : public HwSwitch {
 
   std::shared_ptr<SwitchState> reconstructSwitchState() const override;
 
+  std::shared_ptr<SwitchState> constructSwitchStateWithFib() noexcept override;
+
   void injectSwitchReachabilityChangeNotification() override;
 
   bool getArsExhaustionStatus() override;
@@ -280,7 +289,8 @@ class SaiSwitch : public HwSwitch {
   std::shared_ptr<SwitchState> stateChangedImplLocked(
       const StateDelta& delta,
       const LockPolicyT& lk);
-  void rollback(const StateDelta& delta) noexcept override;
+  void preRollback(const StateDelta& delta) noexcept override;
+  void rollback(const std::vector<StateDelta>& deltas) noexcept override;
   std::string listObjectsLocked(
       const std::vector<sai_object_type_t>& objects,
       bool cached,
@@ -409,15 +419,20 @@ class SaiSwitch : public HwSwitch {
 
   std::map<std::string, HwSysPortStats> getSysPortStatsLocked(
       const std::lock_guard<std::mutex>& lock) const;
+  folly::F14FastMap<std::string, HwRouterInterfaceStats>
+  getRouterInterfaceStatsLocked(const std::lock_guard<std::mutex>& lock) const;
+
   std::map<PortID, phy::PhyInfo> updateAllPhyInfoLocked();
 
   void updatePmdInfo(
       phy::PhySideState& sideState,
       phy::PhySideStats& sideStats,
       std::shared_ptr<SaiPort> port,
+      std::shared_ptr<SaiPortSerdes> serdes,
       phy::PmdState& lastPmdState,
       phy::PmdStats& lastPmdStats,
-      PortID portID);
+      PortID portID,
+      bool readSerdesParams);
 
   void updatePcsInfo(
       phy::PhySideState& sideState,
@@ -683,6 +698,7 @@ class SaiSwitch : public HwSwitch {
   std::unique_ptr<SaiStore> saiStore_;
   std::unique_ptr<SaiManagerTable> managerTable_;
   std::atomic<BootType> bootType_{BootType::UNINITIALIZED};
+  bool rollbackInProgress_{false};
   Callback* callback_{nullptr};
 
   SwitchSaiId saiSwitchId_;
@@ -712,6 +728,7 @@ class SaiSwitch : public HwSwitch {
   int64_t watermarkStatsUpdateTime_{0};
   int64_t voqStatsUpdateTime_{0};
   int64_t cableLengthStatsUpdateTime_{0};
+  time_t lastSerdesParamsReadTime_;
   cfg::AsicType asicType_;
 
   std::map<PortID, phy::PhyInfo> lastPhyInfos_;

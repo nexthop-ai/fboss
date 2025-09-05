@@ -289,7 +289,9 @@ def run_fboss_build(
     if build:
         extra_defines = {
             "CMAKE_BUILD_TYPE": "MinSizeRel",
-            "CMAKE_CXX_STANDARD": "20"
+            "CMAKE_CXX_STANDARD": "20",
+            "CMAKE_C_COMPILER": "/opt/rh/gcc-toolset-12/root/usr/bin/gcc",
+            "CMAKE_CXX_COMPILER": "/opt/rh/gcc-toolset-12/root/usr/bin/g++",
         }
         if extra_cmake_defines:
             for k, v in json.loads(extra_cmake_defines).items():

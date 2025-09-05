@@ -589,6 +589,16 @@ struct SaiSwitchTraits {
         SAI_SWITCH_ATTR_PORT_PTP_MODE,
         sai_int32_t,
         SaiIntDefault<sai_int32_t>>;
+    using RegFatalSwitchAsicSdkHealthCategory = SaiAttribute<
+        EnumType,
+        SAI_SWITCH_ATTR_REG_FATAL_SWITCH_ASIC_SDK_HEALTH_CATEGORY,
+        std::vector<sai_int32_t>,
+        SaiU32ListDefault>;
+    using RegNoticeSwitchAsicSdkHealthCategory = SaiAttribute<
+        EnumType,
+        SAI_SWITCH_ATTR_REG_NOTICE_SWITCH_ASIC_SDK_HEALTH_CATEGORY,
+        std::vector<sai_int32_t>,
+        SaiU32ListDefault>;
 #endif
     struct AttributeReachabilityGroupList {
       std::optional<sai_attr_id_t> operator()();
@@ -746,6 +756,11 @@ struct SaiSwitchTraits {
         std::vector<sai_map_t>,
         AttributeTcRateLimitList,
         SaiListDefault<sai_map_list_t>>;
+    struct AttributeTechSupportType {
+      std::optional<sai_attr_id_t> operator()();
+    };
+    using TechSupportType =
+        SaiExtensionAttribute<sai_uint8_t, AttributeTechSupportType>;
     struct AttributePfcTcDldTimerGranularityInterval {
       std::optional<sai_attr_id_t> operator()();
     };
@@ -816,6 +831,13 @@ struct SaiSwitchTraits {
     using DefaultCpuEgressBufferPool = SaiExtensionAttribute<
         sai_object_id_t,
         AttributeDefaultCpuEgressBufferPool>;
+    struct AttributeModuleIdFabricPortList {
+      std::optional<sai_attr_id_t> operator()();
+    };
+    using ModuleIdFabricPortList = SaiExtensionAttribute<
+        std::vector<sai_object_id_t>,
+        AttributeModuleIdFabricPortList,
+        SaiObjectIdListDefault>;
   };
   using AdapterKey = SwitchSaiId;
   using AdapterHostKey = std::monostate;
@@ -915,23 +937,24 @@ struct SaiSwitchTraits {
       std::optional<Attributes::CreditRequestProfileSchedulerMode>,
       std::optional<Attributes::ModuleIdToCreditRequestProfileParamList>>;
 
-#if SAI_API_VERSION >= SAI_VERSION(1, 12, 0)
-  static constexpr std::array<sai_stat_id_t, 3> CounterIdsToRead = {
-      SAI_SWITCH_STAT_REACHABILITY_DROP,
-      SAI_SWITCH_STAT_GLOBAL_DROP,
-      SAI_SWITCH_STAT_PACKET_INTEGRITY_DROP,
-  };
-#else
+  // Avoid using SAI_SWITCH_STAT_PACKET_INTEGRITY_DROP as that counts
+  // both DramPacketError and EgressRcvPacketError. As we now have a
+  // dedicated counter to track DramPacketError, will need to use the
+  // new SAI_SWITCH_STAT_EGR_RX_PACKET_ERROR to get the EgressRcvPacketError
+  // alone which tracks the reassembly drops.
+  // Note: DramPacketError is a COR counter and was getting cleared when
+  // SAI_SWITCH_STAT_PACKET_INTEGRITY_DROP was used, hence had to fork
+  // a new counter for EgressRcvPacketError alone.
   static constexpr std::array<sai_stat_id_t, 2> CounterIdsToRead = {
       SAI_SWITCH_STAT_REACHABILITY_DROP,
       SAI_SWITCH_STAT_GLOBAL_DROP,
   };
-#endif
   static constexpr std::array<sai_stat_id_t, 0> CounterIdsToReadAndClear = {};
   static const std::vector<sai_stat_id_t>& dramStats();
   static const std::vector<sai_stat_id_t>& rciWatermarkStats();
   static const std::vector<sai_stat_id_t>& dtlWatermarkStats();
   static const std::vector<sai_stat_id_t>& dramBlockTime();
+  static const std::vector<sai_stat_id_t>& dramQuarantinedBufferStats();
   static const std::vector<sai_stat_id_t>& egressCoreBufferWatermarkBytes();
   static const std::vector<sai_stat_id_t>& deletedCredits();
   static const std::vector<sai_stat_id_t>& sramMinBufferWatermarkBytes();
@@ -941,6 +964,9 @@ struct SaiSwitchTraits {
   static const std::vector<sai_stat_id_t>& egressNonFabricCellUnpackError();
   static const std::vector<sai_stat_id_t>& egressParityCellError();
   static const std::vector<sai_stat_id_t>& ddpPacketError();
+  static const std::vector<sai_stat_id_t>& packetIntegrityError();
+  static const std::vector<sai_stat_id_t>&
+  fabricInterCellJitterWatermarkStats();
 };
 
 SAI_ATTRIBUTE_NAME(Switch, InitSwitch)
@@ -1057,6 +1083,8 @@ SAI_ATTRIBUTE_NAME(Switch, ArsProfile)
 #endif
 #if SAI_API_VERSION >= SAI_VERSION(1, 16, 0)
 SAI_ATTRIBUTE_NAME(Switch, PtpMode)
+SAI_ATTRIBUTE_NAME(Switch, RegFatalSwitchAsicSdkHealthCategory)
+SAI_ATTRIBUTE_NAME(Switch, RegNoticeSwitchAsicSdkHealthCategory)
 #endif
 SAI_ATTRIBUTE_NAME(Switch, ReachabilityGroupList)
 SAI_ATTRIBUTE_NAME(Switch, FabricLinkLayerFlowControlThreshold)
@@ -1094,6 +1122,9 @@ SAI_ATTRIBUTE_NAME(Switch, NumTemperatureSensors)
 SAI_ATTRIBUTE_NAME(Switch, TriggerSimulatedEccCorrectableError)
 SAI_ATTRIBUTE_NAME(Switch, TriggerSimulatedEccUnCorrectableError)
 SAI_ATTRIBUTE_NAME(Switch, DefaultCpuEgressBufferPool)
+
+SAI_ATTRIBUTE_NAME(Switch, TechSupportType)
+SAI_ATTRIBUTE_NAME(Switch, ModuleIdFabricPortList)
 
 template <>
 struct SaiObjectHasStats<SaiSwitchTraits> : public std::true_type {};
@@ -1247,7 +1278,7 @@ class SwitchApi : public SaiApi<SwitchApi> {
     registerSwitchHardResetNotifyCallback(id, nullptr);
   }
 
-#if SAI_API_VERSION >= SAI_VERSION(1, 13, 0)
+#if SAI_API_VERSION >= SAI_VERSION(1, 16, 0)
   void registerSwitchAsicSdkHealthEventCallback(
       const SwitchSaiId& id,
       sai_switch_asic_sdk_health_event_notification_fn function) const;

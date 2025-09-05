@@ -169,7 +169,9 @@ class HwSwitch {
       const std::vector<StateDelta>& deltas,
       const HwWriteBehaviorRAII& behavior =
           HwWriteBehaviorRAII(HwWriteBehavior::WRITE));
-  virtual void rollback(const StateDelta& delta) noexcept;
+  virtual void preRollback(const StateDelta& delta) noexcept;
+  virtual void rollback(const std::vector<StateDelta>& deltas) noexcept;
+  virtual std::shared_ptr<SwitchState> constructSwitchStateWithFib() noexcept;
 
   virtual bool transactionsSupported() const {
     return false;
@@ -239,6 +241,9 @@ class HwSwitch {
 
   virtual folly::F14FastMap<std::string, HwPortStats> getPortStats() const = 0;
   virtual CpuPortStats getCpuPortStats() const = 0;
+
+  virtual folly::F14FastMap<std::string, HwRouterInterfaceStats>
+  getRouterInterfaceStats() const = 0;
 
   virtual void fetchL2Table(std::vector<L2EntryThrift>* l2Table) const = 0;
 

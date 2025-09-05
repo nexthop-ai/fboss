@@ -42,6 +42,46 @@ class MultiNodeAgentVoqSwitchTest : public AgentHwTest {
     return {ProductionFeature::VOQ};
   }
 
+  bool isTestDriver() const {
+    // Each nodes in a DSF Multi Node Test setup runs this binary. However,
+    // only one node (SwitchID 0) is the primary driver of the test. Test
+    // binaries on all the other switches are triggered by test orchestrator
+    // (e.g. Netcastle) with --run-forever option, so those initialize the ASIC
+    // SDK, FBOSS state and wait for the test driver switch to drive the test
+    // logic.
+    auto constexpr kTestDriverSwitchId = 0;
+
+    bool ret = getSw()->getSwitchInfoTable().getSwitchIDs().contains(
+        SwitchID(kTestDriverSwitchId));
+
+    XLOG(DBG2) << "DSF Multi Node Test Driver node: SwitchID "
+               << kTestDriverSwitchId << " is "
+               << (ret ? " part of " : " not part of") << " local switchIDs : "
+               << folly::join(
+                      ",", getSw()->getSwitchInfoTable().getSwitchIDs());
+    return ret;
+  }
+
+  std::unique_ptr<MultiNodeUtil> createMultiNodeUtil() {
+    auto multiNodeUtil =
+        std::make_unique<MultiNodeUtil>(getProgrammedState()->getDsfNodes());
+
+    return multiNodeUtil;
+  }
+
+  void verifyDsfClusterHelper(
+      const std::unique_ptr<MultiNodeUtil>& multiNodeUtil) const {
+    WITH_RETRIES_N_TIMED(10, std::chrono::milliseconds(5000), {
+      EXPECT_EVENTUALLY_TRUE(multiNodeUtil->verifyFabricConnectivity());
+      EXPECT_EVENTUALLY_TRUE(multiNodeUtil->verifyFabricReachability());
+      EXPECT_EVENTUALLY_TRUE(multiNodeUtil->verifyPorts());
+      EXPECT_EVENTUALLY_TRUE(multiNodeUtil->verifySystemPorts());
+      EXPECT_EVENTUALLY_TRUE(multiNodeUtil->verifyRifs());
+      EXPECT_EVENTUALLY_TRUE(multiNodeUtil->verifyStaticNdpEntries());
+      EXPECT_EVENTUALLY_TRUE(multiNodeUtil->verifyDsfSessions());
+    });
+  }
+
  private:
   void setCmdLineFlagOverrides() const override {
     AgentHwTest::setCmdLineFlagOverrides();
@@ -62,39 +102,36 @@ TEST_F(MultiNodeAgentVoqSwitchTest, verifyDsfCluster) {
   auto setup = []() {};
 
   auto verify = [this]() {
-    // Each nodes in a DSF Multi Node Test setup runs this binary. However,
-    // only one node (SwitchID 0) is the primary driver of the test. Test
-    // binaries on all the other switches are triggered by test orchestrator
-    // (e.g. Netcastle) with --run-forever option, so those initialize the ASIC
-    // SDK, FBOSS state and wait for the test driver switch to drive the test
-    // logic.
-    auto constexpr kTestDriverSwitchId = 0;
-    if (getSw()->getSwitchInfoTable().getSwitchIDs().contains(
-            SwitchID(kTestDriverSwitchId))) {
-      XLOG(DBG2) << "DSF Multi Node Test Driver node: SwitchID "
-                 << kTestDriverSwitchId << " is part of local switchIDs: "
-                 << folly::join(
-                        ",", getSw()->getSwitchInfoTable().getSwitchIDs());
-    } else {
-      XLOG(DBG2) << "DSF Multi Node Test Remote node: SwitchID "
-                 << kTestDriverSwitchId << " is not part of local switchIDs: "
-                 << folly::join(
-                        ",", getSw()->getSwitchInfoTable().getSwitchIDs());
+    if (!isTestDriver()) {
+      return;
+    }
+    auto multiNodeUtil = createMultiNodeUtil();
+    verifyDsfClusterHelper(multiNodeUtil);
+  };
+
+  verifyAcrossWarmBoots(setup, verify);
+}
+
+TEST_F(MultiNodeAgentVoqSwitchTest, verifyGracefulFabricLinkDownUp) {
+  auto setup = []() {};
+
+  auto verify = [this]() {
+    if (!isTestDriver()) {
       return;
     }
 
-    auto multiNodeUtil =
-        std::make_unique<MultiNodeUtil>(getProgrammedState()->getDsfNodes());
+    auto multiNodeUtil = createMultiNodeUtil();
+    verifyDsfClusterHelper(multiNodeUtil);
+    if (testing::Test::HasNonfatalFailure()) {
+      // Some EXPECT_* asserts in verifyDsfClusterHelper() failed.
+      FAIL()
+          << "Sanity checks in DSF cluster verification failed, can't proceed with test";
+    }
 
-    WITH_RETRIES_N_TIMED(10, std::chrono::milliseconds(5000), {
-      EXPECT_EVENTUALLY_TRUE(multiNodeUtil->verifyFabricConnectivity());
-      EXPECT_EVENTUALLY_TRUE(multiNodeUtil->verifyFabricReachability());
-      EXPECT_EVENTUALLY_TRUE(multiNodeUtil->verifyPorts());
-      EXPECT_EVENTUALLY_TRUE(multiNodeUtil->verifySystemPorts());
-      EXPECT_EVENTUALLY_TRUE(multiNodeUtil->verifyRifs());
-      EXPECT_EVENTUALLY_TRUE(multiNodeUtil->verifyStaticNdpEntries());
-      EXPECT_EVENTUALLY_TRUE(multiNodeUtil->verifyDsfSessions());
-    });
+    EXPECT_TRUE(multiNodeUtil->verifyGracefulFabricLinkDownUp());
+
+    // Verify that the cluster is still healthy after link down/up
+    verifyDsfClusterHelper(multiNodeUtil);
   };
 
   verifyAcrossWarmBoots(setup, verify);

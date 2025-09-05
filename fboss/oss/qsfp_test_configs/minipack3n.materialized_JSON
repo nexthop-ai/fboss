@@ -25,12 +25,7 @@
       {
         "aPortName": "eth1/2/1",
         "zPortName": "eth1/6/1",
-        "profileID": 38
-      },
-      {
-        "aPortName": "eth1/2/5",
-        "zPortName": "eth1/6/5",
-        "profileID": 38
+        "profileID": 39
       },
       {
         "aPortName": "eth1/3/1",
@@ -45,12 +40,7 @@
       {
         "aPortName": "eth1/10/1",
         "zPortName": "eth1/14/1",
-        "profileID": 38
-      },
-      {
-        "aPortName": "eth1/10/5",
-        "zPortName": "eth1/14/5",
-        "profileID": 38
+        "profileID": 39
       },
       {
         "aPortName": "eth1/11/1",
@@ -65,12 +55,7 @@
       {
         "aPortName": "eth1/12/1",
         "zPortName": "eth1/16/1",
-        "profileID": 38
-      },
-      {
-        "aPortName": "eth1/12/5",
-        "zPortName": "eth1/16/5",
-        "profileID": 38
+        "profileID": 39
       },
       {
         "aPortName": "eth1/26/1",
@@ -193,7 +178,7 @@
           "versions": [
             {
               "fwType": 1,
-              "version": "3.9"
+              "version": "3.12"
             }
           ]
       },
@@ -201,7 +186,23 @@
           "versions": [
             {
               "fwType": 1,
-              "version": "3.9"
+              "version": "3.12"
+            }
+          ]
+      },
+      "EOLO-168HG-02-9B": {
+          "versions": [
+            {
+              "fwType": 1,
+              "version": "3.12"
+            }
+          ]
+      },
+      "EOLO-168HG-02-9T": {
+          "versions": [
+            {
+              "fwType": 1,
+              "version": "3.12"
             }
           ]
       },
@@ -297,11 +298,27 @@
           "versions": [
             {
               "fwType": 1,
-              "version": "2.6"
+              "version": "2.9"
             }
           ]
       },
       "FTCE4717E1PCB-FB": {
+          "versions": [
+            {
+              "fwType": 1,
+              "version": "1.16"
+            }
+          ]
+      },
+      "FTCE4717E1PCBFB1": {
+          "versions": [
+            {
+              "fwType": 1,
+              "version": "1.16"
+            }
+          ]
+      },
+      "FTCE4717E1PCBFB3": {
           "versions": [
             {
               "fwType": 1,
@@ -349,7 +366,7 @@
           "versions": [
             {
               "fwType": 1,
-              "version": "234.146"
+              "version": "234.147"
             }
           ]
       },
@@ -493,7 +510,15 @@
           "versions": [
             {
               "fwType": 1,
-              "version": "103.133"
+              "version": "103.137"
+            }
+          ]
+      },
+      "T-OL8CNT-NFB": {
+          "versions": [
+            {
+              "fwType": 1,
+              "version": "103.137"
             }
           ]
       },
@@ -501,7 +526,15 @@
           "versions": [
             {
               "fwType": 1,
-              "version": "103.133"
+              "version": "103.137"
+            }
+          ]
+      },
+      "T-OL8CNT-NFM": {
+          "versions": [
+            {
+              "fwType": 1,
+              "version": "103.137"
             }
           ]
       }

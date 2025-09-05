@@ -6,7 +6,6 @@
 #include "fboss/agent/Platform.h"
 #include "fboss/agent/TxPacket.h"
 #include "fboss/agent/hw/HwSwitchFb303Stats.h"
-#include "fboss/agent/hw/switch_asics/HwAsic.h"
 
 namespace facebook::fboss {
 
@@ -271,6 +270,7 @@ void MonolithicHwSwitchHandler::getHwStats(
   hwStats.hwResourceStats() = hw_->getResourceStats();
   hwStats.arsExhausted() = hw_->getArsExhaustionStatus();
   hwStats.sysPortShelState() = hw_->getSysPortShelState();
+  hwStats.hwRouterInterfaceStats() = hw_->getRouterInterfaceStats();
 }
 
 } // namespace facebook::fboss

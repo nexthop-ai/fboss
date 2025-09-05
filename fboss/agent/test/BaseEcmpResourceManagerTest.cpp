@@ -9,6 +9,7 @@
  */
 
 #include "fboss/agent/test/BaseEcmpResourceManagerTest.h"
+#include "fboss/agent/AgentFeatures.h"
 #include "fboss/agent/FibHelpers.h"
 #include "fboss/agent/test/TestUtils.h"
 
@@ -27,11 +28,31 @@ RouteNextHopSet makeNextHops(int n) {
   return h;
 }
 
+RouteNextHopSet makeV4NextHops(int n) {
+  CHECK_LT(n, 253);
+  RouteNextHopSet h;
+  for (int i = 0; i < n; i++) {
+    std::stringstream ss;
+    ss << std::hex << i + 1;
+    auto ipStr = folly::sformat("200.0.{}.2", i);
+    h.emplace(ResolvedNextHop(
+        folly::IPAddress(ipStr), InterfaceID(i + 1), UCMP_DEFAULT_WEIGHT));
+  }
+  return h;
+}
+
 RouteV6::Prefix makePrefix(int offset) {
   std::stringstream ss;
   ss << std::hex << offset;
   return RouteV6::Prefix(
       folly::IPAddressV6(folly::sformat("2601:db00:2110:{}::", ss.str())), 64);
+}
+
+RouteV4::Prefix makeV4Prefix(int offset) {
+  std::stringstream ss;
+  ss << std::hex << offset;
+  return RouteV4::Prefix(
+      folly::IPAddressV4(folly::sformat("150.0.{}.0", ss.str())), 24);
 }
 
 std::shared_ptr<RouteV6> makeRoute(
@@ -45,7 +66,21 @@ std::shared_ptr<RouteV6> makeRoute(
   return rt;
 }
 
-cfg::SwitchConfig onePortPerIntfConfig(int numIntfs) {
+std::shared_ptr<RouteV4> makeV4Route(
+    const RouteV4::Prefix& pfx,
+    const RouteNextHopSet& nextHops) {
+  RouteNextHopEntry nhopEntry(nextHops, kDefaultAdminDistance);
+  auto rt = std::make_shared<RouteV4>(
+      RouteV4::makeThrift(pfx, ClientID(0), nhopEntry));
+  rt->setResolved(nhopEntry);
+  rt->publish();
+  return rt;
+}
+
+cfg::SwitchConfig onePortPerIntfConfig(
+    int numIntfs,
+    std::optional<cfg::SwitchingMode> backupSwitchingMode,
+    int32_t ecmpCompressionThresholdPct) {
   cfg::SwitchConfig cfg;
   cfg.ports()->resize(numIntfs);
   cfg.vlans()->resize(numIntfs);
@@ -67,14 +102,30 @@ cfg::SwitchConfig onePortPerIntfConfig(int numIntfs) {
     cfg.interfaces()[p].name() = folly::to<std::string>("interface", id);
     cfg.interfaces()[p].mac() = "00:02:00:00:00:01";
     cfg.interfaces()[p].mtu() = 9000;
-    cfg.interfaces()[p].ipAddresses()->resize(1);
+    cfg.interfaces()[p].ipAddresses()->resize(2);
     cfg.interfaces()[p].ipAddresses()[0] =
         folly::sformat("2400:db00:2110:{}::1/64", p);
+    cfg.interfaces()[p].ipAddresses()[1] = folly::sformat("200.0.{}.1/24", p);
   }
-  cfg::FlowletSwitchingConfig flowletConfig;
-  flowletConfig.backupSwitchingMode() = cfg::SwitchingMode::PER_PACKET_RANDOM;
-  cfg.flowletSwitchingConfig() = flowletConfig;
+  if (ecmpCompressionThresholdPct) {
+    cfg.switchSettings()->ecmpCompressionThresholdPct() =
+        ecmpCompressionThresholdPct;
+  }
+  if (backupSwitchingMode.has_value()) {
+    cfg::FlowletSwitchingConfig flowletConfig;
+    flowletConfig.backupSwitchingMode() = cfg::SwitchingMode::PER_PACKET_RANDOM;
+    cfg.flowletSwitchingConfig() = flowletConfig;
+  }
   return cfg;
+}
+
+std::shared_ptr<EcmpResourceManager>
+BaseEcmpResourceManagerTest::makeResourceMgrWithEcmpLimit(
+    int ecmpGroupLimit) const {
+  return std::make_shared<EcmpResourceManager>(
+      ecmpGroupLimit,
+      getEcmpCompressionThresholdPct(),
+      getBackupEcmpSwitchingMode());
 }
 
 std::vector<StateDelta> BaseEcmpResourceManagerTest::consolidate(
@@ -87,15 +138,22 @@ std::vector<StateDelta> BaseEcmpResourceManagerTest::consolidate(
   if (deltas.size()) {
     XLOG(DBG2) << " Checking deltas, num deltas: " << deltas.size();
     assertDeltasForOverflow(deltas);
+    assertResourceMgrCorrectness(*consolidator_, deltas.back().newState());
   }
   XLOG(DBG2) << " Consolidator update done";
   XLOG(DBG2) << " SwSwitch update start";
   updateFlowletSwitchingConfig(state);
   updateRoutes(state);
+  assertResourceMgrCorrectness(*sw_->getEcmpResourceManager(), sw_->getState());
   XLOG(DBG2) << " SwSwitch update done";
   CHECK(state_->isPublished());
   state_ = sw_->getState();
-  EXPECT_EQ(state_->getFibs()->getNode(RouterID(0))->getFibV4()->size(), 1);
+  /*
+   * GE since some tests add v4 routes
+   */
+  EXPECT_GE(
+      state_->getFibs()->getNode(RouterID(0))->getFibV4()->size(),
+      kNumIntfs + 1);
   /*
    * Assert that EcmpResourceMgr leaves the ports state untouched
    */
@@ -115,6 +173,9 @@ std::vector<StateDelta> BaseEcmpResourceManagerTest::consolidate(
         EXPECT_EQ(
             newRoute->getForwardInfo().getOverrideEcmpSwitchingMode(),
             origRoute->getForwardInfo().getOverrideEcmpSwitchingMode());
+        EXPECT_EQ(
+            newRoute->getForwardInfo().getOverrideNextHops(),
+            origRoute->getForwardInfo().getOverrideNextHops());
       }
     }
   }
@@ -131,6 +192,186 @@ void BaseEcmpResourceManagerTest::failUpdate(
   StateDelta delta(state_, state);
   auto deltas = consolidator_->consolidate(delta);
   consolidator_->updateFailed(failTo);
+}
+
+std::map<RouteNextHopSet, EcmpResourceManager::NextHopGroupIds>
+BaseEcmpResourceManagerTest::getNhopsToMergedGroups(
+    const EcmpResourceManager& resourceMgr) const {
+  std::map<RouteNextHopSet, EcmpResourceManager::NextHopGroupIds>
+      nhopsToMergedGroups;
+  auto mergedGroups = resourceMgr.getMergedGroups();
+  for (const auto& mgroup : resourceMgr.getMergedGroups()) {
+    for (auto mGid : mgroup) {
+      auto consInfo = resourceMgr.getMergeGroupConsolidationInfo(mGid);
+      nhopsToMergedGroups.insert({consInfo->mergedNhops, mgroup});
+    }
+  }
+  return nhopsToMergedGroups;
+}
+
+void BaseEcmpResourceManagerTest::assertResourceMgrCorrectness(
+    const EcmpResourceManager& resourceMgr,
+    const std::shared_ptr<SwitchState>& state) const {
+  assertAllGidsClaimed(resourceMgr, state);
+  assertFibAndGroupsMatch(resourceMgr, state);
+  // All unmerged groups should have candidate merge sets with other unmerged
+  // groups
+  assertGroupsAreUnMerged(resourceMgr, resourceMgr.getUnMergedGids());
+  auto allMergedGroups = resourceMgr.getMergedGroups();
+  std::for_each(
+      allMergedGroups.begin(),
+      allMergedGroups.end(),
+      [this, &resourceMgr](const auto& mgroup) {
+        assertMergedGroup(resourceMgr, mgroup);
+      });
+}
+
+void BaseEcmpResourceManagerTest::assertGroupsAreUnMerged(
+    const EcmpResourceManager& resourceMgr,
+    const EcmpResourceManager::NextHopGroupIds& unmergedGroups) const {
+  if (!resourceMgr.getEcmpCompressionThresholdPct()) {
+    return;
+  }
+  auto allUnmergedGroups = resourceMgr.getUnMergedGids();
+  auto allMergedGroups = resourceMgr.getMergedGroups();
+  // Each unmerged group has a candidate merge group with every other unmerged
+  // group and with every merged group.
+  auto expectedCandidateMergeForEachUnmerged =
+      (allUnmergedGroups.size() - 1) + allMergedGroups.size();
+
+  XLOG(DBG2) << " Asserting for unmerged group: " << "["
+             << folly::join(", ", unmergedGroups) << "]"
+             << " Num existing merged groups: " << allMergedGroups.size()
+             << " Existing unmerged groups: "
+             << folly::join(", ", unmergedGroups)
+             << " Expect : " << expectedCandidateMergeForEachUnmerged
+             << " candidate merges";
+  std::for_each(
+      unmergedGroups.begin(),
+      unmergedGroups.end(),
+      [this, &resourceMgr, expectedCandidateMergeForEachUnmerged](auto gid) {
+        auto numCandidateMerges =
+            resourceMgr.getCandidateMergeConsolidationInfo(gid).size();
+        EXPECT_EQ(numCandidateMerges, expectedCandidateMergeForEachUnmerged);
+        // Groups from  unmerge set should no longer
+        // be in merge sets.
+        EXPECT_FALSE(
+            resourceMgr.getMergeGroupConsolidationInfo(gid).has_value());
+      });
+}
+
+void BaseEcmpResourceManagerTest::assertMergedGroup(
+    const EcmpResourceManager& resourceMgr,
+    const EcmpResourceManager::NextHopGroupIds& mergedGroup) const {
+  if (!resourceMgr.getEcmpCompressionThresholdPct()) {
+    return;
+  }
+  auto allUnmergedGroups = resourceMgr.getUnMergedGids();
+  // Each merged group has a candidate merge group with every unmerged
+  // group
+  auto expectedCandidateMergeForEachMerged = allUnmergedGroups.size();
+  XLOG(DBG2) << " Asserting for merged group: " << "["
+             << folly::join(", ", mergedGroup) << "]"
+             << " Have unmerged groups: "
+             << folly::join(", ", allUnmergedGroups)
+             << " Expect : " << expectedCandidateMergeForEachMerged
+             << " candidate merges";
+  std::for_each(
+      mergedGroup.begin(),
+      mergedGroup.end(),
+      [this, &resourceMgr, expectedCandidateMergeForEachMerged](auto gid) {
+        EXPECT_EQ(
+            resourceMgr.getCandidateMergeConsolidationInfo(gid).size(),
+            expectedCandidateMergeForEachMerged);
+        EXPECT_TRUE(
+            resourceMgr.getMergeGroupConsolidationInfo(gid).has_value());
+      });
+  bool found{false};
+  for (auto mgroup : resourceMgr.getMergedGroups()) {
+    if (mgroup == mergedGroup) {
+      found = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found) << "Merged group : " << folly::join(", ", mergedGroup)
+                     << " not found";
+}
+
+void BaseEcmpResourceManagerTest::assertAllGidsClaimed(
+    const EcmpResourceManager& resourceMgr,
+    const std::shared_ptr<SwitchState>& state) const {
+  // Assert that union of all merged and unmerged GIDs == all gids
+  auto allUnmergedGids = resourceMgr.getUnMergedGids();
+  auto allMergedAndUnmergedGids = resourceMgr.getMergedGids();
+  allMergedAndUnmergedGids.insert(
+      allUnmergedGids.begin(), allUnmergedGids.end());
+  auto nhops2Id = resourceMgr.getNhopsToId();
+  EcmpResourceManager::NextHopGroupIds allGids;
+  std::for_each(
+      nhops2Id.begin(), nhops2Id.end(), [&allGids](const auto& nhopsAndId) {
+        allGids.insert(nhopsAndId.second);
+      });
+  EXPECT_EQ(allMergedAndUnmergedGids, allGids);
+  auto nhopsToMergedGroups = getNhopsToMergedGroups(resourceMgr);
+  // Assert that all distinct merged nhops we see map to mergedGroups
+  EXPECT_EQ(nhopsToMergedGroups.size(), resourceMgr.getMergedGroups().size());
+}
+
+void BaseEcmpResourceManagerTest::assertFibAndGroupsMatch(
+    const EcmpResourceManager& resourceMgr,
+    const std::shared_ptr<SwitchState>& state) const {
+  auto nhops2Id = resourceMgr.getNhopsToId();
+  auto nhopsToMergedGroups = getNhopsToMergedGroups(resourceMgr);
+  std::map<EcmpResourceManager::NextHopGroupId, int> unmergedGroupToRouteRef;
+  std::map<EcmpResourceManager::NextHopGroupIds, int> mergedGroupToRouteRef;
+  auto getRouteRef = [&](auto inFib) {
+    for (auto [_, route] : std::as_const(*inFib)) {
+      if (!route->isResolved()) {
+        // Some tests deliberately add unresolved routes to
+        // FIB and run them through local consolidator_ state
+        continue;
+      }
+      ASSERT_NE(route, nullptr);
+      bool isEcmpRoute = route->isResolved() &&
+          route->getForwardInfo().getNextHopSet().size() > 1;
+      if (!isEcmpRoute) {
+        continue;
+      }
+      const auto& fwdInfo = route->getForwardInfo();
+      auto pfxGrpInfo = resourceMgr.getGroupInfo(
+          RouterID(0), route->prefix().toCidrNetwork());
+      if (fwdInfo.hasOverrideNextHops()) {
+        auto mergeInfoItr = pfxGrpInfo->getMergedGroupInfoItr();
+        EXPECT_TRUE(mergeInfoItr.has_value());
+        auto grpOverrideNhops = pfxGrpInfo->getOverrideNextHops();
+        ASSERT_TRUE(grpOverrideNhops.has_value());
+        EXPECT_EQ(fwdInfo.getOverrideNextHops(), grpOverrideNhops);
+        // Assert that override nhops map to existing merged group
+        auto nmitr = nhopsToMergedGroups.find(fwdInfo.normalizedNextHops());
+        ASSERT_NE(nmitr, nhopsToMergedGroups.end());
+        // Bump up route ref to merged groups
+        auto mGroupRefItr =
+            mergedGroupToRouteRef.insert({(*mergeInfoItr)->first, 0}).first;
+        ++mGroupRefItr->second;
+      }
+      EXPECT_EQ(
+          fwdInfo.hasOverrideSwitchingMode(),
+          pfxGrpInfo->isBackupEcmpGroupType());
+      // Non override nhops must map to a entry in nhops2Id. Confirming
+      // that nhops map to a existing group in resourceMgr
+      auto nonOverrideNormalizedHops =
+          route->getForwardInfo().nonOverrideNormalizedNextHops();
+      auto nitr = nhops2Id.find(nonOverrideNormalizedHops);
+      ASSERT_NE(nitr, nhops2Id.end());
+      auto umGroupRefItr =
+          unmergedGroupToRouteRef.insert({nitr->second, 0}).first;
+      ++umGroupRefItr->second;
+    }
+  };
+  getRouteRef(cfib(state));
+  getRouteRef(cfib4(state));
+  EXPECT_EQ(mergedGroupToRouteRef.size(), resourceMgr.getMergedGroups().size());
+  EXPECT_EQ(unmergedGroupToRouteRef.size(), nhops2Id.size());
 }
 
 void BaseEcmpResourceManagerTest::assertDeltasForOverflow(
@@ -209,9 +450,16 @@ void BaseEcmpResourceManagerTest::assertDeltasForOverflow(
                  << primaryEcmpTypeGroups2RefCnt.size()
                  << " on pfx: " << newRoute->str();
     }
+    // Transiently we can exceed consolidator maxPrimaryEcmpGroups,
+    // but we should never exceed
+    // maxPrimaryEcmpGroups +
+    // FLAGS_ecmp_resource_manager_make_before_break_buffer We deliberately set
+    // consolidator's maxPrimaryEcmpGroups to be Actual limit -
+    // FLAGS_ecmp_resource_manager_make_before_break_buffer
     EXPECT_LE(
         primaryEcmpTypeGroups2RefCnt.size(),
-        consolidator_->getMaxPrimaryEcmpGroups());
+        consolidator_->getMaxPrimaryEcmpGroups() +
+            FLAGS_ecmp_resource_manager_make_before_break_buffer);
   };
 
   auto idx = 1;
@@ -249,6 +497,9 @@ void BaseEcmpResourceManagerTest::assertDeltasForOverflow(
             routeDeleted(oldRoute);
           }
         });
+    EXPECT_LE(
+        primaryEcmpTypeGroups2RefCnt.size(),
+        consolidator_->getMaxPrimaryEcmpGroups());
   }
 }
 
@@ -259,29 +510,58 @@ RouteV6::Prefix BaseEcmpResourceManagerTest::nextPrefix() const {
        ++offset) {
     auto pfx = makePrefix(offset);
     if (!fib6->exactMatch(pfx)) {
+      XLOG(DBG2) << " Next pfx: " << pfx.str();
       return pfx;
     }
   }
   CHECK(false) << " Should never get here";
 }
 
-void BaseEcmpResourceManagerTest::SetUp() {
-  XLOG(DBG2) << "BaseEcmpResourceMgrTest SetUp";
+void BaseEcmpResourceManagerTest::setupFlags() const {
   FLAGS_enable_ecmp_resource_manager = true;
   FLAGS_ecmp_resource_percentage = 100;
   FLAGS_ars_resource_percentage = 100;
   FLAGS_flowletSwitchingEnable = true;
   FLAGS_dlbResourceCheckEnable = false;
-  auto cfg = onePortPerIntfConfig(kNumIntfs);
+}
+
+void BaseEcmpResourceManagerTest::SetUp() {
+  XLOG(DBG2) << "BaseEcmpResourceMgrTest SetUp";
+  setupFlags();
+  auto cfg = onePortPerIntfConfig(
+      kNumIntfs,
+      getBackupEcmpSwitchingMode(),
+      getEcmpCompressionThresholdPct());
   handle_ = createTestHandle(&cfg);
   sw_ = handle_->getSw();
   ASSERT_NE(sw_->getEcmpResourceManager(), nullptr);
   // Taken from mock asic
-  EXPECT_EQ(sw_->getEcmpResourceManager()->getMaxPrimaryEcmpGroups(), 5);
-  // Backup ecmp group type will com from default flowlet confg
+  auto asic = *sw_->getHwAsicTable()->getL3Asics().begin();
+  int asicMaxEcmpGroups, maxPct;
+  if (getBackupEcmpSwitchingMode()) {
+    asicMaxEcmpGroups = *asic->getMaxDlbEcmpGroups();
+    maxPct = FLAGS_ars_resource_percentage;
+  } else {
+    asicMaxEcmpGroups = *asic->getMaxEcmpGroups();
+    maxPct = FLAGS_ecmp_resource_percentage;
+  }
   EXPECT_EQ(
-      *sw_->getEcmpResourceManager()->getBackupEcmpSwitchingMode(),
-      *cfg.flowletSwitchingConfig()->backupSwitchingMode());
+      sw_->getEcmpResourceManager()->getMaxPrimaryEcmpGroups(),
+      std::floor(asicMaxEcmpGroups * maxPct / 100.0) -
+          FLAGS_ecmp_resource_manager_make_before_break_buffer);
+  // Backup ecmp group type will come from default flowlet confg
+  std::optional<cfg::SwitchingMode> expectedBackupSwitchingMode;
+  if (cfg.flowletSwitchingConfig() &&
+      cfg.flowletSwitchingConfig()->backupSwitchingMode().has_value()) {
+    expectedBackupSwitchingMode =
+        *cfg.flowletSwitchingConfig()->backupSwitchingMode();
+  }
+  EXPECT_EQ(
+      sw_->getEcmpResourceManager()->getBackupEcmpSwitchingMode(),
+      expectedBackupSwitchingMode);
+  EXPECT_EQ(
+      sw_->getEcmpResourceManager()->getEcmpCompressionThresholdPct(),
+      cfg.switchSettings()->ecmpCompressionThresholdPct().value_or(0));
   consolidator_ = makeResourceMgr();
   state_ = sw_->getState();
   state_->publish();
@@ -295,6 +575,14 @@ void BaseEcmpResourceManagerTest::SetUp() {
   newState->publish();
   consolidate(newState);
   XLOG(DBG2) << "BaseEcmpResourceMgrTest SetUp done";
+}
+
+void BaseEcmpResourceManagerTest::TearDown() {
+  if (!getEcmpCompressionThresholdPct()) {
+    return;
+  }
+  assertResourceMgrCorrectness(*sw_->getEcmpResourceManager(), sw_->getState());
+  assertResourceMgrCorrectness(*consolidator_, state_);
 }
 
 std::set<EcmpResourceManager::NextHopGroupId>
@@ -393,6 +681,240 @@ BaseEcmpResourceManagerTest::getNhopId(const RouteNextHopSet& nhops) const {
   return nhopId;
 }
 
+void BaseEcmpResourceManagerTest::assertTargetState(
+    const std::shared_ptr<SwitchState>& targetState,
+    const std::shared_ptr<SwitchState>& endStatePrefixes,
+    const std::set<RouteV6::Prefix>& overflowPrefixes,
+    const EcmpResourceManager* consolidatorToCheck,
+    bool checkStats) {
+  consolidatorToCheck =
+      consolidatorToCheck ? consolidatorToCheck : consolidator_.get();
+  /*
+   * GE since some tests add v4 routes
+   */
+  EXPECT_GE(
+      state_->getFibs()->getNode(RouterID(0))->getFibV4()->size(),
+      kNumIntfs + 1);
+  std::set<RouteNextHopSet> primaryEcmpGroups, backupEcmpGroups,
+      mergedEcmpGroups;
+  EcmpResourceManager::NextHopGroupIds mergedGroupMembers;
+  auto checkFib = [&](auto fibToCheck, auto targetStateFib) {
+    for (auto [_, inRoute] : std::as_const(*fibToCheck)) {
+      auto route = targetStateFib->exactMatch(inRoute->prefix());
+      ASSERT_TRUE(route->isResolved());
+      ASSERT_NE(route, nullptr);
+      auto consolidatorGrpInfo = consolidatorToCheck->getGroupInfo(
+          RouterID(0), inRoute->prefix().toCidrNetwork());
+      bool isEcmpRoute = route->isResolved() &&
+          route->getForwardInfo().getNextHopSet().size() > 1;
+      if (isEcmpRoute) {
+        ASSERT_NE(consolidatorGrpInfo, nullptr);
+        if (!route->getForwardInfo().getOverrideEcmpSwitchingMode()) {
+          primaryEcmpGroups.insert(
+              route->getForwardInfo().normalizedNextHops());
+        }
+        if (consolidatorToCheck == consolidator_.get()) {
+          /*
+           * If consolidatorToCheck is the same as test class consolidator
+           * assert that group infos b/w SwSwitch's consolidator_ and
+           * Test class consolidator match
+           */
+
+          auto swSwitchGroupInfo = sw_->getEcmpResourceManager()->getGroupInfo(
+              RouterID(0), route->prefix().toCidrNetwork());
+          ASSERT_NE(swSwitchGroupInfo, nullptr);
+          auto swGroupId = swSwitchGroupInfo->getID();
+          auto consolidatorGroupId = swSwitchGroupInfo->getID();
+          auto consolidatorRouteUsageCount =
+              consolidatorGrpInfo->getRouteUsageCount();
+          auto swRouteUsageCount = swSwitchGroupInfo->getRouteUsageCount();
+          auto consolidatorIsBackupEcmpType =
+              consolidatorGrpInfo->isBackupEcmpGroupType();
+          auto swIsBackupEcmpType = swSwitchGroupInfo->isBackupEcmpGroupType();
+          auto consolidatorIsMergeGroup =
+              consolidatorGrpInfo->getMergedGroupInfoItr().has_value();
+          auto swIsMergeGroup =
+              swSwitchGroupInfo->getMergedGroupInfoItr().has_value();
+          EXPECT_EQ(
+              std::tie(
+                  swGroupId,
+                  swRouteUsageCount,
+                  swIsBackupEcmpType,
+                  swIsMergeGroup),
+              std::tie(
+                  consolidatorGroupId,
+                  consolidatorRouteUsageCount,
+                  consolidatorIsBackupEcmpType,
+                  consolidatorIsMergeGroup));
+          // Compare consolidation infos
+          auto swMergedGroupConsolidationInfo =
+              sw_->getEcmpResourceManager()->getMergeGroupConsolidationInfo(
+                  swGroupId);
+          auto consolidatorMergedGroupConsolidationInfo =
+              consolidatorToCheck->getMergeGroupConsolidationInfo(
+                  consolidatorGroupId);
+          EXPECT_EQ(
+              swMergedGroupConsolidationInfo,
+              consolidatorMergedGroupConsolidationInfo);
+          auto swCandidateMergeConsolidationInfo =
+              sw_->getEcmpResourceManager()->getCandidateMergeConsolidationInfo(
+                  swGroupId);
+          auto consolidatorCandidateMergeConsolidationInfo =
+              consolidatorToCheck->getCandidateMergeConsolidationInfo(
+                  consolidatorGroupId);
+          EXPECT_EQ(
+              swCandidateMergeConsolidationInfo,
+              consolidatorCandidateMergeConsolidationInfo);
+          if (swMergedGroupConsolidationInfo) {
+            ASSERT_TRUE(consolidatorGrpInfo->getMergedGroupInfoItr());
+            ASSERT_TRUE(swSwitchGroupInfo->getMergedGroupInfoItr());
+            auto swMergeSet =
+                (*swSwitchGroupInfo->getMergedGroupInfoItr())->first;
+            auto consolidatorMergeSet =
+                (*consolidatorGrpInfo->getMergedGroupInfoItr())->first;
+            EXPECT_EQ(swMergeSet, consolidatorMergeSet);
+            mergedGroupMembers.insert(swMergeSet.begin(), swMergeSet.end());
+          }
+        }
+      }
+    }
+  };
+  auto checkOverflow = [&](const auto fibToCheck, const auto targetStateFib) {
+    for (auto [_, inRoute] : std::as_const(*fibToCheck)) {
+      auto route = targetStateFib->exactMatch(inRoute->prefix());
+      auto consolidatorGrpInfo = consolidatorToCheck->getGroupInfo(
+          RouterID(0), inRoute->prefix().toCidrNetwork());
+      if (overflowPrefixes.find(route->prefix()) != overflowPrefixes.end()) {
+        EXPECT_TRUE(route->getForwardInfo().hasOverrideSwitchingModeOrNhops())
+            << " expected route " << route->str()
+            << " to have override ECMP group type or ecmp nhops";
+        if (getBackupEcmpSwitchingMode()) {
+          EXPECT_EQ(
+              route->getForwardInfo().getOverrideEcmpSwitchingMode(),
+              consolidatorToCheck->getBackupEcmpSwitchingMode());
+          EXPECT_TRUE(consolidatorGrpInfo->isBackupEcmpGroupType());
+          backupEcmpGroups.insert(route->getForwardInfo().normalizedNextHops());
+        }
+        if (getEcmpCompressionThresholdPct()) {
+          EXPECT_TRUE(
+              route->getForwardInfo().getOverrideNextHops().has_value());
+          EXPECT_EQ(
+              route->getForwardInfo().getOverrideNextHops(),
+              consolidatorToCheck
+                  ->getGroupInfo(RouterID(0), route->prefix().toCidrNetwork())
+                  ->getOverrideNextHops());
+          // Merged groups also take up primary ecmp groups
+          mergedEcmpGroups.insert(route->getForwardInfo().normalizedNextHops());
+        }
+      } else {
+        EXPECT_FALSE(route->getForwardInfo().hasOverrideSwitchingModeOrNhops())
+            << " expected route " << route->str()
+            << " to NOT have override ECMP group type or ecmp nhops";
+        bool isEcmpRoute = route->isResolved() &&
+            route->getForwardInfo().getNextHopSet().size() > 1;
+        if (isEcmpRoute) {
+          EXPECT_FALSE(consolidatorGrpInfo->isBackupEcmpGroupType());
+          EXPECT_FALSE(consolidatorGrpInfo->hasOverrideNextHops());
+        }
+      }
+    }
+  };
+  checkFib(cfib(endStatePrefixes), cfib(targetState));
+  checkFib(cfib4(endStatePrefixes), cfib4(targetState));
+  // Overflow prefixes are of v6 type only
+  checkOverflow(cfib(endStatePrefixes), cfib(targetState));
+  if (checkStats) {
+    EXPECT_EQ(
+        sw_->stats()->getPrimaryEcmpGroupsExhausted(),
+        backupEcmpGroups.size() || mergedEcmpGroups.size() ? 1 : 0);
+    EXPECT_EQ(
+        sw_->stats()->getPrimaryEcmpGroupsCount(), primaryEcmpGroups.size());
+    EXPECT_EQ(
+        sw_->stats()->getBackupEcmpGroupsCount(), backupEcmpGroups.size());
+    EXPECT_EQ(
+        sw_->stats()->getMergedEcmpMemberGroupsCount(),
+        mergedGroupMembers.size());
+  }
+}
+
+std::vector<StateDelta> BaseEcmpResourceManagerTest::addOrUpdateRoute(
+    const RoutePrefixV6& prefix6,
+    const RouteNextHopSet& nhops) {
+  auto newRoute = makeRoute(prefix6, nhops);
+  auto newState = state_->clone();
+  auto fib6 = fib(newState);
+  if (fib6->getNodeIf(prefix6.str())) {
+    fib6->updateNode(prefix6.str(), std::move(newRoute));
+  } else {
+    fib6->addNode(prefix6.str(), std::move(newRoute));
+  }
+  newState->publish();
+  return consolidate(newState);
+}
+
+std::vector<StateDelta> BaseEcmpResourceManagerTest::rmRoutes(
+    const std::vector<RoutePrefixV6>& prefix6s) {
+  auto newState = state_->clone();
+  auto fib6 = fib(newState);
+  for (const auto& prefix6 : prefix6s) {
+    fib6->removeNode(prefix6.str());
+  }
+  newState->publish();
+  return consolidate(newState);
+}
+
+std::set<RouteV6::Prefix> BaseEcmpResourceManagerTest::getPrefixesForGroups(
+    const EcmpResourceManager::NextHopGroupIds& grpIds) const {
+  auto grpId2Prefixes = sw_->getEcmpResourceManager()->getGroupIdToPrefix();
+  std::set<RouteV6::Prefix> prefixes;
+  for (auto grpId : grpIds) {
+    for (const auto& [_, pfx] : grpId2Prefixes.at(grpId)) {
+      prefixes.insert(RouteV6::Prefix(pfx.first.asV6(), pfx.second));
+    }
+  }
+  return prefixes;
+}
+
+std::set<RouteV6::Prefix>
+BaseEcmpResourceManagerTest::getPrefixesWithoutOverrides() const {
+  std::set<RouteV6::Prefix> prefixes;
+  return getPrefixesForGroups(getGroupsWithoutOverrides());
+}
+
+RouteNextHopSet BaseEcmpResourceManagerTest::getNextHops(
+    EcmpResourceManager::NextHopGroupId gid) const {
+  const auto& nhops2Id = sw_->getEcmpResourceManager()->getNhopsToId();
+  for (const auto& nhopsAndId : nhops2Id) {
+    if (gid == nhopsAndId.second) {
+      return nhopsAndId.first;
+    }
+  }
+  CHECK(false) << " Should never get here";
+}
+
+EcmpResourceManager::NextHopGroupIds
+BaseEcmpResourceManagerTest::getGroupsWithoutOverrides() const {
+  EcmpResourceManager::NextHopGroupIds nonOverrideGids;
+  auto grpId2Prefixes = sw_->getEcmpResourceManager()->getGroupIdToPrefix();
+  for (const auto& [_, pfxs] : grpId2Prefixes) {
+    auto grpInfo = sw_->getEcmpResourceManager()->getGroupInfo(
+        pfxs.begin()->first, pfxs.begin()->second);
+    if (!grpInfo->hasOverrides()) {
+      nonOverrideGids.insert(grpInfo->getID());
+    }
+  }
+  return nonOverrideGids;
+}
+
+EcmpResourceManager::NextHopGroupIds BaseEcmpResourceManagerTest::getAllGroups()
+    const {
+  EcmpResourceManager::NextHopGroupIds allGroups;
+  for (const auto& nhopsAndId : sw_->getEcmpResourceManager()->getNhopsToId()) {
+    allGroups.insert(nhopsAndId.second);
+  }
+  return allGroups;
+}
+
 TEST_F(BaseEcmpResourceManagerTest, noFibsDelta) {
   auto oldState = state_;
   auto newState = oldState->clone();
@@ -465,5 +987,19 @@ TEST_F(BaseEcmpResourceManagerTest, UpdateFailed) {
   // After update failure, the next hop set should not exist
   auto nhopId = getNhopId(nhops);
   EXPECT_FALSE(nhopId.has_value());
+}
+
+TEST_F(BaseEcmpResourceManagerTest, reloadInvalidConfigs) {
+  {
+    // Both compression threshold and backup group type set
+    auto newCfg = onePortPerIntfConfig(42, getBackupEcmpSwitchingMode());
+    EXPECT_THROW(sw_->applyConfig("Invalid config", newCfg), FbossError);
+  }
+  {
+    // Resetting backup ecmp type is not allowed
+    auto newCfg =
+        onePortPerIntfConfig(getEcmpCompressionThresholdPct(), std::nullopt);
+    EXPECT_THROW(sw_->applyConfig("Invalid config", newCfg), FbossError);
+  }
 }
 } // namespace facebook::fboss

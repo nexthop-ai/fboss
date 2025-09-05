@@ -173,12 +173,6 @@ DEFINE_bool(
 
 DEFINE_bool(skip_buffer_reservation, false, "Enable skip reservation");
 
-// TODO(zecheng): Remove this once firmware support is ready
-DEFINE_bool(
-    conditional_entropy_cpu_seed_test_only,
-    false,
-    "Enable test-only feature for CPU updating conditional entropy seed");
-
 DEFINE_bool(
     fix_lossless_mode_per_pg,
     false,
@@ -228,6 +222,11 @@ DEFINE_int32(
     max_arp_entries,
     1280,
     "Maximum ARP entries supported by Resource Accountant");
+
+DEFINE_bool(
+    enforce_resource_hw_limits,
+    true,
+    "Weather to cap the configured maximum entries to the harwdware limit by Resource Accountant");
 
 DEFINE_bool(
     fw_drained_unrecoverable_error,
@@ -325,3 +324,23 @@ DEFINE_bool(
     dsf_single_stage_r192_f40_e32,
     false,
     "Use platform mapping for DSF Single Stage with 192 RDSWs, 40 FDSWs, 32 EDSWs");
+
+DEFINE_bool(
+    enable_high_frequency_stats_polling,
+    false,
+    "Enable high frequency stats polling");
+
+DEFINE_bool(
+    dsf_headroom_pool_size_multiplication_factor_fix,
+    false,
+    "Fix the headroom pool size multiplication factor for DSF");
+
+DEFINE_bool(
+    ignore_asic_hard_reset_notification,
+    false,
+    "Ignore ASIC hard reset notification received from SAI/SDK");
+
+DEFINE_bool(
+    cleanup_probed_kernel_data,
+    false,
+    "Remove probed routes, addresses, rules, and interfaces from the kernel");

@@ -97,6 +97,8 @@ std::map<int32_t, std::pair<std::string, std::size_t>> _SwitchMap{
 #endif
 #if SAI_API_VERSION >= SAI_VERSION(1, 16, 0)
     SAI_ATTR_MAP(Switch, PtpMode),
+    SAI_ATTR_MAP(Switch, RegFatalSwitchAsicSdkHealthCategory),
+    SAI_ATTR_MAP(Switch, RegNoticeSwitchAsicSdkHealthCategory),
 #endif
     SAI_ATTR_MAP(Switch, AsicTemperatureList),
     SAI_ATTR_MAP(Switch, NumTemperatureSensors),
@@ -165,6 +167,8 @@ void handleExtensionAttributes() {
   SAI_EXT_ATTR_MAP(Switch, TriggerSimulatedEccCorrectableError)
   SAI_EXT_ATTR_MAP(Switch, TriggerSimulatedEccUnCorrectableError)
   SAI_EXT_ATTR_MAP(Switch, DefaultCpuEgressBufferPool)
+  SAI_EXT_ATTR_MAP(Switch, TechSupportType)
+  SAI_EXT_ATTR_MAP(Switch, ModuleIdFabricPortList)
 }
 
 } // namespace

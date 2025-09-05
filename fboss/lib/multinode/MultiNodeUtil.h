@@ -28,6 +28,8 @@ class MultiNodeUtil {
   bool verifyStaticNdpEntries();
   bool verifyDsfSessions();
 
+  bool verifyGracefulFabricLinkDownUp();
+
  private:
   enum class SwitchType : uint8_t {
     RDSW = 0,
@@ -70,9 +72,29 @@ class MultiNodeUtil {
 
   bool verifyFabricReachablityForRdsw(const std::string& rdswToVerify);
 
+  bool verifyNoSessionsFlap(
+      const std::string& rdswToVerify,
+      const std::map<std::string, DsfSessionThrift>& baselinePeerToDsfSession);
+  bool verifyNoSessionsEstablished(const std::string& rdswToVerify);
+  bool verifyAllSessionsEstablished(const std::string& rdswToVerify);
+
+  bool verifyGracefulFabricLinkDown(
+      const std::string& rdswToVerify,
+      const std::map<std::string, PortInfoThrift>&
+          activeFabricPortNameToPortInfo);
+  bool verifyGracefulFabricLinkUp(
+      const std::string& rdswToVerify,
+      const std::map<std::string, PortInfoThrift>&
+          activeFabricPortNameToPortInfo);
+
   std::map<int32_t, facebook::fboss::PortInfoThrift> getPorts(
       const std::string& switchName);
   std::set<std::string> getActiveFabricPorts(const std::string& switchName);
+  std::map<std::string, PortInfoThrift> getActiveFabricPortNameToPortInfo(
+      const std::string& switchName);
+  std::map<std::string, PortInfoThrift> getFabricPortNameToPortInfo(
+      const std::string& switchName);
+
   bool verifyPortActiveStateForSwitch(
       SwitchType switchType,
       const std::string& switchName);
@@ -97,6 +119,8 @@ class MultiNodeUtil {
       const std::string& rdsw,
       const std::set<std::string>& types);
 
+  std::map<std::string, DsfSessionThrift> getPeerToDsfSession(
+      const std::string& rdsw);
   std::set<std::string> getRdswsWithEstablishedDsfSessions(
       const std::string& rdsw);
 

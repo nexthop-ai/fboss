@@ -80,6 +80,7 @@ class CmisModule : public QsfpModule {
   struct ApplicationAdvertisingField {
     uint8_t ApSelCode;
     uint8_t moduleMediaInterface;
+    uint8_t moduleHostInterface{};
     int hostLaneCount;
     int mediaLaneCount;
     std::vector<int> hostStartLanes;
@@ -216,7 +217,7 @@ class CmisModule : public QsfpModule {
   virtual bool customizationSupported() const override {
     return present_ &&
         (getQsfpTransmitterTechnology() == TransmitterTechnology::OPTICAL ||
-         getMediaTypeEncoding() == MediaTypeEncodings::ACTIVE_CABLES);
+         isAecModule());
   }
 
   /*
@@ -569,6 +570,8 @@ class CmisModule : public QsfpModule {
    */
   MediaInterfaceCode getModuleMediaInterface() const override;
 
+  uint64_t maxRetriesWith500msDelay(bool /*init*/);
+
   void resetDataPathWithFunc(
       std::optional<std::function<void()>> afterDataPathDeinitFunc =
           std::nullopt,
@@ -656,8 +659,17 @@ class CmisModule : public QsfpModule {
   void clearTransceiverPrbsStats(const std::string& portName, phy::Side side)
       override;
 
-  // Returns true if the current module is LPO
+  /*
+   * Returns true if the current module is LPO
+   */
   bool isLpoModule() const override;
+
+  /*
+   * Return if module is AEC cable.
+   */
+  bool isAecModule() const {
+    return getMediaTypeEncoding() == MediaTypeEncodings::ACTIVE_CABLES;
+  }
 
   std::time_t vdmIntervalStartTime_{0};
 };

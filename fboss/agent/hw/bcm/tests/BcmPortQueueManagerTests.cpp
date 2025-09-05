@@ -81,7 +81,7 @@ cfg::ActiveQueueManagement getEarlyDropAqmConfig(int mmuCellBytes) {
   *earlyDropLQCD.minimumLength() = mmuCellBytes;
   *earlyDropLQCD.maximumLength() = 2 * mmuCellBytes;
   earlyDropLQCD.probability() = KProbability / 2;
-  earlyDropAQM.detection()->linear_ref() = earlyDropLQCD;
+  earlyDropAQM.detection()->linear() = earlyDropLQCD;
   *earlyDropAQM.behavior() = cfg::QueueCongestionBehavior::EARLY_DROP;
   return earlyDropAQM;
 }
@@ -92,7 +92,7 @@ cfg::ActiveQueueManagement getECNAqmConfig(int mmuCellBytes) {
   *ecnLQCD.minimumLength() = 3 * mmuCellBytes;
   *ecnLQCD.maximumLength() = 3 * mmuCellBytes;
   ecnLQCD.probability() = KProbability;
-  ecnAQM.detection()->linear_ref() = ecnLQCD;
+  ecnAQM.detection()->linear() = ecnLQCD;
   *ecnAQM.behavior() = cfg::QueueCongestionBehavior::ECN;
   return ecnAQM;
 }
@@ -182,7 +182,7 @@ TEST_F(BcmPortQueueManagerTest, DefaultPortQueuesCheckWithoutConfig) {
     return;
   }
 
-  auto setup = [=]() { applyNewConfig(initialConfig()); };
+  auto setup = [=, this]() { applyNewConfig(initialConfig()); };
 
   auto verify = [&]() {
     auto defaultUCQueueSize = getAsic()->getDefaultNumPortQueues(
@@ -212,7 +212,7 @@ TEST_F(BcmPortQueueManagerTest, ConfigPortQueuesSetup) {
     return;
   }
 
-  auto setup = [=]() {
+  auto setup = [=, this]() {
     auto cfg = initialConfig();
     cfg.portQueueConfigs()["queue_config"] =
         getConfigPortQueues(getPlatform()->getMMUCellBytes());
@@ -305,7 +305,7 @@ TEST_F(BcmPortQueueManagerTest, ClearPortQueueSettings) {
     return;
   }
 
-  auto setup = [=]() {
+  auto setup = [=, this]() {
     auto cfg = initialConfig();
     auto portQueues = getConfigPortQueues(mmuCellBytes());
     ;
@@ -423,7 +423,7 @@ TEST_F(BcmPortQueueManagerTest, InternalPriorityMappings) {
     return;
   }
 
-  auto setup = [=]() {
+  auto setup = [=, this]() {
     auto cfg = initialConfig();
     cfg.portQueueConfigs()["queue_config"] =
         getConfigPortQueues(mmuCellBytes());
@@ -478,7 +478,7 @@ TEST_F(BcmPortQueueManagerTest, InternalPriorityMappingsOverride) {
     return;
   }
 
-  auto setup = [=]() {
+  auto setup = [=, this]() {
     auto cfg = initialConfig();
     cfg.portQueueConfigs()["queue_config"] =
         get7ConfigPortQueues(mmuCellBytes());

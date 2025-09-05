@@ -5,7 +5,7 @@
 
 namespace {
 static constexpr int kDefaultMidPriCpuQueueId = 2;
-static constexpr int kDefaultHiPriCpuQueueId = 7;
+static constexpr int kDefaultHiPriCpuQueueId = 3;
 } // namespace
 
 namespace facebook::fboss {
@@ -55,7 +55,6 @@ bool ChenabAsic::isSupportedNonFabric(Feature feature) const {
     case HwAsic::Feature::L3_MTU_ERROR_TRAP:
     case HwAsic::Feature::SAI_PORT_SERDES_PROGRAMMING:
     case HwAsic::Feature::PORT_WRED_COUNTER:
-    case HwAsic::Feature::PORT_SERDES_ZERO_PREEMPHASIS:
     case HwAsic::Feature::SAI_UDF_HASH:
     case HwAsic::Feature::SAI_FEC_COUNTERS:
     case HwAsic::Feature::SAI_FEC_CODEWORDS_STATS:
@@ -74,7 +73,6 @@ bool ChenabAsic::isSupportedNonFabric(Feature feature) const {
     case HwAsic::Feature::INGRESS_POST_LOOKUP_ACL_TABLE:
     case HwAsic::Feature::SAI_USER_DEFINED_TRAP:
     case HwAsic::Feature::ACL_ENTRY_ETHER_TYPE:
-    case HwAsic::Feature::DEDICATED_CPU_BUFFER_POOL:
     case HwAsic::Feature::ROUTE_METADATA:
     case HwAsic::Feature::SAI_ECMP_HASH_ALGORITHM:
     case HwAsic::Feature::ACL_COUNTER_LABEL:
@@ -86,7 +84,14 @@ bool ChenabAsic::isSupportedNonFabric(Feature feature) const {
     case HwAsic::Feature::SWITCH_ASIC_SDK_HEALTH_NOTIFY:
     case HwAsic::Feature::OBJECT_KEY_CACHE:
     case HwAsic::Feature::WARMBOOT:
+    case HwAsic::Feature::SAI_PRBS:
+    case HwAsic::Feature::ROUTER_INTERFACE_STATISTICS:
+    case HwAsic::Feature::CPU_PORT_EGRESS_BUFFER_POOL:
+    case HwAsic::Feature::BLACKHOLE_ROUTE_DROP_COUNTER:
+    case HwAsic::Feature::ANY_ACL_DROP_COUNTER:
       return true;
+    case HwAsic::Feature::PORT_SERDES_ZERO_PREEMPHASIS:
+    case HwAsic::Feature::DEDICATED_CPU_BUFFER_POOL:
     case HwAsic::Feature::IN_PAUSE_INCREMENTS_DISCARDS:
     case HwAsic::Feature::SAI_ACL_TABLE_UPDATE:
     case HwAsic::Feature::PORT_MTU_ERROR_TRAP:
@@ -108,7 +113,6 @@ bool ChenabAsic::isSupportedNonFabric(Feature feature) const {
     case HwAsic::Feature::MEDIA_TYPE:
     case HwAsic::Feature::PORT_TTL_DECREMENT_DISABLE:
     case HwAsic::Feature::COUNTER_REFRESH_INTERVAL:
-    case HwAsic::Feature::BLACKHOLE_ROUTE_DROP_COUNTER:
     case HwAsic::Feature::ECMP_MEMBER_WIDTH_INTROSPECTION:
     case HwAsic::Feature::SAI_MPLS_LABEL_LOOKUP_FAIL_COUNTER:
     case HwAsic::Feature::SAI_MPLS_TTL_1_TRAP:
@@ -179,10 +183,8 @@ bool ChenabAsic::isSupportedNonFabric(Feature feature) const {
     case HwAsic::Feature::LINK_INACTIVE_BASED_ISOLATE:
     case HwAsic::Feature::RX_SNR:
     case HwAsic::Feature::MANAGEMENT_PORT:
-    case HwAsic::Feature::ANY_ACL_DROP_COUNTER:
     case HwAsic::Feature::EGRESS_FORWARDING_DROP_COUNTER:
     case HwAsic::Feature::ANY_TRAP_DROP_COUNTER:
-    case HwAsic::Feature::SAI_PRBS:
     case HwAsic::Feature::RCI_WATERMARK_COUNTER:
     case HwAsic::Feature::DTL_WATERMARK_COUNTER:
     case HwAsic::Feature::LINK_ACTIVE_INACTIVE_NOTIFY:
@@ -218,6 +220,16 @@ bool ChenabAsic::isSupportedNonFabric(Feature feature) const {
     case HwAsic::Feature::RX_SERDES_PARAMETERS:
     case HwAsic::Feature::SAI_PORT_IN_CONGESTION_DISCARDS:
     case HwAsic::Feature::TEMPERATURE_MONITORING:
+    case HwAsic::Feature::ACL_SET_ECMP_HASH_ALGORITHM:
+    case HwAsic::Feature::SET_NEXT_HOP_GROUP_HASH_ALGORITHM:
+    case HwAsic::Feature::BULK_CREATE_ECMP_MEMBER:
+    case HwAsic::Feature::TECH_SUPPORT:
+    case HwAsic::Feature::DRAM_QUARANTINED_BUFFER_STATS:
+    case HwAsic::Feature::MANAGEMENT_PORT_MULTICAST_QUEUE_ALPHA:
+    case HwAsic::Feature::SAI_PORT_PG_DROP_STATUS:
+    case HwAsic::Feature::FABRIC_INTER_CELL_JITTER_WATERMARK:
+    case HwAsic::Feature::MAC_TRANSMIT_DATA_QUEUE_WATERMARK:
+    case HwAsic::Feature::FABRIC_LINK_MONITORING:
       return false;
   }
   return false;
@@ -273,6 +285,7 @@ std::set<cfg::StreamType> ChenabAsic::getQueueStreamTypes(
       return {cfg::StreamType::FABRIC_TX};
     case cfg::PortType::RECYCLE_PORT:
     case cfg::PortType::EVENTOR_PORT:
+    case cfg::PortType::HYPER_PORT:
       // TODO: handle when we start modeling
       // recycle port for Ebro ASIC
       break;
@@ -397,7 +410,7 @@ uint32_t ChenabAsic::getSflowShimHeaderSize() const {
   return 9;
 }
 std::optional<uint32_t> ChenabAsic::getPortSerdesPreemphasis() const {
-  return 50;
+  return -15; // must be same as pre1
 }
 uint32_t ChenabAsic::getPacketBufferUnitSize() const {
   return 192;
@@ -449,6 +462,11 @@ ChenabAsic::desiredLoopbackModes() const {
 
 uint32_t ChenabAsic::getThresholdGranularity() const {
   return getPacketBufferUnitSize() * 64;
+}
+
+std::vector<prbs::PrbsPolynomial> ChenabAsic::getSupportedPrbsPolynomials()
+    const {
+  return {prbs::PrbsPolynomial::PRBS13};
 }
 
 } // namespace facebook::fboss

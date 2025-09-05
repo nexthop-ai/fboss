@@ -515,6 +515,7 @@ class AgentNeighborResolutionOverFlowTest : public AgentNeighborResolutionTest {
     FLAGS_enable_hw_update_protection = true;
     // set max neighbor resource percentage to 200% to bypass resourceAccountant
     // check
+    FLAGS_enforce_resource_hw_limits = false;
     FLAGS_neighbhor_resource_percentage = 200;
     FLAGS_max_ndp_entries = 9000;
   }
@@ -607,11 +608,7 @@ class AgentNeighborResolutionOverFlowTest : public AgentNeighborResolutionTest {
     uint32_t ndpTableSize = 0;
     auto hwAsic = checkSameAndGetAsic(getAgentEnsemble()->getL3Asics());
     CHECK(hwAsic->getMaxNdpTableSize().has_value());
-    if (ndpTableSize > 0) {
-      CHECK_EQ(ndpTableSize, hwAsic->getMaxNdpTableSize().value());
-    }
     ndpTableSize = hwAsic->getMaxNdpTableSize().value();
-
     CHECK(ndpTableSize > 0);
     return ndpTableSize;
   }

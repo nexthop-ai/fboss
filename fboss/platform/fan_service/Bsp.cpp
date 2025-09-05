@@ -118,6 +118,21 @@ void Bsp::kickWatchdog() {
   if (!writeToWatchdog(valueStr)) {
     XLOG(ERR) << "Failed to kick watchdog";
   }
+  XLOG_EVERY_MS(INFO, 5000) << "Watchdog has been kicked";
+}
+
+void Bsp::closeWatchdog() {
+  if (!watchdogFd_.has_value()) {
+    return;
+  }
+  std::cout << "Closing watchdog" << std::endl;
+  try {
+    writeToWatchdog("V");
+  } catch (std::exception& e) {
+    XLOG(ERR) << "Error magic closing watchdog: " << e.what();
+  }
+  close(watchdogFd_.value());
+  watchdogFd_.reset();
 }
 
 bool Bsp::writeToWatchdog(const std::string& value) {
@@ -126,24 +141,23 @@ bool Bsp::writeToWatchdog(const std::string& value) {
     return false;
   }
   auto sysfsPath = config_.watchdog()->sysfsPath()->c_str();
-  int fd = open(sysfsPath, O_WRONLY);
-  if (fd < 0) {
-    XLOG(ERR) << "Failed to open watchdog";
-    return false;
+  if (!watchdogFd_.has_value()) {
+    int fd = open(sysfsPath, O_WRONLY);
+    if (fd < 0) {
+      XLOG(ERR) << fmt::format("Failed to open watchdog file: {}", sysfsPath);
+      return false;
+    }
+    watchdogFd_ = fd;
+    XLOG(INFO) << fmt::format(
+        "Opened watchdog file: {} ({})", sysfsPath, watchdogFd_.value());
   }
   bool res = false;
   try {
-    res = writeFd(fd, value);
+    res = writeFd(watchdogFd_.value(), value);
   } catch (std::exception& e) {
     XLOG(ERR) << "Could not write to watchdog: " << e.what();
     res = false;
   }
-  try {
-    writeFd(fd, "V");
-  } catch (std::exception& e) {
-    XLOG(ERR) << "Failed to magic close watchdog: " << e.what();
-  }
-  close(fd);
   return res;
 }
 
@@ -211,6 +225,8 @@ std::vector<std::pair<std::string, float>> Bsp::processOpticEntries(
       case MediaInterfaceCode::DR4_2x400G:
       case MediaInterfaceCode::FR8_800G:
       case MediaInterfaceCode::LR4_2x400G_10KM:
+      case MediaInterfaceCode::ZR_800G:
+      case MediaInterfaceCode::CR8_800G:
         opticType = constants::OPTIC_TYPE_800_GENERIC();
         break;
       default:
@@ -335,7 +351,7 @@ void Bsp::getAsicTempDataOverThrift(
   try {
     auto agentReadResponse =
         getAsicTempThroughThrift(agentTempThriftPort_, evbSensor_);
-    for (auto& asicTempData : *agentReadResponse.sensorData()) {
+    for (auto& asicTempData : *agentReadResponse.asicTempData()) {
       // Again, for Thrift too, only honor the entry with value and timestamp.
       if (asicTempData.value() && asicTempData.timeStamp()) {
         pSensorData->updateSensorEntry(
@@ -346,7 +362,7 @@ void Bsp::getAsicTempDataOverThrift(
     }
     XLOG(INFO) << fmt::format(
         "Got Asic Temp data from agent.  Item count: {}",
-        agentReadResponse.sensorData()->size());
+        agentReadResponse.asicTempData()->size());
   } catch (std::exception& e) {
     XLOG(ERR) << "Failed to get ASIC temp data using Thrift, with error : "
               << e.what();
@@ -418,6 +434,7 @@ Bsp::~Bsp() {
   }
   fsdbSensorSubscriber_.reset();
   fsdbPubSubMgr_.reset();
+  closeWatchdog();
 }
 
 } // namespace facebook::fboss::platform::fan_service

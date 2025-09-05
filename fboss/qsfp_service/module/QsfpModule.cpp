@@ -367,6 +367,7 @@ unsigned int QsfpModule::numHostLanes() const {
     case MediaInterfaceCode::CR8_800G:
     case MediaInterfaceCode::LR4_2x400G_10KM:
     case MediaInterfaceCode::DR4_2x800G:
+    case MediaInterfaceCode::ZR_800G:
       return 8;
     case MediaInterfaceCode::UNKNOWN:
       return 0;
@@ -383,6 +384,7 @@ unsigned int QsfpModule::numMediaLanes() const {
     case MediaInterfaceCode::BASE_T_10G:
     case MediaInterfaceCode::CR_10G:
     case MediaInterfaceCode::DR1_200G:
+    case MediaInterfaceCode::ZR_800G:
       return 1;
     case MediaInterfaceCode::CWDM4_100G:
     case MediaInterfaceCode::CR4_100G:
@@ -584,7 +586,7 @@ void QsfpModule::updateCachedTransceiverInfoLocked(ModuleStatus moduleStatus) {
   tcvrStats.interfaces() = getInterfaces();
 
   phy::LinkSnapshot snapshot;
-  snapshot.transceiverInfo_ref() = info;
+  snapshot.transceiverInfo() = info;
   snapshots_.wlock()->addSnapshot(snapshot);
   *info_.wlock() = info;
 }
@@ -772,7 +774,6 @@ bool QsfpModule::isTransceiverFeatureSupported(
       case TransceiverFeature::CDB:
         throw FbossError(
             "Line/System side info is not needed to check Feature support in Transceiver");
-        return diagsCapability->cdb().value();
       case TransceiverFeature::PRBS:
         return (side == phy::Side::LINE)
             ? diagsCapability->prbsLine().value()

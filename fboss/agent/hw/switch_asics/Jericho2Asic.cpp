@@ -217,6 +217,18 @@ bool Jericho2Asic::isSupported(Feature feature) const {
     case HwAsic::Feature::RX_SERDES_PARAMETERS:
     case HwAsic::Feature::SAI_PORT_IN_CONGESTION_DISCARDS:
     case HwAsic::Feature::TEMPERATURE_MONITORING:
+    case HwAsic::Feature::ROUTER_INTERFACE_STATISTICS:
+    case HwAsic::Feature::CPU_PORT_EGRESS_BUFFER_POOL:
+    case HwAsic::Feature::ACL_SET_ECMP_HASH_ALGORITHM:
+    case HwAsic::Feature::SET_NEXT_HOP_GROUP_HASH_ALGORITHM:
+    case HwAsic::Feature::BULK_CREATE_ECMP_MEMBER:
+    case HwAsic::Feature::TECH_SUPPORT:
+    case HwAsic::Feature::DRAM_QUARANTINED_BUFFER_STATS:
+    case HwAsic::Feature::MANAGEMENT_PORT_MULTICAST_QUEUE_ALPHA:
+    case HwAsic::Feature::SAI_PORT_PG_DROP_STATUS:
+    case HwAsic::Feature::FABRIC_INTER_CELL_JITTER_WATERMARK:
+    case HwAsic::Feature::MAC_TRANSMIT_DATA_QUEUE_WATERMARK:
+    case HwAsic::Feature::FABRIC_LINK_MONITORING:
       return false;
   }
   return false;
@@ -231,6 +243,7 @@ std::set<cfg::StreamType> Jericho2Asic::getQueueStreamTypes(
     case cfg::PortType::MANAGEMENT_PORT:
     case cfg::PortType::RECYCLE_PORT:
     case cfg::PortType::EVENTOR_PORT:
+    case cfg::PortType::HYPER_PORT:
       return {cfg::StreamType::UNICAST};
     case cfg::PortType::FABRIC_PORT:
       return {cfg::StreamType::FABRIC_TX};
@@ -285,6 +298,7 @@ std::optional<uint64_t> Jericho2Asic::getDefaultReservedBytes(
     case cfg::PortType::MANAGEMENT_PORT:
     case cfg::PortType::FABRIC_PORT:
     case cfg::PortType::EVENTOR_PORT:
+    case cfg::PortType::HYPER_PORT:
       return 0;
   }
   throw FbossError(

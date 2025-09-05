@@ -65,6 +65,8 @@ cpp_unittest(
         "BspPlatformMapTest.cpp",
     ],
     deps = [
+        "//fboss/lib/bsp/icecube800bc:icecube800bc_bsp",
+        "//fboss/lib/bsp/icetea800bc:icetea800bc_bsp",
         "//fboss/lib/bsp/meru400bfu:meru400bfu_bsp",
         "//fboss/lib/bsp/meru400bia:meru400bia_bsp",
         "//fboss/lib/bsp/meru400biu:meru400biu_bsp",
@@ -80,6 +82,7 @@ cpp_unittest(
         "TransceiverStateMachineTest.cpp",
     ],
     deps = [
+        ":mock_transceivers",
         ":transceiver_manager_test_helper",
         "//fboss/qsfp_service:transceiver-manager",
         "//fboss/qsfp_service/module:qsfp-module",
@@ -95,7 +98,7 @@ cpp_library(
     headers = ["MockStateMachine.h"],
     exported_deps = [
         "//fboss/agent:fboss-error",
-        "//fboss/qsfp_service:state-machine-controller",
+        "//fboss/qsfp_service:port-manager",
         "//folly/logging:logging",
         "//thrift/lib/cpp/util:enum_utils",
     ],
@@ -120,12 +123,70 @@ cpp_unittest(
     deps = [
         "fbsource//third-party/googletest:gmock",
         ":mock-state-machine",
-        "//fboss/qsfp_service:state-machine-controller",
+        "//fboss/qsfp_service:port-manager",
         "//fboss/qsfp_service:typed-state-machine-update",
         "//folly:synchronized",
         "//folly/logging:logging",
     ],
     external_deps = [
         "boost",
+    ],
+)
+
+cpp_library(
+    name = "mock_manager_constructor_args",
+    headers = ["MockManagerConstructorArgs.h"],
+    exported_deps = [
+        "//fboss/agent/platforms/common/fake_test:fake_test_platform_mapping",
+        "//fboss/lib/config:fboss_config_utils",
+        "//fboss/qsfp_service:slot-thread-helper",
+    ],
+)
+
+cpp_library(
+    name = "mock_transceivers",
+    headers = ["MockTransceivers.h"],
+    exported_deps = [
+        "fbsource//third-party/googletest:gtest",
+        "//fboss/qsfp_service/module:qsfp-module",
+        "//fboss/qsfp_service/module/tests:fake-transceiver-impl",
+        "//fboss/qsfp_service/module/tests:mock-headers",
+        "//fboss/qsfp_service/test/hw_test:hw_transceiver_utils",
+        "//folly/testing:test_util",
+    ],
+)
+
+cpp_library(
+    name = "mock_port_manager",
+    headers = ["MockPortManager.h"],
+    exported_deps = [
+        "fbsource//third-party/googletest:gmock",
+        "fbsource//third-party/googletest:gtest",
+        "//fboss/qsfp_service:port-manager",
+    ],
+)
+
+cpp_library(
+    name = "mock_phy_manager",
+    headers = ["MockPhyManager.h"],
+    exported_deps = [
+        "fbsource//third-party/googletest:gmock",
+        "fbsource//third-party/googletest:gtest",
+        "//fboss/lib/phy:phy_management_base",
+    ],
+)
+
+cpp_unittest(
+    name = "port_manager_test",
+    srcs = ["PortManagerTest.cpp"],
+    deps = [
+        "fbsource//third-party/googletest:gmock",
+        ":fake-configs-helper",
+        ":mock_manager_constructor_args",
+        ":mock_phy_manager",
+        ":mock_port_manager",
+        "//fboss/qsfp_service:port-manager",
+        "//fboss/qsfp_service/platforms/wedge/tests:mock-wedge-manager",
+        "//folly/testing:test_util",
     ],
 )

@@ -80,6 +80,8 @@ inline std::string toString(PlatformType mode) {
       return "MERU800BIA";
     case PlatformType::PLATFORM_MERU800BIAB:
       return "MERU800BIAB";
+    case PlatformType::PLATFORM_MERU800BIAC:
+      return "MERU800BIAC";
     case PlatformType::PLATFORM_MERU800BFA:
       return "MERU800BFA";
     case PlatformType::PLATFORM_MERU800BFA_P1:
@@ -100,11 +102,14 @@ inline std::string toString(PlatformType mode) {
       return "ICECUBE";
     case PlatformType::PLATFORM_NH4010:
       return "NH4010";
+    case PlatformType::PLATFORM_WEDGE800BA:
+      return "WEDGE800BA";
+    case PlatformType::PLATFORM_ICETEA800BC:
+      return "ICETEA";
     case PlatformType::PLATFORM_UNKNOWN:
       return "UNKNOWN";
   }
   throw std::runtime_error("Unknown mode");
-  return "Unknown";
 }
 
 enum class ExternalPhyVersion : char {
