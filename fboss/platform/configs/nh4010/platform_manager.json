@@ -7,7 +7,7 @@
     "SCM_SLOT": {
       "numOutgoingI2cBuses": 7,
       "idpromConfig": {
-        "busName": "FPGA 0000:03:00.0 I2C Adapter #6",
+        "busName": "FPGA 7011 I2C Adapter #6",
         "address": "0x50",
         "kernelDeviceName": "24c64"
       },
@@ -16,7 +16,7 @@
     "SMB_SLOT": {
       "numOutgoingI2cBuses": 10,
       "idpromConfig": {
-        "busName": "FPGA 0000:03:00.0 I2C Adapter #6",
+        "busName": "FPGA 7011 I2C Adapter #6",
         "address": "0x50",
         "kernelDeviceName": "24c64"
       },
@@ -109,7 +109,7 @@
         "SMB_SLOT@0": {
           "slotType": "SMB_SLOT",
           "outgoingI2cBusNames": [
-            "FPGA 0000:03:00.0 I2C Adapter #6"
+            "FPGA 7011 I2C Adapter #6"
           ]
         }
       }
@@ -224,7 +224,7 @@
     "SMBus PIIX4 adapter port 0 at 0b00",
     "SMBus PIIX4 adapter port 2 at 0b00",
     "SMBus PIIX4 adapter port 1 at 0b20",
-    "FPGA 0000:03:00.0 I2C Adapter #6"
+    "FPGA 7011 I2C Adapter #6"
   ],
   "symbolicLinkToDevicePath": {
     "/run/devmap/eeproms/SCM_EEPROM": "/[IDPROM]",
