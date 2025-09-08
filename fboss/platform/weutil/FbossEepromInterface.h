@@ -49,6 +49,11 @@ class FbossEepromInterface {
   FbossEepromInterface() = default;
   void parseEepromBlobTLV(const std::vector<uint8_t>& buffer);
 
+  // ONIE TlvInfo format parsing methods
+  void parseEepromBlobTLVOnie(const std::vector<uint8_t>& buffer);
+  bool isOnieTlvInfoFormat(const std::vector<uint8_t>& buffer);
+  uint32_t calculateCrc32(const uint8_t* buffer, size_t len);
+
   std::map<int, EepromFieldEntry> fieldMap_{};
   int version_{0};
 };

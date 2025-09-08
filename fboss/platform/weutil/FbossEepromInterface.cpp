@@ -1,5 +1,7 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
+#include <cstring>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -18,6 +20,13 @@ namespace {
 constexpr int kHeaderSize = 4;
 // Field Type and Length are 1 byte each.
 constexpr int kEepromTypeLengthSize = 2;
+
+// ONIE TlvInfo format constants
+constexpr char kOnieTlvInfoIdString[] = "TlvInfo";
+constexpr int kOnieTlvInfoVersion = 0x01;
+constexpr int kOnieTlvInfoHdrLen = 11;
+constexpr int kOnieTlvInfoMaxLen = 2048;
+constexpr int kOnieCrcSize = 4;
 
 using entryType = FbossEepromInterface::entryType;
 using entryType::FIELD_BE_HEX;
@@ -108,6 +117,25 @@ FbossEepromInterface::FbossEepromInterface(
     throw std::runtime_error("Invalid EEPROM size");
   }
 
+  // Check if this is ONIE TlvInfo format
+  if (isOnieTlvInfoFormat(buffer)) {
+    version_ = kOnieEepromVersion;
+    fieldMap_ = kOnieMap;
+    parseEepromBlobTLVOnie(buffer);
+    return;
+  }
+
+  // Check for FBOSS EEPROM format signature (0xFBFB)
+  if (buffer[0] != 0xFB || buffer[1] != 0xFB) {
+    std::stringstream ss;
+    ss << "Invalid FBOSS EEPROM format: Expected signature 0xFBFB, got 0x"
+       << std::hex << std::uppercase << std::setfill('0')
+       << std::setw(2) << static_cast<int>(buffer[0])
+       << std::setw(2) << static_cast<int>(buffer[1]);
+    throw std::runtime_error(ss.str());
+  }
+
+  // Parse Meta EEPROM format
   version_ = buffer.at(2);
   switch (version_) {
     case 5:
@@ -224,19 +252,6 @@ FbossEepromInterface FbossEepromInterface::createEepromInterface(int version) {
           "Invalid EEPROM version : " + std::to_string(version));
   }
   return result;
-}
-
-void FbossEepromInterface::setField(int typeCode, const std::string& value) {
-  auto it = fieldMap_.find(typeCode);
-  if (it != fieldMap_.end()) {
-    it->second.value = value;
-  }
-  // Silently ignore unknown field codes for ONIE compatibility
-}
-
-const std::map<int, FbossEepromInterface::EepromFieldEntry>&
-FbossEepromInterface::getFieldDictionary() const {
-  return fieldMap_;
 }
 
 std::vector<std::pair<std::string, std::string>>
@@ -373,6 +388,135 @@ EepromContents FbossEepromInterface::getEepromContents() const {
         joinedKeys));
   }
   return result;
+}
+
+void FbossEepromInterface::parseEepromBlobTLVOnie(const std::vector<uint8_t>& buffer) {
+  // Validate ONIE header
+  if (!isOnieTlvInfoFormat(buffer)) {
+    throw std::runtime_error("Invalid ONIE TlvInfo format");
+  }
+
+  // Get total length from header
+  uint16_t totalLen = (buffer[9] << 8) | buffer[10];
+  int tlvEnd = kOnieTlvInfoHdrLen + totalLen;
+
+  // Start parsing TLVs after the header
+  int cursor = kOnieTlvInfoHdrLen;
+
+  while (cursor < buffer.size() && cursor < tlvEnd) {
+    // Check if we have at least 2 bytes for TLV header
+    if (cursor + 2 > buffer.size()) {
+      break;
+    }
+
+    int itemCode = static_cast<int>(buffer[cursor]);
+    int itemLength = static_cast<int>(buffer[cursor + 1]);
+
+    // Check if we have enough bytes for the value
+    if (cursor + 2 + itemLength > buffer.size()) {
+      break;
+    }
+
+    unsigned char* itemDataPtr = const_cast<unsigned char*>(&buffer[cursor + 2]);
+    std::string value;
+
+    // Parse based on known ONIE TLV codes
+    switch (itemCode) {
+      case 0x21: // Product Name
+      case 0x22: // Part Number
+      case 0x23: // Serial Number
+      case 0x25: // Manufacture Date
+      case 0x27: // Label Revision
+      case 0x28: // Platform Name
+      case 0x29: // ONIE Version
+      case 0x2B: // Manufacturer
+      case 0x2C: // Manufacture Country
+      case 0x2D: // Vendor Name
+      case 0x2E: // Diag Version
+      case 0x2F: // Service Tag
+        value = ParserUtils::parseString(itemLength, itemDataPtr);
+        break;
+      case 0x24: // Base MAC Address
+        value = ParserUtils::parseMac(itemLength, itemDataPtr);
+        break;
+      case 0x26: // Device Version
+      case 0x2A: // MAC Addresses
+        value = ParserUtils::parseBeUint(itemLength, itemDataPtr);
+        break;
+      case 0xFD: // Vendor Extension
+      case 0xFE: // CRC-32
+        value = ParserUtils::parseBeHex(itemLength, itemDataPtr);
+        break;
+      default:
+        std::cout << " Unknown field code " << itemCode << " at position "
+                  << cursor << std::endl;
+        throw std::runtime_error(
+            "Invalid field code in ONIE EEPROM at :" + std::to_string(cursor));
+        break;
+    }
+
+    fieldMap_.at(itemCode).value = value;
+    cursor += 2 + itemLength;
+
+    // Handle CRC-32 validation
+    if (itemCode == 0xFE) { // CRC-32 code
+      uint32_t crcProgrammed = std::stoul(value, nullptr, 16);
+      uint32_t crcCalculated = calculateCrc32(buffer.data(), cursor - 6); // Exclude CRC TLV
+      if (crcProgrammed == crcCalculated) {
+        value.append(" (CRC Matched)");
+      } else {
+        std::stringstream ss;
+        ss << "0x" << std::hex << std::uppercase << crcCalculated;
+        value.append(" (CRC Mismatch. Expected " + ss.str() + ")");
+      }
+      fieldMap_.at(itemCode).value = value;
+      break; // CRC is the last field
+    }
+  }
+}
+
+bool FbossEepromInterface::isOnieTlvInfoFormat(const std::vector<uint8_t>& buffer) {
+  // Check if we have enough bytes for the ONIE header
+  if (buffer.size() < kOnieTlvInfoHdrLen) {
+    return false;
+  }
+
+  // Check for "TlvInfo\x00" signature (8 bytes)
+  if (std::memcmp(buffer.data(), kOnieTlvInfoIdString, 7) != 0 || buffer[7] != 0x00) {
+    return false;
+  }
+
+  // Check version byte (should be 0x01)
+  if (buffer[8] != kOnieTlvInfoVersion) {
+    return false;
+  }
+
+  // Check total length field (bytes 9-10)
+  uint16_t totalLen = (buffer[9] << 8) | buffer[10];
+  if (totalLen > (kOnieTlvInfoMaxLen - kOnieTlvInfoHdrLen)) {
+    return false;
+  }
+
+  return true;
+}
+
+uint32_t FbossEepromInterface::calculateCrc32(const uint8_t* buffer, size_t len) {
+  // Standard CRC-32 polynomial (IEEE 802.3)
+  const uint32_t polynomial = 0xEDB88320;
+  uint32_t crc = 0xFFFFFFFF;
+
+  for (size_t i = 0; i < len; i++) {
+    crc ^= buffer[i];
+    for (int j = 0; j < 8; j++) {
+      if (crc & 1) {
+        crc = (crc >> 1) ^ polynomial;
+      } else {
+        crc >>= 1;
+      }
+    }
+  }
+
+  return ~crc;
 }
 
 } // namespace facebook::fboss::platform
