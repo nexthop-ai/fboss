@@ -852,11 +852,11 @@ TransceiverManager::setupTransceiverToStateMachineControllerMap() {
 
 TransceiverManager::TransceiverToPortInfo
 TransceiverManager::setupTransceiverToPortInfo() {
-  TransceiverToPortInfo tcvrToPortInfo;
+  TransceiverManager::TransceiverToPortInfo tcvrToPortInfo;
   for (const auto& tcvrID :
        utility::getTransceiverIds(platformMapping_->getChips())) {
-    auto portToPortInfo = std::make_unique<
-        folly::Synchronized<std::unordered_map<PortID, TransceiverPortInfo>>>();
+    auto portToPortInfo =
+        std::make_shared<folly::Synchronized<PortToPortInfo>>();
     tcvrToPortInfo.emplace(tcvrID, std::move(portToPortInfo));
   }
 
@@ -1189,11 +1189,21 @@ void TransceiverManager::programInternalPhyPorts(TransceiverID id) {
   }
 }
 
-std::unordered_map<PortID, TransceiverManager::TransceiverPortInfo>
+TransceiverManager::PortToPortInfo
 TransceiverManager::getProgrammedIphyPortToPortInfo(TransceiverID id) const {
   if (auto tcvrToPortInfo_It = tcvrToPortInfo_.find(id);
       tcvrToPortInfo_It != tcvrToPortInfo_.end()) {
     return *(tcvrToPortInfo_It->second->rlock());
+  }
+  return {};
+}
+
+std::shared_ptr<folly::Synchronized<TransceiverManager::PortToPortInfo>>
+TransceiverManager::getSynchronizedProgrammedIphyPortToPortInfo(
+    TransceiverID id) {
+  if (auto tcvrToPortInfoIt = tcvrToPortInfo_.find(id);
+      tcvrToPortInfoIt != tcvrToPortInfo_.end()) {
+    return tcvrToPortInfoIt->second;
   }
   return {};
 }
@@ -1250,10 +1260,20 @@ void TransceiverManager::programExternalPhyPorts(
   }
 }
 
-TransceiverInfo TransceiverManager::getTransceiverInfo(TransceiverID id) const {
+std::optional<TransceiverInfo> TransceiverManager::getTransceiverInfoOptional(
+    TransceiverID id) const {
   auto lockedTransceivers = transceivers_.rlock();
-  if (auto it = lockedTransceivers->find(id); it != lockedTransceivers->end()) {
-    return it->second->getTransceiverInfo();
+  auto tcvrIt = lockedTransceivers->find(id);
+  if (tcvrIt != lockedTransceivers->end()) {
+    return tcvrIt->second->getTransceiverInfo();
+  }
+  return std::nullopt;
+}
+
+TransceiverInfo TransceiverManager::getTransceiverInfo(TransceiverID id) const {
+  const auto& tcvrInfo = getTransceiverInfoOptional(id);
+  if (tcvrInfo) {
+    return *tcvrInfo;
   } else {
     TransceiverInfo absentTcvr;
     absentTcvr.tcvrState()->present() = false;
@@ -2802,7 +2822,7 @@ void TransceiverManager::getAllInterfacePrbsStates(
     phy::PortComponent component) const {
   const auto& platformPorts = platformMapping_->getPlatformPorts();
   for (const auto& platformPort : platformPorts) {
-    auto portName = platformPort.second.mapping()->name_ref();
+    auto portName = platformPort.second.mapping()->name();
     try {
       prbs::InterfacePrbsState prbsState;
       getInterfacePrbsState(prbsState, *portName, component);
@@ -2831,7 +2851,7 @@ void TransceiverManager::getAllInterfacePrbsStats(
     phy::PortComponent component) const {
   const auto& platformPorts = platformMapping_->getPlatformPorts();
   for (const auto& platformPort : platformPorts) {
-    auto portName = platformPort.second.mapping()->name_ref();
+    auto portName = platformPort.second.mapping()->name();
     try {
       auto prbsStatsEntry = getInterfacePrbsStats(*portName, component);
       prbsStats[*portName] = prbsStatsEntry;
@@ -3284,4 +3304,34 @@ void TransceiverManager::drainAllStateMachineUpdates() {
     }
   } while (!updatesDrained);
 }
+
+bool TransceiverManager::opticalOrActiveCmisCable(const TcvrState& tcvrState) {
+  if (tcvrState.transceiverManagementInterface().has_value() &&
+      tcvrState.transceiverManagementInterface().value() ==
+          TransceiverManagementInterface::CMIS &&
+      opticalOrActiveCable(tcvrState)) {
+    return true;
+  }
+  return false;
+}
+
+bool TransceiverManager::opticalOrActiveCable(const TcvrState& tcvrState) {
+  if (tcvrState.cable().has_value() &&
+      ((tcvrState.cable()->transmitterTech() ==
+        TransmitterTechnology::OPTICAL) ||
+       activeCable(tcvrState))) {
+    return true;
+  }
+  return false;
+}
+
+bool TransceiverManager::activeCable(const TcvrState& tcvrState) {
+  if (tcvrState.cable().has_value() &&
+      (tcvrState.cable()->mediaTypeEncoding().value_or(
+           MediaTypeEncodings::UNKNOWN) == MediaTypeEncodings::ACTIVE_CABLES)) {
+    return true;
+  }
+  return false;
+}
+
 } // namespace facebook::fboss

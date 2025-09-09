@@ -13,11 +13,23 @@ FwUtilHwTest::~FwUtilHwTest() {}
 
 void FwUtilHwTest::SetUp() {
   // TODO: Add arguments for testing
-  fwUtilImpl_ = std::make_unique<FwUtilImpl>("", true, true);
+  fwUtilImpl_ = std::make_unique<FwUtilImpl>("", "", true, true);
 }
 
 TEST_F(FwUtilHwTest, ListFirmwareDevices) {
   EXPECT_GT(fwUtilImpl_->printFpdList().size(), 0);
+}
+TEST_F(FwUtilHwTest, GetAllFirmwareVersionInfo) {
+  EXPECT_NO_THROW(fwUtilImpl_->printVersion("all"));
+}
+
+TEST_F(FwUtilHwTest, GetEachFirmwareVersionInfo) {
+  auto fwList = fwUtilImpl_->printFpdList();
+  std::istringstream iss(fwList);
+  std::string fwNames;
+  while (iss >> fwNames) {
+    EXPECT_NO_THROW(fwUtilImpl_->printVersion(fwNames));
+  }
 }
 
 } // namespace facebook::fboss::platform::fw_util

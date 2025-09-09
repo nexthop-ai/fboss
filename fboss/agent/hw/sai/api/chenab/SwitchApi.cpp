@@ -115,6 +115,18 @@ const std::vector<sai_stat_id_t>& SaiSwitchTraits::dramBlockTime() {
   return stats;
 }
 
+const std::vector<sai_stat_id_t>&
+SaiSwitchTraits::dramQuarantinedBufferStats() {
+  static const std::vector<sai_stat_id_t> stats;
+  return stats;
+}
+
+const std::vector<sai_stat_id_t>&
+SaiSwitchTraits::fabricInterCellJitterWatermarkStats() {
+  static const std::vector<sai_stat_id_t> stats;
+  return stats;
+}
+
 const std::vector<sai_stat_id_t>& SaiSwitchTraits::deletedCredits() {
   static const std::vector<sai_stat_id_t> stats;
   return stats;
@@ -363,5 +375,15 @@ std::optional<sai_attr_id_t> SaiSwitchTraits::Attributes::
 std::optional<sai_attr_id_t>
 SaiSwitchTraits::Attributes::AttributeDefaultCpuEgressBufferPool::operator()() {
   return SAI_SWITCH_ATTR_DEFAULT_CPU_EGRESS_BUFFER_POOL;
+}
+
+std::optional<sai_attr_id_t>
+SaiSwitchTraits::Attributes::AttributeTechSupportType::operator()() {
+  return std::nullopt;
+}
+
+std::optional<sai_attr_id_t>
+SaiSwitchTraits::Attributes::AttributeModuleIdFabricPortList::operator()() {
+  return std::nullopt;
 }
 } // namespace facebook::fboss

@@ -204,9 +204,6 @@ int hwAgentMain(
     // Start the UpdateSwitchStatsThread
     fs.reset(new folly::FunctionScheduler());
     fs->setThreadName("UpdateStatsThread");
-    // steady will help even out the interval which will especially make
-    // aggregated counters more accurate with less spikes and dips
-    fs->setSteady(true);
     std::function<void()> callback(std::bind(
         updateStats,
         hwAgent->getPlatform()->getHwSwitch(),
@@ -258,6 +255,7 @@ int hwAgentMain(
         // cause us to go over the JOIN_TIMEOUT.
         // Avoid it by flushing the queue.
         server->setQueueTimeout(std::chrono::seconds(1));
+
         server->stopListening();
 
         XLOG(DBG2) << "[Exit] Stopping Thrift Server";

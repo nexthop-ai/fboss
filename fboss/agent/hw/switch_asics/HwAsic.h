@@ -219,6 +219,18 @@ class HwAsic {
     ASIC_RESET_NOTIFICATIONS,
     SAI_PORT_IN_CONGESTION_DISCARDS,
     TEMPERATURE_MONITORING,
+    ROUTER_INTERFACE_STATISTICS,
+    CPU_PORT_EGRESS_BUFFER_POOL,
+    ACL_SET_ECMP_HASH_ALGORITHM,
+    SET_NEXT_HOP_GROUP_HASH_ALGORITHM,
+    BULK_CREATE_ECMP_MEMBER,
+    TECH_SUPPORT,
+    DRAM_QUARANTINED_BUFFER_STATS,
+    MANAGEMENT_PORT_MULTICAST_QUEUE_ALPHA,
+    SAI_PORT_PG_DROP_STATUS,
+    FABRIC_INTER_CELL_JITTER_WATERMARK,
+    MAC_TRANSMIT_DATA_QUEUE_WATERMARK,
+    FABRIC_LINK_MONITORING,
   };
 
   enum class AsicMode {
@@ -246,7 +258,7 @@ class HwAsic {
   };
   virtual ~HwAsic() {}
   static std::unique_ptr<HwAsic> makeAsic(
-      std::optional<int64_t> switchID,
+      int64_t switchID,
       const cfg::SwitchInfo& switchInfo,
       std::optional<cfg::SdkVersion> sdkVersion,
       std::optional<HwAsic::FabricNodeRole> fabricNodeRole);
@@ -266,6 +278,11 @@ class HwAsic {
   virtual int getDefaultNumPortQueues(
       cfg::StreamType streamType,
       cfg::PortType portType) const = 0;
+  virtual int getBasePortQueueId(
+      cfg::StreamType streamType,
+      cfg::PortType portType) const {
+    return 0;
+  }
   virtual uint32_t getMaxLabelStackDepth() const = 0;
   virtual uint64_t getMMUSizeBytes() const = 0;
   virtual uint32_t getMaxMirrors() const = 0;
@@ -380,6 +397,11 @@ class HwAsic {
     return std::nullopt;
   }
 
+  // Set this if NDP/ARP uses a single unified neighbor table
+  virtual std::optional<uint32_t> getMaxUnifiedNeighborTableSize() const {
+    return std::nullopt;
+  }
+
   virtual bool scalingFactorBasedDynamicThresholdSupported() const = 0;
 
   virtual int getBufferDynThreshFromScalingFactor(
@@ -479,6 +501,8 @@ class HwAsic {
   virtual cfg::IpTunnelMode getTunnelDscpMode() const {
     return cfg::IpTunnelMode::PIPE;
   }
+
+  virtual uint64_t getCpuPortEgressPoolSize() const;
 
  protected:
   static cfg::Range64 makeRange(int64_t min, int64_t max);

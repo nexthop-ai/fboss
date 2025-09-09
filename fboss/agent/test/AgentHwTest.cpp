@@ -20,6 +20,11 @@ DEFINE_bool(
     false,
     "Used by certain tests where we don't want to bring up ports by toggler");
 
+DEFINE_bool(
+    enable_sdk_dump_on_fail,
+    false,
+    "generate sdk debug dump on failure");
+
 namespace {
 int kArgc;
 char** kArgv;
@@ -112,6 +117,10 @@ void AgentHwTest::TearDown() {
   if (FLAGS_run_forever ||
       (::testing::Test::HasFailure() && FLAGS_run_forever_on_failure)) {
     runForever();
+  }
+  if (FLAGS_enable_sdk_dump_on_fail &&
+      (testing::Test::HasFatalFailure() || testing::Test::HasFailure())) {
+    agentEnsemble_->getHwDebugDump();
   }
   tearDownAgentEnsemble();
 }
@@ -264,8 +273,8 @@ std::map<PortID, HwPortStats> AgentHwTest::getNextUpdatedPortStats(
         nextPortStats = getSw()->getHwPortStats(ports);
         // Check collect timestamp is different from last port stats
         for (const auto& [portId, portStats] : nextPortStats) {
-          if (*portStats.timestamp__ref() ==
-              *lastPortStats.at(portId).timestamp__ref()) {
+          if (*portStats.timestamp_() ==
+              *lastPortStats.at(portId).timestamp_()) {
             return false;
           }
         }
@@ -572,28 +581,64 @@ const HwAsic* AgentHwTest::hwAsicForSwitch(SwitchID switchID) const {
 
 void AgentHwTest::populateArpNeighborsToCache(
     const std::shared_ptr<Interface>& interface) {
-  auto arpCache = getAgentEnsemble()
-                      ->getSw()
-                      ->getNeighborUpdater()
-                      ->getArpCacheForIntf(interface->getID())
-                      .get();
-  getAgentEnsemble()->getSw()->getNeighborCacheEvb()->runInFbossEventBaseThread(
-      [interface, arpCache] {
-        arpCache->repopulate(interface->getArpTable());
-      });
+  if (FLAGS_intf_nbr_tables) {
+    auto arpCache = getAgentEnsemble()
+                        ->getSw()
+                        ->getNeighborUpdater()
+                        ->getArpCacheForIntf(interface->getID())
+                        .get();
+    getAgentEnsemble()
+        ->getSw()
+        ->getNeighborCacheEvb()
+        ->runInFbossEventBaseThread([interface, arpCache] {
+          arpCache->repopulate(interface->getArpTable());
+        });
+  } else {
+    auto vlan =
+        getProgrammedState()->getVlans()->getNodeIf(interface->getVlanID());
+
+    auto arpCache = getAgentEnsemble()
+                        ->getSw()
+                        ->getNeighborUpdater()
+                        ->getArpCacheFor(vlan->getID())
+                        .get();
+    getAgentEnsemble()
+        ->getSw()
+        ->getNeighborCacheEvb()
+        ->runInFbossEventBaseThread(
+            [vlan, arpCache] { arpCache->repopulate(vlan->getArpTable()); });
+  }
 }
 
 void AgentHwTest::populateNdpNeighborsToCache(
     const std::shared_ptr<Interface>& interface) {
-  auto ndpCache = getAgentEnsemble()
-                      ->getSw()
-                      ->getNeighborUpdater()
-                      ->getNdpCacheForIntf(interface->getID())
-                      .get();
-  getAgentEnsemble()->getSw()->getNeighborCacheEvb()->runInFbossEventBaseThread(
-      [interface, ndpCache] {
-        ndpCache->repopulate(interface->getNdpTable());
-      });
+  if (FLAGS_intf_nbr_tables) {
+    auto ndpCache = getAgentEnsemble()
+                        ->getSw()
+                        ->getNeighborUpdater()
+                        ->getNdpCacheForIntf(interface->getID())
+                        .get();
+    getAgentEnsemble()
+        ->getSw()
+        ->getNeighborCacheEvb()
+        ->runInFbossEventBaseThread([interface, ndpCache] {
+          ndpCache->repopulate(interface->getNdpTable());
+        });
+  } else {
+    auto vlan =
+        getProgrammedState()->getVlans()->getNodeIf(interface->getVlanID());
+
+    auto ndpCache = getAgentEnsemble()
+                        ->getSw()
+                        ->getNeighborUpdater()
+                        ->getNdpCacheFor(vlan->getID())
+                        .get();
+    getAgentEnsemble()
+        ->getSw()
+        ->getNeighborCacheEvb()
+        ->runInFbossEventBaseThread(
+            [vlan, ndpCache] { ndpCache->repopulate(vlan->getNdpTable()); });
+  }
 }
 
 void initAgentHwTest(

@@ -44,6 +44,9 @@ constexpr int kUsecVdmLatchHold = 100000;
 constexpr int kUsecDiagSelectLatchWait = 200000;
 constexpr int kUsecAfterAppProgramming = 500000;
 constexpr int kUsecDatapathStateUpdateTime = 5000000; // 5 seconds
+// We may need special handling for scenarios where Init time takes
+// more than 120 seconds. we will likely need to refactor code.
+constexpr int kUsecDatapathStateUpdateTimeMaxFboss = 120000000; // 120 seconds
 constexpr int kUsecDatapathStatePollTime = 500000; // 500 ms
 constexpr double kU16TypeLsbDivisor = 256.0;
 constexpr int kVdmDescriptorLength = 2;
@@ -56,6 +59,10 @@ constexpr int kCdbSymErrHistAvgOffset = 3;
 constexpr int kCdbSymErrHistCurOffset = 5;
 
 constexpr int kMaxFecTailRs544 = 15;
+
+// Datapath init/deinit variables
+constexpr uint8_t DP_INIT_MAX_MASK = 0x0F;
+constexpr uint8_t DP_DINIT_MAX_MASK = 0xF0;
 
 // TODO @sanabani: Change To Map
 std::array<std::string, 9> channelConfigErrorMsg = {
@@ -81,6 +88,23 @@ enum DiagnosticFeatureEncoding {
   BER = 0x1,
   SNR = 0x6,
   LATCHED_BER = 0x11,
+};
+
+// Datapath init/deinit variables
+static const std::unordered_map<uint8_t, uint64_t> DpInitValToTimeMap = {
+    {0, 1000}, // Tstate < 1 ms
+    {1, 5000}, // 1 ms <= Tstate < 5 ms
+    {2, 10000}, // 5 ms <= Tstate < 10 ms
+    {3, 50000}, // 10 ms <= Tstate < 50 ms
+    {4, 100000}, // 50 ms <= Tstate < 100 ms
+    {5, 500000}, // 100 ms <= Tstate < 500 ms
+    {6, 1000000}, // 500 ms <= Tstate < 1 s
+    {7, 5000000}, // 1 s <= Tstate < 5 s
+    {8, 10000000}, // 5 s <= Tstate < 10 s
+    {9, 60000000}, // 10 s <= Tstate < 1 min
+    {10, 300000000}, // 1 min <= Tstate < 5 min
+    {11, 600000000}, // 5 min <= Tstate < 10 min
+    {12, 3000000000}, // 10 min <= Tstate < 50 min
 };
 
 // As per CMIS4.0
@@ -125,6 +149,7 @@ static const QsfpFieldInfo<CmisField, CmisPages>::QsfpFieldMap cmisFields = {
     {CmisField::LENGTH_OM3, {CmisPages::PAGE01, 135, 1}},
     {CmisField::LENGTH_OM2, {CmisPages::PAGE01, 136, 1}},
     {CmisField::VDM_DIAG_SUPPORT, {CmisPages::PAGE01, 142, 1}},
+    {CmisField::MAX_DPINIT_TIME, {CmisPages::PAGE01, 144, 1}},
     {CmisField::TX_CONTROL_SUPPORT, {CmisPages::PAGE01, 155, 1}},
     {CmisField::RX_CONTROL_SUPPORT, {CmisPages::PAGE01, 156, 1}},
     {CmisField::TX_BIAS_MULTIPLIER, {CmisPages::PAGE01, 160, 1}},
@@ -978,8 +1003,11 @@ uint8_t CmisModule::getCurrentApplication(uint8_t lane, int byteOffset) const {
   if (currentApplicationSel <= 8) {
     getQsfpFieldAddress(
         CmisField::APPLICATION_ADVERTISING1, dataAddress, offset, length);
-    // We use the module Media Interface ID, which is located at the second byte
-    // of the field, as Application ID here.
+    // We use the module Media Interface ID for Optical modules, which is
+    // located at the second byte of the field (byteOffset = 1), as Application
+    // ID here. If we have an AEC cable, we use the module host interface ID
+    // which has a byteOffset of 0. This is in page 00h app sel advertising
+    // (starting at offset 86 for page)
     offset += (currentApplicationSel - 1) * length + byteOffset;
   } else {
     getQsfpFieldAddress(
@@ -1008,7 +1036,7 @@ bool CmisModule::getMediaInterfaceId(
       auto smfMediaInterface = getSmfMediaInterface(lane);
       mediaInterface[lane].lane() = lane;
       MediaInterfaceUnion media;
-      media.smfCode_ref() = smfMediaInterface;
+      media.smfCode() = smfMediaInterface;
       mediaInterface[lane].code() =
           CmisHelper::getMediaInterfaceCode<SMFMediaInterfaceCode>(
               smfMediaInterface, CmisHelper::getSmfMediaInterfaceMapping());
@@ -1028,7 +1056,7 @@ bool CmisModule::getMediaInterfaceId(
     for (int lane = 0; lane < mediaInterface.size(); lane++) {
       mediaInterface[lane].lane() = lane;
       MediaInterfaceUnion media;
-      media.passiveCuCode_ref() = static_cast<PassiveCuMediaInterfaceCode>(
+      media.passiveCuCode() = static_cast<PassiveCuMediaInterfaceCode>(
           firstModuleCapability->moduleMediaInterface);
       // FIXME: Remove CR8_400G hardcoding and derive this from number of
       // lanes/host electrical interface instead
@@ -1040,7 +1068,7 @@ bool CmisModule::getMediaInterfaceId(
       auto activeCuInterfaceCode = getActiveCuMediaInterface(lane);
       mediaInterface[lane].lane() = lane;
       MediaInterfaceUnion media;
-      media.activeCuCode_ref() = activeCuInterfaceCode;
+      media.activeCuCode() = activeCuInterfaceCode;
       mediaInterface[lane].code() =
           CmisHelper::getMediaInterfaceCode<ActiveCuHostInterfaceCode>(
               activeCuInterfaceCode,
@@ -1083,11 +1111,12 @@ void CmisModule::getApplicationCapabilities() {
     // identifier for the rate of the application. The Media side of active
     // cables, per spec, specifies only the BER for the cable, which might
     // be the same for all the supported rates.
-    if (getMediaTypeEncoding() == MediaTypeEncodings::ACTIVE_CABLES) {
+    if (isAecModule()) {
       applicationAdvertisingField.moduleMediaInterface = data[0];
     } else {
       applicationAdvertisingField.moduleMediaInterface = data[1];
     }
+    applicationAdvertisingField.moduleHostInterface = data[0];
     applicationAdvertisingField.hostLaneCount =
         (data[2] & FieldMasks::UPPER_FOUR_BITS_MASK) >> 4;
     applicationAdvertisingField.mediaLaneCount =
@@ -1357,11 +1386,13 @@ TransmitterTechnology CmisModule::getQsfpTransmitterTechnology() const {
   uint8_t transTech = *data;
   if (transTech == DeviceTechnologyCmis::UNKNOWN_VALUE_CMIS) {
     return TransmitterTechnology::UNKNOWN;
-  } else if (transTech <= DeviceTechnologyCmis::OPTICAL_MAX_VALUE_CMIS) {
+    // TODO(T232092663): Fix this, introduce the TUNABLE_OPTICS
+  } else if (
+      (transTech <= DeviceTechnologyCmis::OPTICAL_MAX_VALUE_CMIS) ||
+      (transTech == DeviceTechnologyCmis::C_BAND_TUNABLE_LASER_CMIS) ||
+      (transTech == DeviceTechnologyCmis::L_BAND_TUNABLE_LASER_CMIS)) {
     return TransmitterTechnology::OPTICAL;
   } else {
-    // TODO: Fix this, copper is 0xA to 0xF, and there is also tunable lasers
-    // for C-Band (0x10) and L-Band (0x11).
     return TransmitterTechnology::COPPER;
   }
 }
@@ -2002,7 +2033,7 @@ DOMDataUnion CmisModule::getDOMDataUnion() {
   }
   cmisData.timeCollected() = lastRefreshTime_;
   DOMDataUnion data;
-  data.cmis_ref() = cmisData;
+  data.cmis() = cmisData;
   return data;
 }
 
@@ -2201,7 +2232,7 @@ void CmisModule::setApplicationSelectCodeAllPorts(
     uint8_t numHostLanes,
     uint8_t hostLaneMask) {
   std::vector<uint8_t> laneProgramValues;
-  if (getMediaTypeEncoding() == MediaTypeEncodings::ACTIVE_CABLES) {
+  if (isAecModule()) {
     laneProgramValues =
         CmisHelper::getValidMultiportSpeedConfig<ActiveCuHostInterfaceCode>(
             speed,
@@ -2294,7 +2325,7 @@ void CmisModule::setApplicationCodeLocked(
       apache::thrift::util::enumNameSafe(speed),
       startHostLane);
   std::vector<uint8_t> appCodes;
-  if (getMediaTypeEncoding() == MediaTypeEncodings::ACTIVE_CABLES) {
+  if (isAecModule()) {
     appCodes = CmisHelper::getInterfaceCode<ActiveCuHostInterfaceCode>(
         speed, CmisHelper::getActiveSpeedApplication());
   } else {
@@ -2309,6 +2340,8 @@ void CmisModule::setApplicationCodeLocked(
         " Unsupported speed: ",
         apache::thrift::util::enumNameSafe(speed)));
   }
+  QSFP_LOG(INFO, this) << "Application codes supporting current speed: "
+                       << folly::join(",", appCodes);
 
   // Currently we will have the same application across all the lanes. So here
   // we only take one of them to look at.
@@ -2319,12 +2352,24 @@ void CmisModule::setApplicationCodeLocked(
   currentApplicationSel = currentApplicationSel >> APP_SEL_BITSHIFT;
 
   QSFP_LOG(INFO, this) << folly::sformat(
-      "currentApplicationSel: {:#x}", currentApplicationSel);
+      "currentApplicationSel: {:#x} speed {:s} startHostLane {:d} numHostLanesForPort {:d}",
+      currentApplicationSel,
+      apache::thrift::util::enumNameSafe(speed),
+      startHostLane,
+      numHostLanesForPort);
 
   uint8_t currentApplication;
   int offset;
   int length;
   int dataAddress;
+
+  // We use the module Media Interface ID for Optical modules, which is located
+  // at the second byte of the field (byteOffset = 1), as Application ID here.
+  // If we have an AEC cable, we use the module host interface ID which has a
+  // byteOffset of 0. This is in page 00h app sel advertising (starting at
+  // offset 86 for page)
+  int byteOffset =
+      isAecModule() ? kHostInterfaceCodeOffset : kMediaInterfaceCodeOffset;
 
   // For ApSel value 1 to 8 get the current application from Page 0
   // For ApSel value 9 to 15 get the current application from page 1
@@ -2332,18 +2377,16 @@ void CmisModule::setApplicationCodeLocked(
   if (currentApplicationSel >= 1 && currentApplicationSel <= 8) {
     getQsfpFieldAddress(
         CmisField::APPLICATION_ADVERTISING1, dataAddress, offset, length);
-    // We use the module Media Interface ID, which is located at the second byte
-    // of the field, as Application ID here.
-    offset += (currentApplicationSel - 1) * length + 1;
+    // Use host or media application offset based on byteOffset
+    offset += (currentApplicationSel - 1) * length + byteOffset;
     getQsfpValue(dataAddress, offset, 1, &currentApplication);
     QSFP_LOG(INFO, this) << folly::sformat(
         "currentApplication: {:#x}", currentApplication);
   } else if (currentApplicationSel >= 9 && currentApplicationSel <= 15) {
     getQsfpFieldAddress(
         CmisField::APPLICATION_ADVERTISING2, dataAddress, offset, length);
-    // We use the module Media Interface ID, which is located at the second byte
-    // of the field, as Application ID here.
-    offset += (currentApplicationSel - 9) * length + 1;
+    // Use host or media application offset based on byteOffset
+    offset += (currentApplicationSel - 9) * length + byteOffset;
     getQsfpValue(dataAddress, offset, 1, &currentApplication);
     QSFP_LOG(INFO, this) << folly::sformat(
         "currentApplication: {:#x}", currentApplication);
@@ -2374,7 +2417,9 @@ void CmisModule::setApplicationCodeLocked(
     // If the currently configured application is the same as what we are trying
     // to configure, then skip the configuration
     if (application == currentApplication) {
-      QSFP_LOG(INFO, this) << "Speed matches. Doing nothing";
+      QSFP_LOG(INFO, this) << folly::sformat(
+          "Speed matches: currentApplication {:#x}. Doing nothing",
+          currentApplication);
       // Make sure the datapath is initialized, otherwise initialize it before
       // returning
       if (datapathResetPendingMask_ & hostLaneMask) {
@@ -2473,7 +2518,7 @@ bool CmisModule::isRequestValidMultiportSpeedConfig(
   uint8_t mask = laneMask(startHostLane, numLanes);
   auto tcvrName = getNameString();
 
-  if (getMediaTypeEncoding() == MediaTypeEncodings::ACTIVE_CABLES) {
+  if (isAecModule()) {
     return CmisHelper::checkSpeedCombo<ActiveCuHostInterfaceCode>(
         speed,
         startHostLane,
@@ -2669,7 +2714,7 @@ bool CmisModule::tcvrPortStateSupported(TransceiverPortState& portState) const {
   lock_guard<std::mutex> g(qsfpModuleMutex_);
   auto currTransmitterTechnology = getQsfpTransmitterTechnology();
   bool activeElectricalCable = false;
-  if (getMediaTypeEncoding() == MediaTypeEncodings::ACTIVE_CABLES) {
+  if (isAecModule()) {
     activeElectricalCable = true;
   }
   if (currTransmitterTechnology == TransmitterTechnology::OPTICAL &&
@@ -2892,11 +2937,12 @@ MediaInterfaceCode CmisModule::getModuleMediaInterface() const {
     auto firstModuleCapability = moduleCapabilities_.begin();
     auto smfCode = static_cast<SMFMediaInterfaceCode>(
         firstModuleCapability->moduleMediaInterface);
-    if (smfCode == SMFMediaInterfaceCode::FR4_400G &&
+    if (isLpoModule()) {
+      moduleMediaInterface = MediaInterfaceCode::FR4_LPO_2x400G;
+    } else if (
+        smfCode == SMFMediaInterfaceCode::FR4_400G &&
         firstModuleCapability->hostStartLanes.size() == 2) {
-      if (isLpoModule()) {
-        moduleMediaInterface = MediaInterfaceCode::FR4_LPO_2x400G;
-      } else if (getQsfpSMFLength() == kFR4LiteSMFLength) {
+      if (getQsfpSMFLength() == kFR4LiteSMFLength) {
         // Lite Modules are not LPO modules but have a reach of 500m.
         moduleMediaInterface = MediaInterfaceCode::FR4_LITE_2x400G;
       } else {
@@ -3703,6 +3749,42 @@ phy::PrbsStats CmisModule::getPortPrbsStatsSideLocked(
   return prbsStats;
 }
 
+uint64_t CmisModule::maxRetriesWith500msDelay(bool init) {
+  if (isAecModule()) {
+    // Read the datapath init/deinit max time from module.
+    uint8_t specVal;
+    readCmisField(CmisField::MAX_DPINIT_TIME, &specVal);
+
+    uint8_t spec = 0;
+    if (init) {
+      spec = specVal & DP_INIT_MAX_MASK;
+    } else {
+      spec = specVal & DP_DINIT_MAX_MASK;
+    }
+    auto itr = DpInitValToTimeMap.find(spec);
+    if (itr != DpInitValToTimeMap.end()) {
+      uint64_t maxTime = itr->second;
+      QSFP_LOG(INFO, this) << fmt::format(
+          "Datapath max {:s} time from spec is {:d} uSec",
+          init ? "init" : "deinit",
+          maxTime);
+      if (kUsecDatapathStateUpdateTimeMaxFboss > maxTime) {
+        // success.
+        return maxTime / kUsecDatapathStatePollTime;
+      } else {
+        QSFP_LOG(ERR, this) << fmt::format(
+            "Datapath max {:s} time from spec {:d} uSec is greater than max allowed time {:d} uSec",
+            init ? "init" : "deinit",
+            maxTime,
+            kUsecDatapathStateUpdateTimeMaxFboss);
+      }
+    }
+  }
+  QSFP_LOG(INFO, this) << fmt::format(
+      "Default max Init/DeInit time {:d} uSec", kUsecDatapathStateUpdateTime);
+  return kUsecDatapathStateUpdateTime / kUsecDatapathStatePollTime;
+}
+
 void CmisModule::resetDataPath() {
   resetDataPathWithFunc();
 }
@@ -3737,16 +3819,17 @@ void CmisModule::resetDataPathWithFunc(
   };
 
   // Wait for all datapath state machines to get Deactivated
-  auto maxRetries = kUsecDatapathStateUpdateTime / kUsecDatapathStatePollTime;
+  const auto maxRetriesDeInit = maxRetriesWith500msDelay(/*init=*/false);
+
   auto retries = 0;
-  while (retries++ < maxRetries) {
+  while (retries++ < maxRetriesDeInit) {
     /* sleep override */
     usleep(kUsecDatapathStatePollTime);
     if (isDatapathUpdated(hostLaneMask, {CmisLaneState::DEACTIVATED})) {
       break;
     }
   }
-  if (retries >= maxRetries) {
+  if (retries >= maxRetriesDeInit) {
     QSFP_LOG(ERR, this) << fmt::format(
         "Datapath could not deactivate even after waiting {:d} uSec",
         kUsecDatapathStateUpdateTime);
@@ -3762,9 +3845,9 @@ void CmisModule::resetDataPathWithFunc(
   writeCmisField(CmisField::DATA_PATH_DEINIT, &dataPathDeInit);
 
   // Wait for the datapath to come out of deactivated state
-  maxRetries = kUsecDatapathStateUpdateTime / kUsecDatapathStatePollTime;
+  const auto maxRetriesInit = maxRetriesWith500msDelay(/*init=*/true);
   retries = 0;
-  while (retries++ < maxRetries) {
+  while (retries++ < maxRetriesInit) {
     /* sleep override */
     usleep(kUsecDatapathStatePollTime);
     if (isDatapathUpdated(
@@ -3773,7 +3856,7 @@ void CmisModule::resetDataPathWithFunc(
       break;
     }
   }
-  if (retries >= maxRetries) {
+  if (retries >= maxRetriesInit) {
     QSFP_LOG(ERR, this) << fmt::format(
         "Datapath didn't come out of deactivated state even after waiting {:d} uSec",
         kUsecDatapathStateUpdateTime);

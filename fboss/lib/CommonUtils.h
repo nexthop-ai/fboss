@@ -11,6 +11,8 @@
 #include <fb303/ThreadLocalStats.h>
 #include "fboss/agent/FbossError.h"
 
+DECLARE_bool(cpp_wedge_agent_wrapper);
+
 // Exception not subclassing std::exception to avoid being caught by user code.
 // Used only in WITH_RETRIES toolkit
 namespace {
@@ -43,6 +45,57 @@ void checkWithRetry(
   } else {
     throw FbossError(kFailedConditionLog);
   }
+}
+
+template <typename CONDITION_FN>
+bool checkWithRetryErrorReturn(
+    CONDITION_FN condition,
+    int retries = 10,
+    std::chrono::duration<uint32_t, std::milli> msBetweenRetry =
+        std::chrono::milliseconds(1000)) {
+  try {
+    checkWithRetry(condition, retries, msBetweenRetry);
+  } catch (const FbossError& e) {
+    return false;
+  }
+
+  return true;
+}
+
+template <typename CONDITION_FN>
+void checkAlwaysTrueWithRetry(
+    CONDITION_FN condition,
+    int retries = 10,
+    std::chrono::duration<uint32_t, std::milli> msBetweenRetry =
+        std::chrono::milliseconds(1000),
+    std::optional<std::string> conditionFailedLog = std::nullopt) {
+  while (retries--) {
+    if (!condition()) {
+      constexpr auto kFailedConditionLog =
+          "Verify always true with retry failed, condition was not satisfied";
+      if (conditionFailedLog) {
+        throw FbossError(kFailedConditionLog, " : ", *conditionFailedLog);
+      } else {
+        throw FbossError(kFailedConditionLog);
+      }
+    }
+    std::this_thread::sleep_for(msBetweenRetry);
+  }
+}
+
+template <typename CONDITION_FN>
+bool checkAlwaysTrueWithRetryErrorReturn(
+    CONDITION_FN condition,
+    int retries = 10,
+    std::chrono::duration<uint32_t, std::milli> msBetweenRetry =
+        std::chrono::milliseconds(1000)) {
+  try {
+    checkAlwaysTrueWithRetry(condition, retries, msBetweenRetry);
+  } catch (const FbossError& e) {
+    return false;
+  }
+
+  return true;
 }
 
 template <typename StatT>

@@ -288,6 +288,10 @@ inline folly::StringPiece constexpr kInCongestionDiscards() {
   return "in_congestion_discards";
 }
 
+inline folly::StringPiece constexpr kInCongestionDiscardSeen() {
+  return "in_congestion_discard_seen";
+}
+
 inline folly::StringPiece constexpr kOutForwardingDiscards() {
   return "out_forwarding_discards";
 }
@@ -318,5 +322,17 @@ inline folly::StringPiece constexpr kPfcDeadlockDetection() {
 
 inline folly::StringPiece constexpr kPfcDeadlockRecovery() {
   return "pfc_deadlock_recovery";
+}
+
+inline folly::StringPiece constexpr kMacTransmitQueueStuck() {
+  return "mac_transmit_queue_stuck";
+}
+
+inline folly::StringPiece constexpr kFabricControlRxPackets() {
+  return "fabric_control_rx_packets";
+}
+
+inline folly::StringPiece constexpr kFabricControlTxPackets() {
+  return "fabric_control_tx_packets";
 }
 } // namespace facebook::fboss

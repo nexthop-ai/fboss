@@ -157,6 +157,10 @@ void PlatformProductInfo::initMode() {
         modelName.find("DCS-DL-7700R4C-38PE-B-DC-F") == 0) {
       type_ = PlatformType::PLATFORM_MERU800BIAB;
     } else if (
+        modelName.find("Meru800biac") == 0 ||
+        modelName.find("MERU800BIAC") == 0) {
+      type_ = PlatformType::PLATFORM_MERU800BIAC;
+    } else if (
         modelName.find("Meru800bfa") == 0 ||
         modelName.find("MERU800BFA") == 0 ||
         modelName.find("ASY-57651-102") == 0 ||
@@ -182,10 +186,14 @@ void PlatformProductInfo::initMode() {
         modelName.find("TAHAN") == 0 || modelName.find("TAHAN800BC") == 0 ||
         modelName.find("R4063-F9001-01") == 0) {
       type_ = PlatformType::PLATFORM_TAHAN800BC;
-    } else if (modelName.find("ICEPACK-TH6") == 0) {
+    } else if (modelName.find("ICECUBE") == 0) {
       type_ = PlatformType::PLATFORM_ICECUBE800BC;
     } else if (modelName.find("NH-4010") == 0) {
       type_ = PlatformType::PLATFORM_NH4010;
+    } else if (modelName.find("WEDGE800BA") == 0) {
+      type_ = PlatformType::PLATFORM_WEDGE800BA;
+    } else if (modelName.find("ICETEA") == 0) {
+      type_ = PlatformType::PLATFORM_ICETEA800BC;
     } else {
       throw FbossError("invalid model name " + modelName);
     }
@@ -220,6 +228,8 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_MERU800BIA;
     } else if (FLAGS_mode == "meru800biab") {
       type_ = PlatformType::PLATFORM_MERU800BIAB;
+    } else if (FLAGS_mode == "meru800biac") {
+      type_ = PlatformType::PLATFORM_MERU800BIAC;
     } else if (FLAGS_mode == "meru800bfa") {
       type_ = PlatformType::PLATFORM_MERU800BFA;
     } else if (FLAGS_mode == "meru800bfa_p1") {
@@ -236,6 +246,10 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_WEDGE400C_FABRIC;
     } else if (FLAGS_mode == "montblanc" || FLAGS_mode == "minipack3ba") {
       type_ = PlatformType::PLATFORM_MONTBLANC;
+    } else if (FLAGS_mode == "icecube800bc") {
+      type_ = PlatformType::PLATFORM_ICECUBE800BC;
+    } else if (FLAGS_mode == "icetea800bc") {
+      type_ = PlatformType::PLATFORM_ICETEA800BC;
     } else if (FLAGS_mode == "fake_sai") {
       type_ = PlatformType::PLATFORM_FAKE_SAI;
     } else if (FLAGS_mode == "janga800bic") {
@@ -250,6 +264,8 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_MINIPACK3N;
     } else if (FLAGS_mode == "nh4010") {
       type_ = PlatformType::PLATFORM_NH4010;
+    } else if (FLAGS_mode == "wedge800ba") {
+      type_ = PlatformType::PLATFORM_WEDGE800BA;
     } else {
       throw std::runtime_error("invalid mode " + FLAGS_mode);
     }

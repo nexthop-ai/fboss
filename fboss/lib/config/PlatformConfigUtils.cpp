@@ -48,7 +48,7 @@ void recurseGetPinsByChipType(
     std::vector<Pin>& pins) {
   if (chipsMap.find(*pinConn.a()->chip()) != chipsMap.end()) {
     Pin temp;
-    temp.end_ref() = *pinConn.a();
+    temp.end() = *pinConn.a();
     pins.push_back(temp);
     return;
   }
@@ -61,7 +61,7 @@ void recurseGetPinsByChipType(
   if (zPin.getType() == Pin::Type::end) {
     if (chipsMap.find(*zPin.get_end().chip()) != chipsMap.end()) {
       Pin temp;
-      temp.end_ref() = zPin.get_end();
+      temp.end() = zPin.get_end();
       pins.push_back(temp);
       return;
     }
@@ -69,7 +69,7 @@ void recurseGetPinsByChipType(
     auto zJunction = zPin.get_junction();
     if (chipsMap.find(*zJunction.system()->chip()) != chipsMap.end()) {
       Pin temp;
-      temp.junction_ref() = zJunction;
+      temp.junction() = zJunction;
       pins.push_back(temp);
       return;
     }
@@ -389,6 +389,8 @@ std::optional<TransceiverID> getTransceiverId(
   auto transceiverChips = getDataPlanePhyChips(
       port, chipsMap, phy::DataPlanePhyChipType::TRANSCEIVER);
   // There should be no more than one transceiver associated with a port.
+  // Note that this will change once we start supporting multi-transceiver /
+  // single-port use case (e.g. Wedge400 downlinks).
   CHECK_LE(transceiverChips.size(), 1);
   if (!transceiverChips.empty()) {
     return TransceiverID(*transceiverChips.begin()->second.physicalID());
@@ -439,5 +441,63 @@ std::vector<uint32_t> getHwPortLanes(
         getPhysicalLaneId(*chipIter->second.physicalID(), *iphy.lane()));
   }
   return hwLaneList;
+}
+
+TcvrToPortMap getTcvrToPortMap(
+    const std::map<int32_t, cfg::PlatformPortEntry>& platformPorts,
+    const std::map<std::string, phy::DataPlanePhyChip>& chipsMap) {
+  TcvrToPortMap tcvrToPortMap;
+
+  for (const auto& it : platformPorts) {
+    auto port = it.second;
+    // Get the transceiver id based on the port info from platform mapping.
+    auto portIdInt = *port.mapping()->id();
+    auto portId = PortID(portIdInt);
+    auto transceiverId = utility::getTransceiverId(port, chipsMap);
+    if (!transceiverId) {
+      XLOG(INFO) << "Did not find corresponding TransceiverID for PortID: "
+                 << portIdInt;
+      continue;
+    }
+
+    // Add the port to the transceiver-indexed port group.
+    auto portGroupIt = tcvrToPortMap.find(transceiverId.value());
+    if (portGroupIt == tcvrToPortMap.end()) {
+      tcvrToPortMap[transceiverId.value()] = std::vector<PortID>{portId};
+    } else {
+      tcvrToPortMap.at(transceiverId.value()).emplace_back(portId);
+    }
+  }
+
+  return tcvrToPortMap;
+}
+
+PortToTcvrMap getPortToTcvrMap(
+    const std::map<int32_t, cfg::PlatformPortEntry>& platformPorts,
+    const std::map<std::string, phy::DataPlanePhyChip>& chipsMap) {
+  PortToTcvrMap portToTcvrMap;
+
+  for (const auto& it : platformPorts) {
+    auto port = it.second;
+    // Get the transceiver id based on the port info from platform mapping.
+    auto portIdInt = *port.mapping()->id();
+    auto portId = PortID(portIdInt);
+    auto transceiverId = utility::getTransceiverId(port, chipsMap);
+    if (!transceiverId) {
+      XLOG(INFO) << "Did not find corresponding TransceiverID for PortID: "
+                 << portIdInt;
+      continue;
+    }
+
+    // Add the transceiver to the port-indexed transceiver group.
+    auto tcvrGroupIt = portToTcvrMap.find(portId);
+    if (tcvrGroupIt == portToTcvrMap.end()) {
+      portToTcvrMap[portId] = std::vector<TransceiverID>{transceiverId.value()};
+    } else {
+      portToTcvrMap.at(portId).emplace_back(transceiverId.value());
+    }
+  }
+
+  return portToTcvrMap;
 }
 } // namespace facebook::fboss::utility

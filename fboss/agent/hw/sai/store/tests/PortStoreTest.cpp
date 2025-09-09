@@ -78,6 +78,8 @@ class PortStoreTest : public SaiStoreTest {
         std::nullopt, // CondEntropyRehashSeed
         std::nullopt, // ShelEnable
         std::nullopt, // FecErrorDetectEnable
+        std::nullopt, // FabricSystemPort
+        std::nullopt, // StaticModuleId
     };
   }
 
@@ -334,4 +336,38 @@ TEST_F(PortStoreTest, portSetDisableLinkTraining) {
   EXPECT_FALSE(GET_OPT_ATTR(Port, LinkTrainingEnable, portObj.attributes()));
   EXPECT_FALSE(saiApiTable->portApi().getAttribute(
       portId, SaiPortTraits::Attributes::LinkTrainingEnable{}));
+}
+
+TEST_F(PortStoreTest, portGetPortPgPktDropStatus) {
+  auto portId = createPort(0);
+  SaiObject<SaiPortTraits> portObj = createObj<SaiPortTraits>(portId);
+
+  // Test reading the port PG packet drop status (read-only attribute)
+  auto pgPktDropStatus = saiApiTable->portApi().getAttribute(
+      portId, SaiPortTraits::Attributes::PgDropStatus{});
+
+  // Since this is a read-only attribute, we just verify we can read it
+  // The fake implementation returns an empty vector by default
+  EXPECT_TRUE(pgPktDropStatus.empty());
+}
+
+TEST_F(PortStoreTest, portSetStaticModuleId) {
+  auto portId = createPort(0);
+  SaiObject<SaiPortTraits> portObj = createObj<SaiPortTraits>(portId);
+
+  // Check default value
+  auto apiStaticModuleId = saiApiTable->portApi().getAttribute(
+      portId, SaiPortTraits::Attributes::StaticModuleId{});
+  EXPECT_EQ(apiStaticModuleId, 0);
+
+  // Set static module ID list directly using the API instead of through the
+  // SaiObject
+  uint32_t moduleId = 1;
+  SaiPortTraits::Attributes::StaticModuleId staticModuleId(moduleId);
+  saiApiTable->portApi().setAttribute(portId, staticModuleId);
+
+  // Verify the attribute was set correctly
+  apiStaticModuleId = saiApiTable->portApi().getAttribute(
+      portId, SaiPortTraits::Attributes::StaticModuleId{});
+  EXPECT_EQ(apiStaticModuleId, moduleId);
 }

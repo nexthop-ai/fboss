@@ -18,19 +18,21 @@ cpp_library(
     exported_deps = [
         ":eeprom_content_validator",
         ":fboss_eeprom_lib",
-        "//fboss/platform/config_lib:config_lib",
         "//fboss/platform/helpers:platform_name_lib",
         "//fboss/platform/helpers:platform_utils",
+        "//fboss/platform/platform_manager:config_utils",
         "//fboss/platform/weutil/if:weutil_config-cpp2-types",
         "//folly:conv",
         "//folly:format",
         "//folly:string",
         "//folly/json:dynamic",
         "//folly/logging:logging",
+        "//thrift/lib/cpp/util:enum_utils",
         "//thrift/lib/cpp2/protocol:protocol",
     ],
     exported_external_deps = [
         "gflags",
+        "re2",
     ],
 )
 
@@ -38,17 +40,17 @@ cpp_library(
     name = "fboss_eeprom_lib",
     srcs = [
         "FbossEepromInterface.cpp",
-        "FbossEepromParser.cpp",
+        "ParserUtils.cpp",
     ],
     headers = [
-        "CachedFbossEepromParser.h",
         "FbossEepromInterface.h",
-        "FbossEepromParser.h",
+        "ParserUtils.h",
     ],
     exported_deps = [
+        "fbsource//third-party/fmt:fmt",
         ":crc16_ccitt_aug",
         "//fboss/platform/weutil/if:eeprom_contents-cpp2-types",
-        "//folly/logging:logging",
+        "//folly:string",
     ],
 )
 

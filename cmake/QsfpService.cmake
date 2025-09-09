@@ -33,6 +33,7 @@ target_link_libraries(qsfp_lib
     qsfp_bsp_core
     thrift_cow_serializer
     io_stats_recorder
+    cmis_cpp2
 )
 
 add_library(qsfp_config
@@ -105,6 +106,24 @@ add_library(montblanc_bsp
 )
 
 target_link_libraries(montblanc_bsp
+  bsp_platform_mapping_cpp2
+  FBThrift::thriftcpp2
+)
+
+add_library(icecube800bc_bsp
+  fboss/lib/bsp/icecube800bc/Icecube800bcBspPlatformMapping.cpp
+)
+
+target_link_libraries(icecube800bc_bsp
+  bsp_platform_mapping_cpp2
+  FBThrift::thriftcpp2
+)
+
+add_library(icetea800bc_bsp
+  fboss/lib/bsp/icetea800bc/Icetea800bcBspPlatformMapping.cpp
+)
+
+target_link_libraries(icetea800bc_bsp
   bsp_platform_mapping_cpp2
   FBThrift::thriftcpp2
 )
@@ -182,6 +201,8 @@ target_link_libraries(qsfp_bsp_core
   meru800bia_bsp
   meru800bfa_bsp
   montblanc_bsp
+  icecube800bc_bsp
+  icetea800bc_bsp
   minipack3n_bsp
   morgan800cc_bsp
   janga800bic_bsp
@@ -208,7 +229,7 @@ target_link_libraries(transceiver_validator
 add_library(transceiver_manager STATIC
     fboss/qsfp_service/TransceiverManager.cpp
     fboss/qsfp_service/TransceiverStateMachine.cpp
-    fboss/qsfp_service/StateMachineController.cpp
+    fboss/qsfp_service/TransceiverStateMachineController.cpp
     fboss/qsfp_service/SlotThreadHelper.cpp
 )
 

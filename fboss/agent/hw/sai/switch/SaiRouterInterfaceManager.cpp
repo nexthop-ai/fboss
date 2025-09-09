@@ -24,6 +24,45 @@
 
 namespace facebook::fboss {
 
+namespace {
+HwRouterInterfaceStats fillHwRouterInterfaceStats(
+    const folly::F14FastMap<sai_stat_id_t, uint64_t>& stats) {
+  HwRouterInterfaceStats rifStats{};
+  for (const auto& [id, value] : stats) {
+    switch (id) {
+      case SAI_ROUTER_INTERFACE_STAT_IN_OCTETS:
+        rifStats.inBytes_() = value;
+        break;
+      case SAI_ROUTER_INTERFACE_STAT_IN_PACKETS:
+        rifStats.inPkts_() = value;
+        break;
+      case SAI_ROUTER_INTERFACE_STAT_OUT_OCTETS:
+        rifStats.outBytes_() = value;
+        break;
+      case SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS:
+        rifStats.outPkts_() = value;
+        break;
+      case SAI_ROUTER_INTERFACE_STAT_IN_ERROR_OCTETS:
+        rifStats.inErrorBytes_() = value;
+        break;
+      case SAI_ROUTER_INTERFACE_STAT_IN_ERROR_PACKETS:
+        rifStats.inErrorPkts_() = value;
+        break;
+      case SAI_ROUTER_INTERFACE_STAT_OUT_ERROR_OCTETS:
+        rifStats.outErrorBytes_() = value;
+        break;
+      case SAI_ROUTER_INTERFACE_STAT_OUT_ERROR_PACKETS:
+        rifStats.outErrorPkts_() = value;
+        break;
+    }
+  }
+  return rifStats;
+}
+} // namespace
+
+SaiRouterInterfaceHandle::SaiRouterInterfaceHandle(cfg::InterfaceType type)
+    : intfType(type) {}
+
 SaiRouterInterfaceManager::SaiRouterInterfaceManager(
     SaiStore* saiStore,
     SaiManagerTable* managerTable,
@@ -165,6 +204,17 @@ RouterInterfaceSaiId SaiRouterInterfaceManager::addOrUpdatePortRouterInterface(
   }
 
   handles_[swInterface->getID()] = std::move(portRouterInterfaceHandle);
+
+  // Initialize stats if needed.
+  if (platform_->getAsic()->isSupported(
+          HwAsic::Feature::ROUTER_INTERFACE_STATISTICS) &&
+      swInterface->getType() == cfg::InterfaceType::PORT &&
+      !rifStats_.contains(swInterface->getID())) {
+    rifStats_.emplace(
+        swInterface->getID(),
+        std::make_unique<HwRouterInterfaceFb303Stats>(swInterface->getName()));
+  }
+
   return portRouterInterface->adapterKey();
 }
 
@@ -305,4 +355,68 @@ SaiRouterInterfaceManager::getRouterPortInterfaceIDIf(PortSaiId port) const {
   return itr->first;
 }
 
+void SaiRouterInterfaceManager::updateStats() {
+  if (!platform_->getAsic()->isSupported(
+          HwAsic::Feature::ROUTER_INTERFACE_STATISTICS)) {
+    return;
+  }
+  auto now = std::chrono::duration_cast<std::chrono::seconds>(
+      std::chrono::system_clock::now().time_since_epoch());
+
+  for (auto& [intfId, handle] : handles_) {
+    std::visit(
+        [intfId = intfId, handle = handle.get(), now, this](auto& rif) {
+          rif->updateStats();
+
+          if (auto it = rifStats_.find(intfId); it != rifStats_.end()) {
+            it->second->updateStats(
+                fillHwRouterInterfaceStats(rif->getStats()), now);
+          }
+        },
+        handle->routerInterface);
+  }
+}
+
+void SaiRouterInterfaceManager::clearStats() {
+  if (!platform_->getAsic()->isSupported(
+          HwAsic::Feature::ROUTER_INTERFACE_STATISTICS)) {
+    return;
+  }
+  for (auto& [_, handle] : handles_) {
+    std::visit(
+        [](auto& rif) { return rif->clearStats(); }, handle->routerInterface);
+  }
+}
+
+std::map<InterfaceID, HwRouterInterfaceStats>
+SaiRouterInterfaceManager::getRouterInterfaceStats() const {
+  std::map<InterfaceID, HwRouterInterfaceStats> out{};
+  if (!platform_->getAsic()->isSupported(
+          HwAsic::Feature::ROUTER_INTERFACE_STATISTICS)) {
+    return out;
+  }
+  for (const auto& [_, handle] : handles_) {
+    auto stats = std::visit(
+        [](const auto& rif) { return rif->getStats(); },
+        handle->routerInterface);
+
+    out.emplace(_, fillHwRouterInterfaceStats(stats));
+  }
+  return out;
+}
+
+HwRouterInterfaceStats SaiRouterInterfaceManager::getRouterInterfaceStats(
+    const InterfaceID& intfID) const {
+  if (!platform_->getAsic()->isSupported(
+          HwAsic::Feature::ROUTER_INTERFACE_STATISTICS)) {
+    return HwRouterInterfaceStats{};
+  }
+  auto stats = getRouterInterfaceStats();
+  auto iter = stats.find(intfID);
+  if (iter != stats.end()) {
+    return iter->second;
+  }
+  XLOG(DBG4) << "No stats found for interface " << intfID;
+  return HwRouterInterfaceStats{};
+}
 } // namespace facebook::fboss

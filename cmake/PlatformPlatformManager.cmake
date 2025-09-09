@@ -3,6 +3,13 @@
 # In general, libraries and binaries in fboss/foo/bar are built by
 # cmake/FooBar.cmake
 
+add_library(platform_manager_fbiob_ioctl_h INTERFACE)
+
+target_sources(platform_manager_fbiob_ioctl_h
+  INTERFACE
+    fboss/platform/platform_manager/fbiob_ioctl.h
+)
+
 add_fbthrift_cpp_library(
   platform_manager_snapshot_cpp2
   fboss/platform/platform_manager/platform_manager_snapshot.thrift
@@ -14,6 +21,14 @@ add_fbthrift_cpp_library(
 add_fbthrift_cpp_library(
   platform_manager_presence_cpp2
   fboss/platform/platform_manager/platform_manager_presence.thrift
+  OPTIONS
+    json
+    reflection
+)
+
+add_fbthrift_cpp_library(
+  platform_manager_validators_cpp2
+  fboss/platform/platform_manager/platform_manager_validators.thrift
   OPTIONS
     json
     reflection
@@ -109,6 +124,7 @@ target_link_libraries(platform_manager_pci_explorer
   platform_manager_config_cpp2
   platform_manager_utils
   Folly::folly
+  fb303::fb303
 )
 
 add_library(platform_manager_device_path_resolver
@@ -140,7 +156,7 @@ target_link_libraries(platform_manager_platform_explorer
   platform_manager_utils
   platform_fs_utils
   fb303::fb303
-  weutil_fboss_eeprom_parser
+  weutil_fboss_eeprom_interface
   ioctl_smbus_eeprom_reader
   Folly::folly
 )
@@ -152,6 +168,7 @@ add_library(platform_manager_config_validator
 target_link_libraries(platform_manager_config_validator
   platform_manager_i2c_explorer
   platform_manager_config_cpp2
+  platform_manager_validators_cpp2
   Folly::folly
   range-v3
 )
@@ -179,14 +196,7 @@ target_link_libraries(platform_manager_handler
 )
 
 add_executable(platform_manager
-  fboss/platform/platform_manager/DataStore.cpp
-  fboss/platform/platform_manager/I2cExplorer.cpp
   fboss/platform/platform_manager/Main.cpp
-  fboss/platform/platform_manager/PciExplorer.cpp
-  fboss/platform/platform_manager/PlatformExplorer.cpp
-  fboss/platform/platform_manager/DevicePathResolver.cpp
-  fboss/platform/platform_manager/PresenceChecker.cpp
-  fboss/platform/platform_manager/ExplorationSummary.cpp
 )
 
 target_link_libraries(platform_manager
@@ -200,11 +210,12 @@ target_link_libraries(platform_manager
   platform_manager_config_validator
   platform_manager_handler
   platform_manager_pkg_manager
+  platform_manager_platform_explorer
   platform_manager_presence_cpp2
   platform_manager_service_cpp2
   platform_manager_snapshot_cpp2
   platform_manager_utils
-  weutil_fboss_eeprom_parser
+  weutil_fboss_eeprom_interface
   ioctl_smbus_eeprom_reader
   i2c_ctrl
   ${LIBGPIOD}

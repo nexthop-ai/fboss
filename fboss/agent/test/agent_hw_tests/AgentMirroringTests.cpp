@@ -1,32 +1,35 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
-#include "fboss/agent/test/AgentHwTest.h"
+#include <boost/range/combine.hpp>
+#include <folly/IPAddress.h>
+#include <folly/logging/xlog.h>
 
 #include "fboss/agent/AsicUtils.h"
 #include "fboss/agent/packet/PktFactory.h"
 #include "fboss/agent/packet/PktUtil.h"
+#include "fboss/agent/test/AgentHwTest.h"
 #include "fboss/agent/test/EcmpSetupHelper.h"
 #include "fboss/agent/test/utils/AclTestUtils.h"
 #include "fboss/agent/test/utils/ConfigUtils.h"
 #include "fboss/agent/test/utils/MirrorTestUtils.h"
 #include "fboss/agent/test/utils/PacketSnooper.h"
 #include "fboss/lib/CommonUtils.h"
-
-#include <folly/IPAddress.h>
-#include "fboss/agent/TxPacket.h"
-
-#include "fboss/agent/test/gen-cpp2/production_features_types.h"
-
-#include <boost/range/combine.hpp>
-#include <folly/logging/xlog.h>
 #include "fboss/lib/config/PlatformConfigUtils.h"
 
 namespace {
 using TestTypes = ::testing::Types<folly::IPAddressV4, folly::IPAddressV6>;
-const std::string kIngressSpan = "ingress_span";
-const std::string kIngressErspan = "ingress_erspan";
-const std::string kEgressSpan = "egress_span";
-const std::string kEgressErspan = "egress_erspan";
+class IPAddressNameGenerator {
+ public:
+  template <typename T>
+  static std::string GetName(int) {
+    if constexpr (std::is_same_v<T, folly::IPAddressV4>) {
+      return "IPv4";
+    }
+    if constexpr (std::is_same_v<T, folly::IPAddressV6>) {
+      return "IPv6";
+    }
+  }
+};
 
 const std::string kMirrorAcl = "mirror_acl";
 
@@ -46,9 +49,11 @@ class AgentMirroringTest : public AgentHwTest {
     return config;
   }
 
-  PortID getMirrorToPort(const AgentEnsemble& ensemble) const {
+  PortID getMirrorToPort(
+      const AgentEnsemble& ensemble,
+      uint8_t mirrorToPortIndex = utility::kMirrorToPortIndex) const {
     return ensemble.masterLogicalPortIds(
-        {cfg::PortType::INTERFACE_PORT})[utility::kMirrorToPortIndex];
+        {cfg::PortType::INTERFACE_PORT})[mirrorToPortIndex];
   }
 
   PortID getTrafficPort(const AgentEnsemble& ensemble) const {
@@ -120,13 +125,19 @@ class AgentMirroringTest : public AgentHwTest {
   }
 
   template <typename T = AddrT>
-  void resolveMirror(const std::string& mirrorName) {
+  void resolveMirror(
+      const std::string& mirrorName,
+      uint8_t mirrorToPortIndex = utility::kMirrorToPortIndex) {
     utility::EcmpSetupAnyNPorts<AddrT> ecmpHelper(
         getProgrammedState(), getSw()->needL2EntryForNeighbor());
-    auto trafficPort = getTrafficPort(*getAgentEnsemble());
-    auto mirrorToPort = getMirrorToPort(*getAgentEnsemble());
-    EXPECT_EQ(trafficPort, ecmpHelper.nhop(0).portDesc.phyPortID());
-    EXPECT_EQ(mirrorToPort, ecmpHelper.nhop(1).portDesc.phyPortID());
+    PortID trafficPort = getTrafficPort(*getAgentEnsemble());
+    PortID mirrorToPort =
+        getMirrorToPort(*getAgentEnsemble(), mirrorToPortIndex);
+    EXPECT_EQ(
+        trafficPort,
+        ecmpHelper.nhop(utility::kTrafficPortIndex).portDesc.phyPortID());
+    EXPECT_EQ(
+        mirrorToPort, ecmpHelper.nhop(mirrorToPortIndex).portDesc.phyPortID());
     resolveNeighborAndProgramRoutes(ecmpHelper, 1);
     applyNewState([&](const std::shared_ptr<SwitchState>& in) {
       boost::container::flat_set<PortDescriptor> nhopPorts{
@@ -250,9 +261,13 @@ class AgentMirroringTest : public AgentHwTest {
     }
   }
 
-  void verify(const std::string& mirrorName, int payloadSize = 500) {
-    auto trafficPort = getTrafficPort(*getAgentEnsemble());
-    auto mirrorToPort = getMirrorToPort(*getAgentEnsemble());
+  void verify(
+      const std::string& mirrorName,
+      uint8_t mirrorToPortIndex = utility::kMirrorToPortIndex,
+      int payloadSize = 500) {
+    PortID trafficPort = getTrafficPort(*getAgentEnsemble());
+    PortID mirrorToPort =
+        getMirrorToPort(*getAgentEnsemble(), mirrorToPortIndex);
     WITH_RETRIES({
       auto ingressMirror =
           this->getProgrammedState()->getMirrors()->getNodeIf(mirrorName);
@@ -297,16 +312,22 @@ class AgentMirroringTest : public AgentHwTest {
       this->resolveMirror(mirrorName);
       auto cfg = initialConfig(*getAgentEnsemble());
       cfg.mirrors()->clear();
+      // Test that these port mirror attributes can be changed:
+      // - PortID from which mirrored packets will be sent
+      // - DSCP value
+      // Note that DSCP may be ignored by SPAN tests with local mirroring.
       utility::addMirrorConfig<AddrT>(
           &cfg,
           *getAgentEnsemble(),
           mirrorName,
           false /* truncate */,
-          48 /* dscp */);
+          48 /* dscp */,
+          utility::kUpdatedMirrorToPortIndex /* mirrorToPortIndex */);
       this->applyNewConfig(cfg);
+      this->resolveMirror(mirrorName, utility::kUpdatedMirrorToPortIndex);
     };
     auto verify = [=, this]() {
-      this->verify(mirrorName);
+      this->verify(mirrorName, utility::kUpdatedMirrorToPortIndex);
       this->verifyPortMirrorProgrammed(mirrorName);
     };
     this->verifyAcrossWarmBoots(setup, verify);
@@ -376,7 +397,8 @@ class AgentMirroringTest : public AgentHwTest {
     auto verify = [=, this]() {
       auto mirrorToPort = getMirrorToPort(*getAgentEnsemble());
       auto statsBefore = getLatestPortStats(mirrorToPort);
-      this->verify(mirrorName, 8000);
+      this->verify(
+          mirrorName, utility::kMirrorToPortIndex, 8000 /*payloadSize*/);
       WITH_RETRIES({
         auto statsAfter = getLatestPortStats(mirrorToPort);
 
@@ -430,6 +452,11 @@ class AgentIngressPortErspanMirroringTest : public AgentMirroringTest<AddrT> {
  public:
   std::vector<ProductionFeature> getProductionFeaturesVerified()
       const override {
+    if constexpr (std::is_same_v<AddrT, folly::IPAddressV6>) {
+      return {
+          ProductionFeature::INGRESS_MIRRORING,
+          ProductionFeature::ERSPANV6_MIRRORING};
+    }
     return {ProductionFeature::INGRESS_MIRRORING};
   }
 
@@ -453,6 +480,12 @@ class AgentIngressPortErspanMirroringTruncateTest
  public:
   std::vector<ProductionFeature> getProductionFeaturesVerified()
       const override {
+    if constexpr (std::is_same_v<AddrT, folly::IPAddressV6>) {
+      return {
+          ProductionFeature::INGRESS_MIRRORING,
+          ProductionFeature::MIRROR_PACKET_TRUNCATION,
+          ProductionFeature::ERSPANV6_MIRRORING};
+    }
     return {
         ProductionFeature::INGRESS_MIRRORING,
         ProductionFeature::MIRROR_PACKET_TRUNCATION};
@@ -501,6 +534,12 @@ class AgentIngressAclErspanMirroringTest : public AgentMirroringTest<AddrT> {
  public:
   std::vector<ProductionFeature> getProductionFeaturesVerified()
       const override {
+    if constexpr (std::is_same_v<AddrT, folly::IPAddressV6>) {
+      return {
+          ProductionFeature::INGRESS_MIRRORING,
+          ProductionFeature::INGRESS_ACL_MIRRORING,
+          ProductionFeature::ERSPANV6_MIRRORING};
+    }
     return {
         ProductionFeature::INGRESS_MIRRORING,
         ProductionFeature::INGRESS_ACL_MIRRORING};
@@ -523,9 +562,13 @@ class AgentIngressAclErspanMirroringTest : public AgentMirroringTest<AddrT> {
 template <typename AddrT>
 class AgentEgressPortSpanMirroringTest : public AgentMirroringTest<AddrT> {
  public:
- public:
   std::vector<ProductionFeature> getProductionFeaturesVerified()
       const override {
+    if constexpr (std::is_same_v<AddrT, folly::IPAddressV6>) {
+      return {
+          ProductionFeature::EGRESS_MIRRORING,
+          ProductionFeature::ERSPANV6_MIRRORING};
+    }
     return {ProductionFeature::EGRESS_MIRRORING};
   }
 
@@ -548,6 +591,11 @@ class AgentEgressPortErspanMirroringTest : public AgentMirroringTest<AddrT> {
  public:
   std::vector<ProductionFeature> getProductionFeaturesVerified()
       const override {
+    if constexpr (std::is_same_v<AddrT, folly::IPAddressV6>) {
+      return {
+          ProductionFeature::EGRESS_MIRRORING,
+          ProductionFeature::ERSPANV6_MIRRORING};
+    }
     return {ProductionFeature::EGRESS_MIRRORING};
   }
 
@@ -571,6 +619,12 @@ class AgentEgressPortErspanMirroringTruncateTest
  public:
   std::vector<ProductionFeature> getProductionFeaturesVerified()
       const override {
+    if constexpr (std::is_same_v<AddrT, folly::IPAddressV6>) {
+      return {
+          ProductionFeature::MIRROR_PACKET_TRUNCATION,
+          ProductionFeature::EGRESS_MIRRORING,
+          ProductionFeature::ERSPANV6_MIRRORING};
+    }
     return {
         ProductionFeature::MIRROR_PACKET_TRUNCATION,
         ProductionFeature::EGRESS_MIRRORING};
@@ -595,6 +649,12 @@ class AgentEgressAclSpanMirroringTest : public AgentMirroringTest<AddrT> {
  public:
   std::vector<ProductionFeature> getProductionFeaturesVerified()
       const override {
+    if constexpr (std::is_same_v<AddrT, folly::IPAddressV6>) {
+      return {
+          ProductionFeature::EGRESS_MIRRORING,
+          ProductionFeature::EGRESS_ACL_MIRRORING,
+          ProductionFeature::ERSPANV6_MIRRORING};
+    }
     return {
         ProductionFeature::EGRESS_MIRRORING,
         ProductionFeature::EGRESS_ACL_MIRRORING};
@@ -638,23 +698,53 @@ class AgentEgressAclErspanMirroringTest : public AgentMirroringTest<AddrT> {
   }
 };
 
-TYPED_TEST_SUITE(AgentIngressPortSpanMirroringTest, TestTypes);
-TYPED_TEST_SUITE(AgentIngressPortErspanMirroringTest, TestTypes);
-TYPED_TEST_SUITE(AgentIngressPortErspanMirroringTruncateTest, TestTypes);
-TYPED_TEST_SUITE(AgentIngressAclSpanMirroringTest, TestTypes);
-TYPED_TEST_SUITE(AgentIngressAclErspanMirroringTest, TestTypes);
-TYPED_TEST_SUITE(AgentEgressPortSpanMirroringTest, TestTypes);
-TYPED_TEST_SUITE(AgentEgressPortErspanMirroringTest, TestTypes);
-TYPED_TEST_SUITE(AgentEgressPortErspanMirroringTruncateTest, TestTypes);
-TYPED_TEST_SUITE(AgentEgressAclSpanMirroringTest, TestTypes);
-TYPED_TEST_SUITE(AgentEgressAclErspanMirroringTest, TestTypes);
+TYPED_TEST_SUITE(
+    AgentIngressPortSpanMirroringTest,
+    TestTypes,
+    IPAddressNameGenerator);
+TYPED_TEST_SUITE(
+    AgentIngressPortErspanMirroringTest,
+    TestTypes,
+    IPAddressNameGenerator);
+TYPED_TEST_SUITE(
+    AgentIngressPortErspanMirroringTruncateTest,
+    TestTypes,
+    IPAddressNameGenerator);
+TYPED_TEST_SUITE(
+    AgentIngressAclSpanMirroringTest,
+    TestTypes,
+    IPAddressNameGenerator);
+TYPED_TEST_SUITE(
+    AgentIngressAclErspanMirroringTest,
+    TestTypes,
+    IPAddressNameGenerator);
+TYPED_TEST_SUITE(
+    AgentEgressPortSpanMirroringTest,
+    TestTypes,
+    IPAddressNameGenerator);
+TYPED_TEST_SUITE(
+    AgentEgressPortErspanMirroringTest,
+    TestTypes,
+    IPAddressNameGenerator);
+TYPED_TEST_SUITE(
+    AgentEgressPortErspanMirroringTruncateTest,
+    TestTypes,
+    IPAddressNameGenerator);
+TYPED_TEST_SUITE(
+    AgentEgressAclSpanMirroringTest,
+    TestTypes,
+    IPAddressNameGenerator);
+TYPED_TEST_SUITE(
+    AgentEgressAclErspanMirroringTest,
+    TestTypes,
+    IPAddressNameGenerator);
 
 TYPED_TEST(AgentIngressPortSpanMirroringTest, SpanPortMirror) {
   this->testPortMirror(utility::kIngressSpan);
 }
 
 TYPED_TEST(AgentIngressPortSpanMirroringTest, UpdateSpanPortMirror) {
-  this->testUpdatePortMirror(kIngressSpan);
+  this->testUpdatePortMirror(utility::kIngressSpan);
 }
 
 TYPED_TEST(AgentIngressAclSpanMirroringTest, RemoveSpanMirror) {
@@ -670,7 +760,7 @@ TYPED_TEST(AgentIngressAclSpanMirroringTest, RemoveErspanMirror) {
 }
 
 TYPED_TEST(AgentIngressPortErspanMirroringTest, UpdateErspanPortMirror) {
-  this->testUpdatePortMirror(kIngressErspan);
+  this->testUpdatePortMirror(utility::kIngressErspan);
 }
 
 TYPED_TEST(AgentIngressAclSpanMirroringTest, SpanAclMirror) {
@@ -678,7 +768,7 @@ TYPED_TEST(AgentIngressAclSpanMirroringTest, SpanAclMirror) {
 }
 
 TYPED_TEST(AgentIngressAclSpanMirroringTest, UpdateSpanAclMirror) {
-  this->testUpdateAclMirror(kIngressSpan);
+  this->testUpdateAclMirror(utility::kIngressSpan);
 }
 
 TYPED_TEST(AgentIngressAclErspanMirroringTest, ErspanAclMirror) {
@@ -686,12 +776,12 @@ TYPED_TEST(AgentIngressAclErspanMirroringTest, ErspanAclMirror) {
 }
 
 TYPED_TEST(AgentIngressAclErspanMirroringTest, UpdateErspanAclMirror) {
-  this->testUpdateAclMirror(kIngressErspan);
+  this->testUpdateAclMirror(utility::kIngressErspan);
 }
 
 TYPED_TEST(
     AgentIngressPortErspanMirroringTruncateTest,
-    TrucatePortErspanMirror) {
+    TruncatePortErspanMirror) {
   this->testPortMirrorWithLargePacket(utility::kIngressErspan);
 }
 
@@ -713,7 +803,7 @@ TYPED_TEST(AgentEgressAclErspanMirroringTest, ErspanAclMirror) {
 
 TYPED_TEST(
     AgentEgressPortErspanMirroringTruncateTest,
-    TrucatePortErspanMirror) {
+    TruncatePortErspanMirror) {
   this->testPortMirrorWithLargePacket(utility::kEgressErspan);
 }
 
@@ -770,7 +860,10 @@ class AgentErspanIngressSamplingTest
   }
 };
 
-TYPED_TEST_SUITE(AgentErspanIngressSamplingTest, TestTypes);
+TYPED_TEST_SUITE(
+    AgentErspanIngressSamplingTest,
+    TestTypes,
+    IPAddressNameGenerator);
 
 TYPED_TEST(AgentErspanIngressSamplingTest, ErspanIngressSampling) {
   auto kSampleRate = 1000;

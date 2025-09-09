@@ -13,7 +13,6 @@
 #include "fboss/agent/DsfNodeUtils.h"
 #include "fboss/agent/hw/HwSwitchWarmBootHelper.h"
 #include "fboss/agent/hw/sai/switch/SaiSwitch.h"
-#include "fboss/agent/hw/switch_asics/EbroAsic.h"
 #include "fboss/agent/hw/switch_asics/HwAsic.h"
 #include "fboss/agent/hw/switch_asics/Jericho3Asic.h"
 #include "fboss/agent/platforms/sai/SaiBcmDarwinPlatformPort.h"
@@ -22,9 +21,9 @@
 #include "fboss/agent/platforms/sai/SaiBcmIcecube800bcPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiBcmMinipackPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiBcmMontblancPlatformPort.h"
-#include "fboss/agent/platforms/sai/SaiBcmPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiBcmWedge100PlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiBcmWedge400PlatformPort.h"
+#include "fboss/agent/platforms/sai/SaiBcmWedge800baPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiBcmYampPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiElbert8DDPhyPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiFakePlatformPort.h"
@@ -364,7 +363,8 @@ void SaiPlatform::initPorts() {
       saiPort = std::make_unique<SaiMeru400biuPlatformPort>(portId, this);
     } else if (
         platformMode == PlatformType::PLATFORM_MERU800BIA ||
-        platformMode == PlatformType::PLATFORM_MERU800BIAB) {
+        platformMode == PlatformType::PLATFORM_MERU800BIAB ||
+        platformMode == PlatformType::PLATFORM_MERU800BIAC) {
       saiPort = std::make_unique<SaiMeru800biaPlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_MERU400BIA) {
       saiPort = std::make_unique<SaiMeru400biaPlatformPort>(portId, this);
@@ -388,6 +388,8 @@ void SaiPlatform::initPorts() {
       saiPort = std::make_unique<SaiBcmIcecube800bcPlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_NH4010) {
       saiPort = std::make_unique<SaiNh4010PlatformPort>(portId, this);
+    } else if (platformMode == PlatformType::PLATFORM_WEDGE800BA) {
+      saiPort = std::make_unique<SaiBcmWedge800baPlatformPort>(portId, this);
     } else {
       saiPort = std::make_unique<SaiFakePlatformPort>(portId, this);
     }

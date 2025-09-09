@@ -107,6 +107,7 @@ class PeriodicTransmissionMachine : private folly::AsyncTimeout {
 
   void portUp();
   void portDown();
+  std::chrono::seconds getCurrentTransmissionPeriod() const;
 
   // thread-safe
   void start();
@@ -144,6 +145,7 @@ class TransmitMachine : private folly::AsyncTimeout {
 
   void start();
   void stop();
+  bool getLacpLastTransmissionResult() const;
 
  private:
   enum class PeriodicState { NONE, SLOW, FAST, TX };
@@ -155,6 +157,8 @@ class TransmitMachine : private folly::AsyncTimeout {
   static const std::chrono::seconds TX_REPLENISH_RATE;
 
   int transmissionsLeft_{MAX_TRANSMISSIONS_IN_SHORT_PERIOD};
+  bool isLastTransmissionSuccessful_{false};
+
   LacpController& controller_;
   LacpServicerIf* servicer_{nullptr};
 };

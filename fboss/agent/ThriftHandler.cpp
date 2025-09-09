@@ -298,7 +298,7 @@ void getPortInfoHelper(
                               ->cref<switch_config_tags::maximum>()
                               ->cref();
         PortQueueRate portQueueRate;
-        portQueueRate.pktsPerSec_ref() = range;
+        portQueueRate.pktsPerSec() = range;
 
         pq.portQueueRate() = portQueueRate;
       } else if (
@@ -311,7 +311,7 @@ void getPortInfoHelper(
                               ->cref<switch_config_tags::maximum>()
                               ->cref();
         PortQueueRate portQueueRate;
-        portQueueRate.kbitsPerSec_ref() = range;
+        portQueueRate.kbitsPerSec() = range;
 
         pq.portQueueRate() = portQueueRate;
       }
@@ -1122,8 +1122,7 @@ void ThriftHandler::getAclTableGroup(AclTableThrift& aclTableEntry) {
               const auto& aclEntry = aclMapEntry.second;
               aclTable.push_back(populateAclEntryThrift(*aclEntry));
             }
-            aclTableEntry.aclTableEntries_ref()[aclTableName] =
-                std::move(aclTable);
+            aclTableEntry.aclTableEntries()[aclTableName] = std::move(aclTable);
           }
         }
       }
@@ -1131,7 +1130,7 @@ void ThriftHandler::getAclTableGroup(AclTableThrift& aclTableEntry) {
   } else {
     std::vector<AclEntryThrift> aclTable;
     getAclTable(aclTable);
-    aclTableEntry.aclTableEntries_ref()
+    aclTableEntry.aclTableEntries()
         [cfg::switch_config_constants::DEFAULT_INGRESS_ACL_TABLE()] =
         std::move(aclTable);
   }
@@ -1454,7 +1453,7 @@ void ThriftHandler::setInterfacePrbs(
     bool enabled =
         (state->generatorEnabled().value() && state->checkerEnabled().value());
     setPortPrbs(
-        portID, component, enabled, static_cast<int>(*state->polynomial_ref()));
+        portID, component, enabled, static_cast<int>(*state->polynomial()));
   } else if (
       !state->generatorEnabled().has_value() ||
       !state->checkerEnabled().has_value()) {
@@ -1827,8 +1826,10 @@ void ThriftHandler::getRouteTable(std::vector<UnicastRoute>& routes) {
     tempRoute.dest()->ip() = toBinaryAddress(route->prefix().network());
     tempRoute.dest()->prefixLength() = route->prefix().mask();
     tempRoute.nextHopAddrs() = util::fromFwdNextHops(fwdInfo.getNextHopSet());
+    // If there are no overrides, nonOverrideNormalizedNextHops ==
+    // normalizedNextHops
     tempRoute.nextHops() =
-        util::fromRouteNextHopSet(fwdInfo.normalizedNextHops());
+        util::fromRouteNextHopSet(fwdInfo.nonOverrideNormalizedNextHops());
     if (fwdInfo.getCounterID().has_value()) {
       tempRoute.counterID() = *fwdInfo.getCounterID();
     }
@@ -1838,6 +1839,10 @@ void ThriftHandler::getRouteTable(std::vector<UnicastRoute>& routes) {
     if (fwdInfo.getOverrideEcmpSwitchingMode().has_value()) {
       tempRoute.overrideEcmpSwitchingMode() =
           *fwdInfo.getOverrideEcmpSwitchingMode();
+    }
+    if (fwdInfo.getOverrideNextHops().has_value()) {
+      tempRoute.overrideNextHops() =
+          util::fromRouteNextHopSet(fwdInfo.normalizedNextHops());
     }
     routes.emplace_back(std::move(tempRoute));
   });
@@ -2415,7 +2420,7 @@ void ThriftHandler::getAllLacpPartnerPairs(
 }
 
 SwitchRunState ThriftHandler::getSwitchRunState() {
-  auto log = LOG_THRIFT_CALL(DBG3);
+  auto log = LOG_THRIFT_CALL(DBG2);
   ensureConfigured(__func__);
   return sw_->getSwitchRunState();
 }
@@ -2721,7 +2726,12 @@ void ThriftHandler::getHwDebugDump(std::string& out) {
   if (sw_->isRunModeMonolithic()) {
     out = sw_->getMonolithicHwSwitchHandler()->getDebugDump();
   } else {
-    throw FbossError("getHwDebugDump is not supported onmulti switch");
+    folly::dynamic json = folly::dynamic::object;
+    for (const auto& switchId : sw_->getSwitchInfoTable().getSwitchIDs()) {
+      json[folly::to<std::string>(switchId)] =
+          sw_->getHwSwitchThriftClientTable()->getHwDebugDump(switchId);
+    }
+    out = folly::toPrettyJson(json);
   }
 }
 
@@ -2828,7 +2838,7 @@ void ThriftHandler::setMacAddrsToBlock(
 
 void ThriftHandler::publishLinkSnapshots(
     std::unique_ptr<std::vector<std::string>> portNames) {
-  auto log = LOG_THRIFT_CALL_WITH_STATS(DBG1, sw_->stats());
+  auto log = LOG_THRIFT_CALL_WITH_STATS(DBG1, sw_->stats(), portNames);
   for (const auto& portName : *portNames) {
     auto portID = sw_->getPlatformMapping()->getPortID(portName);
     sw_->publishPhyInfoSnapshots(portID);

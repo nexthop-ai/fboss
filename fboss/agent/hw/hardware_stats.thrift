@@ -99,6 +99,16 @@ struct HwPortStats {
   65: map<i16, i64> pgInCongestionDiscards_ = {};
   66: optional i64 pfcDeadlockDetection_;
   67: optional i64 pfcDeadlockRecovery_;
+  68: map<i16, bool> pgInCongestionDiscardSeen_ = {};
+  // MAC transmit data queue min/max watermark is added to
+  // monitor for TX stuck conditions which could result in
+  // RCI stuck like in S545783. Watermark is in cells and
+  // not converted to bytes, details in CS00012417758.
+  69: optional i64 macTransmitQueueMinWatermarkCells_;
+  70: optional i64 macTransmitQueueMaxWatermarkCells_;
+  71: optional bool macTransmitQueueStuck_;
+  72: optional i64 fabricControlRxPackets_;
+  73: optional i64 fabricControlTxPackets_;
 }
 
 struct HwSysPortStats {
@@ -332,6 +342,7 @@ struct HwSwitchWatermarkStats {
   7: optional i64 egressCoreBufferWatermarkBytes;
   8: optional i64 sramMinBufferWatermarkBytes;
   9: optional i64 fdrFifoWatermarkBytes;
+  10: optional i64 fabricInterCellJitterWatermarkUsec;
 }
 
 struct CpuPortStats {
@@ -368,6 +379,7 @@ struct HwSwitchDramStats {
   1: optional i64 dramEnqueuedBytes;
   2: optional i64 dramDequeuedBytes;
   3: optional i64 dramBlockedTimeNsec;
+  4: optional i64 dramQuarantinedBufferCount;
 }
 
 struct HwSwitchCreditStats {
@@ -440,6 +452,8 @@ struct HwSwitchFb303GlobalStats {
   34: i64 fabric_connectivity_bogus;
   35: optional i64 interrupt_masked_events;
   36: optional i64 asic_revision;
+  37: optional i64 sram_low_buffer_limit_hit_count;
+  38: optional i64 dram_quarantined_buffer_count;
 }
 
 struct HwFlowletStats {

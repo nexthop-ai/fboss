@@ -16,6 +16,9 @@
 #include "fboss/agent/if/gen-cpp2/FbossCtrlAsyncClient.h"
 #include "fboss/agent/if/gen-cpp2/FbossHwCtrl.h"
 
+#include "fboss/agent/Utils.h"
+#include "fboss/lib/CommonUtils.h"
+
 namespace {
 using facebook::fboss::FbossCtrl;
 using facebook::fboss::FbossHwCtrl;
@@ -66,6 +69,16 @@ void runOnAllHwAgents(
     auto hwAgentClient = getHwAgentThriftClient(switchName, kHwAgentPorts[i]);
     fn(*hwAgentClient);
   }
+}
+
+void adminDisablePort(const std::string& switchName, int32_t portID) {
+  auto swAgentClient = getSwAgentThriftClient(switchName);
+  swAgentClient->sync_setPortState(portID, false /* disable port */);
+}
+
+void adminEnablePort(const std::string& switchName, int32_t portID) {
+  auto swAgentClient = getSwAgentThriftClient(switchName);
+  swAgentClient->sync_setPortState(portID, true /* enable port */);
 }
 
 } // namespace
@@ -357,20 +370,41 @@ std::map<int32_t, facebook::fboss::PortInfoThrift> MultiNodeUtil::getPorts(
 
 std::set<std::string> MultiNodeUtil::getActiveFabricPorts(
     const std::string& switchName) {
-  auto ports = getPorts(switchName);
-
   std::set<std::string> activePorts;
-  for (const auto& port : ports) {
-    auto portInfo = port.second;
-
-    if (portInfo.portType().value() == cfg::PortType::FABRIC_PORT &&
-        portInfo.activeState().has_value() &&
+  for (const auto& [_, portInfo] : getFabricPortNameToPortInfo(switchName)) {
+    if (portInfo.activeState().has_value() &&
         portInfo.activeState().value() == PortActiveState::ACTIVE) {
       activePorts.insert(portInfo.name().value());
     }
   }
 
   return activePorts;
+}
+
+std::map<std::string, PortInfoThrift>
+MultiNodeUtil::getActiveFabricPortNameToPortInfo(
+    const std::string& switchName) {
+  std::map<std::string, PortInfoThrift> activeFabricPortNameToPortInfo;
+  for (const auto& [_, portInfo] : getFabricPortNameToPortInfo(switchName)) {
+    if (portInfo.activeState().has_value() &&
+        portInfo.activeState().value() == PortActiveState::ACTIVE) {
+      activeFabricPortNameToPortInfo.emplace(portInfo.name().value(), portInfo);
+    }
+  }
+
+  return activeFabricPortNameToPortInfo;
+}
+
+std::map<std::string, PortInfoThrift>
+MultiNodeUtil::getFabricPortNameToPortInfo(const std::string& switchName) {
+  std::map<std::string, PortInfoThrift> fabricPortNameToPortInfo;
+  for (const auto& [_, portInfo] : getPorts(switchName)) {
+    if (portInfo.portType().value() == cfg::PortType::FABRIC_PORT) {
+      fabricPortNameToPortInfo.emplace(portInfo.name().value(), portInfo);
+    }
+  }
+
+  return fabricPortNameToPortInfo;
 }
 
 bool MultiNodeUtil::verifyPortActiveStateForSwitch(
@@ -669,7 +703,7 @@ bool MultiNodeUtil::verifyStaticNdpEntries() {
   return true;
 }
 
-std::set<std::string> MultiNodeUtil::getRdswsWithEstablishedDsfSessions(
+std::map<std::string, DsfSessionThrift> MultiNodeUtil::getPeerToDsfSession(
     const std::string& rdsw) {
   auto logDsfSession =
       [rdsw](const facebook::fboss::DsfSessionThrift& session) {
@@ -686,14 +720,26 @@ std::set<std::string> MultiNodeUtil::getRdswsWithEstablishedDsfSessions(
   std::vector<facebook::fboss::DsfSessionThrift> sessions;
   swAgentClient->sync_getDsfSessions(sessions);
 
-  std::set<std::string> gotRdsws;
+  std::map<std::string, DsfSessionThrift> peerToDsfSession;
   for (const auto& session : sessions) {
     logDsfSession(session);
+    // remoteName format: peerName::peerIP, extract peerName.
+    size_t pos = (*session.remoteName()).find("::");
+    if (pos != std::string::npos) {
+      auto peer = (*session.remoteName()).substr(0, pos);
+      peerToDsfSession.emplace(peer, session);
+    }
+  }
+
+  return peerToDsfSession;
+}
+
+std::set<std::string> MultiNodeUtil::getRdswsWithEstablishedDsfSessions(
+    const std::string& rdsw) {
+  std::set<std::string> gotRdsws;
+  for (const auto& [peer, session] : getPeerToDsfSession(rdsw)) {
     if (session.state() == facebook::fboss::DsfSessionState::ESTABLISHED) {
-      size_t pos = (*session.remoteName()).find("::");
-      if (pos != std::string::npos) {
-        gotRdsws.insert((*session.remoteName()).substr(0, pos));
-      }
+      gotRdsws.insert(peer);
     }
   }
 
@@ -715,6 +761,148 @@ bool MultiNodeUtil::verifyDsfSessions() {
         return false;
       }
     }
+  }
+
+  return true;
+}
+
+bool MultiNodeUtil::verifyNoSessionsFlap(
+    const std::string& rdswToVerify,
+    const std::map<std::string, DsfSessionThrift>& baselinePeerToDsfSession) {
+  auto noSessionFlap =
+      [this, rdswToVerify, baselinePeerToDsfSession]() -> bool {
+    auto currentPeerToDsfSession = getPeerToDsfSession(rdswToVerify);
+    // All entries must be identical i.e.
+    // DSF Session state (ESTABLISHED or not) is the same.
+    // For any session the establishedAt and connnectedAt is the same.
+    return baselinePeerToDsfSession == currentPeerToDsfSession;
+  };
+
+  // It may take several (> 15) seconds for ESTABLISHED => CONNECT.
+  // Thus, keep retrying for several seconds to ensure that the session
+  // stays ESTABLISHED.
+  return checkAlwaysTrueWithRetryErrorReturn(
+      noSessionFlap, 30 /* num retries */);
+}
+
+bool MultiNodeUtil::verifyNoSessionsEstablished(
+    const std::string& rdswToVerify) {
+  auto noSessionsEstablished = [this, rdswToVerify]() -> bool {
+    for (const auto& [peer, session] : getPeerToDsfSession(rdswToVerify)) {
+      if (session.state() == facebook::fboss::DsfSessionState::ESTABLISHED) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  // It may take several (> 15) seconds for ESTABLISHED => CONNECT. Thus,
+  // try for several seconds and check if the session transitions to
+  // CONNECT.
+  return checkWithRetryErrorReturn(noSessionsEstablished, 30 /* num retries */);
+}
+
+bool MultiNodeUtil::verifyAllSessionsEstablished(
+    const std::string& rdswToVerify) {
+  auto allSessionsEstablished = [this, rdswToVerify]() -> bool {
+    for (const auto& [peer, session] : getPeerToDsfSession(rdswToVerify)) {
+      if (session.state() != facebook::fboss::DsfSessionState::ESTABLISHED) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  // It may take several seconds(>15) for ESTABLISHED => CONNECT. Thus,
+  // try for several seconds and check if the session transitions to
+  // ESTABLISHED.
+  return checkWithRetryErrorReturn(
+      allSessionsEstablished, 30 /* num retries */);
+}
+
+bool MultiNodeUtil::verifyGracefulFabricLinkDown(
+    const std::string& rdswToVerify,
+    const std::map<std::string, PortInfoThrift>&
+        activeFabricPortNameToPortInfo) {
+  CHECK(activeFabricPortNameToPortInfo.size() > 2);
+  auto rIter = activeFabricPortNameToPortInfo.rbegin();
+  auto lastActivePort = rIter->first;
+  auto secondLastActivePort = std::next(rIter)->first;
+  auto baselinePeerToDsfSession = getPeerToDsfSession(rdswToVerify);
+
+  // Admin disable all Active fabric ports
+  // Verify that all sessions stay established till last port is disabled.
+  // TODO: modify the config to set minLink threshold, and then extend the
+  // logic to verify that the sessions stay established while the minLink
+  // requirement is met.
+  for (const auto& [portName, portInfo] : activeFabricPortNameToPortInfo) {
+    XLOG(DBG2) << __func__
+               << " Admin disabling port:: " << portInfo.name().value()
+               << " portID: " << portInfo.portId().value();
+    adminDisablePort(rdswToVerify, portInfo.portId().value());
+
+    bool checkPassed = true;
+    if (portName == lastActivePort) {
+      checkPassed = verifyNoSessionsEstablished(rdswToVerify);
+    } else if (portName == secondLastActivePort) {
+      // verify no flaps is expensive.
+      // Thus, only verify just before disabling the last port.
+      // There is no loss of signal due to this approach as if the sessions
+      // flap due to an intermediate port admin disable, it will be detected by
+      // this check failure anyway.
+      checkPassed =
+          verifyNoSessionsFlap(rdswToVerify, baselinePeerToDsfSession);
+    }
+    if (!checkPassed) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool MultiNodeUtil::verifyGracefulFabricLinkUp(
+    const std::string& rdswToVerify,
+    const std::map<std::string, PortInfoThrift>&
+        activeFabricPortNameToPortInfo) {
+  CHECK(activeFabricPortNameToPortInfo.size() > 2);
+  auto firstActivePort = activeFabricPortNameToPortInfo.begin()->first;
+  auto rIter = activeFabricPortNameToPortInfo.rbegin();
+  auto lastActivePort = rIter->first;
+  // Admin Re-enable these fabric ports
+  for (const auto& [portName, portInfo] : activeFabricPortNameToPortInfo) {
+    XLOG(DBG2) << __func__
+               << " Admin enabling port:: " << portInfo.name().value()
+               << " portID: " << portInfo.portId().value();
+    adminEnablePort(rdswToVerify, portInfo.portId().value());
+
+    bool checkPassed = true;
+    if (portName == firstActivePort || portName == lastActivePort) {
+      checkPassed = verifyAllSessionsEstablished(rdswToVerify);
+    }
+
+    if (!checkPassed) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool MultiNodeUtil::verifyGracefulFabricLinkDownUp() {
+  auto myHostname = getLocalHostname();
+  auto activeFabricPortNameToPortInfo =
+      getActiveFabricPortNameToPortInfo(myHostname);
+
+  if (!verifyGracefulFabricLinkDown(
+          myHostname, activeFabricPortNameToPortInfo)) {
+    return false;
+  }
+
+  if (!verifyGracefulFabricLinkUp(myHostname, activeFabricPortNameToPortInfo)) {
+    return false;
   }
 
   return true;

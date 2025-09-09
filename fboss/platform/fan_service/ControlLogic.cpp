@@ -202,17 +202,22 @@ void ControlLogic::updateTargetPwm(const Sensor& sensor) {
     float previousSensorValue = readCache.processedReadValue;
     float sensorValue = readCache.lastReadValue;
     bool deadFanExists = (numFanFailed_ > 0);
+    bool moreThanOneDeadFanExists = (numFanFailed_ > 1);
     bool accelerate =
-        ((previousSensorValue == 0) || (sensorValue > previousSensorValue));
-    if (accelerate && !deadFanExists) {
-      tableToUse = *sensor.normalUpTable();
-    } else if (!accelerate && !deadFanExists) {
-      tableToUse = *sensor.normalDownTable();
-    } else if (accelerate && deadFanExists) {
-      tableToUse = *sensor.failUpTable();
+        (previousSensorValue == 0) || (sensorValue > previousSensorValue);
+    if (!deadFanExists) {
+      tableToUse =
+          accelerate ? *sensor.normalUpTable() : *sensor.normalDownTable();
+    } else if (moreThanOneDeadFanExists) {
+      tableToUse = accelerate
+          ? (sensor.twoRotorsFailUpTable() ? *sensor.twoRotorsFailUpTable()
+                                           : *sensor.failUpTable())
+          : (sensor.twoRotorsFailDownTable() ? *sensor.twoRotorsFailDownTable()
+                                             : *sensor.failDownTable());
     } else {
-      tableToUse = *sensor.failDownTable();
+      tableToUse = accelerate ? *sensor.failUpTable() : *sensor.failDownTable();
     }
+
     // Start with the lowest value
     targetPwm = tableToUse.begin()->second;
     for (const auto& [temp, pwm] : tableToUse) {
@@ -678,7 +683,7 @@ void ControlLogic::updateControl(std::shared_ptr<SensorData> pS) {
 }
 
 int16_t ControlLogic::calculateFanPwm(
-    float slope,
+    uint16_t slope,
     int16_t currentFanPwm,
     int16_t zonePwm) {
   int16_t newFanPwm = zonePwm;

@@ -24,6 +24,7 @@ sai_status_t create_port_fn(
   auto fs = FakeSai::getInstance();
   std::optional<bool> adminState;
   std::vector<uint32_t> lanes;
+  std::optional<sai_uint32_t> staticModuleId;
   std::optional<sai_uint32_t> speed;
   std::optional<sai_port_fec_mode_t> fecMode;
 #if SAI_API_VERSION >= SAI_VERSION(1, 10, 0)
@@ -80,6 +81,7 @@ sai_status_t create_port_fn(
   std::optional<sai_uint32_t> ars_port_load_scaling_factor;
   std::optional<sai_uint32_t> ars_port_load_past_weight;
   std::optional<sai_uint32_t> ars_port_load_future_weight;
+  std::optional<sai_object_id_t> fabricSystemPort;
 
   for (int i = 0; i < attr_count; ++i) {
     switch (attr_list[i].id) {
@@ -91,6 +93,9 @@ sai_status_t create_port_fn(
           lanes.push_back(attr_list[i].value.u32list.list[j]);
         }
       } break;
+      case SAI_PORT_ATTR_STATIC_MODULE_ID:
+        staticModuleId = attr_list[i].value.u32;
+        break;
       case SAI_PORT_ATTR_SPEED:
         speed = attr_list[i].value.u32;
         break;
@@ -276,6 +281,9 @@ sai_status_t create_port_fn(
       case SAI_PORT_ATTR_ARS_PORT_LOAD_FUTURE_WEIGHT:
         ars_port_load_future_weight = attr_list[i].value.u32;
         break;
+      case SAI_PORT_ATTR_FABRIC_SYSTEM_PORT:
+        fabricSystemPort = attr_list[i].value.oid;
+        break;
       default:
         return SAI_STATUS_INVALID_PARAMETER;
     }
@@ -321,6 +329,9 @@ sai_status_t create_port_fn(
   }
   if (preemphasis.size()) {
     port.preemphasis = preemphasis;
+  }
+  if (staticModuleId.has_value()) {
+    port.staticModuleId = staticModuleId.value();
   }
   if (ingressMirrorList.size()) {
     port.ingressMirrorList = ingressMirrorList;
@@ -420,6 +431,9 @@ sai_status_t create_port_fn(
   if (ars_port_load_future_weight.has_value()) {
     port.ars_port_load_future_weight = ars_port_load_future_weight.value();
   }
+  if (fabricSystemPort.has_value()) {
+    port.fabricSystemPort = fabricSystemPort.value();
+  }
 
   return SAI_STATUS_SUCCESS;
 }
@@ -458,6 +472,9 @@ sai_status_t set_port_attribute_fn(
         lanes.push_back(attr->value.u32list.list[j]);
       }
     } break;
+    case SAI_PORT_ATTR_STATIC_MODULE_ID:
+      port.staticModuleId = attr->value.u32;
+      break;
     case SAI_PORT_ATTR_SPEED:
       port.speed = attr->value.u32;
       break;
@@ -798,6 +815,9 @@ sai_status_t get_port_attribute_fn(
         }
         attr[i].value.u32list.count = port.lanes.size();
         break;
+      case SAI_PORT_ATTR_STATIC_MODULE_ID:
+        attr[i].value.u32 = port.staticModuleId;
+        break;
       case SAI_PORT_ATTR_SPEED:
         attr[i].value.u32 = port.speed;
         break;
@@ -1108,6 +1128,19 @@ sai_status_t get_port_attribute_fn(
         break;
       case SAI_PORT_ATTR_ARS_PORT_LOAD_FUTURE_WEIGHT:
         attr[i].value.u32 = port.ars_port_load_future_weight;
+        break;
+      case SAI_PORT_ATTR_FABRIC_SYSTEM_PORT:
+        attr[i].value.oid = port.fabricSystemPort;
+        break;
+      case SAI_PORT_ATTR_PORT_PG_PKT_DROP_STATUS:
+        if (port.portPgPktDropStatus.size() > attr[i].value.maplist.count) {
+          attr[i].value.maplist.count = port.portPgPktDropStatus.size();
+          return SAI_STATUS_BUFFER_OVERFLOW;
+        }
+        for (int j = 0; j < port.portPgPktDropStatus.size(); ++j) {
+          attr[i].value.maplist.list[j] = port.portPgPktDropStatus[j];
+        }
+        attr[i].value.maplist.count = port.portPgPktDropStatus.size();
         break;
       default:
         return SAI_STATUS_INVALID_PARAMETER;

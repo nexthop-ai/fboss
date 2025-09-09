@@ -13,6 +13,7 @@ This document outlines the requirements for the firmware repository, including d
 
 The firmware package for a given platform (e.g., `xylophia9000`) should be organized as follows:
 
+```
 xylophia9000/
 ├── firmware/
 │ └── package_0/
@@ -25,8 +26,7 @@ xylophia9000/
 │ ├── README.md
 │ └── evt/ (optional early EVT repo if images are not compatible with DVT due to critical HW changes)
 │   └── package_0/
-
-
+```
 
 ## Packages
 ---------
@@ -46,8 +46,8 @@ Each firmware file follows the naming convention:
 
   Where:
 
-* `P_` indicates the platform.
-* `<Platform>` is the platform name (e.g., `xylophia9000`) which is the same as the platform name from the eeprom/dmidecode content.
+* `P_` indicates the platform or generic firmware name.
+* `<Platform>` is the platform name (e.g., `xylophia9000`) which is the same as the platform name from the eeprom/dmidecode content, or a generic name which encompasses firmware that belongs to specific HW (e.g., `iceLakeD` for P_iceLakeD_F_bios_V_NL404.bin).
 * `F_` indicates the firmware name, which must match the names listed in `fw_util.json`.
 * `<fw_target_name>` is the name of target name found in fw_util (e.g., `smb_cpld`).
 * `_V_` indicates the version.

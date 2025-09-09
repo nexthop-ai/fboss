@@ -10,8 +10,7 @@
 
 namespace facebook::fboss::platform::platform_manager {
 namespace {
-const re2::RE2 kMeruRe{"meru800b[if]a"};
-const re2::RE2 kMeruPsuSlotPath{"/SMB_SLOT@0/PSU_SLOT@(?P<SlotNum>[01])"};
+const re2::RE2 kPsuSlotPath{R"(/PSU_SLOT@\d+$)"};
 } // namespace
 
 ExplorationSummary::ExplorationSummary(
@@ -26,7 +25,9 @@ void ExplorationSummary::addError(
   ExplorationError newError;
   newError.errorType() = toExplorationErrorTypeStr(errorType);
   newError.message() = message;
-  if (isDeviceExpectedToFail(devicePath)) {
+  if ((errorType == ExplorationErrorType::SLOT_PM_UNIT_ABSENCE ||
+       errorType == ExplorationErrorType::RUN_DEVMAP_SYMLINK) &&
+      isSlotExpectedToBeEmpty(devicePath)) {
     devicePathToExpectedErrors_[devicePath].push_back(newError);
     nExpectedErrs_++;
   } else {
@@ -56,30 +57,16 @@ void ExplorationSummary::print(ExplorationStatus finalStatus) {
         nExpectedErrs_);
   }
   for (const auto& [devicePath, explorationErrors] : devicePathToErrors_) {
-    auto [slotPath, deviceName] = Utils().parseDevicePath(devicePath);
-    XLOG(INFO) << fmt::format(
-        "Unexpected Failures in Device {} for PmUnit {} at SlotPath {}",
-        deviceName,
-        dataStore_.hasPmUnit(slotPath)
-            ? *dataStore_.getPmUnitInfo(slotPath).name()
-            : "<ABSENT>",
-        slotPath);
-    for (int i = 1; const auto& error : explorationErrors) {
-      XLOG(INFO) << fmt::format("{}. {}", i++, *error.message());
+    XLOG_FIRST_N(INFO, 1) << "=========== UNEXPECTED ERRORS ===========";
+    for (const auto& error : explorationErrors) {
+      XLOG(INFO) << fmt::format("{}: {}", devicePath, *error.message());
     }
   }
   for (const auto& [devicePath, explorationErrors] :
        devicePathToExpectedErrors_) {
-    auto [slotPath, deviceName] = Utils().parseDevicePath(devicePath);
-    XLOG(INFO) << fmt::format(
-        "Expected Failures in Device {} for PmUnit {} at SlotPath {}",
-        deviceName,
-        dataStore_.hasPmUnit(slotPath)
-            ? *dataStore_.getPmUnitInfo(slotPath).name()
-            : "<ABSENT>",
-        slotPath);
-    for (int i = 1; const auto& error : explorationErrors) {
-      XLOG(INFO) << fmt::format("{}. {}", i++, *error.message());
+    XLOG_FIRST_N(INFO, 1) << "=========== EXPECTED ERRORS ===========";
+    for (const auto& error : explorationErrors) {
+      XLOG(INFO) << fmt::format("{}: {}", devicePath, *error.message());
     }
   }
 }
@@ -118,11 +105,16 @@ ExplorationStatus ExplorationSummary::summarize() {
   return finalStatus;
 }
 
-bool ExplorationSummary::isDeviceExpectedToFail(const std::string& devicePath) {
+bool ExplorationSummary::isSlotExpectedToBeEmpty(
+    const std::string& devicePath) {
+  auto [slotPath, _] = Utils().parseDevicePath(devicePath);
+  if (re2::RE2::PartialMatch(slotPath, kPsuSlotPath)) {
+    return true;
+  }
   return false;
 }
 
-std::unordered_map<std::string, std::vector<ExplorationError>>
+std::map<std::string, std::vector<ExplorationError>>
 ExplorationSummary::getFailedDevices() {
   return devicePathToErrors_;
 }

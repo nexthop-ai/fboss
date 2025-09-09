@@ -644,18 +644,22 @@ class SwitchStats : public boost::noncopyable {
   void setPrimaryEcmpGroupsExhausted(bool exhausted) const;
   void setPrimaryEcmpGroupsCount(uint32_t count) const;
   void setBackupEcmpGroupsCount(uint32_t count) const;
+  void setMergedEcmpGroupsCount(uint32_t count) const;
+  void setMergedEcmpMemberGroupsCount(uint32_t count) const;
 
   bool getPrimaryEcmpGroupsExhausted() const;
   int64_t getPrimaryEcmpGroupsCount() const;
   int64_t getBackupEcmpGroupsCount() const;
+  int64_t getMergedEcmpGroupsCount() const;
+  int64_t getMergedEcmpMemberGroupsCount() const;
   void getHwAgentStatus(
       std::map<int16_t, HwAgentEventSyncStatus>& statusMap) const;
 
-  typedef fb303::ThreadCachedServiceData::ThreadLocalStatsMap
-      ThreadLocalStatsMap;
-  typedef fb303::ThreadCachedServiceData::TLTimeseries TLTimeseries;
-  typedef fb303::ThreadCachedServiceData::TLHistogram TLHistogram;
-  typedef fb303::ThreadCachedServiceData::TLCounter TLCounter;
+  using ThreadLocalStatsMap =
+      fb303::ThreadCachedServiceData::ThreadLocalStatsMap;
+  using TLTimeseries = fb303::ThreadCachedServiceData::TLTimeseries;
+  using TLHistogram = fb303::ThreadCachedServiceData::TLHistogram;
+  using TLCounter = fb303::ThreadCachedServiceData::TLCounter;
 
  private:
   // Forbidden copy constructor and assignment operator

@@ -10,8 +10,9 @@
 
 #pragma once
 
+#include "fboss/agent/hw/HwRouterInterfaceFb303Stats.h"
 #include "fboss/agent/hw/sai/api/RouterInterfaceApi.h"
-#include "fboss/agent/hw/sai/store/SaiObject.h"
+#include "fboss/agent/hw/sai/store/SaiObjectWithCounters.h"
 #include "fboss/agent/hw/sai/switch/SaiRouteManager.h"
 #include "fboss/agent/state/Interface.h"
 #include "fboss/agent/state/StateDelta.h"
@@ -33,15 +34,17 @@ class SaiManagerTable;
 class SaiPlatform;
 class SaiStore;
 
-using SaiVlanRouterInterface = SaiObject<SaiVlanRouterInterfaceTraits>;
-using SaiPortRouterInterface = SaiObject<SaiPortRouterInterfaceTraits>;
+using SaiVlanRouterInterface =
+    SaiObjectWithCounters<SaiVlanRouterInterfaceTraits>;
+using SaiPortRouterInterface =
+    SaiObjectWithCounters<SaiPortRouterInterfaceTraits>;
 
 struct SaiRouterInterfaceHandle {
   using SaiRouterInterface = std::variant<
       std::shared_ptr<SaiVlanRouterInterface>,
       std::shared_ptr<SaiPortRouterInterface>>;
-  SaiRouterInterface routerInterface;
-  SaiRouterInterfaceHandle(cfg::InterfaceType type) : intfType(type) {}
+  explicit SaiRouterInterfaceHandle(cfg::InterfaceType type);
+
   RouterInterfaceSaiId adapterKey() const {
     return std::visit(
         [](auto& handle) { return handle->adapterKey(); }, routerInterface);
@@ -63,9 +66,10 @@ struct SaiRouterInterfaceHandle {
     return std::get<std::shared_ptr<SaiVlanRouterInterface>>(routerInterface);
   }
 
-  std::vector<std::shared_ptr<SaiRoute>> toMeRoutes;
-  bool isLocalRif{true};
   cfg::InterfaceType intfType{cfg::InterfaceType::VLAN};
+  bool isLocalRif{true};
+  SaiRouterInterface routerInterface{};
+  std::vector<std::shared_ptr<SaiRoute>> toMeRoutes{};
 };
 
 class SaiRouterInterfaceManager {
@@ -110,6 +114,15 @@ class SaiRouterInterfaceManager {
 
   std::optional<InterfaceID> getRouterPortInterfaceIDIf(PortSaiId port) const;
 
+  void updateStats();
+
+  void clearStats();
+
+  std::map<InterfaceID, HwRouterInterfaceStats> getRouterInterfaceStats() const;
+
+  HwRouterInterfaceStats getRouterInterfaceStats(
+      const InterfaceID& intfID) const;
+
  private:
   RouterInterfaceSaiId addRouterInterface(
       const std::shared_ptr<Interface>& swInterface,
@@ -140,6 +153,8 @@ class SaiRouterInterfaceManager {
   const SaiPlatform* platform_;
   folly::F14FastMap<InterfaceID, std::unique_ptr<SaiRouterInterfaceHandle>>
       handles_;
+  folly::F14FastMap<InterfaceID, std::unique_ptr<HwRouterInterfaceFb303Stats>>
+      rifStats_;
 };
 
 } // namespace facebook::fboss

@@ -24,7 +24,6 @@
 #include "fboss/agent/state/PortMap.h"
 #include "fboss/agent/state/SwitchState.h"
 
-#include <folly/io/async/EventBase.h>
 #include <folly/logging/xlog.h>
 
 #include <algorithm>
@@ -90,6 +89,10 @@ std::shared_ptr<SwitchState> ProgramForwardingAndPartnerState::operator()(
   aggPort = aggPort->modify(&nextState);
   aggPort->setForwardingState(portID_, forwardingState_);
   aggPort->setPartnerState(portID_, partnerState_);
+  XLOG(DBG2) << "Updated " << aggPort->getName()
+             << " forwardingSubportCount: " << aggPort->forwardingSubportCount()
+             << ", minLinkCount: " << aggPort->getMinimumLinkCount()
+             << ", up: " << static_cast<int>(aggPort->isUp());
   return nextState;
 }
 
@@ -348,9 +351,8 @@ bool LinkAggregationManager::transmit(LACPDU lacpdu, PortID portID) {
 
   // TODO(joseph5wu) Actually LACP should be multicast pkt, and using
   // OutOfPacket will actually send the packet to unicast queue.
-  sw_->sendNetworkControlPacketAsync(std::move(pkt), PortDescriptor(portID));
-
-  return true;
+  return sw_->sendNetworkControlPacketAsync(
+      std::move(pkt), PortDescriptor(portID));
 }
 
 void LinkAggregationManager::enableForwardingAndSetPartnerState(
@@ -407,7 +409,6 @@ LinkAggregationManager::getControllersFor(
     controllers[i] = it->second;
   }
 
-  // TODO(samank): does this move?
   return controllers;
 }
 

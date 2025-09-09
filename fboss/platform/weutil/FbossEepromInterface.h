@@ -29,11 +29,8 @@ class FbossEepromInterface {
     std::string value{};
   };
 
+  FbossEepromInterface(const std::string& eepromPath, const uint16_t offset);
   static FbossEepromInterface createEepromInterface(int version);
-
-  void setField(int typeCode, const std::string& value);
-
-  const std::map<int, EepromFieldEntry>& getFieldDictionary() const;
 
   // TODO: Get rid of getContents() in the future.
   std::vector<std::pair<std::string, std::string>> getContents() const;
@@ -50,6 +47,12 @@ class FbossEepromInterface {
 
  private:
   FbossEepromInterface() = default;
+  void parseEepromBlobTLV(const std::vector<uint8_t>& buffer);
+
+  // ONIE TlvInfo format parsing methods
+  void parseEepromBlobTLVOnie(const std::vector<uint8_t>& buffer);
+  bool isOnieTlvInfoFormat(const std::vector<uint8_t>& buffer);
+  uint32_t calculateCrc32(const uint8_t* buffer, size_t len);
 
   std::map<int, EepromFieldEntry> fieldMap_{};
   int version_{0};

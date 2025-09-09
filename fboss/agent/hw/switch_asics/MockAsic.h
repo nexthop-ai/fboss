@@ -39,6 +39,7 @@ class MockAsic : public HwAsic {
       case HwAsic::Feature::WEIGHTED_NEXTHOPGROUP_MEMBER:
       case HwAsic::Feature::EVENTOR_PORT_FOR_SFLOW:
       case HwAsic::Feature::SWITCH_ASIC_SDK_HEALTH_NOTIFY:
+      case HwAsic::Feature::ROUTER_INTERFACE_STATISTICS:
         return false;
       case HwAsic::Feature::CPU_TX_PACKET_REQUIRES_VLAN_TAG:
         return getSwitchType() == cfg::SwitchType::NPU;
@@ -70,6 +71,7 @@ class MockAsic : public HwAsic {
       case cfg::PortType::MANAGEMENT_PORT:
       case cfg::PortType::RECYCLE_PORT:
       case cfg::PortType::EVENTOR_PORT:
+      case cfg::PortType::HYPER_PORT:
         return {cfg::StreamType::UNICAST};
       case cfg::PortType::FABRIC_PORT:
         return {cfg::StreamType::FABRIC_TX};
@@ -138,13 +140,13 @@ class MockAsic : public HwAsic {
     return 128;
   }
   uint32_t getMaxEcmpSize() const override {
-    return 512;
+    return 128;
   }
   std::optional<uint32_t> getMaxEcmpGroups() const override {
     return 20;
   }
   std::optional<uint32_t> getMaxEcmpMembers() const override {
-    return 256;
+    return 512;
   }
   std::optional<uint32_t> getMaxDlbEcmpGroups() const override {
     return 7;
@@ -154,6 +156,9 @@ class MockAsic : public HwAsic {
   }
   std::optional<uint32_t> getMaxArpTableSize() const override {
     return 8;
+  }
+  std::optional<uint32_t> getMaxUnifiedNeighborTableSize() const override {
+    return 12;
   }
   AsicVendor getAsicVendor() const override {
     return HwAsic::AsicVendor::ASIC_VENDOR_MOCK;

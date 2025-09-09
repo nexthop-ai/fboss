@@ -29,7 +29,7 @@ struct Zone {
   2: string zoneName;
   3: list<string> sensorNames;
   4: list<string> fanNames;
-  5: float slope;
+  5: i32 slope;
 }
 
 # If the read temperature exceeds the specified temperature,
@@ -98,6 +98,8 @@ struct Sensor {
   10: TempToPwmMap failUpTable;
   11: TempToPwmMap failDownTable;
   12: PidSetting pidSetting;
+  13: optional TempToPwmMap twoRotorsFailUpTable;
+  14: optional TempToPwmMap twoRotorsFailDownTable;
 }
 
 struct ControlInterval {

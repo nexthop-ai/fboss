@@ -22,6 +22,7 @@ SaiPortTraits::Attributes::AttributeSerdesLaneList::operator()() {
   return std::nullopt;
 #endif
 }
+
 std::optional<sai_attr_id_t>
 SaiPortTraits::Attributes::AttributeDiagModeEnable::operator()() {
 #if defined(BRCM_SAI_SDK_XGS)
@@ -194,6 +195,15 @@ SaiPortSerdesTraits::Attributes::AttributeTpChn0Wrapper::operator()() {
 }
 
 std::optional<sai_attr_id_t>
+SaiPortTraits::Attributes::AttributeFabricSystemPort::operator()() {
+#if defined(BRCM_SAI_SDK_DNX_GTE_13_0)
+  return SAI_PORT_ATTR_FABRIC_SYSTEM_PORT;
+#else
+  return std::nullopt;
+#endif
+}
+
+std::optional<sai_attr_id_t>
 SaiPortSerdesTraits::Attributes::AttributeTxLutModeIdWrapper::operator()() {
   return std::nullopt;
 }
@@ -261,6 +271,24 @@ std::optional<sai_attr_id_t>
 SaiPortTraits::Attributes::AttributeFecErrorDetectEnable::operator()() {
 #if defined(BRCM_SAI_SDK_DNX_GTE_11_7)
   return SAI_PORT_ATTR_FEC_ERROR_DETECT_ENABLE;
+#else
+  return std::nullopt;
+#endif
+}
+
+std::optional<sai_attr_id_t>
+SaiPortTraits::Attributes::AttributePgDropStatus::operator()() {
+#if defined(BRCM_SAI_SDK_GTE_13_0) && !defined(BRCM_SAI_SDK_DNX)
+  return SAI_PORT_ATTR_PORT_PG_PKT_DROP_STATUS;
+#else
+  return std::nullopt;
+#endif
+}
+
+std::optional<sai_attr_id_t>
+SaiPortTraits::Attributes::AttributeStaticModuleId::operator()() {
+#if defined(BRCM_SAI_SDK_DNX_GTE_13_0)
+  return SAI_PORT_ATTR_STATIC_MODULE_ID;
 #else
   return std::nullopt;
 #endif
@@ -459,5 +487,75 @@ SaiPortTraits::Attributes::AttributeShelEnable::operator()() {
 #else
   return std::nullopt;
 #endif
+}
+
+std::optional<sai_attr_id_t>
+SaiPortTraits::Attributes::AttributeArsLinkState::operator()() {
+#if defined(BRCM_SAI_SDK_GTE_13_0) && !defined(BRCM_SAI_SDK_GTE_14_0) && \
+    defined(BRCM_SAI_SDK_XGS)
+  return SAI_PORT_ATTR_ARS_LINK_STATE;
+#else
+  return std::nullopt;
+#endif
+}
+
+std::optional<sai_attr_id_t>
+SaiPortTraits::Attributes::AttributeIsHyperPortMember::operator()() {
+#if defined(BRCM_SAI_SDK_DNX_GTE_14_0)
+  return SAI_PORT_ATTR_IS_HYPERPORT_MEMBER;
+#else
+  return std::nullopt;
+#endif
+}
+
+std::optional<sai_attr_id_t>
+SaiPortTraits::Attributes::AttributeHyperPortMemberList::operator()() {
+#if defined(BRCM_SAI_SDK_DNX_GTE_14_0)
+  return SAI_PORT_ATTR_HYPERPORT_MEMBER_LIST;
+#else
+  return std::nullopt;
+#endif
+}
+
+const std::vector<sai_stat_id_t>&
+SaiPortTraits::macTxDataQueueMinWatermarkStats() {
+#if defined(BRCM_SAI_SDK_DNX_GTE_11_7) && !defined(BRCM_SAI_SDK_DNX_GTE_13_0)
+  static const std::vector<sai_stat_id_t> stats{
+      SAI_PORT_STAT_MAC_TX_DATA_QUEUE_MIN_WM};
+#else
+  static const std::vector<sai_stat_id_t> stats;
+#endif
+  return stats;
+}
+
+const std::vector<sai_stat_id_t>&
+SaiPortTraits::macTxDataQueueMaxWatermarkStats() {
+#if defined(BRCM_SAI_SDK_DNX_GTE_11_7) && !defined(BRCM_SAI_SDK_DNX_GTE_13_0)
+  static const std::vector<sai_stat_id_t> stats{
+      SAI_PORT_STAT_MAC_TX_DATA_QUEUE_MAX_WM};
+#else
+  static const std::vector<sai_stat_id_t> stats;
+#endif
+  return stats;
+}
+
+const std::vector<sai_stat_id_t>& SaiPortTraits::fabricControlRxPacketStats() {
+#if defined(BRCM_SAI_SDK_DNX_GTE_13_0)
+  static const std::vector<sai_stat_id_t> stats{
+      SAI_PORT_STAT_FABRIC_CONTROL_RX_PKTS};
+#else
+  static const std::vector<sai_stat_id_t> stats;
+#endif
+  return stats;
+}
+
+const std::vector<sai_stat_id_t>& SaiPortTraits::fabricControlTxPacketStats() {
+#if defined(BRCM_SAI_SDK_DNX_GTE_13_0)
+  static const std::vector<sai_stat_id_t> stats{
+      SAI_PORT_STAT_FABRIC_CONTROL_TX_PKTS};
+#else
+  static const std::vector<sai_stat_id_t> stats;
+#endif
+  return stats;
 }
 } // namespace facebook::fboss

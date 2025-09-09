@@ -7,9 +7,6 @@
 #include "fboss/agent/SetupThrift.h"
 #include "fboss/agent/ThriftHandler.h"
 #include "fboss/lib/CommonFileUtils.h"
-#include "fboss/lib/CommonUtils.h"
-
-#include <folly/io/async/EventBase.h>
 
 #ifndef IS_OSS
 #if __has_feature(address_sanitizer)
@@ -92,9 +89,11 @@ SwitchFlags SwSwitchInitializer::setupFlags() {
 }
 
 void SwSwitchInitializer::stopFunctionScheduler() {
+  XLOG(DBG2) << "Stopping stats FunctionScheduler";
   if (fs_) {
     fs_->shutdown();
   }
+  XLOG(DBG2) << "Stopped stats FunctionScheduler";
 }
 
 void SwSwitchInitializer::waitForInitDone() {
@@ -136,9 +135,6 @@ void SwSwitchInitializer::init(
     // Start the UpdateSwitchStatsThread
     fs_ = std::make_unique<folly::FunctionScheduler>();
     fs_->setThreadName("UpdateStatsThread");
-    // steady will help even out the interval which will especially make
-    // aggregated counters more accurate with less spikes and dips
-    fs_->setSteady(true);
     std::function<void()> callback(std::bind(updateStats, sw_));
     auto timeInterval = std::chrono::seconds(FLAGS_update_stats_interval_s);
     fs_->addFunction(callback, timeInterval, "updateStats");
@@ -171,6 +167,7 @@ void SwAgentInitializer::stopServer() {
   // cause us to go over the JOIN_TIMEOUT.
   // Avoid it by flushing the queue.
   server_->setQueueTimeout(std::chrono::seconds(1));
+
   server_->stopListening();
 
   XLOG(DBG2) << "Stopping thrift server";
@@ -192,8 +189,13 @@ void SwAgentInitializer::stopServices() {
   if (initializer_) {
     initializer_->stopFunctionScheduler();
   }
-  XLOG(DBG2) << "Stopped stats FunctionScheduler";
   fbossFinalize();
+}
+
+void SwAgentInitializer::stopStatsThread() {
+  if (initializer_) {
+    initializer_->stopFunctionScheduler();
+  }
 }
 
 void SwAgentInitializer::stopAgent(bool setupWarmboot, bool gracefulExit) {

@@ -19,6 +19,7 @@ class AgentTunnelMgrTest : public AgentHwTest {
   void setCmdLineFlagOverrides() const override {
     AgentHwTest::setCmdLineFlagOverrides();
     FLAGS_tun_intf = true;
+    FLAGS_cleanup_probed_kernel_data = true;
   }
 
   void SetUp() override {
@@ -320,8 +321,9 @@ class AgentTunnelMgrTest : public AgentHwTest {
     XLOG(DBG2) << "checkIpRuleEntriesRemoved Cmd: " << cmd;
     XLOG(DBG2) << "checkIpRuleEntriesRemoved Output: \n" << output;
 
-    if (output.find(folly::to<std::string>(intfIp)) != std::string::npos)
+    if (output.find(folly::to<std::string>(intfIp)) != std::string::npos) {
       return false;
+    }
 
     return true;
   }
@@ -631,6 +633,9 @@ class AgentTunnelMgrTest : public AgentHwTest {
       const std::vector<std::string>& intfOldIPs) {
     for (int i = 0; i < config.ports()->size(); i++) {
       config.ports()[i].state() = cfg::PortState::ENABLED;
+      auto portType = config.ports()[i].portType().value();
+      config.ports()[i].loopbackMode() =
+          getAsics().cbegin()->second->getDesiredLoopbackMode(portType);
     }
     // Apply the config
     applyNewConfig(config);
@@ -1152,6 +1157,9 @@ TEST_F(AgentTunnelMgrTest, checkKernelIPv4EntriesPortsDownUp) {
 
     for (int i = 0; i < config.ports()->size(); i++) {
       config.ports()[i].state() = cfg::PortState::ENABLED;
+      auto portType = config.ports()[i].portType().value();
+      config.ports()[i].loopbackMode() =
+          getAsics().cbegin()->second->getDesiredLoopbackMode(portType);
     }
 
     // Apply the config
@@ -1219,6 +1227,9 @@ TEST_F(AgentTunnelMgrTest, checkKernelIPv6EntriesPortsDownUp) {
 
     for (int i = 0; i < config.ports()->size(); i++) {
       config.ports()[i].state() = cfg::PortState::ENABLED;
+      auto portType = config.ports()[i].portType().value();
+      config.ports()[i].loopbackMode() =
+          getAsics().cbegin()->second->getDesiredLoopbackMode(portType);
     }
 
     // Apply the config
@@ -1278,7 +1289,9 @@ TEST_F(AgentTunnelMgrTest, changeIpv4AddressPortDownUp) {
     std::string intfIPv4;
     std::vector<std::string> intfOldIPv4s;
     std::vector<std::string> intfNewIPv4s;
-    InterfaceID intfID = (InterfaceID)config.interfaces()[0].intfID().value();
+    InterfaceID intfID = getInterfaceIDForPort(
+        getAgentEnsemble()->masterLogicalPortIds()[0],
+        getAgentEnsemble()->getSw()->getState());
 
     intfOldIPv4s = getInterfaceIpAddress(config, true);
     checkKernelIpEntriesExist(intfID, intfOldIPv4s[0], true);
@@ -1301,6 +1314,9 @@ TEST_F(AgentTunnelMgrTest, changeIpv4AddressPortDownUp) {
     checkKernelIpEntriesRemoved(intfID, intfOldIPv4s[0], true);
 
     config.ports()[0].state() = cfg::PortState::ENABLED;
+    auto portType = config.ports()[0].portType().value();
+    config.ports()[0].loopbackMode() =
+        getAsics().cbegin()->second->getDesiredLoopbackMode(portType);
     // Apply the config
     applyNewConfig(config);
     waitForStateUpdates(getAgentEnsemble()->getSw());
@@ -1331,7 +1347,9 @@ TEST_F(AgentTunnelMgrTest, changeIpv6AddressPortDownUp) {
     std::string intfIPv6;
     std::vector<std::string> intfOldIPv6s;
     std::vector<std::string> intfNewIPv6s;
-    InterfaceID intfID = (InterfaceID)config.interfaces()[0].intfID().value();
+    InterfaceID intfID = getInterfaceIDForPort(
+        getAgentEnsemble()->masterLogicalPortIds()[0],
+        getAgentEnsemble()->getSw()->getState());
 
     intfOldIPv6s = getInterfaceIpAddress(config, false);
     checkKernelIpEntriesExist(intfID, intfOldIPv6s[0], false);
@@ -1355,6 +1373,9 @@ TEST_F(AgentTunnelMgrTest, changeIpv6AddressPortDownUp) {
     checkKernelIpEntriesRemoved(intfID, intfOldIPv6s[0], false);
 
     config.ports()[0].state() = cfg::PortState::ENABLED;
+    auto portType = config.ports()[0].portType().value();
+    config.ports()[0].loopbackMode() =
+        getAsics().cbegin()->second->getDesiredLoopbackMode(portType);
     // Apply the config
     applyNewConfig(config);
     waitForStateUpdates(getAgentEnsemble()->getSw());

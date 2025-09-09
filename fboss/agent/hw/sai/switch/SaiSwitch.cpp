@@ -137,6 +137,11 @@ DEFINE_bool(
     false,
     "Fail if untagged packet is transmitted on platform where tagged packet is required");
 
+DEFINE_int32(
+    serdes_params_poll_interval_s,
+    360,
+    "Interval for reading serdes stats");
+
 namespace {
 /*
  * For the devices/SDK we use, the only events we should get (and process)
@@ -491,7 +496,9 @@ void SaiSwitch::processCreditRequestProfileDelta(
       if (scheduling == cfg::QueueScheduling::STRICT_PRIORITY) {
         expectedScheduling = scheduling;
         paramVal = static_cast<int>(param.value().spPriority().value());
-      } else if (scheduling == cfg::QueueScheduling::WEIGHTED_ROUND_ROBIN) {
+      } else if (
+          scheduling == cfg::QueueScheduling::WEIGHTED_ROUND_ROBIN ||
+          scheduling == cfg::QueueScheduling::DEFICIT_ROUND_ROBIN) {
         expectedScheduling = scheduling;
         paramVal = param.value().wrrWeight().value();
       }
@@ -589,20 +596,87 @@ bool SaiSwitch::transactionsSupported() const {
   return true;
 }
 
-void SaiSwitch::rollback(const StateDelta& delta) noexcept {
-  const auto& knownGoodState = delta.oldState();
-  auto curBootType = getBootType();
-  // Attempt rollback
-  // Detailed design is in the sai_switch_transactions wiki, but at a high
-  // level the steps of the rollback are 0) Remove any added entries in the new
-  // state (currently routes) 1) Clear out our internal data structures (stores,
-  // managers) in SW, while throttling writes to HW 2) Reinit managers and
-  // SaiStores. SaiStore* will now have all the HW state 3) Replay
-  // StateDelta(emptySwitchState, delta.oldState()) to get us to the pre
-  // transaction state 4) Clear out any remaining handles in SaiStore to flush
-  // state left in HW due to the failed transaction Steps 2-4 are exactly the
-  // same as what we do for warmboot and piggy back heavily on it for both code
-  // reuse and correctness
+std::shared_ptr<SwitchState> SaiSwitch::constructSwitchStateWithFib() noexcept {
+  auto state = std::make_shared<SwitchState>();
+
+  const auto& switchStateRoutesMap =
+      managerTable_->routeManager().getSwitchStateRoutesMap();
+
+  // Create a new MultiSwitchForwardingInformationBaseMap
+  auto fibMap = std::make_shared<MultiSwitchForwardingInformationBaseMap>();
+  auto scopeResolver = platform_->scopeResolver();
+
+  // Group routes by router ID
+  std::map<RouterID, std::vector<std::shared_ptr<RouteV4>>> routesV4;
+  std::map<RouterID, std::vector<std::shared_ptr<RouteV6>>> routesV6;
+
+  // Create a set of routerIds from each routeEntry in switchStateRoutesMap
+  std::set<RouterID> routerIds;
+  std::for_each(
+      switchStateRoutesMap.begin(),
+      switchStateRoutesMap.end(),
+      [&routerIds](const auto& routeEntry) {
+        routerIds.insert(RouterID(routeEntry.first.virtualRouterId()));
+      });
+  for (const auto& routerId : routerIds) {
+    // Create FIB containers
+    auto fibContainer =
+        std::make_shared<ForwardingInformationBaseContainer>(routerId);
+    fibMap->updateForwardingInformationBaseContainer(
+        fibContainer, scopeResolver->scope(fibContainer));
+  }
+
+  // Iterate through the switchStateRoutesMap
+  for (const auto& [routeEntry, routeVariant] : switchStateRoutesMap) {
+    RouterID routerId(routeEntry.virtualRouterId());
+
+    if (std::holds_alternative<std::shared_ptr<RouteV4>>(routeVariant)) {
+      auto route = std::get<std::shared_ptr<RouteV4>>(routeVariant);
+      if (route) {
+        routesV4[routerId].push_back(route);
+      }
+    } else if (std::holds_alternative<std::shared_ptr<RouteV6>>(routeVariant)) {
+      auto route = std::get<std::shared_ptr<RouteV6>>(routeVariant);
+      if (route) {
+        routesV6[routerId].push_back(route);
+      }
+    }
+  }
+
+  // Process each router ID with v4 routes
+  for (const auto& [routerId, v4Routes] : routesV4) {
+    // Create IPv4 FIB
+    typename ForwardingInformationBaseV4::Base::NodeContainer v4Container;
+    for (const auto& route : v4Routes) {
+      RoutePrefix<folly::IPAddressV4> prefix(
+          route->prefix().network(), route->prefix().mask());
+      v4Container.emplace(prefix.str(), route);
+    }
+    auto fibV4 =
+        std::make_shared<ForwardingInformationBaseV4>(std::move(v4Container));
+    fibMap->getNodeIf(routerId)->setFib<folly::IPAddressV4>(fibV4);
+  }
+
+  // Process each router ID with v6 routes
+  for (const auto& [routerId, v6Routes] : routesV6) {
+    // Create IPv6 FIB
+    typename ForwardingInformationBaseV6::Base::NodeContainer v6Container;
+    for (const auto& route : v6Routes) {
+      RoutePrefix<folly::IPAddressV6> prefix(
+          route->prefix().network(), route->prefix().mask());
+      v6Container.emplace(prefix.str(), route);
+    }
+    auto fibV6 =
+        std::make_shared<ForwardingInformationBaseV6>(std::move(v6Container));
+    fibMap->getNodeIf(routerId)->setFib<folly::IPAddressV6>(fibV6);
+  }
+
+  state->resetForwardingInformationBases(fibMap);
+  state->publish();
+  return state;
+}
+
+void SaiSwitch::preRollback(const StateDelta& delta) noexcept {
   try {
     CoarseGrainedLockPolicy lockPolicy(saiSwitchMutex_);
 
@@ -634,6 +708,29 @@ void SaiSwitch::rollback(const StateDelta& delta) noexcept {
           &SaiRouteManager::removeRouteForRollback<folly::IPAddressV6>,
           routerID);
     }
+  } catch (const std::exception& ex) {
+    // Rollback failed. Fail hard.
+    XLOG(FATAL) << " Pre rollback failed with : " << ex.what();
+  }
+}
+
+void SaiSwitch::rollback(const std::vector<StateDelta>& deltas) noexcept {
+  CHECK_EQ(deltas.size(), 1);
+  const auto& knownGoodState = deltas.front().oldState();
+  auto curBootType = getBootType();
+  // Attempt rollback
+  // Detailed design is in the sai_switch_transactions wiki, but at a high
+  // level the steps of the rollback are 0) Remove any added entries in the new
+  // state (currently routes) 1) Clear out our internal data structures (stores,
+  // managers) in SW, while throttling writes to HW 2) Reinit managers and
+  // SaiStores. SaiStore* will now have all the HW state 3) Replay
+  // StateDelta(emptySwitchState, delta.oldState()) to get us to the pre
+  // transaction state 4) Clear out any remaining handles in SaiStore to flush
+  // state left in HW due to the failed transaction Steps 2-4 are exactly the
+  // same as what we do for warmboot and piggy back heavily on it for both code
+  // reuse and correctness
+  try {
+    CoarseGrainedLockPolicy lockPolicy(saiSwitchMutex_);
 
     auto hwSwitchJson = toFollyDynamicLocked(lockPolicy.lock());
     {
@@ -660,6 +757,7 @@ void SaiSwitch::rollback(const StateDelta& delta) noexcept {
     // so set the bootType to warm boot for duration of roll back. We
     // will restore it once we are done with roll back.
     bootType_ = BootType::WARM_BOOT;
+    rollbackInProgress_ = true;
     initStoreAndManagersLocked(
         lockPolicy.lock(),
         // We are being strict here in the sense of not allowing any HW
@@ -678,6 +776,7 @@ void SaiSwitch::rollback(const StateDelta& delta) noexcept {
     saiStore_->printWarmbootHandles();
     saiStore_->removeUnexpectedUnclaimedWarmbootHandles();
     bootType_ = curBootType;
+    rollbackInProgress_ = false;
   } catch (const std::exception& ex) {
     // Rollback failed. Fail hard.
     XLOG(FATAL) << " Roll back failed with : " << ex.what();
@@ -1851,6 +1950,26 @@ std::map<std::string, HwSysPortStats> SaiSwitch::getSysPortStatsLocked(
   return portStatsMap;
 }
 
+folly::F14FastMap<std::string, HwRouterInterfaceStats>
+SaiSwitch::getRouterInterfaceStats() const {
+  std::lock_guard<std::mutex> lock(saiSwitchMutex_);
+  return getRouterInterfaceStatsLocked(lock);
+}
+
+folly::F14FastMap<std::string, HwRouterInterfaceStats>
+SaiSwitch::getRouterInterfaceStatsLocked(
+    const std::lock_guard<std::mutex>& /*lock*/) const {
+  folly::F14FastMap<std::string, HwRouterInterfaceStats> rifStatsMap;
+  const auto& statsMap =
+      managerTable_->routerInterfaceManager().getRouterInterfaceStats();
+  auto state = getProgrammedState();
+  for (const auto& entry : statsMap) {
+    auto intf = state->getInterfaces()->getNodeIf(entry.first);
+    rifStatsMap.emplace(intf->getName(), entry.second);
+  }
+  return rifStatsMap;
+}
+
 std::map<PortID, phy::PhyInfo> SaiSwitch::updateAllPhyInfoImpl() {
   std::lock_guard<std::mutex> lock(saiSwitchMutex_);
   return updateAllPhyInfoLocked();
@@ -1868,6 +1987,13 @@ std::map<int, cfg::PortState> SaiSwitch::getSysPortShelState() const {
 std::map<PortID, phy::PhyInfo> SaiSwitch::updateAllPhyInfoLocked() {
   std::map<PortID, phy::PhyInfo> returnPhyParams;
   auto& portManager = managerTable_->portManager();
+  bool readSerdesParams = false;
+  auto now = duration_cast<seconds>(system_clock::now().time_since_epoch());
+  if ((now.count() - lastSerdesParamsReadTime_) >=
+      FLAGS_serdes_params_poll_interval_s) {
+    readSerdesParams = true;
+    lastSerdesParamsReadTime_ = now.count();
+  }
 
   for (const auto& portIdAndHandle : managerTable_->portManager()) {
     PortID portID = portIdAndHandle.first;
@@ -1932,9 +2058,11 @@ std::map<PortID, phy::PhyInfo> SaiSwitch::updateAllPhyInfoLocked() {
           *phyParams.state()->line(),
           *phyParams.stats()->line(),
           portHandle->port,
+          portHandle->serdes,
           lastLinePmdState,
           lastLinePmdStats,
-          portID);
+          portID,
+          readSerdesParams);
       if (isXphy) {
         CHECK(phyParams.state()->system().has_value());
         CHECK(phyParams.stats()->system().has_value());
@@ -1950,9 +2078,11 @@ std::map<PortID, phy::PhyInfo> SaiSwitch::updateAllPhyInfoLocked() {
             *phyParams.state()->system(),
             *phyParams.stats()->system(),
             portHandle->sysPort,
+            portHandle->sysSerdes,
             lastSysPmdState,
             lastSysPmdStats,
-            portID);
+            portID,
+            false /* readSerdesParams */);
       }
 
       // Update PCS Info
@@ -1974,7 +2104,6 @@ std::map<PortID, phy::PhyInfo> SaiSwitch::updateAllPhyInfoLocked() {
           *lastPhyInfo.state()->line());
 
       // PhyInfo update timestamp
-      auto now = duration_cast<seconds>(system_clock::now().time_since_epoch());
       phyParams.state()->timeCollected() = now.count();
       phyParams.stats()->timeCollected() = now.count();
       returnPhyParams[portID] = phyParams;
@@ -1988,9 +2117,11 @@ void SaiSwitch::updatePmdInfo(
     phy::PhySideState& sideState,
     phy::PhySideStats& sideStats,
     std::shared_ptr<SaiPort> port,
+    std::shared_ptr<SaiPortSerdes> serdes,
     [[maybe_unused]] phy::PmdState& lastPmdState,
     [[maybe_unused]] phy::PmdStats& lastPmdStats,
-    [[maybe_unused]] PortID portID) {
+    [[maybe_unused]] PortID portID,
+    bool readSerdesParams) {
   uint32_t numPmdLanes;
   if (platform_->getAsic()->isSupported(
           HwAsic::Feature::SAI_PORT_GET_PMD_LANES)) {
@@ -2122,6 +2253,26 @@ void SaiSwitch::updatePmdInfo(
   }
 #endif
 
+  std::vector<phy::SerdesParameters> pmdSerdesParameters;
+  if (readSerdesParams) {
+    pmdSerdesParameters = managerTable_->portManager().getSerdesParameters(
+        serdes->adapterKey(), portID, numPmdLanes);
+  } else {
+    // Use the previous state
+    for (const auto& [_, laneState] : *lastPmdState.lanes()) {
+      pmdSerdesParameters.push_back(*laneState.serdesParameters());
+    }
+  }
+  for (const auto& serdesParams : pmdSerdesParameters) {
+    auto laneId = *serdesParams.lane();
+    phy::LaneState laneState;
+    if (laneStates.find(laneId) != laneStates.end()) {
+      laneState = laneStates[laneId];
+    }
+    laneState.lane() = laneId;
+    laneState.serdesParameters() = serdesParams;
+    laneStates[laneId] = laneState;
+  }
   for (auto laneStat : laneStats) {
     sideStats.pmd()->lanes()[laneStat.first] = laneStat.second;
   }
@@ -2345,7 +2496,7 @@ void SaiSwitch::gracefulExitLocked(const std::lock_guard<std::mutex>& lock) {
         saiSwitchId_, restartIssu);
 #endif
   }
-#if defined(TAJO_SDK_VERSION_1_42_8)
+#if defined(TAJO_SDK_VERSION_1_42_8) || defined(TAJO_SDK_VERSION_24_8_3001)
   checkAndSetSdkDowngradeVersion();
 #endif
   folly::dynamic follySwitchState = folly::dynamic::object;
@@ -2559,6 +2710,7 @@ void SaiSwitch::linkStateChangedCallbackBottomHalf(
           // details. So, need to force trigger clearing neighbor cache
           // associated with the agg port here.
           swPortId2DownAggPort[swPortId] = swAggPort;
+          XLOG(DBG2) << "link down for agg port " << swAggPort.value();
         }
       }
       managerTable_->fdbManager().handleLinkDown(SaiPortDescriptor(swPortId));
@@ -3255,7 +3407,7 @@ void SaiSwitch::initSwitchReachabilityChangeLocked(
   setSwitchReachabilityChangePending();
 }
 
-#if SAI_API_VERSION >= SAI_VERSION(1, 13, 0)
+#if SAI_API_VERSION >= SAI_VERSION(1, 16, 0)
 void SaiSwitch::initSwitchAsicSdkHealthNotificationLocked(
     const std::lock_guard<std::mutex>& /* lock */) {
   CHECK(platform_->getAsic()->isSupported(
@@ -3268,6 +3420,19 @@ void SaiSwitch::initSwitchAsicSdkHealthNotificationLocked(
   auto& switchApi = SaiApiTable::getInstance()->switchApi();
   switchApi.registerSwitchAsicSdkHealthEventCallback(
       saiSwitchId_, __gSwitchAsicSdkHealthNotificationCallBack);
+
+  // register for categories of asic sdk health events
+  std::vector<sai_int32_t> categories{
+      SAI_SWITCH_ASIC_SDK_HEALTH_CATEGORY_SW,
+      SAI_SWITCH_ASIC_SDK_HEALTH_CATEGORY_FW,
+      SAI_SWITCH_ASIC_SDK_HEALTH_CATEGORY_CPU_HW,
+      SAI_SWITCH_ASIC_SDK_HEALTH_CATEGORY_ASIC_HW};
+  SaiSwitchTraits::Attributes::RegFatalSwitchAsicSdkHealthCategory fatalEvents =
+      categories;
+  SaiSwitchTraits::Attributes::RegNoticeSwitchAsicSdkHealthCategory
+      noticeEvents = categories;
+  switchApi.setAttribute(saiSwitchId_, fatalEvents);
+  switchApi.setAttribute(saiSwitchId_, noticeEvents);
 }
 #endif
 
@@ -3613,7 +3778,7 @@ void SaiSwitch::unregisterCallbacksLocked(
 
   if (platform_->getAsic()->isSupported(
           HwAsic::Feature::SWITCH_ASIC_SDK_HEALTH_NOTIFY)) {
-#if SAI_API_VERSION >= SAI_VERSION(1, 13, 0)
+#if SAI_API_VERSION >= SAI_VERSION(1, 16, 0)
     switchApi.unregisterSwitchAsicSdkHealthEventCallback(saiSwitchId_);
 #endif
   }
@@ -4034,7 +4199,7 @@ void SaiSwitch::switchRunStateChangedImplLocked(
       }
       if (platform_->getAsic()->isSupported(
               HwAsic::Feature::SWITCH_ASIC_SDK_HEALTH_NOTIFY)) {
-#if SAI_API_VERSION >= SAI_VERSION(1, 13, 0)
+#if SAI_API_VERSION >= SAI_VERSION(1, 16, 0)
         initSwitchAsicSdkHealthNotificationLocked(lock);
 #endif
       }
@@ -4575,7 +4740,10 @@ phy::FecMode SaiSwitch::getPortFECMode(PortID portId) const {
 }
 
 void SaiSwitch::rollbackInTest(const StateDelta& delta) {
-  rollback(delta);
+  preRollback(delta);
+  std::vector<StateDelta> deltas;
+  deltas.emplace_back(delta.oldState(), delta.newState());
+  rollback(deltas);
   setProgrammedState(delta.oldState());
 }
 
@@ -4874,12 +5042,6 @@ void SaiSwitch::vendorSwitchEventNotificationCallback(
   // splitting the callback to bottom / top half processing.
   managerTable_->vendorSwitchManager().vendorSwitchEventNotificationCallback(
       bufferSize, buffer, eventType);
-}
-
-void SaiSwitch::hardResetSwitchEventNotificationCallback(
-    sai_size_t /*bufferSize*/,
-    const void* /*buffer*/) {
-  XLOG(FATAL) << " ASIC had a hard reset. Aborting !!!";
 }
 
 TeFlowStats SaiSwitch::getTeFlowStats() const {

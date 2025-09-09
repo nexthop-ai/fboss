@@ -56,6 +56,9 @@ HwPortFb303Stats::kPortMonotonicCounterStatKeys() const {
       kLinkLayerFlowControlWatermark(),
       kPfcDeadlockDetection(),
       kPfcDeadlockRecovery(),
+      kMacTransmitQueueStuck(),
+      kFabricControlRxPackets(),
+      kFabricControlTxPackets(),
   };
   return kPortKeys;
 }
@@ -136,9 +139,17 @@ HwPortFb303Stats::kPfcMonotonicCounterStatKeys() const {
 }
 
 const std::vector<folly::StringPiece>&
-HwPortFb303Stats::kPriorityGroupCounterStatKeys() const {
+HwPortFb303Stats::kPriorityGroupMonotonicCounterStatKeys() const {
   static std::vector<folly::StringPiece> kPgKeys{
       kInCongestionDiscards(),
+  };
+  return kPgKeys;
+}
+
+const std::vector<folly::StringPiece>&
+HwPortFb303Stats::kPriorityGroupCounterStatKeys() const {
+  static std::vector<folly::StringPiece> kPgKeys{
+      kInCongestionDiscardSeen(),
   };
   return kPgKeys;
 }
@@ -257,6 +268,24 @@ void HwPortFb303Stats::updateStats(
         timeRetrieved_,
         kPfcDeadlockRecovery(),
         *curPortStats.pfcDeadlockRecovery_());
+  }
+  if (curPortStats.macTransmitQueueStuck_().has_value()) {
+    updateStat(
+        timeRetrieved_,
+        kMacTransmitQueueStuck(),
+        *curPortStats.macTransmitQueueStuck_());
+  }
+  if (curPortStats.fabricControlRxPackets_().has_value()) {
+    updateStat(
+        timeRetrieved_,
+        kFabricControlRxPackets(),
+        *curPortStats.fabricControlRxPackets_());
+  }
+  if (curPortStats.fabricControlTxPackets_().has_value()) {
+    updateStat(
+        timeRetrieved_,
+        kFabricControlTxPackets(),
+        *curPortStats.fabricControlTxPackets_());
   }
 
   // Update queue stats
@@ -430,11 +459,12 @@ void HwPortFb303Stats::updateStats(
   }
 
   // PG stats
-  for (int i = 0; i <= cfg::switch_config_constants::PORT_PG_VALUE_MAX(); ++i) {
-    auto it = curPortStats.pgInCongestionDiscards_()->find(i);
-    if (it != curPortStats.pgInCongestionDiscards_()->end()) {
-      updatePgStat(timeRetrieved_, kInCongestionDiscards(), i, it->second);
-    }
+  for (const auto& [pgId, discards] : *curPortStats.pgInCongestionDiscards_()) {
+    updatePgStat(timeRetrieved_, kInCongestionDiscards(), pgId, discards);
+  }
+  for (const auto& [pgId, discardSeen] :
+       *curPortStats.pgInCongestionDiscardSeen_()) {
+    setPgCounter(timeRetrieved_, kInCongestionDiscardSeen(), pgId, discardSeen);
   }
 
   portStats_ = curPortStats;

@@ -783,6 +783,42 @@ class Port : public ThriftStructNode<Port, state::PortFields> {
     }
   }
 
+  std::optional<bool> getDesiredSelfHealingECMPLagEnable() const {
+    if (auto desiredSelfHealingECMPLagEnable =
+            cref<switch_state_tags::desiredSelfHealingECMPLagEnable>()) {
+      return desiredSelfHealingECMPLagEnable->cref();
+    }
+    return std::nullopt;
+  }
+
+  void setDesiredSelfHealingECMPLagEnable(
+      std::optional<bool> desiredSelfHealingECMPLagEnable) {
+    if (!desiredSelfHealingECMPLagEnable.has_value()) {
+      ref<switch_state_tags::desiredSelfHealingECMPLagEnable>().reset();
+    } else {
+      set<switch_state_tags::desiredSelfHealingECMPLagEnable>(
+          desiredSelfHealingECMPLagEnable.value());
+    }
+  }
+
+  /** @brief Get inter-packet gap state bits */
+  std::optional<int32_t> getInterPacketGapBits() const {
+    if (auto interPacketGapBits =
+            cref<switch_state_tags::interPacketGapBits>()) {
+      return interPacketGapBits->cref();
+    }
+    return std::nullopt;
+  }
+
+  /** @brief Set inter-packet gap state bits */
+  void setInterPacketGapBits(std::optional<int32_t> interPacketGapBits) {
+    if (!interPacketGapBits.has_value()) {
+      ref<switch_state_tags::interPacketGapBits>().reset();
+    } else {
+      set<switch_state_tags::interPacketGapBits>(interPacketGapBits.value());
+    }
+  }
+
  private:
   auto getRxSaks() const {
     return safe_cref<switch_state_tags::rxSecureAssociationKeys>();

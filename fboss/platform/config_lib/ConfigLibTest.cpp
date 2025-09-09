@@ -56,16 +56,6 @@ TEST(ConfigLibTest, Basic) {
       ConfigLib().getPlatformManagerConfig(kNonExistentPlatform),
       std::runtime_error);
 
-  // weutil Configs
-  EXPECT_NO_THROW(ConfigLib().getWeutilConfig(kDarwin));
-  EXPECT_NO_THROW(ConfigLib().getWeutilConfig(kMeru800bfa));
-  EXPECT_NO_THROW(ConfigLib().getWeutilConfig(kMeru800bia));
-  EXPECT_NO_THROW(ConfigLib().getWeutilConfig(kJanga800bic));
-  EXPECT_NO_THROW(ConfigLib().getWeutilConfig(kTahan800bc));
-  EXPECT_NO_THROW(ConfigLib().getWeutilConfig(kMontblanc));
-  EXPECT_THROW(
-      ConfigLib().getWeutilConfig(kNonExistentPlatform), std::runtime_error);
-
   // fwutil Configs
   EXPECT_NO_THROW(ConfigLib().getFwUtilConfig(kDarwin));
   EXPECT_NO_THROW(ConfigLib().getFwUtilConfig(kMeru800bfa));
@@ -86,4 +76,9 @@ TEST(ConfigLibTest, Basic) {
   EXPECT_NO_THROW(ConfigLib().getBspTestConfig(kMeru800bfa));
   EXPECT_THROW(
       ConfigLib().getBspTestConfig(kNonExistentPlatform), std::out_of_range);
+
+  // Showtech Configs
+  EXPECT_NO_THROW(ConfigLib().getShowtechConfig(kSample));
+  EXPECT_THROW(
+      ConfigLib().getShowtechConfig(kNonExistentPlatform), std::out_of_range);
 }
