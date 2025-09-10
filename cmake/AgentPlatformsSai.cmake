@@ -40,11 +40,9 @@ add_library(sai_platform
   fboss/agent/platforms/sai/SaiYangraPlatform.cpp
   fboss/agent/platforms/sai/SaiMinipack3NPlatform.cpp
   fboss/agent/platforms/sai/SaiBcmIcecube800bcPlatform.cpp
+  fboss/agent/platforms/sai/SaiBcmIcetea800bcPlatform.cpp
   fboss/agent/platforms/sai/SaiBcmWedge800baPlatform.cpp
   fboss/agent/platforms/sai/SaiBcmWedge800baPlatformPort.cpp
-
-
-
   fboss/agent/platforms/sai/oss/SaiBcmMinipackPlatform.cpp
   fboss/agent/platforms/sai/oss/SaiTajoPlatform.cpp
   fboss/agent/platforms/sai/oss/SaiBcmMinipackPlatformPort.cpp
@@ -71,8 +69,12 @@ add_library(sai_platform
   fboss/agent/platforms/sai/SaiYangraPlatformPort.cpp
   fboss/agent/platforms/sai/SaiMinipack3NPlatformPort.cpp
   fboss/agent/platforms/sai/SaiBcmIcecube800bcPlatformPort.cpp
+<<<<<<< HEAD
   fboss/agent/platforms/sai/SaiNh4010Platform.cpp
   fboss/agent/platforms/sai/SaiNh4010PlatformPort.cpp
+=======
+  fboss/agent/platforms/sai/SaiBcmIcetea800bcPlatformPort.cpp
+>>>>>>> upstream/main
 )
 
 target_link_libraries(sai_platform
@@ -110,7 +112,11 @@ target_link_libraries(sai_platform
   janga800bic_platform_mapping
   tahan800bc_platform_mapping
   icecube800bc_platform_mapping
+<<<<<<< HEAD
   nh4010_platform_mapping
+=======
+  icetea800bc_platform_mapping
+>>>>>>> upstream/main
   led_structs_types_cpp2
   led_mapping_cpp2
   wedge800ba_platform_mapping

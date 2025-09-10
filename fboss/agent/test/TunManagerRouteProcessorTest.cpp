@@ -52,7 +52,10 @@
   FRIEND_TEST(                                                                 \
       TunManagerAddressRuleTest,                                               \
       DeleteProbedAddressesAndRulesEmptyInterfaces);                           \
-  FRIEND_TEST(TunManagerRouteProcessorTest, DeleteProbedInterfacesEmpty);
+  FRIEND_TEST(                                                                 \
+      TunManagerAddressRuleTest,                                               \
+      DeleteProbedAddressesAndRulesNoTableIdMapping);                          \
+  FRIEND_TEST(TunManagerAddressRuleTest, DeleteProbedInterfaces);
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -751,20 +754,65 @@ TEST_F(
 }
 
 /**
- * @brief Test deleteProbedInterfaces with empty interfaces map
+ * @brief Test deletion of source IP rules and TUN addresses with no table ID
+ * mapping
  *
- * Verifies that deleteProbedInterfaces handles empty interfaces map
- * correctly.
+ * Verifies that deleteProbedAddressesAndRules handles the case where there's no
+ * table ID mapping for an interface index. In this case, tableId becomes 0 and
+ * no source route rules should be called, but TUN addresses should still be
+ * removed.
  */
-TEST_F(TunManagerRouteProcessorTest, DeleteProbedInterfacesEmpty) {
-  // Verify interfaces map starts empty
-  EXPECT_EQ(0, tunMgr_->intfs_.size());
+TEST_F(
+    TunManagerAddressRuleTest,
+    DeleteProbedAddressesAndRulesNoTableIdMapping) {
+  // Add a mock interface with addresses
+  std::vector<std::pair<folly::IPAddress, uint8_t>> addresses = {
+      {folly::IPAddress("10.1.1.1"), 24}};
 
-  // Call deleteProbedInterfaces with empty map
-  tunMgr_->deleteProbedInterfaces();
+  addMockInterface(InterfaceID(2000), 42, "fboss2000", addresses);
 
-  // Verify interfaces map remains empty
-  EXPECT_EQ(0, tunMgr_->intfs_.size());
+  // Create empty ifIndexToTableId map (no mapping for ifIndex 42)
+  std::unordered_map<int, int> ifIndexToTableId;
+
+  // Expect no calls to addRemoveSourceRouteRule since tableId is 0
+  EXPECT_CALL(*tunMgr_, addRemoveSourceRouteRule(_, _, _, _)).Times(0);
+  // But still expect call to addRemoveTunAddress
+  EXPECT_CALL(
+      *tunMgr_,
+      addRemoveTunAddress(
+          "fboss2000", 42, folly::IPAddress("10.1.1.1"), 24, false))
+      .Times(1);
+
+  // Call deleteProbedAddressesAndRules
+  tunMgr_->deleteProbedAddressesAndRules(ifIndexToTableId);
+}
+
+/**
+ * @brief Test deleteProbedInterfaces functionality for both empty and
+ * populated interfaces map
+ *
+ * Verifies that deleteProbedInterfaces clears the interfaces map in both
+ * scenarios: when interfaces map is empty and when it contains interfaces.
+ */
+TEST_F(TunManagerAddressRuleTest, DeleteProbedInterfaces) {
+  // Define common verification lambda
+  auto verifyDeletionBehavior = [&](int expectedInitialSize) {
+    // Verify expected initial state
+    EXPECT_EQ(expectedInitialSize, tunMgr_->intfs_.size());
+
+    // Call deleteProbedInterfaces
+    tunMgr_->deleteProbedInterfaces();
+
+    // Verify interfaces map is cleared
+    EXPECT_EQ(0, tunMgr_->intfs_.size());
+  };
+
+  // Test 1: Empty interfaces map scenario
+  verifyDeletionBehavior(0);
+
+  // Test 2: Populated interfaces map scenario
+  addMockInterface(InterfaceID(2000), 42, "fboss2000", {});
+  verifyDeletionBehavior(1);
 }
 
 } // namespace facebook::fboss

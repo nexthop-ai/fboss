@@ -19,6 +19,7 @@
 #include "fboss/agent/platforms/sai/SaiBcmElbertPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmFujiPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmIcecube800bcPlatform.h"
+#include "fboss/agent/platforms/sai/SaiBcmIcetea800bcPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmMinipackPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmMontblancPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmWedge100Platform.h"
@@ -116,8 +117,13 @@ std::unique_ptr<SaiPlatform> chooseSaiPlatform(
   } else if (productInfo->getType() == PlatformType::PLATFORM_ICECUBE800BC) {
     return std::make_unique<SaiBcmIcecube800bcPlatform>(
         std::move(productInfo), localMac, platformMappingStr);
+<<<<<<< HEAD
   } else if (productInfo->getType() == PlatformType::PLATFORM_NH4010) {
     return std::make_unique<SaiNh4010Platform>(
+=======
+  } else if (productInfo->getType() == PlatformType::PLATFORM_ICETEA800BC) {
+    return std::make_unique<SaiBcmIcetea800bcPlatform>(
+>>>>>>> upstream/main
         std::move(productInfo), localMac, platformMappingStr);
   } else if (productInfo->getType() == PlatformType::PLATFORM_WEDGE800BA) {
     return std::make_unique<SaiBcmWedge800baPlatform>(
