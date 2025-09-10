@@ -49,7 +49,7 @@ bool isComponentAllowedSysfsAccess(const std::string& deviceName) {
 namespace facebook::fboss::platform::fw_util {
 
 bool ConfigValidator::isValid(const fw_util_config::FwUtilConfig& config) {
-  XLOG(INFO) << "Validating fw_util config";
+  XLOG(DBG1) << "Validating fw_util config";
   if (config.fwConfigs()->empty()) {
     XLOG(INFO) << "FwUtilConfig is empty. Please check the config file";
   }
@@ -60,14 +60,21 @@ bool ConfigValidator::isValid(const fw_util_config::FwUtilConfig& config) {
     }
   }
 
-  XLOG(INFO) << "FwUtilConfig validation passed";
+  XLOG(DBG1) << "FwUtilConfig validation passed";
   return true;
 }
 
 bool ConfigValidator::isValidFwConfig(
     const std::string& deviceName,
     const fw_util_config::FwConfig& fwConfig) {
-  XLOG(INFO) << fmt::format("Validating FwConfig for device: {}", deviceName);
+  XLOG(DBG1) << fmt::format("Validating FwConfig for device: {}", deviceName);
+
+  // Skip validation for oob_eeprom as it's not currently being used
+  // and contains unsupported command types like ddDynamicBus
+  if (deviceName == "oob_eeprom") {
+    XLOG(INFO) << "Skipping validation for oob_eeprom device";
+    return true;
+  }
 
   if (deviceName.empty()) {
     XLOG(ERR) << "Device name cannot be empty";

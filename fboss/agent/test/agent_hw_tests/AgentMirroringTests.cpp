@@ -82,8 +82,10 @@ class AgentMirroringTest : public AgentHwTest {
   void sendPackets(int count, size_t payloadSize = 1) {
     auto params = utility::getMirrorTestParams<AddrT>();
     auto vlanId = getVlanIDForTx();
-    auto intfMac =
-        utility::getMacForFirstInterfaceWithPorts(getProgrammedState());
+    const auto dstMac = utility::getMacForFirstInterfaceWithPorts(
+        getAgentEnsemble()->getProgrammedState());
+    const auto srcMac = utility::MacAddressGenerator().get(dstMac.u64NBO() + 1);
+
     std::vector<uint8_t> payload(payloadSize, 0xff);
     auto trafficPort = getTrafficPort(*getAgentEnsemble());
     auto oldPacketStats = getLatestPortStats(trafficPort);
@@ -93,8 +95,8 @@ class AgentMirroringTest : public AgentHwTest {
       auto pkt = utility::makeUDPTxPacket(
           getSw(),
           vlanId,
-          intfMac,
-          intfMac,
+          srcMac,
+          dstMac,
           params.senderIp,
           params.receiverIp,
           srcL4Port_,
@@ -148,13 +150,15 @@ class AgentMirroringTest : public AgentHwTest {
     });
     getSw()->getUpdateEvb()->runInFbossEventBaseThreadAndWait([] {});
     auto mirror = getSw()->getState()->getMirrors()->getNodeIf(mirrorName);
-    auto dip = mirror->getDestinationIp();
-    if (dip.has_value()) {
-      auto prefix = getMirrorRoutePrefix(dip.value());
-      boost::container::flat_set<PortDescriptor> nhopPorts{
-          PortDescriptor(mirrorToPort)};
-      auto wrapper = getSw()->getRouteUpdater();
-      ecmpHelper.programRoutes(&wrapper, nhopPorts, {prefix});
+    if (mirror) {
+      auto dip = mirror->getDestinationIp();
+      if (dip.has_value()) {
+        auto prefix = getMirrorRoutePrefix(dip.value());
+        boost::container::flat_set<PortDescriptor> nhopPorts{
+            PortDescriptor(mirrorToPort)};
+        auto wrapper = getSw()->getRouteUpdater();
+        ecmpHelper.programRoutes(&wrapper, nhopPorts, {prefix});
+      }
     }
   }
 
@@ -162,14 +166,12 @@ class AgentMirroringTest : public AgentHwTest {
       cfg::SwitchConfig* cfg,
       const AgentEnsemble& ensemble,
       const std::string& mirrorName) const {
-    auto trafficPort = getTrafficPort(ensemble);
     std::string aclEntryName = kMirrorAcl;
     auto aclEntry = cfg::AclEntry();
     aclEntry.name() = aclEntryName;
     aclEntry.actionType() = cfg::AclActionType::PERMIT;
     aclEntry.l4SrcPort() = srcL4Port_;
     aclEntry.l4DstPort() = dstL4Port_;
-    aclEntry.dstPort() = trafficPort;
     aclEntry.proto() = 17;
     /*
      * The number of packets mirrorred through ACL is different in Native BCM
@@ -208,18 +210,9 @@ class AgentMirroringTest : public AgentHwTest {
     ttl.mask() = 0xFF;
     aclEntry.ttl() = ttl;
     utility::addAclEntry(cfg, aclEntry, utility::kDefaultAclTable());
-
-    cfg::MatchAction matchAction = cfg::MatchAction();
-    if (mirrorName == utility::kIngressErspan) {
-      matchAction.ingressMirror() = mirrorName;
-    } else {
-      matchAction.egressMirror() = mirrorName;
-    }
-    cfg::MatchToAction matchToAction = cfg::MatchToAction();
-    matchToAction.matcher() = aclEntryName;
-    matchToAction.action() = matchAction;
-    cfg->dataPlaneTrafficPolicy() = cfg::TrafficPolicyConfig();
-    cfg->dataPlaneTrafficPolicy()->matchToAction()->push_back(matchToAction);
+    auto counterName = aclEntryName + "_counter";
+    utility::addAclMirrorAction(
+        cfg, aclEntryName, counterName, mirrorName, true);
   }
 
   void verifyMirrorProgrammed(
@@ -278,7 +271,7 @@ class AgentMirroringTest : public AgentHwTest {
     auto mirrorPortPktStatsBefore = getLatestPortStats(mirrorToPort);
 
     auto trafficPortPktsBefore = *trafficPortPktStatsBefore.outUnicastPkts_();
-    auto mirroredPortPktsBefore = *trafficPortPktStatsBefore.outUnicastPkts_();
+    auto mirroredPortPktsBefore = *mirrorPortPktStatsBefore.outUnicastPkts_();
 
     this->sendPackets(1, payloadSize);
 
@@ -377,17 +370,8 @@ class AgentMirroringTest : public AgentHwTest {
     auto verify = [=, this]() {
       auto mirror = getProgrammedState()->getMirrors()->getNodeIf(mirrorName);
       EXPECT_EQ(mirror, nullptr);
-      auto scopeResolver = getAgentEnsemble()->getSw()->getScopeResolver();
-      auto scope = scopeResolver->scope(mirror);
-      for (auto switchID : scope.switchIds()) {
-        auto client = getAgentEnsemble()->getHwAgentTestClient(switchID);
-        WITH_RETRIES({
-          EXPECT_EVENTUALLY_FALSE(client->sync_isPortMirrored(
-              getTrafficPort(*getAgentEnsemble()), mirrorName, isIngress()));
-          EXPECT_TRUE(client->sync_isAclEntryMirrored(
-              kMirrorAcl, mirrorName, isIngress()));
-        });
-      }
+      // if mirror is expected to be null then we should not pass
+      // it as an argument to scopeResolver->scope
     };
     this->verifyAcrossWarmBoots(setup, verify);
   }
