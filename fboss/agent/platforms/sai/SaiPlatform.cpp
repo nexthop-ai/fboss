@@ -387,13 +387,10 @@ void SaiPlatform::initPorts() {
       saiPort = std::make_unique<SaiMinipack3NPlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_ICECUBE800BC) {
       saiPort = std::make_unique<SaiBcmIcecube800bcPlatformPort>(portId, this);
-<<<<<<< HEAD
     } else if (platformMode == PlatformType::PLATFORM_NH4010) {
       saiPort = std::make_unique<SaiNh4010PlatformPort>(portId, this);
-=======
     } else if (platformMode == PlatformType::PLATFORM_ICETEA800BC) {
       saiPort = std::make_unique<SaiBcmIcetea800bcPlatformPort>(portId, this);
->>>>>>> upstream/main
     } else if (platformMode == PlatformType::PLATFORM_WEDGE800BA) {
       saiPort = std::make_unique<SaiBcmWedge800baPlatformPort>(portId, this);
     } else {
