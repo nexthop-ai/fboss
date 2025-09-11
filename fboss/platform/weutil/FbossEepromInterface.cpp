@@ -437,7 +437,7 @@ void FbossEepromInterface::parseEepromBlobTLVOnie(const std::vector<uint8_t>& bu
         value = ParserUtils::parseString(itemLength, itemDataPtr);
         break;
       case 0x24: // Base MAC Address
-        value = ParserUtils::parseMac(itemLength, itemDataPtr);
+        value = ParserUtils::parseOnieMac(itemLength, itemDataPtr);
         break;
       case 0x26: // Device Version
       case 0x2A: // MAC Addresses
@@ -456,12 +456,13 @@ void FbossEepromInterface::parseEepromBlobTLVOnie(const std::vector<uint8_t>& bu
     }
 
     fieldMap_.at(itemCode).value = value;
-    cursor += 2 + itemLength;
 
     // Handle CRC-32 validation
     if (itemCode == 0xFE) { // CRC-32 code
       uint32_t crcProgrammed = std::stoul(value, nullptr, 16);
-      uint32_t crcCalculated = calculateCrc32(buffer.data(), cursor - 6); // Exclude CRC TLV
+      // Calculate CRC over data including CRC TLV header but excluding CRC value
+      // cursor points to start of CRC TLV, so include TLV header (2 bytes) but exclude CRC value (4 bytes)
+      uint32_t crcCalculated = calculateCrc32(buffer.data(), cursor + 2);
       if (crcProgrammed == crcCalculated) {
         value.append(" (CRC Matched)");
       } else {
@@ -472,6 +473,8 @@ void FbossEepromInterface::parseEepromBlobTLVOnie(const std::vector<uint8_t>& bu
       fieldMap_.at(itemCode).value = value;
       break; // CRC is the last field
     }
+
+    cursor += 2 + itemLength;
   }
 }
 
