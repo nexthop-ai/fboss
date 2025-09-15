@@ -279,6 +279,7 @@ def run_fboss_build(
     extras_dir: Optional[str],
     extra_cmake_defines: Optional[str],
     build: bool = True,
+    sdk_path: Optional[str] = None,
 ):
     use_stable_hashes()
 
@@ -306,6 +307,8 @@ def run_fboss_build(
         cmd_args.append("-it")
     if extras_dir:
         cmd_args.extend(["-v", f"{extras_dir}:/var/extras:rw"])
+    if sdk_path:
+        cmd_args.extend(["-v", f"{sdk_path}:/opt/sdk:z"])
     # Add args for docker container name
     cmd_args.append(f"--name={FBOSS_CONTAINER_NAME}")
     # Add args for image name
