@@ -129,9 +129,9 @@ FbossEepromInterface::FbossEepromInterface(
   if (buffer[0] != 0xFB || buffer[1] != 0xFB) {
     std::stringstream ss;
     ss << "Invalid FBOSS EEPROM format: Expected signature 0xFBFB, got 0x"
-       << std::hex << std::uppercase << std::setfill('0')
-       << std::setw(2) << static_cast<int>(buffer[0])
-       << std::setw(2) << static_cast<int>(buffer[1]);
+       << std::hex << std::uppercase << std::setfill('0') << std::setw(2)
+       << static_cast<int>(buffer[0]) << std::setw(2)
+       << static_cast<int>(buffer[1]);
     throw std::runtime_error(ss.str());
   }
 
@@ -382,15 +382,17 @@ EepromContents FbossEepromInterface::getEepromContents() const {
   } catch (const std::out_of_range&) {
     auto availableKeys = fieldMap_ | std::views::keys;
     std::string joinedKeys = folly::join(", ", availableKeys);
-    throw std::runtime_error(fmt::format(
-        "Invalid FbossEepromInterface structure. Version: {}, Available keys: [{}]",
-        version_,
-        joinedKeys));
+    throw std::runtime_error(
+        fmt::format(
+            "Invalid FbossEepromInterface structure. Version: {}, Available keys: [{}]",
+            version_,
+            joinedKeys));
   }
   return result;
 }
 
-void FbossEepromInterface::parseEepromBlobTLVOnie(const std::vector<uint8_t>& buffer) {
+void FbossEepromInterface::parseEepromBlobTLVOnie(
+    const std::vector<uint8_t>& buffer) {
   // Validate ONIE header
   if (!isOnieTlvInfoFormat(buffer)) {
     throw std::runtime_error("Invalid ONIE TlvInfo format");
@@ -417,7 +419,8 @@ void FbossEepromInterface::parseEepromBlobTLVOnie(const std::vector<uint8_t>& bu
       break;
     }
 
-    unsigned char* itemDataPtr = const_cast<unsigned char*>(&buffer[cursor + 2]);
+    unsigned char* itemDataPtr =
+        const_cast<unsigned char*>(&buffer[cursor + 2]);
     std::string value;
 
     // Parse based on known ONIE TLV codes
@@ -460,14 +463,15 @@ void FbossEepromInterface::parseEepromBlobTLVOnie(const std::vector<uint8_t>& bu
     // Handle CRC-32 validation
     if (itemCode == 0xFE) { // CRC-32 code
       uint32_t crcProgrammed = std::stoul(value, nullptr, 16);
-      // Calculate CRC over data including CRC TLV header but excluding CRC value
-      // cursor points to start of CRC TLV, so include TLV header (2 bytes) but exclude CRC value (4 bytes)
+      // Calculate CRC over data including CRC TLV header but excluding CRC
+      // value cursor points to start of CRC TLV, so include TLV header (2
+      // bytes) but exclude CRC value (4 bytes)
       uint32_t crcCalculated = calculateCrc32(buffer.data(), cursor + 2);
       if (crcProgrammed == crcCalculated) {
         value.append(" (CRC Matched)");
       } else {
         std::stringstream ss;
-        ss << "0x" << std::hex << std::uppercase << crcCalculated;
+        ss << "0x" << std::hex << crcCalculated;
         value.append(" (CRC Mismatch. Expected " + ss.str() + ")");
       }
       fieldMap_.at(itemCode).value = value;
@@ -478,14 +482,16 @@ void FbossEepromInterface::parseEepromBlobTLVOnie(const std::vector<uint8_t>& bu
   }
 }
 
-bool FbossEepromInterface::isOnieTlvInfoFormat(const std::vector<uint8_t>& buffer) {
+bool FbossEepromInterface::isOnieTlvInfoFormat(
+    const std::vector<uint8_t>& buffer) {
   // Check if we have enough bytes for the ONIE header
   if (buffer.size() < kOnieTlvInfoHdrLen) {
     return false;
   }
 
   // Check for "TlvInfo\x00" signature (8 bytes)
-  if (std::memcmp(buffer.data(), kOnieTlvInfoIdString, 7) != 0 || buffer[7] != 0x00) {
+  if (std::memcmp(buffer.data(), kOnieTlvInfoIdString, 7) != 0 ||
+      buffer[7] != 0x00) {
     return false;
   }
 
@@ -503,7 +509,9 @@ bool FbossEepromInterface::isOnieTlvInfoFormat(const std::vector<uint8_t>& buffe
   return true;
 }
 
-uint32_t FbossEepromInterface::calculateCrc32(const uint8_t* buffer, size_t len) {
+uint32_t FbossEepromInterface::calculateCrc32(
+    const uint8_t* buffer,
+    size_t len) {
   // Standard CRC-32 polynomial (IEEE 802.3)
   const uint32_t polynomial = 0xEDB88320;
   uint32_t crc = 0xFFFFFFFF;
