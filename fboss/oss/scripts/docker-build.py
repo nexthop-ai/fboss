@@ -306,8 +306,6 @@ def run_fboss_build(
         cmd_args.append("-it")
     if extras_dir:
         cmd_args.extend(["-v", f"{extras_dir}:/var/extras:rw"])
-    if not build:
-        cmd_args.extend(["-v", f"{os.path.abspath('.')}:/var/FBOSS/fboss"])
     # Add args for docker container name
     cmd_args.append(f"--name={FBOSS_CONTAINER_NAME}")
     # Add args for image name
