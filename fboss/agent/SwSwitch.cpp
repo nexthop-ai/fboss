@@ -1344,7 +1344,8 @@ std::shared_ptr<SwitchState> SwSwitch::preInit(SwitchFlags flags) {
     auto l3Asics = hwAsicTable_->getL3Asics();
     if (l3Asics.size()) {
       auto asic = checkSameAndGetAsic(l3Asics);
-      ecmpResourceManager_ = makeEcmpResourceManager(state, asic, stats());
+      ecmpResourceManager_ =
+          makeEcmpResourceManager(state, asic, [this] { return stats(); });
       registerStateModifier(
           ecmpResourceManager_.get(), "Ecmp Resource Manager");
     }
@@ -2560,9 +2561,9 @@ void SwSwitch::linkActiveStateChangedOrFwIsolated(
           setPortActiveStatusCounter(portID, isActive);
           portStats(portID)->linkActiveStateChange(isActive);
 
-          auto getActiveStr = [](std::optional<bool> isActive) {
-            return isActive.has_value()
-                ? (isActive.value() ? "ACTIVE" : "INACTIVE")
+          auto getActiveStr = [](std::optional<bool> activeState) {
+            return activeState.has_value()
+                ? (activeState.value() ? "ACTIVE" : "INACTIVE")
                 : "NONE";
           };
           XLOG(DBG2) << "SW Link state changed: " << port->getName() << " ["

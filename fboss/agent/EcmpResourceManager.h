@@ -22,31 +22,34 @@ class NextHopGroupInfo;
 class HwAsic;
 
 class EcmpResourceManager : public PreUpdateStateModifier {
+ public:
+  using SwitchStatsGetter = std::function<SwitchStats*()>;
+
  private:
   EcmpResourceManager(
       const EcmpResourceManagerConfig& config,
-      SwitchStats* stats);
+      const SwitchStatsGetter& switchStatsGetter);
 
  public:
   explicit EcmpResourceManager(
       uint32_t maxHwEcmpGroups,
       int compressionPenaltyThresholdPct = 0,
-      SwitchStats* stats = nullptr)
+      SwitchStatsGetter statsGetter = []() { return nullptr; })
       : EcmpResourceManager(
             EcmpResourceManagerConfig(
                 maxHwEcmpGroups,
                 std::nullopt,
                 std::nullopt,
                 compressionPenaltyThresholdPct),
-            stats) {}
+            statsGetter) {}
 
   explicit EcmpResourceManager(
       uint32_t maxHwEcmpGroups,
       std::optional<cfg::SwitchingMode> backupEcmpGroupType = std::nullopt,
-      SwitchStats* stats = nullptr)
+      SwitchStatsGetter statsGetter = []() { return nullptr; })
       : EcmpResourceManager(
             EcmpResourceManagerConfig(maxHwEcmpGroups, backupEcmpGroupType),
-            stats) {}
+            statsGetter) {}
   using NextHopGroupId = uint32_t;
   using NextHopGroupIds = std::set<NextHopGroupId>;
   using NextHops2GroupId = std::map<RouteNextHopSet, NextHopGroupId>;
@@ -82,6 +85,8 @@ class EcmpResourceManager : public PreUpdateStateModifier {
       return std::tie(mergedNhops, groupId2Penalty) ==
           std::tie(other.mergedNhops, other.groupId2Penalty);
     }
+    std::string str() const;
+    std::string verboseStr() const;
     RouteNextHopSet mergedNhops;
     std::map<NextHopGroupId, int> groupId2Penalty;
   };
@@ -90,6 +95,8 @@ class EcmpResourceManager : public PreUpdateStateModifier {
   using GroupIds2ConsolidationInfo =
       std::map<NextHopGroupIds, ConsolidationInfo>;
   using GroupIds2ConsolidationInfoItr = GroupIds2ConsolidationInfo::iterator;
+  using GroupIds2ConsolidationInfoCItr =
+      GroupIds2ConsolidationInfo::const_iterator;
   NextHopGroupIds getUnMergedGids() const;
   NextHopGroupIds getMergedGids() const;
   std::vector<NextHopGroupIds> getMergedGroups() const;
@@ -110,9 +117,12 @@ class EcmpResourceManager : public PreUpdateStateModifier {
   /* Test helper API end */
 
  private:
+  std::optional<GroupIds2ConsolidationInfoItr> getMergeGroupItr(
+      const RouteNextHopSet& mergedNhops);
   GroupIds2ConsolidationInfoItr fixAndGetMergeGroupItr(
       const NextHopGroupId newMemberGroup,
-      const RouteNextHopSet& mergedNhops);
+      const RouteNextHopSet& mergedNhops,
+      std::optional<GroupIds2ConsolidationInfoItr> existingMitr);
   void fixMergeItreators(
       const NextHopGroupIds& newMergeSet,
       GroupIds2ConsolidationInfoItr mitr,
@@ -300,7 +310,7 @@ class EcmpResourceManager : public PreUpdateStateModifier {
   // Cached pre update state, will be used in case of roll back
   // if update fails
   std::optional<PreUpdateState> preUpdateState_;
-  SwitchStats* switchStats_;
+  SwitchStatsGetter statsGetter_;
   EcmpResourceManagerConfig config_;
 };
 
@@ -310,6 +320,8 @@ class NextHopGroupInfo {
   using NextHopGroupItr = EcmpResourceManager::NextHops2GroupId::iterator;
   using GroupIds2ConsolidationInfoItr =
       EcmpResourceManager::GroupIds2ConsolidationInfo::iterator;
+  using GroupIds2ConsolidationInfoCItr =
+      EcmpResourceManager::GroupIds2ConsolidationInfo::const_iterator;
   NextHopGroupInfo(
       NextHopGroupId id,
       NextHopGroupItr ngItr,
@@ -385,7 +397,9 @@ class NextHopGroupInfo {
 std::unique_ptr<EcmpResourceManager> makeEcmpResourceManager(
     const std::shared_ptr<SwitchState>& state,
     const HwAsic* asic,
-    SwitchStats* stats = nullptr);
+    const EcmpResourceManager::SwitchStatsGetter& switchStatsGetter = []() {
+      return nullptr;
+    });
 
 std::ostream& operator<<(
     std::ostream& os,
