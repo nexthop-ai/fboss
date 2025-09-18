@@ -14,13 +14,9 @@
 #include "fboss/lib/bsp/minipack3n/Minipack3NBspPlatformMapping.h"
 #include "fboss/lib/bsp/montblanc/MontblancBspPlatformMapping.h"
 #include "fboss/lib/bsp/morgan800cc/Morgan800ccBspPlatformMapping.h"
-#include "fboss/lib/bsp/tahan800bc/Tahan800bcBspPlatformMapping.h"
-<<<<<<< HEAD
 #include "fboss/lib/bsp/nh4010/Nh4010BspPlatformMapping.h"
-||||||| 6974be46ed
-=======
+#include "fboss/lib/bsp/tahan800bc/Tahan800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/tahansb800bc/Tahansb800bcBspPlatformMapping.h"
->>>>>>> upstream/main
 
 DEFINE_string(
     bsp_platform_mapping_override_path,
@@ -146,8 +142,7 @@ using Nh4010SystemContainer =
     BspGenericSystemContainer<Nh4010BspPlatformMapping>;
 folly::Singleton<Nh4010SystemContainer> _nh4010SystemContainer;
 template <>
-std::shared_ptr<Nh4010SystemContainer>
-Nh4010SystemContainer::getInstance() {
+std::shared_ptr<Nh4010SystemContainer> Nh4010SystemContainer::getInstance() {
   return _nh4010SystemContainer.try_get();
 }
 

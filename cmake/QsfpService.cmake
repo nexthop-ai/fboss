@@ -164,18 +164,6 @@ target_link_libraries(tahan800bc_bsp
   FBThrift::thriftcpp2
 )
 
-<<<<<<< HEAD
-add_library(nh4010_bsp
-  fboss/lib/bsp/nh4010/Nh4010BspPlatformMapping.cpp
-)
-
-target_link_libraries(nh4010_bsp
-  bsp_platform_mapping_cpp2
-  FBThrift::thriftcpp2
-)
-
-||||||| 6974be46ed
-=======
 add_library(tahansb800bc_bsp
   fboss/lib/bsp/tahansb800bc/Tahansb800bcBspPlatformMapping.cpp
 )
@@ -185,7 +173,15 @@ target_link_libraries(tahansb800bc_bsp
   FBThrift::thriftcpp2
 )
 
->>>>>>> upstream/main
+add_library(nh4010_bsp
+  fboss/lib/bsp/nh4010/Nh4010BspPlatformMapping.cpp
+)
+
+target_link_libraries(nh4010_bsp
+  bsp_platform_mapping_cpp2
+  FBThrift::thriftcpp2
+)
+
 add_library(qsfp_bsp_core
   fboss/lib/bsp/BspGenericSystemContainer.cpp
   fboss/lib/bsp/BspIOBus.cpp
@@ -220,12 +216,8 @@ target_link_libraries(qsfp_bsp_core
   morgan800cc_bsp
   janga800bic_bsp
   tahan800bc_bsp
-<<<<<<< HEAD
-  nh4010_bsp
-||||||| 6974be46ed
-=======
   tahansb800bc_bsp
->>>>>>> upstream/main
+  nh4010_bsp
   device_mdio
   fpga_device
   phy_management_base

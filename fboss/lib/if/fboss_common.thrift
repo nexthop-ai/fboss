@@ -48,12 +48,8 @@ enum PlatformType {
   PLATFORM_MERU800BIAC = 40,
   PLATFORM_WEDGE800BA = 41,
   PLATFORM_ICETEA800BC = 42,
-<<<<<<< HEAD
-  PLATFORM_NH4010 = 43,
-||||||| 6974be46ed
-=======
   PLATFORM_TAHANSB800BC = 43,
->>>>>>> upstream/main
+  PLATFORM_NH4010 = 44,
 
   # Placeholder for unknown platform type
   PLATFORM_UNKNOWN = 1000,
