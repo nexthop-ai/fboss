@@ -164,6 +164,15 @@ target_link_libraries(tahan800bc_bsp
   FBThrift::thriftcpp2
 )
 
+add_library(tahansb800bc_bsp
+  fboss/lib/bsp/tahansb800bc/Tahansb800bcBspPlatformMapping.cpp
+)
+
+target_link_libraries(tahansb800bc_bsp
+  bsp_platform_mapping_cpp2
+  FBThrift::thriftcpp2
+)
+
 add_library(nh4010_bsp
   fboss/lib/bsp/nh4010/Nh4010BspPlatformMapping.cpp
 )
@@ -207,6 +216,7 @@ target_link_libraries(qsfp_bsp_core
   morgan800cc_bsp
   janga800bic_bsp
   tahan800bc_bsp
+  tahansb800bc_bsp
   nh4010_bsp
   device_mdio
   fpga_device

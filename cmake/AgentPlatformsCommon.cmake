@@ -50,6 +50,7 @@ target_link_libraries(platform_mapping_utils
   icecube800bc_platform_mapping
   wedge800ba_platform_mapping
   icetea800bc_platform_mapping
+  tahansb800bc_platform_mapping
   nh4010_platform_mapping
   ${RE2}
 )
