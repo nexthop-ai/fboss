@@ -26,7 +26,6 @@ constexpr char kOnieTlvInfoIdString[] = "TlvInfo";
 constexpr int kOnieTlvInfoVersion = 0x01;
 constexpr int kOnieTlvInfoHdrLen = 11;
 constexpr int kOnieTlvInfoMaxLen = 2048;
-constexpr int kOnieCrcSize = 4;
 
 using entryType = FbossEepromInterface::entryType;
 using entryType::FIELD_BE_HEX;
