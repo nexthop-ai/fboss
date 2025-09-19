@@ -216,6 +216,35 @@
             }
           ]
         }
+      ],
+      "i2cDeviceConfigs": [
+        {
+          "busName": "SMB_IOB_I2C_0",
+          "address": "0x70",
+          "kernelDeviceName": "fpga-mux",
+          "pmUnitScopedName": "SMB_MUX_0",
+          "numOutgoingChannels": 4
+        },
+        {
+          "busName": "SMB_IOB_I2C_1",
+          "address": "0x70",
+          "kernelDeviceName": "fpga-mux",
+          "pmUnitScopedName": "SMB_MUX_1",
+          "numOutgoingChannels": 4
+        },
+        {
+          "busName": "SMB_IOB_I2C_3",
+          "address": "0x70",
+          "kernelDeviceName": "fpga-mux",
+          "pmUnitScopedName": "SMB_MUX_2",
+          "numOutgoingChannels": 4
+        },
+        {
+          "busName": "SMB_MUX_2@1",
+          "address": "0x4c",
+          "kernelDeviceName": "lm90",
+          "pmUnitScopedName": "SMB_TSENSOR1"
+        }
       ]
     }
   },
@@ -255,7 +284,8 @@
     "/run/devmap/xcvrs/xcvr_io_3": "/SMB_SLOT@0/[SMB_IOB_I2C_6]",
     "/run/devmap/xcvrs/xcvr_ctrl_3": "/SMB_SLOT@0/[OSFP_PORT3_XCVR]",
     "/run/devmap/xcvrs/xcvr_io_4": "/SMB_SLOT@0/[SMB_IOB_I2C_7]",
-    "/run/devmap/xcvrs/xcvr_ctrl_4": "/SMB_SLOT@0/[OSFP_PORT4_XCVR]"
+    "/run/devmap/xcvrs/xcvr_ctrl_4": "/SMB_SLOT@0/[OSFP_PORT4_XCVR]",
+    "/run/devmap/sensors/SMB_TSENSOR1": "/SMB_SLOT@0/[SMB_TSENSOR1]"
   },
   "chassisEepromDevicePath": "/[IDPROM]",
   "numXcvrs": 4,
