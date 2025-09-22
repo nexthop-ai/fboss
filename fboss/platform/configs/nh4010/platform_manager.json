@@ -123,6 +123,16 @@
           "deviceId": "0x7012",
           "subSystemVendorId": "0x10ee",
           "subSystemDeviceId": "0x0007",
+          "fanTachoPwmConfigs": [
+            {
+              "fpgaIpBlockConfig": {
+                "pmUnitScopedName": "FAN_CTRL",
+                "deviceName": "fan_ctrl",
+                "csrOffset": "0x00a0"
+              },
+              "numFans": 4
+            }
+          ],
           "i2cAdapterConfigs": [
             {
               "fpgaIpBlockConfig": {
@@ -285,7 +295,8 @@
     "/run/devmap/xcvrs/xcvr_ctrl_3": "/SMB_SLOT@0/[OSFP_PORT3_XCVR]",
     "/run/devmap/xcvrs/xcvr_io_4": "/SMB_SLOT@0/[SMB_IOB_I2C_7]",
     "/run/devmap/xcvrs/xcvr_ctrl_4": "/SMB_SLOT@0/[OSFP_PORT4_XCVR]",
-    "/run/devmap/sensors/SMB_TSENSOR1": "/SMB_SLOT@0/[SMB_TSENSOR1]"
+    "/run/devmap/sensors/SMB_TSENSOR1": "/SMB_SLOT@0/[SMB_TSENSOR1]",
+    "/run/devmap/sensors/FAN_CTRL": "/SMB_SLOT@0/[FAN_CTRL]"
   },
   "chassisEepromDevicePath": "/[IDPROM]",
   "numXcvrs": 4,
