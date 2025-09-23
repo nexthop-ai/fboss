@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 
-# Enter the FBOSS build container with everything mounted
+# Enter the FBOSS build container with the following mounts:
+# - the fboss repository at /var/FBOSS/fboss
+# - a temporary directory at ~/work for a scratch path used to download
+#   dependencies needed for building
+# - the ~work cache for speeding up the build
+# - optional SDK path at /opt/sdk if the --sdk-path argument is provided
+# Once the container is ran, rerunning this script will just reenter the
+# existing container with its mount points. If mount points need to be changed,
+# use the --reset-mount argument to recreate the container with the new mounts.
 
 import os.path
 import importlib
@@ -32,6 +40,7 @@ if (
     proc.returncode == 0
     and docker_build.FBOSS_CONTAINER_NAME not in proc.stdout.decode()
 ):
+    # If the container does not exist, create it with the appropriate mounts
     sdk_path = None
     if args.sdk_path:
         if os.path.exists(args.sdk_path):
@@ -49,11 +58,11 @@ if (
         '{"CMAKE_C_COMPILER_LAUNCHER":"sccache","CMAKE_CXX_COMPILER_LAUNCHER":"sccache"}',
     )
     docker_build.run_fboss_build(
-        scratch_path=os.path.expandvars("$HOME/work/fboss_build-" + branch_name),
+        scratch_path=os.path.expandvars("$HOME/work/fboss_build-" + branch_name), # used the fboss system to download dependencies needed for building
         target=None,
         docker_output=True,
         use_system_deps=True,
-        env_vars=["SCCACHE_DIR:/var/extras/sccache", "SCCACHE_CACHE_SIZE:30G"],
+        env_vars=["SCCACHE_DIR:/var/extras/sccache", "SCCACHE_CACHE_SIZE:30G"], # Caching to speed up build within container
         use_local=True,
         num_jobs=None,
         schedule_type=None,
@@ -64,6 +73,7 @@ if (
         sdk_path=sdk_path,
     )
 else:
+    # If the container exists, start it if it's not running, and enter it
     proc = subprocess.run(["docker", "ps"], capture_output=True)
     if (
         proc.returncode == 0
