@@ -14,6 +14,7 @@ import os.path
 import importlib
 import subprocess
 import argparse
+import re
 
 docker_build = importlib.import_module("docker-build")
 
@@ -35,11 +36,26 @@ if args.reset_mount:
         ["docker", "rm", docker_build.FBOSS_CONTAINER_NAME], capture_output=True
     )
 
+
+def is_container_available(check_all: bool = False) -> bool:
+    """Check if the FBOSS build container is available.
+    Args:
+        check_all: If True, check if the container exists but might not be running.
+    Returns:
+        True if the container is available, False otherwise.
+    """
+    proc = subprocess.run(
+        ["docker", "ps", "-a" if check_all else ""], capture_output=True
+    )
+    return (
+        proc.returncode == 0
+        and re.search(rf"\b{docker_build.FBOSS_CONTAINER_NAME}\b", proc.stdout.decode())
+        is not None
+    )
+
+
 proc = subprocess.run(["docker", "ps", "-a"], capture_output=True)
-if (
-    proc.returncode == 0
-    and docker_build.FBOSS_CONTAINER_NAME not in proc.stdout.decode()
-):
+if not is_container_available(check_all=True):
     # If the container does not exist, create it with the appropriate mounts
     sdk_path = None
     if args.sdk_path:
@@ -58,11 +74,16 @@ if (
         '{"CMAKE_C_COMPILER_LAUNCHER":"sccache","CMAKE_CXX_COMPILER_LAUNCHER":"sccache"}',
     )
     docker_build.run_fboss_build(
-        scratch_path=os.path.expandvars("$HOME/work/fboss_build-" + branch_name), # used the fboss system to download dependencies needed for building
+        scratch_path=os.path.expandvars(
+            "$HOME/work/fboss_build-" + branch_name
+        ),  # Used for downloading dependencies to for building
         target=None,
         docker_output=True,
         use_system_deps=True,
-        env_vars=["SCCACHE_DIR:/var/extras/sccache", "SCCACHE_CACHE_SIZE:30G"], # Caching to speed up build within container
+        env_vars=[
+            "SCCACHE_DIR:/var/extras/sccache",
+            "SCCACHE_CACHE_SIZE:30G",
+        ],  # Caching to speed up build within container
         use_local=True,
         num_jobs=None,
         schedule_type=None,
@@ -75,10 +96,7 @@ if (
 else:
     # If the container exists, start it if it's not running, and enter it
     proc = subprocess.run(["docker", "ps"], capture_output=True)
-    if (
-        proc.returncode == 0
-        and docker_build.FBOSS_CONTAINER_NAME not in proc.stdout.decode()
-    ):
+    if not is_container_available():
         subprocess.run(["docker", "start", docker_build.FBOSS_CONTAINER_NAME])
 
     subprocess.run(["docker", "exec", "-it", docker_build.FBOSS_CONTAINER_NAME, "bash"])
