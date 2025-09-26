@@ -4,3 +4,5 @@
 /external
 /external.install
 .*.swp
+/.build_dir
+/.sccache

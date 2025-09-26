@@ -142,8 +142,10 @@ class BuilderBase(object):
         patchcmd = ["git", "apply", "--ignore-space-change"]
         if self.patchfile_opts:
             patchcmd.append(self.patchfile_opts)
+        env = dict(os.environ)
+        env["GIT_CEILING_DIRECTORIES"] = os.patch.join(self.src_dir, "..")
         try:
-            subprocess.check_call(patchcmd + [patchfile])
+            subprocess.check_call(patchcmd + [patchfile], env=env)
         except subprocess.CalledProcessError:
             raise ValueError(f"Failed to apply patch to {self.manifest.name}")
         os.chdir(old_wd)
