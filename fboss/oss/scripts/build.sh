@@ -8,12 +8,17 @@ common_options='--allow-system-packages --scratch-path /var/src/.build_dir --src
 
 ./build/fbcode_builder/getdeps.py install-system-deps --recursive fboss
 
+SAI_DIR=/var/src/.build_dir/sai
+source $SAI_DIR/sai_build.env
+
+if [ -z "$BUILD_SAI_FAKE" ]; then
+    ./fboss/oss/scripts/build-helper.py $SAI_DIR/lib/libsai_impl.a $SAI_DIR/include /var/src/.build_dir/sai_impl $SAI_VERSION
+fi
+
 echo "Building deps"
 ./build/fbcode_builder/getdeps.py build --only-deps $common_options
 
 echo "Building FBOSS"
-export BUILD_SAI_FAKE=1
-export BUILD_SAI_FAKE_LINK_TEST=1
 ./build/fbcode_builder/getdeps.py build --build-type MinSizeRel --no-deps $common_options
 
 ./fboss/oss/scripts/package-fboss.py --scratch-path /var/src/.build_dir/ --compress
