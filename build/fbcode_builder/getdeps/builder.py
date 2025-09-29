@@ -9,6 +9,7 @@
 import glob
 import json
 import os
+import os.path
 import pathlib
 import shutil
 import stat
@@ -143,7 +144,7 @@ class BuilderBase(object):
         if self.patchfile_opts:
             patchcmd.append(self.patchfile_opts)
         env = dict(os.environ)
-        env["GIT_CEILING_DIRECTORIES"] = os.patch.join(self.src_dir, "..")
+        env["GIT_CEILING_DIRECTORIES"] = os.path.join(self.src_dir, "..")
         try:
             subprocess.check_call(patchcmd + [patchfile], env=env)
         except subprocess.CalledProcessError:
