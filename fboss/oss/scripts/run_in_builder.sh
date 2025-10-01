@@ -3,5 +3,10 @@
 #
 # $CWD will be bind-mounted to /var/FBOSS/fboss in the container
 
-docker run -it --rm --volume $PWD:/var/src --volume $HOME/.config/gh:/root/.config/gh \
+interactive=""
+if [ "$1" = "bash" ]; then
+    interactive="-it"
+fi
+
+docker run $interactive --rm --volume $PWD:/var/src --volume $HOME/.config/gh:/root/.config/gh \
     --env BASH_ENV=/root/.bashrc fboss_builder /bin/bash -c $@
