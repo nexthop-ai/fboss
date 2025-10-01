@@ -111,6 +111,7 @@ namespace {
 
 const uint8_t kV6LinkLocalAddrMask{64};
 constexpr auto kMcQueueScalingFactor = cfg::MMUScalingFactor::ONE_8TH;
+constexpr auto kHyperPortSpeed = cfg::PortSpeed::THREEPOINTTWOT;
 
 // Only one buffer pool is supported systemwide. Variable to track the name
 // and validate during a config change.
@@ -314,9 +315,9 @@ class ThriftConfigApplier {
   }
 
   // Interface route prefix. IPAddress has mask applied
-  typedef std::pair<InterfaceID, folly::IPAddress> IntfAddress;
-  typedef boost::container::flat_map<folly::CIDRNetwork, IntfAddress> IntfRoute;
-  typedef boost::container::flat_map<RouterID, IntfRoute> IntfRouteTable;
+  using IntfAddress = std::pair<InterfaceID, folly::IPAddress>;
+  using IntfRoute = boost::container::flat_map<folly::CIDRNetwork, IntfAddress>;
+  using IntfRouteTable = boost::container::flat_map<RouterID, IntfRoute>;
   IntfRouteTable intfRouteTables_;
 
   /* The ThriftConfigApplier object exposes a single, top-level method "run()".
@@ -1607,7 +1608,8 @@ void ThriftConfigApplier::processInterfaceForPortForVoqSwitches(
         } break;
         case cfg::PortType::FABRIC_PORT:
         case cfg::PortType::CPU_PORT:
-          // no interface for fabric/cpu port
+        case cfg::PortType::HYPER_PORT_MEMBER:
+          // no interface for fabric/cpu/hyper member port
           break;
       }
     }
@@ -1771,7 +1773,9 @@ shared_ptr<SystemPortMap> ThriftConfigApplier::updateSystemPorts(
       cfg::PortType::INTERFACE_PORT,
       cfg::PortType::RECYCLE_PORT,
       cfg::PortType::MANAGEMENT_PORT,
-      cfg::PortType::EVENTOR_PORT};
+      cfg::PortType::EVENTOR_PORT,
+      cfg::PortType::HYPER_PORT,
+      cfg::PortType::HYPER_PORT_MEMBER};
   auto sysPorts = std::make_shared<SystemPortMap>();
 
   for (const auto& [matcherString, portMap] : std::as_const(*ports)) {
@@ -1815,10 +1819,12 @@ shared_ptr<SystemPortMap> ThriftConfigApplier::updateSystemPorts(
           static_cast<int>(platformPort.mapping()->scope().value()),
           static_cast<int>(port.second->getScope()));
       sysPort->setScope(port.second->getScope());
-      sysPort->setShelDestinationEnabled(
-          cfg_->switchSettings()->selfHealingEcmpLagConfig().has_value() &&
-          port.second->getPortType() == cfg::PortType::RECYCLE_PORT &&
-          port.second->getScope() == cfg::Scope::GLOBAL);
+      if (port.second->getPortType() != cfg::PortType::HYPER_PORT_MEMBER) {
+        sysPort->setShelDestinationEnabled(
+            cfg_->switchSettings()->selfHealingEcmpLagConfig().has_value() &&
+            port.second->getPortType() == cfg::PortType::RECYCLE_PORT &&
+            port.second->getScope() == cfg::Scope::GLOBAL);
+      }
       sysPort->setPortType(port.second->getPortType());
       sysPorts->addSystemPort(std::move(sysPort));
     }
@@ -2692,7 +2698,12 @@ shared_ptr<Port> ThriftConfigApplier::updatePort(
   newPort->setAdminState(*portConf->state());
   newPort->setIngressVlan(VlanID(*portConf->ingressVlan()));
   newPort->setVlans(vlans);
-  newPort->setSpeed(*portConf->speed());
+  if (portConf->portType() == cfg::PortType::HYPER_PORT &&
+      *portConf->speed() == cfg::PortSpeed::DEFAULT) {
+    newPort->setSpeed(kHyperPortSpeed);
+  } else {
+    newPort->setSpeed(*portConf->speed());
+  }
   newPort->setProfileId(*portConf->profileID());
   newPort->setPause(*portConf->pause());
   newPort->setSflowIngressRate(*portConf->sFlowIngressRate());
@@ -2816,6 +2827,7 @@ shared_ptr<AggregatePort> ThriftConfigApplier::updateAggPort(
       origAggPort->getSystemID() == cfgSystemID &&
       origAggPort->getMinimumLinkCount() == cfgMinLinkCount &&
       origAggPort->getMinimumLinkCountToUp() == cfgMinLinkCountToUp &&
+      origAggPort->getAggregatePortType() == *cfg.aggregatePortType() &&
       std::equal(
           origSubports.begin(), origSubports.end(), cfgSubports.begin()) &&
       std::equal(
@@ -2834,6 +2846,7 @@ shared_ptr<AggregatePort> ThriftConfigApplier::updateAggPort(
   newAggPort->setSubports(folly::range(cfgSubports.begin(), cfgSubports.end()));
   newAggPort->setInterfaceIDs(cfgAggregatePortInterfaceIDs);
   newAggPort->setMinimumLinkCounToUp(cfgMinLinkCountToUp);
+  newAggPort->setAggregatePortType(*cfg.aggregatePortType());
 
   return newAggPort;
 }
@@ -2866,7 +2879,8 @@ shared_ptr<AggregatePort> ThriftConfigApplier::createAggPort(
       cfgMinLinkCount,
       folly::range(subports.begin(), subports.end()),
       aggregatePortInterfaceIDs,
-      cfgMinLinkCountToUp);
+      cfgMinLinkCountToUp,
+      *cfg.aggregatePortType());
 }
 
 std::vector<AggregatePort::Subport> ThriftConfigApplier::getSubportsSorted(
@@ -3692,7 +3706,7 @@ std::shared_ptr<AclMap> ThriftConfigApplier::updateAclsImpl(
           throw FbossError("Mirror ", egMirror->cref(), " is undefined");
         }
       }
-      entries.push_back(std::make_pair(acl->getID(), acl));
+      entries.emplace_back(acl->getID(), acl);
     }
     return entries;
   };
@@ -4213,7 +4227,12 @@ shared_ptr<Interface> ThriftConfigApplier::createInterface(
       : IPAddressV6("::");
   intf->setDhcpV4Relay(dhcpV4Relay);
   intf->setDhcpV6Relay(dhcpV6Relay);
-
+  if (config->desiredPeerName().has_value()) {
+    intf->setDesiredPeerName(config->desiredPeerName().value());
+  }
+  if (config->desiredPeerAddressIPv6().has_value()) {
+    intf->setDesiredPeerAddressIPv6(config->desiredPeerAddressIPv6().value());
+  }
   return intf;
 }
 

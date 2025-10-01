@@ -7,18 +7,19 @@
  *  of patent rights can be found in the PATENTS file in the same directory.
  *
  */
+#pragma once
 
-#include "fboss/agent/hw/benchmarks/HwVoqRemoteNeighborBenchmarkHelper.h"
-
-#include <folly/Benchmark.h>
+#include "fboss/agent/platforms/sai/SaiBcmPlatformPort.h"
 
 namespace facebook::fboss {
 
-BENCHMARK(HwVoqRemoteNeighborAdd) {
-  remoteNeighborBenchmark(true /*add*/);
-}
+class SaiBcmTahansb800bcPlatformPort : public SaiBcmPlatformPort {
+ public:
+  SaiBcmTahansb800bcPlatformPort(PortID id, SaiPlatform* platform)
+      : SaiBcmPlatformPort(id, platform) {}
 
-BENCHMARK(HwVoqRemoteNeighborDel) {
-  remoteNeighborBenchmark(false /*add*/);
-}
+ private:
+  uint32_t currentLedState_{0};
+};
+
 } // namespace facebook::fboss

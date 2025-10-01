@@ -116,6 +116,7 @@ enum PortSpeed {
   TWOHUNDREDG = 200000, // 200G
   FOURHUNDREDG = 400000, // 400G
   EIGHTHUNDREDG = 800000, // 800G
+  THREEPOINTTWOT = 3200000, // 3.2T
 }
 
 // <speed>_<num_lanes>_<modulation>_<fec>
@@ -1097,6 +1098,7 @@ enum PortType {
   MANAGEMENT_PORT = 4,
   EVENTOR_PORT = 5,
   HYPER_PORT = 6,
+  HYPER_PORT_MEMBER = 7,
 }
 
 struct PortNeighbor {
@@ -1691,6 +1693,7 @@ struct TrafficCounter {
 enum L2LearningMode {
   HARDWARE = 0,
   SOFTWARE = 1,
+  DISABLED = 2,
 }
 
 enum SwitchDrainState {
@@ -2222,6 +2225,15 @@ struct FlowletSwitchingConfig {
   16: optional i32 alternatePathBias;
 }
 
+/*
+ * configuration for a static MAC entry
+ */
+struct StaticMacEntry {
+  1: i32 vlanID;
+  2: string macAddress;
+  3: i32 egressLogicalPortID;
+}
+
 /**
  * The configuration for a switch.
  *
@@ -2356,4 +2368,5 @@ struct SwitchConfig {
   // list of ACL table groups, prefer this over aclTableGroup, aclTableGroup will be deprecated
   56: optional list<AclTableGroup> aclTableGroups;
   57: list<MirrorOnDropReport> mirrorOnDropReports = [];
+  58: optional list<StaticMacEntry> staticMacAddrs;
 }
