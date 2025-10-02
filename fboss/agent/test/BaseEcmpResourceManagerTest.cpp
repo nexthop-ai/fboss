@@ -169,6 +169,7 @@ std::vector<StateDelta> BaseEcmpResourceManagerTest::consolidate(
   {
     // Assert restoration from current state results in no
     // overflow and the route backup group state matches
+    XLOG(DBG2) << " Asserting for reconstructing from switch state";
     auto newConsolidator = makeResourceMgr();
     auto restoreDeltas = newConsolidator->reconstructFromSwitchState(state_);
     EXPECT_EQ(restoreDeltas.size(), 1);
@@ -180,10 +181,12 @@ std::vector<StateDelta> BaseEcmpResourceManagerTest::consolidate(
       if (origRoute->isResolved()) {
         EXPECT_EQ(
             newRoute->getForwardInfo().getOverrideEcmpSwitchingMode(),
-            origRoute->getForwardInfo().getOverrideEcmpSwitchingMode());
+            origRoute->getForwardInfo().getOverrideEcmpSwitchingMode())
+            << " Failed for : " << newRoute->str();
         EXPECT_EQ(
             newRoute->getForwardInfo().getOverrideNextHops(),
-            origRoute->getForwardInfo().getOverrideNextHops());
+            origRoute->getForwardInfo().getOverrideNextHops())
+            << " Failed for : " << newRoute->str();
       }
     }
   }
@@ -541,16 +544,17 @@ void BaseEcmpResourceManagerTest::assertTargetState(
   }
 }
 
-std::vector<StateDelta> BaseEcmpResourceManagerTest::addOrUpdateRoute(
-    const RoutePrefixV6& prefix6,
-    const RouteNextHopSet& nhops) {
-  auto newRoute = makeRoute(prefix6, nhops);
+std::vector<StateDelta> BaseEcmpResourceManagerTest::addOrUpdateRoutes(
+    const std::map<RoutePrefixV6, RouteNextHopSet>& prefix2Nhops) {
   auto newState = state_->clone();
   auto fib6 = fib(newState);
-  if (fib6->getNodeIf(prefix6.str())) {
-    fib6->updateNode(prefix6.str(), std::move(newRoute));
-  } else {
-    fib6->addNode(prefix6.str(), std::move(newRoute));
+  for (const auto& [prefix6, nhops] : prefix2Nhops) {
+    auto newRoute = makeRoute(prefix6, nhops);
+    if (fib6->getNodeIf(prefix6.str())) {
+      fib6->updateNode(prefix6.str(), std::move(newRoute));
+    } else {
+      fib6->addNode(prefix6.str(), std::move(newRoute));
+    }
   }
   newState->publish();
   return consolidate(newState);
@@ -593,7 +597,7 @@ RouteNextHopSet BaseEcmpResourceManagerTest::getNextHops(
 EcmpResourceManager::NextHopGroupIds
 BaseEcmpResourceManagerTest::getGroupsWithoutOverrides() const {
   EcmpResourceManager::NextHopGroupIds nonOverrideGids;
-  auto grpId2Prefixes = sw_->getEcmpResourceManager()->getGroupIdToPrefix();
+  auto grpId2Prefixes = sw_->getEcmpResourceManager()->getGidToPrefixes();
   for (const auto& [_, pfxs] : grpId2Prefixes) {
     auto grpInfo = sw_->getEcmpResourceManager()->getGroupInfo(
         pfxs.begin()->first, pfxs.begin()->second);

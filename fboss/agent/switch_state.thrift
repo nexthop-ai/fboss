@@ -152,6 +152,8 @@ struct PortFields {
   60: optional i32 interPacketGapBits;
   // AM (Alignment Marker) idles configuration for this port
   61: optional bool amIdles;
+  // Option to reset the initial credits for a port, primarily for tests
+  62: optional bool resetQueueCreditBalance;
 }
 
 typedef ctrl.SystemPortThrift SystemPortFields
@@ -161,6 +163,7 @@ struct TransceiverSpecFields {
   2: optional double cableLength;
   3: optional transceiver.MediaInterfaceCode mediaInterface;
   4: optional transceiver.TransceiverManagementInterface managementInterface;
+  5: optional transceiver.Vendor vendor;
 }
 
 struct AclTtl {
@@ -273,6 +276,7 @@ struct MacEntryFields {
   2: switch_config.PortDescriptor portId;
   3: optional switch_config.AclLookupClass classID;
   4: MacEntryType type = MacEntryType.DYNAMIC_ENTRY;
+  5: optional bool configured;
 }
 
 struct NeighborResponseEntryFields {
@@ -560,6 +564,7 @@ struct SflowCollectorFields {
   2: SocketAddress address;
 }
 
+@thrift.DeprecatedUnvalidatedAnnotations{items = {"allow_skip_thrift_cow": "1"}}
 struct InterfaceFields {
   1: i32 interfaceId;
   2: i32 routerId;
@@ -582,7 +587,6 @@ struct InterfaceFields {
   17: optional string dhcpV6Relay;
   18: map<string, string> dhcpRelayOverridesV4;
   19: map<string, string> dhcpRelayOverridesV6;
-
   /*
    * Set only on Remote Interfaces of VOQ switches.
    */
@@ -596,6 +600,9 @@ struct InterfaceFields {
 
   /* applicable only for port type of interface */
   23: optional i32 portId;
+  /* These fields contains information of remote GPU */
+  24: optional string desiredPeerName;
+  25: optional string desiredPeerAddressIPv6;
 }
 
 enum LacpState {
@@ -647,6 +654,7 @@ struct AggregatePortFields {
   10: list<i32> interfaceIDs;
   // Used as the upper bound to bring up the aggregate port
   11: optional i16 minimumLinkCountToUp;
+  12: switch_config.AggregatePortType aggregatePortType = switch_config.AggregatePortType.LAG_PORT;
 }
 
 struct TeFlowEntryFields {

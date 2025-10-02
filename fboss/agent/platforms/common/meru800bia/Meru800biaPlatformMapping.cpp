@@ -86890,6 +86890,12 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         },
         "supportedProfiles": {
           "0": {
+              "subsumedPorts": [
+                6147,
+                6145,
+                6146,
+                6144
+              ],
               "pins": {
                 "iphy": [
 
@@ -87194,6 +87200,12 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         },
         "supportedProfiles": {
           "0": {
+              "subsumedPorts": [
+                6149,
+                6151,
+                6148,
+                6150
+              ],
               "pins": {
                 "iphy": [
 
@@ -87218,6 +87230,12 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         },
         "supportedProfiles": {
           "0": {
+              "subsumedPorts": [
+                6152,
+                6154,
+                6153,
+                6155
+              ],
               "pins": {
                 "iphy": [
 
@@ -87242,6 +87260,12 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         },
         "supportedProfiles": {
           "0": {
+              "subsumedPorts": [
+                6158,
+                6159,
+                6156,
+                6157
+              ],
               "pins": {
                 "iphy": [
 
@@ -96273,11 +96297,11 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
               }
             }
           ],
-          "portType": 0,
+          "portType": 7,
           "attachedCoreId": 0,
           "attachedCorePortIndex": 8,
           "virtualDeviceId": 0,
-          "scope": 1
+          "scope": 0
         },
         "supportedProfiles": {
           "39": {
@@ -96553,11 +96577,11 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
               }
             }
           ],
-          "portType": 0,
+          "portType": 7,
           "attachedCoreId": 0,
           "attachedCorePortIndex": 9,
           "virtualDeviceId": 0,
-          "scope": 1
+          "scope": 0
         },
         "supportedProfiles": {
           "39": {
@@ -96833,11 +96857,11 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
               }
             }
           ],
-          "portType": 0,
+          "portType": 7,
           "attachedCoreId": 0,
           "attachedCorePortIndex": 10,
           "virtualDeviceId": 0,
-          "scope": 1
+          "scope": 0
         },
         "supportedProfiles": {
           "39": {
@@ -97113,11 +97137,11 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
               }
             }
           ],
-          "portType": 0,
+          "portType": 7,
           "attachedCoreId": 0,
           "attachedCorePortIndex": 11,
           "virtualDeviceId": 0,
-          "scope": 1
+          "scope": 0
         },
         "supportedProfiles": {
           "39": {
@@ -97393,11 +97417,11 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
               }
             }
           ],
-          "portType": 0,
+          "portType": 7,
           "attachedCoreId": 1,
           "attachedCorePortIndex": 8,
           "virtualDeviceId": 0,
-          "scope": 1
+          "scope": 0
         },
         "supportedProfiles": {
           "39": {
@@ -97673,11 +97697,11 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
               }
             }
           ],
-          "portType": 0,
+          "portType": 7,
           "attachedCoreId": 1,
           "attachedCorePortIndex": 9,
           "virtualDeviceId": 0,
-          "scope": 1
+          "scope": 0
         },
         "supportedProfiles": {
           "39": {
@@ -97953,11 +97977,11 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
               }
             }
           ],
-          "portType": 0,
+          "portType": 7,
           "attachedCoreId": 1,
           "attachedCorePortIndex": 10,
           "virtualDeviceId": 0,
-          "scope": 1
+          "scope": 0
         },
         "supportedProfiles": {
           "39": {
@@ -98233,11 +98257,11 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
               }
             }
           ],
-          "portType": 0,
+          "portType": 7,
           "attachedCoreId": 1,
           "attachedCorePortIndex": 11,
           "virtualDeviceId": 0,
-          "scope": 1
+          "scope": 0
         },
         "supportedProfiles": {
           "39": {
@@ -98513,11 +98537,11 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
               }
             }
           ],
-          "portType": 0,
+          "portType": 7,
           "attachedCoreId": 2,
           "attachedCorePortIndex": 8,
           "virtualDeviceId": 0,
-          "scope": 1
+          "scope": 0
         },
         "supportedProfiles": {
           "39": {
@@ -98793,11 +98817,11 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
               }
             }
           ],
-          "portType": 0,
+          "portType": 7,
           "attachedCoreId": 2,
           "attachedCorePortIndex": 9,
           "virtualDeviceId": 0,
-          "scope": 1
+          "scope": 0
         },
         "supportedProfiles": {
           "39": {
@@ -99073,11 +99097,11 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
               }
             }
           ],
-          "portType": 0,
+          "portType": 7,
           "attachedCoreId": 2,
           "attachedCorePortIndex": 10,
           "virtualDeviceId": 0,
-          "scope": 1
+          "scope": 0
         },
         "supportedProfiles": {
           "39": {
@@ -99353,11 +99377,11 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
               }
             }
           ],
-          "portType": 0,
+          "portType": 7,
           "attachedCoreId": 2,
           "attachedCorePortIndex": 11,
           "virtualDeviceId": 0,
-          "scope": 1
+          "scope": 0
         },
         "supportedProfiles": {
           "39": {
@@ -99633,11 +99657,11 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
               }
             }
           ],
-          "portType": 0,
+          "portType": 7,
           "attachedCoreId": 3,
           "attachedCorePortIndex": 8,
           "virtualDeviceId": 0,
-          "scope": 1
+          "scope": 0
         },
         "supportedProfiles": {
           "39": {
@@ -99913,11 +99937,11 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
               }
             }
           ],
-          "portType": 0,
+          "portType": 7,
           "attachedCoreId": 3,
           "attachedCorePortIndex": 9,
           "virtualDeviceId": 0,
-          "scope": 1
+          "scope": 0
         },
         "supportedProfiles": {
           "39": {
@@ -100193,11 +100217,11 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
               }
             }
           ],
-          "portType": 0,
+          "portType": 7,
           "attachedCoreId": 3,
           "attachedCorePortIndex": 10,
           "virtualDeviceId": 0,
-          "scope": 1
+          "scope": 0
         },
         "supportedProfiles": {
           "39": {
@@ -100473,11 +100497,11 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
               }
             }
           ],
-          "portType": 0,
+          "portType": 7,
           "attachedCoreId": 3,
           "attachedCorePortIndex": 11,
           "virtualDeviceId": 0,
-          "scope": 1
+          "scope": 0
         },
         "supportedProfiles": {
           "39": {

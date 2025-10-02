@@ -13,7 +13,6 @@ namespace facebook::fboss {
 
 bool Jericho3Asic::isSupported(Feature feature) const {
   switch (feature) {
-    case HwAsic::Feature::NEXTHOP_TTL_DECREMENT_DISABLE:
     case HwAsic::Feature::OBJECT_KEY_CACHE:
     case HwAsic::Feature::PKTIO:
     case HwAsic::Feature::HOSTTABLE:
@@ -235,6 +234,14 @@ bool Jericho3Asic::isSupported(Feature feature) const {
     case HwAsic::Feature::SAI_PORT_PG_DROP_STATUS:
     case HwAsic::Feature::FABRIC_INTER_CELL_JITTER_WATERMARK:
     case HwAsic::Feature::MAC_TRANSMIT_DATA_QUEUE_WATERMARK:
+      /*
+       * J3 does not support NEXTHOP_TTL_DECREMENT_DISABLE. Similar effect is
+       * achieved by configuring to forward TTL0 packets by enabling
+       * SAI_TTL0_PACKET_FORWARD_ENABLE.
+       */
+    case HwAsic::Feature::NEXTHOP_TTL_DECREMENT_DISABLE:
+    case HwAsic::Feature::RESERVED_BYTES_FOR_BUFFER_POOL:
+    case HwAsic::Feature::IN_DISCARDS_EXCLUDES_PFC:
       return false;
   }
   return false;
@@ -250,6 +257,7 @@ std::set<cfg::StreamType> Jericho3Asic::getQueueStreamTypes(
     case cfg::PortType::RECYCLE_PORT:
     case cfg::PortType::EVENTOR_PORT:
     case cfg::PortType::HYPER_PORT:
+    case cfg::PortType::HYPER_PORT_MEMBER:
       return {cfg::StreamType::UNICAST};
     case cfg::PortType::FABRIC_PORT:
       return {cfg::StreamType::FABRIC_TX};
@@ -274,6 +282,7 @@ int Jericho3Asic::getDefaultNumPortQueues(
         case cfg::PortType::MANAGEMENT_PORT:
         case cfg::PortType::EVENTOR_PORT:
         case cfg::PortType::HYPER_PORT:
+        case cfg::PortType::HYPER_PORT_MEMBER:
           return 8;
         case cfg::PortType::FABRIC_PORT:
           break;
@@ -310,6 +319,7 @@ std::optional<uint64_t> Jericho3Asic::getDefaultReservedBytes(
     case cfg::PortType::FABRIC_PORT:
     case cfg::PortType::EVENTOR_PORT:
     case cfg::PortType::HYPER_PORT:
+    case cfg::PortType::HYPER_PORT_MEMBER:
       return 0;
   }
   throw FbossError(
@@ -356,10 +366,12 @@ const std::map<cfg::PortType, cfg::PortLoopbackMode>&
 Jericho3Asic::desiredLoopbackModes() const {
   static const std::map<cfg::PortType, cfg::PortLoopbackMode> kLoopbackMode = {
       {cfg::PortType::INTERFACE_PORT, cfg::PortLoopbackMode::PHY},
+      {cfg::PortType::HYPER_PORT_MEMBER, cfg::PortLoopbackMode::PHY},
       {cfg::PortType::MANAGEMENT_PORT, cfg::PortLoopbackMode::PHY},
       {cfg::PortType::FABRIC_PORT, cfg::PortLoopbackMode::MAC},
       {cfg::PortType::RECYCLE_PORT, cfg::PortLoopbackMode::NONE},
-      {cfg::PortType::EVENTOR_PORT, cfg::PortLoopbackMode::NONE}};
+      {cfg::PortType::EVENTOR_PORT, cfg::PortLoopbackMode::NONE},
+      {cfg::PortType::HYPER_PORT, cfg::PortLoopbackMode::NONE}};
   return kLoopbackMode;
 }
 
@@ -414,7 +426,7 @@ std::vector<std::pair<int, int>> Jericho3Asic::getPortGroups() const {
   for (auto g = 0; g < kNumPortGroups; ++g) {
     auto portGroupStart = kPortGroupStart + g * kPortGroupSize;
     auto portGroupEnd = portGroupStart + kPortGroupSize - 1;
-    portGroups.push_back(std::make_pair(portGroupStart, portGroupEnd));
+    portGroups.emplace_back(portGroupStart, portGroupEnd);
   }
   return portGroups;
 }
@@ -429,8 +441,8 @@ int Jericho3Asic::getHiPriCpuQueueId() const {
 
 std::optional<uint32_t> Jericho3Asic::getMaxEcmpGroups() const {
   // CS00012342521
-  // For 2-stage DSF we only support 16 wide (upto 2K) ecmp groups
+  // For 2-stage DSF with 2K wide ecmp we only support 16 ecmp groups
   // No other use case exists.
-  return isDualStage3Q2QMode() ? 16 : 64;
+  return (isDualStage3Q2QMode() && FLAGS_ecmp_width >= 2048) ? 16 : 64;
 }
 } // namespace facebook::fboss

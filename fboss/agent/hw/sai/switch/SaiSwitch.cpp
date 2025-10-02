@@ -1960,6 +1960,13 @@ SaiSwitch::getRouterInterfaceStatsLocked(
   auto state = getProgrammedState();
   for (const auto& entry : statsMap) {
     auto intf = state->getInterfaces()->getNodeIf(entry.first);
+    if (!intf) {
+      // rif will get added into sai switch but programmed state is reflecting
+      // old state until the entire switch state is fully applied.
+      XLOG(WARNING) << "interface with id " << entry.first
+                    << " not yet in programmed state";
+      continue;
+    }
     rifStatsMap.emplace(intf->getName(), entry.second);
   }
   return rifStatsMap;
@@ -4298,8 +4305,8 @@ void SaiSwitch::fdbEventCallback(
           break;
       }
     }
-    fdbEventNotificationDataTmp.push_back(FdbEventNotificationData(
-        data[i].event_type, data[i].fdb_entry, bridgePortSaiId, fdbMetaData));
+    fdbEventNotificationDataTmp.emplace_back(
+        data[i].event_type, data[i].fdb_entry, bridgePortSaiId, fdbMetaData);
     XLOG(DBG2) << "Received FDB event: " << fdbEventToString(data[i].event_type)
                << " for bridge port: " << bridgePortSaiId;
   }
@@ -4331,7 +4338,7 @@ void SaiSwitch::fdbEventCallbackLockedBottomHalf(
         if (l2Entry) {
           XLOG(DBG2) << "Received FDB " << updateTypeStr
                      << " notification for: " << l2Entry->str();
-          l2Entries.push_back({l2Entry.value(), ditr->second});
+          l2Entries.emplace_back(l2Entry.value(), ditr->second);
         }
       }
     }
