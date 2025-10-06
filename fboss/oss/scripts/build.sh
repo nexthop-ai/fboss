@@ -48,6 +48,7 @@ echo "Building FBOSS"
 
 ./fboss/oss/scripts/package-fboss.py --scratch-path $build_dir/ --compress
 mv $build_dir/fboss_bins.tar.zst .
+rm -rf $build_dir/fboss_bins-*
 
 # Restore modified manifests
 tar -xf manifests_snapshot.tar

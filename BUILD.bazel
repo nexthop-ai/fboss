@@ -1,3 +1,7 @@
+# We explicitly place the intermediate build products into the
+# source tree to help incremental rebuild speed. This is both to make
+# incremental rebuild calculations faster, but also to avoid
+# unnecessary rebuilds when, say, an intermediate file is deleted.
 genrule(
     name = "fboss_builder_docker",
     visibility = ["//visibility:public"],
@@ -19,4 +23,41 @@ sh_library(
     name = "run_in_builder",
     visibility = ["//visibility:public"],
     srcs = ["fboss/oss/scripts/run_in_builder.sh"],
+)
+
+genrule(
+    name = "fboss-fake-sai",
+    srcs = [
+        "//fboss:fboss_builder.tar",
+        ".buckconfig",
+        "CMakeLists.txt",
+        "buck2",
+        "functions.cmake",
+        "getdeps.sh",
+        "sdk_dependencies.txt",
+    ] + glob(["build/**", # Avoid dot files, especially .sccache to which bazel doesn't have permission
+              "cmake/**",
+              "common/**",
+              "docs/**",
+              "fboss/**",
+    ]),
+    outs = ["fboss-fake-sai.tar.zst"],
+    cmd = """
+        if ! $$(docker images | grep -q fboss_builder); then
+            cat $(location //fboss:fboss_builder.tar) | docker image load
+        fi
+
+        pushd fboss
+        mkdir -p .build_dir/sai .sccache
+        tar -C .build_dir/sai -xf ./fboss/oss/scripts/fake-sai-devel.tar.zstd
+
+        ./fboss/oss/scripts/run_in_builder.sh ./fboss/oss/scripts/build.sh
+        popd
+
+        cp fboss/fboss_bins.tar.zst $(location fboss-fake-sai.tar.zst)
+    """,
+    tags = [
+        "no-sandbox",
+        "not-for-ci",
+    ]
 )
