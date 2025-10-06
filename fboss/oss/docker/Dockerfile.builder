@@ -15,7 +15,8 @@ RUN dnf install -y --allowerasing \
     libzstd libzstd-devel lz4-devel ncurses-devel ninja-build openssl \
     openssl-devel openssl-libs python3 python3-devel re2 re2-devel \
     snappy-devel xxhash-devel xz-devel zlib-devel zlib-static bison flex \
-    gperf libcap-devel libmount-devel gcc-toolset-12
+    gperf libcap-devel libmount-devel gcc-toolset-12 glog libusbx xxhash-libs \
+    libunwind libdwarf libsodium
 RUN dnf group install "Development Tools" -y
 RUN echo "source /opt/rh/gcc-toolset-12/enable" >> /root/.bashrc
 RUN python3 -m pip install boto3 botocore gitpython meson jinja2
