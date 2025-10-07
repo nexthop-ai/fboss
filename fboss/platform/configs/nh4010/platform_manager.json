@@ -75,6 +75,13 @@
                 "deviceName": "i2c_master",
                 "csrOffset": "0x40a00"
               }
+            },
+            {
+              "fpgaIpBlockConfig": {
+                "pmUnitScopedName": "SCM_IOB_I2C_6",
+                "deviceName": "i2c_master",
+                "csrOffset": "0x40c00"
+              }
             }
           ]
         }
@@ -84,13 +91,13 @@
           "busName": "SCM_IOB_I2C_1",
           "address": "0x18",
           "kernelDeviceName": "ad525x_dpot",
-          "pmUnitScopedName": "NVGPIO_0"
+          "pmUnitScopedName": "AD5258_1"
         },
         {
           "busName": "SCM_IOB_I2C_2",
           "address": "0x18",
           "kernelDeviceName": "ad525x_dpot",
-          "pmUnitScopedName": "NVGPIO_1"
+          "pmUnitScopedName": "AD5258_2"
         },
         {
           "busName": "SCM_IOB_I2C_3",
@@ -101,8 +108,27 @@
         {
           "busName": "SCM_IOB_I2C_4",
           "address": "0x61",
-          "kernelDeviceName": "raa229621",
+          "kernelDeviceName": "isl68137",
           "pmUnitScopedName": "SVI_VR"
+        },
+        {
+          "busName": "SCM_IOB_I2C_5",
+          "address": "0x41",
+          "kernelDeviceName": "adm1266",
+          "pmUnitScopedName": "DPM_2"
+        },
+
+        {
+          "busName": "SCM_IOB_I2C_6",
+          "address": "0x50",
+          "kernelDeviceName": "24c64",
+          "pmUnitScopedName": "SCM_FPGA_EEPROM"
+        },
+        {
+          "busName": "SCM_IOB_I2C_6",
+          "address": "0x48",
+          "kernelDeviceName": "tmp464",
+          "pmUnitScopedName": "SCM_TEMP_SENSOR"
         }
       ],
       "outgoingSlotConfigs": {
@@ -230,30 +256,69 @@
       "i2cDeviceConfigs": [
         {
           "busName": "SMB_IOB_I2C_0",
-          "address": "0x70",
+          "address": "0x71",
           "kernelDeviceName": "fpga-mux",
           "pmUnitScopedName": "SMB_MUX_0",
           "numOutgoingChannels": 4
         },
         {
           "busName": "SMB_IOB_I2C_1",
-          "address": "0x70",
+          "address": "0x71",
           "kernelDeviceName": "fpga-mux",
           "pmUnitScopedName": "SMB_MUX_1",
           "numOutgoingChannels": 4
         },
         {
           "busName": "SMB_IOB_I2C_3",
-          "address": "0x70",
+          "address": "0x71",
           "kernelDeviceName": "fpga-mux",
           "pmUnitScopedName": "SMB_MUX_2",
           "numOutgoingChannels": 4
+        },
+
+        {
+          "busName": "SMB_MUX_0@3",
+          "address": "0x50",
+          "kernelDeviceName": "24c64",
+          "pmUnitScopedName": "SMB_EEPROM"
+        },
+
+        {
+          "busName": "SMB_MUX_1@1",
+          "address": "0x60",
+          "kernelDeviceName": "isl68137",
+          "pmUnitScopedName": "POWER_CTRL_ISL68225_1"
+        },
+        {
+          "busName": "SMB_MUX_1@1",
+          "address": "0x62",
+          "kernelDeviceName": "isl68137",
+          "pmUnitScopedName": "POWER_CTRL_ISL68225_2"
+        },
+        {
+          "busName": "SMB_MUX_1@1",
+          "address": "0x64",
+          "kernelDeviceName": "isl68137",
+          "pmUnitScopedName": "POWER_CTRL_ISL68225_3"
+        },
+        {
+          "busName": "SMB_MUX_1@1",
+          "address": "0x66",
+          "kernelDeviceName": "isl68137",
+          "pmUnitScopedName": "POWER_CTRL_ISL68225_4"
+        },
+
+        {
+          "busName": "SMB_MUX_2@0",
+          "address": "0x50",
+          "kernelDeviceName": "24c64",
+          "pmUnitScopedName": "MGMT_EEPROM"
         },
         {
           "busName": "SMB_MUX_2@1",
           "address": "0x4c",
           "kernelDeviceName": "lm90",
-          "pmUnitScopedName": "SMB_TSENSOR1"
+          "pmUnitScopedName": "MGMT_TEMP_SENSOR"
         }
       ]
     }
@@ -267,10 +332,13 @@
   ],
   "symbolicLinkToDevicePath": {
     "/run/devmap/eeproms/SCM_EEPROM": "/[IDPROM]",
-    "/run/devmap/sensors/NVGPIO_0": "/[NVGPIO_0]",
-    "/run/devmap/sensors/NVGPIO_1": "/[NVGPIO_1]",
+    "/run/devmap/eeproms/SCM_FPGA_EEPROM": "/[SCM_FPGA_EEPROM]",
+    "/run/devmap/sensors/AD5258_1": "/[AD5258_1]",
+    "/run/devmap/sensors/AD5258_2": "/[AD5258_2]",
     "/run/devmap/sensors/DPM": "/[DPM]",
     "/run/devmap/sensors/SVI_VR": "/[SVI_VR]",
+    "/run/devmap/sensors/DPM_2": "/[DPM_2]",
+    "/run/devmap/sensors/SCM_TEMP_SENSOR": "/[SCM_TEMP_SENSOR]",
     "/run/devmap/fpgas/SCM_IOB": "/[SCM_IOB]",
     "/run/devmap/i2c-busses/SCM_IOB_I2C_0": "/[SCM_IOB_I2C_0]",
     "/run/devmap/i2c-busses/SCM_IOB_I2C_1": "/[SCM_IOB_I2C_1]",
@@ -278,6 +346,7 @@
     "/run/devmap/i2c-busses/SCM_IOB_I2C_3": "/[SCM_IOB_I2C_3]",
     "/run/devmap/i2c-busses/SCM_IOB_I2C_4": "/[SCM_IOB_I2C_4]",
     "/run/devmap/i2c-busses/SCM_IOB_I2C_5": "/[SCM_IOB_I2C_5]",
+    "/run/devmap/i2c-busses/SCM_IOB_I2C_6": "/[SCM_IOB_I2C_6]",
     "/run/devmap/fpgas/SMB_IOB": "/SMB_SLOT@0/[SMB_IOB]",
     "/run/devmap/i2c-busses/SMB_IOB_I2C_0": "/SMB_SLOT@0/[SMB_IOB_I2C_0]",
     "/run/devmap/i2c-busses/SMB_IOB_I2C_1": "/SMB_SLOT@0/[SMB_IOB_I2C_1]",
@@ -287,19 +356,23 @@
     "/run/devmap/i2c-busses/SMB_IOB_I2C_5": "/SMB_SLOT@0/[SMB_IOB_I2C_5]",
     "/run/devmap/i2c-busses/SMB_IOB_I2C_6": "/SMB_SLOT@0/[SMB_IOB_I2C_6]",
     "/run/devmap/i2c-busses/SMB_IOB_I2C_7": "/SMB_SLOT@0/[SMB_IOB_I2C_7]",
-    "/run/devmap/xcvrs/xcvr_io_1": "/SMB_SLOT@0/[SMB_IOB_I2C_4]",
-    "/run/devmap/xcvrs/xcvr_ctrl_1": "/SMB_SLOT@0/[OSFP_PORT1_XCVR]",
-    "/run/devmap/xcvrs/xcvr_io_2": "/SMB_SLOT@0/[SMB_IOB_I2C_5]",
-    "/run/devmap/xcvrs/xcvr_ctrl_2": "/SMB_SLOT@0/[OSFP_PORT2_XCVR]",
-    "/run/devmap/xcvrs/xcvr_io_3": "/SMB_SLOT@0/[SMB_IOB_I2C_6]",
-    "/run/devmap/xcvrs/xcvr_ctrl_3": "/SMB_SLOT@0/[OSFP_PORT3_XCVR]",
-    "/run/devmap/xcvrs/xcvr_io_4": "/SMB_SLOT@0/[SMB_IOB_I2C_7]",
-    "/run/devmap/xcvrs/xcvr_ctrl_4": "/SMB_SLOT@0/[OSFP_PORT4_XCVR]",
-    "/run/devmap/sensors/SMB_TSENSOR1": "/SMB_SLOT@0/[SMB_TSENSOR1]",
+    "/run/devmap/eeproms/SMB_EEPROM": "/SMB_SLOT@0/[SMB_EEPROM]",
+    "/run/devmap/eeproms/MGMT_EEPROM": "/SMB_SLOT@0/[MGMT_EEPROM]",
+    "/run/devmap/sensors/POWER_CTRL_ISL68225_1": "/SMB_SLOT@0/[POWER_CTRL_ISL68225_1]",
+    "/run/devmap/sensors/POWER_CTRL_ISL68225_2": "/SMB_SLOT@0/[POWER_CTRL_ISL68225_2]",
+    "/run/devmap/sensors/POWER_CTRL_ISL68225_3": "/SMB_SLOT@0/[POWER_CTRL_ISL68225_3]",
+    "/run/devmap/sensors/POWER_CTRL_ISL68225_4": "/SMB_SLOT@0/[POWER_CTRL_ISL68225_4]",
+    "/run/devmap/sensors/MGMT_TEMP_SENSOR": "/SMB_SLOT@0/[MGMT_TEMP_SENSOR]",
     "/run/devmap/sensors/FAN_CTRL": "/SMB_SLOT@0/[FAN_CTRL]"
   },
   "chassisEepromDevicePath": "/[IDPROM]",
-  "numXcvrs": 4,
   "bspKmodsRpmName": "nexthop_bsp_kmods",
-  "bspKmodsRpmVersion": "1.0.0-1"
+  "bspKmodsRpmVersion": "1.0.0-1",
+  "requiredKmodsToLoad": [
+    "i2c_i801",
+    "tmp464",
+    "lm90",
+    "adm1266",
+    "pmbus"
+  ]
 }
