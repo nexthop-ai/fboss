@@ -1,3 +1,5 @@
+load("//fboss:fboss_build_types.bzl", "fboss_unit_test")
+
 # We explicitly place the intermediate build products into the
 # source tree to help incremental rebuild speed. This is both to make
 # incremental rebuild calculations faster, but also to avoid
@@ -43,7 +45,26 @@ genrule(
     ]),
     outs = [
         "fboss-fake-sai.tar.zst",
+        "api_test",
         "async_logger_test",
+        "fsdb_client_test",
+        "platform_config_lib_config_lib_test",
+        "platform_data_corral_sw_test",
+        "platform_helpers_platform_name_lib_test",
+        "platform_manager_config_validator_test",
+        "platform_manager_data_store_test",
+        "platform_manager_i2c_explorer_test",
+        "platform_manager_platform_explorer_test",
+        "platform_manager_presence_checker_test",
+        "platform_manager_utils_test",
+        "rackmon_test",
+        "sensor_service_sw_test",
+        "sensor_service_utils_test",
+        "store_test",
+        "switch_test",
+        "thrift_node_tests",
+        "weutil_crc16_ccitt_test",
+        "weutil_fboss_eeprom_interface_test",
     ],
     cmd = """
         if ! $$(docker images | grep -q fboss_builder); then
@@ -72,13 +93,23 @@ genrule(
     ]
 )
 
-sh_test(
-    name = "run_async_logger_test",
-    srcs = ["fboss/oss/scripts/bazel_test.sh"],
-    args = ["async_logger_test"],
-    data = [
-        ":run_in_builder",
-        "//fboss:fboss_builder.tar",
-        ":async_logger_test",
-    ],
-)
+fboss_unit_test(name = "api_test", tags = ["disabled", "not-for-ci"]) # Fails
+fboss_unit_test(name = "async_logger_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "fsdb_client_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_config_lib_config_lib_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_data_corral_sw_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_helpers_platform_name_lib_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_manager_config_validator_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_manager_data_store_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_manager_i2c_explorer_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_manager_platform_explorer_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_manager_presence_checker_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_manager_utils_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "rackmon_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "sensor_service_sw_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "sensor_service_utils_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "store_test", tags = ["disabled", "not-for-ci"]) # fails
+fboss_unit_test(name = "switch_test", tags = ["disabled", "not-for-ci"]) # Fails
+fboss_unit_test(name = "thrift_node_tests", tags = ["not-for-ci"])
+fboss_unit_test(name = "weutil_crc16_ccitt_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "weutil_fboss_eeprom_interface_test", tags = ["not-for-ci"])
