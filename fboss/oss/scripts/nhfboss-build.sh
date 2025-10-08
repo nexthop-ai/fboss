@@ -37,8 +37,8 @@ if [ "$USE_FAKE_SAI" = true ]; then
     export BUILD_SAI_FAKE_LINK_TEST=1
 else
     export SAI_BRCM_IMPL=1
-    export SAI_SDK_VERSION=SAI_VERSION_11_7_0_0_ODP
-    export SAI_VERSION=1.14.0
+    export SAI_SDK_VERSION=SAI_VERSION_12_2_0_0_ODP
+    export SAI_VERSION=1.15.3
 fi
 
 ./build/fbcode_builder/getdeps.py build --build-type MinSizeRel --no-deps $common_options
