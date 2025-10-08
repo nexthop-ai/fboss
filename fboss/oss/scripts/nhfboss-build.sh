@@ -28,6 +28,9 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+# Don't overload the system
+num_jobs=$(( $(nproc) - 2 ))
+
 pushd /var/FBOSS/fboss >/dev/null
 
 common_options='--allow-system-packages --scratch-path /var/FBOSS/tmp_bld_dir --src-dir . --extra-cmake-defines {"CMAKE_C_COMPILER_LAUNCHER":"sccache","CMAKE_CXX_COMPILER_LAUNCHER":"sccache"} fboss'
@@ -41,6 +44,6 @@ else
     export SAI_VERSION=1.15.3
 fi
 
-./build/fbcode_builder/getdeps.py build --build-type MinSizeRel --no-deps $common_options
+nice -n 19 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --build-type MinSizeRel --no-deps $common_options
 
 popd >/dev/null

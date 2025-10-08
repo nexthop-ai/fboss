@@ -11,8 +11,11 @@
 
 pushd /var/FBOSS/fboss >/dev/null
 
+# Don't overload the system
+num_jobs=$(( $(nproc) - 2 ))
+
 common_options='--allow-system-packages --scratch-path /var/FBOSS/tmp_bld_dir --src-dir . --extra-cmake-defines {"CMAKE_C_COMPILER_LAUNCHER":"sccache","CMAKE_CXX_COMPILER_LAUNCHER":"sccache"} fboss'
-./build/fbcode_builder/getdeps.py install-system-deps --recursive $common_options
-./build/fbcode_builder/getdeps.py build --only-deps $common_options
+nice -n 19 ./build/fbcode_builder/getdeps.py install-system-deps --num-jobs $num_jobs --recursive $common_options
+nice -n 19 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --only-deps $common_options
 
 popd >/dev/null

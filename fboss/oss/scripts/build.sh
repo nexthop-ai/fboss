@@ -4,6 +4,9 @@ set -e
 export SCCACHE_DIR=/var/src/.sccache
 export SCCACHE_CACHE_SIZE=30G
 
+# Don't overload the system
+num_jobs=$(( $(nproc) - 2 ))
+
 SAI_DIR=/var/src/.build_dir/sai
 source $SAI_DIR/sai_build.env
 
@@ -41,12 +44,12 @@ if [ -z "$BUILD_SAI_FAKE" ]; then
 fi
 
 echo "Building deps"
-./build/fbcode_builder/getdeps.py build --only-deps $common_options
+nice -n 19 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --only-deps $common_options
 
 echo "Building FBOSS"
-./build/fbcode_builder/getdeps.py build --build-type MinSizeRel --no-deps $common_options
+nice -n 19 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --build-type MinSizeRel --no-deps $common_options
 
-./fboss/oss/scripts/package-fboss.py --scratch-path $build_dir/ --compress
+nice -n 19 ./fboss/oss/scripts/package-fboss.py --scratch-path $build_dir/ --compress
 mv $build_dir/fboss_bins.tar.zst .
 rm -rf $build_dir/fboss_bins-*
 
