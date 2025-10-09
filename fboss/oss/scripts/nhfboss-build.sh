@@ -1,37 +1,16 @@
 #!/bin/bash
 
 # Run inside the build container.
-# Builds FBOSS against a real (default to 1.14.0) or fake SAI -- assumes
+# Builds FBOSS against a real or fake SAI -- assumes
 # dependencies have already been fetched and built using the
 # nhfboss-get-deps.sh script.
 
-usage() {
-    echo "Usage: $0 [--fake-sai]"
-    echo "  --fake-sai    Build against fake SAI instead of BRCM SAI"
-    exit 1
-}
-
-USE_FAKE_SAI=false
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        --fake-sai)
-            USE_FAKE_SAI=true
-            shift
-            ;;
-        -h|--help)
-            usage
-            ;;
-        *)
-            echo "Unknown option: $1"
-            usage
-            ;;
-    esac
-done
-
+USE_FAKE_SAI=${USE_FAKE_SAI:-false}
 # Don't overload the system
 num_jobs=$(( $(nproc) - 2 ))
 
-pushd /var/FBOSS/fboss >/dev/null
+set -e
+cd /var/FBOSS/fboss
 
 common_options='--allow-system-packages --scratch-path /var/FBOSS/tmp_bld_dir --src-dir . --extra-cmake-defines {"CMAKE_C_COMPILER_LAUNCHER":"sccache","CMAKE_CXX_COMPILER_LAUNCHER":"sccache"} fboss'
 
@@ -44,6 +23,5 @@ else
     export SAI_VERSION=1.15.3
 fi
 
-nice -n 19 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --build-type MinSizeRel --no-deps $common_options
-
-popd >/dev/null
+export PATH=/opt/rh/gcc-toolset-12/root/usr/bin:$PATH
+nice -n 19 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --build-type MinSizeRel --no-deps $common_options "$@"
