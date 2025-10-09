@@ -251,4 +251,28 @@ TEST_F(MultiNodeAgentVoqSwitchTest, verifyTrafficSpray) {
   verifyAcrossWarmBoots(setup, verify);
 }
 
+TEST_F(MultiNodeAgentVoqSwitchTest, verifyNoTrafficDropOnProcessRestarts) {
+  auto setup = []() {};
+
+  auto verify = [this]() {
+    verifySetupRunTestVerifyAgain([](const MultiNodeUtil* multiNodeUtil) {
+      return multiNodeUtil->verifyNoTrafficDropOnProcessRestarts();
+    });
+  };
+
+  verifyAcrossWarmBoots(setup, verify);
+}
+
+TEST_F(MultiNodeAgentVoqSwitchTest, verifyNoTrafficDropOnDrainUndrain) {
+  auto setup = []() {};
+
+  auto verify = [this]() {
+    verifySetupRunTestVerifyAgain([](const MultiNodeUtil* multiNodeUtil) {
+      return multiNodeUtil->verifyNoTrafficDropOnDrainUndrain();
+    });
+  };
+
+  verifyAcrossWarmBoots(setup, verify);
+}
+
 } // namespace facebook::fboss

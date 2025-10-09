@@ -154,6 +154,8 @@ struct PortFields {
   61: optional bool amIdles;
   // Option to reset the initial credits for a port, primarily for tests
   62: optional bool resetQueueCreditBalance;
+  // Switch ID for use with fabric links in Fabric Link Monitoring
+  63: optional i32 portSwitchId;
 }
 
 typedef ctrl.SystemPortThrift SystemPortFields
@@ -462,6 +464,8 @@ struct SwitchSettingsFields {
   // PFC watchdog timer granularity which can be 1ms, 10ms or 100ms.
   58: optional i32 pfcWatchdogTimerGranularityMsec;
   59: optional i32 ecmpCompressionThresholdPct;
+  // System port offset for fabric link monitoring
+  60: optional i32 fabricLinkMonitoringSystemPortOffset;
 }
 
 struct RoutePrefix {
@@ -513,8 +517,14 @@ struct LabelForwardingEntryFields {
 
 struct FibContainerFields {
   1: i16 vrf;
-  2: map<string, RouteFields> fibV4 (allow_skip_thrift_cow = true);
-  3: map<string, RouteFields> fibV6 (allow_skip_thrift_cow = true);
+  @thrift.DeprecatedUnvalidatedAnnotations{
+    items = {"allow_skip_thrift_cow": "1"},
+  }
+  2: map<string, RouteFields> fibV4;
+  @thrift.DeprecatedUnvalidatedAnnotations{
+    items = {"allow_skip_thrift_cow": "1"},
+  }
+  3: map<string, RouteFields> fibV6;
 }
 
 struct TrafficClassToQosAttributeEntry {
@@ -744,6 +754,11 @@ struct SwitchState {
   // Remote object maps
   600: map<SwitchIdList, map<i64, SystemPortFields>> remoteSystemPortMaps;
   601: map<SwitchIdList, map<i32, InterfaceFields>> remoteInterfaceMaps;
+  // Fabric Link Monitoring system ports
+  602: map<
+    SwitchIdList,
+    map<i64, SystemPortFields>
+  > fabricLinkMonitoringSystemPortMaps;
 }
 
 struct RouteTableFields {
