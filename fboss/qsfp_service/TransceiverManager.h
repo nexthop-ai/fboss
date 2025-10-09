@@ -741,8 +741,6 @@ class TransceiverManager {
   void findAndTriggerPotentialFirmwareUpgradeEvents(
       const std::vector<TransceiverID>& presentXcvrIds);
 
-  void resetTcvrMgrStateAfterFirmwareUpgrade();
-
   void clearEvbsRunningFirmwareUpgrade() {
     // Clear the map that tracks the firmware upgrades in progress per evb
     evbsRunningFirmwareUpgrade_.wlock()->clear();
@@ -754,6 +752,8 @@ class TransceiverManager {
   // initialization to avoid cold booting non-XPhy systems in case of a
   // non-graceful exit and also set during graceful exit.
   void setCanWarmBoot();
+
+  void completeRefresh();
 
   // Store the warmboot state for qsfp_service. This will be updated
   // periodically after Transceiver State machine updates to maintain
@@ -768,6 +768,24 @@ class TransceiverManager {
 
   folly::dynamic getWarmBootState() const {
     return warmBootState_;
+  }
+
+  void setPhyManager(std::unique_ptr<PhyManager> phyManager) {
+    phyManager_ = std::move(phyManager);
+    phyManager_->setPublishPhyCb(
+        [this](auto&& portName, auto&& newInfo, auto&& portStats) {
+          if (newInfo.has_value()) {
+            publishPhyStateToFsdb(
+                std::string(portName), std::move(*newInfo->state()));
+            publishPhyStatToFsdb(
+                std::string(portName), std::move(*newInfo->stats()));
+          } else {
+            publishPhyStateToFsdb(std::string(portName), std::nullopt);
+          }
+          if (portStats.has_value()) {
+            publishPortStatToFsdb(std::move(portName), std::move(*portStats));
+          }
+        });
   }
 
  protected:
@@ -788,24 +806,6 @@ class TransceiverManager {
   virtual void initTransceiverMap() = 0;
 
   virtual void loadConfig() = 0;
-
-  void setPhyManager(std::unique_ptr<PhyManager> phyManager) {
-    phyManager_ = std::move(phyManager);
-    phyManager_->setPublishPhyCb(
-        [this](auto&& portName, auto&& newInfo, auto&& portStats) {
-          if (newInfo.has_value()) {
-            publishPhyStateToFsdb(
-                std::string(portName), std::move(*newInfo->state()));
-            publishPhyStatToFsdb(
-                std::string(portName), std::move(*newInfo->stats()));
-          } else {
-            publishPhyStateToFsdb(std::string(portName), std::nullopt);
-          }
-          if (portStats.has_value()) {
-            publishPortStatToFsdb(std::move(portName), std::move(*portStats));
-          }
-        });
-  }
 
   // Update the cached PortStatus of TransceiverToPortInfo based on the input
   // This will only change the active state of the state machine.

@@ -964,6 +964,11 @@ std::shared_ptr<SwitchState> SaiSwitch::stateChangedImplLocked(
       lockPolicy,
       &SaiSystemPortManager::removeSystemPort);
   processRemovedDelta(
+      delta.getFabricLinkMonitoringSystemPortsDelta(),
+      managerTable_->systemPortManager(),
+      lockPolicy,
+      &SaiSystemPortManager::removeFabricLinkMonitoringSystemPort);
+  processRemovedDelta(
       delta.getPortsDelta(),
       managerTable_->portManager(),
       lockPolicy,
@@ -984,6 +989,11 @@ std::shared_ptr<SwitchState> SaiSwitch::stateChangedImplLocked(
       lockPolicy,
       &SaiSystemPortManager::changeSystemPort);
   processChangedDelta(
+      delta.getFabricLinkMonitoringSystemPortsDelta(),
+      managerTable_->systemPortManager(),
+      lockPolicy,
+      &SaiSystemPortManager::changeFabricLinkMonitoringSystemPort);
+  processChangedDelta(
       delta.getPortsDelta(),
       managerTable_->portManager(),
       lockPolicy,
@@ -1003,6 +1013,11 @@ std::shared_ptr<SwitchState> SaiSwitch::stateChangedImplLocked(
       managerTable_->systemPortManager(),
       lockPolicy,
       &SaiSystemPortManager::addSystemPort);
+  processAddedDelta(
+      delta.getFabricLinkMonitoringSystemPortsDelta(),
+      managerTable_->systemPortManager(),
+      lockPolicy,
+      &SaiSystemPortManager::addFabricLinkMonitoringSystemPort);
   processAddedDelta(
       delta.getPortsDelta(),
       managerTable_->portManager(),
@@ -1784,6 +1799,19 @@ void SaiSwitch::processSwitchSettingsChangeSansDrainedEntryLocked(
         newPfcWatchdogTimerGranularity.has_value()) {
       managerTable_->switchManager().setPfcWatchdogTimerGranularity(
           *newPfcWatchdogTimerGranularity);
+    }
+  }
+
+  {
+    const auto oldFabricLinkMonitoringSystemPortOffset =
+        oldSwitchSettings->getFabricLinkMonitoringSystemPortOffset();
+    const auto newFabricLinkMonitoringSystemPortOffset =
+        newSwitchSettings->getFabricLinkMonitoringSystemPortOffset();
+    if (oldFabricLinkMonitoringSystemPortOffset !=
+        newFabricLinkMonitoringSystemPortOffset) {
+      managerTable_->systemPortManager()
+          .setFabricLinkMonitoringSystemPortOffset(
+              newFabricLinkMonitoringSystemPortOffset);
     }
   }
 }
@@ -2700,7 +2728,7 @@ void SaiSwitch::linkStateChangedCallbackBottomHalf(
         // once link comes back up LACP engine in SwSwitch will bundle it
         // again
         managerTable_->lagManager().disableMember(swAggPort.value(), swPortId);
-        if (!managerTable_->lagManager().isMinimumLinkMet(swAggPort.value())) {
+        if (!managerTable_->lagManager().isLagUp(swAggPort.value())) {
           // remove fdb entries on LAG, this would remove neighbors, next hops
           // will point to drop and next hop group will shrink.
           managerTable_->fdbManager().handleLinkDown(
