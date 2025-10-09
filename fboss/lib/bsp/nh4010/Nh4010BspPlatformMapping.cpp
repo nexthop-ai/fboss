@@ -11,6 +11,8 @@ using namespace apache::thrift;
 namespace {
 constexpr auto kJsonBspPlatformMappingStr = R"(
 {
+  "pimMapping": {}
+}
 )";
 
 static BspPlatformMappingThrift buildNh4010PlatformMapping(
