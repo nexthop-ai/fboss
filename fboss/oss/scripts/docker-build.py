@@ -2,6 +2,7 @@
 # Copyright 2004-present Facebook. All Rights Reserved.
 
 import argparse
+import getpass
 import json
 import os
 import re
@@ -26,8 +27,9 @@ OPT_ARG_CACHE_CONFIG = "--cache-config"
 OPT_ARG_EXTRA_CMAKE_DEFINES = "--extra-cmake-defines"
 OPT_ARG_DOT_FILES = "--dot-files"
 
-FBOSS_IMAGE_NAME = "fboss_image"
-FBOSS_CONTAINER_NAME = "FBOSS_BUILD_CONTAINER"
+USERNAME = getpass.getuser()
+FBOSS_IMAGE_NAME = f"fboss_image_{USERNAME}"
+FBOSS_CONTAINER_NAME = f"FBOSS_build_{USERNAME}"
 CONTAINER_SCRATCH_PATH = "/var/FBOSS/tmp_bld_dir"
 CONTAINER_WORKDIR = "/var/FBOSS/fboss"
 
@@ -255,8 +257,10 @@ def build_docker_image(docker_dir_path: str):
     print(
         f"Attempting to build docker image from {docker_dir_path}/Dockerfile. You can run `sudo tail -f {log_path}` in order to follow along."
     )
+
     with os.fdopen(fd, "w") as output:
         dockerfile_path = os.path.join(docker_dir_path, "Dockerfile")
+        shell = os.getenv("SHELL", "/bin/bash")
         cp = subprocess.run(
             [
                 "sudo",
@@ -267,6 +271,14 @@ def build_docker_image(docker_dir_path: str):
                 FBOSS_IMAGE_NAME,
                 "-f",
                 dockerfile_path,
+                "--build-arg",
+                f"USERNAME={USERNAME}",
+                "--build-arg",
+                f"USER_UID={os.getuid()}",
+                "--build-arg",
+                f"USER_GID={os.getgid()}",
+                "--build-arg",
+                f"USER_SHELL={shell}",
             ],
             stdout=output,
             stderr=subprocess.STDOUT,

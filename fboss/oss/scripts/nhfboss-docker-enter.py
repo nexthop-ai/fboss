@@ -73,10 +73,12 @@ if not is_container_available(check_all=True):
     extra_cmake_defines = (
         '{"CMAKE_C_COMPILER_LAUNCHER":"sccache","CMAKE_CXX_COMPILER_LAUNCHER":"sccache"}',
     )
+    scratch_path = os.path.expandvars(  # Used for downloading dependencies to for building
+        "$HOME/work/fboss_build-" + branch_name
+    )
+    docker_build.create_scratch_path(scratch_path)
     docker_build.run_fboss_build(
-        scratch_path=os.path.expandvars(
-            "$HOME/work/fboss_build-" + branch_name
-        ),  # Used for downloading dependencies to for building
+        scratch_path=scratch_path,
         target=None,
         docker_output=True,
         use_system_deps=True,
@@ -100,4 +102,5 @@ else:
     if not is_container_available():
         subprocess.run(["docker", "start", docker_build.FBOSS_CONTAINER_NAME])
 
-    subprocess.run(["docker", "exec", "-it", docker_build.FBOSS_CONTAINER_NAME, "bash"])
+    shell = os.getenv("SHELL", "/bin/bash")
+    subprocess.run(["docker", "exec", "-it", docker_build.FBOSS_CONTAINER_NAME, shell])
