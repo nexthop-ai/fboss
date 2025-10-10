@@ -24,6 +24,7 @@ OPT_ARG_SCHEDULE_TYPE = "--schedule-type"
 OPT_ARG_EXTRAS_DIR = "--extras-dir"
 OPT_ARG_CACHE_CONFIG = "--cache-config"
 OPT_ARG_EXTRA_CMAKE_DEFINES = "--extra-cmake-defines"
+OPT_ARG_DOT_FILES = "--dot-files"
 
 FBOSS_IMAGE_NAME = "fboss_image"
 FBOSS_CONTAINER_NAME = "FBOSS_BUILD_CONTAINER"
@@ -200,6 +201,16 @@ def parse_args():
             'e.g: \'{"CMAKE_CXX_FLAGS": "--bla"}\''
         ),
     )
+    parser.add_argument(
+        OPT_ARG_DOT_FILES,
+        dest="dot_files",
+        default=False,
+        action="store_true",
+        help=(
+            "Mount essential config files from the user's home directory into the container. "
+            "This includes shell configs (.bashrc/.zshrc), .ssh, .vim, .vimrc, and .gitconfig."
+        ),
+    )
 
     return parser.parse_args()
 
@@ -278,6 +289,7 @@ def run_fboss_build(
     cache_config: Optional[str],
     extras_dir: Optional[str],
     extra_cmake_defines: Optional[str],
+    dot_files: bool = False,
     build: bool = True,
     sdk_path: Optional[str] = None,
 ):
@@ -309,6 +321,25 @@ def run_fboss_build(
         cmd_args.extend(["-v", f"{extras_dir}:/var/extras:rw"])
     if sdk_path:
         cmd_args.extend(["-v", f"{sdk_path}:/opt/sdk:z"])
+
+    # Mount dotfiles if requested
+    if dot_files:
+        home_dir = os.path.expanduser("~")
+        # Mount other common dotfiles/directories
+        dotfiles = [
+            ".bashrc", ".zshrc",
+            ".ssh",
+            ".emacs", ".emacs.d",
+            ".vim", ".vimrc",
+            ".gitconfig",
+            "bin",
+            ]
+
+        for dotfile in dotfiles:
+            host_path = os.path.join(home_dir, dotfile)
+            if os.path.exists(host_path):
+                cmd_args.extend(["-v", f"{host_path}:/home/{USERNAME}/{dotfile}:ro"])
+
     # Add args for docker container name
     cmd_args.append(f"--name={FBOSS_CONTAINER_NAME}")
     # Add args for image name
@@ -404,6 +435,7 @@ def main():
         args.cache_config,
         args.extras_dir,
         args.extra_cmake_defines,
+        args.dot_files,
     )
 
     cleanup_fboss_build_container()

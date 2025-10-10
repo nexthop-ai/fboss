@@ -90,6 +90,7 @@ if not is_container_available(check_all=True):
         cache_config=None,
         extras_dir=os.path.expandvars("$HOME/work/caches"),
         extra_cmake_defines=extra_cmake_defines,
+        dot_files=True,
         build=False,
         sdk_path=sdk_path,
     )
