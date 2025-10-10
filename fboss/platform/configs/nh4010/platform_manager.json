@@ -1,6 +1,6 @@
 {
   "___COMMENT___": "NH-4010 Platform Manager Configuration",
-  "platformName": "NH-4010",
+  "platformName": "NH4010",
   "rootPmUnitName": "SCM",
   "rootSlotType": "SCM_SLOT",
   "slotTypeConfigs": {
