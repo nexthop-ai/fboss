@@ -6,13 +6,7 @@ ARG USER_UID=0
 ARG USER_GID=0
 ARG USER_SHELL=/bin/bash
 
-RUN dnf install git sudo lsof `basename "$USER_SHELL"` -y
-
-# Use /var/FBOSS as the set location to clone the git repository and store the outputs of the build.
-WORKDIR /var/FBOSS/
-
 # Download and install sccache
-
 RUN curl -L https://github.com/mozilla/sccache/releases/download/v0.10.0/sccache-v0.10.0-x86_64-unknown-linux-musl.tar.gz -o sccache.tar.gz && \
     tar xzf sccache.tar.gz && \
     mv sccache-v0.10.0-x86_64-unknown-linux-musl/sccache /usr/local/bin/ && \
@@ -21,34 +15,33 @@ RUN curl -L https://github.com/mozilla/sccache/releases/download/v0.10.0/sccache
 # Mount point for extra files.
 RUN mkdir -p /var/extras
 
-RUN mkdir -p /var/FBOSS/fboss
-COPY . fboss
-WORKDIR fboss
-
-RUN rm -rf build/deps/github_hashes/
-RUN tar xvzf fboss/oss/stable_commits/latest_stable_hashes.tar.gz
-
-RUN dnf install -y 'dnf-command(config-manager)'
-RUN dnf config-manager --set-enabled crb
-RUN dnf install -y epel-release epel-next-release
-RUN sudo dnf install -y autoconf automake binutils binutils-devel bzip2 \
+RUN dnf install -y 'dnf-command(config-manager)' && \
+    dnf config-manager --set-enabled crb && \
+    dnf install -y epel-release epel-next-release
+RUN dnf install -y --allowerasing autoconf automake binutils binutils-devel bzip2 \
     bzip2-devel cmake double-conversion double-conversion-devel libcurl-devel \
     libcurl-minimal libdwarf libdwarf-devel libevent-devel libffi libffi-devel \
     libnghttp2 libnghttp2-devel libnl3 libnl3-devel libsodium-devel \
     libsodium-static libtool libunwind libunwind-devel libusb libusb-devel \
     libzstd libzstd-devel lz4-devel ncurses-devel ninja-build openssl \
     openssl-devel openssl-libs python3 python3-devel re2 re2-devel \
-    snappy-devel xxhash-devel xz-devel zlib-devel zlib-static -y --allowerasing
+    snappy-devel xxhash-devel xz-devel zlib-devel zlib-static \
+    libxml2-devel expat-devel wget \
+    git sudo lsof `basename "$USER_SHELL"`
 RUN python3 -m pip install boto3 botocore
-RUN ./build/fbcode_builder/getdeps.py install-system-deps --recursive fboss
-RUN dnf install bison flex -y
-RUN dnf group install "Development Tools" -y
-RUN python3 -m pip install gitpython meson jinja2
-RUN dnf install gperf libcap-devel libmount-devel -y
-RUN dnf install gcc-toolset-12 gcc-toolset-12-libasan-devel gcc-toolset-12-libubsan-devel -y && \
-    echo "source /opt/rh/gcc-toolset-12/enable" >> /etc/profile.d/gcc-toolset-12.sh
 
-RUN rm -rf /var/FBOSS/fboss/*
+# Use /var/FBOSS as the set location to clone the git repository and store the outputs of the build.
+WORKDIR /var/FBOSS/fboss
+COPY build/fbcode_builder /var/FBOSS/fboss/build/fbcode_builder
+RUN ./build/fbcode_builder/getdeps.py install-system-deps --recursive fboss && \
+    rm -rf build
+
+RUN dnf install bison flex -y && \
+    dnf group install "Development Tools" -y && \
+    python3 -m pip install gitpython meson jinja2 && \
+    dnf install gperf libcap-devel libmount-devel -y && \
+    dnf install gcc-toolset-12 gcc-toolset-12-libasan-devel gcc-toolset-12-libubsan-devel -y && \
+    echo "source /opt/rh/gcc-toolset-12/enable" >> /etc/profile.d/gcc-toolset-12.sh
 
 # The following libraries are needed for building SDK
 RUN dnf install -y doxygen aspell libyaml-devel vim-common libnsl libnsl2-devel
@@ -56,7 +49,6 @@ RUN dnf install -y doxygen aspell libyaml-devel vim-common libnsl libnsl2-devel
 RUN dnf install -y perl-diagnostics perl-sort perl-English perl-Clone perl-Data-Compare \
     perl-List-MoreUtils perl-Moose perl-YAML perl-namespace-autoclean perl-JSON-XS perl-FindBin \
     perl-Math-BigInt perl-YAML-LibYAML perl-Sys-Hostname perl-Time
-RUN dnf install -y libxml2-devel expat-devel wget
 RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN pip install pyyaml filelock
 # ============================================================
