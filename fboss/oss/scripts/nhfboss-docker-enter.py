@@ -63,19 +63,10 @@ if not is_container_available(check_all=True):
             sdk_path = args.sdk_path
         else:
             print(f"Warning: SDK path {args.sdk_path} does not exist")
-    branch_name = (
-        subprocess.run(
-            "git status | awk '/On branch/ {print $3}'", shell=True, capture_output=True
-        )
-        .stdout.decode()
-        .strip()
-    )
     extra_cmake_defines = (
         '{"CMAKE_C_COMPILER_LAUNCHER":"sccache","CMAKE_CXX_COMPILER_LAUNCHER":"sccache"}',
     )
-    scratch_path = os.path.expandvars(  # Used for downloading dependencies to for building
-        "$HOME/work/fboss_build-" + branch_name
-    )
+    scratch_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.build_dir"))
     docker_build.create_scratch_path(scratch_path)
     docker_build.run_fboss_build(
         scratch_path=scratch_path,
