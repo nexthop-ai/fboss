@@ -60,6 +60,9 @@ on:
 
 jobs:
   build-image:
+    permissions:
+      id-token: write
+      contents: read
     uses: nexthop-ai/nh/.github/workflows/build.reusable.yml@main
     with:
       # For PR events: use PR branch name
