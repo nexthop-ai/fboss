@@ -204,7 +204,7 @@ TEST_F(CmdShowRouteDetailsTestFixture, queryClient) {
   CmdShowRouteDetailsTraits::ObjectArgType queriedEntries;
   auto model = cmd.queryClient(localhost(), queriedEntries);
 
-  EXPECT_THRIFT_EQ(model, normalizedModel);
+  EXPECT_THRIFT_EQ(normalizedModel, model);
 }
 
 TEST_F(CmdShowRouteDetailsTestFixture, queryNetworkEntries) {
@@ -223,7 +223,7 @@ TEST_F(CmdShowRouteDetailsTestFixture, queryNetworkEntries) {
   CmdShowRouteDetailsTraits::ObjectArgType queriedEntries(entries);
   auto model = cmd.queryClient(localhost(), queriedEntries);
 
-  EXPECT_THRIFT_EQ(model, normalizedModel);
+  EXPECT_THRIFT_EQ(normalizedModel, model);
 }
 
 TEST_F(CmdShowRouteDetailsTestFixture, queryIpRouteEntries) {
@@ -246,7 +246,7 @@ TEST_F(CmdShowRouteDetailsTestFixture, queryIpRouteEntries) {
   CmdShowRouteDetailsTraits::ObjectArgType queriedEntries(entries);
   auto model = cmd.queryClient(localhost(), queriedEntries);
 
-  EXPECT_THRIFT_EQ(model, normalizedModel);
+  EXPECT_THRIFT_EQ(normalizedModel, model);
 }
 
 TEST_F(CmdShowRouteDetailsTestFixture, printOutput) {
