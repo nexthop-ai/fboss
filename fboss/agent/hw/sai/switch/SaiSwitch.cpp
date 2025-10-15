@@ -4194,6 +4194,21 @@ void SaiSwitch::switchRunStateChangedImplLocked(
         switchApi.setAttribute(saiSwitchId_, sdkRegDumpLogPath);
       }
 
+      /*
+       * Cold boot system init results in a lot of events like interrupts.
+       * These needs to be cleared once system is up and running as it will
+       * help ensure that tech support dumps done at a later point in time
+       * will yield good data and we dont need to worry about events being
+       * left over from cold boot system init. Ideally, we need to clear the
+       * cold boot system init events once system is stable. However, it is
+       * hard to define the criteria for system stability, hence the decision
+       * to perform this init post cold boot and config complete.
+       */
+      if (bootType_ == BootType::COLD_BOOT &&
+          platform_->getAsic()->isSupported(HwAsic::Feature::TECH_SUPPORT)) {
+        initTechSupport();
+      }
+
       if (getFeaturesDesired() & FeaturesDesired::LINKSCAN_DESIRED) {
         /*
          * Post warmboot synchronize hw link state with switch state
@@ -4294,7 +4309,7 @@ SaiManagerTable* SaiSwitch::managerTableLocked(
 void SaiSwitch::fdbEventCallback(
     uint32_t count,
     const sai_fdb_event_notification_data_t* data) {
-  XLOG(DBG2) << "Received " << count << " learn notifications";
+  XLOG(DBG4) << "Received " << count << " learn notifications";
   if (runState_ < SwitchRunState::CONFIGURED) {
     // receive learn events after switch is configured to prevent
     // fdb entries from being created against ports  which would
@@ -4335,7 +4350,7 @@ void SaiSwitch::fdbEventCallback(
     }
     fdbEventNotificationDataTmp.emplace_back(
         data[i].event_type, data[i].fdb_entry, bridgePortSaiId, fdbMetaData);
-    XLOG(DBG2) << "Received FDB event: " << fdbEventToString(data[i].event_type)
+    XLOG(DBG4) << "Received FDB event: " << fdbEventToString(data[i].event_type)
                << " for bridge port: " << bridgePortSaiId;
   }
   fdbEventBottomHalfEventBase_.runInFbossEventBaseThread(
@@ -4354,6 +4369,7 @@ void SaiSwitch::fdbEventCallbackLockedBottomHalf(
         cfg::L2LearningMode::SOFTWARE) {
       // Some platforms call fdb callback even when mode is set to HW. In
       // keeping with our native SDK approach, don't send these events up.
+      XLOG(DBG4) << "Ignoring FDB learn notification as mode is not software";
       return;
     }
 
