@@ -40,7 +40,7 @@ RUN dnf install bison flex -y && \
     dnf group install "Development Tools" -y && \
     python3 -m pip install gitpython meson jinja2 && \
     dnf install gperf libcap-devel libmount-devel -y && \
-    dnf install gcc-toolset-12 gcc-toolset-12-libasan-devel gcc-toolset-12-libubsan-devel -y && \
+    dnf install gcc-toolset-12 gcc-toolset-12-libasan-devel gcc-toolset-12-libubsan-devel clang-tools-extra -y && \
     echo "source /opt/rh/gcc-toolset-12/enable" >> /etc/profile.d/gcc-toolset-12.sh
 
 # The following libraries are needed for building SDK
