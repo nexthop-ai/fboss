@@ -485,12 +485,21 @@ int TunManager::getTableIdForVoq(InterfaceID ifID) const {
   } else if (
       platform == PlatformType::PLATFORM_JANGA800BIC ||
       FLAGS_dsf_single_stage_r192_f40_e32 ||
-      FLAGS_dsf_single_stage_r128_f40_e16_uniform_local_offset) {
+      FLAGS_dsf_single_stage_r128_f40_e16_uniform_local_offset ||
+      // TODO(daiweix): remove FLAGS_hyper_port after
+      // FLAGS_dsf_single_stage_r128_f40_e16_uniform_local_offset is set for
+      // hyper port
+      FLAGS_hyper_port) {
     auto intf = sw_->getState()->getInterfaces()->getNode(ifID);
     auto constexpr kLocalIntfTableStart = 1;
     auto constexpr kGlobalIntfTableStart = 200;
     if (intf->getScope() == cfg::Scope::LOCAL) {
-      return kLocalIntfTableStart + ifID;
+      if (FLAGS_dsf_single_stage_r128_f40_e16_uniform_local_offset) {
+        auto constexpr kLocalSystemPortIdStart = 6058;
+        return kLocalIntfTableStart + ifID - kLocalSystemPortIdStart;
+      } else {
+        return kLocalIntfTableStart + ifID;
+      }
     } else {
       auto firstSwitchSysPortRange =
           getFirstSwitchSystemPortIdRange(switchIdToSwitchInfo);

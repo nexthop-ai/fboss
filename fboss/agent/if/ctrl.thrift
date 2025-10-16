@@ -19,6 +19,7 @@ include "fboss/lib/phy/phy.thrift"
 include "fboss/agent/hw/hardware_stats.thrift"
 include "thrift/annotation/python.thrift"
 include "thrift/annotation/cpp.thrift"
+include "thrift/annotation/thrift.thrift"
 
 typedef common.fbbinary fbbinary
 typedef common.fbstring fbstring
@@ -252,6 +253,7 @@ struct InterfaceDetail {
   10: switch_config.Scope scope = switch_config.Scope.LOCAL;
   // PortId populated only for interfaces of type PORT
   11: i32 portId;
+  12: optional string desiredPeerAddressIPv6;
 }
 
 /*
@@ -421,6 +423,7 @@ struct PortQueueFields {
   19: optional common.BufferPoolFields bufferPoolConfig;
 }
 
+@thrift.DeprecatedUnvalidatedAnnotations{items = {"allow_skip_thrift_cow": "1"}}
 struct SystemPortThrift {
   1: i64 portId;
   2: i64 switchId;
