@@ -47,6 +47,7 @@ genrule(
         "fboss-fake-sai.tar.zst",
         "api_test",
         "async_logger_test",
+        "fboss2_cmd_test",
         "fsdb_client_test",
         "platform_config_lib_config_lib_test",
         "platform_data_corral_sw_test",
@@ -95,6 +96,7 @@ genrule(
 
 fboss_unit_test(name = "api_test", tags = ["disabled", "not-for-ci"]) # Fails
 fboss_unit_test(name = "async_logger_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "fboss2_cmd_test", tags = ["not-for-ci"])
 fboss_unit_test(name = "fsdb_client_test", tags = ["not-for-ci"])
 fboss_unit_test(name = "platform_config_lib_config_lib_test", tags = ["not-for-ci"])
 fboss_unit_test(name = "platform_data_corral_sw_test", tags = ["not-for-ci"])
