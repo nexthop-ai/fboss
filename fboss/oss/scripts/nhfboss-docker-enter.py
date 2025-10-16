@@ -67,6 +67,16 @@ if not is_container_available(check_all=True):
         '{"CMAKE_C_COMPILER_LAUNCHER":"sccache","CMAKE_CXX_COMPILER_LAUNCHER":"sccache"}',
     )
     scratch_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.build_dir"))
+    caches_dir = os.path.expandvars("$HOME/work/caches")
+    os.makedirs(caches_dir, exist_ok=True)
+    # Transition away from building as root:
+    if not os.access(caches_dir, os.W_OK):
+        print(f"Attempting to fix permissions on {caches_dir}")
+        subprocess.run(
+            f"sudo chown -R $(id -u):$(id -g) {caches_dir}",
+            check=True,
+            shell=True,
+        )
     docker_build.create_scratch_path(scratch_path)
     docker_build.run_fboss_build(
         scratch_path=scratch_path,
@@ -81,7 +91,7 @@ if not is_container_available(check_all=True):
         num_jobs=None,
         schedule_type=None,
         cache_config=None,
-        extras_dir=os.path.expandvars("$HOME/work/caches"),
+        extras_dir=caches_dir,
         extra_cmake_defines=extra_cmake_defines,
         dot_files=True,
         build=False,
