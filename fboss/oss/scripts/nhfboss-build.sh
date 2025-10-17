@@ -19,8 +19,8 @@ if [ "$USE_FAKE_SAI" = true ]; then
     export BUILD_SAI_FAKE_LINK_TEST=1
 else
     export SAI_BRCM_IMPL=1
-    export SAI_SDK_VERSION=SAI_VERSION_12_2_0_0_ODP
-    export SAI_VERSION=1.15.3
+    export SAI_SDK_VERSION=SAI_VERSION_13_3_0_0_ODP
+    export SAI_VERSION=1.16.1
 fi
 
 export PATH=/opt/rh/gcc-toolset-12/root/usr/bin:$PATH
