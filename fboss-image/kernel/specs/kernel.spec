@@ -7,6 +7,9 @@
 # Disable debug packages
 %global debug_package %{nil}
 
+# Disable shebang mangling (kernel scripts have their own shebang conventions)
+%global __brp_mangle_shebangs %{nil}
+
 Name: kernel
 Version: %{kernel_version}
 Release: 1.fboss%{?dist}
@@ -102,6 +105,31 @@ rm -f %{buildroot}/lib/modules/%{version}/source
 # Install headers
 make %{?_smp_mflags} headers_install INSTALL_HDR_PATH=%{buildroot}/usr
 
+# Install kernel-devel files for building external modules (Broadcom SAI on x86_64)
+KERNELDEV=%{buildroot}/usr/src/kernels/%{version}
+mkdir -p $KERNELDEV
+
+# Essential build files
+cp .config $KERNELDEV/
+cp Module.symvers $KERNELDEV/
+cp Makefile $KERNELDEV/
+
+# Kernel headers (including generated headers like autoconf.h)
+cp -a include $KERNELDEV/
+
+# Scripts directory (required by kernel Makefile for building modules)
+cp -a scripts $KERNELDEV/
+
+# Tools directory - only copy compiled binaries needed for module builds
+mkdir -p $KERNELDEV/tools/objtool
+if [ -f tools/objtool/objtool ]; then
+    cp tools/objtool/objtool $KERNELDEV/tools/objtool/
+fi
+
+# x86_64 architecture files
+mkdir -p $KERNELDEV/arch/x86
+cp -a arch/x86/include $KERNELDEV/arch/x86/
+cp arch/x86/Makefile $KERNELDEV/arch/x86/
 
 # Files sections - defines what goes into each binary RPM
 %files core
@@ -120,6 +148,7 @@ make %{?_smp_mflags} headers_install INSTALL_HDR_PATH=%{buildroot}/usr
 
 %files devel
 %defattr(-,root,root)
+/usr/src/kernels/%{version}/
 
 %changelog
 * Fri Oct 03 2025 Project Mosaic Team <meta-support@nexthop.ai> - %{version}-1.fboss
