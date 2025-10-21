@@ -44,12 +44,12 @@ if [ -z "$BUILD_SAI_FAKE" ]; then
 fi
 
 echo "Building deps"
-nice -n 19 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --only-deps $common_options
+nice -n 10 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --only-deps $common_options
 
 echo "Building FBOSS"
-nice -n 19 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --build-type MinSizeRel --no-deps $common_options
+nice -n 10 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --build-type MinSizeRel --no-deps $common_options
 
-nice -n 19 ./fboss/oss/scripts/package-fboss.py --scratch-path $build_dir/ --compress
+nice -n 10 ./fboss/oss/scripts/package-fboss.py --scratch-path $build_dir/ --compress
 mv $build_dir/fboss_bins.tar.zst .
 rm -rf $build_dir/fboss_bins-*
 

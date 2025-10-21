@@ -17,5 +17,5 @@ cd /var/FBOSS/fboss
 
 export PATH=/opt/rh/gcc-toolset-12/root/usr/bin:$PATH
 common_options='--allow-system-packages --scratch-path /var/FBOSS/tmp_bld_dir --src-dir . --extra-cmake-defines {"CMAKE_C_COMPILER_LAUNCHER":"sccache","CMAKE_CXX_COMPILER_LAUNCHER":"sccache"} fboss'
-nice -n 19 ./build/fbcode_builder/getdeps.py install-system-deps --num-jobs $num_jobs --recursive $common_options
-nice -n 19 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --only-deps $common_options
+nice -n 10 ./build/fbcode_builder/getdeps.py install-system-deps --num-jobs $num_jobs --recursive $common_options
+nice -n 10 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --only-deps $common_options
