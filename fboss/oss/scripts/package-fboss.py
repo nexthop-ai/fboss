@@ -322,9 +322,12 @@ class PackageFboss:
 
     def _compress_binaries(self):
         print("Compressing FBOSS Binaries...")
+        env = os.environ.copy()
+        env['ZSTD_NBTHREADS'] = "0"
         tar_path = os.path.join(args.scratch_path, PackageFboss.FBOSS_BIN_TAR)
         subprocess.run(
-            ["tar", "-cvf", tar_path, "--zstd", "-C", self.tmp_dir_name, "."]
+            ["tar", "-cvf", tar_path, "--zstd", "-C", self.tmp_dir_name, "."],
+            env=env,
         )
         print(f"Compressed to {tar_path}")
 
