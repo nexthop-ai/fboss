@@ -4,11 +4,11 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <thrift/lib/cpp2/reflection/testing.h>
 #include "fboss/agent/if/gen-cpp2/ctrl_types.h"
 #include "fboss/cli/fboss2/commands/show/transceiver/CmdShowTransceiver.h"
 #include "fboss/cli/fboss2/commands/show/transceiver/gen-cpp2/model_types.h"
 #include "fboss/cli/fboss2/test/CmdHandlerTestBase.h"
-#include <thrift/lib/cpp2/reflection/testing.h>
 
 using namespace ::testing;
 using namespace facebook::neteng::fboss::bgp::thrift;
@@ -334,11 +334,6 @@ TEST_F(CmdShowTransceiverTestFixture, queryClient) {
   CmdShowTransceiverTraits::ObjectArgType queriedEntries;
   auto model = cmd.queryClient(localhost(), queriedEntries);
 
-<<<<<<< HEAD
-  EXPECT_THRIFT_EQ(normalizedModel, model);
-||||||| 5e7fbb4d0e
-  EXPECT_THRIFT_EQ(model, normalizedModel);
-=======
   EXPECT_THRIFT_EQ(normalizedModel, model);
 }
 
@@ -478,7 +473,6 @@ TEST_F(CmdShowTransceiverTestFixture, queryClientFilteredByMultiplePorts) {
 
   auto& tcvr6 = model.transceivers()->at("eth1/6/1");
   EXPECT_EQ(tcvr6.vendor().value(), "vendorThree");
->>>>>>> upstream/main
 }
 
 TEST_F(CmdShowTransceiverTestFixture, printOutput) {

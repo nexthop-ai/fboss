@@ -190,18 +190,10 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_TAHAN800BC;
     } else if (modelName.find("ICECUBE") == 0) {
       type_ = PlatformType::PLATFORM_ICECUBE800BC;
-<<<<<<< HEAD
     } else if (modelName.find("NH-4010") == 0) {
       type_ = PlatformType::PLATFORM_NH4010;
-    } else if (modelName.find("WEDGE800BA") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800BA;
-||||||| 5e7fbb4d0e
-    } else if (modelName.find("WEDGE800BA") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800BA;
-=======
     } else if (modelName.find("WEDGE800B_ACT") == 0) {
       type_ = PlatformType::PLATFORM_WEDGE800B_ACT;
->>>>>>> upstream/main
     } else if (modelName.find("ICETEA") == 0) {
       type_ = PlatformType::PLATFORM_ICETEA800BC;
     } else if (modelName.find("WEDGE800C_ACT") == 0) {

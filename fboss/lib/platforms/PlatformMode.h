@@ -100,15 +100,9 @@ inline std::string toString(PlatformType mode) {
       return "MINIPACK3N";
     case PlatformType::PLATFORM_ICECUBE800BC:
       return "ICECUBE";
-<<<<<<< HEAD
     case PlatformType::PLATFORM_NH4010:
       return "NH4010";
-    case PlatformType::PLATFORM_WEDGE800BA:
-||||||| 5e7fbb4d0e
-    case PlatformType::PLATFORM_WEDGE800BA:
-=======
     case PlatformType::PLATFORM_WEDGE800B_ACT:
->>>>>>> upstream/main
       return "WEDGE800BA";
     case PlatformType::PLATFORM_ICETEA800BC:
       return "ICETEA";
