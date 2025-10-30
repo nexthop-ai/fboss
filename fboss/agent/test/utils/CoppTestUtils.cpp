@@ -708,8 +708,9 @@ std::shared_ptr<facebook::fboss::Interface> getEligibleInterface(
     const PortID& srcPort) {
   VlanID downlinkBaseVlanId(kDownlinkBaseVlanId);
   auto intfMap = swState->getInterfaces()->modify(&swState);
-  for (const auto& [_, intfMap] : *intfMap) {
-    for (auto iter = intfMap->begin(); iter != intfMap->end(); ++iter) {
+  for (const auto& [_, currentIntfMap] : *intfMap) {
+    for (auto iter = currentIntfMap->begin(); iter != currentIntfMap->end();
+         ++iter) {
       auto intf = iter->second;
       if (intf->getType() == cfg::InterfaceType::VLAN &&
           intf->getVlanID() >= downlinkBaseVlanId) {
@@ -1230,31 +1231,37 @@ std::vector<cfg::PacketRxReasonToQueue> getCoppRxReasonToQueuesForSai(
   }
 
   if (hwAsic->isSupported(HwAsic::Feature::SAI_EAPOL_TRAP)) {
-    rxReasonToQueues.push_back(ControlPlane::makeRxReasonToQueueEntry(
-        cfg::PacketRxReason::EAPOL, coppHighPriQueueId));
+    rxReasonToQueues.push_back(
+        ControlPlane::makeRxReasonToQueueEntry(
+            cfg::PacketRxReason::EAPOL, coppHighPriQueueId));
   }
 
   if (hwAsic->isSupported(HwAsic::Feature::SAI_MPLS_TTL_1_TRAP)) {
-    rxReasonToQueues.push_back(ControlPlane::makeRxReasonToQueueEntry(
-        cfg::PacketRxReason::MPLS_TTL_1, kCoppLowPriQueueId));
+    rxReasonToQueues.push_back(
+        ControlPlane::makeRxReasonToQueueEntry(
+            cfg::PacketRxReason::MPLS_TTL_1, kCoppLowPriQueueId));
   }
 
   if (hwAsic->isSupported(HwAsic::Feature::SAI_SAMPLEPACKET_TRAP)) {
-    rxReasonToQueues.push_back(ControlPlane::makeRxReasonToQueueEntry(
-        cfg::PacketRxReason::SAMPLEPACKET, kCoppLowPriQueueId));
+    rxReasonToQueues.push_back(
+        ControlPlane::makeRxReasonToQueueEntry(
+            cfg::PacketRxReason::SAMPLEPACKET, kCoppLowPriQueueId));
   }
 
   if (hwAsic->isSupported(HwAsic::Feature::L3_MTU_ERROR_TRAP)) {
-    rxReasonToQueues.push_back(ControlPlane::makeRxReasonToQueueEntry(
-        cfg::PacketRxReason::L3_MTU_ERROR, kCoppLowPriQueueId));
+    rxReasonToQueues.push_back(
+        ControlPlane::makeRxReasonToQueueEntry(
+            cfg::PacketRxReason::L3_MTU_ERROR, kCoppLowPriQueueId));
   }
   if (hwAsic->isSupported(HwAsic::Feature::PORT_MTU_ERROR_TRAP)) {
-    rxReasonToQueues.push_back(ControlPlane::makeRxReasonToQueueEntry(
-        cfg::PacketRxReason::PORT_MTU_ERROR, kCoppLowPriQueueId));
+    rxReasonToQueues.push_back(
+        ControlPlane::makeRxReasonToQueueEntry(
+            cfg::PacketRxReason::PORT_MTU_ERROR, kCoppLowPriQueueId));
   }
   if (hwAsic->isSupported(HwAsic::Feature::SAI_HOST_MISS_TRAP)) {
-    rxReasonToQueues.push_back(ControlPlane::makeRxReasonToQueueEntry(
-        cfg::PacketRxReason::HOST_MISS, kCoppLowPriQueueId));
+    rxReasonToQueues.push_back(
+        ControlPlane::makeRxReasonToQueueEntry(
+            cfg::PacketRxReason::HOST_MISS, kCoppLowPriQueueId));
   }
 
   return rxReasonToQueues;

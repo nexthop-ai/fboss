@@ -50058,10 +50058,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 4,
-                      "main": 101,
-                      "post": -9,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -50153,9 +50153,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -16,
                       "pre2": 2,
-                      "main": 127,
+                      "main": 112,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -50250,8 +50250,8 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     "tx": {
                       "pre": -16,
                       "pre2": 2,
-                      "main": 136,
-                      "post": -12,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -50343,10 +50343,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -28,
-                      "pre2": 0,
-                      "main": 139,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -50440,8 +50440,8 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     "tx": {
                       "pre": -8,
                       "pre2": 0,
-                      "main": 149,
-                      "post": -13,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -50533,10 +50533,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 153,
-                      "post": -13,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -50628,10 +50628,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 4,
-                      "main": 124,
-                      "post": -18,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -50723,10 +50723,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 131,
-                      "post": -18,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -50818,10 +50818,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -16,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 94,
-                      "post": -11,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -50913,10 +50913,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 1,
-                      "main": 100,
-                      "post": -14,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -51008,10 +51008,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -28,
-                      "pre2": 0,
-                      "main": 139,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -51103,10 +51103,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -27,
-                      "pre2": 5,
-                      "main": 107,
-                      "post": -7,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -51198,10 +51198,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -9,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 153,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -51293,10 +51293,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -51388,10 +51388,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 132,
-                      "post": -15,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -51483,10 +51483,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 5,
-                      "main": 125,
-                      "post": -15,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -51578,10 +51578,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 131,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -51673,9 +51673,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 0,
-                      "main": 125,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -51768,10 +51768,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -17,
-                      "pre2": 0,
-                      "main": 141,
-                      "post": -8,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -51863,10 +51863,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 133,
-                      "post": -21,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -51958,10 +51958,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -10,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -52053,10 +52053,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 149,
-                      "post": -9,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -52148,9 +52148,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 143,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -52243,10 +52243,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 139,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -52338,10 +52338,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 164,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -52433,10 +52433,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -7,
-                      "pre2": 0,
-                      "main": 134,
-                      "post": -26,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -52528,10 +52528,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 0,
-                      "main": 139,
-                      "post": -19,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -52623,10 +52623,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -32,
+                      "pre": -16,
                       "pre2": 2,
-                      "main": 125,
-                      "post": -8,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -52718,10 +52718,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -52813,10 +52813,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 154,
-                      "post": -13,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -52908,10 +52908,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 147,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -53003,10 +53003,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -28,
-                      "pre2": 0,
-                      "main": 139,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -53098,10 +53098,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -11,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 100,
-                      "post": -11,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -53193,10 +53193,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 145,
-                      "post": -16,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -53288,10 +53288,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 0,
-                      "main": 138,
-                      "post": -19,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -53383,10 +53383,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 153,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -53478,10 +53478,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 152,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -53573,10 +53573,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 152,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -53668,10 +53668,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -13,
-                      "pre2": 0,
-                      "main": 133,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -53764,9 +53764,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     },
                     "tx": {
                       "pre": -16,
-                      "pre2": 0,
-                      "main": 138,
-                      "post": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -53858,10 +53858,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 143,
-                      "post": -16,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -53953,10 +53953,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -54048,10 +54048,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 130,
-                      "post": -18,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -54143,10 +54143,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 129,
-                      "post": -24,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -54238,10 +54238,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 166,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -54333,10 +54333,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -54428,10 +54428,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -10,
+                      "pre": -16,
                       "pre2": 2,
-                      "main": 122,
-                      "post": -10,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -54523,10 +54523,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 0,
-                      "main": 142,
-                      "post": -12,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -54618,10 +54618,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -22,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 127,
-                      "post": -15,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -54713,10 +54713,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -3,
-                      "pre2": 3,
-                      "main": 128,
-                      "post": -14,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -54808,10 +54808,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 152,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -54903,10 +54903,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 129,
-                      "post": -15,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -54998,10 +54998,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -55093,10 +55093,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -10,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -55189,9 +55189,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     },
                     "tx": {
                       "pre": -12,
-                      "pre2": 6,
-                      "main": 140,
-                      "post": -8,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -55283,10 +55283,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -55378,9 +55378,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 126,
+                      "main": 104,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -55473,10 +55473,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -12,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 106,
-                      "post": -15,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -55568,10 +55568,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 149,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -55663,10 +55663,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -12,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 137,
-                      "post": -12,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -55758,10 +55758,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -55853,10 +55853,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 153,
-                      "post": -13,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -55948,10 +55948,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 158,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -56045,8 +56045,8 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     "tx": {
                       "pre": -8,
                       "pre2": 0,
-                      "main": 138,
-                      "post": -8,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -56138,10 +56138,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -6,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 101,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -56233,10 +56233,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -15,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 90,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -56328,10 +56328,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -15,
-                      "pre2": 0,
-                      "main": 136,
-                      "post": -15,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -56423,10 +56423,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -8,
-                      "pre2": 0,
-                      "main": 149,
-                      "post": -13,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -56518,10 +56518,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -56613,10 +56613,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 158,
-                      "post": -9,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -56708,10 +56708,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -56803,10 +56803,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 167,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -56898,9 +56898,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 3,
-                      "main": 90,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -56993,10 +56993,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 2,
-                      "main": 130,
-                      "post": 0,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -57088,10 +57088,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -10,
-                      "pre2": 0,
-                      "main": 157,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -57183,10 +57183,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 144,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -57278,9 +57278,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 152,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -57373,10 +57373,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -57468,10 +57468,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 139,
-                      "post": -8,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -57563,10 +57563,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -57658,10 +57658,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -3,
+                      "pre": -8,
                       "pre2": 0,
                       "main": 104,
-                      "post": -3,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -57753,9 +57753,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 140,
+                      "main": 104,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -57848,10 +57848,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 167,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -57943,10 +57943,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 149,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -58038,10 +58038,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 170,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -58133,10 +58133,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -22,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 129,
-                      "post": -15,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -58228,10 +58228,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 152,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -58323,9 +58323,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 5,
-                      "main": 114,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 120,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -58418,10 +58418,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -58513,10 +58513,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 110,
-                      "post": -14,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -58608,10 +58608,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 152,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -58703,10 +58703,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 150,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -58798,10 +58798,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -58893,10 +58893,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 146,
-                      "post": -16,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -58989,9 +58989,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     },
                     "tx": {
                       "pre": -12,
-                      "pre2": 0,
-                      "main": 142,
-                      "post": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -59083,10 +59083,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -59178,10 +59178,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -3,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 105,
-                      "post": -3,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -59273,10 +59273,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 114,
-                      "post": -6,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -59368,10 +59368,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 158,
-                      "post": -9,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -59463,10 +59463,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 0,
-                      "main": 137,
-                      "post": -8,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -59558,10 +59558,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -59653,10 +59653,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -59748,10 +59748,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 0,
-                      "main": 154,
-                      "post": -9,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -59843,10 +59843,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -17,
-                      "pre2": 4,
-                      "main": 138,
-                      "post": -8,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -59938,9 +59938,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 101,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -60033,10 +60033,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 4,
-                      "main": 136,
-                      "post": -8,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -60128,10 +60128,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -60223,10 +60223,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 0,
-                      "main": 141,
-                      "post": -12,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -60318,9 +60318,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 143,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -60413,10 +60413,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -60508,10 +60508,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -11,
+                      "pre": -12,
                       "pre2": 2,
-                      "main": 125,
-                      "post": -7,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -60603,10 +60603,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -60698,10 +60698,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -26,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 121,
-                      "post": -11,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -60793,10 +60793,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -60888,10 +60888,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 166,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -60983,10 +60983,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -22,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 111,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -61078,10 +61078,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -61173,10 +61173,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -61268,10 +61268,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 167,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -61363,10 +61363,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 166,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -61458,10 +61458,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -61553,10 +61553,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -3,
-                      "pre2": 0,
-                      "main": 122,
-                      "post": -7,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -61648,9 +61648,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -30,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 129,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -61743,10 +61743,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 135,
-                      "post": -12,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -61838,10 +61838,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -12,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 140,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -61933,10 +61933,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -62028,9 +62028,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 167,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -62123,10 +62123,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 169,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -62218,10 +62218,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -10,
-                      "pre2": 0,
-                      "main": 157,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -62313,10 +62313,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -10,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -62408,10 +62408,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -62503,10 +62503,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 144,
-                      "post": -19,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -62598,10 +62598,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 167,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -62693,10 +62693,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 108,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -62788,10 +62788,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 146,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -62883,10 +62883,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 166,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -62978,10 +62978,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -27,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 139,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -63073,10 +63073,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 167,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -63168,10 +63168,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -16,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 135,
-                      "post": -8,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -63263,10 +63263,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 0,
-                      "main": 136,
-                      "post": -11,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -63358,10 +63358,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -25,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 108,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -63453,10 +63453,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 3,
-                      "main": 117,
-                      "post": -3,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -63548,9 +63548,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 166,
+                      "main": 100,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -63643,10 +63643,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": -12,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -63738,10 +63738,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -11,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 90,
-                      "post": -3,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -63833,10 +63833,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -13,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 148,
-                      "post": -9,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -63928,10 +63928,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 154,
-                      "post": -13,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -64023,10 +64023,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 158,
-                      "post": -9,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 128,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -64118,10 +64118,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 152,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -64213,10 +64213,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -9,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 151,
-                      "post": -9,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -64308,10 +64308,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 0,
-                      "main": 137,
-                      "post": -8,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -64403,10 +64403,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 147,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 128,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -64498,9 +64498,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 120,
+                      "main": 100,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -64593,10 +64593,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -21,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 137,
-                      "post": -8,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -64688,10 +64688,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 159,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -64783,10 +64783,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 5,
-                      "main": 128,
-                      "post": -21,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -64878,9 +64878,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -10,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
+                      "main": 100,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -64973,10 +64973,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 166,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -65068,10 +65068,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -65163,10 +65163,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -13,
-                      "pre2": 3,
-                      "main": 127,
-                      "post": -23,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -65258,9 +65258,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -18,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 113,
+                      "main": 100,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -65353,10 +65353,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -17,
-                      "pre2": 3,
-                      "main": 117,
-                      "post": -10,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -65448,10 +65448,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -65543,10 +65543,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 0,
-                      "main": 140,
-                      "post": -9,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -65638,9 +65638,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
+                      "main": 100,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -65733,10 +65733,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 148,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -65828,10 +65828,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 153,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -65924,9 +65924,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     },
                     "tx": {
                       "pre": -16,
-                      "pre2": 0,
-                      "main": 112,
-                      "post": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -66018,10 +66018,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 2,
-                      "main": 120,
-                      "post": -13,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -66113,10 +66113,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -11,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 118,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -66208,10 +66208,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 140,
-                      "post": -4,
+                      "pre": -20,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -66303,10 +66303,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -27,
-                      "pre2": 0,
-                      "main": 138,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -66398,10 +66398,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 152,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -66493,10 +66493,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 167,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -66588,10 +66588,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -16,
-                      "pre2": 6,
-                      "main": 134,
-                      "post": -12,
+                      "pre": -20,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -66683,10 +66683,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 110,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -66778,9 +66778,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 114,
+                      "main": 100,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -66873,10 +66873,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 6,
-                      "main": 117,
-                      "post": 0,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -66968,10 +66968,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 158,
-                      "post": -9,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -67063,10 +67063,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 141,
-                      "post": -4,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -67158,9 +67158,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 161,
+                      "main": 100,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -67253,10 +67253,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -13,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 145,
-                      "post": -9,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -67348,10 +67348,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
+                      "pre": -12,
+                      "pre2": 2,
                       "main": 108,
-                      "post": -6,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -67443,10 +67443,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -13,
-                      "pre2": 0,
-                      "main": 145,
-                      "post": -9,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -67538,9 +67538,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 138,
+                      "main": 104,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -67633,10 +67633,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -67728,9 +67728,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 0,
-                      "main": 137,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
                       "post": -8,
                       "post2": 0,
                       "post3": 0,
@@ -67823,10 +67823,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -18,
+                      "pre": -16,
                       "pre2": 2,
-                      "main": 129,
-                      "post": -18,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -67918,10 +67918,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -28,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 130,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -68013,10 +68013,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 148,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -68108,10 +68108,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 153,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -68203,10 +68203,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -27,
-                      "pre2": 4,
-                      "main": 125,
-                      "post": -11,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -68298,10 +68298,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -10,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 158,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -68393,10 +68393,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -16,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 101,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -68488,9 +68488,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 143,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -68583,10 +68583,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 144,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -68678,10 +68678,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -68773,10 +68773,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 154,
-                      "post": -9,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -68868,10 +68868,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -16,
-                      "pre2": 0,
-                      "main": 111,
-                      "post": -10,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -68963,10 +68963,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -18,
+                      "pre": -16,
                       "pre2": 2,
-                      "main": 106,
-                      "post": -12,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -69058,10 +69058,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 134,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -69153,9 +69153,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 0,
-                      "main": 133,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -69248,9 +69248,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 144,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -69343,10 +69343,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 0,
-                      "main": 139,
-                      "post": -8,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -69438,10 +69438,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 161,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -69533,10 +69533,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 152,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -69628,10 +69628,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -6,
-                      "pre2": 0,
-                      "main": 103,
-                      "post": -14,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -69723,10 +69723,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 121,
-                      "post": -22,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -69818,10 +69818,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 5,
-                      "main": 94,
-                      "post": 0,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -69913,10 +69913,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 155,
-                      "post": -9,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -70008,10 +70008,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -16,
-                      "pre2": 0,
-                      "main": 138,
-                      "post": -12,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -70103,10 +70103,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 0,
-                      "main": 145,
-                      "post": -12,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -70198,10 +70198,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 165,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -70293,10 +70293,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -70388,10 +70388,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 158,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -70483,10 +70483,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 0,
-                      "main": 98,
-                      "post": -6,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -70578,10 +70578,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 151,
-                      "post": -16,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -70673,10 +70673,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 4,
-                      "main": 98,
-                      "post": -15,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -70768,10 +70768,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -70863,10 +70863,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 5,
-                      "main": 128,
-                      "post": -21,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -70958,10 +70958,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -71053,10 +71053,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 165,
-                      "post": 0,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -71148,10 +71148,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -15,
-                      "pre2": 0,
-                      "main": 125,
-                      "post": -11,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -71243,10 +71243,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -25,
-                      "pre2": 5,
-                      "main": 121,
-                      "post": -14,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -71338,10 +71338,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -6,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 114,
-                      "post": -10,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -71433,10 +71433,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 6,
-                      "main": 136,
-                      "post": -8,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -71528,10 +71528,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 0,
-                      "main": 137,
-                      "post": -8,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -71623,9 +71623,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 140,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -71718,10 +71718,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -71813,10 +71813,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -71908,10 +71908,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 130,
-                      "post": -24,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -72003,10 +72003,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 0,
-                      "main": 135,
-                      "post": -21,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -72098,10 +72098,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -8,
-                      "pre2": 0,
-                      "main": 146,
-                      "post": -12,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -72193,10 +72193,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -3,
-                      "pre2": 3,
-                      "main": 120,
-                      "post": -19,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -72288,10 +72288,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 130,
-                      "post": -18,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -72383,10 +72383,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 5,
-                      "main": 125,
-                      "post": -15,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 128,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -72478,10 +72478,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 0,
-                      "main": 153,
-                      "post": -9,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -72573,10 +72573,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -12,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 140,
-                      "post": -16,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -72668,10 +72668,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 127,
-                      "post": -18,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -72763,10 +72763,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -25,
-                      "pre2": 5,
-                      "main": 121,
-                      "post": -14,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 128,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -72858,10 +72858,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -8,
-                      "pre2": 0,
-                      "main": 99,
-                      "post": -11,
+                      "pre": -20,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -72953,10 +72953,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 7,
-                      "main": 137,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -73048,10 +73048,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -10,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 122,
-                      "post": -17,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -73143,10 +73143,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -26,
-                      "pre2": 0,
-                      "main": 126,
-                      "post": -15,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -73238,10 +73238,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 0,
-                      "main": 141,
-                      "post": -12,
+                      "pre": -20,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -73333,10 +73333,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 0,
-                      "main": 144,
-                      "post": -12,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -73428,10 +73428,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 150,
-                      "post": -13,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -73523,10 +73523,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 153,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -73618,10 +73618,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -16,
                       "pre2": 2,
-                      "main": 113,
-                      "post": -13,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -73713,10 +73713,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 109,
-                      "post": -13,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -73808,10 +73808,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 132,
-                      "post": -15,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -73903,10 +73903,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -17,
-                      "pre2": 0,
-                      "main": 105,
-                      "post": -3,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -73998,10 +73998,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -7,
-                      "pre2": 0,
-                      "main": 134,
-                      "post": -27,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -74093,10 +74093,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -17,
-                      "pre2": 5,
-                      "main": 127,
-                      "post": -21,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -74188,10 +74188,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -10,
-                      "pre2": 0,
-                      "main": 157,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -74283,10 +74283,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 151,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -74378,10 +74378,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 133,
-                      "post": -15,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -74473,9 +74473,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 143,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 120,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -74568,10 +74568,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 153,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -74663,10 +74663,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 158,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -74758,10 +74758,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 5,
-                      "main": 107,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -74854,9 +74854,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     },
                     "tx": {
                       "pre": -12,
-                      "pre2": 4,
-                      "main": 109,
-                      "post": -18,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -74948,10 +74948,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -27,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 139,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -75043,10 +75043,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 153,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -75138,10 +75138,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 130,
-                      "post": -18,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -75233,10 +75233,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 5,
-                      "main": 125,
-                      "post": -15,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -75328,10 +75328,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 146,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -75423,9 +75423,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -13,
-                      "pre2": 0,
-                      "main": 147,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -75518,10 +75518,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -6,
-                      "pre2": 3,
+                      "pre": -16,
+                      "pre2": 2,
                       "main": 112,
-                      "post": -22,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -75613,10 +75613,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 129,
-                      "post": -21,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -75708,10 +75708,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -6,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 113,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -75803,10 +75803,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -7,
-                      "pre2": 0,
-                      "main": 127,
-                      "post": -7,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -75900,8 +75900,8 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     "tx": {
                       "pre": -8,
                       "pre2": 0,
-                      "main": 148,
-                      "post": -13,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -75993,10 +75993,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -76088,10 +76088,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -6,
-                      "pre2": 0,
+                      "pre": -16,
+                      "pre2": 2,
                       "main": 112,
-                      "post": -22,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -76183,10 +76183,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 1,
-                      "main": 99,
-                      "post": -14,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -76278,10 +76278,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 155,
-                      "post": -9,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -76373,10 +76373,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -10,
-                      "pre2": 0,
-                      "main": 157,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -76468,10 +76468,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 152,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -76563,10 +76563,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 0,
-                      "main": 137,
-                      "post": -8,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -76658,10 +76658,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 150,
-                      "post": -16,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -76753,10 +76753,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 0,
-                      "main": 137,
-                      "post": -8,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -76849,9 +76849,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     },
                     "tx": {
                       "pre": -16,
-                      "pre2": 0,
-                      "main": 99,
-                      "post": -3,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -76943,10 +76943,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -15,
-                      "pre2": 4,
-                      "main": 105,
-                      "post": -15,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -77038,10 +77038,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 147,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -77133,9 +77133,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 0,
-                      "main": 141,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -77228,10 +77228,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -77323,10 +77323,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 0,
-                      "main": 126,
-                      "post": -18,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -77418,10 +77418,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -10,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 131,
-                      "post": -26,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -77513,10 +77513,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -77608,10 +77608,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 4,
-                      "main": 102,
-                      "post": -9,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -77703,10 +77703,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -20,
-                      "pre2": 0,
-                      "main": 100,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -77798,10 +77798,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -12,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 132,
-                      "post": -8,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -77893,10 +77893,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 152,
-                      "post": -9,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -77988,10 +77988,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 150,
-                      "post": -9,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -78083,10 +78083,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 0,
-                      "main": 137,
-                      "post": -8,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -78178,10 +78178,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -78273,10 +78273,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 0,
-                      "main": 146,
-                      "post": -19,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -78368,10 +78368,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 0,
-                      "main": 137,
-                      "post": -8,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -78463,10 +78463,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -15,
-                      "pre2": 0,
-                      "main": 108,
-                      "post": -18,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -78558,10 +78558,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 166,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -78653,10 +78653,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 163,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -78748,10 +78748,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 153,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -78843,10 +78843,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -10,
+                      "pre": -16,
                       "pre2": 2,
-                      "main": 129,
-                      "post": -26,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -78938,10 +78938,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -79033,10 +79033,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -79128,10 +79128,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 124,
-                      "post": -7,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -79223,10 +79223,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 0,
-                      "main": 126,
-                      "post": -14,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -79318,10 +79318,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 152,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -79413,10 +79413,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -79508,10 +79508,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 166,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -79603,10 +79603,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 150,
-                      "post": -9,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -79698,10 +79698,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -79795,8 +79795,8 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     "tx": {
                       "pre": -8,
                       "pre2": 0,
-                      "main": 145,
-                      "post": -12,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -79888,9 +79888,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 143,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -79983,10 +79983,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -10,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 132,
-                      "post": -26,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -80078,10 +80078,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 166,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -80173,10 +80173,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 132,
-                      "post": -12,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -80268,10 +80268,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 165,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -80363,10 +80363,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -9,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 152,
-                      "post": -5,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -80458,10 +80458,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -10,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -80553,10 +80553,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 168,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -80648,10 +80648,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -7,
-                      "pre2": 0,
-                      "main": 117,
-                      "post": -3,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -80743,10 +80743,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
+                      "pre": -16,
+                      "pre2": 2,
                       "main": 120,
-                      "post": -10,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -80838,10 +80838,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 166,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -80933,10 +80933,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -17,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 108,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -81028,10 +81028,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 152,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -81123,10 +81123,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 0,
-                      "main": 153,
-                      "post": -9,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -81218,10 +81218,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 96,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -81313,10 +81313,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -81408,10 +81408,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -15,
-                      "pre2": 0,
-                      "main": 102,
-                      "post": -12,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -81503,10 +81503,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -8,
-                      "pre2": 0,
-                      "main": 102,
-                      "post": -14,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -81598,9 +81598,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 94,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -81693,10 +81693,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 153,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -81788,10 +81788,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -81883,10 +81883,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -81978,10 +81978,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 167,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -82073,10 +82073,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 165,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -82168,10 +82168,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 110,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -82263,10 +82263,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -16,
-                      "pre2": 6,
-                      "main": 135,
-                      "post": -8,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -82358,10 +82358,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 167,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -82453,10 +82453,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -11,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 107,
-                      "post": -17,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -82548,10 +82548,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -13,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": -9,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -82643,10 +82643,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 152,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -82738,10 +82738,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -82833,10 +82833,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -82928,10 +82928,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -12,
                       "pre2": 2,
-                      "main": 142,
-                      "post": -19,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -83023,10 +83023,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 0,
-                      "main": 104,
-                      "post": -6,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -83118,10 +83118,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -3,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 117,
-                      "post": -3,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -83213,10 +83213,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 152,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -83308,10 +83308,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -83403,10 +83403,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 149,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -83498,10 +83498,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -10,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -83593,10 +83593,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 160,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -83688,10 +83688,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -7,
-                      "pre2": 0,
-                      "main": 131,
-                      "post": -11,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -83783,10 +83783,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 108,
-                      "post": -15,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -83878,10 +83878,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -21,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 127,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -83973,10 +83973,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 111,
-                      "post": -9,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -84069,9 +84069,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     },
                     "tx": {
                       "pre": -12,
-                      "pre2": 0,
-                      "main": 140,
-                      "post": -16,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -84163,10 +84163,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 152,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -84258,9 +84258,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 152,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -84353,10 +84353,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -84448,10 +84448,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 147,
-                      "post": -16,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -84543,10 +84543,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 115,
-                      "post": -21,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -84638,9 +84638,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 115,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -84733,9 +84733,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 124,
+                      "main": 104,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -84828,10 +84828,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 152,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -84923,10 +84923,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -10,
-                      "pre2": 0,
-                      "main": 132,
-                      "post": -24,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -85018,10 +85018,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 167,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -85113,10 +85113,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 144,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -85208,10 +85208,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -10,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -85303,9 +85303,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -18,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 144,
+                      "main": 104,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -85398,10 +85398,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 166,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -85493,10 +85493,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -28,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 139,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -85588,10 +85588,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -15,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 121,
-                      "post": -7,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -85683,10 +85683,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -7,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 129,
-                      "post": -23,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -85778,10 +85778,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 138,
-                      "post": -12,
+                      "main": 96,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -85873,10 +85873,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 135,
-                      "post": -12,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -85968,10 +85968,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -86063,10 +86063,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -86158,9 +86158,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -86253,10 +86253,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 167,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -86348,10 +86348,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -3,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 87,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -86443,10 +86443,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 124,
-                      "post": -7,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -86538,10 +86538,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -7,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 130,
-                      "post": -11,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -86633,10 +86633,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 6,
-                      "main": 133,
-                      "post": 0,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -86728,10 +86728,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -10,
-                      "pre2": 0,
-                      "main": 157,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -86823,10 +86823,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 156,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -86918,9 +86918,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -18,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 144,
+                      "main": 104,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -87013,10 +87013,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -87108,10 +87108,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 170,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -87203,9 +87203,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -22,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 143,
+                      "main": 100,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -87298,10 +87298,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 4,
-                      "main": 126,
-                      "post": -15,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -87393,10 +87393,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -3,
-                      "pre2": 0,
-                      "main": 125,
-                      "post": -14,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -87488,10 +87488,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 158,
-                      "post": -5,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -87583,10 +87583,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -87678,10 +87678,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -87773,10 +87773,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -87868,10 +87868,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 161,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -87963,10 +87963,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -88058,10 +88058,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 165,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -88153,10 +88153,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -88248,10 +88248,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -10,
-                      "pre2": 0,
-                      "main": 157,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -88343,10 +88343,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 147,
-                      "post": -19,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 128,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -88438,10 +88438,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -3,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 99,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -88533,10 +88533,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 2,
-                      "main": 127,
-                      "post": 0,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -88628,10 +88628,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -88723,10 +88723,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -8,
-                      "pre2": 6,
-                      "main": 140,
-                      "post": -15,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 128,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -88818,9 +88818,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 166,
+                      "main": 100,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -88913,10 +88913,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -89008,10 +89008,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 6,
-                      "main": 132,
-                      "post": -11,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -89103,10 +89103,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 115,
-                      "post": -21,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -89198,10 +89198,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -22,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 139,
-                      "post": -4,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -89293,10 +89293,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 136,
-                      "post": -8,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -89388,10 +89388,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 149,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -89483,10 +89483,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -28,
-                      "pre2": 0,
-                      "main": 139,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -89578,9 +89578,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 143,
+                      "main": 100,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -89673,10 +89673,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 153,
-                      "post": -9,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -89768,10 +89768,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -13,
-                      "pre2": 0,
-                      "main": 145,
-                      "post": -9,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -89863,10 +89863,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 113,
-                      "post": -3,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -89958,9 +89958,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -32,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 135,
+                      "main": 100,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -90053,10 +90053,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -90148,10 +90148,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -90243,10 +90243,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 0,
-                      "main": 137,
-                      "post": -8,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -90338,9 +90338,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -22,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 142,
+                      "main": 104,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -90433,10 +90433,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 161,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -90528,10 +90528,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 157,
-                      "post": -9,
+                      "pre": -20,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -90623,9 +90623,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -17,
-                      "pre2": 0,
-                      "main": 139,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
                       "post": -8,
                       "post2": 0,
                       "post3": 0,
@@ -90718,10 +90718,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -9,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 150,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -90813,9 +90813,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 124,
+                      "main": 104,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -90908,10 +90908,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 146,
-                      "post": -5,
+                      "pre": -20,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -91003,9 +91003,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 0,
-                      "main": 137,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
                       "post": -8,
                       "post2": 0,
                       "post3": 0,
@@ -91098,9 +91098,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 143,
+                      "main": 100,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -91193,10 +91193,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 160,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -91288,10 +91288,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -17,
-                      "pre2": 0,
-                      "main": 141,
-                      "post": -8,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -91383,10 +91383,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -7,
-                      "pre2": 0,
-                      "main": 124,
-                      "post": -11,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -91478,9 +91478,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 143,
+                      "main": 100,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -91573,10 +91573,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 148,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -91668,9 +91668,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 144,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -91763,10 +91763,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -17,
-                      "pre2": 0,
-                      "main": 143,
-                      "post": -9,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -91858,10 +91858,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -91953,10 +91953,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 150,
-                      "post": -16,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -92048,10 +92048,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -15,
-                      "pre2": 0,
-                      "main": 102,
-                      "post": -12,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -92143,10 +92143,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 0,
-                      "main": 126,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -92238,10 +92238,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 103,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -92333,10 +92333,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 96,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -92428,10 +92428,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 0,
-                      "main": 143,
-                      "post": -19,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -92523,10 +92523,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 151,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -92618,10 +92618,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -10,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -92713,10 +92713,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -12,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 140,
-                      "post": -16,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -92808,10 +92808,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -17,
-                      "pre2": 1,
-                      "main": 100,
-                      "post": -12,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -92903,10 +92903,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 5,
-                      "main": 124,
-                      "post": -14,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -92998,10 +92998,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -17,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 117,
-                      "post": -10,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -93093,10 +93093,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -16,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 101,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -93188,10 +93188,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -15,
-                      "pre2": 0,
-                      "main": 136,
-                      "post": -15,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -93283,10 +93283,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -24,
-                      "pre2": 6,
-                      "main": 129,
-                      "post": -8,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -93378,10 +93378,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 144,
-                      "post": -22,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -93473,10 +93473,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 161,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -93568,10 +93568,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 128,
-                      "post": -18,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -93663,9 +93663,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 144,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -93758,10 +93758,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -3,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 119,
-                      "post": -21,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -93853,10 +93853,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 0,
-                      "main": 118,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -93948,9 +93948,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 140,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -94043,10 +94043,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -20,
-                      "pre2": 0,
-                      "main": 134,
-                      "post": -12,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -94138,10 +94138,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -94233,9 +94233,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 165,
+                      "main": 100,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -94328,10 +94328,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -17,
-                      "pre2": 0,
-                      "main": 109,
-                      "post": -7,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -94423,10 +94423,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 0,
-                      "main": 142,
-                      "post": -12,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -94518,10 +94518,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 167,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -94613,10 +94613,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
                       "main": 100,
-                      "post": -13,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -94708,10 +94708,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 161,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -94803,10 +94803,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 129,
-                      "post": -15,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -94898,10 +94898,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 152,
-                      "post": -9,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -94993,10 +94993,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -17,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 141,
-                      "post": -8,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -95088,10 +95088,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -11,
+                      "pre": -16,
                       "pre2": 2,
-                      "main": 134,
-                      "post": -21,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -95183,10 +95183,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 0,
-                      "main": 129,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -95278,10 +95278,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 2,
-                      "main": 138,
-                      "post": 0,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -95373,10 +95373,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 148,
-                      "post": 0,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -95468,10 +95468,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -15,
-                      "pre2": 0,
-                      "main": 133,
-                      "post": -18,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -95563,10 +95563,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -36,
-                      "pre2": 0,
-                      "main": 131,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -95658,10 +95658,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -18,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 143,
-                      "post": -4,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -95753,10 +95753,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 2,
-                      "main": 133,
-                      "post": -18,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -95848,10 +95848,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 4,
-                      "main": 93,
-                      "post": -8,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -95943,10 +95943,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -17,
-                      "pre2": 0,
-                      "main": 109,
-                      "post": -7,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -96038,10 +96038,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 150,
-                      "post": -16,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -96133,10 +96133,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 139,
-                      "post": -8,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -96228,10 +96228,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -18,
+                      "pre": -12,
                       "pre2": 2,
-                      "main": 131,
-                      "post": -18,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -96323,10 +96323,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 5,
-                      "main": 128,
-                      "post": -21,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -96418,10 +96418,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -12,
                       "pre2": 2,
-                      "main": 142,
-                      "post": -19,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -96513,10 +96513,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -11,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 134,
-                      "post": -21,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -96608,10 +96608,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -17,
-                      "pre2": 0,
-                      "main": 105,
-                      "post": -3,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -96703,10 +96703,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 5,
-                      "main": 105,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 128,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -96798,10 +96798,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -3,
-                      "pre2": 0,
-                      "main": 103,
-                      "post": -18,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -96893,10 +96893,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 163,
-                      "post": 0,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -96988,10 +96988,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 0,
-                      "main": 140,
-                      "post": -16,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -97083,10 +97083,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -10,
-                      "pre2": 5,
-                      "main": 129,
-                      "post": -23,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 128,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -97178,10 +97178,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 161,
-                      "post": -5,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -97273,10 +97273,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 158,
-                      "post": -9,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -97368,10 +97368,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -16,
-                      "pre2": 0,
-                      "main": 138,
-                      "post": -12,
+                      "pre": -20,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -97463,9 +97463,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 140,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -97558,10 +97558,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -97653,10 +97653,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -97748,10 +97748,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -15,
+                      "pre": -20,
                       "pre2": 2,
-                      "main": 128,
-                      "post": -11,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -97843,9 +97843,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 144,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -97938,10 +97938,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -8,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": -13,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -98034,9 +98034,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     },
                     "tx": {
                       "pre": -12,
-                      "pre2": 0,
-                      "main": 142,
-                      "post": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -98128,9 +98128,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 140,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -98223,9 +98223,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -36,
-                      "pre2": 6,
-                      "main": 120,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -98318,10 +98318,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 0,
-                      "main": 129,
-                      "post": -11,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -98413,10 +98413,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -8,
-                      "pre2": 0,
-                      "main": 140,
-                      "post": -19,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -98508,10 +98508,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 5,
-                      "main": 127,
-                      "post": -20,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -98603,10 +98603,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -28,
-                      "pre2": 0,
-                      "main": 141,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -98698,10 +98698,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 140,
-                      "post": -4,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -98793,10 +98793,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 135,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -98888,10 +98888,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 129,
-                      "post": -15,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 128,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -98983,9 +98983,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 139,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -99078,10 +99078,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -8,
-                      "pre2": 0,
-                      "main": 140,
-                      "post": -19,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -99173,10 +99173,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 122,
-                      "post": -7,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -99268,10 +99268,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -27,
-                      "pre2": 0,
+                      "pre": -16,
+                      "pre2": 2,
                       "main": 128,
-                      "post": -12,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -99363,10 +99363,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 113,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -99458,10 +99458,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -99553,10 +99553,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -10,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -99648,10 +99648,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 130,
-                      "post": -18,
+                      "pre": -20,
+                      "pre2": 2,
+                      "main": 136,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -99743,10 +99743,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 0,
-                      "main": 142,
-                      "post": -12,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 128,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -99838,10 +99838,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -10,
-                      "pre2": 0,
-                      "main": 95,
-                      "post": -13,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -99933,10 +99933,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 158,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -100028,10 +100028,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 95,
-                      "post": 0,
+                      "pre": -20,
+                      "pre2": 2,
+                      "main": 136,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -100123,10 +100123,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -15,
-                      "pre2": 0,
-                      "main": 136,
-                      "post": -15,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 128,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -100218,10 +100218,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 130,
-                      "post": -18,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 132,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -100313,10 +100313,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -100408,10 +100408,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 140,
-                      "post": -4,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -100503,10 +100503,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 143,
-                      "post": -16,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -100598,10 +100598,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 95,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 132,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -100693,10 +100693,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 147,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -100788,10 +100788,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -100883,10 +100883,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 158,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -100978,10 +100978,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
+                      "pre": -12,
+                      "pre2": 2,
                       "main": 132,
-                      "post": -18,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -101073,10 +101073,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 127,
-                      "post": -15,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -101168,10 +101168,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -6,
-                      "pre2": 4,
-                      "main": 101,
-                      "post": -11,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -101263,10 +101263,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -6,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 101,
-                      "post": -9,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -101358,10 +101358,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 106,
-                      "post": -21,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 132,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -101453,10 +101453,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -10,
-                      "pre2": 0,
-                      "main": 108,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -101548,10 +101548,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -7,
-                      "pre2": 0,
-                      "main": 134,
-                      "post": -27,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -101643,10 +101643,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 151,
-                      "post": -13,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -101738,10 +101738,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -101833,9 +101833,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 139,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -101928,10 +101928,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -16,
-                      "pre2": 0,
-                      "main": 112,
-                      "post": -10,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -102023,10 +102023,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -22,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 129,
-                      "post": -15,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -102118,10 +102118,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 6,
-                      "main": 130,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -102213,10 +102213,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 5,
-                      "main": 140,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -102308,10 +102308,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -8,
-                      "pre2": 0,
-                      "main": 140,
-                      "post": -19,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -102403,10 +102403,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -9,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 155,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -102498,10 +102498,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -102593,10 +102593,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -24,
-                      "pre2": 0,
-                      "main": 145,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -102688,10 +102688,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 0,
-                      "main": 147,
-                      "post": -16,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -102785,8 +102785,8 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     "tx": {
                       "pre": -8,
                       "pre2": 0,
-                      "main": 107,
-                      "post": -19,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -102878,10 +102878,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -15,
-                      "pre2": 0,
-                      "main": 116,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -102973,10 +102973,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 0,
-                      "main": 133,
-                      "post": -4,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -103068,10 +103068,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 147,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -103165,8 +103165,8 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     "tx": {
                       "pre": -8,
                       "pre2": 0,
-                      "main": 146,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -103258,9 +103258,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 139,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -103353,10 +103353,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 152,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -103448,10 +103448,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -7,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 130,
-                      "post": -11,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -103543,10 +103543,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -28,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 139,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -103638,10 +103638,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -27,
-                      "pre2": 0,
-                      "main": 139,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -103733,10 +103733,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 153,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -103828,10 +103828,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 2,
-                      "main": 148,
-                      "post": -16,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -103923,9 +103923,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -27,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 139,
+                      "main": 104,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -104018,10 +104018,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 130,
-                      "post": -18,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -104113,10 +104113,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -15,
-                      "pre2": 0,
-                      "main": 134,
-                      "post": -18,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -104208,9 +104208,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 143,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -104303,10 +104303,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 121,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -104398,10 +104398,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 0,
-                      "main": 126,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -104493,10 +104493,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -13,
-                      "pre2": 0,
-                      "main": 145,
-                      "post": -9,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -104588,10 +104588,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 154,
-                      "post": -13,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -104683,10 +104683,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -28,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 141,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -104778,10 +104778,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -104873,10 +104873,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -104968,10 +104968,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -7,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 128,
-                      "post": -11,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -105063,10 +105063,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 100,
-                      "post": -3,
+                      "main": 96,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -105158,10 +105158,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 153,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -105253,10 +105253,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 152,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -105348,10 +105348,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -105443,9 +105443,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -17,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 133,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -105538,10 +105538,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 0,
-                      "main": 135,
-                      "post": -21,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -105633,10 +105633,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -27,
-                      "pre2": 0,
-                      "main": 127,
-                      "post": -12,
+                      "pre": -20,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -105728,10 +105728,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -17,
-                      "pre2": 0,
-                      "main": 100,
-                      "post": -12,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -105823,10 +105823,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -16,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 83,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -105918,10 +105918,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -10,
-                      "pre2": 0,
-                      "main": 132,
-                      "post": -24,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -106013,10 +106013,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 149,
-                      "post": -5,
+                      "pre": -20,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -106108,10 +106108,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -13,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": -9,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -106203,10 +106203,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 167,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -106298,10 +106298,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 132,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -106393,10 +106393,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -106488,10 +106488,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 153,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -106583,9 +106583,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -17,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 88,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -106678,9 +106678,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 140,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 132,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -106773,10 +106773,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 0,
-                      "main": 118,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -106868,10 +106868,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 153,
-                      "post": -16,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -106963,10 +106963,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 135,
-                      "post": -12,
+                      "main": 96,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -107059,9 +107059,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     },
                     "tx": {
                       "pre": -16,
-                      "pre2": 0,
-                      "main": 137,
-                      "post": -12,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -107153,10 +107153,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 152,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 136,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -107248,10 +107248,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 153,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -107344,9 +107344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     },
                     "tx": {
                       "pre": -8,
-                      "pre2": 4,
-                      "main": 142,
-                      "post": -12,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -107438,10 +107438,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 131,
-                      "post": -21,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -107533,10 +107533,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 136,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -107628,10 +107628,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -107723,10 +107723,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -107818,10 +107818,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 0,
-                      "main": 137,
-                      "post": -19,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 132,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -107913,10 +107913,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 0,
-                      "main": 154,
-                      "post": -9,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -108008,10 +108008,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 128,
-                      "post": -14,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -108103,10 +108103,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -11,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 90,
-                      "post": -5,
+                      "main": 96,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -108198,10 +108198,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -13,
-                      "pre2": 0,
-                      "main": 141,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 132,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -108293,9 +108293,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 144,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -108388,9 +108388,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 152,
+                      "main": 100,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -108483,10 +108483,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 135,
-                      "post": -12,
+                      "main": 96,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -108578,10 +108578,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -28,
-                      "pre2": 0,
-                      "main": 139,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -108673,10 +108673,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -20,
                       "pre2": 2,
-                      "main": 130,
-                      "post": -21,
+                      "main": 136,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -108768,10 +108768,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -20,
-                      "pre2": 0,
-                      "main": 112,
-                      "post": -13,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -108863,9 +108863,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 118,
+                      "main": 100,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -108958,10 +108958,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 137,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -109053,10 +109053,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 4,
+                      "pre": -20,
+                      "pre2": 2,
                       "main": 136,
-                      "post": 0,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -109148,10 +109148,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 151,
-                      "post": -16,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -109243,9 +109243,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 156,
+                      "main": 100,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -109338,10 +109338,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -16,
-                      "pre2": 0,
-                      "main": 111,
-                      "post": -10,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -109433,9 +109433,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -22,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 140,
+                      "main": 104,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -109528,10 +109528,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 153,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -109623,10 +109623,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -12,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 124,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -109718,10 +109718,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -11,
+                      "pre": -12,
                       "pre2": 2,
-                      "main": 137,
-                      "post": -19,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -109813,10 +109813,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 137,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -109908,10 +109908,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 163,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -110003,10 +110003,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -27,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 139,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -110098,10 +110098,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": -4,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -110193,10 +110193,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -10,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 121,
-                      "post": -10,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -110288,10 +110288,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -9,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 150,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -110383,10 +110383,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -110478,10 +110478,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 152,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -110573,10 +110573,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 166,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -110668,10 +110668,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 135,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -110763,10 +110763,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -28,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 141,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -110858,10 +110858,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -25,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 126,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -110953,10 +110953,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 2,
-                      "main": 149,
-                      "post": 0,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -111048,10 +111048,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -21,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 137,
-                      "post": -8,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -111143,10 +111143,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 146,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -111238,10 +111238,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -9,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 145,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -111333,10 +111333,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -12,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 131,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -111428,10 +111428,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -3,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 117,
-                      "post": -10,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -111523,10 +111523,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -111618,9 +111618,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -22,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 140,
+                      "main": 104,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -111713,10 +111713,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 166,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -111808,10 +111808,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 157,
-                      "post": -9,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -111903,10 +111903,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -7,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 136,
-                      "post": -24,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -111998,10 +111998,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -20,
-                      "pre2": 4,
-                      "main": 86,
-                      "post": 0,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -112093,10 +112093,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 113,
-                      "post": -3,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -112188,10 +112188,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -112283,10 +112283,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 128,
-                      "post": -7,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -112378,9 +112378,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 0,
-                      "main": 137,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 132,
                       "post": -8,
                       "post2": 0,
                       "post3": 0,
@@ -112473,10 +112473,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 166,
-                      "post": 0,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -112568,10 +112568,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 120,
-                      "post": -3,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -112663,9 +112663,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 4,
-                      "main": 125,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 100,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -112758,10 +112758,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -27,
-                      "pre2": 6,
-                      "main": 119,
-                      "post": -4,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 132,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -112853,10 +112853,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 147,
-                      "post": -16,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -112948,10 +112948,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -113045,8 +113045,8 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     "tx": {
                       "pre": -8,
                       "pre2": 0,
-                      "main": 133,
-                      "post": -8,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -113138,10 +113138,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 153,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -113233,10 +113233,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 0,
-                      "main": 153,
-                      "post": -9,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -113328,10 +113328,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 2,
-                      "main": 144,
-                      "post": -12,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -113423,10 +113423,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 6,
-                      "main": 124,
-                      "post": -11,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -113518,10 +113518,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 152,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -113613,10 +113613,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 118,
-                      "post": -15,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -113708,10 +113708,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 158,
-                      "post": -9,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -113803,10 +113803,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 146,
-                      "post": -16,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -113898,10 +113898,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 0,
-                      "main": 141,
-                      "post": -12,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -113993,10 +113993,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 154,
-                      "post": -13,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -114088,10 +114088,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 2,
-                      "main": 142,
-                      "post": -19,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -114183,10 +114183,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -7,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 128,
-                      "post": -11,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -114278,10 +114278,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -8,
-                      "pre2": 0,
-                      "main": 139,
-                      "post": -12,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -114373,9 +114373,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 0,
-                      "main": 132,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -114468,10 +114468,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 153,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -114563,9 +114563,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 4,
-                      "main": 151,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 100,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -114658,10 +114658,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -114753,10 +114753,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -8,
-                      "pre2": 0,
-                      "main": 144,
-                      "post": -16,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -114848,10 +114848,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 166,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -114944,8 +114944,8 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     },
                     "tx": {
                       "pre": -8,
-                      "pre2": 2,
-                      "main": 128,
+                      "pre2": 0,
+                      "main": 104,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -115038,10 +115038,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -20,
-                      "pre2": 6,
-                      "main": 122,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -115133,10 +115133,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 135,
-                      "post": -11,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -115228,10 +115228,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -115323,10 +115323,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -28,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 139,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -115419,9 +115419,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     },
                     "tx": {
                       "pre": -12,
-                      "pre2": 0,
-                      "main": 142,
-                      "post": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -115513,10 +115513,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 152,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -115608,10 +115608,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 132,
-                      "post": -21,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -115703,9 +115703,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -7,
-                      "pre2": 2,
-                      "main": 112,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -115798,9 +115798,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 0,
-                      "main": 115,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 124,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -115893,10 +115893,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -115988,10 +115988,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 150,
-                      "post": -16,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -116083,9 +116083,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 153,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -116178,9 +116178,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 143,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -116273,9 +116273,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -18,
+                      "pre": -12,
                       "pre2": 2,
-                      "main": 143,
+                      "main": 112,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -116368,10 +116368,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 135,
-                      "post": -15,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -116463,10 +116463,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 135,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -116558,10 +116558,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 129,
-                      "post": -21,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -116653,10 +116653,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
+                      "pre": -12,
+                      "pre2": 2,
                       "main": 112,
-                      "post": -9,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -116748,10 +116748,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 160,
-                      "post": -5,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -116843,10 +116843,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -10,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -116938,10 +116938,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 128,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -117033,10 +117033,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 154,
-                      "post": -13,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -117128,10 +117128,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -6,
-                      "pre2": 2,
-                      "main": 105,
-                      "post": -6,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -117223,10 +117223,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 117,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -117318,10 +117318,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 128,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -117413,10 +117413,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -3,
-                      "pre2": 0,
-                      "main": 117,
-                      "post": -15,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -117508,10 +117508,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -22,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 128,
-                      "post": -15,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -117603,10 +117603,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -117698,10 +117698,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -10,
-                      "pre2": 3,
-                      "main": 133,
-                      "post": -24,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -117793,10 +117793,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 147,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -117888,10 +117888,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 161,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -117983,10 +117983,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 114,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -118079,9 +118079,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     },
                     "tx": {
                       "pre": -12,
-                      "pre2": 0,
-                      "main": 125,
-                      "post": 0,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -118174,9 +118174,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     },
                     "tx": {
                       "pre": -12,
-                      "pre2": 0,
-                      "main": 137,
-                      "post": -12,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -118268,10 +118268,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -15,
-                      "pre2": 0,
-                      "main": 155,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -118363,10 +118363,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 152,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -118458,9 +118458,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 140,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -118553,10 +118553,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -118648,10 +118648,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -9,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 117,
-                      "post": -19,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -118743,10 +118743,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -9,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 150,
-                      "post": -9,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -118838,10 +118838,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -9,
+                      "pre": -12,
                       "pre2": 2,
-                      "main": 124,
-                      "post": -25,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -118933,10 +118933,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -13,
-                      "pre2": 0,
-                      "main": 104,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -119028,10 +119028,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 2,
-                      "main": 144,
-                      "post": -12,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -119123,10 +119123,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 148,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -119218,10 +119218,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 144,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -119313,10 +119313,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 144,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -119408,10 +119408,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -119503,10 +119503,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -12,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 140,
-                      "post": -8,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -119598,10 +119598,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 96,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -119693,10 +119693,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 129,
-                      "post": -15,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -119788,10 +119788,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 147,
-                      "post": -16,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -119883,10 +119883,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 147,
-                      "post": -16,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -119978,10 +119978,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -13,
-                      "pre2": 0,
-                      "main": 129,
-                      "post": -24,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -120073,10 +120073,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -120168,9 +120168,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -11,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 115,
+                      "main": 112,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -120263,10 +120263,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -7,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 130,
-                      "post": -11,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -120358,10 +120358,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 4,
-                      "main": 126,
-                      "post": -15,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -120453,10 +120453,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -10,
-                      "pre2": 0,
-                      "main": 131,
-                      "post": -26,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -120548,10 +120548,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -21,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 137,
-                      "post": -8,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -120643,10 +120643,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -22,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 128,
-                      "post": -15,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -120738,10 +120738,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 131,
-                      "post": -21,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 128,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -120833,10 +120833,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -15,
-                      "pre2": 0,
-                      "main": 134,
-                      "post": -18,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -120928,10 +120928,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -13,
-                      "pre2": 0,
-                      "main": 140,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -121023,10 +121023,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -10,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 121,
-                      "post": -10,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -121118,10 +121118,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 3,
-                      "main": 117,
-                      "post": -14,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 128,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -121213,10 +121213,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -20,
-                      "pre2": 0,
-                      "main": 135,
-                      "post": -12,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -121308,10 +121308,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -20,
-                      "pre2": 6,
-                      "main": 133,
-                      "post": -8,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -121403,10 +121403,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 147,
-                      "post": -16,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -121498,10 +121498,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -121593,10 +121593,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 0,
-                      "main": 140,
-                      "post": -9,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -121688,10 +121688,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -9,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 150,
-                      "post": -9,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -121783,10 +121783,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -121878,10 +121878,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -22,
+                      "pre": -16,
                       "pre2": 2,
-                      "main": 127,
-                      "post": -15,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -121973,10 +121973,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 0,
-                      "main": 136,
-                      "post": -19,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -122068,10 +122068,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 5,
-                      "main": 132,
-                      "post": -18,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -122163,10 +122163,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -18,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 124,
-                      "post": -11,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -122258,10 +122258,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 130,
-                      "post": -24,
+                      "pre": -24,
+                      "pre2": 4,
+                      "main": 132,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -122353,10 +122353,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 131,
-                      "post": -18,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -122448,9 +122448,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 145,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -122543,10 +122543,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 158,
-                      "post": -9,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -122638,9 +122638,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -30,
-                      "pre2": 6,
-                      "main": 119,
+                      "pre": -24,
+                      "pre2": 4,
+                      "main": 132,
                       "post": -8,
                       "post2": 0,
                       "post3": 0,
@@ -122733,10 +122733,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 131,
-                      "post": -18,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -122828,10 +122828,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -7,
+                      "pre": -12,
                       "pre2": 2,
-                      "main": 134,
-                      "post": -21,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -122923,10 +122923,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 2,
-                      "main": 140,
-                      "post": -12,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -123018,10 +123018,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -31,
+                      "pre": -16,
                       "pre2": 2,
-                      "main": 133,
-                      "post": 0,
+                      "main": 128,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -123113,10 +123113,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 0,
-                      "main": 137,
-                      "post": -8,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -123208,10 +123208,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -15,
+                      "pre": -16,
                       "pre2": 2,
-                      "main": 133,
-                      "post": -18,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -123303,10 +123303,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 6,
-                      "main": 127,
-                      "post": 0,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -123398,10 +123398,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 129,
-                      "post": -15,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 128,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -123493,10 +123493,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 132,
-                      "post": -21,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -123588,10 +123588,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -8,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": -13,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -123683,10 +123683,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 135,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -123778,10 +123778,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -26,
-                      "pre2": 0,
-                      "main": 134,
-                      "post": -4,
+                      "pre": -20,
+                      "pre2": 2,
+                      "main": 136,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -123873,10 +123873,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 3,
-                      "main": 110,
-                      "post": -18,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 128,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -123968,10 +123968,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 0,
-                      "main": 142,
-                      "post": -12,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -124063,10 +124063,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -15,
+                      "pre": -8,
                       "pre2": 0,
                       "main": 104,
-                      "post": -9,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -124158,10 +124158,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -26,
-                      "pre2": 0,
-                      "main": 126,
-                      "post": -15,
+                      "pre": -20,
+                      "pre2": 2,
+                      "main": 136,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -124253,10 +124253,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -26,
-                      "pre2": 6,
-                      "main": 124,
-                      "post": -11,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 128,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -124348,10 +124348,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 7,
-                      "main": 138,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -124443,10 +124443,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 154,
-                      "post": -13,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -124538,10 +124538,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -27,
-                      "pre2": 0,
-                      "main": 127,
-                      "post": -12,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 132,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -124633,10 +124633,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 128,
-                      "post": -18,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -124728,10 +124728,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -20,
-                      "pre2": 0,
-                      "main": 133,
-                      "post": -12,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -124823,10 +124823,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 166,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -124918,10 +124918,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 129,
-                      "post": -15,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 132,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -125013,10 +125013,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -15,
-                      "pre2": 0,
-                      "main": 136,
-                      "post": -15,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -125108,10 +125108,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 149,
-                      "post": -9,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -125203,10 +125203,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -18,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 124,
-                      "post": -11,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -125298,10 +125298,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -17,
-                      "pre2": 3,
-                      "main": 125,
-                      "post": -20,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 132,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -125393,10 +125393,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 1,
-                      "main": 100,
-                      "post": -12,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -125488,10 +125488,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -20,
-                      "pre2": 4,
-                      "main": 134,
-                      "post": -12,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -125583,10 +125583,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 166,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -125678,10 +125678,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -26,
+                      "pre": -12,
                       "pre2": 2,
-                      "main": 124,
-                      "post": -15,
+                      "main": 132,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -125773,10 +125773,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -125868,10 +125868,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 144,
-                      "post": -4,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -125963,10 +125963,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -126058,9 +126058,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 0,
-                      "main": 112,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -126153,10 +126153,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 108,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -126248,10 +126248,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 160,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -126343,10 +126343,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 132,
-                      "post": -15,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -126438,10 +126438,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -126533,10 +126533,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -126628,10 +126628,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -126723,10 +126723,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -15,
-                      "pre2": 6,
-                      "main": 120,
-                      "post": 0,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -126818,10 +126818,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 131,
-                      "post": -21,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -126915,8 +126915,8 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     "tx": {
                       "pre": -16,
                       "pre2": 2,
-                      "main": 137,
-                      "post": -12,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -127008,9 +127008,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 144,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -127103,10 +127103,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -12,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 140,
-                      "post": -16,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -127198,10 +127198,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -16,
                       "pre2": 2,
-                      "main": 130,
-                      "post": -21,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -127293,10 +127293,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -16,
                       "pre2": 2,
-                      "main": 130,
-                      "post": -21,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -127388,10 +127388,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 158,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -127483,9 +127483,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -22,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 139,
+                      "main": 104,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -127578,10 +127578,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 1,
-                      "main": 117,
-                      "post": -24,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -127673,10 +127673,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 150,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -127768,10 +127768,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 132,
-                      "post": -15,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -127863,10 +127863,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -127958,10 +127958,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 4,
-                      "main": 126,
-                      "post": -18,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -128053,10 +128053,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 158,
-                      "post": -9,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -128148,10 +128148,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -13,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 145,
-                      "post": -9,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -128243,10 +128243,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -12,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 131,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -128338,10 +128338,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -18,
+                      "pre": -16,
                       "pre2": 2,
-                      "main": 126,
-                      "post": -18,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -128433,10 +128433,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -10,
-                      "pre2": 0,
-                      "main": 131,
-                      "post": -21,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -128528,10 +128528,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 149,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -128623,10 +128623,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 148,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -128718,10 +128718,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -128813,10 +128813,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -128908,10 +128908,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -17,
-                      "pre2": 0,
-                      "main": 141,
-                      "post": -8,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -129003,10 +129003,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -27,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 139,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -129098,10 +129098,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -15,
-                      "pre2": 0,
-                      "main": 103,
-                      "post": -12,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -129193,10 +129193,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 0,
-                      "main": 129,
-                      "post": -11,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -129288,10 +129288,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 148,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -129383,9 +129383,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 167,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -129478,10 +129478,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 147,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -129573,10 +129573,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 149,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -129670,8 +129670,8 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     "tx": {
                       "pre": -8,
                       "pre2": 0,
-                      "main": 147,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -129763,9 +129763,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 148,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -129858,10 +129858,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -13,
-                      "pre2": 0,
-                      "main": 94,
-                      "post": -13,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -129953,10 +129953,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 112,
-                      "post": 0,
+                      "pre": -20,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -130048,10 +130048,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -130143,10 +130143,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -22,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 127,
-                      "post": -18,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -130238,10 +130238,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -10,
-                      "pre2": 0,
-                      "main": 133,
-                      "post": -27,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -130333,9 +130333,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -13,
-                      "pre2": 0,
-                      "main": 143,
+                      "pre": -20,
+                      "pre2": 2,
+                      "main": 120,
                       "post": -8,
                       "post2": 0,
                       "post3": 0,
@@ -130428,10 +130428,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -17,
-                      "pre2": 0,
-                      "main": 114,
-                      "post": -7,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -130523,10 +130523,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 152,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -130618,9 +130618,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 114,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 132,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -130713,10 +130713,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 149,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -130808,10 +130808,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 135,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -130903,9 +130903,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 150,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -130998,10 +130998,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 132,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -131093,10 +131093,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -131188,10 +131188,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 149,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -131283,9 +131283,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 143,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -131378,10 +131378,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -15,
-                      "pre2": 0,
-                      "main": 91,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -131473,10 +131473,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 110,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 136,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -131568,10 +131568,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 160,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -131663,10 +131663,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -10,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 156,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -131758,10 +131758,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -7,
-                      "pre2": 0,
-                      "main": 134,
-                      "post": -27,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -131853,10 +131853,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 152,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 136,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -131948,10 +131948,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -132043,10 +132043,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 153,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -132138,10 +132138,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 0,
-                      "main": 138,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 132,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -132233,10 +132233,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 149,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -132328,10 +132328,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 134,
-                      "post": -12,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -132423,10 +132423,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -26,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 126,
-                      "post": -15,
+                      "main": 96,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -132518,10 +132518,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 132,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -132614,9 +132614,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     },
                     "tx": {
                       "pre": -16,
-                      "pre2": 0,
-                      "main": 138,
-                      "post": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -132708,9 +132708,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 5,
-                      "main": 139,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 100,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -132803,9 +132803,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -22,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 111,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -132898,10 +132898,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 115,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -132993,10 +132993,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -26,
+                      "pre": -20,
                       "pre2": 2,
-                      "main": 111,
-                      "post": 0,
+                      "main": 136,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -133088,10 +133088,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -19,
-                      "pre2": 0,
-                      "main": 132,
-                      "post": -15,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -133185,8 +133185,8 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     "tx": {
                       "pre": -8,
                       "pre2": 0,
-                      "main": 146,
-                      "post": -12,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -133278,10 +133278,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -10,
-                      "pre2": 0,
-                      "main": 132,
-                      "post": -24,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -133373,10 +133373,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 0,
-                      "main": 137,
-                      "post": -19,
+                      "pre": -20,
+                      "pre2": 2,
+                      "main": 136,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -133468,10 +133468,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -8,
-                      "pre2": 0,
-                      "main": 138,
-                      "post": -12,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -133563,10 +133563,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -133658,10 +133658,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -133753,10 +133753,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 5,
-                      "main": 144,
-                      "post": 0,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -133848,10 +133848,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 149,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -133943,10 +133943,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -134038,10 +134038,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 153,
-                      "post": -13,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -134133,10 +134133,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 118,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -134228,10 +134228,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 130,
-                      "post": -18,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -134325,8 +134325,8 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     "tx": {
                       "pre": -8,
                       "pre2": 0,
-                      "main": 124,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -134418,10 +134418,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -134513,10 +134513,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -134608,10 +134608,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -10,
-                      "pre2": 0,
-                      "main": 132,
-                      "post": -24,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -134703,10 +134703,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 161,
-                      "post": -9,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -134798,10 +134798,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 133,
-                      "post": -15,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -134893,10 +134893,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -21,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 138,
-                      "post": -8,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -134988,10 +134988,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -3,
-                      "pre2": 0,
-                      "main": 107,
-                      "post": -6,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -135083,9 +135083,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 124,
+                      "main": 104,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -135178,10 +135178,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 4,
-                      "main": 118,
-                      "post": 0,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -135273,10 +135273,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -22,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 117,
-                      "post": -7,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -135368,10 +135368,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -135463,10 +135463,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 166,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -135559,9 +135559,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     },
                     "tx": {
                       "pre": -8,
-                      "pre2": 4,
-                      "main": 146,
-                      "post": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -135653,10 +135653,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -135748,10 +135748,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -135843,10 +135843,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -135938,10 +135938,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -16,
                       "pre2": 2,
-                      "main": 160,
-                      "post": -5,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -136033,10 +136033,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -12,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 95,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -136128,10 +136128,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -136223,10 +136223,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -136318,10 +136318,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -136413,10 +136413,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 161,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -136508,10 +136508,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 135,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -136603,10 +136603,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 152,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -136698,10 +136698,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
+                      "pre": -16,
+                      "pre2": 2,
                       "main": 132,
-                      "post": -21,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -136793,10 +136793,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -136888,10 +136888,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 137,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -136983,10 +136983,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -137078,10 +137078,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 140,
-                      "post": -4,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 132,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -137173,9 +137173,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 152,
+                      "main": 112,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -137268,10 +137268,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -15,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 90,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -137363,10 +137363,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 118,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -137458,10 +137458,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 131,
-                      "post": -14,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -137553,10 +137553,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 0,
-                      "main": 137,
-                      "post": -8,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -137648,10 +137648,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -24,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 146,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -137743,10 +137743,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 2,
-                      "main": 160,
-                      "post": -5,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -137838,10 +137838,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -137933,10 +137933,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -7,
-                      "pre2": 0,
-                      "main": 140,
-                      "post": -19,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -138028,10 +138028,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -138123,10 +138123,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 155,
-                      "post": -13,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -138219,9 +138219,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     },
                     "tx": {
                       "pre": -16,
-                      "pre2": 0,
-                      "main": 138,
-                      "post": -12,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -138313,9 +138313,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -12,
                       "pre2": 2,
-                      "main": 135,
+                      "main": 108,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -138408,10 +138408,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 141,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -138503,10 +138503,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -138598,10 +138598,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -7,
-                      "pre2": 0,
-                      "main": 134,
-                      "post": -27,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -138693,10 +138693,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 0,
-                      "main": 137,
-                      "post": -19,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -138788,10 +138788,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 132,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -138883,10 +138883,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -138978,10 +138978,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 6,
-                      "main": 129,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -139073,10 +139073,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -3,
-                      "pre2": 0,
-                      "main": 117,
-                      "post": -10,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -139168,10 +139168,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -17,
-                      "pre2": 0,
-                      "main": 140,
-                      "post": -8,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -139263,10 +139263,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 134,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -139358,10 +139358,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 144,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -139453,10 +139453,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -5,
-                      "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -139548,10 +139548,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 155,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -139643,10 +139643,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -16,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 123,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -139738,9 +139738,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 141,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 124,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -139833,10 +139833,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -15,
+                      "pre": -12,
                       "pre2": 2,
-                      "main": 128,
-                      "post": -11,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -139928,10 +139928,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -14,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 152,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -140023,9 +140023,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -23,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 143,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -140118,10 +140118,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 124,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -140213,10 +140213,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -4,
-                      "pre2": 0,
-                      "main": 147,
-                      "post": -16,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -140308,10 +140308,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 150,
-                      "post": -16,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -140403,9 +140403,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 121,
+                      "main": 96,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -140498,10 +140498,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -8,
-                      "pre2": 4,
-                      "main": 108,
-                      "post": -19,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -140593,10 +140593,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 150,
-                      "post": -9,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -140688,10 +140688,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -140783,10 +140783,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -27,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 139,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -140878,10 +140878,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 130,
-                      "post": -18,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -140973,10 +140973,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 0,
-                      "main": 137,
-                      "post": -8,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -141068,10 +141068,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -141163,10 +141163,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -141258,10 +141258,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -13,
+                      "pre": -16,
                       "pre2": 2,
-                      "main": 104,
-                      "post": 0,
+                      "main": 128,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -141353,10 +141353,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -13,
-                      "pre2": 0,
-                      "main": 141,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -141448,10 +141448,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -31,
-                      "pre2": 4,
-                      "main": 131,
-                      "post": 0,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -141543,9 +141543,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -18,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 144,
+                      "main": 100,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -141638,10 +141638,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -17,
+                      "pre": -16,
                       "pre2": 2,
-                      "main": 127,
-                      "post": -21,
+                      "main": 128,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -141733,10 +141733,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 149,
-                      "post": -9,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 108,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -141828,10 +141828,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -16,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 111,
-                      "post": -10,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -141923,10 +141923,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 99,
-                      "post": 0,
+                      "main": 100,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -142018,10 +142018,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 4,
-                      "main": 127,
-                      "post": -15,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -142113,10 +142113,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 139,
-                      "post": -8,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -142208,10 +142208,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 167,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -142303,10 +142303,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 162,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -142398,10 +142398,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -31,
-                      "pre2": 0,
-                      "main": 124,
-                      "post": -11,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -142493,10 +142493,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 151,
-                      "post": -5,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -142588,9 +142588,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": 0,
-                      "pre2": 0,
-                      "main": 127,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 104,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -142683,10 +142683,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 135,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -142778,10 +142778,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -13,
-                      "pre2": 0,
-                      "main": 133,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -142873,9 +142873,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -21,
-                      "pre2": 6,
-                      "main": 134,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -142968,10 +142968,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 158,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -143063,10 +143063,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 137,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -143158,10 +143158,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -10,
-                      "pre2": 0,
-                      "main": 133,
-                      "post": -27,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -143254,9 +143254,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     },
                     "tx": {
                       "pre": -12,
-                      "pre2": 0,
-                      "main": 142,
-                      "post": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -143348,10 +143348,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 153,
-                      "post": -9,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -143443,9 +143443,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 129,
+                      "main": 104,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -143538,10 +143538,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 130,
-                      "post": -18,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -143633,10 +143633,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -15,
-                      "pre2": 0,
-                      "main": 104,
-                      "post": -12,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -143728,9 +143728,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -18,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 144,
+                      "main": 100,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -143823,10 +143823,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -9,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 153,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -143918,10 +143918,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 129,
-                      "post": -15,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -144013,10 +144013,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -17,
+                      "pre": -12,
                       "pre2": 2,
-                      "main": 127,
-                      "post": -21,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -144108,10 +144108,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -17,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 118,
-                      "post": -10,
+                      "main": 100,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -144203,9 +144203,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -7,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 122,
+                      "main": 104,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -144298,10 +144298,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -20,
+                      "pre": -16,
                       "pre2": 2,
-                      "main": 107,
-                      "post": -7,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -144393,10 +144393,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 150,
-                      "post": -9,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -144488,10 +144488,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -144583,10 +144583,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -11,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 135,
-                      "post": -21,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -144678,10 +144678,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 0,
-                      "main": 143,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -144773,10 +144773,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 148,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -144868,10 +144868,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 150,
-                      "post": -13,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -144963,10 +144963,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -13,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 105,
-                      "post": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -145058,10 +145058,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 0,
-                      "main": 126,
-                      "post": -17,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 128,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -145153,10 +145153,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 0,
-                      "main": 130,
-                      "post": -11,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -145248,9 +145248,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 144,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -145343,10 +145343,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -19,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 130,
-                      "post": -12,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -145438,10 +145438,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
+                      "pre": -16,
+                      "pre2": 2,
                       "main": 128,
-                      "post": -15,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -145533,10 +145533,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -15,
-                      "pre2": 0,
-                      "main": 134,
-                      "post": -18,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -145628,9 +145628,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -24,
-                      "pre2": 0,
-                      "main": 124,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
                       "post": -4,
                       "post2": 0,
                       "post3": 0,
@@ -145725,8 +145725,8 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                     "tx": {
                       "pre": -8,
                       "pre2": 0,
-                      "main": 140,
-                      "post": -19,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -145818,10 +145818,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -9,
+                      "pre": -8,
                       "pre2": 0,
                       "main": 100,
-                      "post": -9,
+                      "post": 0,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -145913,10 +145913,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": -7,
-                      "pre2": 5,
-                      "main": 125,
-                      "post": -20,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -146008,10 +146008,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -18,
-                      "pre2": 0,
-                      "main": 130,
-                      "post": -18,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -146103,10 +146103,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -9,
-                      "pre2": 0,
-                      "main": 153,
-                      "post": -5,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -146198,9 +146198,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -23,
-                      "pre2": 2,
-                      "main": 142,
+                      "pre": -8,
+                      "pre2": 0,
+                      "main": 100,
                       "post": 0,
                       "post2": 0,
                       "post3": 0,
@@ -146293,10 +146293,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -5,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 157,
-                      "post": -5,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -146388,10 +146388,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -24,
-                      "pre2": 0,
-                      "main": 146,
-                      "post": 0,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 120,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -146483,10 +146483,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -12,
-                      "pre2": 0,
-                      "main": 142,
-                      "post": -12,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -146578,10 +146578,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 0
                     },
                     "tx": {
-                      "pre": -22,
-                      "pre2": 0,
-                      "main": 137,
-                      "post": 0,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -146673,10 +146673,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 1
                     },
                     "tx": {
-                      "pre": 0,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 154,
-                      "post": -13,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -146768,10 +146768,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 2
                     },
                     "tx": {
-                      "pre": -17,
-                      "pre2": 0,
-                      "main": 125,
-                      "post": -17,
+                      "pre": -24,
+                      "pre2": 4,
+                      "main": 132,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -146863,10 +146863,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 3
                     },
                     "tx": {
-                      "pre": -13,
-                      "pre2": 0,
-                      "main": 123,
-                      "post": -20,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -146958,10 +146958,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 4
                     },
                     "tx": {
-                      "pre": -11,
-                      "pre2": 6,
-                      "main": 135,
-                      "post": -15,
+                      "pre": -12,
+                      "pre2": 2,
+                      "main": 112,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -147053,10 +147053,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 5
                     },
                     "tx": {
-                      "pre": -4,
+                      "pre": -8,
                       "pre2": 0,
-                      "main": 153,
-                      "post": -9,
+                      "main": 104,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -147148,10 +147148,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 6
                     },
                     "tx": {
-                      "pre": -22,
+                      "pre": -24,
                       "pre2": 4,
-                      "main": 129,
-                      "post": -15,
+                      "main": 132,
+                      "post": -8,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -147243,10 +147243,10 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
                       "lane": 7
                     },
                     "tx": {
-                      "pre": -14,
-                      "pre2": 5,
-                      "main": 128,
-                      "post": -21,
+                      "pre": -16,
+                      "pre2": 2,
+                      "main": 116,
+                      "post": -4,
                       "post2": 0,
                       "post3": 0,
                       "pre3": 0
@@ -148560,7 +148560,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -148594,7 +148598,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -148628,7 +148636,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -148662,7 +148674,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -148696,7 +148712,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -148730,7 +148750,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -148764,7 +148788,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -148798,7 +148826,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -148832,7 +148864,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -148866,7 +148902,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -148900,7 +148940,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -148934,7 +148978,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -148968,7 +149016,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149002,7 +149054,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149036,7 +149092,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149070,7 +149130,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149104,7 +149168,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149138,7 +149206,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149172,7 +149244,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149206,7 +149282,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149240,7 +149320,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149274,7 +149358,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149308,7 +149396,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149342,7 +149434,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149376,7 +149472,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149410,7 +149510,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149444,7 +149548,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149478,7 +149586,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149512,7 +149624,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149546,7 +149662,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149580,7 +149700,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149614,7 +149738,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149648,7 +149776,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149682,7 +149814,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149716,7 +149852,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149750,7 +149890,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149784,7 +149928,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149818,7 +149966,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149852,7 +150004,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149886,7 +150042,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149920,7 +150080,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149954,7 +150118,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -149988,7 +150156,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150022,7 +150194,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150056,7 +150232,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150090,7 +150270,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150124,7 +150308,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150158,7 +150346,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150192,7 +150384,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150203,11 +150399,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
               "lane": 0
             },
             "tx": {
-              "pre": 0,
-              "pre2": 0,
-              "main": 0,
-              "post": 0,
-              "post2": 0,
+              "pre": -27,
+              "pre2": 6,
+              "main": 106,
+              "post": -16,
+              "post2": -10,
               "post3": 0,
               "pre3": 0
             }
@@ -150226,7 +150422,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150260,7 +150460,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150294,7 +150498,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150328,7 +150536,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150339,11 +150551,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
               "lane": 4
             },
             "tx": {
-              "pre": 0,
-              "pre2": 0,
-              "main": 0,
-              "post": 0,
-              "post2": 0,
+              "pre": -24,
+              "pre2": 5,
+              "main": 109,
+              "post": -18,
+              "post2": -10,
               "post3": 0,
               "pre3": 0
             }
@@ -150362,7 +150574,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150396,7 +150612,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150430,7 +150650,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150464,7 +150688,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150498,7 +150726,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150532,7 +150764,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150566,7 +150802,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150577,11 +150817,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
               "lane": 3
             },
             "tx": {
-              "pre": 0,
-              "pre2": 0,
-              "main": 0,
-              "post": 0,
-              "post2": 0,
+              "pre": -29,
+              "pre2": 8,
+              "main": 93,
+              "post": -25,
+              "post2": -10,
               "post3": 0,
               "pre3": 0
             }
@@ -150600,7 +150840,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150634,7 +150878,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150668,7 +150916,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150702,7 +150954,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150713,11 +150969,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
               "lane": 7
             },
             "tx": {
-              "pre": 0,
-              "pre2": 0,
-              "main": 0,
-              "post": 0,
-              "post2": 0,
+              "pre": -31,
+              "pre2": 10,
+              "main": 92,
+              "post": -23,
+              "post2": -9,
               "post3": 0,
               "pre3": 0
             }
@@ -150736,7 +150992,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150770,7 +151030,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150804,7 +151068,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150838,7 +151106,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150872,7 +151144,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150906,7 +151182,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150940,7 +151220,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -150974,7 +151258,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151008,7 +151296,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151042,7 +151334,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151076,7 +151372,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151110,7 +151410,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151144,7 +151448,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151178,7 +151486,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151212,7 +151524,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151246,7 +151562,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151280,7 +151600,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151314,7 +151638,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151348,7 +151676,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151382,7 +151714,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151416,7 +151752,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151450,7 +151790,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151484,7 +151828,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151518,7 +151866,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151552,7 +151904,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151586,7 +151942,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151620,7 +151980,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151654,7 +152018,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151688,7 +152056,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151722,7 +152094,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151756,7 +152132,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151790,7 +152170,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151824,7 +152208,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151858,7 +152246,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151892,7 +152284,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151926,7 +152322,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151960,7 +152360,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -151994,7 +152398,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152028,7 +152436,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152062,7 +152474,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152096,7 +152512,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152130,7 +152550,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152164,7 +152588,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152198,7 +152626,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152232,7 +152664,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152266,7 +152702,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152300,7 +152740,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152334,7 +152778,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152368,7 +152816,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152402,7 +152854,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152436,7 +152892,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152470,7 +152930,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152504,7 +152968,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152538,7 +153006,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152572,7 +153044,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152606,7 +153082,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152640,7 +153120,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152674,7 +153158,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152708,7 +153196,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152742,7 +153234,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152776,7 +153272,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152810,7 +153310,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152844,7 +153348,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152878,7 +153386,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152912,7 +153424,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152946,7 +153462,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -152980,7 +153500,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153014,7 +153538,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153048,7 +153576,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153082,7 +153614,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153116,7 +153652,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153150,7 +153690,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153184,7 +153728,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153218,7 +153766,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153252,7 +153804,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153286,7 +153842,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153320,7 +153880,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153354,7 +153918,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153388,7 +153956,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153422,7 +153994,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153456,7 +154032,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153490,7 +154070,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153524,7 +154108,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153558,7 +154146,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153592,7 +154184,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153626,7 +154222,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153660,7 +154260,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153694,7 +154298,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153728,7 +154336,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153762,7 +154374,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153796,7 +154412,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153830,7 +154450,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153864,7 +154488,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153898,7 +154526,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153932,7 +154564,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -153966,7 +154602,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154000,7 +154640,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154034,7 +154678,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154068,7 +154716,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154102,7 +154754,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154136,7 +154792,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154170,7 +154830,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154204,7 +154868,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154238,7 +154906,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154272,7 +154944,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154306,7 +154982,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154340,7 +155020,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154374,7 +155058,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154408,7 +155096,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154442,7 +155134,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154476,7 +155172,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154510,7 +155210,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154544,7 +155248,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154578,7 +155286,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154612,7 +155324,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154646,7 +155362,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154680,7 +155400,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154714,7 +155438,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154748,7 +155476,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154782,7 +155514,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154816,7 +155552,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154850,7 +155590,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154884,7 +155628,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154918,7 +155666,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154952,7 +155704,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -154986,7 +155742,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155020,7 +155780,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155054,7 +155818,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155088,7 +155856,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155122,7 +155894,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155156,7 +155932,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155190,7 +155970,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155224,7 +156008,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155258,7 +156046,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155292,7 +156084,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155326,7 +156122,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155360,7 +156160,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155394,7 +156198,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155428,7 +156236,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155462,7 +156274,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155496,7 +156312,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155530,7 +156350,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155564,7 +156388,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155598,7 +156426,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155632,7 +156464,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155666,7 +156502,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155700,7 +156540,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155734,7 +156578,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155768,7 +156616,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155802,7 +156654,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155836,7 +156692,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155870,7 +156730,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155904,7 +156768,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155938,7 +156806,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -155972,7 +156844,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156006,7 +156882,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156040,7 +156920,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156074,7 +156958,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156108,7 +156996,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156142,7 +157034,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156176,7 +157072,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156210,7 +157110,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156244,7 +157148,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156278,7 +157186,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156312,7 +157224,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156346,7 +157262,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156380,7 +157300,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156414,7 +157338,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156448,7 +157376,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156482,7 +157414,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156516,7 +157452,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156550,7 +157490,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156584,7 +157528,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156618,7 +157566,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156652,7 +157604,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156686,7 +157642,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156720,7 +157680,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156754,7 +157718,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156788,7 +157756,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156822,7 +157794,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156856,7 +157832,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156890,7 +157870,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156924,7 +157908,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156958,7 +157946,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -156992,7 +157984,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157026,7 +158022,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157060,7 +158060,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157094,7 +158098,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157128,7 +158136,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157141,7 +158153,7 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             "tx": {
               "pre": -26,
               "pre2": 7,
-              "main": 100,
+              "main": 99,
               "post": -24,
               "post2": -11,
               "post3": 0,
@@ -157162,7 +158174,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157196,7 +158212,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157230,7 +158250,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157264,7 +158288,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157298,7 +158326,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157332,7 +158364,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157366,7 +158402,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157400,7 +158440,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157434,7 +158478,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157468,7 +158516,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157502,7 +158554,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157536,7 +158592,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157570,7 +158630,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157604,7 +158668,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157638,7 +158706,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157672,7 +158744,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157706,7 +158782,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157740,7 +158820,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157774,7 +158858,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157808,7 +158896,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157842,7 +158934,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157876,7 +158972,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157910,7 +159010,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157944,7 +159048,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -157978,7 +159086,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158012,7 +159124,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158046,7 +159162,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158080,7 +159200,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158114,7 +159238,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158148,7 +159276,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158182,7 +159314,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158216,7 +159352,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158250,7 +159390,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158284,7 +159428,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158318,7 +159466,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158352,7 +159504,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158386,7 +159542,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158420,7 +159580,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158454,7 +159618,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158488,7 +159656,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158522,7 +159694,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158556,7 +159732,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158590,7 +159770,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158624,7 +159808,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158658,7 +159846,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158692,7 +159884,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158726,7 +159922,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158760,7 +159960,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158794,7 +159998,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158828,7 +160036,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158862,7 +160074,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158896,7 +160112,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158907,11 +160127,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
               "lane": 0
             },
             "tx": {
-              "pre": 0,
-              "pre2": 0,
-              "main": 0,
-              "post": 0,
-              "post2": 0,
+              "pre": -26,
+              "pre2": 6,
+              "main": 107,
+              "post": -15,
+              "post2": -11,
               "post3": 0,
               "pre3": 0
             }
@@ -158930,7 +160150,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158964,7 +160188,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -158998,7 +160226,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159032,7 +160264,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159043,11 +160279,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
               "lane": 4
             },
             "tx": {
-              "pre": 0,
-              "pre2": 0,
-              "main": 0,
-              "post": 0,
-              "post2": 0,
+              "pre": -24,
+              "pre2": 5,
+              "main": 111,
+              "post": -16,
+              "post2": -10,
               "post3": 0,
               "pre3": 0
             }
@@ -159066,7 +160302,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159100,7 +160340,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159134,7 +160378,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159168,7 +160416,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159202,7 +160454,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159236,7 +160492,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159270,7 +160530,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159281,11 +160545,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
               "lane": 3
             },
             "tx": {
-              "pre": 0,
-              "pre2": 0,
-              "main": 0,
-              "post": 0,
-              "post2": 0,
+              "pre": -30,
+              "pre2": 9,
+              "main": 91,
+              "post": -27,
+              "post2": -8,
               "post3": 0,
               "pre3": 0
             }
@@ -159304,7 +160568,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159338,7 +160606,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159372,7 +160644,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159406,7 +160682,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159417,11 +160697,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
               "lane": 7
             },
             "tx": {
-              "pre": 0,
-              "pre2": 0,
-              "main": 0,
-              "post": 0,
-              "post2": 0,
+              "pre": -30,
+              "pre2": 9,
+              "main": 92,
+              "post": -27,
+              "post2": -8,
               "post3": 0,
               "pre3": 0
             }
@@ -159440,7 +160720,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159474,7 +160758,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159508,7 +160796,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159542,7 +160834,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159576,7 +160872,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159610,7 +160910,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159644,7 +160948,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159678,7 +160986,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159712,7 +161024,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159746,7 +161062,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159780,7 +161100,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159814,7 +161138,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159848,7 +161176,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159882,7 +161214,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159916,7 +161252,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159950,7 +161290,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -159984,7 +161328,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160018,7 +161366,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160052,7 +161404,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160086,7 +161442,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160120,7 +161480,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160154,7 +161518,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160188,7 +161556,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160222,7 +161594,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160256,7 +161632,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160290,7 +161670,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160324,7 +161708,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160358,7 +161746,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160392,7 +161784,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160426,7 +161822,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160460,7 +161860,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160494,7 +161898,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160528,7 +161936,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160562,7 +161974,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160596,7 +162012,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160630,7 +162050,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160664,7 +162088,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160698,7 +162126,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160732,7 +162164,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160766,7 +162202,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160800,7 +162240,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160834,7 +162278,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160868,7 +162316,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160902,7 +162354,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160936,7 +162392,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -160970,7 +162430,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161004,7 +162468,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161038,7 +162506,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161072,7 +162544,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161106,7 +162582,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161140,7 +162620,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161174,7 +162658,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161208,7 +162696,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161242,7 +162734,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161276,7 +162772,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161310,7 +162810,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161344,7 +162848,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161378,7 +162886,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161412,7 +162924,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161446,7 +162962,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161480,7 +163000,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161514,7 +163038,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161548,7 +163076,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161582,7 +163114,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161616,7 +163152,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161650,7 +163190,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161684,7 +163228,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161718,7 +163266,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161752,7 +163304,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161786,7 +163342,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161820,7 +163380,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161854,7 +163418,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161888,7 +163456,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161922,7 +163494,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161956,7 +163532,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -161990,7 +163570,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162024,7 +163608,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162058,7 +163646,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162092,7 +163684,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162126,7 +163722,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162160,7 +163760,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162194,7 +163798,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162228,7 +163836,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162262,7 +163874,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162296,7 +163912,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162330,7 +163950,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162364,7 +163988,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162398,7 +164026,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162432,7 +164064,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162466,7 +164102,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162500,7 +164140,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162534,7 +164178,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162568,7 +164216,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162602,7 +164254,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162636,7 +164292,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162670,7 +164330,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162704,7 +164368,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162738,7 +164406,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162772,7 +164444,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162806,7 +164482,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162840,7 +164520,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162874,7 +164558,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162908,7 +164596,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162942,7 +164634,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -162976,7 +164672,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163010,7 +164710,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163044,7 +164748,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163078,7 +164786,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163112,7 +164824,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163146,7 +164862,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163180,7 +164900,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163214,7 +164938,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163248,7 +164976,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163282,7 +165014,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163316,7 +165052,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163350,7 +165090,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163384,7 +165128,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163418,7 +165166,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163452,7 +165204,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163486,7 +165242,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163520,7 +165280,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163554,7 +165318,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163588,7 +165356,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163622,7 +165394,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163656,7 +165432,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163690,7 +165470,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163724,7 +165508,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163758,7 +165546,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163792,7 +165584,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163826,7 +165622,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163860,7 +165660,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163894,7 +165698,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163928,7 +165736,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163962,7 +165774,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -163996,7 +165812,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164030,7 +165850,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164064,7 +165888,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164098,7 +165926,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164132,7 +165964,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164166,7 +166002,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164200,7 +166040,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164234,7 +166078,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164268,7 +166116,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164302,7 +166154,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164336,7 +166192,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164370,7 +166230,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164404,7 +166268,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164438,7 +166306,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164472,7 +166344,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164506,7 +166382,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164540,7 +166420,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164574,7 +166458,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164608,7 +166496,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164642,7 +166534,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164676,7 +166572,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164710,7 +166610,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164744,7 +166648,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164778,7 +166686,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164812,7 +166724,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164846,7 +166762,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164880,7 +166800,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164914,7 +166838,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164948,7 +166876,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -164982,7 +166914,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165016,7 +166952,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165050,7 +166990,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165084,7 +167028,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165118,7 +167066,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165152,7 +167104,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165186,7 +167142,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165220,7 +167180,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165254,7 +167218,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165288,7 +167256,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165322,7 +167294,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165356,7 +167332,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165390,7 +167370,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165424,7 +167408,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165458,7 +167446,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165492,7 +167484,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165526,7 +167522,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165560,7 +167560,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165594,7 +167598,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165628,7 +167636,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165662,7 +167674,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165696,7 +167712,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165730,7 +167750,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165764,7 +167788,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165798,7 +167826,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165832,7 +167864,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165866,7 +167902,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165900,7 +167940,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165913,7 +167957,7 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             "tx": {
               "pre": -26,
               "pre2": 6,
-              "main": 100,
+              "main": 98,
               "post": -24,
               "post2": -12,
               "post3": 0,
@@ -165934,7 +167978,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165968,7 +168016,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -165981,7 +168033,7 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             "tx": {
               "pre": -23,
               "pre2": 5,
-              "main": 106,
+              "main": 103,
               "post": -24,
               "post2": -12,
               "post3": 0,
@@ -166002,7 +168054,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166036,7 +168092,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166070,7 +168130,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166104,7 +168168,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166138,7 +168206,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166172,7 +168244,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166206,7 +168282,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166240,7 +168320,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166274,7 +168358,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166308,7 +168396,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166342,7 +168434,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166376,7 +168472,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166410,7 +168510,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166444,7 +168548,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166478,7 +168586,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166512,7 +168624,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166546,7 +168662,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166580,7 +168700,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166614,7 +168738,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166648,7 +168776,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166682,7 +168814,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166716,7 +168852,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166750,7 +168890,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166784,7 +168928,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166818,7 +168966,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166852,7 +169004,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166886,7 +169042,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166920,7 +169080,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166954,7 +169118,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -166988,7 +169156,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167022,7 +169194,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167056,7 +169232,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167090,7 +169270,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167124,7 +169308,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167158,7 +169346,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167192,7 +169384,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167226,7 +169422,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167260,7 +169460,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167294,7 +169498,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167328,7 +169536,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167362,7 +169574,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167396,7 +169612,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167430,7 +169650,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167464,7 +169688,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167498,7 +169726,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167532,7 +169764,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167566,7 +169802,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167600,7 +169840,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167634,7 +169878,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167668,7 +169916,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167702,7 +169954,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167736,7 +169992,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167770,7 +170030,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167804,7 +170068,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167838,7 +170106,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167872,7 +170144,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167906,7 +170182,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167940,7 +170220,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -167974,7 +170258,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168008,7 +170296,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168042,7 +170334,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168076,7 +170372,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168110,7 +170410,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168144,7 +170448,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168178,7 +170486,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168212,7 +170524,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168246,7 +170562,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168280,7 +170600,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168314,7 +170638,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168348,7 +170676,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168382,7 +170714,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168416,7 +170752,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168450,7 +170790,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168484,7 +170828,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168518,7 +170866,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168552,7 +170904,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168586,7 +170942,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168620,7 +170980,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168654,7 +171018,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168688,7 +171056,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168722,7 +171094,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168756,7 +171132,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168790,7 +171170,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168824,7 +171208,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168858,7 +171246,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168892,7 +171284,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168926,7 +171322,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168960,7 +171360,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -168994,7 +171398,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169028,7 +171436,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169062,7 +171474,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169096,7 +171512,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169130,7 +171550,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169164,7 +171588,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169198,7 +171626,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169232,7 +171664,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169266,7 +171702,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169300,7 +171740,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169334,7 +171778,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169368,7 +171816,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169402,7 +171854,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169436,7 +171892,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169470,7 +171930,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169504,7 +171968,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169538,7 +172006,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169572,7 +172044,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169606,7 +172082,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169640,7 +172120,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169674,7 +172158,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169708,7 +172196,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169742,7 +172234,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169776,7 +172272,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169810,7 +172310,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169844,7 +172348,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169878,7 +172386,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169912,7 +172424,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169946,7 +172462,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -169980,7 +172500,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170014,7 +172538,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170048,7 +172576,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170082,7 +172614,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170116,7 +172652,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170150,7 +172690,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170184,7 +172728,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170218,7 +172766,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170252,7 +172804,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170286,7 +172842,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170320,7 +172880,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170354,7 +172918,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170388,7 +172956,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170422,7 +172994,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170456,7 +173032,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170490,7 +173070,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170524,7 +173108,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170558,7 +173146,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170592,7 +173184,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170626,7 +173222,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170660,7 +173260,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170694,7 +173298,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170728,7 +173336,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170762,7 +173374,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170796,7 +173412,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170830,7 +173450,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170864,7 +173488,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170898,7 +173526,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170932,7 +173564,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -170966,7 +173602,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171000,7 +173640,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171034,7 +173678,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171068,7 +173716,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171102,7 +173754,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171136,7 +173792,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171170,7 +173830,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171204,7 +173868,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171238,7 +173906,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171272,7 +173944,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171306,7 +173982,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171340,7 +174020,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171374,7 +174058,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171408,7 +174096,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171442,7 +174134,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171476,7 +174172,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171510,7 +174210,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171544,7 +174248,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171578,7 +174286,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171612,7 +174324,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171646,7 +174362,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171680,7 +174400,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171714,7 +174438,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171748,7 +174476,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171782,7 +174514,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171816,7 +174552,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171850,7 +174590,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171884,7 +174628,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171918,7 +174666,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171952,7 +174704,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -171986,7 +174742,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172020,7 +174780,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172054,7 +174818,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172088,7 +174856,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172122,7 +174894,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172156,7 +174932,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172190,7 +174970,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172224,7 +175008,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172258,7 +175046,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172292,7 +175084,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172326,7 +175122,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172360,7 +175160,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172394,7 +175198,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172428,7 +175236,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172462,7 +175274,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172496,7 +175312,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172530,7 +175350,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172564,7 +175388,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172598,7 +175426,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172609,11 +175441,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
               "lane": 3
             },
             "tx": {
-              "pre": 0,
-              "pre2": 0,
-              "main": 0,
-              "post": 0,
-              "post2": 0,
+              "pre": -31,
+              "pre2": 8,
+              "main": 106,
+              "post": -7,
+              "post2": -13,
               "post3": 0,
               "pre3": 0
             }
@@ -172632,7 +175464,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172666,7 +175502,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172700,7 +175540,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172734,7 +175578,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172745,11 +175593,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
               "lane": 7
             },
             "tx": {
-              "pre": 0,
-              "pre2": 0,
-              "main": 0,
-              "post": 0,
-              "post2": 0,
+              "pre": -29,
+              "pre2": 7,
+              "main": 107,
+              "post": -9,
+              "post2": -12,
               "post3": 0,
               "pre3": 0
             }
@@ -172768,7 +175616,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172779,11 +175631,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
               "lane": 0
             },
             "tx": {
-              "pre": 0,
-              "pre2": 0,
-              "main": 0,
-              "post": 0,
-              "post2": 0,
+              "pre": -25,
+              "pre2": 6,
+              "main": 94,
+              "post": -33,
+              "post2": -7,
               "post3": 0,
               "pre3": 0
             }
@@ -172802,7 +175654,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172836,7 +175692,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172870,7 +175730,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172904,7 +175768,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172915,11 +175783,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
               "lane": 4
             },
             "tx": {
-              "pre": 0,
-              "pre2": 0,
-              "main": 0,
-              "post": 0,
-              "post2": 0,
+              "pre": -25,
+              "pre2": 6,
+              "main": 95,
+              "post": -33,
+              "post2": -7,
               "post3": 0,
               "pre3": 0
             }
@@ -172938,7 +175806,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -172972,7 +175844,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173006,7 +175882,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173040,7 +175920,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173074,7 +175958,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173108,7 +175996,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173142,7 +176034,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173176,7 +176072,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173210,7 +176110,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173244,7 +176148,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173278,7 +176186,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173312,7 +176224,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173346,7 +176262,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173380,7 +176300,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173414,7 +176338,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173448,7 +176376,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173482,7 +176414,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173516,7 +176452,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173550,7 +176490,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173584,7 +176528,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173618,7 +176566,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173652,7 +176604,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173686,7 +176642,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173720,7 +176680,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173754,7 +176718,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173788,7 +176756,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173822,7 +176794,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173856,7 +176832,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173890,7 +176870,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173924,7 +176908,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173958,7 +176946,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -173992,7 +176984,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174026,7 +177022,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174060,7 +177060,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174094,7 +177098,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174128,7 +177136,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174162,7 +177174,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174196,7 +177212,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174230,7 +177250,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174264,7 +177288,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174298,7 +177326,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174332,7 +177364,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174366,7 +177402,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174400,7 +177440,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174434,7 +177478,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174468,7 +177516,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174502,7 +177554,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174536,7 +177592,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174570,7 +177630,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174604,7 +177668,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174638,7 +177706,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174672,7 +177744,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174706,7 +177782,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174740,7 +177820,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174753,7 +177837,7 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             "tx": {
               "pre": -23,
               "pre2": 4,
-              "main": 108,
+              "main": 103,
               "post": -24,
               "post2": -13,
               "post3": 0,
@@ -174774,7 +177858,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174808,7 +177896,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174842,7 +177934,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174876,7 +177972,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174910,7 +178010,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174944,7 +178048,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -174978,7 +178086,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175012,7 +178124,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175046,7 +178162,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175080,7 +178200,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175114,7 +178238,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175148,7 +178276,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175182,7 +178314,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175216,7 +178352,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175250,7 +178390,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175284,7 +178428,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175318,7 +178466,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175352,7 +178504,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175386,7 +178542,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175420,7 +178580,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175454,7 +178618,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175488,7 +178656,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175522,7 +178694,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175556,7 +178732,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175590,7 +178770,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175624,7 +178808,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175658,7 +178846,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175692,7 +178884,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175726,7 +178922,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175760,7 +178960,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175794,7 +178998,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175828,7 +179036,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175862,7 +179074,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175896,7 +179112,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175930,7 +179150,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175964,7 +179188,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -175998,7 +179226,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176032,7 +179264,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176066,7 +179302,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176100,7 +179340,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176134,7 +179378,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176168,7 +179416,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176202,7 +179454,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176236,7 +179492,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176270,7 +179530,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176304,7 +179568,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176338,7 +179606,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176372,7 +179644,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176406,7 +179682,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176440,7 +179720,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176474,7 +179758,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176508,7 +179796,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176542,7 +179834,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176576,7 +179872,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176610,7 +179910,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176644,7 +179948,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176678,7 +179986,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176712,7 +180024,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176746,7 +180062,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176780,7 +180100,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176814,7 +180138,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176848,7 +180176,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176882,7 +180214,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176916,7 +180252,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176950,7 +180290,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -176984,7 +180328,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177018,7 +180366,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177052,7 +180404,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177086,7 +180442,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177120,7 +180480,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177154,7 +180518,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177188,7 +180556,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177222,7 +180594,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177256,7 +180632,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177290,7 +180670,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177324,7 +180708,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177358,7 +180746,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177392,7 +180784,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177426,7 +180822,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177460,7 +180860,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177494,7 +180898,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177528,7 +180936,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177562,7 +180974,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177596,7 +181012,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177630,7 +181050,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177664,7 +181088,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177698,7 +181126,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177732,7 +181164,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177766,7 +181202,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177800,7 +181240,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177834,7 +181278,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177868,7 +181316,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177902,7 +181354,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177936,7 +181392,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -177970,7 +181430,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178004,7 +181468,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178038,7 +181506,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178072,7 +181544,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178106,7 +181582,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178140,7 +181620,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178174,7 +181658,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178208,7 +181696,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178242,7 +181734,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178276,7 +181772,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178310,7 +181810,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178344,7 +181848,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178378,7 +181886,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178412,7 +181924,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178446,7 +181962,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178480,7 +182000,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178514,7 +182038,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178548,7 +182076,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178582,7 +182114,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178616,7 +182152,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178650,7 +182190,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178684,7 +182228,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178718,7 +182266,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178752,7 +182304,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178786,7 +182342,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178820,7 +182380,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178854,7 +182418,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178888,7 +182456,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178922,7 +182494,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178956,7 +182532,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -178990,7 +182570,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179024,7 +182608,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179058,7 +182646,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179092,7 +182684,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179126,7 +182722,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179160,7 +182760,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179194,7 +182798,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179228,7 +182836,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179262,7 +182874,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179296,7 +182912,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179330,7 +182950,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179364,7 +182988,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179398,7 +183026,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179432,7 +183064,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179466,7 +183102,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179500,7 +183140,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179534,7 +183178,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179568,7 +183216,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179602,7 +183254,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179636,7 +183292,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179670,7 +183330,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179704,7 +183368,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179738,7 +183406,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179772,7 +183444,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179806,7 +183482,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179840,7 +183520,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179874,7 +183558,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179908,7 +183596,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179942,7 +183634,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -179976,7 +183672,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180010,7 +183710,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180044,7 +183748,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180078,7 +183786,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180112,7 +183824,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180146,7 +183862,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180180,7 +183900,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180214,7 +183938,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180248,7 +183976,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180282,7 +184014,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180316,7 +184052,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180350,7 +184090,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180384,7 +184128,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180418,7 +184166,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180452,7 +184204,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180486,7 +184242,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180520,7 +184280,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180554,7 +184318,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180588,7 +184356,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180622,7 +184394,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180656,7 +184432,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180690,7 +184470,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180724,7 +184508,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180758,7 +184546,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180792,7 +184584,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180826,7 +184622,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180860,7 +184660,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180894,7 +184698,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180928,7 +184736,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180962,7 +184774,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -180996,7 +184812,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181030,7 +184850,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181064,7 +184888,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181098,7 +184926,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181132,7 +184964,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181166,7 +185002,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181200,7 +185040,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181234,7 +185078,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181268,7 +185116,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181302,7 +185154,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181313,11 +185169,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
               "lane": 3
             },
             "tx": {
-              "pre": 0,
-              "pre2": 0,
-              "main": 0,
-              "post": 0,
-              "post2": 0,
+              "pre": -33,
+              "pre2": 9,
+              "main": 103,
+              "post": -7,
+              "post2": -12,
               "post3": 0,
               "pre3": 0
             }
@@ -181336,7 +185192,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181370,7 +185230,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181404,7 +185268,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181438,7 +185306,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181449,11 +185321,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
               "lane": 7
             },
             "tx": {
-              "pre": 0,
-              "pre2": 0,
-              "main": 0,
-              "post": 0,
-              "post2": 0,
+              "pre": -30,
+              "pre2": 8,
+              "main": 105,
+              "post": -10,
+              "post2": -12,
               "post3": 0,
               "pre3": 0
             }
@@ -181472,7 +185344,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181483,11 +185359,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
               "lane": 0
             },
             "tx": {
-              "pre": 0,
-              "pre2": 0,
-              "main": 0,
-              "post": 0,
-              "post2": 0,
+              "pre": -26,
+              "pre2": 6,
+              "main": 92,
+              "post": -29,
+              "post2": -7,
               "post3": 0,
               "pre3": 0
             }
@@ -181506,7 +185382,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181540,7 +185420,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181574,7 +185458,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181608,7 +185496,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181619,11 +185511,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
               "lane": 4
             },
             "tx": {
-              "pre": 0,
-              "pre2": 0,
-              "main": 0,
-              "post": 0,
-              "post2": 0,
+              "pre": -26,
+              "pre2": 6,
+              "main": 94,
+              "post": -31,
+              "post2": -8,
               "post3": 0,
               "pre3": 0
             }
@@ -181642,7 +185534,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181676,7 +185572,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181710,7 +185610,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181744,7 +185648,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181778,7 +185686,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181812,7 +185724,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181846,7 +185762,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181880,7 +185800,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181914,7 +185838,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181948,7 +185876,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -181982,7 +185914,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182016,7 +185952,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182050,7 +185990,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182084,7 +186028,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182118,7 +186066,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182152,7 +186104,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182186,7 +186142,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182220,7 +186180,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182254,7 +186218,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182288,7 +186256,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182322,7 +186294,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182356,7 +186332,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182390,7 +186370,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182424,7 +186408,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182458,7 +186446,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182492,7 +186484,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182526,7 +186522,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182560,7 +186560,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182594,7 +186598,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182628,7 +186636,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182662,7 +186674,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182696,7 +186712,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182730,7 +186750,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182764,7 +186788,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182798,7 +186826,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182832,7 +186864,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182866,7 +186902,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182900,7 +186940,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182934,7 +186978,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -182968,7 +187016,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -183002,7 +187054,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -183036,7 +187092,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -183070,7 +187130,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -183104,7 +187168,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -183138,7 +187206,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -183172,7 +187244,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -183206,7 +187282,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -183240,7 +187320,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -183274,7 +187358,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -183308,7 +187396,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {
@@ -183342,7 +187434,11 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
-          "partNumber": "PartNum_1"
+          "oui": "",
+          "partNumber": "PartNum_1",
+          "rev": "",
+          "serialNumber": "",
+          "dateCode": ""
         }
       },
       "pins": {

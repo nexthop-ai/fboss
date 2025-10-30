@@ -190,14 +190,22 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_TAHAN800BC;
     } else if (modelName.find("ICECUBE") == 0) {
       type_ = PlatformType::PLATFORM_ICECUBE800BC;
+<<<<<<< HEAD
     } else if (modelName.find("NH-4010") == 0) {
       type_ = PlatformType::PLATFORM_NH4010;
     } else if (modelName.find("WEDGE800BA") == 0) {
       type_ = PlatformType::PLATFORM_WEDGE800BA;
+||||||| 5e7fbb4d0e
+    } else if (modelName.find("WEDGE800BA") == 0) {
+      type_ = PlatformType::PLATFORM_WEDGE800BA;
+=======
+    } else if (modelName.find("WEDGE800B_ACT") == 0) {
+      type_ = PlatformType::PLATFORM_WEDGE800B_ACT;
+>>>>>>> upstream/main
     } else if (modelName.find("ICETEA") == 0) {
       type_ = PlatformType::PLATFORM_ICETEA800BC;
-    } else if (modelName.find("WEDGE800CA") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800CA;
+    } else if (modelName.find("WEDGE800C_ACT") == 0) {
+      type_ = PlatformType::PLATFORM_WEDGE800C_ACT;
     } else {
       throw FbossError("invalid model name " + modelName);
     }
@@ -269,11 +277,11 @@ void PlatformProductInfo::initMode() {
     } else if (FLAGS_mode == "nh4010") {
       type_ = PlatformType::PLATFORM_NH4010;
     } else if (FLAGS_mode == "wedge800ba") {
-      type_ = PlatformType::PLATFORM_WEDGE800BA;
+      type_ = PlatformType::PLATFORM_WEDGE800B_ACT;
     } else if (FLAGS_mode == "tahansb800bc") {
       type_ = PlatformType::PLATFORM_TAHANSB800BC;
     } else if (FLAGS_mode == "wedge800ca") {
-      type_ = PlatformType::PLATFORM_WEDGE800CA;
+      type_ = PlatformType::PLATFORM_WEDGE800C_ACT;
     } else {
       throw std::runtime_error("invalid mode " + FLAGS_mode);
     }

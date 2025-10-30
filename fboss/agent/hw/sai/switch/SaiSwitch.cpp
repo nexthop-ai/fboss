@@ -2495,9 +2495,10 @@ SaiSwitch::getVirtualDeviceToRemoteConnectionGroupsLocked(
       lookupVirtualDeviceId);
 }
 
-void SaiSwitch::fetchL2Table(std::vector<L2EntryThrift>* l2Table) const {
+void SaiSwitch::fetchL2Table(std::vector<L2EntryThrift>* l2Table, bool sdk)
+    const {
   std::lock_guard<std::mutex> lock(saiSwitchMutex_);
-  fetchL2TableLocked(lock, l2Table);
+  fetchL2TableLocked(lock, l2Table, sdk);
 }
 
 void SaiSwitch::gracefulExitImpl() {
@@ -4084,8 +4085,9 @@ bool SaiSwitch::sendPacketOutOfPortSync(
 
 void SaiSwitch::fetchL2TableLocked(
     const std::lock_guard<std::mutex>& /* lock */,
-    std::vector<L2EntryThrift>* l2Table) const {
-  *l2Table = managerTable_->fdbManager().getL2Entries();
+    std::vector<L2EntryThrift>* l2Table,
+    bool sdk) const {
+  *l2Table = managerTable_->fdbManager().getL2Entries(sdk);
 }
 
 folly::dynamic SaiSwitch::toFollyDynamicLocked(
@@ -4723,8 +4725,9 @@ std::string SaiSwitch::listObjects(
         objTypes.push_back(SAI_OBJECT_TYPE_TAM_REPORT);
         objTypes.push_back(SAI_OBJECT_TYPE_TAM_EVENT_ACTION);
 #if defined(BRCM_SAI_SDK_DNX_GTE_11_0)
-        objTypes.push_back(static_cast<sai_object_type_t>(
-            SAI_OBJECT_TYPE_TAM_EVENT_AGING_GROUP));
+        objTypes.push_back(
+            static_cast<sai_object_type_t>(
+                SAI_OBJECT_TYPE_TAM_EVENT_AGING_GROUP));
 #endif
         objTypes.push_back(SAI_OBJECT_TYPE_TAM_EVENT);
         objTypes.push_back(SAI_OBJECT_TYPE_TAM);
@@ -5135,6 +5138,13 @@ HwSwitchPipelineStats SaiSwitch::getSwitchPipelineStats() const {
 HwSwitchTemperatureStats SaiSwitch::getSwitchTemperatureStats() const {
   std::lock_guard<std::mutex> lk(saiSwitchMutex_);
   return managerTable_->switchManager().getSwitchTemperatureStats();
+}
+
+HwSwitchHardResetStats SaiSwitch::getHwSwitchHardResetStats() const {
+  HwSwitchHardResetStats hardResetStats;
+  hardResetStats.hard_reset_notification_received() =
+      hardResetNotificationReceived_.load();
+  return hardResetStats;
 }
 
 /*

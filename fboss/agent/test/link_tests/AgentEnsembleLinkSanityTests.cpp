@@ -46,7 +46,7 @@ bool isEqual(
 // For some reason this flag always evaluates as false if we hardcode the string
 // So return it from a function instead
 const std::string qsfpUtilPrefix() {
-  std::string extraFlags = "";
+  std::string extraFlags;
   if (FLAGS_multi_npu_platform_mapping) {
     extraFlags += " --multi-npu-platform-mapping ";
   }
@@ -105,8 +105,9 @@ TEST_F(AgentEnsembleLinkTest, asicLinkFlap) {
         setPortStatus(port, false);
       }
       ASSERT_NO_THROW(waitForAllCabledPorts(false));
-      ASSERT_NO_THROW(utility::waitForAllTransceiverStates(
-          false, getCabledTranceivers(), 60, 5s));
+      ASSERT_NO_THROW(
+          utility::waitForAllTransceiverStates(
+              false, getCabledTranceivers(), 60, 5s));
 
       // Set the port status on all cabled ports to true. The link should come
       // back up
@@ -114,8 +115,9 @@ TEST_F(AgentEnsembleLinkTest, asicLinkFlap) {
         setPortStatus(port, true);
       }
       ASSERT_NO_THROW(waitForAllCabledPorts(true));
-      ASSERT_NO_THROW(utility::waitForAllTransceiverStates(
-          true, getCabledTranceivers(), 60, 5s));
+      ASSERT_NO_THROW(
+          utility::waitForAllTransceiverStates(
+              true, getCabledTranceivers(), 60, 5s));
       ASSERT_NO_THROW(checkAgentMemoryInBounds());
     }
   };
@@ -192,11 +194,12 @@ TEST_F(AgentEnsembleLinkSanityTestDataPlaneFlood, qsfpWarmbootIsHitLess) {
         createL3DataplaneFlood();
         utility::restartQsfpService(false /* coldboot */);
         // Wait for all transceivers to converge to Active state
-        EXPECT_NO_THROW(utility::waitForAllTransceiverStates(
-            true,
-            getCabledTranceivers(),
-            60 /* retries */,
-            5s /* retry interval */));
+        EXPECT_NO_THROW(
+            utility::waitForAllTransceiverStates(
+                true,
+                getCabledTranceivers(),
+                60 /* retries */,
+                5s /* retry interval */));
       },
       [this]() {
         // Assert no traffic loss and no ecmp shrink. If ports flap
@@ -477,8 +480,9 @@ TEST_F(AgentEnsembleLinkTest, qsfpColdbootAfterAgentUp) {
         sleep(5);
         // Assert all cabled ports are up and transceivers have ACTIVE state
         EXPECT_NO_THROW(waitForAllCabledPorts(true, 60, 5s));
-        EXPECT_NO_THROW(utility::waitForAllTransceiverStates(
-            true, getCabledTranceivers(), 60, 5s));
+        EXPECT_NO_THROW(
+            utility::waitForAllTransceiverStates(
+                true, getCabledTranceivers(), 60, 5s));
       });
 }
 

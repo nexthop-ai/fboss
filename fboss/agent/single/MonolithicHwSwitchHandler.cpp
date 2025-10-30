@@ -104,6 +104,11 @@ HwSwitchTemperatureStats MonolithicHwSwitchHandler::getSwitchTemperatureStats()
   return hw_->getSwitchTemperatureStats();
 }
 
+HwSwitchHardResetStats MonolithicHwSwitchHandler::getHwSwitchHardResetStats()
+    const {
+  return hw_->getHwSwitchHardResetStats();
+}
+
 void MonolithicHwSwitchHandler::updateAllPhyInfo() {
   hw_->updateAllPhyInfo();
 }
@@ -181,8 +186,9 @@ std::string MonolithicHwSwitchHandler::getDebugDump() const {
 }
 
 void MonolithicHwSwitchHandler::fetchL2Table(
-    std::vector<L2EntryThrift>* l2Table) const {
-  hw_->fetchL2Table(l2Table);
+    std::vector<L2EntryThrift>* l2Table,
+    bool sdk) const {
+  hw_->fetchL2Table(l2Table, sdk);
 }
 
 std::string MonolithicHwSwitchHandler::listObjects(
@@ -271,6 +277,7 @@ void MonolithicHwSwitchHandler::getHwStats(
   hwStats.arsExhausted() = hw_->getArsExhaustionStatus();
   hwStats.sysPortShelState() = hw_->getSysPortShelState();
   hwStats.hwRouterInterfaceStats() = hw_->getRouterInterfaceStats();
+  hwStats.hardResetStats() = hw_->getHwSwitchHardResetStats();
 }
 
 } // namespace facebook::fboss

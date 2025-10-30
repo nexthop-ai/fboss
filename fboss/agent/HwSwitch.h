@@ -245,7 +245,9 @@ class HwSwitch {
   virtual folly::F14FastMap<std::string, HwRouterInterfaceStats>
   getRouterInterfaceStats() const = 0;
 
-  virtual void fetchL2Table(std::vector<L2EntryThrift>* l2Table) const = 0;
+  virtual void fetchL2Table(
+      std::vector<L2EntryThrift>* l2Table,
+      bool sdk = false) const = 0;
 
   void updateAllPhyInfo();
   std::map<PortID, phy::PhyInfo> getAllPhyInfo() const {
@@ -267,6 +269,12 @@ class HwSwitch {
   virtual HwResourceStats getResourceStats() const = 0;
   virtual std::map<int, cfg::PortState> getSysPortShelState() const = 0;
   virtual cfg::SwitchingMode getFwdSwitchingMode(const RouteNextHopEntry&) = 0;
+  /*
+   * Stats for number of times switch has been hard reset. This is only
+   * needed in tests to validate hard reset callback being received, but
+   * actual hard reset is avoided by appropriate GFLAGs.
+   */
+  virtual HwSwitchHardResetStats getHwSwitchHardResetStats() const = 0;
 
   /*
    * Get latest device watermark bytes
