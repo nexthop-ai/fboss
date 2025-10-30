@@ -108,7 +108,8 @@ class MonolithicHwSwitchHandler : public HwSwitchHandler {
 
   std::string getDebugDump() const;
 
-  void fetchL2Table(std::vector<L2EntryThrift>* l2Table) const;
+  void fetchL2Table(std::vector<L2EntryThrift>* l2Table, bool sdk = false)
+      const;
 
   std::string listObjects(const std::vector<HwObjectType>& types, bool cached)
       const;
@@ -136,6 +137,8 @@ class MonolithicHwSwitchHandler : public HwSwitchHandler {
   HwSwitchPipelineStats getSwitchPipelineStats() const;
 
   HwSwitchTemperatureStats getSwitchTemperatureStats() const;
+
+  HwSwitchHardResetStats getHwSwitchHardResetStats() const;
 
   void getHwStats(multiswitch::HwSwitchStats& hwStats) const;
 

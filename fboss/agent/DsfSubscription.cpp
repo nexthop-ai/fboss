@@ -7,7 +7,6 @@
 #include "fboss/agent/SwSwitch.h"
 #include "fboss/agent/SwitchStats.h"
 #include "fboss/agent/state/SwitchState.h"
-#include "fboss/fsdb/if/FsdbModel.h"
 #include "fboss/fsdb/if/gen-cpp2/fsdb_common_types.h"
 #include "fboss/lib/thrift_service_client/ConnectionOptions.h"
 #include "fboss/thrift_cow/nodes/Serializer.h"
@@ -566,7 +565,14 @@ void DsfSubscription::processGRHoldTimerExpired() {
     return std::shared_ptr<SwitchState>{};
   };
 
-  hwUpdateEvb_->runInEventBaseThread(
-      [this, updateDsfStateFn]() { updateDsfState(updateDsfStateFn); });
+  {
+    // Hold the lock while enqueueing the GR expiry update. This is to avoid
+    // another DSF update comes in at the same time and not being enqueued
+    // because of the non-null nextDsfUpdate_.
+    auto nextDsfUpdateWlock = nextDsfUpdate_.wlock();
+    hwUpdateEvb_->runInEventBaseThread(
+        [this, updateDsfStateFn]() { updateDsfState(updateDsfStateFn); });
+    nextDsfUpdateWlock->reset();
+  }
 }
 } // namespace facebook::fboss

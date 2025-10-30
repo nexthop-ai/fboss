@@ -268,10 +268,11 @@ std::string SaiPlatform::getHwAsicConfig(
   std::vector<std::string> nameValStrs;
   auto addNameValue = [&nameValStrs, &overrides](const auto& keyAndVal) {
     auto oitr = overrides.find(keyAndVal.first);
-    nameValStrs.emplace_back(folly::to<std::string>(
-        keyAndVal.first,
-        '=',
-        oitr == overrides.end() ? keyAndVal.second : oitr->second));
+    nameValStrs.emplace_back(
+        folly::to<std::string>(
+            keyAndVal.first,
+            '=',
+            oitr == overrides.end() ? keyAndVal.second : oitr->second));
   };
   for (const auto& entry : commonConfigs) {
     addNameValue(entry);
@@ -301,12 +302,17 @@ std::string SaiPlatform::getHwAsicConfig(
 void SaiPlatform::initSaiProfileValues() {
   kSaiProfileValues.insert(
       std::make_pair(SAI_KEY_INIT_CONFIG_FILE, getHwConfigDumpFile()));
-  kSaiProfileValues.insert(std::make_pair(
-      SAI_KEY_WARM_BOOT_READ_FILE, getWarmBootHelper()->warmBootDataPath()));
-  kSaiProfileValues.insert(std::make_pair(
-      SAI_KEY_WARM_BOOT_WRITE_FILE, getWarmBootHelper()->warmBootDataPath()));
-  kSaiProfileValues.insert(std::make_pair(
-      SAI_KEY_BOOT_TYPE, getWarmBootHelper()->canWarmBoot() ? "1" : "0"));
+  kSaiProfileValues.insert(
+      std::make_pair(
+          SAI_KEY_WARM_BOOT_READ_FILE,
+          getWarmBootHelper()->warmBootDataPath()));
+  kSaiProfileValues.insert(
+      std::make_pair(
+          SAI_KEY_WARM_BOOT_WRITE_FILE,
+          getWarmBootHelper()->warmBootDataPath()));
+  kSaiProfileValues.insert(
+      std::make_pair(
+          SAI_KEY_BOOT_TYPE, getWarmBootHelper()->canWarmBoot() ? "1" : "0"));
   auto vendorProfileValues = getSaiProfileVendorExtensionValues();
   kSaiProfileValues.insert(
       vendorProfileValues.begin(), vendorProfileValues.end());
@@ -394,9 +400,9 @@ void SaiPlatform::initPorts() {
       saiPort = std::make_unique<SaiNh4010PlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_ICETEA800BC) {
       saiPort = std::make_unique<SaiBcmIcetea800bcPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_WEDGE800BA) {
+    } else if (platformMode == PlatformType::PLATFORM_WEDGE800B_ACT) {
       saiPort = std::make_unique<SaiBcmWedge800baPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_WEDGE800CA) {
+    } else if (platformMode == PlatformType::PLATFORM_WEDGE800C_ACT) {
       saiPort = std::make_unique<SaiWedge800caPlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_TAHANSB800BC) {
       saiPort = std::make_unique<SaiBcmTahansb800bcPlatformPort>(portId, this);
@@ -979,6 +985,7 @@ SaiSwitchTraits::CreateAttributes SaiPlatform::getSwitchAttributes(
 #if defined(BRCM_SAI_SDK_XGS_AND_DNX)
       localSystemPortIdRangeList, // range list of local scope system port ids
 #endif
+      std::nullopt, // enable PFC monitoring for the switch
   };
 }
 

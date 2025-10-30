@@ -193,7 +193,7 @@ std::unique_ptr<PlatformMapping> initPlatformMapping(PlatformType type) {
       return platformMappingStr.empty()
           ? std::make_unique<Nh4010PlatformMapping>()
           : std::make_unique<Nh4010PlatformMapping>(platformMappingStr);
-    case PlatformType::PLATFORM_WEDGE800BA:
+    case PlatformType::PLATFORM_WEDGE800B_ACT:
       return platformMappingStr.empty()
           ? std::make_unique<Wedge800baPlatformMapping>()
           : std::make_unique<Wedge800baPlatformMapping>(platformMappingStr);
@@ -205,7 +205,7 @@ std::unique_ptr<PlatformMapping> initPlatformMapping(PlatformType type) {
       return platformMappingStr.empty()
           ? std::make_unique<Tahansb800bcPlatformMapping>()
           : std::make_unique<Tahansb800bcPlatformMapping>(platformMappingStr);
-    case PlatformType::PLATFORM_WEDGE800CA:
+    case PlatformType::PLATFORM_WEDGE800C_ACT:
       return platformMappingStr.empty()
           ? std::make_unique<Wedge800caPlatformMapping>()
           : std::make_unique<Wedge800caPlatformMapping>(platformMappingStr);

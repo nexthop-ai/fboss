@@ -63,8 +63,8 @@ std::shared_ptr<RouteV6> makeRoute(
     const RouteV6::Prefix& pfx,
     const RouteNextHopSet& nextHops) {
   RouteNextHopEntry nhopEntry(nextHops, kDefaultAdminDistance);
-  auto rt = std::make_shared<RouteV6>(
-      RouteV6::makeThrift(pfx, ClientID(0), nhopEntry));
+  auto rt =
+      std::make_shared<RouteV6>(RouteV6::makeThrift(pfx, kClientID, nhopEntry));
   rt->setResolved(nhopEntry);
   rt->publish();
   return rt;
@@ -74,8 +74,8 @@ std::shared_ptr<RouteV4> makeV4Route(
     const RouteV4::Prefix& pfx,
     const RouteNextHopSet& nextHops) {
   RouteNextHopEntry nhopEntry(nextHops, kDefaultAdminDistance);
-  auto rt = std::make_shared<RouteV4>(
-      RouteV4::makeThrift(pfx, ClientID(0), nhopEntry));
+  auto rt =
+      std::make_shared<RouteV4>(RouteV4::makeThrift(pfx, kClientID, nhopEntry));
   rt->setResolved(nhopEntry);
   rt->publish();
   return rt;
@@ -286,11 +286,30 @@ void BaseEcmpResourceManagerTest::SetUp() {
 }
 
 void BaseEcmpResourceManagerTest::TearDown() {
+  // Assert route replays are noops
+  assertReplayIsNoOp(false /*syncFib*/);
+  assertReplayIsNoOp(true /*syncFib*/);
   if (!getEcmpCompressionThresholdPct()) {
     return;
   }
   assertResourceMgrCorrectness(*sw_->getEcmpResourceManager(), sw_->getState());
   assertResourceMgrCorrectness(*consolidator_, state_);
+}
+
+void BaseEcmpResourceManagerTest::assertReplayIsNoOp(bool syncFib) {
+  auto preAddState = state_;
+  ThriftHandler handler(sw_);
+  auto replayRoutes = getClientRoutes(kClientID);
+  XLOG(DBG2) << " Will replay: " << replayRoutes->size()
+             << " routes via: " << (syncFib ? "syncFib" : "addUnicastRoutes");
+  if (syncFib) {
+    handler.syncFib(static_cast<int16_t>(kClientID), std::move(replayRoutes));
+  } else {
+    handler.addUnicastRoutes(
+        static_cast<int16_t>(kClientID), std::move(replayRoutes));
+  }
+  state_ = sw_->getState();
+  ASSERT_EQ(preAddState, state_);
 }
 
 std::shared_ptr<EcmpResourceManager>
@@ -330,7 +349,6 @@ void BaseEcmpResourceManagerTest::updateFlowletSwitchingConfig(
 
 void BaseEcmpResourceManagerTest::updateRoutes(
     const std::shared_ptr<SwitchState>& newState) {
-  auto constexpr kClientID(ClientID::BGPD);
   StateDelta delta(sw_->getState(), newState);
 
   auto routesToAddOrUpdate = std::make_unique<std::vector<UnicastRoute>>();
@@ -340,12 +358,16 @@ void BaseEcmpResourceManagerTest::updateRoutes(
       delta,
       [&routesToAddOrUpdate](
           RouterID rid, const auto& /*oldRoute*/, const auto& newRoute) {
-        routesToAddOrUpdate->emplace_back(util::toUnicastRoute(
-            newRoute->prefix().toCidrNetwork(), newRoute->getForwardInfo()));
+        routesToAddOrUpdate->emplace_back(
+            util::toUnicastRoute(
+                newRoute->prefix().toCidrNetwork(),
+                newRoute->getForwardInfo()));
       },
       [&routesToAddOrUpdate](RouterID rid, const auto& newRoute) {
-        routesToAddOrUpdate->emplace_back(util::toUnicastRoute(
-            newRoute->prefix().toCidrNetwork(), newRoute->getForwardInfo()));
+        routesToAddOrUpdate->emplace_back(
+            util::toUnicastRoute(
+                newRoute->prefix().toCidrNetwork(),
+                newRoute->getForwardInfo()));
       },
       [&prefixesToDelete](RouterID rid, const auto& oldRoute) {
         IpPrefix pfx;
@@ -360,6 +382,39 @@ void BaseEcmpResourceManagerTest::updateRoutes(
   handler.addUnicastRoutes(
       static_cast<int16_t>(kClientID), std::move(routesToAddOrUpdate));
   assertRibFibEquivalence();
+}
+
+std::unique_ptr<std::vector<UnicastRoute>>
+BaseEcmpResourceManagerTest::getClientRoutes(ClientID client) const {
+  auto fibContainer =
+      sw_->getState()->getFibs()->getAllNodes()->getFibContainerIf(RouterID(0));
+  auto unicastRoutes = std::make_unique<std::vector<UnicastRoute>>();
+  auto fillInRoutes = [&unicastRoutes](const auto& fibIn) {
+    for (const auto& [_, route] : std::as_const(*fibIn)) {
+      auto forwardInfo = route->getEntryForClient(kClientID);
+      if (forwardInfo) {
+        unicastRoutes->emplace_back(
+            util::toUnicastRoute(
+                route->prefix().toCidrNetwork(), *forwardInfo));
+      }
+    }
+  };
+  fillInRoutes(fibContainer->getFibV4());
+  fillInRoutes(fibContainer->getFibV6());
+  XLOG(DBG2) << " For client : " << static_cast<int>(client)
+             << " got : " << unicastRoutes->size() << " routes";
+  return unicastRoutes;
+}
+
+void BaseEcmpResourceManagerTest::syncFib() {
+  ThriftHandler handler(sw_);
+  handler.syncFib(static_cast<int16_t>(kClientID), getClientRoutes(kClientID));
+}
+
+void BaseEcmpResourceManagerTest::replayAllRoutesViaThrift() {
+  ThriftHandler handler(sw_);
+  handler.addUnicastRoutes(
+      static_cast<int16_t>(kClientID), getClientRoutes(kClientID));
 }
 
 void BaseEcmpResourceManagerTest::assertRibFibEquivalence() const {

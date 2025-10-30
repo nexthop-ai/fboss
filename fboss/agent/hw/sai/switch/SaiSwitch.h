@@ -125,6 +125,7 @@ class SaiSwitch : public HwSwitch {
   HwSwitchPipelineStats getSwitchPipelineStats() const override;
   HwSwitchTemperatureStats getSwitchTemperatureStats() const override;
 
+  HwSwitchHardResetStats getHwSwitchHardResetStats() const override;
   std::map<int, cfg::PortState> getSysPortShelState() const override;
 
   folly::F14FastMap<std::string, HwRouterInterfaceStats>
@@ -134,7 +135,8 @@ class SaiSwitch : public HwSwitch {
 
   uint64_t getDeviceWatermarkBytes() const override;
 
-  void fetchL2Table(std::vector<L2EntryThrift>* l2Table) const override;
+  void fetchL2Table(std::vector<L2EntryThrift>* l2Table, bool sdk = false)
+      const override;
 
   folly::dynamic toFollyDynamic() const override;
 
@@ -351,7 +353,8 @@ class SaiSwitch : public HwSwitch {
 
   void fetchL2TableLocked(
       const std::lock_guard<std::mutex>& lock,
-      std::vector<L2EntryThrift>* l2Table) const;
+      std::vector<L2EntryThrift>* l2Table,
+      bool sdk = false) const;
 
   const std::map<PortID, FabricEndpoint>& getFabricConnectivityLocked(
       const std::lock_guard<std::mutex>& lock) const;
@@ -738,6 +741,7 @@ class SaiSwitch : public HwSwitch {
   folly::Synchronized<int> switchReachabilityChangePending_{0};
   folly::Synchronized<bool> txReadyStatusChangePending_{false};
   std::optional<uint32_t> asicRevision_;
+  std::atomic<int16_t> hardResetNotificationReceived_{0};
 };
 
 } // namespace facebook::fboss
