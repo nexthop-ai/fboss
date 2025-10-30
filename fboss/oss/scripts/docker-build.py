@@ -336,18 +336,20 @@ def run_fboss_build(
         home_dir = os.path.expanduser("~")
         # Mount other common dotfiles/directories
         dotfiles = [
-            ".bashrc", ".zshrc",
-            ".ssh",
+            ".bashrc", ".bash_history", ".zshrc", ".zsh_history",
+            ".config",
             ".emacs", ".emacs.d",
-            ".vim", ".vimrc",
             ".gitconfig",
+            ".gnupg",
+            ".ssh",
+            ".vim", ".vimrc",
             "bin",
             ]
 
         for dotfile in dotfiles:
             host_path = os.path.join(home_dir, dotfile)
             if os.path.exists(host_path):
-                cmd_args.extend(["-v", f"{host_path}:/home/{USERNAME}/{dotfile}:ro"])
+                cmd_args.extend(["-v", f"{host_path}:/home/{USERNAME}/{dotfile}:rw"])
 
     # Add args for docker container name
     cmd_args.append(f"--name={FBOSS_CONTAINER_NAME}")
