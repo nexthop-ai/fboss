@@ -50,10 +50,10 @@ enum PlatformType {
   PLATFORM_ICETEA800BC = 42,
   PLATFORM_TAHANSB800BC = 43,
   PLATFORM_WEDGE800C_ACT = 44,
-  PLATFORM_NH4010 = 45,
 
   # Placeholder for unknown platform type
   PLATFORM_UNKNOWN = 1000,
+  PLATFORM_NH4010 = 999, # Not intended to go upstream, keep here to avoid merge conflicts
 }
 
 enum SdkVersionRolloutType {
