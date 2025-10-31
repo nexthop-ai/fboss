@@ -8,6 +8,7 @@
 USE_FAKE_SAI=${USE_FAKE_SAI:-false}
 # Don't overload the system
 num_jobs=$(( $(nproc) - 2 ))
+echo 1000 > /proc/self/oom_score_adj
 
 set -e
 cd /var/FBOSS/fboss
