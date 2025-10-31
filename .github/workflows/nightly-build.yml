@@ -1,0 +1,15 @@
+name: Nightly Build
+run-name: Nightly Build - Full FBOSS
+
+on:
+  # Allow manually triggering the workflow
+  workflow_dispatch:
+  # Schedule nightly build at 6:00 AM UTC (11:00 PM PT / 2:00 AM ET)
+  schedule:
+    - cron: '0 5 * * *'
+
+jobs:
+  build-and-test:
+    uses: ./.github/workflows/build-and-test.yml
+    with:
+      sai_version: '1.16.1'

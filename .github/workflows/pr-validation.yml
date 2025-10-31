@@ -1,0 +1,14 @@
+name: PR Validation
+run-name: PR Validation - Build and Test
+
+on:
+  # Allow manually triggering the workflow
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  build-and-test:
+    uses: ./.github/workflows/build-and-test.yml
+    with:
+      sai_version: '1.16.1'
+

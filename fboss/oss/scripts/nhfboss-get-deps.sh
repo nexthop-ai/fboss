@@ -10,7 +10,9 @@
 # getdeps script can understand.
 
 # Don't overload the system
-num_jobs=$(( $(nproc) - 2 ))
+if [ -z "$num_jobs" ]; then
+    num_jobs=$(( $(nproc) - 2 ))
+fi
 
 set -e
 cd /var/FBOSS/fboss

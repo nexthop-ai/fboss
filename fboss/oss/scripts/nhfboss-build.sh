@@ -7,7 +7,9 @@
 
 USE_FAKE_SAI=${USE_FAKE_SAI:-false}
 # Don't overload the system
-num_jobs=$(( $(nproc) - 2 ))
+if [ -z "$num_jobs" ]; then
+    num_jobs=$(( $(nproc) - 2 ))
+fi
 echo 1000 > /proc/self/oom_score_adj
 
 set -e
@@ -20,8 +22,17 @@ if [ "$USE_FAKE_SAI" = true ]; then
     export BUILD_SAI_FAKE_LINK_TEST=1
 else
     export SAI_BRCM_IMPL=1
-    export SAI_SDK_VERSION=SAI_VERSION_13_3_0_0_ODP
-    export SAI_VERSION=1.16.1
+    export SAI_VERSION=${SAI_VERSION:-1.16.1}
+    if [ -z "$SAI_SDK_VERSION" ]; then
+        case $SAI_VERSION in
+            1.14.0) SAI_SDK_VERSION=SAI_VERSION_11_7_0_0_ODP ;;
+            1.15.3) SAI_SDK_VERSION=SAI_VERSION_12_2_0_0_ODP ;;
+            1.16.1) SAI_SDK_VERSION=SAI_VERSION_13_3_0_0_ODP ;;
+            *) echo "Don't know what SAI_SDK_VERSION to use for $SAI_VERSION"; exit 1 ;;
+        esac
+        echo "Using SAI_SDK_VERSION=$SAI_SDK_VERSION for SAI_VERSION=$SAI_VERSION"
+        export SAI_SDK_VERSION
+    fi
 fi
 
 export PATH=/opt/rh/gcc-toolset-12/root/usr/bin:$PATH

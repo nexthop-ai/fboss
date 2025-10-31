@@ -1,0 +1,70 @@
+name: Build and Test
+run-name: Build and Test FBOSS (SAI ${{ inputs.sai_version }})
+
+on:
+  workflow_call:
+    inputs:
+      sai_version:
+        description: 'SAI version to build against'
+        required: false
+        default: '1.16.1'
+        type: string
+
+jobs:
+  Build-and-Test:
+    if: github.repository_owner == 'nexthop-ai'
+    runs-on: [self-hosted, fboss-gha]
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          # We'll clean the workspace ourselves to preserve most of .build_dir
+          # so keep vendored dependencies across builds.
+          clean: false
+
+      - name: Clean workspace
+        run: |
+          git clean -ffdxe .build_dir
+          rm -rf .build_dir/build/fboss .build_dir/installed/fboss
+
+      - name: Cleanup any existing container
+        run: |
+          docker stop FBOSS_build_${USER} 2>/dev/null || true
+          docker rm FBOSS_build_${USER} 2>/dev/null || true
+
+      - name: Build FBOSS Docker image
+        run: ./fboss/oss/scripts/nhfboss-docker-build.py
+
+      - name: Prune dangling images
+        run: docker image prune -f
+
+      - name: Start FBOSS build container
+        run: ./fboss/oss/scripts/nhfboss-docker-enter.py
+
+      - name: Prepare SAI
+        run: |
+          docker exec FBOSS_build_${USER} ./fboss/oss/scripts/build-helper.py \
+            /var/extras/sai/${{ inputs.sai_version }} \
+            /var/extras/sai/${{ inputs.sai_version }} \
+            /var/extras/sai/${{ inputs.sai_version }} \
+            ${{ inputs.sai_version }} \
+            --skip-archive-creation
+
+      - name: Fetch dependencies
+        run: |
+          docker exec -e num_jobs=$(nproc) FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-get-deps.sh
+
+      - name: Build FBOSS
+        run: |
+          docker exec -e num_jobs=$(nproc) -e SAI_VERSION=${{ inputs.sai_version }} FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh
+          docker exec FBOSS_build_${USER} sccache -s
+
+      - name: Run unit tests
+        run: |
+          docker exec FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-test.sh
+
+      - name: Cleanup FBOSS container
+        if: always()
+        run: |
+          docker stop FBOSS_build_${USER} 2>/dev/null || true
+          docker rm FBOSS_build_${USER} 2>/dev/null || true

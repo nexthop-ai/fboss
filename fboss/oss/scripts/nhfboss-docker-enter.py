@@ -15,6 +15,7 @@ import importlib
 import subprocess
 import argparse
 import re
+import sys
 
 docker_build = importlib.import_module("docker-build")
 
@@ -45,7 +46,7 @@ def is_container_available(check_all: bool = False) -> bool:
         True if the container is available, False otherwise.
     """
     proc = subprocess.run(
-        ["docker", "ps", "-a" if check_all else ""], capture_output=True
+        ["docker", "ps", "-a" if check_all else ""], capture_output=True, check=True,
     )
     return (
         proc.returncode == 0
@@ -53,8 +54,8 @@ def is_container_available(check_all: bool = False) -> bool:
         is not None
     )
 
-
-proc = subprocess.run(["docker", "ps", "-a"], capture_output=True)
+# Check if we're in an interactive environment (has a TTY)
+is_interactive = sys.stdout.isatty()
 if not is_container_available(check_all=True):
     # If the container does not exist, create it with the appropriate mounts
     sdk_path = None
@@ -81,7 +82,7 @@ if not is_container_available(check_all=True):
     docker_build.run_fboss_build(
         scratch_path=scratch_path,
         target=None,
-        docker_output=True,
+        docker_output=is_interactive,
         use_system_deps=True,
         env_vars=[
             "SCCACHE_DIR:/var/extras/sccache",
@@ -96,12 +97,15 @@ if not is_container_available(check_all=True):
         dot_files=True,
         build=False,
         sdk_path=sdk_path,
+        daemon=not is_interactive,
     )
 else:
     # If the container exists, start it if it's not running, and enter it
-    proc = subprocess.run(["docker", "ps"], capture_output=True)
     if not is_container_available():
         subprocess.run(["docker", "start", docker_build.FBOSS_CONTAINER_NAME])
 
-    shell = os.getenv("SHELL", "/bin/bash")
-    subprocess.run(["docker", "exec", "-it", docker_build.FBOSS_CONTAINER_NAME, shell])
+    if is_interactive:
+        shell = os.getenv("SHELL", "/bin/bash")
+        subprocess.run(["docker", "exec", "-it", docker_build.FBOSS_CONTAINER_NAME, shell])
+    else:
+        print(f"Container {docker_build.FBOSS_CONTAINER_NAME} is running and ready for commands")

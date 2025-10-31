@@ -300,6 +300,7 @@ def run_fboss_build(
     extra_cmake_defines: Optional[str],
     dot_files: bool = False,
     build: bool = True,
+    daemon: bool = False,
     sdk_path: Optional[str] = None,
 ):
     use_stable_hashes()
@@ -323,6 +324,14 @@ def run_fboss_build(
     cmd_args.append(f"{scratch_path}:{CONTAINER_SCRATCH_PATH}:z")
     # Add required capability for sudo permissions
     cmd_args.append("--cap-add=CAP_AUDIT_WRITE")
+    if daemon:
+        cmd_args.append("-d")
+        if docker_output:
+            print(
+                "ERROR: Docker output is not supported in daemon mode. "
+                "Use `docker logs -f FBOSS_build_${USER}` to view the logs."
+            )
+            sys.exit(1)
     # Add TTY flags
     if docker_output:
         cmd_args.append("-it")
@@ -389,7 +398,7 @@ def run_fboss_build(
             build_cmd.extend(["--cache-config", cache_config])
         build_cmd.append("fboss")
     else:
-        build_cmd = ["bash"]
+        build_cmd = ["sleep", "infinity"] if daemon else ["bash"]
     cmd_args.extend(build_cmd)
     build_cp = subprocess.run(cmd_args)
     if build_cp.returncode != 0:
