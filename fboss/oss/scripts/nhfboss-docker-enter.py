@@ -45,8 +45,11 @@ def is_container_available(check_all: bool = False) -> bool:
     Returns:
         True if the container is available, False otherwise.
     """
+    cmd = ["docker", "ps"]
+    if check_all:
+        cmd.append("-a")
     proc = subprocess.run(
-        ["docker", "ps", "-a" if check_all else ""], capture_output=True, check=True,
+        cmd, capture_output=True, check=True,
     )
     return (
         proc.returncode == 0
