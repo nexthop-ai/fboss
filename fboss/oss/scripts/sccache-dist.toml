@@ -1,0 +1,7 @@
+[dist]
+scheduler_url = "http://sccache.us-west-1.nexthop.ai:10600"
+retry_on_busy = true
+
+[dist.auth]
+type = "token"
+token = "5420f48ebbdafef316daab08ca28a88918bb531cec5929753c593279990d61089d4695a3d06ffc134ac000cc65b810d6bf76ccf204121e262d4fa77531ec874b"

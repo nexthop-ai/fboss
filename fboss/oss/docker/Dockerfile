@@ -6,12 +6,10 @@ ARG USER_UID=0
 ARG USER_GID=0
 ARG USER_SHELL=/bin/bash
 
-# Download and install sccache
-RUN version=v0.11.0 && \
-    curl -L https://github.com/mozilla/sccache/releases/download/$version/sccache-$version-x86_64-unknown-linux-musl.tar.gz -o sccache.tar.gz && \
-    tar xzf sccache.tar.gz && \
-    mv sccache-$version-x86_64-unknown-linux-musl/sccache /usr/local/bin/ && \
-    rm -rf sccache-$version-x86_64-unknown-linux-musl sccache.tar.gz
+# Download and install our own patched sccache
+RUN curl -L https://github.com/timn-nexthop/sccache/releases/download/retry-on-busy-1/sccache.gz | \
+    gunzip > /usr/local/bin/sccache && \
+    chmod +x /usr/local/bin/sccache
 
 # Mount point for extra files.
 RUN mkdir -p /var/extras

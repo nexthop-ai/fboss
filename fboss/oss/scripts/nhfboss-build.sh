@@ -5,17 +5,15 @@
 # dependencies have already been fetched and built using the
 # nhfboss-get-deps.sh script.
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/nhfboss-common.sh"
+
 USE_FAKE_SAI=${USE_FAKE_SAI:-false}
-# Don't overload the system
-if [ -z "$num_jobs" ]; then
-    num_jobs=$(( $(nproc) - 2 ))
-fi
+
 echo 1000 > /proc/self/oom_score_adj
 
 set -e
 cd /var/FBOSS/fboss
-
-common_options='--allow-system-packages --scratch-path /var/FBOSS/tmp_bld_dir --src-dir . --extra-cmake-defines {"CMAKE_C_COMPILER_LAUNCHER":"sccache","CMAKE_CXX_COMPILER_LAUNCHER":"sccache"} fboss'
 
 if [ "$USE_FAKE_SAI" = true ]; then
     export BUILD_SAI_FAKE=1
