@@ -31,7 +31,7 @@ RUN dnf install -y 'dnf-command(config-manager)' && \
     re2 re2-devel snappy-devel xxhash-devel xz-devel zlib-devel zlib-static \
     libxml2-devel expat-devel wget git sudo lsof `basename "$USER_SHELL"` \
     libcap-devel libmount-devel \
-    gcc-toolset-12 gcc-toolset-12-libasan-devel gcc-toolset-12-libubsan-devel clang-tools-extra && \
+    gcc-toolset-12 gcc-toolset-12-libasan-devel gcc-toolset-12-libubsan-devel && \
     update-alternatives --install /usr/bin/gcc gcc /opt/rh/gcc-toolset-12/root/usr/bin/gcc 100 \
     --slave /usr/bin/g++ g++ /opt/rh/gcc-toolset-12/root/usr/bin/g++ \
     --slave /usr/bin/c++ c++ /opt/rh/gcc-toolset-12/root/usr/bin/g++ \
@@ -46,6 +46,28 @@ RUN dnf install -y 'dnf-command(config-manager)' && \
     rm -f libtool-*.rpm && \
     python3 -m pip install boto3 botocore gitpython meson jinja2
 
+# Install clang-format version 21 from LLVM official releases because CentOS Stream 9 is still on version 20.
+# Extract the version from .pre-commit-config.yaml to ensure consistency.
+COPY .pre-commit-config.yaml /tmp/.pre-commit-config.yaml
+RUN LLVM_VERSION=$(grep -A 1 'mirrors-clang-format' /tmp/.pre-commit-config.yaml | grep 'rev:' | sed 's/.*v\([0-9.]*\).*/\1/') && \
+    curl -L https://github.com/llvm/llvm-project/releases/download/llvmorg-${LLVM_VERSION}/LLVM-${LLVM_VERSION}-Linux-X64.tar.xz -o /tmp/llvm.tar.xz && \
+    tar -xf /tmp/llvm.tar.xz -C /tmp && \
+    for i in \
+    clang-apply-replacements \
+    clang-format \
+    clang-format-diff \
+    clang-include-cleaner \
+    clang-include-fixer \
+    clang-refactor \
+    clang-reorder-fields \
+    clang-tidy \
+    clangd \
+    find-all-symbols \
+    git-clang-format \
+    run-clang-tidy; do \
+    install -m 0755 /tmp/LLVM-${LLVM_VERSION}-Linux-X64/bin/$i /usr/local/bin/; \
+    done && \
+    rm -rf /tmp/llvm.tar.xz /tmp/LLVM-${LLVM_VERSION}-Linux-X64 /tmp/.pre-commit-config.yaml
 
 # Use /var/FBOSS as the set location to clone the git repository and store the outputs of the build.
 WORKDIR /var/FBOSS/fboss
