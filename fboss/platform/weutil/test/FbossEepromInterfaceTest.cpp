@@ -280,6 +280,8 @@ TEST(FbossEepromInterfaceTest, V5ObjWrongCrc) {
 TEST(FbossEepromOnieTest, OnieFormat) {
   std::vector<std::pair<std::string, std::string>> expectedContentsDummy = {
       {"Format", "ONIE TlvInfo"},
+      {"Version", "6"},
+      {"Production State", "1"},
       {"Product Name", "TestProduct"},
       {"Part Number", "PN12345"},
       {"Serial Number", "SN1234567"},
@@ -300,6 +302,8 @@ TEST(FbossEepromOnieTest, OnieFormat) {
   };
   std::vector<std::pair<std::string, std::string>> expectedContentsNH4010 = {
       {"Format", "ONIE TlvInfo"},
+      {"Version", "6"},
+      {"Production State", "1"},
       {"Product Name", "NH-4010"},
       {"Part Number", "950-00001-01"},
       {"Serial Number", "NH-FSJ25160005"},

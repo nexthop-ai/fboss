@@ -60,3 +60,20 @@ TEST_F(ContentValidatorTest, MissingProductionState) {
       {"Version", "6"}};
   EXPECT_FALSE(validator.isValid(contents));
 }
+
+TEST_F(ContentValidatorTest, ValidOnieFormat) {
+  // ONIE format is presented as v6 with additional "Format" field
+  std::vector<std::pair<std::string, std::string>> contents = {
+      {"Format", "ONIE TlvInfo"},
+      {"Version", "6"},
+      {"Production State", "1"}};
+  EXPECT_TRUE(validator.isValid(contents));
+  // ONIE format with additional fields
+  contents = {
+      {"Format", "ONIE TlvInfo"},
+      {"Version", "6"},
+      {"Production State", "1"},
+      {"Product Name", "NH4010"},
+      {"Serial Number", "ABC123"}};
+  EXPECT_TRUE(validator.isValid(contents));
+}

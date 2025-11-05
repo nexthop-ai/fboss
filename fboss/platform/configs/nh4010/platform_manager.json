@@ -304,14 +304,6 @@
           "pmUnitScopedName": "SMB_MUX_2",
           "numOutgoingChannels": 4
         },
-
-        {
-          "busName": "SMB_MUX_0@3",
-          "address": "0x50",
-          "kernelDeviceName": "24c64",
-          "pmUnitScopedName": "SMB_EEPROM"
-        },
-
         {
           "busName": "SMB_MUX_1@1",
           "address": "0x60",
@@ -337,12 +329,6 @@
           "pmUnitScopedName": "POWER_CTRL_ISL68225_4"
         },
 
-        {
-          "busName": "SMB_MUX_2@0",
-          "address": "0x50",
-          "kernelDeviceName": "24c64",
-          "pmUnitScopedName": "MGMT_EEPROM"
-        },
         {
           "busName": "SMB_MUX_2@1",
           "address": "0x4c",
@@ -385,8 +371,6 @@
     "/run/devmap/i2c-busses/SMB_IOB_I2C_5": "/SMB_SLOT@0/[SMB_IOB_I2C_5]",
     "/run/devmap/i2c-busses/SMB_IOB_I2C_6": "/SMB_SLOT@0/[SMB_IOB_I2C_6]",
     "/run/devmap/i2c-busses/SMB_IOB_I2C_7": "/SMB_SLOT@0/[SMB_IOB_I2C_7]",
-    "/run/devmap/eeproms/SMB_EEPROM": "/SMB_SLOT@0/[SMB_EEPROM]",
-    "/run/devmap/eeproms/MGMT_EEPROM": "/SMB_SLOT@0/[MGMT_EEPROM]",
     "/run/devmap/sensors/POWER_CTRL_ISL68225_1": "/SMB_SLOT@0/[POWER_CTRL_ISL68225_1]",
     "/run/devmap/sensors/POWER_CTRL_ISL68225_2": "/SMB_SLOT@0/[POWER_CTRL_ISL68225_2]",
     "/run/devmap/sensors/POWER_CTRL_ISL68225_3": "/SMB_SLOT@0/[POWER_CTRL_ISL68225_3]",

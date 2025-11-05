@@ -258,8 +258,12 @@ FbossEepromInterface::getContents() const {
   std::vector<std::pair<std::string, std::string>> contents;
 
   // Handle version display differently for ONIE format
+  // For ONIE format, we fake it as FBOSS v6 for compatibility
   if (version_ == kOnieEepromVersion) {
     contents.emplace_back("Format", "ONIE TlvInfo");
+    contents.emplace_back("Version", "6");
+    // v6 requires Production State, so we fake it as "1" (production)
+    contents.emplace_back("Production State", "1");
   } else {
     contents.emplace_back("Version", std::to_string(getVersion()));
   }
