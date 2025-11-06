@@ -34,4 +34,5 @@ else
 fi
 
 export PATH=/opt/rh/gcc-toolset-12/root/usr/bin:$PATH
-nice -n 10 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --build-type MinSizeRel --no-deps $common_options "$@"
+time nice -n 10 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --build-type MinSizeRel --no-deps $common_options "$@"
+echo "Build SUCCESS"

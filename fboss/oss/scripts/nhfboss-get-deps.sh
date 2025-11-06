@@ -16,5 +16,6 @@ set -e
 cd /var/FBOSS/fboss
 
 export PATH=/opt/rh/gcc-toolset-12/root/usr/bin:$PATH
-nice -n 10 ./build/fbcode_builder/getdeps.py install-system-deps --num-jobs $num_jobs --recursive $common_options
-nice -n 10 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --only-deps $common_options
+time nice -n 10 ./build/fbcode_builder/getdeps.py install-system-deps --num-jobs $num_jobs --recursive $common_options
+time nice -n 10 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --only-deps $common_options
+echo "Get deps SUCCESS"
