@@ -42,6 +42,18 @@ LINK_JOBS=$(ceildiv $SERVER_RAM_GB 12)
 
 num_jobs=$((LINK_JOBS > COMPILE_JOBS ? LINK_JOBS : COMPILE_JOBS))
 
+ENDPOINT_HOST=bucket.internal.nexthop.ai
+ENDPOINT_PORT=7480
+if timeout 1 bash -c ">/dev/tcp/$ENDPOINT_HOST/$ENDPOINT_PORT" 2>/dev/null; then
+    export SCCACHE_BUCKET=sccache
+    export SCCACHE_ENDPOINT=$ENDPOINT_HOST:$ENDPOINT_PORT
+    export SCCACHE_S3_KEY_PREFIX=fboss
+    export SCCACHE_REGION=auto
+    export AWS_ACCESS_KEY_ID=R74SNIY3OLH45CN19OWC
+    export AWS_SECRET_ACCESS_KEY=4rsA7lOZU0JbX81SZSTQ3nDs2ZslKlcvPdIgdOMP
+    echo "Using sccache bucket: $ENDPOINT_HOST:$ENDPOINT_PORT/$SCCACHE_BUCKET/$SCCACHE_S3_KEY_PREFIX"
+fi
+
 # Note: Because COMPILE_JOBS and LINK_JOBS depend on SERVER_RAM_GB, and they're
 # included as extra cmake defines, you need to do rerun nhfboss-get-deps.sh
 
