@@ -159,6 +159,7 @@ target_link_libraries(utils
   icecube800bc_platform_mapping
   icetea800bc_platform_mapping
   tahansb800bc_platform_mapping
+  ladakh800bcls_platform_mapping
 )
 
 add_library(stats
@@ -258,6 +259,7 @@ add_library(core
   fboss/agent/DsfUpdateValidator.cpp
   fboss/agent/FabricConnectivityManager.cpp
   fboss/agent/FabricLinkMonitoring.cpp
+  fboss/agent/FabricLinkMonitoringManager.cpp
   fboss/agent/EncapIndexAllocator.cpp
   fboss/agent/HwAsicTable.cpp
   fboss/agent/HwSwitch.cpp
@@ -399,6 +401,8 @@ set(core_libs
   ecmp_resource_manager
   thrift_method_rate_limit
   shel_manager
+  state_delta_logger
+  dsfnode_utils
 )
 
 target_link_libraries(core ${core_libs})

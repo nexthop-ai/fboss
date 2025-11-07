@@ -271,10 +271,68 @@ bool ConfigValidator::isValidLedCtrlBlockConfig(
       if (!isValidCsrOffsetCalc(
               *ledCtrlBlockConfig.csrOffsetCalc(),
               port,
-              led,
-              *ledCtrlBlockConfig.startPort())) {
+              *ledCtrlBlockConfig.startPort(),
+              led)) {
         return false;
       }
+    }
+  }
+
+  return true;
+}
+
+bool ConfigValidator::isValidXcvrCtrlBlockConfig(
+    const XcvrCtrlBlockConfig& xcvrCtrlBlockConfig) {
+  if (xcvrCtrlBlockConfig.pmUnitScopedNamePrefix()->empty()) {
+    XLOG(ERR) << "PmUnitScopedNamePrefix must be a non-empty string";
+    return false;
+  }
+  if (xcvrCtrlBlockConfig.pmUnitScopedNamePrefix()->ends_with('_')) {
+    XLOG(ERR) << "PmUnitScopedNamePrefix must not end with an underscore";
+    return false;
+  }
+  if (xcvrCtrlBlockConfig.deviceName()->empty()) {
+    XLOG(ERR) << "deviceName must be a non-empty string";
+    return false;
+  }
+  if (xcvrCtrlBlockConfig.csrOffsetCalc()->empty()) {
+    XLOG(ERR) << "csrOffsetCalc must be a non-empty string";
+    return false;
+  }
+  if (*xcvrCtrlBlockConfig.numPorts() <= 0) {
+    XLOG(ERR) << "numPorts must be a value greater than 0";
+    return false;
+  }
+  if (*xcvrCtrlBlockConfig.startPort() <= 0) {
+    XLOG(ERR) << "startPort must be a value greater than 0";
+    return false;
+  }
+  if (*xcvrCtrlBlockConfig.numPorts() > numXcvrs_) {
+    XLOG(ERR) << fmt::format(
+        "numPorts must be less than or equal to {}", numXcvrs_);
+    return false;
+  }
+  if (*xcvrCtrlBlockConfig.startPort() > numXcvrs_) {
+    XLOG(ERR) << fmt::format(
+        "startPort must be less than or equal to {}", numXcvrs_);
+    return false;
+  }
+  if (*xcvrCtrlBlockConfig.startPort() + *xcvrCtrlBlockConfig.numPorts() - 1 >
+      numXcvrs_) {
+    XLOG(ERR) << fmt::format(
+        "startPort + numPorts - 1 must be must be less than or equal to {}",
+        numXcvrs_);
+    return false;
+  }
+
+  for (int16_t port = *xcvrCtrlBlockConfig.startPort(); port <
+       *xcvrCtrlBlockConfig.startPort() + *xcvrCtrlBlockConfig.numPorts();
+       port++) {
+    if (!isValidCsrOffsetCalc(
+            *xcvrCtrlBlockConfig.csrOffsetCalc(),
+            port,
+            *xcvrCtrlBlockConfig.startPort())) {
+      return false;
     }
   }
 
@@ -378,7 +436,25 @@ bool ConfigValidator::isValidPciDeviceConfig(
     }
   }
 
-  if (!isValidPortRanges(*pciDeviceConfig.ledCtrlBlockConfigs())) {
+  std::vector<std::pair<int16_t, int16_t>> ledPortRanges;
+  for (const auto& config : *pciDeviceConfig.ledCtrlBlockConfigs()) {
+    ledPortRanges.emplace_back(*config.startPort(), *config.numPorts());
+  }
+  if (!isValidPortRanges(ledPortRanges)) {
+    return false;
+  }
+
+  for (const auto& config : *pciDeviceConfig.xcvrCtrlBlockConfigs()) {
+    if (!isValidXcvrCtrlBlockConfig(config)) {
+      return false;
+    }
+  }
+
+  std::vector<std::pair<int16_t, int16_t>> xcvrPortRanges;
+  for (const auto& config : *pciDeviceConfig.xcvrCtrlBlockConfigs()) {
+    xcvrPortRanges.emplace_back(*config.startPort(), *config.numPorts());
+  }
+  if (!isValidPortRanges(xcvrPortRanges)) {
     return false;
   }
 
@@ -533,6 +609,7 @@ bool ConfigValidator::isValidDeviceName(
               *pciDeviceConfig.spiMasterConfigs(),
               *pciDeviceConfig.fanTachoPwmConfigs(),
               *pciDeviceConfig.ledCtrlConfigs(),
+              Utils().createXcvrCtrlConfigs(pciDeviceConfig),
               *pciDeviceConfig.xcvrCtrlConfigs(),
               *pciDeviceConfig.spiMasterConfigs(),
               *pciDeviceConfig.gpioChipConfigs(),
@@ -915,13 +992,13 @@ bool ConfigValidator::isValidXcvrSymlinks(
 bool ConfigValidator::isValidCsrOffsetCalc(
     const std::string& csrOffsetCalc,
     const int16_t& portNum,
-    const int16_t& ledNum,
-    const int16_t& startPort) {
+    const int16_t& startPort,
+    std::optional<int16_t> ledNum) {
   // Test the expression with sample values to see if it's computable
   try {
     // Use Utils to test if the expression can be compiled and evaluated
     auto result =
-        Utils().computeHexExpression(csrOffsetCalc, portNum, ledNum, startPort);
+        Utils().computeHexExpression(csrOffsetCalc, portNum, startPort, ledNum);
 
     // Validate the resulting hex value
     if (result.empty()) {
@@ -1007,16 +1084,15 @@ bool ConfigValidator::isValidVersionedPmUnitConfig(
 }
 
 bool ConfigValidator::isValidPortRanges(
-    const std::vector<LedCtrlBlockConfig>& ledCtrlBlockConfigs) {
-  if (ledCtrlBlockConfigs.empty()) {
+    const std::vector<std::pair<int16_t, int16_t>>& startPortAndNumPorts) {
+  if (startPortAndNumPorts.empty()) {
     return true; // Empty list is valid
   }
 
   // Create a vector of port ranges (startPort, endPort) for sorting
   std::vector<std::pair<int, int>> portRanges;
-  for (const auto& config : ledCtrlBlockConfigs) {
-    int startPort = *config.startPort();
-    int endPort = startPort + *config.numPorts() - 1;
+  for (const auto& [startPort, numPorts] : startPortAndNumPorts) {
+    int endPort = startPort + numPorts - 1;
     portRanges.emplace_back(startPort, endPort);
   }
 

@@ -12,6 +12,10 @@
 
 #include "fboss/agent/if/gen-cpp2/FbossHwCtrl.h"
 #include "fboss/agent/if/gen-cpp2/TestCtrlAsyncClient.h"
+#include "fboss/fsdb/if/gen-cpp2/FsdbService.h"
+#include "fboss/qsfp_service/if/gen-cpp2/qsfp_clients.h"
+
+#include <folly/MacAddress.h>
 
 namespace facebook::fboss::utility {
 
@@ -20,9 +24,17 @@ getSwAgentThriftClient(const std::string& switchName);
 std::unique_ptr<apache::thrift::Client<FbossHwCtrl>> getHwAgentThriftClient(
     const std::string& switchName,
     int port);
+std::unique_ptr<apache::thrift::Client<facebook::fboss::QsfpService>>
+getQsfpThriftClient(const std::string& switchName);
+std::unique_ptr<apache::thrift::Client<facebook::fboss::fsdb::FsdbService>>
+getFsdbThriftClient(const std::string& switchName);
+
+int64_t getQsfpAliveSinceEpoch(const std::string& switchName);
+int64_t getFsdbAliveSinceEpoch(const std::string& switchName);
 
 MultiSwitchRunState getMultiSwitchRunState(const std::string& switchName);
 int getNumHwSwitches(const std::string& switchName);
+QsfpServiceRunState getQsfpServiceRunState(const std::string& switchName);
 
 std::map<std::string, FabricEndpoint> getFabricPortToFabricEndpoint(
     const std::string& switchName);
@@ -39,5 +51,41 @@ std::map<int32_t, facebook::fboss::InterfaceDetail> getIntfIdToIntf(
     const std::string& switchName);
 std::vector<facebook::fboss::NdpEntryThrift> getNdpEntries(
     const std::string& switchName);
+
+std::vector<facebook::fboss::DsfSessionThrift> getDsfSessions(
+    const std::string& switchName);
+
+std::map<int64_t, cfg::DsfNode> getSwitchIdToDsfNode(
+    const std::string& switchName);
+
+facebook::fboss::fsdb::SubscriberIdToOperSubscriberInfos
+getSubscriberIdToOperSusbscriberInfos(const std::string& switchName);
+
+void triggerGracefulAgentRestart(const std::string& switchName);
+void triggerUngracefulAgentRestart(const std::string& switchName);
+void triggerGracefulAgentRestartWithDelay(
+    const std::string& switchName,
+    int32_t delayInSeconds);
+
+void triggerGracefulQsfpRestart(const std::string& switchName);
+void triggerUngracefulQsfpRestart(const std::string& switchName);
+
+void triggerGracefulFsdbRestart(const std::string& switchName);
+void triggerUngracefulFsdbRestart(const std::string& switchName);
+
+void adminDisablePort(const std::string& switchName, int32_t portID);
+void adminEnablePort(const std::string& switchName, int32_t portID);
+
+void addNeighbor(
+    const std::string& switchName,
+    const int32_t& interfaceID,
+    const folly::IPAddress& neighborIP,
+    const folly::MacAddress& macAddress,
+    int32_t portID);
+
+void removeNeighbor(
+    const std::string& switchName,
+    const int32_t& interfaceID,
+    const folly::IPAddress& neighborIP);
 
 } // namespace facebook::fboss::utility

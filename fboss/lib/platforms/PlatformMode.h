@@ -102,14 +102,16 @@ inline std::string toString(PlatformType mode) {
       return "ICECUBE";
     case PlatformType::PLATFORM_NH4010:
       return "NH4010";
-    case PlatformType::PLATFORM_WEDGE800B_ACT:
-      return "WEDGE800BA";
+    case PlatformType::PLATFORM_WEDGE800BACT:
+      return "WEDGE800BACT";
     case PlatformType::PLATFORM_ICETEA800BC:
       return "ICETEA";
     case PlatformType::PLATFORM_TAHANSB800BC:
       return "TAHANSB";
-    case PlatformType::PLATFORM_WEDGE800C_ACT:
-      return "WEDGE800C_ACT";
+    case PlatformType::PLATFORM_WEDGE800CACT:
+      return "WEDGE800CACT";
+    case PlatformType::PLATFORM_LADAKH800BCLS:
+      return "LADAKH800BCLS";
     case PlatformType::PLATFORM_UNKNOWN:
       return "UNKNOWN";
   }

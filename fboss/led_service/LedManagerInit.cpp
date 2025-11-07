@@ -7,6 +7,7 @@
 #include "fboss/led_service/Icecube800bcLedManager.h"
 #include "fboss/led_service/Icetea800bcLedManager.h"
 #include "fboss/led_service/Janga800bicLedManager.h"
+#include "fboss/led_service/Ladakh800bclsLedManager.h"
 #include "fboss/led_service/Meru800bfaLedManager.h"
 #include "fboss/led_service/Meru800biaLedManager.h"
 #include "fboss/led_service/Minipack3NLedManager.h"
@@ -74,6 +75,8 @@ std::unique_ptr<LedManager> createLedManager() {
     return std::make_unique<Tahansb800bcLedManager>();
   } else if (mode == PlatformType::PLATFORM_NH4010) {
     return std::make_unique<Nh4010LedManager>();
+  } else if (mode == PlatformType::PLATFORM_LADAKH800BCLS) {
+    return std::make_unique<Ladakh800bclsLedManager>();
   }
   return nullptr;
 }

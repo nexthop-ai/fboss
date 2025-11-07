@@ -44,14 +44,14 @@ class TestVerifyPlatformMappingGeneratedFiles(unittest.TestCase):
             "icecube800bc",
             "icetea800bc",
             "tahansb800bc",
-            "wedge800ba",
+            "wedge800bact",
         ],
         True: [
             "meru800bfa",
             "meru400bfu",
             "janga800bic_dctypef_prod",
             "janga800bic_dctypef_test_fixture",
-            "ladakh800bc",
+            "ladakh800bcls",
         ],
     }
     _FBCODE_GENERATED_DIR: str = (

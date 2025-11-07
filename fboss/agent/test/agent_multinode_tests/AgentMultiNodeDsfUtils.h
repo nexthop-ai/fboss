@@ -15,6 +15,25 @@
 namespace facebook::fboss::utility {
 
 void verifyDsfCluster(const std::unique_ptr<TopologyInfo>& topologyInfo);
-void verifyDsfAgentDownUp();
+
+bool verifyDsfGracefulAgentRestart(
+    const std::unique_ptr<TopologyInfo>& topologyInfo);
+bool verifyDsfUngracefulAgentRestart(
+    const std::unique_ptr<TopologyInfo>& topologyInfo);
+bool verifyDsfGracefulAgentRestartTimeoutRecovery(
+    const std::unique_ptr<TopologyInfo>& topologyInfo);
+
+bool verifyDsfGracefulQsfpRestart(
+    const std::unique_ptr<TopologyInfo>& topologyInfo);
+bool verifyDsfUngracefulQsfpRestart(
+    const std::unique_ptr<TopologyInfo>& topologyInfo);
+
+bool verifyDsfGracefulFSDBRestart(
+    const std::unique_ptr<TopologyInfo>& topologyInfo);
+bool verifyDsfUngracefulFSDBRestart(
+    const std::unique_ptr<TopologyInfo>& topologyInfo);
+
+bool verifyDsfGracefulFabricLinkDownUp(
+    const std::unique_ptr<TopologyInfo>& topologyInfo);
 
 } // namespace facebook::fboss::utility

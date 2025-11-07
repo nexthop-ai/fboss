@@ -72,6 +72,7 @@ add_library(led_manager_lib
   fboss/led_service/Nh4010LedManager.cpp
   fboss/led_service/Tahan800bcLedManager.cpp
   fboss/led_service/Tahansb800bcLedManager.cpp
+  fboss/led_service/Ladakh800bclsLedManager.cpp
 )
 
 target_link_libraries(led_manager_lib
@@ -92,6 +93,7 @@ target_link_libraries(led_manager_lib
   morgan800cc_bsp
   nh4010_bsp
   tahansb800bc_bsp
+  ladakh800bcls_bsp
   darwin_platform_mapping
   elbert_platform_mapping
   fuji_platform_mapping
@@ -107,6 +109,7 @@ target_link_libraries(led_manager_lib
   nh4010_platform_mapping
   tahan800bc_platform_mapping
   tahansb800bc_platform_mapping
+  ladakh800bcls_platform_mapping
   wedge400_platform_mapping
   yamp_platform_mapping
   product_info
