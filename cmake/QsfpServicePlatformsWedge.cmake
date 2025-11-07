@@ -38,7 +38,12 @@ target_link_libraries(qsfp_platforms_wedge
   icecube800bc_platform_mapping
   icetea800bc_platform_mapping
   tahansb800bc_platform_mapping
+<<<<<<< HEAD
   nh4010_platform_mapping
+||||||| 39d08dd0a7
+=======
+  ladakh800bcls_platform_mapping
+>>>>>>> upstream/main
   platform_base
   qsfp_config
   wedge400_i2c

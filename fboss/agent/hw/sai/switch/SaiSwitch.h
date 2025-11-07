@@ -116,6 +116,17 @@ class SaiSwitch : public HwSwitch {
       PortID portID,
       std::optional<uint8_t> queueId) noexcept override;
 
+  bool sendPacketOutOfPortSyncForPktType(
+      std::unique_ptr<TxPacket> pkt,
+      const PortID& portID,
+      TxPacketType packetType) override;
+
+  bool sendPacketOutOfPortSyncCommon(
+      std::unique_ptr<TxPacket> pkt,
+      const PortSaiId& portSaiId,
+      std::optional<uint8_t> queueId,
+      std::optional<int32_t> packetType);
+
   folly::F14FastMap<std::string, HwPortStats> getPortStats() const override;
   std::map<std::string, HwSysPortStats> getSysPortStats() const override;
   FabricReachabilityStats getFabricReachabilityStats() const override;

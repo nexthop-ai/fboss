@@ -32,6 +32,10 @@ class TopologyInfo {
     return topologyType_;
   }
 
+  std::string getMyHostname() const {
+    return myHostname_;
+  }
+
   virtual const std::map<int, std::vector<std::string>>& getClusterIdToRdsws()
       const = 0;
   virtual const std::map<int, std::vector<std::string>>& getClusterIdToFdsws()
@@ -45,9 +49,15 @@ class TopologyInfo {
   getSwitchNameToSwitchIds() const = 0;
   virtual const std::map<std::string, cfg::AsicType>& getSwitchNameToAsicType()
       const = 0;
+  virtual const std::map<std::string, cfg::SystemPortRanges>
+  getSwitchNameToSystemPortRanges() const = 0;
 
  private:
   TopologyType topologyType_;
+
+  // The Test binary only runs on the TestDriver.
+  // Thus, My hostname is also the TestDriver name.
+  std::string myHostname_;
 };
 
 } // namespace facebook::fboss::utility

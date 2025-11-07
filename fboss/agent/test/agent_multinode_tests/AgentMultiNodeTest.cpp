@@ -60,12 +60,34 @@ void AgentMultiNodeTest::setCmdLineFlagOverrides() const {
   FLAGS_dsf_subscribe = true;
 }
 
-TEST_F(AgentMultiNodeTest, verifyCluster) {
+void AgentMultiNodeTest::verifyCluster() const {
   switch (topologyInfo_->getTopologyType()) {
     case utility::TopologyInfo::TopologyType::DSF:
       utility::verifyDsfCluster(topologyInfo_);
       break;
   }
+}
+
+void AgentMultiNodeTest::runTestWithVerifyCluster(
+    const std::function<bool(const std::unique_ptr<utility::TopologyInfo>&)>&
+        testFn) const {
+  // Verify cluster before running test
+  verifyCluster();
+  if (testing::Test::HasNonfatalFailure()) {
+    // Some EXPECT_* asserts in verifyDsfClusterHelper() failed.
+    FAIL()
+        << "Sanity checks in DSF cluster verification failed, can't proceed with test";
+  }
+
+  // The testFn is expected to contain retries specific to the test logic,
+  // thus, we can ASSERT here.
+  ASSERT_TRUE(testFn(topologyInfo_));
+  // Verify cluster is still healthy after test
+  verifyCluster();
+}
+
+TEST_F(AgentMultiNodeTest, verifyCluster) {
+  verifyCluster();
 }
 
 } // namespace facebook::fboss

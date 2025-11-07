@@ -639,8 +639,8 @@ void HwSwitchEnsemble::setupEnsemble(
   cfg::Range64 portIdRange;
   portIdRange.minimum() =
       cfg::switch_config_constants::DEFAULT_PORT_ID_RANGE_MIN();
-  portIdRange.maximum() =
-      cfg::switch_config_constants::DEFAULT_PORT_ID_RANGE_MAX();
+  portIdRange.maximum() = cfg::switch_config_constants::
+      DEFAULT_DUAL_STAGE_3Q_2Q_PORT_ID_RANGE_MAX();
   switchInfo.portIdRange() = portIdRange;
   auto switchIdToSwitchInfo = std::map<int64_t, cfg::SwitchInfo>(
       {{asic->getSwitchId() ? *asic->getSwitchId() : 0, switchInfo}});
@@ -709,8 +709,9 @@ void HwSwitchEnsemble::setupEnsemble(
         scopeResolver_->switchIdToSwitchInfo());
     // this is supporting single ASIC (or switch only)
     for (auto& switchIdAndSwitchInfo : switchIdToSwitchInfo) {
-      auto matcher = HwSwitchMatcher(std::unordered_set<SwitchID>(
-          {static_cast<SwitchID>(switchIdAndSwitchInfo.first)}));
+      auto matcher = HwSwitchMatcher(
+          std::unordered_set<SwitchID>(
+              {static_cast<SwitchID>(switchIdAndSwitchInfo.first)}));
       multiSwitchSwitchSettings->addNode(
           matcher.matcherString(), switchSettings);
     }

@@ -10,6 +10,7 @@
 
 #include "fboss/agent/test/BaseEcmpResourceManagerTest.h"
 #include "fboss/agent/AgentFeatures.h"
+#include "fboss/agent/SwSwitchWarmBootHelper.h"
 #include "fboss/agent/test/TestUtils.h"
 #include "fboss/agent/test/utils/EcmpResourceManagerTestUtils.h"
 
@@ -289,6 +290,20 @@ void BaseEcmpResourceManagerTest::TearDown() {
   // Assert route replays are noops
   assertReplayIsNoOp(false /*syncFib*/);
   assertReplayIsNoOp(true /*syncFib*/);
+  {
+    auto wbState = sw_->gracefulExitState();
+    auto [reconstructedState, reconstructedRib] =
+        sw_->getWarmBootHelper()->reconstructStateAndRib(
+            wbState, true /*hasL3*/);
+    // Assert reconstructed RIB matches both reconstructed
+    // state and current SwitchState. The above APIs will
+    // be used on WB to reconstruct both rib and switch
+    // state
+    facebook::fboss::assertRibFibEquivalence(
+        reconstructedState, reconstructedRib.get());
+    facebook::fboss::assertRibFibEquivalence(
+        sw_->getState(), reconstructedRib.get());
+  }
   if (!getEcmpCompressionThresholdPct()) {
     return;
   }
@@ -419,14 +434,7 @@ void BaseEcmpResourceManagerTest::replayAllRoutesViaThrift() {
 
 void BaseEcmpResourceManagerTest::assertRibFibEquivalence() const {
   waitForStateUpdates(sw_);
-  for (const auto& [_, route] : std::as_const(*cfib(sw_->getState()))) {
-    auto ribRoute =
-        sw_->getRib()->longestMatch(route->prefix().network(), RouterID(0));
-    ASSERT_NE(ribRoute, nullptr);
-    // TODO - check why are the pointers different even though the
-    // forwarding info matches. This is true with or w/o consolidator
-    EXPECT_EQ(ribRoute->getForwardInfo(), route->getForwardInfo());
-  }
+  facebook::fboss::assertRibFibEquivalence(sw_->getState(), sw_->getRib());
 }
 
 std::vector<std::shared_ptr<RouteV6>>

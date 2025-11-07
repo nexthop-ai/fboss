@@ -15,6 +15,7 @@
 #include "fboss/agent/MultiHwSwitchHandler.h"
 #include "fboss/agent/MultiSwitchFb303Stats.h"
 #include "fboss/agent/PacketObserver.h"
+#include "fboss/agent/StateDeltaLogger.h"
 #include "fboss/agent/SwRxPacket.h"
 #include "fboss/agent/SwSwitchRouteUpdateWrapper.h"
 #include "fboss/agent/SwitchInfoTable.h"
@@ -646,6 +647,11 @@ class SwSwitch : public HwSwitchCallback {
       AggregatePortID aggPortID,
       std::optional<uint8_t> queue = std::nullopt) noexcept;
 
+  bool sendPacketOutOfPortSyncForPktType(
+      std::unique_ptr<TxPacket> pkt,
+      const PortID& portID,
+      TxPacketType packetType) noexcept;
+
   /*
    * Send a packet to HwSwitch using thrift stream
    */
@@ -653,7 +659,8 @@ class SwSwitch : public HwSwitchCallback {
       std::unique_ptr<TxPacket> pkt,
       SwitchID switchId,
       std::optional<PortID> portID,
-      std::optional<uint8_t> queue = std::nullopt) noexcept;
+      std::optional<uint8_t> queue = std::nullopt,
+      std::optional<TxPacketType> packetType = std::nullopt) noexcept;
   /*
    * Send a packet, using switching logic to send it out the correct port(s)
    * for the specified VLAN and destination MAC.
@@ -1016,7 +1023,6 @@ class SwSwitch : public HwSwitchCallback {
   void createAndProbeTunManager();
   void initializeTunManager(bool useBlocking);
 
-  void updateRibEcmpOverrides(const StateDelta& delta);
   std::optional<folly::MacAddress> getSourceMac(
       const std::shared_ptr<Interface>& intf) const;
   void updateStateBlockingImpl(
@@ -1329,6 +1335,7 @@ class SwSwitch : public HwSwitchCallback {
   std::unique_ptr<MPLSHandler> mplsHandler_;
   std::unique_ptr<PacketLogger> packetLogger_;
   std::unique_ptr<RouteUpdateLogger> routeUpdateLogger_;
+  std::unique_ptr<StateDeltaLogger> stateDeltaLogger_;
   std::unique_ptr<LinkAggregationManager> lagManager_;
   std::unique_ptr<ResolvedNexthopMonitor> resolvedNexthopMonitor_;
   std::unique_ptr<ResolvedNexthopProbeScheduler> resolvedNexthopProbeScheduler_;

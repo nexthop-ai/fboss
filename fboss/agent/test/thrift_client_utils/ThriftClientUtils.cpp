@@ -12,6 +12,7 @@
 
 #include <thrift/lib/cpp2/async/RocketClientChannel.h>
 #include "common/network/NetworkUtil.h"
+#include "fboss/agent/AddressUtil.h"
 
 namespace facebook::fboss::utility {
 
@@ -45,6 +46,43 @@ std::unique_ptr<apache::thrift::Client<FbossHwCtrl>> getHwAgentThriftClient(
       std::move(channel));
 }
 
+std::unique_ptr<apache::thrift::Client<facebook::fboss::QsfpService>>
+getQsfpThriftClient(const std::string& switchName) {
+  folly::EventBase* eb = folly::EventBaseManager::get()->getEventBase();
+  auto remoteSwitchIp =
+      facebook::network::NetworkUtil::getHostByName(switchName);
+  folly::SocketAddress qsfp(remoteSwitchIp, 5910);
+  auto socket = folly::AsyncSocket::newSocket(eb, qsfp);
+  auto channel =
+      apache::thrift::RocketClientChannel::newChannel(std::move(socket));
+  return std::make_unique<apache::thrift::Client<QsfpService>>(
+      std::move(channel));
+}
+
+std::unique_ptr<apache::thrift::Client<facebook::fboss::fsdb::FsdbService>>
+getFsdbThriftClient(const std::string& switchName) {
+  folly::EventBase* eb = folly::EventBaseManager::get()->getEventBase();
+  auto remoteSwitchIp =
+      facebook::network::NetworkUtil::getHostByName(switchName);
+  folly::SocketAddress fsdb(remoteSwitchIp, 5908);
+  auto socket = folly::AsyncSocket::newSocket(eb, fsdb);
+  auto channel =
+      apache::thrift::RocketClientChannel::newChannel(std::move(socket));
+  return std::make_unique<
+      apache::thrift::Client<facebook::fboss::fsdb::FsdbService>>(
+      std::move(channel));
+}
+
+int64_t getQsfpAliveSinceEpoch(const std::string& switchName) {
+  auto qsfpClient = getQsfpThriftClient(switchName);
+  return qsfpClient->sync_aliveSince();
+}
+
+int64_t getFsdbAliveSinceEpoch(const std::string& switchName) {
+  auto fsdbClient = getFsdbThriftClient(switchName);
+  return fsdbClient->sync_aliveSince();
+}
+
 MultiSwitchRunState getMultiSwitchRunState(const std::string& switchName) {
   auto swAgentClient = getSwAgentThriftClient(switchName);
   MultiSwitchRunState runState;
@@ -55,6 +93,11 @@ MultiSwitchRunState getMultiSwitchRunState(const std::string& switchName) {
 int getNumHwSwitches(const std::string& switchName) {
   auto runState = getMultiSwitchRunState(switchName);
   return runState.hwIndexToRunState()->size();
+}
+
+QsfpServiceRunState getQsfpServiceRunState(const std::string& switchName) {
+  auto qsfpClient = getQsfpThriftClient(switchName);
+  return qsfpClient->sync_getQsfpServiceRunState();
 }
 
 void runOnAllHwAgents(
@@ -123,6 +166,136 @@ std::vector<facebook::fboss::NdpEntryThrift> getNdpEntries(
   std::vector<facebook::fboss::NdpEntryThrift> ndpEntries;
   swAgentClient->sync_getNdpTable(ndpEntries);
   return ndpEntries;
+}
+
+std::vector<facebook::fboss::DsfSessionThrift> getDsfSessions(
+    const std::string& switchName) {
+  auto swAgentClient = getSwAgentThriftClient(switchName);
+  std::vector<facebook::fboss::DsfSessionThrift> sessions;
+  swAgentClient->sync_getDsfSessions(sessions);
+  return sessions;
+}
+
+std::map<int64_t, cfg::DsfNode> getSwitchIdToDsfNode(
+    const std::string& switchName) {
+  auto swAgentClient = getSwAgentThriftClient(switchName);
+  std::map<int64_t, cfg::DsfNode> switchIdToDsfNode;
+  swAgentClient->sync_getDsfNodes(switchIdToDsfNode);
+  return switchIdToDsfNode;
+}
+
+facebook::fboss::fsdb::SubscriberIdToOperSubscriberInfos
+getSubscriberIdToOperSusbscriberInfos(const std::string& switchName) {
+  auto fsdbClient = getFsdbThriftClient(switchName);
+  facebook::fboss::fsdb::SubscriberIdToOperSubscriberInfos subInfos;
+  fsdbClient->sync_getAllOperSubscriberInfos(subInfos);
+  return subInfos;
+}
+
+void triggerGracefulAgentRestart(const std::string& switchName) {
+  try {
+    auto swAgentClient = getSwAgentThriftClient(switchName);
+    swAgentClient->sync_gracefullyRestartService("wedge_agent_test");
+  } catch (...) {
+    // Thrift request may throw error as the Agent exits.
+    // Ignore it, as we only wanted to trigger exit.
+  }
+}
+
+void triggerUngracefulAgentRestart(const std::string& switchName) {
+  try {
+    auto swAgentClient = getSwAgentThriftClient(switchName);
+    swAgentClient->sync_ungracefullyRestartService("wedge_agent_test");
+  } catch (...) {
+    // Thrift request may throw error as the Agent exits.
+    // Ignore it, as we only wanted to trigger exit.
+  }
+}
+
+void triggerGracefulAgentRestartWithDelay(
+    const std::string& switchName,
+    int32_t delayInSeconds) {
+  try {
+    auto swAgentClient = getSwAgentThriftClient(switchName);
+    swAgentClient->sync_gracefullyRestartServiceWithDelay(
+        "wedge_agent_test", delayInSeconds);
+  } catch (...) {
+    // Thrift request may throw error as the Agent exits.
+    // Ignore it, as we only wanted to trigger exit.
+  }
+}
+
+void triggerGracefulQsfpRestart(const std::string& switchName) {
+  try {
+    auto swAgentClient = getSwAgentThriftClient(switchName);
+    swAgentClient->sync_gracefullyRestartService("qsfp_service");
+  } catch (...) {
+    // Thrift request may throw error as the Agent exits.
+    // Ignore it, as we only wanted to trigger exit.
+  }
+}
+
+void triggerUngracefulQsfpRestart(const std::string& switchName) {
+  try {
+    auto swAgentClient = getSwAgentThriftClient(switchName);
+    swAgentClient->sync_ungracefullyRestartService("qsfp_service");
+  } catch (...) {
+    // Thrift request may throw error as the Agent exits.
+    // Ignore it, as we only wanted to trigger exit.
+  }
+}
+
+void triggerGracefulFsdbRestart(const std::string& switchName) {
+  try {
+    auto swAgentClient = getSwAgentThriftClient(switchName);
+    swAgentClient->sync_gracefullyRestartService("fsdb");
+  } catch (...) {
+    // Thrift request may throw error as the Agent exits.
+    // Ignore it, as we only wanted to trigger exit.
+  }
+}
+
+void triggerUngracefulFsdbRestart(const std::string& switchName) {
+  try {
+    auto swAgentClient = getSwAgentThriftClient(switchName);
+    swAgentClient->sync_ungracefullyRestartService("fsdb");
+  } catch (...) {
+    // Thrift request may throw error as the Agent exits.
+    // Ignore it, as we only wanted to trigger exit.
+  }
+}
+
+void adminDisablePort(const std::string& switchName, int32_t portID) {
+  auto swAgentClient = getSwAgentThriftClient(switchName);
+  swAgentClient->sync_setPortState(portID, false /* disable port */);
+}
+
+void adminEnablePort(const std::string& switchName, int32_t portID) {
+  auto swAgentClient = getSwAgentThriftClient(switchName);
+  swAgentClient->sync_setPortState(portID, true /* enable port */);
+}
+
+void addNeighbor(
+    const std::string& switchName,
+    const int32_t& interfaceID,
+    const folly::IPAddress& neighborIP,
+    const folly::MacAddress& macAddress,
+    int32_t portID) {
+  auto swAgentClient = getSwAgentThriftClient(switchName);
+  swAgentClient->sync_addNeighbor(
+      interfaceID,
+      facebook::network::toBinaryAddress(neighborIP),
+      macAddress.toString(),
+      portID);
+}
+
+void removeNeighbor(
+    const std::string& switchName,
+    const int32_t& interfaceID,
+    const folly::IPAddress& neighborIP) {
+  auto swAgentClient = getSwAgentThriftClient(switchName);
+  swAgentClient->sync_flushNeighborEntry(
+      facebook::network::toBinaryAddress(neighborIP), interfaceID);
 }
 
 } // namespace facebook::fboss::utility

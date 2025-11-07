@@ -233,6 +233,7 @@ void FbossEepromInterface::parseEepromBlobTLV(
   }
 }
 
+<<<<<<< HEAD
 FbossEepromInterface FbossEepromInterface::createEepromInterface(int version) {
   FbossEepromInterface result;
   result.version_ = version;
@@ -253,6 +254,26 @@ FbossEepromInterface FbossEepromInterface::createEepromInterface(int version) {
   return result;
 }
 
+||||||| 39d08dd0a7
+FbossEepromInterface FbossEepromInterface::createEepromInterface(int version) {
+  FbossEepromInterface result;
+  result.version_ = version;
+  switch (version) {
+    case 5:
+      result.fieldMap_ = kV5Map;
+      break;
+    case 6:
+      result.fieldMap_ = kV6Map;
+      break;
+    default:
+      throw std::runtime_error(
+          "Invalid EEPROM version : " + std::to_string(version));
+  }
+  return result;
+}
+
+=======
+>>>>>>> upstream/main
 std::vector<std::pair<std::string, std::string>>
 FbossEepromInterface::getContents() const {
   std::vector<std::pair<std::string, std::string>> contents;

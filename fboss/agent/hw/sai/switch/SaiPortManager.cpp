@@ -540,6 +540,7 @@ int getWorstCaseAssumedOpticsDelayNS(const HwAsic& asic) {
     case cfg::AsicType::ASIC_TYPE_RAMON:
     case cfg::AsicType::ASIC_TYPE_GARONNE:
     case cfg::AsicType::ASIC_TYPE_SANDIA_PHY:
+    case cfg::AsicType::ASIC_TYPE_AGERA3:
       break;
     case cfg::AsicType::ASIC_TYPE_JERICHO3:
     case cfg::AsicType::ASIC_TYPE_RAMON3:
@@ -719,8 +720,11 @@ void SaiPortManager::loadPortQueues(const Port& swPort) {
     }
     updatedPortQueue.push_back(clonedPortQueue);
   }
-  managerTable_->queueManager().ensurePortQueueConfig(
-      saiPort->adapterKey(), portHandle->queues, updatedPortQueue, &swPort);
+  if (swPort.getPortType() != cfg::PortType::HYPER_PORT_MEMBER) {
+    // skip queue programming for hyper port members
+    managerTable_->queueManager().ensurePortQueueConfig(
+        saiPort->adapterKey(), portHandle->queues, updatedPortQueue, &swPort);
+  }
 }
 
 void SaiPortManager::addNode(const std::shared_ptr<Port>& swPort) {
@@ -2260,7 +2264,8 @@ void SaiPortManager::updateStats(
   }
   const auto& asic = platform_->getAsic();
   if (updateCableLengths && isPortUp(portId) &&
-      portType == cfg::PortType::FABRIC_PORT &&
+      (portType == cfg::PortType::FABRIC_PORT ||
+       portType == cfg::PortType::HYPER_PORT_MEMBER) &&
       asic->isSupported(HwAsic::Feature::CABLE_PROPOGATION_DELAY)) {
     bool cableLenAvailableOnPort = true;
     if (asic->getSwitchType() == cfg::SwitchType::FABRIC &&
@@ -2439,6 +2444,14 @@ void SaiPortManager::setQosMapsOnPort(
         port->setOptionalAttribute(
             SaiPortTraits::Attributes::QosDscpToTcMap{mapping});
         break;
+      case SAI_QOS_MAP_TYPE_DOT1P_TO_TC:
+        port->setOptionalAttribute(
+            SaiPortTraits::Attributes::QosDot1pToTcMap{mapping});
+        break;
+      case SAI_QOS_MAP_TYPE_TC_AND_COLOR_TO_DOT1P:
+        port->setOptionalAttribute(
+            SaiPortTraits::Attributes::QosTcAndColorToDot1pMap{mapping});
+        break;
       case SAI_QOS_MAP_TYPE_TC_TO_QUEUE:
         /*
          * On certain platforms, applying TC to QUEUE mapping on front panel
@@ -2483,6 +2496,9 @@ SaiPortManager::getNullSaiIdsForQosMaps() {
 
   auto qosMapHandle = managerTable_->qosMapManager().getQosMap();
   if (qosMapHandle) {
+    if (qosMapHandle->tcToPcpMap) {
+      qosMaps.emplace_back(SAI_QOS_MAP_TYPE_TC_AND_COLOR_TO_DOT1P, nullObjId);
+    }
     if (qosMapHandle->tcToPgMap) {
       qosMaps.emplace_back(SAI_QOS_MAP_TYPE_TC_TO_PRIORITY_GROUP, nullObjId);
     }
@@ -2500,6 +2516,17 @@ SaiPortManager::getSaiIdsForQosMaps(const SaiQosMapHandle* qosMapHandle) {
   if (!globalQosMapSupported_) {
     qosMaps.emplace_back(
         SAI_QOS_MAP_TYPE_DSCP_TO_TC, qosMapHandle->dscpToTcMap->adapterKey());
+    if (qosMapHandle->pcpToTcMap) {
+      qosMaps.emplace_back(
+          SAI_QOS_MAP_TYPE_DOT1P_TO_TC, qosMapHandle->pcpToTcMap->adapterKey());
+    }
+
+    if (qosMapHandle->tcToPcpMap) {
+      qosMaps.emplace_back(
+          SAI_QOS_MAP_TYPE_TC_AND_COLOR_TO_DOT1P,
+          qosMapHandle->tcToPcpMap->adapterKey());
+    }
+
     qosMaps.emplace_back(
         SAI_QOS_MAP_TYPE_TC_TO_QUEUE, qosMapHandle->tcToQueueMap->adapterKey());
   }
@@ -2540,6 +2567,12 @@ void SaiPortManager::setQosPolicy(
   auto handle = getPortHandle(portID);
   if (!globalQosMapSupported_) {
     handle->dscpToTcQosMap = qosMapHandle->dscpToTcMap;
+    if (qosMapHandle->pcpToTcMap) {
+      handle->pcpToTcQosMap = qosMapHandle->pcpToTcMap;
+    }
+    if (qosMapHandle->tcToPcpMap) {
+      handle->tcToPcpQosMap = qosMapHandle->tcToPcpMap;
+    }
     handle->tcToQueueQosMap = qosMapHandle->tcToQueueMap;
     handle->qosPolicy = qosMapHandle->name;
   }
@@ -2567,6 +2600,12 @@ void SaiPortManager::clearQosPolicy(PortID portID) {
     auto qosMaps = getNullSaiIdsForQosMaps();
     setQosMapsOnPort(portID, qosMaps);
     handle->dscpToTcQosMap.reset();
+    if (handle->pcpToTcQosMap) {
+      handle->pcpToTcQosMap.reset();
+    }
+    if (handle->tcToPcpQosMap) {
+      handle->tcToPcpQosMap.reset();
+    }
     handle->tcToQueueQosMap.reset();
     handle->qosPolicy.reset();
   }

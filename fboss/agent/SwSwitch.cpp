@@ -676,8 +676,17 @@ void SwSwitch::stop(bool isGracefulStop, bool revertToMinAlpmState) {
   // state. Thus, directly calling underlying getHw_DEPRECATED()->stateChanged()
   if (revertToMinAlpmState) {
     XLOG(DBG3) << "setup min ALPM state";
-    stateChanged(
-        StateDelta(getState(), getMinAlpmRouteState(getState())), false);
+    auto minAlpmStateDelta =
+        StateDelta(getState(), getMinAlpmRouteState(getState()));
+    if (stateDeltaLogger_ && FLAGS_enable_state_delta_logging) {
+      stateDeltaLogger_->logStateDelta(
+          minAlpmStateDelta, "Setup min ALPM state");
+    }
+    stateChanged(minAlpmStateDelta, false);
+  }
+
+  if (stateDeltaLogger_ && FLAGS_enable_state_delta_logging) {
+    stateDeltaLogger_.reset();
   }
 }
 
@@ -1346,6 +1355,12 @@ std::shared_ptr<SwitchState> SwSwitch::preInit(SwitchFlags flags) {
   if (!hwAsicTable_->getVoqAsics().empty()) {
     shelManager_ = std::make_unique<ShelManager>();
   }
+
+  // Init StateDeltaLogger for logging state deltas
+  if (FLAGS_enable_state_delta_logging) {
+    stateDeltaLogger_ = std::make_unique<StateDeltaLogger>();
+  }
+
   XLOG(DBG2)
       << "Time to init switch and start all threads "
       << duration_cast<duration<float>>(steady_clock::now() - begin).count();
@@ -1397,7 +1412,6 @@ void SwSwitch::init(
   multiHwSwitchHandler_->stateChanged(deltas, false, hwWriteBehavior);
   if (ecmpResourceManager_) {
     ecmpResourceManager_->updateDone();
-    updateRibEcmpOverrides(StateDelta(origInitialState, initialState));
   }
   if (shelManager_) {
     shelManager_->updateDone();
@@ -1491,7 +1505,6 @@ void SwSwitch::init(const HwWriteBehavior& hwWriteBehavior, SwitchFlags flags) {
   }
   if (ecmpResourceManager_) {
     ecmpResourceManager_->updateDone();
-    updateRibEcmpOverrides(StateDelta(origInitialState, initialState));
   }
   if (shelManager_) {
     shelManager_->updateDone();
@@ -1970,6 +1983,12 @@ SwSwitch::applyUpdate(
     return std::make_pair(oldState, newDesiredState);
   }
 
+  // Log state deltas that are sent to HwSwitch
+  if (stateDeltaLogger_ && FLAGS_enable_state_delta_logging) {
+    stateDeltaLogger_->logStateDeltas(
+        deltas, "Update after ERM and Shel Manager");
+  }
+
   std::shared_ptr<SwitchState> newAppliedState;
 
   // Inform the HwSwitch of the change.
@@ -2002,9 +2021,6 @@ SwSwitch::applyUpdate(
     dumpBadStateUpdate(oldState, newDesiredState);
     XLOG(FATAL) << "encountered a fatal error: " << folly::exceptionStr(ex);
   }
-  if (ecmpResourceManager_ && newAppliedState != oldState) {
-    updateRibEcmpOverrides(StateDelta(origDesiredState, newAppliedState));
-  }
 
   setStateInternal(newAppliedState);
 
@@ -2022,72 +2038,6 @@ SwSwitch::applyUpdate(
 
   XLOG(DBG0) << "Update state took " << duration.count() << "us";
   return std::make_pair(newAppliedState, newDesiredState);
-}
-
-void SwSwitch::updateRibEcmpOverrides(const StateDelta& delta) {
-  std::map<
-      RouterID,
-      std::map<folly::CIDRNetwork, std::optional<cfg::SwitchingMode>>>
-      rid2prefix2SwitchingMode;
-  std::map<
-      RouterID,
-      std::map<folly::CIDRNetwork, std::optional<RouteNextHopSet>>>
-      rid2prefix2Nhops;
-
-  forEachChangedRoute(
-      delta,
-      [&rid2prefix2SwitchingMode, &rid2prefix2Nhops](
-          RouterID rid, const auto& oldRoute, const auto& newRoute) {
-        if (!newRoute->isResolved()) {
-          return;
-        }
-        if (!oldRoute->isResolved()) {
-          if (newRoute->getForwardInfo()
-                  .getOverrideEcmpSwitchingMode()
-                  .has_value()) {
-            rid2prefix2SwitchingMode[rid][newRoute->prefix().toCidrNetwork()] =
-                newRoute->getForwardInfo().getOverrideEcmpSwitchingMode();
-          }
-          if (newRoute->getForwardInfo().getOverrideNextHops().has_value()) {
-            rid2prefix2Nhops[rid][newRoute->prefix().toCidrNetwork()] =
-                newRoute->getForwardInfo().getOverrideNextHops();
-          }
-        } else {
-          // both are resolved
-          if (oldRoute->getForwardInfo().getOverrideEcmpSwitchingMode() !=
-              newRoute->getForwardInfo().getOverrideEcmpSwitchingMode()) {
-            rid2prefix2SwitchingMode[rid][newRoute->prefix().toCidrNetwork()] =
-                newRoute->getForwardInfo().getOverrideEcmpSwitchingMode();
-          }
-          if (oldRoute->getForwardInfo().getOverrideNextHops() !=
-              newRoute->getForwardInfo().getOverrideNextHops()) {
-            rid2prefix2Nhops[rid][newRoute->prefix().toCidrNetwork()] =
-                newRoute->getForwardInfo().getOverrideNextHops();
-          }
-        }
-      },
-      [&rid2prefix2SwitchingMode, &rid2prefix2Nhops](
-          RouterID rid, const auto& newRoute) {
-        if (newRoute->isResolved() &&
-            newRoute->getForwardInfo()
-                .getOverrideEcmpSwitchingMode()
-                .has_value()) {
-          rid2prefix2SwitchingMode[rid][newRoute->prefix().toCidrNetwork()] =
-              newRoute->getForwardInfo().getOverrideEcmpSwitchingMode();
-        }
-        if (newRoute->getForwardInfo().getOverrideNextHops().has_value()) {
-          rid2prefix2Nhops[rid][newRoute->prefix().toCidrNetwork()] =
-              newRoute->getForwardInfo().getOverrideNextHops();
-        }
-      },
-      [&rid2prefix2SwitchingMode](RouterID /*rid*/, const auto& /*oldRoute*/) {
-      });
-  for (const auto& [rid, prefixes] : rid2prefix2SwitchingMode) {
-    getRouteUpdater().programEcmpSwitchingModeAsync(rid, prefixes);
-  }
-  for (const auto& [rid, prefixes] : rid2prefix2Nhops) {
-    getRouteUpdater().programEcmpNhopOverridesAsync(rid, prefixes);
-  }
 }
 
 void SwSwitch::dumpBadStateUpdate(
@@ -3225,17 +3175,47 @@ bool SwSwitch::sendPacketOutOfPortAsync(
   return false;
 }
 
+bool SwSwitch::sendPacketOutOfPortSyncForPktType(
+    std::unique_ptr<TxPacket> pkt,
+    const PortID& portId,
+    TxPacketType packetType) noexcept {
+  auto state = getState();
+  if (!state->getPorts()->getNodeIf(portId)) {
+    XLOG(ERR)
+        << "sendPacketOutOfPortSyncForPktType: dropping packet to unexpected port "
+        << portId;
+    stats()->pktDropped();
+    return false;
+  }
+
+  pcapMgr_->packetSent(pkt.get());
+
+  if (!multiHwSwitchHandler_->sendPacketOutOfPortSyncForPktType(
+          std::move(pkt), portId, packetType)) {
+    // Log error
+    XLOG(ERR) << "Failed to send packet type "
+              << apache::thrift::util::enumNameSafe(packetType) << " out port "
+              << portId;
+    return false;
+  }
+  return true;
+}
+
 bool SwSwitch::sendPacketOutViaThriftStream(
     std::unique_ptr<TxPacket> pkt,
     SwitchID switchId,
     std::optional<PortID> portID,
-    std::optional<uint8_t> queue) noexcept {
+    std::optional<uint8_t> queue,
+    std::optional<TxPacketType> packetType) noexcept {
   multiswitch::TxPacket txPacket;
   if (portID) {
     txPacket.port() = portID.value();
   }
   if (queue) {
     txPacket.queue() = queue.value();
+  }
+  if (packetType) {
+    txPacket.packetType() = packetType.value();
   }
   txPacket.length() = pkt->buf()->computeChainDataLength();
   txPacket.data() = Packet::extractIOBuf(std::move(pkt));
@@ -3533,6 +3513,17 @@ void SwSwitch::applyConfigImpl(
         }
         return newState;
       });
+  if (FLAGS_enable_ecmp_resource_manager) {
+    // Since config update can also update ecmp overrides - in
+    // case of config changing ecmp switching mode. Sync these
+    // route overrides to rib
+    updateEventBase_.runInFbossEventBaseThreadAndWait([this]() {
+      if (rib_) {
+        rib_->updateEcmpOverrides(
+            StateDelta(std::make_shared<SwitchState>(), getState()));
+      }
+    });
+  }
   // Since we're using blocking state update, once we reach here, the new
   // config should be already applied and programmed into hardware.
   updateConfigAppliedInfo();
@@ -3553,7 +3544,6 @@ void SwSwitch::applyConfigImpl(
    * and applyConfig. So ensure programming allways goes through the route
    * update wrapper abstraction
    */
-
   routeUpdater.program();
   runFsdbSyncFunction([&oldConfig, &newConfig](auto& syncer) {
     syncer->cfgUpdated(oldConfig, newConfig);
