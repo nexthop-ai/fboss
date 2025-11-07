@@ -173,7 +173,6 @@ target_link_libraries(tahansb800bc_bsp
   FBThrift::thriftcpp2
 )
 
-<<<<<<< HEAD
 add_library(nh4010_bsp
   fboss/lib/bsp/nh4010/Nh4010BspPlatformMapping.cpp
 )
@@ -183,8 +182,6 @@ target_link_libraries(nh4010_bsp
   FBThrift::thriftcpp2
 )
 
-||||||| 39d08dd0a7
-=======
 add_library(ladakh800bcls_bsp
   fboss/lib/bsp/ladakh800bcls/Ladakh800bclsBspPlatformMapping.cpp
 )
@@ -194,7 +191,6 @@ target_link_libraries(ladakh800bcls_bsp
   FBThrift::thriftcpp2
 )
 
->>>>>>> upstream/main
 add_library(qsfp_bsp_core
   fboss/lib/bsp/BspGenericSystemContainer.cpp
   fboss/lib/bsp/BspIOBus.cpp
@@ -230,12 +226,8 @@ target_link_libraries(qsfp_bsp_core
   janga800bic_bsp
   tahan800bc_bsp
   tahansb800bc_bsp
-<<<<<<< HEAD
   nh4010_bsp
-||||||| 39d08dd0a7
-=======
   ladakh800bcls_bsp
->>>>>>> upstream/main
   device_mdio
   fpga_device
   phy_management_base

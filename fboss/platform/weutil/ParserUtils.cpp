@@ -136,47 +136,9 @@ std::string ParserUtils::parseMac(int len, unsigned char* ptr) {
   return retVal;
 }
 
-<<<<<<< HEAD
 // For ONIE format, Parse MAC with the format XX:XX:XX:XX:XX:XX (no size field)
 std::string ParserUtils::parseOnieMac(int len, unsigned char* ptr) {
   return parseMacHelper(len, ptr, true);
 }
 
-std::string ParserUtils::parseDate(int len, unsigned char* ptr) {
-  std::string retVal;
-  if (len != 4) {
-    throw std::runtime_error("Date field must be 4 Bytes Long!");
-  }
-  unsigned int year = (unsigned int)ptr[1] + (unsigned int)ptr[0];
-  unsigned int month = (unsigned int)ptr[2];
-  unsigned int day = (unsigned int)ptr[3];
-  std::string yearString = std::to_string(year % 100);
-  std::string monthString = std::to_string(month);
-  std::string dayString = std::to_string(day);
-  yearString = (yearString.length() == 1 ? "0" : "") + yearString;
-  monthString = (monthString.length() == 1 ? "0" : "") + monthString;
-  dayString = (dayString.length() == 1 ? "0" : "") + dayString;
-  return monthString + "-" + dayString + "-" + yearString;
-}
-
-||||||| 39d08dd0a7
-std::string ParserUtils::parseDate(int len, unsigned char* ptr) {
-  std::string retVal;
-  if (len != 4) {
-    throw std::runtime_error("Date field must be 4 Bytes Long!");
-  }
-  unsigned int year = (unsigned int)ptr[1] + (unsigned int)ptr[0];
-  unsigned int month = (unsigned int)ptr[2];
-  unsigned int day = (unsigned int)ptr[3];
-  std::string yearString = std::to_string(year % 100);
-  std::string monthString = std::to_string(month);
-  std::string dayString = std::to_string(day);
-  yearString = (yearString.length() == 1 ? "0" : "") + yearString;
-  monthString = (monthString.length() == 1 ? "0" : "") + monthString;
-  dayString = (dayString.length() == 1 ? "0" : "") + dayString;
-  return monthString + "-" + dayString + "-" + yearString;
-}
-
-=======
->>>>>>> upstream/main
 } // namespace facebook::fboss::platform

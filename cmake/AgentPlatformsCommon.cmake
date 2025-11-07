@@ -52,14 +52,8 @@ target_link_libraries(platform_mapping_utils
   wedge800bact_platform_mapping
   icetea800bc_platform_mapping
   tahansb800bc_platform_mapping
-<<<<<<< HEAD
-  wedge800ca_platform_mapping
   nh4010_platform_mapping
-||||||| 39d08dd0a7
-  wedge800ca_platform_mapping
-=======
   wedge800cact_platform_mapping
   ladakh800bcls_platform_mapping
->>>>>>> upstream/main
   ${RE2}
 )

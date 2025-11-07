@@ -198,16 +198,8 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_TAHAN800BC;
     } else if (modelName.find("ICECUBE") == 0) {
       type_ = PlatformType::PLATFORM_ICECUBE800BC;
-<<<<<<< HEAD
     } else if (modelName.find("NH-4010") == 0) {
       type_ = PlatformType::PLATFORM_NH4010;
-    } else if (modelName.find("WEDGE800B_ACT") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800B_ACT;
-||||||| 39d08dd0a7
-    } else if (modelName.find("WEDGE800B_ACT") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800B_ACT;
-=======
->>>>>>> upstream/main
     } else if (modelName.find("ICETEA") == 0) {
       type_ = PlatformType::PLATFORM_ICETEA800BC;
     } else if (modelName.find("LADAKH800BCLS") == 0) {
@@ -280,18 +272,10 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_YANGRA;
     } else if (FLAGS_mode == "minipack3n") {
       type_ = PlatformType::PLATFORM_MINIPACK3N;
-<<<<<<< HEAD
     } else if (FLAGS_mode == "nh4010") {
       type_ = PlatformType::PLATFORM_NH4010;
-    } else if (FLAGS_mode == "wedge800ba") {
-      type_ = PlatformType::PLATFORM_WEDGE800B_ACT;
-||||||| 39d08dd0a7
-    } else if (FLAGS_mode == "wedge800ba") {
-      type_ = PlatformType::PLATFORM_WEDGE800B_ACT;
-=======
     } else if (FLAGS_mode == "wedge800bact") {
       type_ = PlatformType::PLATFORM_WEDGE800BACT;
->>>>>>> upstream/main
     } else if (FLAGS_mode == "tahansb800bc") {
       type_ = PlatformType::PLATFORM_TAHANSB800BC;
     } else if (FLAGS_mode == "wedge800cact") {
