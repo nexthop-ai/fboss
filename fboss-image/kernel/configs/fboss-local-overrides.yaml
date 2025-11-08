@@ -13,7 +13,7 @@
 # Common overrides that apply to all kernel versions
 # Add config lines here
 common_overrides: |
-  # These changes disable Meta-specific file references that don't exist in open source builds
+  # These changes disable settings in Meta reference config that don't exist in standard linux source
   CONFIG_BOOT_CONFIG_EMBED_FILE=""
   CONFIG_SYSTEM_TRUSTED_KEYS=""
 
@@ -26,6 +26,18 @@ common_overrides: |
   CONFIG_SENSORS_ISL68137=m
   CONFIG_AD525X_DPOT=m
   CONFIG_AD525X_DPOT_I2C=m
+  CONFIG_NET_VENDOR_AMD=y
+  CONFIG_AMD_XGBE=m
+  CONFIG_AMD_XGBE_DCB=y
+  CONFIG_AMD_XGBE_HAVE_ECC=y
+  CONFIG_X86_AMD_PLATFORM_DEVICE=y
+  CONFIG_I2C_DESIGNWARE_PLATFORM=y
+  CONFIG_I2C_DESIGNWARE_PCI=y
+  CONFIG_ACPI_SPCR_TABLE=y
+  CONFIG_SERIAL_8250_DW=m
+  CONFIG_SERIAL_8250_DWLIB=m
+  CONFIG_SERIAL_8250_PNP=y
+
 
 # Kernel version overrides
 # Add kernel version as key, then add config lines in the value

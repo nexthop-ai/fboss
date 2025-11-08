@@ -32,6 +32,7 @@ BuildRequires: gcc, make
 BuildRequires: openssl-devel, elfutils-libelf-devel, dwarves
 BuildRequires: bc, rsync, tar, xz
 BuildRequires: perl, python3
+BuildRequires: dracut, cpio, gzip
 
 %description
 The Linux kernel for FBOSS based on upstream Linux v%{version}
@@ -82,8 +83,9 @@ Requires: kernel-headers = %{epoch}:%{version}-%{release}
 export CC=gcc
 export LD=ld
 
-# Build kernel and modules
-make %{?_smp_mflags} bzImage modules
+# Build kernel and modules with correct KERNELRELEASE
+# This ensures uname -r returns the full version-release-arch string
+make %{?_smp_mflags} bzImage modules KERNELRELEASE=%{version}-%{release}.%{_arch}
 
 # Install phase - places files for binary RPM packaging
 %install
@@ -95,18 +97,18 @@ cp arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{version}-%{release}.%{_arch
 cp System.map %{buildroot}/boot/System.map-%{version}-%{release}.%{_arch}
 cp .config %{buildroot}/boot/config-%{version}-%{release}.%{_arch}
 
-# Install modules
-make %{?_smp_mflags} modules_install INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_STRIP=1
+# Install modules (do NOT strip - needed for proper module loading)
+# Use KERNELRELEASE to match the RPM version-release string
+make %{?_smp_mflags} modules_install INSTALL_MOD_PATH=%{buildroot} KERNELRELEASE=%{version}-%{release}.%{_arch}
 
-# Remove problematic symlinks that point to build directories
-rm -f %{buildroot}/lib/modules/%{version}/build
-rm -f %{buildroot}/lib/modules/%{version}/source
+# Install VDSO (Virtual Dynamic Shared Object) - needed for fast system calls
+make %{?_smp_mflags} vdso_install INSTALL_MOD_PATH=%{buildroot} KERNELRELEASE=%{version}-%{release}.%{_arch}
 
 # Install headers
 make %{?_smp_mflags} headers_install INSTALL_HDR_PATH=%{buildroot}/usr
 
 # Install kernel-devel files for building external modules (Broadcom SAI on x86_64)
-KERNELDEV=%{buildroot}/usr/src/kernels/%{version}
+KERNELDEV=%{buildroot}/usr/src/kernels/%{version}-%{release}.%{_arch}
 mkdir -p $KERNELDEV
 
 # Essential build files
@@ -131,16 +133,25 @@ mkdir -p $KERNELDEV/arch/x86
 cp -a arch/x86/include $KERNELDEV/arch/x86/
 cp arch/x86/Makefile $KERNELDEV/arch/x86/
 
+# Create placeholder initramfs (will be generated at install time)
+# We estimate the size of the initramfs because rpm needs to take this size
+# into consideration when performing disk space calculations
+mkdir -p %{buildroot}/boot
+dd if=/dev/zero of=%{buildroot}/boot/initramfs-%{version}-%{release}.%{_arch}.img bs=1M count=20
+
 # Files sections - defines what goes into each binary RPM
 %files core
 %defattr(-,root,root)
 /boot/vmlinuz-%{version}-%{release}.%{_arch}
 /boot/System.map-%{version}-%{release}.%{_arch}
 /boot/config-%{version}-%{release}.%{_arch}
+/boot/initramfs-%{version}-%{release}.%{_arch}.img
 
 %files modules
 %defattr(-,root,root)
-/lib/modules/%{version}/
+/lib/modules/%{version}-%{release}.%{_arch}/
+%exclude /lib/modules/%{version}-%{release}.%{_arch}/build
+%exclude /lib/modules/%{version}-%{release}.%{_arch}/source
 
 %files headers
 %defattr(-,root,root)
@@ -148,7 +159,7 @@ cp arch/x86/Makefile $KERNELDEV/arch/x86/
 
 %files devel
 %defattr(-,root,root)
-/usr/src/kernels/%{version}/
+/usr/src/kernels/%{version}-%{release}.%{_arch}/
 
 %changelog
 * Fri Oct 03 2025 Project Mosaic Team <meta-support@nexthop.ai> - %{version}-1.fboss

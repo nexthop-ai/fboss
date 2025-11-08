@@ -22,7 +22,8 @@ dnf install -y --allowerasing \
     elfutils-libelf-devel \
     elfutils-devel \
     dwarves \
-    perl
+    perl \
+    dracut
 
 touch /tmp/.kernel_deps_installed
 
