@@ -38,7 +38,8 @@ fi
 
 # Link parallelism is different from compilation because linking always happens
 # on the local machine.
-LINK_JOBS=$(ceildiv $SERVER_RAM_GB 12)
+# Empirically, link parallelism of 2 works well on 24GB and 32GB VMs.
+LINK_JOBS=$(ceildiv $SERVER_RAM_GB 16)
 
 num_jobs=$((LINK_JOBS > COMPILE_JOBS ? LINK_JOBS : COMPILE_JOBS))
 
