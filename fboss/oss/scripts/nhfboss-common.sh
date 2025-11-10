@@ -57,6 +57,8 @@ fi
 # Note: Because COMPILE_JOBS and LINK_JOBS depend on SERVER_RAM_GB, and they're
 # included as extra cmake defines, you need to do rerun nhfboss-get-deps.sh
 
+BUILD_TYPE=${BUILD_TYPE:-MinSizeRel}
+
 # Build common_options for getdeps.py
 common_options='--allow-system-packages'
 common_options+=' --scratch-path /var/FBOSS/tmp_bld_dir'
