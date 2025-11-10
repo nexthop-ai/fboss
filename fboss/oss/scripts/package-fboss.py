@@ -207,14 +207,17 @@ class PackageFboss:
         )
 
     def _copy_unsupported_tests(self, tmp_dir_name):
-        qsfp_unsupported_tests_path = os.path.join(
-            self.git_path, "fboss/oss/qsfp_unsupported_tests"
-        )
-        print(f"Copying {qsfp_unsupported_tests_path} to {tmp_dir_name}")
-        shutil.copytree(
-            "fboss/oss/qsfp_unsupported_tests",
-            os.path.join(tmp_dir_name, PackageFboss.DATA, "qsfp_unsupported_tests"),
-        )
+        unsupported_tests_dirs = [ "qsfp_unsupported_tests","sai_hw_unsupported_tests"]
+        for unsupported_tests_dir in unsupported_tests_dirs:
+            unsupported_tests_path = os.path.join(
+                self.git_path, "fboss/oss", unsupported_tests_dir
+            )
+            print(f"Copying {unsupported_tests_path} to {tmp_dir_name}")
+            shutil.copytree(
+                os.path.join("fboss/oss", unsupported_tests_dir),
+                os.path.join(tmp_dir_name, PackageFboss.DATA, unsupported_tests_dir
+                ),
+            )
 
     def _copy_binaries(self, tmp_dir_name):
         print("Copying binaries...")
