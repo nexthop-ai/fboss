@@ -14,8 +14,11 @@ SERVER_RAM_GB=$(free -g | awk '/^Mem:/{print $2}')
 
 # Stop any existing sccache server to ensure clean state
 sccache --stop-server > /dev/null 2>&1
+# Make sure if OOM that the build gets the short end of the stick.
+echo 1000 > /proc/self/oom_score_adj
 
 export SCCACHE_ERROR_LOG="/tmp/sccache.log"
+export SCCACHE_LOG=info
 
 # Detect if distributed sccache is available and configure accordingly
 SCCACHE_SCHEDULER_HOST=sccache.us-west-1.nexthop.ai
@@ -30,11 +33,17 @@ if timeout 1 bash -c ">/dev/tcp/$SCCACHE_SCHEDULER_HOST/10600" 2>/dev/null; then
 
     # Running sccache to just send a job somewhere else is cheap. We can do a
     # lot per core.
-    COMPILE_JOBS=$(($(nproc) * 20))
+    COMPILE_JOBS=$(($(nproc) * 10))
+
+    if sccache --dist-status | grep Disabled; then
+        echo Remote sccache not working!
+        exit 1
+    fi
 else
     echo "Only using local sccache cache"
     COMPILE_JOBS=$(ceildiv $SERVER_RAM_GB 8)
 fi
+
 
 # Link parallelism is different from compilation because linking always happens
 # on the local machine.

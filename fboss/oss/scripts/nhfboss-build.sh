@@ -10,8 +10,6 @@ source "$SCRIPT_DIR/nhfboss-common.sh"
 
 USE_FAKE_SAI=${USE_FAKE_SAI:-false}
 
-echo 1000 > /proc/self/oom_score_adj
-
 set -e
 cd /var/FBOSS/fboss
 
