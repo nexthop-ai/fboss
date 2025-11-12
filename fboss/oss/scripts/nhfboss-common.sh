@@ -32,8 +32,9 @@ if timeout 1 bash -c ">/dev/tcp/$SCCACHE_SCHEDULER_HOST/10600" 2>/dev/null; then
     # but linking is local and memory-intensive, so limit it to 2 jobs
 
     # Running sccache to just send a job somewhere else is cheap. We can do a
-    # lot per core.
-    COMPILE_JOBS=$(($(nproc) * 10))
+    # lot per core, but we still preprocess files locally, and that can take
+    # about 1.4G per file.
+    COMPILE_JOBS=$(ceildiv $SERVER_RAM_GB 2)
 
     if sccache --dist-status | grep Disabled; then
         echo Remote sccache not working!
