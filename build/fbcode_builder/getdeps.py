@@ -950,6 +950,7 @@ class TestCmd(ProjectCmdBase):
             test_filter=args.filter,
             retry=args.retry,
             no_testpilot=args.no_testpilot,
+            timeout=args.timeout,
         )
 
     def setup_project_cmd_parser(self, parser):
@@ -966,6 +967,12 @@ class TestCmd(ProjectCmdBase):
             "--no-testpilot",
             help="Do not use Test Pilot even when available",
             action="store_true",
+        )
+        parser.add_argument(
+            "--timeout",
+            type=int,
+            default=None,
+            help="Timeout in seconds for each individual test",
         )
 
 
