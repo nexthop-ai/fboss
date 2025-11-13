@@ -1,42 +1,48 @@
 #!/bin/bash
 
-# Script that builds the docker for building FBOSS products
+# Script that builds the docker for building FBOSS image(s)
 
-# Defaults
-USE_FORCE="no"
-BUILD_ISO_IMAGE="no"
+# Get the full path to the workspace root directory where everything lives
+WSROOT="$(cd $(dirname "$0")/.. && pwd)"
+IMAGE_BUILDER_DIR="$(basename ${WSROOT})"           # this is the "image_builder" directory
+SCRIPT_DIR="${WSROOT}/bin"                          # All scripts live in this directory
+LOG_DIR="${WSROOT}/logs"                            # All logs are written to this directory
+LOG_FILE="${LOG_DIR}/build_image.log"               # Log file for this script
+
+# Defaults actions flags
+BUILD_FBOSS_IMAGE="no"
 ENTER_SHELL="no"
+
+# Default housekeeping flags
 USE_DOCKER_CACHE="yes"
 USER=$(whoami)
-DOCKER_INSTANCE_NAME=${USER}-fboss-iso-build
-DOCKER_IMAGE_NAME=${USER}-fboss-image
+DOCKER_INSTANCE_NAME=${USER}-fboss-image-builder
+DOCKER_IMAGE_NAME=${USER}-fboss-image-builder
 BUILD_DOCKER_IMAGE="no"
 DELETE_DOCKER_IMAGE="no"
-DELETE_DOCKER_CONTAINER="no"
-LOG_FILE=$(pwd -P)/build-docker.log
-
-# Change directory full path to correct levels up from the script location as its expected by Dockerfile
-SCRIPT_DIR=$(dirname $(readlink -f $0))
-IMAGEDIR=$(readlink -f ${SCRIPT_DIR}/..)
-CWDSTART=$(readlink -f ${SCRIPT_DIR}/../../..)
-cd ${CWDSTART}                      # Switch to "fboss" directory, 2 levels up from this script
 
 print_help() {
     echo "Usage: $0 [options] [--] [options for child scripts]"
     echo ""
     echo "Options:"
     echo ""
-    echo "  -b|--build-docker               Build Docker Image to be used for building .ISO image"
-    echo "  -C|--skip_docker_cache          Do not use docker cache when building docker image"
-    echo "  -d|--delete-docker-container    Stop docker container and the image used for builds"
-    echo "  -D|--delete-docker-image        Delete docker container and the image used for building .ISO image"
+    echo "  -B|--build-docker-image         Build docker to be used for building FBOSS images"
+    echo "  -C|--skip-docker-cache          Do not use docker cache when building docker itself (default: use cache)"
+    echo "  -D|--delete-docker-image        Delete docker image used for building images"
     echo ""
-    echo "  -i|--build-iso-image            Build .ISO image"
+    echo "  --docker-image-name <name>      Name of docker image to use (default: ${DOCKER_IMAGE_NAME})"
+    echo "  --docker-instance-name <name>   Name of docker instance to use (default: ${DOCKER_INSTANCE_NAME})"
+    echo "  -b|--build-fboss-images         Generate FBOSS images - USB ISO and PXE bootable"
+    echo "  -e|--enter-shell                Enter shell in the docker container (for debugging)"
+    echo "  --                              All arguments after this are passed to child scripts"
     echo ""
-    echo "  -e|--enter-shell                Enter shell within the docker container (for debugging)"
-    echo ""
-    echo "  -l|--log-file <file>            Log file to use (default: ${LOG_FILE})"
-    echo "  -h|--help                       Print this help message"
+    echo "Examples:"
+    echo "       $(basename $0) -B                      Build docker image"
+    echo "       $(basename $0) -D                      Delete docker image"
+    echo "       $(basename $0) -e                      Enter shell in docker container"
+    echo "       $(basename $0) -B -b                   Build FBOSS images"
+    echo "       $(basename $0) -b -- -k <kernelrpmdir> Build FBOSS images using kernel from specified directory"
+    echo "       $(basename $0) -b -- -f <fboss.tar>    Overlay image with specified tar file"
     echo ""
 }
 
@@ -45,19 +51,18 @@ ORIGINAL_ARGS=("$0" "$@")
 # Parse command line arguments
  while [[ "$#" -gt 0 ]]; do
     case "$1" in
-        -b|--build-docker)
+        -B|--build-docker-image)
             BUILD_DOCKER_IMAGE=yes
             shift 1;
             ;;
 
-        -d|--stop-docker-container)
-            DELETE_DOCKER_CONTAINER="yes"
+        -D|--delete-docker-image)
+            DELETE_DOCKER_IMAGE="yes"
             shift 1;
             ;;
 
-
-        -D|--delete-docker-image)
-            DELETE_DOCKER_IMAGE="yes"
+        -C|--skip-docker-cache)
+            USE_DOCKER_CACHE="no"
             shift 1;
             ;;
 
@@ -66,23 +71,18 @@ ORIGINAL_ARGS=("$0" "$@")
             shift 1;
             ;;
 
-        -C|--skip_docker_cache)
-            USE_DOCKER_CACHE="no"
+        -b|--build-fboss-images)
+            BUILD_FBOSS_IMAGES=yes
             shift 1;
             ;;
 
-        -f|--force)
-            USE_FORCE="yes"
-            shift 1;
+        --docker-image-name)
+            DOCKER_IMAGE_NAME="$2"
+            shift 2;
             ;;
 
-        -i|--build-iso-image)
-            BUILD_ISO_IMAGE="yes"
-            shift 1;
-            ;;
-
-        -l|--log-file)
-            LOG_FILE=$2
+        --docker-instance-name)
+            DOCKER_INSTANCE_NAME="$2"
             shift 2;
             ;;
 
@@ -112,7 +112,9 @@ if (( "$#" > 0 )); then
 fi
 
 # Log everything for posterity ;-)
-> ${LOG_FILE}           # Truncate log file
+mkdir -p ${LOG_DIR}
+chmod 777 ${LOG_DIR}
+> ${LOG_FILE}                       # Truncate log file
 export LOG_FILE
 
 # Source common functions
@@ -120,19 +122,13 @@ source ${SCRIPT_DIR}/../lib/functions.sh
 dprint "Script launch cmdline: ${ORIGINAL_ARGS[*]}"
 dprint " ... logging all output to: ${LOG_FILE}"
 
-# Have we been asked to delete the docker container?
-if [ "${DELETE_DOCKER_CONTAINER}" = "yes" ] ; then
-    dprint "Stopping and deleting docker containe using image : ${DOCKER_IMAGE_NAME}"
-    delete_docker_containers ${DOCKER_IMAGE_NAME}
-fi
-
 # Have we been asked to delete the docker image?
 if [ "${DELETE_DOCKER_IMAGE}" = "yes" ] ; then
     IMAGEID=$(docker images -q ${DOCKER_IMAGE_NAME})
     if [ -n "${IMAGEID}" ] ; then
 
         # Stop and delete containers using this image
-        dprint "Deleting containers using image: ${DOCKER_IMAGE_NAME}"
+        dprint "Deleting container(s) using image: ${DOCKER_IMAGE_NAME}"
         delete_docker_containers ${DOCKER_IMAGE_NAME}
 
         # Delete the image
@@ -141,9 +137,17 @@ if [ "${DELETE_DOCKER_IMAGE}" = "yes" ] ; then
     else
         dprint "Docker image: ${DOCKER_IMAGE_NAME} does not exist, nothing to delete..."
     fi
+    exit 0
 fi
 
-# Have we been asked to build the docker image?
+# Check if docker image is available, else build it
+IMAGEID=$(docker images -q ${DOCKER_IMAGE_NAME})
+if [ -z "${IMAGEID}" ] ; then
+    dprint "Docker image: ${DOCKER_IMAGE_NAME} not found, building it first..."
+    BUILD_DOCKER_IMAGE="yes"
+fi
+
+# Have we been asked to build the docker image (housekeeping)?
 RC=0
 if [ "${BUILD_DOCKER_IMAGE}" = "yes" ] ; then
     IMAGEID=$(docker images -q ${DOCKER_IMAGE_NAME})
@@ -155,41 +159,28 @@ if [ "${BUILD_DOCKER_IMAGE}" = "yes" ] ; then
         if [ "${USE_DOCKER_CACHE}" = "no" ] ; then
             DOCKER_BUILD_ARGS="--no-cache ${DOCKER_BUILD_ARGS} "
         fi
-        # This Dockerfile assumes you are at "nh" directory level
+
+        # Change directory full path to correct levels up from the script location as its expected by Dockerfile
+        cd ${WSROOT}/../..
+        # This docker build expects to be run from the workspace root directory
         docker build -f fboss/oss/docker/Dockerfile ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME} . >> ${LOG_FILE} 2>&1
         handle_error $? "docker build"
     fi
 fi
 
-# Main stuff happens here, either we enter the docker in a shell or build ISO or Kernel inside the docker
-DOCKER_ARGS=" --privileged --cap-add SYS_ADMIN -v ${IMAGEDIR}:/image_builder -v /dev:/dev --name ${DOCKER_INSTANCE_NAME}"
+# Main stuff happens here, either we enter the docker in a shell or build images inside it
+DOCKER_ARGS=" --privileged --cap-add SYS_ADMIN -v ${WSROOT}:/${IMAGE_BUILDER_DIR} -v /dev:/dev --name ${DOCKER_INSTANCE_NAME}"
 
 if [ "${ENTER_SHELL}" = "yes" ] ; then
     dprint "Starting bash in docker container: ${DOCKER_INSTANCE_NAME}"
-    docker run -it ${DOCKER_ARGS} ${DOCKER_IMAGE_NAME} /bin/bash
-
-    # housekeeping, remove the container
-    dprint "Removing Container after shell exit"
-    delete_docker_containers ${DOCKER_IMAGE_NAME}
-    handle_error $? "delete_docker_container"
+    docker run --rm -it ${DOCKER_ARGS} ${DOCKER_IMAGE_NAME} /bin/bash
 else
-    RC0=0; RC1=0;
-
-    if [ "${BUILD_ISO_IMAGE}" = "yes" ] ; then
-        dprint "Starting ISO image build, launching in docker: /image_builder/bin/build-image.sh $@"
-        docker run -it ${DOCKER_ARGS} ${DOCKER_IMAGE_NAME}     /image_builder/bin/build-image.sh $@ >> ${LOG_FILE} 2>&1
-        RC1=$?
-        handle_error ${RC1} "docker run - /images/bin/build-iso.sh"
+    if [ "${BUILD_FBOSS_IMAGES}" = "yes" ]; then
+        dprint "Starting image build, launching in docker: /${IMAGE_BUILDER_DIR}/bin/build_image_in_container.sh $@"
+        docker run --rm -it ${DOCKER_ARGS} ${DOCKER_IMAGE_NAME} /${IMAGE_BUILDER_DIR}/bin/build_image_in_container.sh ${CHILD_SCRIPT_ARGS[*]} >> ${LOG_FILE} 2>&1
+        RC=$?
+        handle_error ${RC} "docker run /${IMAGE_BUILDER_DIR}/bin/build_image.sh ${CHILD_SCRIPT_ARGS[*]}"
     fi
-
-    # Housekeeping, remove the container(s) if we spawned them
-    if [ "${BUILD_ISO_IMAGE}" = "yes" ] ; then
-        dprint "Removing container(s)..."
-        delete_docker_containers ${DOCKER_IMAGE_NAME}
-        handle_error $? "delete_docker_containers (line: ${LINENO})"
-    fi
-
-    RC=$((RC0 | RC1))
 fi
 dprint "$0 execution complete, exit code: ${RC}"
 exit ${RC}

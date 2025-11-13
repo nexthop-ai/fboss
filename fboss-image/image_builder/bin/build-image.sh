@@ -1,45 +1,40 @@
 #!/bin/bash
 
-# Script that builds a bootable .ISO image using kiwi-ng-3. 
+# Script that builds a PXE and USB bootable ISO an image using kiwi-ng-3.
+
+# Get the full path to the workspace root directory where everything lives
+WSROOT=$(cd $(dirname "$0")/.. && pwd)
 
 # Change directory full path to correct levels up from the script location so that we can include
 # the functions.sh file
-SCRIPT_DIR=$(dirname $(readlink -f $0))
+SCRIPT_DIR="${WSROOT}/bin"
+LOG_DIR="${WSROOT}/logs"
 
 # Source common functions
-source ${SCRIPT_DIR}/../lib/functions.sh
+source ${WSROOT}/lib/functions.sh
 
 # Save all arguments for later use
 ORIGINAL_ARGS=("$0" "$@")
 
 # Default values
-DESCRIPTION_DIR="/image_builder/templates/centos-09.0"
-PROFILE="FBOSS"
-IMAGE_TYPE="oem"
-DELETE_DIR="no"
-FBOSS_TARFILE=""
-KERNEL_INSTALL_DIR=""
-TARGET_DIR=""
+DESCRIPTION_DIR="${WSROOT}/templates/centos-09.0"
+TARGET_DIR="${WSROOT}/output"
 
-if [ -z "${LOG_FILE}" ]; then
-    LOG_FILE="$(pwd -P)/build-image.log"
-fi
+# User configurable variables (fboss tarfile and kernel rpm directory)
+FBOSS_TARFILE=""
+KERNEL_RPM_DIR=""               # default: download LTS 6.12
+
+mkdir -p ${LOG_DIR}
+LOG_FILE="${LOG_DIR}/build_image_in_container.log"
 
 help() {
     echo "Usage: $0 [options]"
     echo ""
     echo "Options:"
-    echo "  -d|--description-dir <dir>  kiwi-ng config.xml directory to use (default: ${DESCRIPTION_DIR})"
-    echo "  -t|--target-dir <dir>       Target directory, aka output directory (default: output-${IMAGE_TYPE})"
-    echo "  -p|--profile <profile>      Build profile to use (default: ${PROFILE})"
-    echo "  -i|--image-type <type>      Image type to build (default: ${IMAGE_TYPE})"
     echo ""
     echo "  -f|--fboss-tarfile          Location of compressed FBOSS tar file to add to image"
-    echo "  -k|--kernel-install-dir     Location of kernel install directory to add to image"
+    echo "  -k|--kernel-rpm-dir         Directory containing kernel rpms to install (default: download LTS 6.12)"
     echo ""
-    echo "  -D|--delete-dir             Delete output directory (if it exists)"
-    echo ""
-    echo "  -l|--log-file <file>        Log file to use (default: ${LOG_FILE})"
     echo "  -h|--help                   Print this help message"
     echo ""
 }
@@ -56,50 +51,21 @@ update_docker() {
             dnf-plugin-versionlock \
             dracut-kiwi-oem-dump \
             kiwi-systemdeps-image-validation \
-            syslinux
+            syslinux \
+            btrfs-progs
 }
 
 # Parse command line arguments
 while [[ "$#" -gt 0 ]]; do
     case "$1" in
 
-        -D|--delete-dir)
-            DELETE_DIR="yes"
-            shift 1;
-            ;;
-
-        -d|--description-dir)
-            DESCRIPTION_DIR=$2
-            shift 2;
-            ;;
-
-        -t|--target-dir)
-            TARGET_DIR=$2
-            shift 2;
-            ;;
-
-        -p|--profile)
-            PROFILE=$2
-            shift 2;
-            ;;
-
-        -i|--image-type)
-            IMAGE_TYPE=$2
-            shift 2;
-            ;;
-
         -f|--fboss-tarfile)
             FBOSS_TARFILE=$2
             shift 2;
             ;;
 
-        -k|--kernel-install-dir)
-            KERNEL_INSTALL_DIR=$2
-            shift 2;
-            ;;
-
-        -l|--log-file)
-            LOG_FILE=$2
+        -k|--kernel-rpm-dir)
+            KERNEL_RPM_DIR=$2
             shift 2;
             ;;
 
@@ -118,22 +84,29 @@ done
 > ${LOG_FILE}           # Truncate log file
 export LOG_FILE
 
-if [ -z "${TARGET_DIR}" -o "${TARGET_DIR}" = "" ]; then
-    TARGET_DIR="/image_builder/output-${IMAGE_TYPE}"
-fi
-
 dprint "Script launch cmdline: ${ORIGINAL_ARGS[*]}"
 dprint " ... logging all output to: ${LOG_FILE}"
 dprint " ... output directory: ${TARGET_DIR}"
 
-# Update the docker image, this will be no-op if python3-kiwi is already installed
+# Perform some sanity checks of user input
+if [ ! -d ${KERNEL_RPM_DIR} ]; then
+    dprint "ERROR: directory of kernel rpms: ${KERNEL_RPM_DIR} not accessible, exiting..."
+    exit 1
+fi
+
+if [ -n "${FBOSS_TARFILE}" ]; then
+    if [ ! -f ${FBOSS_TARFILE} ]; then
+        dprint "ERROR: FBOSS tarfile: ${FBOSS_TARFILE} not accessible, exiting..."
+        exit 1
+    fi
+fi
+
+# Update the docker image
 dprint "Updating docker image..."
 update_docker  >> ${LOG_FILE} 2>&1
 
-if [ "${DELETE_DIR}" = "yes" ] ; then
-    dprint "Deleting target directory: ${TARGET_DIR}"
-    rm -rf ${TARGET_DIR}
-fi
+dprint "Deleting target directory: ${TARGET_DIR}"
+rm -rf ${TARGET_DIR}
 
 # Create the output directory (in case it doesn't exist)
 mkdir -p ${TARGET_DIR}
@@ -153,19 +126,52 @@ if [ -n "${FBOSS_TARFILE}" ]; then
     fi
 fi
 
-# If a kernel install directory is specified, we will copy it over to ${DESCRIPTION_DIR}/root, this 
-# will overlay the kernel and modules on top of the root file system.
+# Create a directory to hold the kernel rpms
+rm -rf ${DESCRIPTION_DIR}/root/repos
+mkdir -p ${DESCRIPTION_DIR}/root/repos
 
-# Generate the ISO image
-dprint "Generating ${IMAGE_TYPE} image, this may take a while..."
+# If the user specified a kernel rpm directory, copy the rpms from there.  Otherwise, download them
+if [ -z "${KERNEL_RPM_DIR}" ]; then
+    dprint "Downloading LTS kernel 6.12 rpms to ${DESCRIPTION_DIR}/root/repos..."
+    dnf copr enable kwizart/kernel-longterm-6.12 -y >> ${LOG_FILE} 2>&1
+    dnf download --destdir=${DESCRIPTION_DIR}/root/repos kernel-longterm-core-* kernel-longterm-modules-core-* >> ${LOG_FILE} 2>&1
+    if [ $? -ne 0 ]; then
+        dprint "ERROR: Failed to download LTS kernel rpms, check logfile for errors, exiting..."
+        exit 1
+    fi
+else
+    dprint "Copying kernel rpms to ${DESCRIPTION_DIR}/root/repos..."
+    for rpm_file in ${KERNEL_RPM_DIR}/*.rpm; do
+        if [ -f "$rpm_file" ]; then
+            dprint "   ... $(basename "$rpm_file")"
+            cp "$rpm_file" ${DESCRIPTION_DIR}/root/repos/
+        fi
+    done
+fi
+
+dprint "Copying /etc/resolv.conf to ${DESCRIPTION_DIR}/root/etc/resolv.conf..."
+# Pass /etc/resolv.conf to the chrooted environment
+mkdir -p ${DESCRIPTION_DIR}/root/etc
+cp /etc/resolv.conf ${DESCRIPTION_DIR}/root/etc/
+
+# Add build timestamp to the image
+echo "Built on: $(date -u)" > $DESCRIPTION_DIR/root/etc/build-info
+
+# Generate the images
+dprint "Generating PXE and USB bootable image, this will take few minutes..."
 kiwi-ng-3 \
-    --profile ${PROFILE} \
-    --type ${IMAGE_TYPE} \
-    --debug system build \
+    --profile FBOSS \
+    --type oem \
+    system build \
     --description ${DESCRIPTION_DIR} \
     --target-dir ${TARGET_DIR} \
     >> ${LOG_FILE} 2>&1
 
 RC=$?
-dprint "Image generation completed with return code ${RC}"
+
+if [ ${RC} -eq 0 ]; then
+    ls -l  ${TARGET_DIR}/FBOSS-Distro-Image.x86_64-1.0.install.*
+fi
+
+dprint "Image generation completed with exit code ${RC}"
 exit ${RC}
