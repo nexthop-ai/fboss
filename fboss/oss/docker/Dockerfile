@@ -6,11 +6,6 @@ ARG USER_UID=0
 ARG USER_GID=0
 ARG USER_SHELL=/bin/bash
 
-# Download and install our own patched sccache
-RUN curl -L https://github.com/timn-nexthop/sccache/releases/download/retry-on-busy-1/sccache.gz | \
-    gunzip > /usr/local/bin/sccache && \
-    chmod +x /usr/local/bin/sccache
-
 # Mount point for extra files.
 RUN mkdir -p /var/extras
 
@@ -94,5 +89,10 @@ RUN if [ "$USERNAME" != "root" ] && [ "$USER_UID" != "0" ]; then \
     useradd -m -u $USER_UID -g $USER_GID -G root,adm,wheel,users -s $USER_SHELL $USERNAME && \
     chown -R $USERNAME /var/FBOSS; \
     fi
+
+# Download and install our own patched sccache
+RUN curl -L https://github.com/timn-nexthop/sccache/releases/download/remote-only-2/sccache.gz | \
+    gunzip > /usr/local/bin/sccache && \
+    chmod +x /usr/local/bin/sccache
 
 USER ${USERNAME}
