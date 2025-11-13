@@ -30,6 +30,7 @@ sh_library(
 genrule(
     name = "fboss-fake-sai",
     srcs = [
+        "//nhtools:ln_or_cp",
         "//fboss:fboss_builder.tar",
         ".buckconfig",
         "CMakeLists.txt",
@@ -82,9 +83,9 @@ genrule(
         for out in $(OUTS); do
             filename=$$(basename $$out)
             if [ $$filename = "fboss-fake-sai.tar.zst" ]; then
-                cp fboss/fboss_bins.tar.zst $(location fboss-fake-sai.tar.zst)
+                $(execpath //nhtools:ln_or_cp) fboss/fboss_bins.tar.zst $(location fboss-fake-sai.tar.zst)
             else
-                cp fboss/.build_dir/sai-fake/build/fboss/$$filename $(RULEDIR)/$$filename
+                $(execpath //nhtools:ln_or_cp) fboss/.build_dir/sai-fake/build/fboss/$$filename $(RULEDIR)/$$filename
             fi
         done
     """,
