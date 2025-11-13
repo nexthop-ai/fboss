@@ -111,28 +111,6 @@ std::map<std::string, PortInfoThrift> getUpEthernetPortNameToPortInfo(
   return upEthernetPortNameToPortInfo;
 }
 
-std::map<std::string, int64_t> getSwitchNameToQsfpAliveSinceEpoch(
-    const std::map<std::string, std::set<facebook::fboss::SwitchID>>&
-        switchNameToSwitchIds) {
-  std::map<std::string, int64_t> switchNameToQsfpAliveSinceEpoch;
-  for (const auto& [switchName, _] : switchNameToSwitchIds) {
-    switchNameToQsfpAliveSinceEpoch[switchName] =
-        getQsfpAliveSinceEpoch(switchName);
-  }
-  return switchNameToQsfpAliveSinceEpoch;
-}
-
-std::map<std::string, int64_t> getSwitchNameToFsdbAliveSinceEpoch(
-    const std::map<std::string, std::set<facebook::fboss::SwitchID>>&
-        switchNameToSwitchIds) {
-  std::map<std::string, int64_t> switchNameToFsdbAliveSinceEpoch;
-  for (const auto& [switchName, _] : switchNameToSwitchIds) {
-    switchNameToFsdbAliveSinceEpoch[switchName] =
-        getFsdbAliveSinceEpoch(switchName);
-  }
-  return switchNameToFsdbAliveSinceEpoch;
-}
-
 bool verifySwSwitchRunState(
     const std::string& switchName,
     const SwitchRunState& expectedSwitchRunState) {
@@ -151,35 +129,6 @@ bool verifySwSwitchRunState(
       true /* retry on exception */);
 }
 
-bool verifyQsfpRestarted(
-    const std::map<std::string, std::set<SwitchID>>& switchNameToSwitchIds,
-    const std::map<std::string, int64_t>& baselinePeerToQsfpAliveSinceEpoch) {
-  auto allQsfpRestarted = [switchNameToSwitchIds,
-                           baselinePeerToQsfpAliveSinceEpoch] {
-    auto currentSwitchNameToQsfpAliveSinceEpoch =
-        getSwitchNameToQsfpAliveSinceEpoch(switchNameToSwitchIds);
-    // Verify all QSFPs restarted
-    return std::all_of(
-        currentSwitchNameToQsfpAliveSinceEpoch.begin(),
-        currentSwitchNameToQsfpAliveSinceEpoch.end(),
-        [&](const auto& pair) {
-          const auto& switchName = pair.first;
-          const auto& aliveSinceEpoch = pair.second;
-          auto baselineIt = baselinePeerToQsfpAliveSinceEpoch.find(switchName);
-          CHECK(baselineIt != baselinePeerToQsfpAliveSinceEpoch.end());
-          // If the QSFP has restarted, aliveSince will be greater i.e. later
-          // timestamp.
-          return baselineIt->second < aliveSinceEpoch;
-        });
-  };
-
-  return checkWithRetryErrorReturn(
-      allQsfpRestarted,
-      30 /* num retries */,
-      std::chrono::milliseconds(5000) /* sleep between retries */,
-      true /* retry on exception */);
-}
-
 bool verifyQsfpServiceRunState(
     const std::string& switchName,
     const QsfpServiceRunState& expectedQsfpRunState) {
@@ -192,37 +141,6 @@ bool verifyQsfpServiceRunState(
   // Thus, continue to retry while absorbing exceptions.
   return checkWithRetryErrorReturn(
       qsfpServiceRunStateMatches,
-      30 /* num retries */,
-      std::chrono::milliseconds(5000) /* sleep between retries */,
-      true /* retry on exception */);
-}
-
-bool verifyFsdbRestarted(
-    const std::map<std::string, std::set<SwitchID>>& switchNameToSwitchIds,
-    const std::map<std::string, int64_t>&
-        baselineSwitchNameToFsdbAliveSinceEpoch) {
-  auto allFsdbRestarted = [switchNameToSwitchIds,
-                           baselineSwitchNameToFsdbAliveSinceEpoch] {
-    auto currentSwitchNameToFsdbAliveSinceEpoch =
-        getSwitchNameToFsdbAliveSinceEpoch(switchNameToSwitchIds);
-    // Verify all FSDBs restarted
-    return std::all_of(
-        currentSwitchNameToFsdbAliveSinceEpoch.begin(),
-        currentSwitchNameToFsdbAliveSinceEpoch.end(),
-        [&](const auto& pair) {
-          const auto& switchName = pair.first;
-          const auto& aliveSinceEpoch = pair.second;
-          auto baselineIt =
-              baselineSwitchNameToFsdbAliveSinceEpoch.find(switchName);
-          CHECK(baselineIt != baselineSwitchNameToFsdbAliveSinceEpoch.end());
-          // If the FSDB has restarted, aliveSince will be greater i.e. later
-          // timestamp.
-          return baselineIt->second < aliveSinceEpoch;
-        });
-  };
-
-  return checkWithRetryErrorReturn(
-      allFsdbRestarted,
       30 /* num retries */,
       std::chrono::milliseconds(5000) /* sleep between retries */,
       true /* retry on exception */);

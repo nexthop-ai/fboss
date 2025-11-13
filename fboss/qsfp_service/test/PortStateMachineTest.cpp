@@ -176,6 +176,7 @@ class PortStateMachineTest : public TransceiverManagerTestHelper {
   void refreshAndTriggerProgramming() {
     transceiverManager_->refreshTransceivers();
     portManager_->updateTransceiverPortStatus();
+    portManager_->updatePortActiveStatusInTransceiverManager();
     portManager_
         ->detectTransceiverDiscoveredAndReinitializeCorrespondingPorts();
     portManager_->triggerProgrammingEvents();
@@ -186,6 +187,8 @@ class PortStateMachineTest : public TransceiverManagerTestHelper {
       TransceiverStateMachineState tcvrState,
       PortStates portStates,
       bool multiPort) {
+    // Set tcvr & port overrides - assumes port up is desired, which can be
+    // overridden below.
     if (multiPort) {
       transceiverManager_->setOverrideTcvrToPortAndProfileForTesting(
           overrideMultiPortTcvrToPortAndProfile_);
@@ -197,19 +200,37 @@ class PortStateMachineTest : public TransceiverManagerTestHelper {
       portManager_->setOverrideAgentPortStatusForTesting(
           {portId1_}, {portId1_});
     }
-    if (tcvrState == TransceiverStateMachineState::DISCOVERED &&
-        portStates.first == PortStateMachineState::INITIALIZED &&
-        portStates.second ==
-            optionalPortState(multiPort, PortStateMachineState::INITIALIZED)) {
+
+    // Current use case requires both ports to be in the same state.
+    if (tcvrState == TransceiverStateMachineState::NOT_PRESENT &&
+        portStates.first == PortStateMachineState::UNINITIALIZED) {
+      // Default state - no action needed.
+    } else if (
+        tcvrState == TransceiverStateMachineState::NOT_PRESENT &&
+        portStates.first == PortStateMachineState::INITIALIZED) {
+      portManager_->updateTransceiverPortStatus();
+      portManager_->updatePortActiveStatusInTransceiverManager();
+    } else if (
+        tcvrState == TransceiverStateMachineState::DISCOVERED &&
+        portStates.first == PortStateMachineState::INITIALIZED) {
       initializePortsThroughRefresh();
     } else if (
         tcvrState == TransceiverStateMachineState::TRANSCEIVER_PROGRAMMED &&
-        portStates.first == PortStateMachineState::PORT_UP &&
-        portStates.second ==
-            optionalPortState(multiPort, PortStateMachineState::PORT_UP)) {
+        portStates.first == PortStateMachineState::PORT_UP) {
       for (int i = 0; i < 5; ++i) {
         refreshAndTriggerProgramming();
       }
+    } else if (
+        tcvrState == TransceiverStateMachineState::TRANSCEIVER_PROGRAMMED &&
+        portStates.first == PortStateMachineState::PORT_DOWN) {
+      portManager_->setOverrideAgentPortStatusForTesting(
+          {}, {portId1_, portId3_});
+      for (int i = 0; i < 5; ++i) {
+        refreshAndTriggerProgramming();
+      }
+    } else {
+      // Ensure test setup is as expected.
+      throw FbossError("Unsupported initial state.");
     }
 
     XLOG(INFO) << "setState changed state to "
@@ -253,6 +274,19 @@ class PortStateMachineTest : public TransceiverManagerTestHelper {
     // Sleep 1s to avoid the state machine handling the event too fast
     /* sleep override */
     sleep(1);
+  }
+
+  void assertCurrentStateEquals(TcvrPortStatePair expectedState) {
+    auto currentState = getCurrentState(false);
+    ASSERT_EQ(currentState, expectedState)
+        << "Intermediate state doesn't match expected after transceiver down, "
+        << "expected=" << logState(expectedState)
+        << ", actual=" << logState(currentState);
+  }
+
+  bool isTransceiverPresent(const TransceiverID& tcvrId) {
+    const auto& presentTcvrs = transceiverManager_->getPresentTransceivers();
+    return presentTcvrs.find(tcvrId) != presentTcvrs.end();
   }
 
   template <
@@ -672,14 +706,6 @@ TEST_F(PortStateMachineTest, fullSimpleRefreshCycle) {
 TEST_F(
     PortStateMachineTest,
     transceiverDownReinitializesPortThenTransceiverUp) {
-  auto assertCurrentStateEquals = [this](TcvrPortStatePair expectedState) {
-    auto currentState = getCurrentState(false);
-    ASSERT_EQ(currentState, expectedState)
-        << "Intermediate state doesn't match expected after transceiver down, "
-        << "expected=" << logState(expectedState)
-        << ", actual=" << logState(currentState);
-  };
-
   initManagers();
 
   // Set the original state.
@@ -975,6 +1001,238 @@ TEST_F(PortStateMachineTest, syncPortsOnRemovedTransceiver) {
       } /* verify */,
       "Triggering syncPorts with port down on a removed transceiver",
       true);
+}
+
+TEST_F(PortStateMachineTest, verifyAllDownPortStatusSharedWithTransceiver) {
+  std::string kTestName = "verifyAllDownPortStatusSharedWithTransceiver";
+  for (auto multiPort : {false, true}) {
+    initManagers();
+    XLOG(INFO) << "Verifying " << kTestName << " = " << multiPort;
+
+    verifyStateMachine(
+        {TcvrPortStatePair{
+            TransceiverStateMachineState::TRANSCEIVER_PROGRAMMED,
+            {PortStateMachineState::PORT_UP,
+             optionalPortState(multiPort, PortStateMachineState::PORT_UP)}}},
+        TcvrPortStatePair{
+            TransceiverStateMachineState::TRANSCEIVER_PROGRAMMED,
+            {PortStateMachineState::PORT_DOWN,
+             optionalPortState(
+                 multiPort,
+                 PortStateMachineState::PORT_DOWN)}} /* expected state */,
+        []() {} /* preUpdate */,
+        [this]() {
+          portManager_->setOverrideAllAgentPortStatusForTesting(
+              false /* up */, true /* enabled */);
+          for (int i = 0; i < 5; ++i) {
+            refreshAndTriggerProgramming();
+          }
+        } /* stateUpdate */,
+        [this]() {
+          auto [allPortsDown, downPorts] =
+              transceiverManager_->areAllPortsDown(tcvrId_);
+          ASSERT_TRUE(allPortsDown);
+        } /* verify */,
+        kTestName);
+
+    resetManagers();
+  }
+}
+
+TEST_F(
+    PortStateMachineTest,
+    verifyOneDownPortMultiPortStatusSharedWithTransceiver) {
+  std::string kTestName =
+      "verifyOneDownPortMultiPortStatusSharedWithTransceiver";
+  initManagers();
+  XLOG(INFO) << "Verifying " << kTestName;
+
+  verifyStateMachine(
+      {TcvrPortStatePair{
+          TransceiverStateMachineState::TRANSCEIVER_PROGRAMMED,
+          {PortStateMachineState::PORT_UP, PortStateMachineState::PORT_UP}}},
+      TcvrPortStatePair{
+          TransceiverStateMachineState::TRANSCEIVER_PROGRAMMED,
+          {PortStateMachineState::PORT_DOWN,
+           PortStateMachineState::PORT_UP}} /* expected state */,
+      []() {} /* preUpdate */,
+      [this]() {
+        portManager_->setOverrideAgentPortStatusForTesting(
+            {portId3_}, {portId1_, portId3_});
+        for (int i = 0; i < 5; ++i) {
+          refreshAndTriggerProgramming();
+        }
+      } /* stateUpdate */,
+      [this]() {
+        auto [allPortsDown, downPorts] =
+            transceiverManager_->areAllPortsDown(tcvrId_);
+        ASSERT_FALSE(allPortsDown);
+        ASSERT_EQ(downPorts.size(), 1);
+        ASSERT_EQ(downPorts[0], kPortName1);
+      } /* verify */,
+      kTestName);
+
+  resetManagers();
+}
+
+TEST_F(PortStateMachineTest, verifyDetectingPortStatusOnResetTransceiver) {
+  auto verifyTcvrPortStatus = [this](PortStateMachineState portState) {
+    bool allPortsDown = false;
+    std::vector<std::string> downPorts;
+    std::tie(allPortsDown, downPorts) =
+        transceiverManager_->areAllPortsDown(tcvrId_);
+
+    if (portState == PortStateMachineState::PORT_UP) {
+      // Port is up, so allPortsDown should be false
+      ASSERT_FALSE(allPortsDown);
+      ASSERT_EQ(downPorts.size(), 0);
+    } else {
+      // Port is down, so allPortsDown should be true
+      ASSERT_TRUE(allPortsDown);
+      ASSERT_EQ(downPorts.size(), 1);
+      ASSERT_EQ(downPorts[0], kPortName1);
+    }
+  };
+
+  // Test both PORT_UP and PORT_DOWN scenarios
+  for (auto portState :
+       {PortStateMachineState::PORT_UP, PortStateMachineState::PORT_DOWN}) {
+    std::string testName =
+        portState == PortStateMachineState::PORT_UP ? "PortUp" : "PortDown";
+    XLOG(INFO) << "Verifying verifyDetectingPortStatusOnResetTransceiver with "
+               << testName;
+
+    initManagers();
+
+    // Set initial states.
+    xcvr_ = overrideTransceiver(false, true);
+    setState(
+        TransceiverStateMachineState::TRANSCEIVER_PROGRAMMED,
+        {portState, std::nullopt},
+        false);
+
+    // Mark transceiver as not present.
+    setMockCmisPresence(false);
+    setMockCmisTransceiverReady(false);
+
+    // Refresh cycle a few more times and ensure that port stays in expected
+    // state, transceiver reaches transceiver ready, but transceiver isn't
+    // present.
+    for (int i = 0; i < 5; i++) {
+      refreshAndTriggerProgramming();
+    }
+    assertCurrentStateEquals(
+        TcvrPortStatePair{
+            TransceiverStateMachineState::TRANSCEIVER_READY,
+            {portState, std::nullopt}});
+    ASSERT_FALSE(isTransceiverPresent(tcvrId_));
+
+    // Ensure transceiver manager returns updated port status data.
+    verifyTcvrPortStatus(portState);
+
+    // Mark transceiver as present.
+    setMockCmisPresence(true);
+    setMockCmisTransceiverReady(true);
+
+    for (int i = 0; i < 5; i++) {
+      refreshAndTriggerProgramming();
+    }
+
+    auto expectedTcvrState = portState == PortStateMachineState::PORT_UP
+        ? TransceiverStateMachineState::TRANSCEIVER_READY
+        : TransceiverStateMachineState::TRANSCEIVER_PROGRAMMED;
+    assertCurrentStateEquals(
+        TcvrPortStatePair{expectedTcvrState, {portState, std::nullopt}});
+    ASSERT_TRUE(isTransceiverPresent(tcvrId_));
+
+    // Ensure transceiver manager returns updated port status data.
+    verifyTcvrPortStatus(portState);
+
+    resetManagers();
+  }
+}
+
+TEST_F(PortStateMachineTest, ensureNoFwUpgradeOnPortUpAndI2cConnectionIssues) {
+  /*
+   * This test is meant to mimic the case where an inserted transceiver with
+   * ports up starts suddenly having i2c connection issues which makes
+   * TransceiverManager think it's not present. We need to ensure we don't
+   * reprogram or trigger firmware upgrade on accident.
+   */
+  std::string kTestName = "ensureNoFwUpgradeOnPortUpAndI2cConnectionIssues";
+
+  initManagers();
+  XLOG(INFO) << "Verifying " << kTestName;
+
+  // Execute refresh loop to get to TRANSCEIVER_PROGRAMMED / PORT_UP.
+  xcvr_ = overrideTransceiver(false, true);
+  setState(
+      TransceiverStateMachineState::TRANSCEIVER_PROGRAMMED,
+      {PortStateMachineState::PORT_UP, std::nullopt},
+      false);
+
+  gflags::SetCommandLineOptionWithMode(
+      "firmware_upgrade_on_tcvr_insert", "t", gflags::SET_FLAGS_DEFAULT);
+  gflags::SetCommandLineOptionWithMode(
+      "firmware_upgrade_supported", "t", gflags::SET_FLAGS_DEFAULT);
+
+  // Mark transceiver as not present.
+  setMockCmisPresence(false);
+  setMockCmisTransceiverReady(false);
+
+  // Refresh cycle a few more times and ensure that port stays up, transceiver
+  // reaches transceiver ready, but transceiver isn't present.
+  for (int i = 0; i < 5; i++) {
+    refreshAndTriggerProgramming();
+  }
+  assertCurrentStateEquals(
+      TcvrPortStatePair{
+          TransceiverStateMachineState::TRANSCEIVER_READY,
+          {PortStateMachineState::PORT_UP, std::nullopt}});
+  ASSERT_FALSE(isTransceiverPresent(tcvrId_));
+
+  // Mark transceiver as present.
+  setMockCmisPresence(true);
+  setMockCmisTransceiverReady(true);
+
+  // Mocking aggregate refreshTransceivers() call to determine which
+  // transceivers are candidates for fw upgrade.
+  std::unordered_set<TransceiverID> emptyTcvrs{};
+  const auto& refreshedTcvrs =
+      static_cast<TransceiverManager*>(transceiverManager_.get())
+          ->refreshTransceivers(emptyTcvrs);
+  const auto& tcvrsForFwUpgrade =
+      transceiverManager_->findPotentialTcvrsForFirmwareUpgrade(refreshedTcvrs);
+  ASSERT_FALSE(tcvrsForFwUpgrade.contains(tcvrId_));
+
+  // Ensure the state is as expected.
+  assertCurrentStateEquals(
+      TcvrPortStatePair{
+          TransceiverStateMachineState::DISCOVERED,
+          {PortStateMachineState::PORT_UP, std::nullopt}});
+
+  // Ensure all ports are still up. If allPortsDown is false while
+  // TransceiverManager was refreshingTransceivers, the
+  // FLAGS_firmware_upgrade_on_tcvr_insert case should have been hit.
+  auto [allPortsDown, _] = transceiverManager_->areAllPortsDown(tcvrId_);
+  ASSERT_FALSE(allPortsDown);
+
+  // Refresh a few more times and guarantee transceiver reaches
+  // TRANSCEIVER_READY
+  for (int i = 0; i < 5; i++) {
+    refreshAndTriggerProgramming();
+  }
+  assertCurrentStateEquals(
+      TcvrPortStatePair{
+          TransceiverStateMachineState::TRANSCEIVER_READY,
+          {PortStateMachineState::PORT_UP, std::nullopt}});
+  ASSERT_TRUE(isTransceiverPresent(tcvrId_));
+
+  gflags::SetCommandLineOptionWithMode(
+      "firmware_upgrade_on_tcvr_insert", "f", gflags::SET_FLAGS_DEFAULT);
+  gflags::SetCommandLineOptionWithMode(
+      "firmware_upgrade_supported", "f", gflags::SET_FLAGS_DEFAULT);
+  resetManagers();
 }
 
 } // namespace facebook::fboss

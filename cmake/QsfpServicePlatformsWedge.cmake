@@ -38,7 +38,12 @@ target_link_libraries(qsfp_platforms_wedge
   icecube800bc_platform_mapping
   icetea800bc_platform_mapping
   tahansb800bc_platform_mapping
+<<<<<<< HEAD
   nh4010_platform_mapping
+||||||| 7614f746d8
+=======
+  wedge800bact_platform_mapping
+>>>>>>> d7d3794a2812707b0b2e4f73786a36ce784aaed1
   ladakh800bcls_platform_mapping
   platform_base
   qsfp_config
