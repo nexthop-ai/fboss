@@ -745,6 +745,9 @@ class TransceiverManager {
   // Return the list of transceivers that have programming events
   std::vector<TransceiverID> triggerProgrammingEvents();
 
+  std::unordered_set<TransceiverID> findPotentialTcvrsForFirmwareUpgrade(
+      const std::vector<TransceiverID>& presentXcvrIds);
+
   void findAndTriggerPotentialFirmwareUpgradeEvents(
       const std::vector<TransceiverID>& presentXcvrIds);
 
@@ -798,6 +801,12 @@ class TransceiverManager {
           }
         });
   }
+
+  // Check whether the specified stableTcvrs need remediation and then trigger
+  // the remediation events to remediate such transceivers.
+  void triggerRemediateEvents(const std::vector<TransceiverID>& stableTcvrs);
+
+  std::set<TransceiverID> getPresentTransceivers() const;
 
  protected:
   /*
@@ -889,8 +898,6 @@ class TransceiverManager {
       TransceiverID /* tcvrID */,
       facebook::fboss::TcvrState&& /* newState */) {}
 
-  std::set<TransceiverID> getPresentTransceivers() const;
-
  private:
   // Forbidden copy constructor and assignment operator
   TransceiverManager(TransceiverManager const&) = delete;
@@ -970,10 +977,6 @@ class TransceiverManager {
   // Update the cached PortStatus of TransceiverToPortInfo using wedge_agent
   // getPortStatus() results
   void updateTransceiverPortStatus() noexcept;
-
-  // Check whether the specified stableTcvrs need remediation and then trigger
-  // the remediation events to remediate such transceivers.
-  void triggerRemediateEvents(const std::vector<TransceiverID>& stableTcvrs);
 
   std::string warmBootStateFileName() const;
 

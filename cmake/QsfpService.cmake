@@ -182,6 +182,15 @@ target_link_libraries(nh4010_bsp
   FBThrift::thriftcpp2
 )
 
+add_library(wedge800bact_bsp
+  fboss/lib/bsp/wedge800bact/Wedge800BACTBspPlatformMapping.cpp
+)
+
+target_link_libraries(wedge800bact_bsp
+  bsp_platform_mapping_cpp2
+  FBThrift::thriftcpp2
+)
+
 add_library(ladakh800bcls_bsp
   fboss/lib/bsp/ladakh800bcls/Ladakh800bclsBspPlatformMapping.cpp
 )
@@ -227,6 +236,7 @@ target_link_libraries(qsfp_bsp_core
   tahan800bc_bsp
   tahansb800bc_bsp
   nh4010_bsp
+  wedge800bact_bsp
   ladakh800bcls_bsp
   device_mdio
   fpga_device

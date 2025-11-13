@@ -39,7 +39,7 @@ class PortManager {
  public:
   using TcvrToSynchronizedPortSet = std::unordered_map<
       TransceiverID,
-      std::unique_ptr<folly::Synchronized<std::unordered_set<PortID>>>>;
+      std::unique_ptr<folly::Synchronized<std::set<PortID>>>>;
 
  private:
   using TcvrToPortMap = std::unordered_map<TransceiverID, std::vector<PortID>>;
@@ -287,6 +287,14 @@ class PortManager {
   }
 
   void updateTransceiverPortStatus() noexcept;
+
+  // Remediation logic and update on transceiver insert logic in
+  // TransceiverManager NEED to know if a transceiver has any ports that are
+  // currently active.
+
+  // Because PortManager states are now separated from transceiver manager, we
+  // need to update tcvrPortToPortInfo with this data every refresh cycle.
+  void updatePortActiveStatusInTransceiverManager();
 
   // For testing purposes only - direct access to tcvrToInitializedPorts_ cache
   const TcvrToSynchronizedPortSet& getTcvrToInitializedPortsForTest() const {

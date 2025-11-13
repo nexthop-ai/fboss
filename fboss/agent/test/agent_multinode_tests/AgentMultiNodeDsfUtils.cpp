@@ -758,13 +758,16 @@ bool verifyDsfAgentRestartForRdsws(
       if (rdsw == myHostname) { // exclude self
         continue;
       }
-      // Trigger graceful or ungraceful Agent restart
-      triggerGracefulRestart ? triggerGracefulAgentRestart(rdsw)
-                             : triggerUngracefulAgentRestart(rdsw);
 
-      // Wait for the switch to come up
-      if (!verifySwSwitchRunState(rdsw, SwitchRunState::CONFIGURED)) {
-        XLOG(DBG2) << "Agent failed to come up post warmboot: " << rdsw;
+      // Trigger graceful or ungraceful Agent restart
+      if (!restartServiceForSwitches(
+              {rdsw},
+              triggerGracefulRestart ? triggerGracefulAgentRestart
+                                     : triggerUngracefulAgentRestart,
+              getAgentAliveSinceEpoch,
+              verifySwSwitchRunState,
+              SwitchRunState::CONFIGURED)) {
+        XLOG(ERR) << "Failed to restart Agent on RDSW: " << rdsw;
         return false;
       }
 
@@ -813,11 +816,16 @@ bool verifyDsfAgentRestartForFdsws(
     // Gracefully restart only one remote FDSW per cluster
     if (!fdsws.empty()) {
       auto fdsw = fdsws.front();
-      triggerGracefulRestart ? triggerGracefulAgentRestart(fdsw)
-                             : triggerUngracefulAgentRestart(fdsw);
-      // Wait for the switch to come up
-      if (!verifySwSwitchRunState(fdsw, SwitchRunState::CONFIGURED)) {
-        XLOG(DBG2) << "Agent failed to come up post warmboot: " << fdsw;
+
+      // Trigger graceful or ungraceful Agent restart
+      if (!restartServiceForSwitches(
+              {fdsw},
+              triggerGracefulRestart ? triggerGracefulAgentRestart
+                                     : triggerUngracefulAgentRestart,
+              getAgentAliveSinceEpoch,
+              verifySwSwitchRunState,
+              SwitchRunState::CONFIGURED)) {
+        XLOG(ERR) << "Failed to restart Agent on FDSW: " << fdsw;
         return false;
       }
     }
@@ -1011,8 +1019,6 @@ bool verifyLiveSystemPorts(const std::unique_ptr<TopologyInfo>& topologyInfo) {
       30 /* num retries */,
       std::chrono::milliseconds(5000) /* sleep between retries */,
       true /* retry on exception */);
-
-  return true;
 }
 
 bool verifyLiveRifs(const std::unique_ptr<TopologyInfo>& topologyInfo) {
@@ -1105,29 +1111,18 @@ bool verifyDsfQsfpRestart(
 
   auto myHostname = topologyInfo->getMyHostname();
   auto baselinePeerToDsfSession = getPeerToDsfSession(myHostname);
-  auto switchNameToSwitchIds = topologyInfo->getSwitchNameToSwitchIds();
-  auto baselineSwitchNameToQsfpAliveSinceEpoch =
-      getSwitchNameToQsfpAliveSinceEpoch(switchNameToSwitchIds);
 
   // For every device (RDSW, FDSW, SDSW) issue QSFP graceful restart
-  for (const auto& [switchName, _] : switchNameToSwitchIds) {
-    triggerGracefulRestart ? triggerGracefulQsfpRestart(switchName)
-                           : triggerUngracefulQsfpRestart(switchName);
-  }
-
-  // Wait for QSFP to restart
-  if (!verifyQsfpRestarted(
-          switchNameToSwitchIds, baselineSwitchNameToQsfpAliveSinceEpoch)) {
-    XLOG(DBG2) << "QSFP failed to restart on all switches";
+  if (!restartServiceForSwitches(
+          topologyInfo->getAllSwitches(),
+          triggerGracefulRestart ? triggerGracefulQsfpRestart
+                                 : triggerUngracefulQsfpRestart,
+          getQsfpAliveSinceEpoch,
+          verifyQsfpServiceRunState,
+          QsfpServiceRunState::ACTIVE)) {
+    XLOG(ERR) << "Failed to restart QSFP on: "
+              << folly::join(",", topologyInfo->getAllSwitches());
     return false;
-  }
-
-  // Wait for QSFP service to come up
-  for (const auto& [switchName, _] : switchNameToSwitchIds) {
-    if (!verifyQsfpServiceRunState(switchName, QsfpServiceRunState::ACTIVE)) {
-      XLOG(DBG2) << "QSFP failed to come up post warmboot: " << switchName;
-      return false;
-    }
   }
 
   // No session flaps are expected for QSFP graceful restart.
@@ -1168,25 +1163,14 @@ bool verifyDsfFSDBRestart(
         continue;
       }
 
-      std::map<std::string, std::set<SwitchID>> switchNameToSwitchIds = {
-          {rdsw, topologyInfo->getSwitchNameToSwitchIds().at(rdsw)}};
-      auto baselineSwitchNameToFsdbAliveSinceEpoch =
-          getSwitchNameToFsdbAliveSinceEpoch(switchNameToSwitchIds);
-
-      // Trigger graceful or ungraceful FSDB restart
-      triggerGracefulRestart ? triggerGracefulFsdbRestart(rdsw)
-                             : triggerUngracefulFsdbRestart(rdsw);
-
-      // Wait for FSDB to restart
-      if (!verifyFsdbRestarted(
-              switchNameToSwitchIds, baselineSwitchNameToFsdbAliveSinceEpoch)) {
-        XLOG(DBG2) << "FSDB failed to restart on: " << rdsw;
-        return false;
-      }
-
-      // Wait for FSDB to come up
-      if (!verifyFsdbIsUp(rdsw)) {
-        XLOG(DBG2) << "FSDB failed to come up post restart: " << rdsw;
+      if (!restartServiceForSwitches(
+              {rdsw},
+              triggerGracefulRestart ? triggerGracefulFsdbRestart
+                                     : triggerUngracefulFsdbRestart,
+              getFsdbAliveSinceEpoch,
+              verifyFsdbIsUp)) {
+        XLOG(ERR) << "Failed to restart FSDB on: "
+                  << folly::join(",", topologyInfo->getAllSwitches());
         return false;
       }
 
