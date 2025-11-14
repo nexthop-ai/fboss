@@ -50,7 +50,6 @@ RUN LLVM_VERSION=$(grep -A 1 'mirrors-clang-format' /tmp/.pre-commit-config.yaml
     for i in \
     clang-apply-replacements \
     clang-format \
-    clang-format-diff \
     clang-include-cleaner \
     clang-include-fixer \
     clang-refactor \
@@ -78,6 +77,8 @@ RUN dnf install -y perl-diagnostics perl-sort perl-English perl-Clone perl-Data-
     perl-Math-BigInt perl-YAML-LibYAML perl-Sys-Hostname perl-Time
 RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN pip install pyyaml filelock
+RUN --mount=type=bind,source=requirements-dev.txt,target=/tmp/requirements-dev.txt \
+    pip install -r /tmp/requirements-dev.txt
 # ============================================================
 
 # Configure sudoers to allow wheel group passwordless sudo
