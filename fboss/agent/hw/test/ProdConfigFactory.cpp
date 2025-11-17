@@ -111,6 +111,7 @@ uint16_t uplinksCountFromSwitch(PlatformType mode) {
     case PM::PLATFORM_DARWIN48V:
     case PM::PLATFORM_TAHAN800BC:
     case PM::PLATFORM_MONTBLANC:
+    case PM::PLATFORM_NH4010:
       return 4;
     case PM::PLATFORM_MINIPACK3N:
       return 64;
@@ -148,6 +149,7 @@ cfg::PortSpeed getPortSpeed(
       portSpeed = cfg::PortSpeed::TWOHUNDREDG;
       break;
     case PlatformType::PLATFORM_MONTBLANC:
+    case PlatformType::PLATFORM_NH4010:
       portSpeed = cfg::PortSpeed::FOURHUNDREDG;
       break;
     case PlatformType::PLATFORM_TAHAN800BC:
