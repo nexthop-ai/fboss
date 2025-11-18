@@ -264,6 +264,7 @@ add_library(transceiver_manager STATIC
 )
 
 target_link_libraries(transceiver_manager
+  qsfp_lib
   qsfp_module
   ledIO
   qsfp_bsp_core
@@ -294,6 +295,7 @@ add_library(port_manager STATIC
 )
 
 target_link_libraries(port_manager
+  qsfp_lib
   fboss_error
   fboss_types
   utils
@@ -301,6 +303,7 @@ target_link_libraries(port_manager
   phy_management_base
   thrift_service_client
   thread_heartbeat
+  utils
   product_info
   fsdb_flags
   restart_time_tracker

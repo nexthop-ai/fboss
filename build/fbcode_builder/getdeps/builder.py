@@ -19,7 +19,7 @@ import typing
 from shlex import quote as shellquote
 from typing import Optional
 
-from .copytree import simple_copytree
+from .copytree import rmtree_more, simple_copytree
 from .dyndeps import create_dyn_dep_munger
 from .envfuncs import add_path_entry, Env, path_search
 from .fetcher import copy_if_different, is_public_commit
@@ -206,7 +206,7 @@ class BuilderBase(object):
                 if os.path.islink(self.build_dir):
                     os.remove(self.build_dir)
                 else:
-                    shutil.rmtree(self.build_dir)
+                    rmtree_more(self.build_dir)
         elif self.build_opts.is_windows():
             # On Windows, emit a wrapper script that can be used to run build artifacts
             # directly from the build directory, without installing them.  On Windows $PATH
@@ -241,7 +241,9 @@ class BuilderBase(object):
             )
         )
 
-    def run_tests(self, schedule_type, owner, test_filter, retry, no_testpilot, timeout=None) -> None:
+    def run_tests(
+        self, schedule_type, owner, test_filter, retry, no_testpilot, timeout=None
+    ) -> None:
         """Execute any tests that we know how to run.  If they fail,
         raise an exception."""
         pass
@@ -346,7 +348,9 @@ class MakeBuilder(BuilderBase):
             for file in glob.glob(srcpattern):
                 shutil.copy(file, libdir)
 
-    def run_tests(self, schedule_type, owner, test_filter, retry, no_testpilot, timeout=None) -> None:
+    def run_tests(
+        self, schedule_type, owner, test_filter, retry, no_testpilot, timeout=None
+    ) -> None:
         if not self.test_args:
             return
 
@@ -1072,6 +1076,9 @@ if __name__ == "__main__":
                 if run_id is not None:
                     testpilot_args += ["--run-id", run_id]
 
+                if timeout is not None:
+                    testpilot_args += ["--timeout", str(timeout)]
+
                 if test_filter:
                     testpilot_args += ["--", test_filter]
 
@@ -1429,7 +1436,9 @@ class SetupPyBuilder(BuilderBase):
         with open(os.path.join(self.inst_dir, ".built-by-getdeps"), "w") as f:
             f.write("built")
 
-    def run_tests(self, schedule_type, owner, test_filter, retry, no_testpilot, timeout=None) -> None:
+    def run_tests(
+        self, schedule_type, owner, test_filter, retry, no_testpilot, timeout=None
+    ) -> None:
         # setup.py actually no longer has a standard command for running tests.
         # Instead we let manifest files specify an arbitrary Python file to run
         # as a test.

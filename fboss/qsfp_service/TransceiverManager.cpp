@@ -163,7 +163,9 @@ TransceiverManager::TransceiverManager(
     portNameToPortID_.insert(PortNameIdMap::value_type(portName, portID));
     SwPortInfo portInfo;
     portInfo.name = portName;
-    portInfo.tcvrID = utility::getTransceiverId(platformPort, chips);
+    auto tcvrIds = utility::getTransceiverIds(platformPort, chips);
+    portInfo.tcvrID =
+        tcvrIds.empty() ? std::nullopt : std::make_optional(tcvrIds[0]);
     portToSwPortInfo_.emplace(portID, std::move(portInfo));
   }
   try {
@@ -487,14 +489,14 @@ TransceiverManager::getPortNameToModuleMap() const {
     const auto& platformPorts = platformMapping_->getPlatformPorts();
     for (const auto& it : platformPorts) {
       auto port = it.second;
-      auto transceiverId =
-          utility::getTransceiverId(port, platformMapping_->getChips());
-      if (!transceiverId) {
+      auto transceiverIds =
+          utility::getTransceiverIds(port, platformMapping_->getChips());
+      if (transceiverIds.empty()) {
         continue;
       }
 
       auto& portName = *(port.mapping()->name());
-      portNameToModule_[portName] = transceiverId.value();
+      portNameToModule_[portName] = transceiverIds[0];
     }
   }
 
@@ -758,6 +760,15 @@ bool TransceiverManager::upgradeFirmware(Transceiver& tcvr) {
                         << partNumber
                         << " fwStorageHandle=" << fwStorageHandleName
                         << ". Skipping fw upgrade";
+    return false;
+  }
+
+  if (!fwStorage()) {
+    FW_LOG(ERR, tcvrID)
+        << "FbossFwStorage not initialized. Firmware upgrade not supported. "
+        << "Part Number=" << partNumber
+        << " fwStorageHandle=" << fwStorageHandleName
+        << ". Skipping fw upgrade";
     return false;
   }
 
@@ -2534,7 +2545,9 @@ std::pair<bool, std::vector<std::string>> TransceiverManager::areAllPortsDown(
   if (portToPortInfoWithLock->empty()) {
     XLOG(WARN) << "Can't find any programmed port for Transceiver:" << id
                << " in cached tcvrToPortInfo_";
-    return {false, {}};
+    //  In PortManager mode, we can interpret an empty map as indicative of no
+    //  ports being up. Otherwise, we should interpret this as ports being up.
+    return {FLAGS_port_manager_mode, {}};
   }
   bool anyPortUp = false;
   std::vector<std::string> downPorts;
@@ -2599,8 +2612,12 @@ void TransceiverManager::triggerRemediateEvents(
     auto curState = getCurrentState(tcvrID);
     // If we are not in the active or inactive state, don't try to remediate
     // yet
-    if (curState != TransceiverStateMachineState::ACTIVE &&
-        curState != TransceiverStateMachineState::INACTIVE) {
+
+    bool isValidState = FLAGS_port_manager_mode
+        ? curState == TransceiverStateMachineState::TRANSCEIVER_PROGRAMMED
+        : (curState == TransceiverStateMachineState::ACTIVE ||
+           curState == TransceiverStateMachineState::INACTIVE);
+    if (!isValidState) {
       continue;
     }
 
@@ -2695,6 +2712,10 @@ void TransceiverManager::publishLinkSnapshots(PortID portID) {
     phyManager_->publishXphyInfoSnapshots(portID);
   }
   // Publish transceiver snapshots if there's a transceiver
+  publishLinkSnapshotsTransceiver(portID);
+}
+
+void TransceiverManager::publishLinkSnapshotsTransceiver(PortID portID) {
   if (auto tcvrIDOpt = getTransceiverID(portID)) {
     auto lockedTransceivers = transceivers_.rlock();
     if (auto tcvrIt = lockedTransceivers->find(*tcvrIDOpt);
@@ -3625,12 +3646,25 @@ bool TransceiverManager::activeCable(const TcvrState& tcvrState) {
 void TransceiverManager::markTransceiverReadyForProgramming(
     TransceiverID tcvrId,
     bool ready) {
+  if (!FLAGS_port_manager_mode) {
+    return;
+  }
   auto lockedTcvrsReadyForProgramming = tcvrsReadyForProgramming_.wlock();
   if (ready) {
     lockedTcvrsReadyForProgramming->insert(tcvrId);
   } else {
     lockedTcvrsReadyForProgramming->erase(tcvrId);
   }
+}
+
+bool TransceiverManager::transceiverJustRemediated(
+    const TransceiverID& id) const {
+  auto stateMachineItr = stateMachineControllers_.find(id);
+  if (stateMachineItr == stateMachineControllers_.end()) {
+    throw FbossError("Transceiver:", id, " doesn't exist");
+  }
+  return stateMachineItr->second->getStateMachine().rlock()->get_attribute(
+      isTransceiverJustRemediated);
 }
 
 std::unordered_set<TransceiverID>

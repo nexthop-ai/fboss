@@ -17,6 +17,73 @@ class HwAsic {
       std::unordered_set<cfg::SwitchType> supportedModes = {
           cfg::SwitchType::NPU});
   enum class Feature {
+    // ACL Features::
+    //
+    // ACL Entry:
+    //   - Consists of Matcher and Action
+    //   - Matcher: check if patcket matches criteria e.g. specific source IP.
+    //   - Action: perform action on match e.g. drop packet
+    //
+    // ACL Counter:
+    //   - Can be optionally attached to an ACL entry.
+    //   - Can be configured to count the number of bytes and/or packets that
+    //     matched that ACL entry.
+    //
+    // ACL Table:
+    //  - Ordered list of ACL entries
+    //  - Only the first matching ACL entry and its Action take effect.
+    //
+    // ACL Table Group:
+    //  - Group of ACL Tables
+    //  - First matching ACL entry in each table and its Action takes effect.
+    //
+    // Bind point:
+    //  - Where to attach the ACL e.g. switch (global), per port etc.
+    //  - FBOSS supports only switch level ACLs i.e. ACL will be checked for
+    //    very packet in the switch.
+    //
+    // Stage:
+    //  - Stage in the pipeline the ACL will be checked.
+    //  - For example: ingress, egress etc.
+    //
+
+    // Set to true if Multiple ACL Tables are supported
+    // TODO:
+    //  - Candidate for removal: YES, ACL_TABLE_GROUP is enabled everywhere.
+    //  - Consolidate to a single feature prefixed with ACL_
+    MULTIPLE_ACL_TABLES,
+    ACL_TABLE_GROUP,
+
+    // Set to true if SAI implementations allow individually enabling Packet
+    // counter and byte counter.
+    // On some SAI implementations, supporting this is non-trivial. Those SAI
+    // implementations enable bytes as well as packet counters even if only one
+    // of the two is enabled.
+    // TODO:
+    //   - Candidate for removal: YES. FBOSS use case does not require enabling
+    //     only one. Enforce that either both are enabled or neither is enabled
+    //     on every platform, and then remove this feature.
+    //   - If we decide to keep the feature, rename to carry ACL_ prefix.
+    SEPARATE_BYTE_AND_PACKET_ACL_COUNTER,
+
+    // Set to true if Ingress ACLs are supported.
+    // Used to bind an ACL Table or ACL Table Group to a switch using
+    // SAI_SWITCH_ATTR_INGRESS_ACL
+    // TODO:
+    //  - Candidate for removal: YES. All ASICs/SDKs already support this.
+    SWITCH_ATTR_INGRESS_ACL,
+
+    INGRESS_FIELD_PROCESSOR_FLEX_COUNTER,
+    EMPTY_ACL_MATCHER,
+    SAI_ACL_TABLE_UPDATE,
+    ACL_COUNTER_LABEL,
+    ACL_METADATA_QUALIFER,
+    SAI_ACL_ENTRY_SRC_PORT_QUALIFIER,
+    ACL_ENTRY_ETHER_TYPE,
+    ACL_BYTE_COUNTER,
+    INGRESS_POST_LOOKUP_ACL_TABLE,
+    ACL_SET_ECMP_HASH_ALGORITHM,
+    // Other features
     SPAN,
     ERSPANv4,
     ERSPANv6,
@@ -43,9 +110,6 @@ class HwAsic {
     L3_EGRESS_MODE_AUTO_ENABLED,
     SAI_ECN_WRED,
     PKTIO,
-    ACL_COPY_TO_CPU,
-    SWITCH_ATTR_INGRESS_ACL,
-    INGRESS_FIELD_PROCESSOR_FLEX_COUNTER,
     HOSTTABLE,
     PORT_TX_DISABLE,
     ZERO_SDK_WRITE_WARMBOOT,
@@ -74,22 +138,17 @@ class HwAsic {
     EGRESS_SFLOW,
     DEFAULT_VLAN,
     SAI_LAG_HASH,
-    SAI_ACL_ENTRY_SRC_PORT_QUALIFIER,
     TRAFFIC_HASHING,
-    ACL_TABLE_GROUP,
     MACSEC,
     CPU_PORT,
     VRF,
     SAI_HASH_FIELDS_CLEAR_BEFORE_SET,
-    EMPTY_ACL_MATCHER,
     SAI_PORT_SERDES_FIELDS_RESET,
     ROUTE_COUNTERS,
-    MULTIPLE_ACL_TABLES,
     ROUTE_FLEX_COUNTERS,
     BRIDGE_PORT_8021Q,
     FEC_DIAG_COUNTERS,
     SAI_WEIGHTED_NEXTHOPGROUP_MEMBER,
-    SAI_ACL_TABLE_UPDATE,
     PORT_EYE_VALUES,
     SAI_MPLS_TTL_1_TRAP,
     SAI_MPLS_LABEL_LOOKUP_FAIL_COUNTER,
@@ -146,13 +205,11 @@ class HwAsic {
     SLOW_STAT_UPDATE, // pending CS00012299308
     VOQ_DELETE_COUNTER,
     DRAM_ENQUEUE_DEQUEUE_STATS,
-    SEPARATE_BYTE_AND_PACKET_ACL_COUNTER,
     ARS_PORT_ATTRIBUTES,
     SAI_EAPOL_TRAP,
     // pending CS00012311423
     L3_MTU_ERROR_TRAP,
     SAI_USER_DEFINED_TRAP,
-    ACL_COUNTER_LABEL,
     CREDIT_WATCHDOG,
     ECMP_DLB_OFFSET,
     SAI_FEC_CORRECTED_BITS,
@@ -164,7 +221,6 @@ class HwAsic {
     ANY_ACL_DROP_COUNTER,
     ANY_TRAP_DROP_COUNTER,
     PORT_WRED_COUNTER,
-    ACL_METADATA_QUALIFER,
     PORT_SERDES_ZERO_PREEMPHASIS,
     EGRESS_FORWARDING_DROP_COUNTER,
     SAI_PRBS,
@@ -180,8 +236,6 @@ class HwAsic {
     CABLE_PROPOGATION_DELAY,
     DRAM_BLOCK_TIME,
     VOQ_LATENCY_WATERMARK_BIN,
-    ACL_ENTRY_ETHER_TYPE,
-    ACL_BYTE_COUNTER,
     DATA_CELL_FILTER,
     EGRESS_CORE_BUFFER_WATERMARK,
     DELETED_CREDITS_STAT,
@@ -196,7 +250,6 @@ class HwAsic {
     PORT_MTU_ERROR_TRAP,
     L3_INTF_MTU,
     DEDICATED_CPU_BUFFER_POOL,
-    INGRESS_POST_LOOKUP_ACL_TABLE,
     FAST_LLFC_COUNTER,
     INGRESS_SRAM_MIN_BUFFER_WATERMARK,
     FDR_FIFO_WATERMARK,
@@ -221,7 +274,6 @@ class HwAsic {
     TEMPERATURE_MONITORING,
     ROUTER_INTERFACE_STATISTICS,
     CPU_PORT_EGRESS_BUFFER_POOL,
-    ACL_SET_ECMP_HASH_ALGORITHM,
     SET_NEXT_HOP_GROUP_HASH_ALGORITHM,
     BULK_CREATE_ECMP_MEMBER,
     TECH_SUPPORT,
@@ -233,6 +285,10 @@ class HwAsic {
     FABRIC_LINK_MONITORING,
     ARS_ALTERNATE_MEMBERS,
     RESERVED_BYTES_FOR_BUFFER_POOL,
+    // Indicates the buffer pool size excludes the headroom
+    // pool size given the buffer pool size determination is
+    // left to vendor SAI implementation.
+    INGRESS_BUFFER_POOL_SIZE_EXCLUDES_HEADROOM,
   };
 
   enum class AsicMode {
