@@ -959,6 +959,7 @@ cpp_library(
         "//fboss/agent/if:mpls-cpp2-types",
         "//fboss/agent/if:multiswitch_ctrl-cpp2-services",
         "//fboss/agent/lldp:lldp",
+        "//fboss/agent/lldp:lldp_structs-cpp2-types",
         "//fboss/agent/packet:ether_type",
         "//fboss/agent/packet:ipproto",
         "//fboss/agent/packet:packet",
@@ -1061,6 +1062,7 @@ cpp_library(
     ],
     exported_deps = [
         ":address_utils",
+        ":agent_features",
         ":core",
         ":fboss-error",
         ":fboss-types",

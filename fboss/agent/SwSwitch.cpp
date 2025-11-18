@@ -18,6 +18,7 @@
 #include "fboss/agent/ArpHandler.h"
 #include "fboss/agent/AsicUtils.h"
 #include "fboss/agent/Constants.h"
+#include "fboss/agent/FabricLinkMonitoringManager.h"
 #include "fboss/agent/FbossError.h"
 #include "fboss/agent/FbossHwUpdateError.h"
 #include "fboss/agent/FibHelpers.h"
@@ -611,6 +612,10 @@ void SwSwitch::stop(bool isGracefulStop, bool revertToMinAlpmState) {
     lagManager_.reset();
   }
 
+  if (fabricLinkMonitoringManager_) {
+    fabricLinkMonitoringManager_->stop();
+  }
+
   // Need to destroy IPv6Handler as it is a state observer,
   // but we must do it after we've stopped TunManager.
   // Otherwise, we might attempt to call sendL3Packet which
@@ -1093,6 +1098,28 @@ void SwSwitch::updateStats() {
 
   phySnapshotManager_->updatePhyInfos(phyInfo);
   updatePhyFb303Stats(phyInfo);
+  updateFabricLinkMonitoringStats();
+}
+
+void SwSwitch::updateFabricLinkMonitoringStats() {
+  // Check if fabricLinkMonitoringManager is instantiated
+  auto fabricLinkMonMgr = getFabricLinkMonitoringManager();
+  if (!fabricLinkMonMgr) {
+    return;
+  }
+
+  // Get all fabric link monitoring stats in a single call (more efficient
+  // than calling getFabricLinkMonPortStats() for each port individually)
+  auto allPortStats = fabricLinkMonMgr->getAllFabricLinkMonPortStats();
+
+  // Update fb303 counters for each monitored port
+  for (const auto& [portId, stats] : allPortStats) {
+    auto portStat = portStats(portId);
+
+    // Update RX and TX counters
+    portStat->fabricLinkMonitoringRxPackets(*stats.rxCount());
+    portStat->fabricLinkMonitoringTxPackets(*stats.txCount());
+  }
 }
 
 void SwSwitch::updateRouteStats() {
@@ -1549,6 +1576,10 @@ void SwSwitch::initialConfigApplied(
 
   if (lldpManager_) {
     lldpManager_->start();
+  }
+
+  if (fabricLinkMonitoringManager_) {
+    fabricLinkMonitoringManager_->start();
   }
 
   // Send neighbor solicitation for configured interfaces after
@@ -2181,6 +2212,21 @@ PortDescriptor SwSwitch::getPortFromPkt(const RxPacket* pkt) const {
 }
 
 void SwSwitch::handlePacket(std::unique_ptr<RxPacket> pkt) {
+  if (getFabricLinkMonitoringManager()) {
+    // This flow will be hit only for a subset of VoQ and Fabric switches
+    // where fabric link monitoring manager is running.
+    auto* port =
+        getState()->getPorts()->getNodeIf(PortID(pkt->getSrcPort())).get();
+    if (port && (port->getPortType() == cfg::PortType::FABRIC_PORT)) {
+      // TODO(nivinl): Once Broadcom implements the new attribute to specify
+      // packet type as requested in CS00012430577, the check for port type
+      // can be avoided.
+      Cursor c(pkt->buf());
+      getFabricLinkMonitoringManager()->handlePacket(std::move(pkt), c);
+      return;
+    }
+  }
+
   if (FLAGS_intf_nbr_tables) {
     auto intf = getState()->getInterfaces()->getNodeIf(
         getState()->getInterfaceIDForPort(getPortFromPkt(pkt.get())));
@@ -2806,6 +2852,7 @@ void SwSwitch::startThreads() {
 
 void SwSwitch::postInit() {
   initLldpManager();
+  initFabricLinkMonitoringManager();
   publishBootTypeStats();
   initThreadHeartbeats();
   startHeartbeatWatchdog();
@@ -2815,6 +2862,28 @@ void SwSwitch::postInit() {
 void SwSwitch::initLldpManager() {
   if (flags_ & SwitchFlags::ENABLE_LLDP) {
     lldpManager_ = std::make_unique<LldpManager>(this);
+  }
+}
+
+void SwSwitch::initFabricLinkMonitoringManager() {
+  if (flags_ & SwitchFlags::ENABLE_FABRIC_LINK_MONITORING) {
+    // Fabric link monitoring manager is needed to send/receive packets
+    // from VoQ switch to L1 fabric and from L1 to L2 fabric. It is not
+    // needed on single stage fabric or dual stage L2 fabric devices.
+    bool isVoqSwitch =
+        getSwitchInfoTable().getSwitchIdsOfType(cfg::SwitchType::VOQ).size();
+    auto hwAsic = getHwAsicTable()->getHwAsicIf(
+        *getSwitchInfoTable().getSwitchIDs().begin());
+    bool isDualStageL1 = isVoqSwitch
+        ? false
+        : hwAsic->getFabricNodeRole() == HwAsic::FabricNodeRole::DUAL_STAGE_L1;
+    if (isVoqSwitch || isDualStageL1) {
+      fabricLinkMonitoringManager_ =
+          std::make_unique<FabricLinkMonitoringManager>(this);
+    } else {
+      XLOG(DBG3) << "Fabric Link Monitoring Manager packet send/receive is not"
+                    " enabled on single stage fabric and dual stage L2 fabric!";
+    }
   }
 }
 
@@ -3849,10 +3918,10 @@ std::shared_ptr<SwitchState> SwSwitch::modifyTransceivers(
     std::unordered_map<PortID, TransceiverID> portIdToTransceiverID;
     const auto& platformPorts = platformMapping->getPlatformPorts();
     for (const auto& [portId, platformPort] : platformPorts) {
-      auto transceiverId =
-          utility::getTransceiverId(platformPort, platformMapping->getChips());
-      if (transceiverId) {
-        portIdToTransceiverID.emplace(PortID(portId), *transceiverId);
+      auto transceiverIds =
+          utility::getTransceiverIds(platformPort, platformMapping->getChips());
+      if (!transceiverIds.empty()) {
+        portIdToTransceiverID.emplace(PortID(portId), transceiverIds[0]);
       }
     }
     auto getPortIdsForTransceiver = [&portIdToTransceiverID](

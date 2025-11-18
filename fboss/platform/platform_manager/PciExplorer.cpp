@@ -283,37 +283,6 @@ void PciExplorer::createLedCtrl(
   create(pciDevice, *ledCtrlConfig.fpgaIpBlockConfig(), auxData);
 }
 
-std::vector<LedCtrlConfig> PciExplorer::createLedCtrlConfigs(
-    const PciDeviceConfig& pciDeviceConfig) {
-  std::vector<LedCtrlConfig> ledCtrlConfigs;
-  const auto ledCtrlConfigBlocks = pciDeviceConfig.ledCtrlBlockConfigs();
-  for (const auto& ledCtrlConfigBlock : *ledCtrlConfigBlocks) {
-    int endPort =
-        *ledCtrlConfigBlock.startPort() + *ledCtrlConfigBlock.numPorts();
-    for (int port = *ledCtrlConfigBlock.startPort(); port < endPort; ++port) {
-      for (int led = 1; led <= ledCtrlConfigBlock.ledPerPort(); ++led) {
-        LedCtrlConfig ledCtrlConfig;
-        ledCtrlConfig.fpgaIpBlockConfig()->pmUnitScopedName() = fmt::format(
-            "{}_PORT_{}_LED_{}",
-            *ledCtrlConfigBlock.pmUnitScopedNamePrefix(),
-            port,
-            led);
-        ledCtrlConfig.fpgaIpBlockConfig()->deviceName() = "port_led";
-        ledCtrlConfig.fpgaIpBlockConfig()->csrOffset() =
-            Utils().computeHexExpression(
-                *ledCtrlConfigBlock.csrOffsetCalc(),
-                port,
-                *ledCtrlConfigBlock.startPort(),
-                led);
-        ledCtrlConfig.portNumber() = port;
-        ledCtrlConfig.ledId() = led;
-        ledCtrlConfigs.push_back(ledCtrlConfig);
-      }
-    }
-  }
-  return ledCtrlConfigs;
-}
-
 std::string PciExplorer::createXcvrCtrl(
     const PciDevice& pciDevice,
     const XcvrCtrlConfig& xcvrCtrlConfig,
@@ -352,6 +321,15 @@ std::string PciExplorer::createFanPwmCtrl(
   create(pciDevice, *fanPwmCtrlConfig.fpgaIpBlockConfig(), auxData);
   return getFanPwmCtrlSysfsPath(
       pciDevice, *fanPwmCtrlConfig.fpgaIpBlockConfig(), instanceId);
+}
+
+std::string PciExplorer::createMdioBus(
+    const PciDevice& pciDevice,
+    const FpgaIpBlockConfig& mdioBusConfig,
+    uint32_t instanceId) {
+  auto auxData = getAuxData(mdioBusConfig, instanceId);
+  create(pciDevice, mdioBusConfig, auxData);
+  return getMdioBusSysfsPath(pciDevice, mdioBusConfig, instanceId);
 }
 
 void PciExplorer::createFpgaIpBlock(
@@ -752,6 +730,25 @@ std::string PciExplorer::getXcvrCtrlSysfsPath(
   throw PciSubDeviceRuntimeError(
       fmt::format(
           "Couldn't find XcvrCtrl {} under {}",
+          *fpgaIpBlockConfig.deviceName(),
+          pciDevice.sysfsPath()),
+      *fpgaIpBlockConfig.pmUnitScopedName());
+}
+
+std::string PciExplorer::getMdioBusSysfsPath(
+    const PciDevice& pciDevice,
+    const FpgaIpBlockConfig& fpgaIpBlockConfig,
+    uint32_t instanceId) {
+  std::string expectedEnding =
+      fmt::format(".{}.{}", *fpgaIpBlockConfig.deviceName(), instanceId);
+  for (const auto& dirEntry : fs::directory_iterator(pciDevice.sysfsPath())) {
+    if (dirEntry.path().string().ends_with(expectedEnding)) {
+      return Utils().resolveMdioBusCharDevPath(instanceId);
+    }
+  }
+  throw PciSubDeviceRuntimeError(
+      fmt::format(
+          "Couldn't find MdioBus {} under {}",
           *fpgaIpBlockConfig.deviceName(),
           pciDevice.sysfsPath()),
       *fpgaIpBlockConfig.pmUnitScopedName());
