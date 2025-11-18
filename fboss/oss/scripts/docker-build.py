@@ -352,6 +352,7 @@ def run_fboss_build(
             ".gnupg",
             ".ssh",
             ".vim", ".vimrc",
+            ".vscode-server",
             "bin",
             ]
 
