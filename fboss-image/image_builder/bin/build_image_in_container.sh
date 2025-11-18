@@ -103,7 +103,7 @@ fi
 
 # Update the docker image
 dprint "Updating docker image..."
-update_docker  >> ${LOG_FILE} 2>&1
+update_docker |& tee -a ${LOG_FILE}
 
 dprint "Deleting target directory: ${TARGET_DIR}"
 rm -rf ${TARGET_DIR}
@@ -133,8 +133,8 @@ mkdir -p ${DESCRIPTION_DIR}/root/repos
 # If the user specified a kernel rpm directory, copy the rpms from there.  Otherwise, download them
 if [ -z "${KERNEL_RPM_DIR}" ]; then
     dprint "Downloading LTS kernel 6.12 rpms to ${DESCRIPTION_DIR}/root/repos..."
-    dnf copr enable kwizart/kernel-longterm-6.12 -y >> ${LOG_FILE} 2>&1
-    dnf download --destdir=${DESCRIPTION_DIR}/root/repos kernel-longterm-core-* kernel-longterm-modules-core-* >> ${LOG_FILE} 2>&1
+    dnf copr enable kwizart/kernel-longterm-6.12 -y |& tee -a ${LOG_FILE}
+    dnf download --destdir=${DESCRIPTION_DIR}/root/repos kernel-longterm-core-* kernel-longterm-modules-core-* |& tee -a ${LOG_FILE}
     if [ $? -ne 0 ]; then
         dprint "ERROR: Failed to download LTS kernel rpms, check logfile for errors, exiting..."
         exit 1
@@ -165,7 +165,7 @@ kiwi-ng-3 \
     system build \
     --description ${DESCRIPTION_DIR} \
     --target-dir ${TARGET_DIR} \
-    >> ${LOG_FILE} 2>&1
+    |& tee -a ${LOG_FILE}
 
 RC=$?
 

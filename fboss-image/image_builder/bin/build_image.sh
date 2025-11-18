@@ -163,7 +163,7 @@ if [ "${BUILD_DOCKER_IMAGE}" = "yes" ] ; then
         # Change directory full path to correct levels up from the script location as its expected by Dockerfile
         cd ${WSROOT}/../..
         # This docker build expects to be run from the workspace root directory
-        docker build -f fboss/oss/docker/Dockerfile ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME} . >> ${LOG_FILE} 2>&1
+        docker build -f fboss/oss/docker/Dockerfile ${DOCKER_BUILD_ARGS} -t ${DOCKER_IMAGE_NAME} . |& tee -a ${LOG_FILE}
         handle_error $? "docker build"
     fi
 fi
@@ -177,7 +177,7 @@ if [ "${ENTER_SHELL}" = "yes" ] ; then
 else
     if [ "${BUILD_FBOSS_IMAGES}" = "yes" ]; then
         dprint "Starting image build, launching in docker: /${IMAGE_BUILDER_DIR}/bin/build_image_in_container.sh $@"
-        docker run --rm -it ${DOCKER_ARGS} ${DOCKER_IMAGE_NAME} /${IMAGE_BUILDER_DIR}/bin/build_image_in_container.sh ${CHILD_SCRIPT_ARGS[*]} >> ${LOG_FILE} 2>&1
+        docker run --rm -it ${DOCKER_ARGS} ${DOCKER_IMAGE_NAME} /${IMAGE_BUILDER_DIR}/bin/build_image_in_container.sh ${CHILD_SCRIPT_ARGS[*]} |& tee -a ${LOG_FILE}
         RC=$?
         handle_error ${RC} "docker run /${IMAGE_BUILDER_DIR}/bin/build_image.sh ${CHILD_SCRIPT_ARGS[*]}"
     fi
