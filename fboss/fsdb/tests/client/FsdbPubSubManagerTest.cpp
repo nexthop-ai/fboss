@@ -944,17 +944,9 @@ using PatchApiTestTypes = ::testing::Types<PatchPubSubForState>;
 
 TYPED_TEST_SUITE(FsdbPubSubManagerPatchApiTest, PatchApiTestTypes);
 
-<<<<<<< HEAD
-// DISABLED: Timeout issue with patch API subscription
-// TODO: Investigate why this test times out
-TYPED_TEST(FsdbPubSubManagerPatchApiTest, DISABLED_verifyEmptyInitialResponse) {
-||||||| d7d3794a28
-TYPED_TEST(FsdbPubSubManagerPatchApiTest, verifyEmptyInitialResponse) {
-=======
 TYPED_TEST(FsdbPubSubManagerPatchApiTest, verifyEmptyInitialResponse) {
   // TODO: Block this test in OSS until we support patchNodes
 #ifndef IS_OSS
->>>>>>> f4d35184bc8f8133908e73dcd98217b7091aea43
   folly::Synchronized<std::vector<SubscriberChunk>> received;
   bool initialResponseReceived = false;
   bool isDataExpected;

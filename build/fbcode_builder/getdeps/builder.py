@@ -241,15 +241,9 @@ class BuilderBase(object):
             )
         )
 
-<<<<<<< HEAD
-    def run_tests(self, schedule_type, owner, test_filter, retry, no_testpilot, timeout=None) -> None:
-||||||| d7d3794a28
-    def run_tests(self, schedule_type, owner, test_filter, retry, no_testpilot) -> None:
-=======
     def run_tests(
         self, schedule_type, owner, test_filter, retry, no_testpilot, timeout=None
     ) -> None:
->>>>>>> f4d35184bc8f8133908e73dcd98217b7091aea43
         """Execute any tests that we know how to run.  If they fail,
         raise an exception."""
         pass
@@ -354,15 +348,9 @@ class MakeBuilder(BuilderBase):
             for file in glob.glob(srcpattern):
                 shutil.copy(file, libdir)
 
-<<<<<<< HEAD
-    def run_tests(self, schedule_type, owner, test_filter, retry, no_testpilot, timeout=None) -> None:
-||||||| d7d3794a28
-    def run_tests(self, schedule_type, owner, test_filter, retry, no_testpilot) -> None:
-=======
     def run_tests(
         self, schedule_type, owner, test_filter, retry, no_testpilot, timeout=None
     ) -> None:
->>>>>>> f4d35184bc8f8133908e73dcd98217b7091aea43
         if not self.test_args:
             return
 
@@ -1448,15 +1436,9 @@ class SetupPyBuilder(BuilderBase):
         with open(os.path.join(self.inst_dir, ".built-by-getdeps"), "w") as f:
             f.write("built")
 
-<<<<<<< HEAD
-    def run_tests(self, schedule_type, owner, test_filter, retry, no_testpilot, timeout=None) -> None:
-||||||| d7d3794a28
-    def run_tests(self, schedule_type, owner, test_filter, retry, no_testpilot) -> None:
-=======
     def run_tests(
         self, schedule_type, owner, test_filter, retry, no_testpilot, timeout=None
     ) -> None:
->>>>>>> f4d35184bc8f8133908e73dcd98217b7091aea43
         # setup.py actually no longer has a standard command for running tests.
         # Instead we let manifest files specify an arbitrary Python file to run
         # as a test.

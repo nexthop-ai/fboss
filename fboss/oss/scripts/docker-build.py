@@ -2,13 +2,8 @@
 # Copyright 2004-present Facebook. All Rights Reserved.
 
 import argparse
-<<<<<<< HEAD
 import getpass
 import json
-||||||| d7d3794a28
-=======
-import json
->>>>>>> f4d35184bc8f8133908e73dcd98217b7091aea43
 import os
 import re
 import shlex
@@ -26,17 +21,11 @@ OPT_ARG_NO_SYSTEM_DEPS = "--no-system-deps"
 OPT_ARG_ADD_BUILD_ENV_VAR = "--env-var"
 OPT_ARG_LOCAL = "--local"
 OPT_ARG_NUM_JOBS = "--num-jobs"
-<<<<<<< HEAD
 OPT_ARG_SCHEDULE_TYPE = "--schedule-type"
 OPT_ARG_EXTRAS_DIR = "--extras-dir"
 OPT_ARG_CACHE_CONFIG = "--cache-config"
 OPT_ARG_EXTRA_CMAKE_DEFINES = "--extra-cmake-defines"
 OPT_ARG_DOT_FILES = "--dot-files"
-||||||| d7d3794a28
-=======
-OPT_ARG_EXTRAS_DIR = "--extras-dir"
-OPT_ARG_EXTRA_CMAKE_DEFINES = "--extra-cmake-defines"
->>>>>>> f4d35184bc8f8133908e73dcd98217b7091aea43
 
 USERNAME = getpass.getuser()
 FBOSS_IMAGE_NAME = f"fboss_image_{USERNAME}"
@@ -176,7 +165,6 @@ def parse_args():
             "If unspecified, the default is the number of cpus. (CPU(s) in lspcu output)"
         ),
     )
-<<<<<<< HEAD
     parser.add_argument(
         OPT_ARG_SCHEDULE_TYPE,
         type=str,
@@ -225,29 +213,6 @@ def parse_args():
             "This includes shell configs (.bashrc/.zshrc), .ssh, .vim, .vimrc, and .gitconfig."
         ),
     )
-||||||| d7d3794a28
-=======
-    parser.add_argument(
-        OPT_ARG_EXTRAS_DIR,
-        type=str,
-        required=False,
-        help=(
-            "The contents of this directory will be mounted into the docker "
-            "image at /var/extras."
-        ),
-    )
-    parser.add_argument(
-        OPT_ARG_EXTRA_CMAKE_DEFINES,
-        type=str,
-        required=False,
-        help=(
-            "Extra cmake defines passed to getdeps.py: "
-            "Input json map that contains extra cmake defines to be used "
-            "when compiling the current project and all its deps. "
-            'e.g: \'{"CMAKE_CXX_FLAGS": "--bla"}\''
-        ),
-    )
->>>>>>> f4d35184bc8f8133908e73dcd98217b7091aea43
 
     return parser.parse_args()
 
@@ -329,7 +294,6 @@ def run_fboss_build(
     env_vars: List[str],
     use_local: bool,
     num_jobs: Optional[int],
-<<<<<<< HEAD
     schedule_type: Optional[str],
     cache_config: Optional[str],
     extras_dir: Optional[str],
@@ -338,11 +302,6 @@ def run_fboss_build(
     build: bool = True,
     daemon: bool = False,
     sdk_path: Optional[str] = None,
-||||||| d7d3794a28
-=======
-    extras_dir: Optional[str],
-    extra_cmake_defines: Optional[str],
->>>>>>> f4d35184bc8f8133908e73dcd98217b7091aea43
 ):
     use_stable_hashes()
 
@@ -376,7 +335,6 @@ def run_fboss_build(
     # Add TTY flags
     if docker_output:
         cmd_args.append("-it")
-<<<<<<< HEAD
     if extras_dir:
         cmd_args.extend(["-v", f"{extras_dir}:/var/extras:rw"])
     if sdk_path:
@@ -402,17 +360,11 @@ def run_fboss_build(
             if os.path.exists(host_path):
                 cmd_args.extend(["-v", f"{host_path}:/home/{USERNAME}/{dotfile}:rw"])
 
-||||||| d7d3794a28
-=======
-    if extras_dir:
-        cmd_args.extend(["-v", f"{extras_dir}:/var/extras:rw"])
->>>>>>> f4d35184bc8f8133908e73dcd98217b7091aea43
     # Add args for docker container name
     cmd_args.append(f"--name={FBOSS_CONTAINER_NAME}")
     # Add args for image name
     cmd_args.append(f"{FBOSS_IMAGE_NAME}:latest")
     # Add build command args
-<<<<<<< HEAD
     if build:
         extra_defines = {
             "CMAKE_BUILD_TYPE": "MinSizeRel",
@@ -447,54 +399,6 @@ def run_fboss_build(
         build_cmd.append("fboss")
     else:
         build_cmd = ["sleep", "infinity"] if daemon else ["bash"]
-||||||| d7d3794a28
-    build_cmd = [
-        "./build/fbcode_builder/getdeps.py",
-        "build",
-        '--extra-cmake-defines={"CMAKE_BUILD_TYPE": "MinSizeRel", "CMAKE_CXX_STANDARD": "20", "CMAKE_C_COMPILER": "/opt/rh/gcc-toolset-12/root/usr/bin/gcc", "CMAKE_CXX_COMPILER": "/opt/rh/gcc-toolset-12/root/usr/bin/g++"}',
-        "--scratch-path",
-        f"{CONTAINER_SCRATCH_PATH}",
-    ]
-    if num_jobs is not None:
-        build_cmd.append("--num-jobs")
-        build_cmd.append(str(num_jobs))
-    if use_system_deps:
-        build_cmd.append("--allow-system-packages")
-    if target is not None:
-        build_cmd.append("--cmake-target")
-        build_cmd.append(target)
-    if use_local:
-        build_cmd.extend(["--src-dir", "."])
-    build_cmd.append("fboss")
-=======
-    extra_defines = {
-        "CMAKE_BUILD_TYPE": "MinSizeRel",
-        "CMAKE_CXX_STANDARD": "20",
-        "CMAKE_C_COMPILER": "/opt/rh/gcc-toolset-12/root/usr/bin/gcc",
-        "CMAKE_CXX_COMPILER": "/opt/rh/gcc-toolset-12/root/usr/bin/g++",
-    }
-    if extra_cmake_defines:
-        for k, v in json.loads(extra_cmake_defines).items():
-            extra_defines[k] = v
-    build_cmd = [
-        "./build/fbcode_builder/getdeps.py",
-        "build",
-        f"--extra-cmake-defines={json.dumps(extra_defines)}",
-        "--scratch-path",
-        f"{CONTAINER_SCRATCH_PATH}",
-    ]
-    if num_jobs is not None:
-        build_cmd.append("--num-jobs")
-        build_cmd.append(str(num_jobs))
-    if use_system_deps:
-        build_cmd.append("--allow-system-packages")
-    if target is not None:
-        build_cmd.append("--cmake-target")
-        build_cmd.append(target)
-    if use_local:
-        build_cmd.extend(["--src-dir", "."])
-    build_cmd.append("fboss")
->>>>>>> f4d35184bc8f8133908e73dcd98217b7091aea43
     cmd_args.extend(build_cmd)
     build_cp = subprocess.run(cmd_args)
     if build_cp.returncode != 0:
@@ -547,17 +451,11 @@ def main():
         args.env_vars,
         args.local,
         args.num_jobs,
-<<<<<<< HEAD
         args.schedule_type,
         args.cache_config,
         args.extras_dir,
         args.extra_cmake_defines,
         args.dot_files,
-||||||| d7d3794a28
-=======
-        args.extras_dir,
-        args.extra_cmake_defines,
->>>>>>> f4d35184bc8f8133908e73dcd98217b7091aea43
     )
 
     cleanup_fboss_build_container()
