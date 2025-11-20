@@ -49,13 +49,14 @@ py_test(
     size = "small",
 )
 
-load("//bazel_lib:python_lint.bzl", "py_lint_test")
-
-py_lint_test(
-    name = "lint_check",
-    srcs = glob(["**/*.py"]),
-    config = "ruff.toml",
-)
+# Temporarily disabled until bazel_lib is available in nh.git main
+# load("//bazel_lib:python_lint.bzl", "py_lint_test")
+#
+# py_lint_test(
+#     name = "lint_check",
+#     srcs = glob(["**/*.py"]),
+#     config = "ruff.toml",
+# )
 
 test_suite(
     name = "all_tests",
@@ -65,6 +66,6 @@ test_suite(
         ":build_test",
         ":device_test",
         ":cli_test",
-        ":lint_check",
+        # ":lint_check",  # Temporarily disabled
     ],
 )
