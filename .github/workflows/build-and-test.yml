@@ -9,6 +9,11 @@ on:
         required: false
         default: '1.16.1'
         type: string
+      use_clang:
+        description: 'Use Clang instead of GCC'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   Build-and-Test:
@@ -33,6 +38,8 @@ jobs:
           docker rm FBOSS_build_${USER} 2>/dev/null || true
 
       - name: Build FBOSS Docker image
+        env:
+          USE_CLANG: ${{ inputs.use_clang }}
         run: ./fboss/oss/scripts/nhfboss-docker-build.py
 
       - name: Prune dangling images

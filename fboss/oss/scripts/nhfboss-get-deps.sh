@@ -15,7 +15,6 @@ source "$SCRIPT_DIR/nhfboss-common.sh"
 set -e
 cd /var/FBOSS/fboss
 
-export PATH=/opt/rh/gcc-toolset-12/root/usr/bin:$PATH
-time nice -n 10 ./build/fbcode_builder/getdeps.py install-system-deps --num-jobs $num_jobs --recursive $common_options
-time nice -n 10 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --build-type $BUILD_TYPE --only-deps $common_options
-echo "Get deps SUCCESS"
+time nice -n 10 ./fboss/oss/scripts/run-getdeps.py install-system-deps --num-jobs $num_jobs --recursive $common_options \
+  && time nice -n 10 ./fboss/oss/scripts/run-getdeps.py build --num-jobs $num_jobs --build-type $BUILD_TYPE --only-deps $common_options \
+  && echo "Get deps SUCCESS"

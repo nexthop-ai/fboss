@@ -26,6 +26,7 @@ OPT_ARG_EXTRAS_DIR = "--extras-dir"
 OPT_ARG_CACHE_CONFIG = "--cache-config"
 OPT_ARG_EXTRA_CMAKE_DEFINES = "--extra-cmake-defines"
 OPT_ARG_DOT_FILES = "--dot-files"
+OPT_ARG_USE_CLANG = "--use-clang"
 
 USERNAME = getpass.getuser()
 FBOSS_IMAGE_NAME = f"fboss_image_{USERNAME}"
@@ -213,6 +214,16 @@ def parse_args():
             "This includes shell configs (.bashrc/.zshrc), .ssh, .vim, .vimrc, and .gitconfig."
         ),
     )
+    parser.add_argument(
+        OPT_ARG_USE_CLANG,
+        dest="use_clang",
+        default=False,
+        action="store_true",
+        help=(
+            "Use clang instead of gcc for building. This will install the full LLVM toolchain "
+            "in the Docker image and configure it as the default compiler via update-alternatives."
+        ),
+    )
 
     return parser.parse_args()
 
@@ -257,7 +268,7 @@ def use_stable_hashes():
     os.chdir(cwd)
 
 
-def build_docker_image(docker_dir_path: str):
+def build_docker_image(docker_dir_path: str, use_clang: bool = False):
     dockerfile_path = os.path.join(docker_dir_path, "Dockerfile")
     shell = os.getenv("SHELL", "/bin/bash")
     cp = subprocess.run(
@@ -278,6 +289,8 @@ def build_docker_image(docker_dir_path: str):
             f"USER_GID={os.getgid()}",
             "--build-arg",
             f"USER_SHELL={shell}",
+            "--build-arg",
+            f"USE_CLANG={'true' if use_clang else 'false'}",
         ],
     )
     if not cp.returncode == 0:
@@ -370,14 +383,12 @@ def run_fboss_build(
         extra_defines = {
             "CMAKE_BUILD_TYPE": "MinSizeRel",
             "CMAKE_CXX_STANDARD": "20",
-            "CMAKE_C_COMPILER": "/opt/rh/gcc-toolset-12/root/usr/bin/gcc",
-            "CMAKE_CXX_COMPILER": "/opt/rh/gcc-toolset-12/root/usr/bin/g++",
         }
         if extra_cmake_defines:
             for k, v in json.loads(extra_cmake_defines).items():
                 extra_defines[k] = v
         build_cmd = [
-            "./build/fbcode_builder/getdeps.py",
+            "./fboss/oss/scripts/run-getdeps.py",
             "build",
             f"--extra-cmake-defines={json.dumps(extra_defines)}",
             "--scratch-path",
@@ -442,7 +453,7 @@ def main():
         return errCode
 
     docker_dir_path = get_docker_path()
-    build_docker_image(docker_dir_path)
+    build_docker_image(docker_dir_path, args.use_clang)
 
     status_code = run_fboss_build(
         args.scratch_path,

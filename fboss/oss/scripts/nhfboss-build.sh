@@ -31,6 +31,5 @@ else
     fi
 fi
 
-export PATH=/opt/rh/gcc-toolset-12/root/usr/bin:$PATH
-time nice -n 10 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --build-type $BUILD_TYPE --no-deps $common_options "$@"
-echo "Build SUCCESS"
+time nice -n 10 ./fboss/oss/scripts/run-getdeps.py build --num-jobs $num_jobs --build-type $BUILD_TYPE --no-deps $common_options "$@" \
+  && echo "Build SUCCESS"

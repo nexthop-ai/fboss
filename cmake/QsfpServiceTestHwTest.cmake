@@ -60,7 +60,7 @@ target_link_libraries(qsfp_hw_test
   ${LIBGMOCK_LIBRARIES}
   FBThrift::thriftcpp2
   fb303::fb303
-  hw_test_main
+  fboss_init
   qsfp_production_features_cpp2
 )
 
