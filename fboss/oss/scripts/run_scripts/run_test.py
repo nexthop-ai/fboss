@@ -767,7 +767,6 @@ class TestRunner(abc.ABC):
             )
             conf_file = self._backup_and_modify_config(original_conf_file)
             output = self._run_tests(tests_to_run, conf_file, args)
-            self._restore_config()
             end_time = datetime.now()
             delta_time = end_time - start_time
             print(
