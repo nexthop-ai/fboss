@@ -7,10 +7,53 @@ ceildiv() {
     echo $(( ($1 + $2 - 1) / $2 ))
 }
 
+SERVER_RAM_GB=$(free -g | awk '/^Mem:/{print $2}')
+
+# Calculate number of jobs based on available RAM with varying memory requirements
+# Args: first_job_gb [second_job_gb ...] repeating_job_gb
+# Each number is the incremental memory requirement for each job. Because
+# increasing parallelism does not automatically run all the worst jobs at the
+# same time, this is not the same as simply the most demanding job's requirements
+# at each step.
+# The last memory requirement repeats for all subsequent jobs
+# Example: jobs_for_ram 10 5 3
+#   Job 1 needs 10GB, job 2 needs 5GB, jobs 3+ each need 3GB
+#   With 32GB: job 1 (10GB) + job 2 (5GB) + 5 more jobs (15GB) = 30GB total = 7 jobs
+jobs_for_ram() {
+    # Leave 2GB for the OS and vscode or whatnot
+    local available_ram=$(($SERVER_RAM_GB - 2))
+
+    if [ $# -eq 0 ]; then
+        echo "Error: jobs_for_ram requires at least one memory requirement argument" >&2
+        return 1
+    fi
+
+    local job_count=0
+    local used_ram=0
+    local last_requirement=${@: -1}  # Get the last argument (repeating requirement)
+
+    # Process each specified job requirement
+    for requirement in "$@"; do
+        if [ $((used_ram + requirement)) -le $available_ram ]; then
+            used_ram=$((used_ram + requirement))
+            job_count=$((job_count + 1))
+        else
+            echo $job_count
+            return 0
+        fi
+    done
+
+    # Continue adding jobs using the last (repeating) requirement
+    while [ $((used_ram + last_requirement)) -le $available_ram ]; do
+        used_ram=$((used_ram + last_requirement))
+        job_count=$((job_count + 1))
+    done
+
+    echo $job_count
+}
+
 # Get the directory where this script is located
 COMMON_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-SERVER_RAM_GB=$(free -g | awk '/^Mem:/{print $2}')
 
 # Stop any existing sccache server to ensure clean state
 sccache --stop-server > /dev/null 2>&1
@@ -38,20 +81,46 @@ if timeout 1 bash -c ">/dev/tcp/$SCCACHE_SCHEDULER_HOST/10600" 2>/dev/null; then
     ram_jobs=$((SERVER_RAM_GB * 5))
     COMPILE_JOBS=$((nproc_jobs < ram_jobs ? nproc_jobs : ram_jobs))
 
+    if [[ "${BUILD_TYPE}" = "Debug" ]]; then
+        # PathValidator.cpp takes at least 32 minutes to build in debug mode
+        # Increase timeout to 45 minutes
+        export SCCACHE_DIST_REQUEST_TIMEOUT=2700
+        # Need to increase the idle timeout also, otherwise the local sccache
+        # server will exit because only *starting* a compile job counts as
+        # activity.
+        export SCCACHE_IDLE_TIMEOUT=2700
+    fi
+
     if sccache --dist-status | grep Disabled; then
         echo Remote sccache not working!
         exit 1
     fi
 else
     echo "Only using local sccache cache"
-    COMPILE_JOBS=$(ceildiv $SERVER_RAM_GB 8)
+    COMPILE_JOBS=$(jobs_for_ram 6)
 fi
-
+if [ $COMPILE_JOBS -eq 0 ]; then
+    echo "Not enough memory to compile"
+    exit 1
+fi
 
 # Link parallelism is different from compilation because linking always happens
 # on the local machine.
-# Empirically, link parallelism of 2 works well on 24GB and 32GB VMs.
-LINK_JOBS=$(ceildiv $SERVER_RAM_GB 16)
+if [[ "${BUILD_TYPE}" = "Debug" ]]; then
+    # Even 1 job is too much for 32GB
+    # 2 link jobs works with 64GB of RAM, with 7.5GB available at the low point
+    # 1 link job on 64GB VM peaks at 48GB of RAM
+    # 2 link jobs on 64GB VM peak at 56GB of RAM
+    LINK_JOBS=$(jobs_for_ram 48 8)
+else
+    # 2 works well on 24GB and 32GB VMs.
+    LINK_JOBS=$(jobs_for_ram 11)
+fi
+if [ $LINK_JOBS -eq 0 ]; then
+    echo "Not enough memory to link"
+    exit 1
+fi
+echo "Using $COMPILE_JOBS compile jobs and $LINK_JOBS link jobs"
 
 num_jobs=$((LINK_JOBS > COMPILE_JOBS ? LINK_JOBS : COMPILE_JOBS))
 
@@ -68,7 +137,8 @@ if timeout 1 bash -c ">/dev/tcp/$ENDPOINT_HOST/$ENDPOINT_PORT" 2>/dev/null; then
 fi
 
 # Note: Because COMPILE_JOBS and LINK_JOBS depend on SERVER_RAM_GB, and they're
-# included as extra cmake defines, you need to do rerun nhfboss-get-deps.sh
+# included as extra cmake defines, you need to rerun nhfboss-get-deps.sh when
+# server RAM changes.
 
 BUILD_TYPE=${BUILD_TYPE:-MinSizeRel}
 

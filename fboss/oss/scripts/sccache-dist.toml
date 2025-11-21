@@ -1,7 +1,6 @@
 [dist]
 scheduler_url = "http://sccache.us-west-1.nexthop.ai:10600"
-retry_on_busy = true
-# Some day, replace retry_on_busy with remote_only
+remote_only = true
 
 [dist.auth]
 type = "token"
