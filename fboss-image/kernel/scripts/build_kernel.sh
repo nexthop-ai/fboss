@@ -59,7 +59,11 @@ rpmbuild -ba "$CONTAINER_SPECS_DIR/kernel.spec" \
 cp -r RPMS/* "$OUT_DIR"/ 2>/dev/null
 cp -r SRPMS/* "$OUT_DIR"/ 2>/dev/null
 
+tar czf $OUT_DIR/kernel-$KERNEL_VERSION.rpms.tar.gz \
+    --transform 's|.*/||' \
+    --transform 's|^\(kernel-[^-]\+\)-.*\.\(x86_64\)\.rpm$|\1-\2.rpm|' \
+    $(find RPMS -name "*.rpm")
+
 echo 'Kernel RPM build complete!'
 echo 'Output files:'
-find "$OUT_DIR" -name '*.rpm' -type f
-
+find "$OUT_DIR" \( -name '*.rpm' -o -name '*.gz' \) -type f
