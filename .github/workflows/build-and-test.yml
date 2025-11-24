@@ -59,11 +59,15 @@ jobs:
 
       - name: Fetch dependencies
         run: |
-          docker exec -e num_jobs=$(nproc) FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-get-deps.sh
+          docker exec FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-get-deps.sh
 
       - name: Build FBOSS
         run: |
-          docker exec -e num_jobs=$(nproc) -e SAI_VERSION=${{ inputs.sai_version }} FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh
+          docker exec -e SAI_VERSION=${{ inputs.sai_version }} FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh
+
+      - name: Collect sccache statistics
+        if: always()
+        run: |
           docker exec FBOSS_build_${USER} sccache -s
 
       - name: Run unit tests
