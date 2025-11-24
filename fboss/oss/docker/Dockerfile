@@ -81,6 +81,20 @@ RUN LLVM_VERSION=$(grep -A 1 'mirrors-clang-format' /tmp/.pre-commit-config.yaml
     --slave /usr/bin/readelf readelf /usr/local/llvm/bin/llvm-readelf \
     --slave /usr/bin/strip strip /usr/local/llvm/bin/llvm-strip \
     --slave /usr/bin/gcov gcov /usr/local/bin/llvm-cov-gcov && \
+    for i in \
+    clang-apply-replacements \
+    clang-format \
+    clang-include-cleaner \
+    clang-include-fixer \
+    clang-refactor \
+    clang-reorder-fields \
+    clang-tidy \
+    clangd \
+    find-all-symbols \
+    git-clang-format \
+    run-clang-tidy; do \
+    ln -s /usr/local/llvm/bin/$i /usr/local/bin/$i; \
+    done && \
     echo '#!/bin/sh -x' > /usr/local/bin/use-gcc && \
     echo 'sudo update-alternatives --set gcc /opt/rh/gcc-toolset-12/root/usr/bin/gcc' >> /usr/local/bin/use-gcc && \
     echo '#!/bin/sh -x' > /usr/local/bin/use-clang && \

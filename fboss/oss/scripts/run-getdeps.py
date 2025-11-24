@@ -155,34 +155,30 @@ def setup_clang_environment(toolchain_info):
         if flag not in cxxflags:
             cxxflags.insert(0, flag)
 
+    # Helper to prepend a value to an environment variable
+    def prepend_env(new, var, sep=" "):
+        os.environ[var] = (new + sep + os.environ.get(var, "")).strip(sep)
+
     # Set CFLAGS - prepend to existing flags
     cflags = ["-DHAVE_SETNS=1"]
-    existing_cflags = os.environ.get("CFLAGS", "")
-    if existing_cflags:
-        os.environ["CFLAGS"] = " ".join(cflags) + " " + existing_cflags
-    else:
-        os.environ["CFLAGS"] = " ".join(cflags)
+    prepend_env(" ".join(cflags), "CFLAGS")
 
     # Set CXXFLAGS - prepend to existing flags
-    existing_cxxflags = os.environ.get("CXXFLAGS", "")
-    if existing_cxxflags:
-        os.environ["CXXFLAGS"] = " ".join(cxxflags) + " " + existing_cxxflags
-    else:
-        os.environ["CXXFLAGS"] = " ".join(cxxflags)
+    prepend_env(" ".join(cxxflags), "CXXFLAGS")
 
-    # Set LD_LIBRARY_PATH to find LLVM's libunwind and other libraries
     # Derive the lib directory from the bin directory
     # e.g., /usr/local/llvm/bin -> /usr/local/llvm/lib/x86_64-unknown-linux-gnu
     # Get the parent directory (e.g., /usr/local/llvm)
     llvm_prefix = os.path.dirname(llvm_bin_dir)
     llvm_lib_dir = os.path.join(llvm_prefix, "lib", target_triple)
 
-    # Prepend to existing LD_LIBRARY_PATH
-    existing_ld_path = os.environ.get("LD_LIBRARY_PATH", "")
-    if existing_ld_path:
-        os.environ["LD_LIBRARY_PATH"] = f"{llvm_lib_dir}:{existing_ld_path}"
-    else:
-        os.environ["LD_LIBRARY_PATH"] = llvm_lib_dir
+    # Set LDFLAGS to embed rpath so binaries can find LLVM libraries without LD_LIBRARY_PATH
+    # This allows test binaries to run directly without needing environment setup
+    rpath_flag = f"-Wl,-rpath,{llvm_lib_dir}"
+    prepend_env(rpath_flag, "LDFLAGS")
+
+    # Set LD_LIBRARY_PATH to find LLVM's libunwind and other libraries during build
+    prepend_env(llvm_lib_dir, "LD_LIBRARY_PATH", ":")
 
     # Make sure we don't install binutils when we use clang.
     # This is ugly but makes gcc compatibility simpler.
