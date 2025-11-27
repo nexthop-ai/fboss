@@ -382,6 +382,11 @@ SaiStaticBufferProfileTraits::Attributes::AttributeSramDynamicTh::operator()() {
   return std::nullopt;
 }
 
+std::optional<sai_attr_id_t> SaiStaticBufferProfileTraits::Attributes::
+    AttributePgPipelineLatencyBytes::operator()() {
+  return std::nullopt;
+}
+
 std::optional<sai_attr_id_t> SaiDynamicBufferProfileTraits::Attributes::
     AttributeSharedFadtMaxTh::operator()() {
   return std::nullopt;
@@ -409,6 +414,11 @@ std::optional<sai_attr_id_t> SaiDynamicBufferProfileTraits::Attributes::
 
 std::optional<sai_attr_id_t> SaiDynamicBufferProfileTraits::Attributes::
     AttributeSramDynamicTh::operator()() {
+  return std::nullopt;
+}
+
+std::optional<sai_attr_id_t> SaiDynamicBufferProfileTraits::Attributes::
+    AttributePgPipelineLatencyBytes::operator()() {
   return std::nullopt;
 }
 
@@ -956,6 +966,11 @@ SaiSwitchTraits::Attributes::AttributeModuleIdFabricPortList::operator()() {
 std::optional<sai_attr_id_t>
 SaiSwitchTraits::Attributes::AttributePfcMonitorEnable::operator()() {
   return SAI_SWITCH_ATTR_PFC_MONITOR_ENABLE;
+}
+
+std::optional<sai_attr_id_t> SaiSwitchTraits::Attributes::
+    AttributeCablePropagationDelayMeasurement::operator()() {
+  return SAI_SWITCH_ATTR_CABLE_PROPAGATION_DELAY_MEASUREMENT;
 }
 #if SAI_API_VERSION >= SAI_VERSION(1, 16, 0)
 std::optional<sai_attr_id_t>

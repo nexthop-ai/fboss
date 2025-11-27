@@ -25,12 +25,26 @@ OPT_ARG_SCHEDULE_TYPE = "--schedule-type"
 OPT_ARG_EXTRAS_DIR = "--extras-dir"
 OPT_ARG_CACHE_CONFIG = "--cache-config"
 OPT_ARG_EXTRA_CMAKE_DEFINES = "--extra-cmake-defines"
+<<<<<<< HEAD
 OPT_ARG_DOT_FILES = "--dot-files"
 OPT_ARG_USE_CLANG = "--use-clang"
+||||||| f4d35184bc
+=======
+OPT_ARG_DOT_FILES = "--dot-file"
+>>>>>>> c9be1644a9498721df9000b7fd5a2decd203dabf
 
+<<<<<<< HEAD
 USERNAME = getpass.getuser()
 FBOSS_IMAGE_NAME = f"fboss_image_{USERNAME}"
 FBOSS_CONTAINER_NAME = f"FBOSS_build_{USERNAME}"
+||||||| f4d35184bc
+FBOSS_IMAGE_NAME = "fboss_image"
+FBOSS_CONTAINER_NAME = "FBOSS_BUILD_CONTAINER"
+=======
+USERNAME = getpass.getuser()
+FBOSS_IMAGE_NAME = "fboss_image"
+FBOSS_CONTAINER_NAME = "FBOSS_BUILD_CONTAINER"
+>>>>>>> c9be1644a9498721df9000b7fd5a2decd203dabf
 CONTAINER_SCRATCH_PATH = "/var/FBOSS/tmp_bld_dir"
 CONTAINER_WORKDIR = "/var/FBOSS/fboss"
 
@@ -204,6 +218,7 @@ def parse_args():
             'e.g: \'{"CMAKE_CXX_FLAGS": "--bla"}\''
         ),
     )
+<<<<<<< HEAD
     parser.add_argument(
         OPT_ARG_DOT_FILES,
         dest="dot_files",
@@ -224,6 +239,19 @@ def parse_args():
             "in the Docker image and configure it as the default compiler via update-alternatives."
         ),
     )
+||||||| f4d35184bc
+=======
+    parser.add_argument(
+        OPT_ARG_DOT_FILES,
+        dest="dot_files",
+        default=[],
+        action="append",
+        help=(
+            "Choose essential config files to mount from the user's home directory into the container. "
+            "Usage: --dot-file .vimrc --dot-file .vim --dot-file .bashrc"
+        ),
+    )
+>>>>>>> c9be1644a9498721df9000b7fd5a2decd203dabf
 
     return parser.parse_args()
 
@@ -268,6 +296,7 @@ def use_stable_hashes():
     os.chdir(cwd)
 
 
+<<<<<<< HEAD
 def build_docker_image(docker_dir_path: str, use_clang: bool = False):
     dockerfile_path = os.path.join(docker_dir_path, "Dockerfile")
     shell = os.getenv("SHELL", "/bin/bash")
@@ -292,6 +321,35 @@ def build_docker_image(docker_dir_path: str, use_clang: bool = False):
             "--build-arg",
             f"USE_CLANG={'true' if use_clang else 'false'}",
         ],
+||||||| f4d35184bc
+def build_docker_image(docker_dir_path: str):
+    fd, log_path = tempfile.mkstemp(suffix="docker-build.log")
+    print(
+        f"Attempting to build docker image from {docker_dir_path}/Dockerfile. You can run `sudo tail -f {log_path}` in order to follow along."
+=======
+def build_docker_image(docker_dir_path: str):
+    dockerfile_path = os.path.join(docker_dir_path, "Dockerfile")
+    shell = os.getenv("SHELL", "/bin/bash")
+    cp = subprocess.run(
+        [
+            "sudo",
+            "docker",
+            "build",
+            ".",
+            "-t",
+            FBOSS_IMAGE_NAME,
+            "-f",
+            dockerfile_path,
+            "--build-arg",
+            f"USERNAME={USERNAME}",
+            "--build-arg",
+            f"USER_UID={os.getuid()}",
+            "--build-arg",
+            f"USER_GID={os.getgid()}",
+            "--build-arg",
+            f"USER_SHELL={shell}",
+        ],
+>>>>>>> c9be1644a9498721df9000b7fd5a2decd203dabf
     )
     if not cp.returncode == 0:
         errMsg = f"An error occurred while trying to build the FBOSS docker image: {cp.stderr}"
@@ -311,10 +369,15 @@ def run_fboss_build(
     cache_config: Optional[str],
     extras_dir: Optional[str],
     extra_cmake_defines: Optional[str],
+<<<<<<< HEAD
     dot_files: bool = False,
     build: bool = True,
     daemon: bool = False,
     sdk_path: Optional[str] = None,
+||||||| f4d35184bc
+=======
+    dot_files: Optional[List],
+>>>>>>> c9be1644a9498721df9000b7fd5a2decd203dabf
 ):
     use_stable_hashes()
 
@@ -350,6 +413,7 @@ def run_fboss_build(
         cmd_args.append("-it")
     if extras_dir:
         cmd_args.extend(["-v", f"{extras_dir}:/var/extras:rw"])
+<<<<<<< HEAD
     if sdk_path:
         cmd_args.extend(["-v", f"{sdk_path}:/opt/sdk:z"])
 
@@ -374,6 +438,17 @@ def run_fboss_build(
             if os.path.exists(host_path):
                 cmd_args.extend(["-v", f"{host_path}:/home/{USERNAME}/{dotfile}:rw"])
 
+||||||| f4d35184bc
+=======
+
+    # Mount dotfiles if requested
+    home_dir = os.path.expanduser("~")
+    for dotfile in dot_files:
+        host_path = os.path.join(home_dir, dotfile)
+        if os.path.exists(host_path):
+            cmd_args.extend(["-v", f"{host_path}:/home/{USERNAME}/{dotfile}:rw"])
+
+>>>>>>> c9be1644a9498721df9000b7fd5a2decd203dabf
     # Add args for docker container name
     cmd_args.append(f"--name={FBOSS_CONTAINER_NAME}")
     # Add args for image name

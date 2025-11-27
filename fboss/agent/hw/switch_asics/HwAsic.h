@@ -73,16 +73,98 @@ class HwAsic {
     //  - Candidate for removal: YES. All ASICs/SDKs already support this.
     SWITCH_ATTR_INGRESS_ACL,
 
-    INGRESS_FIELD_PROCESSOR_FLEX_COUNTER,
-    EMPTY_ACL_MATCHER,
-    SAI_ACL_TABLE_UPDATE,
-    ACL_COUNTER_LABEL,
-    ACL_METADATA_QUALIFER,
-    SAI_ACL_ENTRY_SRC_PORT_QUALIFIER,
-    ACL_ENTRY_ETHER_TYPE,
-    ACL_BYTE_COUNTER,
+    // Set to true if Egress ACL Table is supported.
+    // However, this Table sits post lookup but before buffering.
+    // Thus, named as INGRESS_POST_LOOKUP_ACL_TABLE.
+    // For SAI, this maps to SAI_ACL_STAGE_EGRESS.
+    // TODO:
+    //  - Rename to carry ACL_ prefix.
     INGRESS_POST_LOOKUP_ACL_TABLE,
+
+    // Set to true if Empty Matcher can be used to match all packets.
+    // TODO:
+    //  - Rename to carry ACL_ prefix.
+    EMPTY_ACL_MATCHER,
+
+    // Set to true if Metadata qualifier is supported for ACLs.
+    // Metadata is an integer field that can be associated with an L2 entry,
+    // Neighbor entry, Route entry etc. When that L2/Neighbor/Route enetry is
+    // hit, the corresponding Metadata is  associated with the packet. This
+    // packet can match any ACL that carries the same Metadata in the matcher
+    // field and corresponding ACL action takes effect.
+    ACL_METADATA_QUALIFER,
+
+    // Set to true if the SAI implementation supports setting a
+    // label (string identifier) for an ACL counter.
+    // This label can be used to uniquely identify ACL counter
+    // object during warmboot.  The support was added by SAI community PR 1430,
+    // and is part of the SAI spec since v1.10.0.
+    ACL_COUNTER_LABEL,
+
+    // Set to true if the SAI implementation supports Ether type as ACL matcher
+    // For SAI, this maps to whether SAI_ACL_TABLE_ATTR_FIELD_ETHER_TYPE can be
+    // set during ACL Table creation.
+    // TODO:
+    //  - Candidate for removal: YES, but non-trivial.
+    //  - Extend SAI spec sai_acl_capability_t to return the list of ACL
+    //    matchers supported.
+    //  - Work with SAI implementations to support this capability.
+    //  - Extend FBOSS to query supported matchers for a given stage e.g.
+    //    SAI_SWITCH_ATTR_ACL_STAGE_INGRESS
+    ACL_ENTRY_ETHER_TYPE,
+
+    // Set to true if the SAI implementation supports ACL Byte counters
+    // For SAI, this maps to whether SAI_ACL_COUNTER_ATTR_BYTES can be queried.
+    // TODO:
+    //  - Candidate for removal: YES, but non-trivial.
+    //  - Extend SAI spec sai_acl_capability_t to return whether ACL Byte
+    //    counters are supported.
+    //  - Work with SAI implementations to support this capability.
+    //  - Extend FBOSS to query whether ACL Byte counters are supported.
+    ACL_BYTE_COUNTER,
+
+    // Packet is dropped due to configured ACL rules, all stages/bind points
+    // For SAI this maps to whether debug counter SAI_IN_DROP_REASON_ACL_ANY
+    // can be queried.
+    // TODO:
+    //  - Candidate for removal: YES, but non-trivial.
+    //  - Extend SAI spec to support capability_t for Debug counters.
+    //  - Work with SAI implementations to support this capability.
+    //  - Extend FBOSS to query.
+    //  - Rename to carry ACL_ prefix.
+    ANY_ACL_DROP_COUNTER,
+
+    // Set to true if the SAI implementation supports Ether type as ACL matcher
+    // For SAI, this maps to whether SAI_ACL_TABLE_ATTR_FIELD_{IN, SRC}_PORT can
+    // be set during ACL Table creation.
+    // TODO:
+    //  - Candidate for removal: YES, but non-trivial.
+    //  - Extend SAI spec sai_acl_capability_t to return the list of ACL
+    //    matchers supported.
+    //  - Work with SAI implementations to support this capability.
+    //  - Extend FBOSS to query supported matchers for a given stage e.g.
+    //    SAI_SWITCH_ATTR_ACL_STAGE_INGRESS
+    //  - Rename to carry ACL_ prefix.
+    SAI_ACL_ENTRY_SRC_PORT_QUALIFIER,
+
+    // Set to true if the SAI implementation supports ACL action to set hash
+    // algorithm. For SAI, this maps to whether
+    // SAI_ACL_ACTION_TYPE_SET_ECMP_HASH_ALGORITHM
+    // ACL action is supported.
+    // TODO:
+    //  - Candidate for removal: YES.
+    //  - switch_config.AclTable already carries list of actionTypes.
+    //  - Start populating that field in the config.
+    //  - Populate SAI_ACL_ACTION_TYPE_SET_ECMP_HASH_ALGORITHM action only for
+    //    SAI implementations that support this action.
     ACL_SET_ECMP_HASH_ALGORITHM,
+
+    // Set to true if flex counters are supported by ingress field processor.
+    // TODO:
+    //  - Candidate for removal: YES.
+    //  - Only used by non-SAI. Once we completely migrate to SAI, remove.
+    INGRESS_FIELD_PROCESSOR_FLEX_COUNTER,
+    SAI_ACL_TABLE_UPDATE,
     // Other features
     SPAN,
     ERSPANv4,
@@ -218,7 +300,6 @@ class HwAsic {
     SAI_PORT_SERDES_PROGRAMMING,
     RX_SNR,
     MANAGEMENT_PORT,
-    ANY_ACL_DROP_COUNTER,
     ANY_TRAP_DROP_COUNTER,
     PORT_WRED_COUNTER,
     PORT_SERDES_ZERO_PREEMPHASIS,
@@ -337,8 +418,8 @@ class HwAsic {
       cfg::StreamType streamType,
       cfg::PortType portType) const = 0;
   virtual int getBasePortQueueId(
-      cfg::StreamType streamType,
-      cfg::PortType portType) const {
+      cfg::StreamType /* streamType */,
+      cfg::PortType /* portType */) const {
     return 0;
   }
   virtual uint32_t getMaxLabelStackDepth() const = 0;

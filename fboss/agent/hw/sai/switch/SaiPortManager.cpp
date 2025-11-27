@@ -1779,7 +1779,8 @@ std::shared_ptr<Port> SaiPortManager::swPortFromAttributes(
 
 #if defined(BRCM_SAI_SDK_DNX_GTE_11_0)
   if (port->getPortType() == cfg::PortType::INTERFACE_PORT ||
-      port->getPortType() == cfg::PortType::MANAGEMENT_PORT) {
+      port->getPortType() == cfg::PortType::MANAGEMENT_PORT ||
+      port->getPortType() == cfg::PortType::HYPER_PORT) {
     auto shelEnable = GET_OPT_ATTR(Port, ShelEnable, attributes);
     port->setSelfHealingECMPLagEnable(shelEnable);
   }
@@ -2206,7 +2207,7 @@ void SaiPortManager::updateStats(
       // SAI_PORT_ATTR_MAX_FEC_SYMBOL_ERRORS_DETECTABLE but this attribute
       // isn't supported yet
       sai_stat_id_t maxFecCounterId = getFECMode(portId) == phy::FecMode::RS528
-          ? SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S8
+          ? SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S7
           : SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S15;
       std::vector<sai_stat_id_t> fecCodewordsToRead;
       for (int counterId = SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S0;
