@@ -15,9 +15,22 @@ jobs:
       - uses: actions/setup-python@v6 # v6.0.0(latest)
         with:
           python-version: "3.9" # pre-commit-hooks requires Python 3.9+
+      - name: Determine base ref for pre-commit
+        id: base-ref
+        run: |
+          # For sync PRs, find the merge commit titled "Sync with upstream main"
+          # and use it as the base ref (so we only lint commits after the merge)
+          SYNC_MERGE_COMMIT=$(git log --oneline --merges --grep="^Sync with upstream main$" -1 --format="%H" 2>/dev/null || true)
+          if [ -n "$SYNC_MERGE_COMMIT" ]; then
+            echo "Detected sync PR with merge commit: $SYNC_MERGE_COMMIT"
+            echo "base_ref=$SYNC_MERGE_COMMIT" >> $GITHUB_OUTPUT
+          else
+            echo "Regular PR, using HEAD^ as base"
+            echo "base_ref=HEAD^" >> $GITHUB_OUTPUT
+          fi
       - name: Show changed files
-        run: git diff --name-only HEAD^...
+        run: git diff --name-only ${{ steps.base-ref.outputs.base_ref }}...HEAD
       - uses: pre-commit/action@v3.0.1 # v3.0.1(latest)
         with:
           # replace the default extra_args = "--all-files" since we only care about the changed files for now
-          extra_args: "--from-ref HEAD^ --to-ref HEAD"
+          extra_args: "--from-ref ${{ steps.base-ref.outputs.base_ref }} --to-ref HEAD"
