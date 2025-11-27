@@ -383,12 +383,38 @@ TEST_F(RackmonTest, DormantRecovery) {
     EXPECT_CALL(*ptr, initialize(exp)).Times(1);
     EXPECT_CALL(*ptr, isPresent()).WillRepeatedly(Return(true));
     EXPECT_CALL(*ptr, command(_, _, _, _, _))
-        .WillRepeatedly(
-            Invoke([&commandTimeout](Msg&, Msg&, uint32_t, ModbusTime, Parity) {
-              if (commandTimeout) {
-                throw TimeoutException();
-              }
-            }));
+        .WillRepeatedly(Invoke([&commandTimeout](
+                                   Msg& req,
+                                   Msg& resp,
+                                   uint32_t /* baudrate */,
+                                   ModbusTime /* timeout */,
+                                   Parity /* parity */) {
+          // Check timeout atomically - this value must be read exactly once
+          // to avoid TOCTOU races with the test setting the flag
+          bool shouldTimeout = commandTimeout.load();
+          if (shouldTimeout) {
+            throw TimeoutException();
+          }
+          // Parse the request to understand what we need to respond with
+          Encoder::encode(req);
+          uint8_t addr = req.raw[0];
+          uint8_t func = req.raw[1];
+          // Only handle read holding registers (function 0x03)
+          if (func != 0x03) {
+            throw std::runtime_error("Unexpected function code");
+          }
+          uint16_t regCount = (req.raw[4] << 8) | req.raw[5];
+          uint8_t byteCount = regCount * 2;
+          // Build a valid response: addr, func, byteCount, data..., crc
+          resp.len = 0;
+          resp << addr << func << byteCount;
+          for (int i = 0; i < byteCount; i++) {
+            resp << uint8_t(0x00); // Fill with zeros
+          }
+          resp.addr = addr;
+          Encoder::finalize(resp);
+          Encoder::decode(resp);
+        }));
     std::unique_ptr<Modbus> ptr2 = std::move(ptr);
     return ptr2;
   };
