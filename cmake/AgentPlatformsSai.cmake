@@ -34,6 +34,8 @@ set(SAI_PLATFORM_SRC
   fboss/agent/platforms/sai/SaiMeru400biaPlatformPort.cpp
   fboss/agent/platforms/sai/SaiMeru400biaPlatform.cpp
   fboss/agent/platforms/sai/SaiBcmMontblancPlatform.cpp
+  fboss/agent/platforms/sai/SaiNh4010Platform.cpp
+  fboss/agent/platforms/sai/SaiNh4010PlatformPort.cpp
   fboss/agent/platforms/sai/SaiBcmIcecube800bcPlatform.cpp
   fboss/agent/platforms/sai/SaiBcmIcecube800bcPlatformPort.cpp
   fboss/agent/platforms/sai/SaiBcmIcetea800bcPlatform.cpp
@@ -76,24 +78,6 @@ set(SAI_PLATFORM_SRC
   fboss/agent/platforms/sai/oss/SaiTajoPlatform.cpp
   fboss/agent/platforms/sai/oss/SaiMeru400biaPlatform.cpp
   fboss/agent/platforms/sai/oss/SaiMorgan800ccPlatformPort.cpp
-<<<<<<< HEAD
-  fboss/agent/platforms/sai/SaiYangraPlatformPort.cpp
-  fboss/agent/platforms/sai/SaiMinipack3NPlatformPort.cpp
-  fboss/agent/platforms/sai/SaiBcmIcecube800bcPlatformPort.cpp
-  fboss/agent/platforms/sai/SaiNh4010Platform.cpp
-  fboss/agent/platforms/sai/SaiNh4010PlatformPort.cpp
-  fboss/agent/platforms/sai/SaiBcmIcetea800bcPlatformPort.cpp
-  fboss/agent/platforms/sai/SaiWedge800CACTPlatform.cpp
-  fboss/agent/platforms/sai/SaiWedge800CACTPlatformPort.cpp
-||||||| f4d35184bc
-  fboss/agent/platforms/sai/SaiYangraPlatformPort.cpp
-  fboss/agent/platforms/sai/SaiMinipack3NPlatformPort.cpp
-  fboss/agent/platforms/sai/SaiBcmIcecube800bcPlatformPort.cpp
-  fboss/agent/platforms/sai/SaiBcmIcetea800bcPlatformPort.cpp
-  fboss/agent/platforms/sai/SaiWedge800CACTPlatform.cpp
-  fboss/agent/platforms/sai/SaiWedge800CACTPlatformPort.cpp
-=======
->>>>>>> c9be1644a9498721df9000b7fd5a2decd203dabf
 )
 
 if (SAI_BRCM_PAI_IMPL)
