@@ -33,6 +33,7 @@
 #include "fboss/qsfp_service/platforms/wedge/GalaxyManager.h"
 #include "fboss/qsfp_service/platforms/wedge/Wedge100Manager.h"
 #include "fboss/qsfp_service/platforms/wedge/Wedge400CManager.h"
+#include "fboss/qsfp_service/platforms/wedge/Wedge400Manager.h"
 #include "fboss/qsfp_service/platforms/wedge/Wedge40Manager.h"
 
 #include "fboss/lib/CommonFileUtils.h"
@@ -160,9 +161,10 @@ std::unique_ptr<WedgeManager> createWedgeManager(
           PlatformType::PLATFORM_NH4010>(platformMapping, threads);
     case PlatformType::PLATFORM_FUJI:
     case PlatformType::PLATFORM_MINIPACK:
-    case PlatformType::PLATFORM_WEDGE400:
       return createFBWedgeManager(
           std::move(productInfo), platformMapping, threads);
+    case PlatformType::PLATFORM_WEDGE400:
+      return std::make_unique<Wedge400Manager>(platformMapping, threads);
     case PlatformType::PLATFORM_TAHANSB800BC:
       return createBspWedgeManager<
           Tahansb800bcBspPlatformMapping,
@@ -199,10 +201,11 @@ std::pair<std::unique_ptr<WedgeManager>, std::unique_ptr<PortManager>>
 createQsfpManagers() {
   auto [productInfo, platformMapping, threads] = initializeManagerComponents();
 
-  auto phyManager =
-      createPhyManager(productInfo->getType(), platformMapping.get());
+  const auto platformType = productInfo->getType();
   auto wedgeManager =
       createWedgeManager(std::move(productInfo), platformMapping, threads);
+  auto phyManager =
+      createPhyManager(platformType, platformMapping.get(), wedgeManager.get());
 
   std::unique_ptr<PortManager> portManager{nullptr};
   if (FLAGS_port_manager_mode) {

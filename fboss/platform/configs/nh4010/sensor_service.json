@@ -32,6 +32,15 @@
             "upperCriticalVal": 85
           },
           "compute": "@/1000.0"
+        },
+        {
+          "name": "PSU1_PIN",
+          "sysfsPath": "/run/devmap/sensors/DPM/power1_input",
+          "type": 0,
+          "thresholds": {
+            "upperCriticalVal": 1000
+          },
+          "compute": "@/1000000"
         }
       ]
     },
@@ -86,5 +95,21 @@
         }
       ]
     }
-  ]
+  ],
+  "temperatureConfigs": [
+    {
+      "name": "ASIC",
+      "temperatureSensorNames": [
+        "SCM_TEMP_SENSOR"
+      ]
+    }
+  ],
+  "powerConfig": {
+    "perSlotPowerConfigs": [
+      {
+        "name": "PSU1",
+        "powerSensorName": "PSU1_PIN"
+      }
+    ]
+  }
 }

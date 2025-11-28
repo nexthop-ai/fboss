@@ -25,7 +25,7 @@ OPT_ARG_SCHEDULE_TYPE = "--schedule-type"
 OPT_ARG_EXTRAS_DIR = "--extras-dir"
 OPT_ARG_CACHE_CONFIG = "--cache-config"
 OPT_ARG_EXTRA_CMAKE_DEFINES = "--extra-cmake-defines"
-OPT_ARG_DOT_FILES = "--dot-files"
+OPT_ARG_DOT_FILES = "--dot-file"
 OPT_ARG_USE_CLANG = "--use-clang"
 
 USERNAME = getpass.getuser()
@@ -207,11 +207,11 @@ def parse_args():
     parser.add_argument(
         OPT_ARG_DOT_FILES,
         dest="dot_files",
-        default=False,
-        action="store_true",
+        default=[],
+        action="append",
         help=(
-            "Mount essential config files from the user's home directory into the container. "
-            "This includes shell configs (.bashrc/.zshrc), .ssh, .vim, .vimrc, and .gitconfig."
+            "Choose essential config files to mount from the user's home directory into the container. "
+            "Usage: --dot-file .vimrc --dot-file .vim --dot-file .bashrc"
         ),
     )
     parser.add_argument(
@@ -311,7 +311,7 @@ def run_fboss_build(
     cache_config: Optional[str],
     extras_dir: Optional[str],
     extra_cmake_defines: Optional[str],
-    dot_files: bool = False,
+    dot_files: Optional[List],
     build: bool = True,
     daemon: bool = False,
     sdk_path: Optional[str] = None,
@@ -350,29 +350,13 @@ def run_fboss_build(
         cmd_args.append("-it")
     if extras_dir:
         cmd_args.extend(["-v", f"{extras_dir}:/var/extras:rw"])
-    if sdk_path:
-        cmd_args.extend(["-v", f"{sdk_path}:/opt/sdk:z"])
 
     # Mount dotfiles if requested
-    if dot_files:
-        home_dir = os.path.expanduser("~")
-        # Mount other common dotfiles/directories
-        dotfiles = [
-            ".bashrc", ".bash_history", ".zshrc", ".zsh_history",
-            ".config",
-            ".emacs", ".emacs.d",
-            ".gitconfig",
-            ".gnupg",
-            ".ssh",
-            ".vim", ".vimrc",
-            ".vscode-server",
-            "bin",
-            ]
-
-        for dotfile in dotfiles:
-            host_path = os.path.join(home_dir, dotfile)
-            if os.path.exists(host_path):
-                cmd_args.extend(["-v", f"{host_path}:/home/{USERNAME}/{dotfile}:rw"])
+    home_dir = os.path.expanduser("~")
+    for dotfile in dot_files:
+        host_path = os.path.join(home_dir, dotfile)
+        if os.path.exists(host_path):
+            cmd_args.extend(["-v", f"{host_path}:/home/{USERNAME}/{dotfile}:rw"])
 
     # Add args for docker container name
     cmd_args.append(f"--name={FBOSS_CONTAINER_NAME}")

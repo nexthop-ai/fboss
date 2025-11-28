@@ -57,6 +57,9 @@ class HwSwitchThriftClientTable {
       const SwitchID& switchId,
       const PortID& portId);
 
+  state::SwitchState getProgrammedState(const SwitchID& switchId);
+  SwitchRunState getHwSwitchRunState(const SwitchID& switchId);
+
  private:
   std::map<
       SwitchID,
