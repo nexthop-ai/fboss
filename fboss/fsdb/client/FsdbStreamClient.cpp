@@ -100,24 +100,18 @@ folly::coro::Task<void> FsdbStreamClient::serviceLoopWrapper() {
   } catch (const apache::thrift::SinkThrew& ex) {
     if (ex.getMessage().find("FsdbClientGRDisconnectException") !=
         std::string::npos) {
-      if (!cancelling_.load()) {
-        STREAM_XLOG(INFO)
-            << "Service loop exited with FsdbClientGRDisconnectException";
-      }
+      STREAM_XLOG(INFO)
+          << "Service loop exited with FsdbClientGRDisconnectException";
     } else {
-      if (!cancelling_.load()) {
-        STREAM_XLOG(ERR)
-            << "Service loop exited with unknown exception, mark DISCONNECTED: "
-            << ex.getMessage();
-      }
+      STREAM_XLOG(ERR)
+          << "Service loop exited with unknown exception, mark DISCONNECTED: "
+          << ex.getMessage();
       setStateDisconnectedWithReason(FsdbErrorCode::DISCONNECTED);
     }
   } catch (const FsdbException& ef) {
-    if (!cancelling_.load()) {
-      STREAM_XLOG(ERR) << "FsdbException: "
-                       << apache::thrift::util::enumNameSafe(ef.get_errorCode())
-                       << ": " << ef.get_message();
-    }
+    STREAM_XLOG(ERR) << "FsdbException: "
+                     << apache::thrift::util::enumNameSafe(ef.get_errorCode())
+                     << ": " << ef.get_message();
     setStateDisconnectedWithReason(ef.get_errorCode());
   } catch (const apache::thrift::transport::TTransportException& et) {
     FsdbErrorCode disconnectReason = FsdbErrorCode::CLIENT_TRANSPORT_EXCEPTION;
@@ -128,9 +122,7 @@ folly::coro::Task<void> FsdbStreamClient::serviceLoopWrapper() {
     }
     setStateDisconnectedWithReason(disconnectReason);
   } catch (const std::exception& ex) {
-    if (!cancelling_.load()) {
-      STREAM_XLOG(ERR) << "Unknown error: " << folly::exceptionStr(ex);
-    }
+    STREAM_XLOG(ERR) << "Unknown error: " << folly::exceptionStr(ex);
     setStateDisconnectedWithReason(FsdbErrorCode::DISCONNECTED);
   }
   notifyGracefulServiceLoopCompletion();

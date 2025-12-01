@@ -1,0 +1,16 @@
+# This file contains a list of tests that are excluded from the nhfboss-test.sh
+# Each line is a regex pattern that matches one or more test names.
+# Keep this file sorted alphabetically rather than always appending to the end
+# to reduce merge conflicts. Add a brief comment for each pattern.
+
+# Too many flaky tests
+FsdbPubSubManager
+
+# Racy test
+PathPublisherTest.verifyHeartbeatDisconnect
+
+# Flaky test
+StreamClientTest.connectAndCancel
+
+# Flaky tests
+StreamPublisherTest.(overflowQueue|pipeResetWhenServeStreamStuck)

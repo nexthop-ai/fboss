@@ -484,9 +484,7 @@ TYPED_TEST(FsdbPubSubManagerTest, publishMultipleSubscribers) {
   this->assertQueue(states, 2);
 }
 
-// DISABLED: Segfault due to race condition during publisher destruction
-// TODO: Fix race condition between destructor and service loop
-TYPED_TEST(FsdbPubSubManagerTest, DISABLED_publisherDropCausesSubscriberReset) {
+TYPED_TEST(FsdbPubSubManagerTest, publisherDropCausesSubscriberReset) {
   this->createPublishers();
   folly::Synchronized<std::vector<OperDelta>> statDeltas, stateDeltas;
   folly::Synchronized<std::vector<OperState>> statPaths, statePaths;
@@ -545,9 +543,7 @@ TYPED_TEST(FsdbPubSubManagerTest, publishMultipleSubscribersPruneSome) {
   this->assertQueue(states, 4);
 }
 
-// DISABLED: Segfault due to race condition during publisher destruction
-// TODO: Fix race condition between destructor and service loop
-TYPED_TEST(FsdbPubSubManagerTest, DISABLED_subscriberAppError) {
+TYPED_TEST(FsdbPubSubManagerTest, subscriberAppError) {
   this->createPublishers();
   folly::Synchronized<std::vector<OperDelta>> statDeltas, stateDeltas;
   folly::Synchronized<std::vector<OperState>> statPaths, statePaths;
@@ -652,11 +648,9 @@ using SkipLivenessTestTypes = ::testing::Types<
 
 TYPED_TEST_SUITE(FsdbPubSubManagerSkipLivenessTest, SkipLivenessTestTypes);
 
-// DISABLED: Segfault due to race condition during publisher destruction
-// TODO: Fix race condition between destructor and service loop
 TYPED_TEST(
     FsdbPubSubManagerSkipLivenessTest,
-    DISABLED_publisherDropDoesntResetSubscriber) {
+    publisherDropDoesntResetSubscriber) {
   this->createPublishers();
 
   folly::Synchronized<std::vector<OperDelta>> statDeltas, stateDeltas;
@@ -762,11 +756,7 @@ using GRTestTypes = ::testing::Types<
 
 TYPED_TEST_SUITE(FsdbPubSubManagerGRTest, GRTestTypes);
 
-// DISABLED: Segfault due to race condition during publisher destruction
-// TODO: Fix race condition between destructor and service loop
-TYPED_TEST(
-    FsdbPubSubManagerGRTest,
-    DISABLED_verifySubscriptionDisconnectOnPublisherGR) {
+TYPED_TEST(FsdbPubSubManagerGRTest, verifySubscriptionDisconnectOnPublisherGR) {
   this->createPublishers();
   folly::Synchronized<std::vector<OperDelta>> statDeltas, stateDeltas;
   folly::Synchronized<std::vector<OperState>> statPaths, statePaths;
@@ -924,9 +914,7 @@ TYPED_TEST(FsdbPubSubManagerGRHoldTest, verifyRHoldTimeExpiryOnInitialConnect) {
   this->pubSubManager_.reset();
 }
 
-// DISABLED: Timeout issue with extended delta subscription
-// TODO: Investigate why this test times out
-TYPED_TEST(FsdbPubSubManagerTest, DISABLED_pubSubExtDelta) {
+TYPED_TEST(FsdbPubSubManagerTest, pubSubExtDelta) {
   folly::Synchronized<std::vector<OperSubDeltaUnit>> deltas;
   this->createPublishers();
   this->addStateExtDeltaSubscription(

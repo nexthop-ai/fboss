@@ -243,42 +243,42 @@ void FsdbPubSubManager::removeStateDeltaPublisher(bool gracefulRestart) {
   if (gracefulRestart && stateDeltaPublisher_) {
     stateDeltaPublisher_->disconnectForGR();
   }
-  stopPublisher(lk, std::move(stateDeltaPublisher_));
+  stateDeltaPublisher_.reset();
 }
 void FsdbPubSubManager::removeStatePathPublisher(bool gracefulRestart) {
   std::lock_guard<std::mutex> lk(publisherMutex_);
   if (gracefulRestart && statePathPublisher_) {
     statePathPublisher_->disconnectForGR();
   }
-  stopPublisher(lk, std::move(statePathPublisher_));
+  statePathPublisher_.reset();
 }
 void FsdbPubSubManager::removeStatePatchPublisher(bool gracefulRestart) {
   std::lock_guard<std::mutex> lk(publisherMutex_);
   if (gracefulRestart && statePatchPublisher_) {
     statePatchPublisher_->disconnectForGR();
   }
-  stopPublisher(lk, std::move(statePatchPublisher_));
+  statePatchPublisher_.reset();
 }
 void FsdbPubSubManager::removeStatDeltaPublisher(bool gracefulRestart) {
   std::lock_guard<std::mutex> lk(publisherMutex_);
   if (gracefulRestart && statDeltaPublisher_) {
     statDeltaPublisher_->disconnectForGR();
   }
-  stopPublisher(lk, std::move(statDeltaPublisher_));
+  statDeltaPublisher_.reset();
 }
 void FsdbPubSubManager::removeStatPathPublisher(bool gracefulRestart) {
   std::lock_guard<std::mutex> lk(publisherMutex_);
   if (gracefulRestart && statPathPublisher_) {
     statPathPublisher_->disconnectForGR();
   }
-  stopPublisher(lk, std::move(statPathPublisher_));
+  statPathPublisher_.reset();
 }
 void FsdbPubSubManager::removeStatPatchPublisher(bool gracefulRestart) {
   std::lock_guard<std::mutex> lk(publisherMutex_);
   if (gracefulRestart && statPatchPublisher_) {
     statPatchPublisher_->disconnectForGR();
   }
-  stopPublisher(lk, std::move(statPatchPublisher_));
+  statPatchPublisher_.reset();
 }
 
 template <typename PublisherT, typename PubUnitT>

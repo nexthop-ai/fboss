@@ -317,11 +317,7 @@ TEST_F(PathPublisherTest, coalesceOnPublishQueueBuildup) {
 #endif
 }
 
-// TODO: Re-enable once the race condition in the test is fixed.
-// The test fails in CI due to timing differences - the pipe is never created
-// because of a race between state becoming CONNECTED and handleStateChange
-// creating the pipe. See commit eaafd7f8cfa5b0e5ef9654221841298a16ca575c.
-TEST_F(PathPublisherTest, DISABLED_verifyHeartbeatDisconnect) {
+TEST_F(PathPublisherTest, verifyHeartbeatDisconnect) {
   auto counterPrefix = streamPublisher_->getCounterPrefix();
   EXPECT_EQ(
       fb303::ServiceData::get()->getCounter(counterPrefix + ".connected"), 0);
