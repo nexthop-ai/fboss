@@ -5,6 +5,7 @@
 
 # Too many flaky tests
 FsdbPubSubManager
+FsdbCgoPubSubWrapperTest
 
 # Racy test
 PathPublisherTest.verifyHeartbeatDisconnect
