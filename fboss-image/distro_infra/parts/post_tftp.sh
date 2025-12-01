@@ -6,16 +6,16 @@
 set -euo pipefail
 
 action=$1
-filesize=$2
-address=$3
-filepath=$4
-
 if [[ "$action" != "tftp" ]]; then
     exit 0
 fi
 
+filesize=$2
+address=$3
+filepath=$4
+
 case $filepath in
-    /distro_infra/persistent/*/pxeboot.kernel)
+    /distro_infra/persistent/*/pxeboot_complete)
         mac=$(echo $filepath | cut -d/ -f4)
         rm -rf /distro_infra/dnsmasq_conf.d/$mac
         killall -HUP dnsmasq
