@@ -24,7 +24,7 @@ This will start an interactive tool to configure supplying PXE boot options to a
 terminates the container.
 
 The first time a MAC address is given, a `<MAC>` directory under the persistent directory will be created. Into this the
-image files to boot must be manually copied. eg:
+image files to boot must be manually extracted. eg:
 
 ```
 $ ./distro_infra.sh vlan1033 images
@@ -39,10 +39,13 @@ Enter MAC address (blank to exit): DC-DA-4D-FC-AD-2D
 ```
 
 Now images/dc-da-4d-fc-ad-2d has been created. Into that directory the following files must be copied (or hardlinked
-from the also created `images/cache` directory) with these precise names.
+from the also created `images/cache` directory), or extracted from the PXE installer tarball, which contains these
+precise names:
 
 ```
-$ ls -1 images/dc-da-4d-fc-ad-2d/
+$ cd images/dc-da-4d-fc-ad-2d
+$ tar -xf fboss-distro-image_pxe.tar
+$ ls -1
 FBOSS-Distro-Image.x86_64-1.0.config.bootoptions
 FBOSS-Distro-Image.x86_64-1.0.initrd
 FBOSS-Distro-Image.x86_64-1.0.kernel
@@ -52,7 +55,7 @@ pxeboot.FBOSS-Distro-Image.x86_64-1.0.kernel
 pxeboot.FBOSS-Distro-Image.x86_64-1.0.initrd
 ```
 
-The `ipxe.efi` and `autoload.ipxe` files are generated and will be populated.
+Other files will be generated and populated automatically.
 
 The dut can then be rebooted and PXE boot will start. Once PXE boot has completed, the Distro Infrastructure container
 will stop serving PXE boot to that MAC. To serve PXE boot again, re-enter the MAC address at the menu. It is not
