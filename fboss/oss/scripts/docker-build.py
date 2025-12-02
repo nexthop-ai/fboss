@@ -350,6 +350,8 @@ def run_fboss_build(
         cmd_args.append("-it")
     if extras_dir:
         cmd_args.extend(["-v", f"{extras_dir}:/var/extras:rw"])
+    if sdk_path:
+        cmd_args.extend(["-v", f"{sdk_path}:/opt/sdk:z"])
 
     # Mount dotfiles if requested
     home_dir = os.path.expanduser("~")
