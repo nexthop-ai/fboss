@@ -15,6 +15,7 @@ jobs:
       superproject_repo: nexthop-ai/nh
       submodule_repo: ${{ github.repository }}
       submodule_path: fboss
+      advance_syncs: true
     secrets:
       GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
       GH_TOKEN_PR_APPROVER: ${{ secrets.NEXTHOP_ORG_GHA_PAT }}
