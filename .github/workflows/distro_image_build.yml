@@ -8,20 +8,39 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   Distro-Image-Build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, fboss-gha] # ubuntu-latest upstream
     steps:
       - name: Check out repository code
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::867344435357:role/GitHubActions-EC2-Role
+          aws-region: us-east-2
+          role-duration-seconds: 14400 # 4 hours timeout
+          output-env-credentials: true
+
       - name: Run fboss-image build
-        run: ./fboss-image/distro_cli/fboss-image build fboss-image/from_source.json
+        run: |
+          ./fboss-image/distro_cli/fboss-image build fboss-image/from_source.json
+          build_id=$(nexis-buildrunner init --repo nh/private-fboss --branch ${{ github.ref_name }} --platform xgs)
+          nexis-buildrunner upload --build-id $build_id --image fboss-distro-image_usb.iso
+          nexis-buildrunner upload --build-id $build_id --image fboss-distro-image_pxe.tar
+          nexis-buildrunner commit --build-id $build_id
 
       - name: Cleanup
         if: always()
         run: |
           docker stop ${USER}-fboss-image-builder 2>/dev/null || true
           docker rm ${USER}-fboss-image-builder 2>/dev/null || true
+          sudo rm -rf fboss-image/image_builder/output || true
+          sudo rm -rf fboss-image/image_builder/templates/centos-09.0/root || true
