@@ -7,8 +7,8 @@
 FsdbPubSubManager
 FsdbCgoPubSubWrapperTest
 
-# Racy test
-PathPublisherTest.verifyHeartbeatDisconnect
+# Racy tests
+PathPublisherTest
 
 # Flaky test
 StreamClientTest.connectAndCancel
