@@ -669,8 +669,16 @@ class CmisModule : public QsfpModule {
     return getIdentifier() == TransceiverModuleIdentifier::OSFP;
   }
 
+  // Utility functions for power state management
+  PowerControlState getCurrentPowerControlState();
+  bool isModuleInReadyState();
+  bool moduleReadyStatePoll();
+
   // Check if module should be kept in low power mode for AppSel programming.
   bool programAppSelInLowPowerMode() const;
+
+  // Apply Rx-SNR correction and return the corrected value
+  double applyRxSnrCorrection(uint16_t rawValue, double snrValue) const;
 
   // Private functions to extract and fill in VDM performance monitoring stats
   bool fillVdmPerfMonitorSnr(VdmPerfMonitorStats& vdmStats);
