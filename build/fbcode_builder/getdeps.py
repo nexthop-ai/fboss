@@ -941,19 +941,7 @@ class FixupDeps(ProjectCmdBase):
 @cmd("test", "test a given project")
 class TestCmd(ProjectCmdBase):
     def run_project_cmd(self, args, loader, manifest):
-<<<<<<< HEAD
         return self.create_builder(loader, manifest).run_tests(
-||||||| c9be1644a9
-        if not self.check_built(loader, manifest):
-            print("project %s has not been built" % manifest.name)
-            return 1
-        self.create_builder(loader, manifest).run_tests(
-=======
-        if not self.check_built(loader, manifest):
-            print("project %s has not been built" % manifest.name)
-            return 1
-        return self.create_builder(loader, manifest).run_tests(
->>>>>>> 449479b9e7d8f57cc8e524bff36e2430d26be3f0
             schedule_type=args.schedule_type,
             owner=args.test_owner,
             test_filter=args.filter,

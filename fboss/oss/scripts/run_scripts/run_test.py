@@ -1438,22 +1438,18 @@ if __name__ == "__main__":
         default=None,
         help=("run script before warm boot run"),
     )
-<<<<<<< HEAD
     ap.add_argument(
         "--run-on-reference-board",
         action="store_true",
         help="Modify SAI settings to run on reference board instead of real product",
         default=False,
     )
-||||||| c9be1644a9
-=======
     ap.add_argument(
         OPT_ARG_TEST_RUN_TIMEOUT,
         type=int,
         default=DEFAULT_TEST_RUN_TIMEOUT_IN_SECOND,
         help="Specify test run timeout in seconds",
     )
->>>>>>> 449479b9e7d8f57cc8e524bff36e2430d26be3f0
 
     # Add subparsers for different test types
     subparsers = ap.add_subparsers()
