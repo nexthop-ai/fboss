@@ -29,8 +29,8 @@ jobs:
 
       - name: Clean workspace
         run: |
-          git clean -ffdxe .build_dir
-          rm -rf .build_dir/build/fboss .build_dir/installed/fboss
+          sudo git clean -ffdxe .build_dir
+          sudo rm -rf .build_dir/build/fboss .build_dir/installed/fboss
 
       - name: Cleanup any existing container
         run: |
