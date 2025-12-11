@@ -15,17 +15,11 @@ When build command is fully implemented, these tests should be expanded.
 """
 
 import argparse
-import sys
 import unittest
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-# Add parent directory to path to import the modules
-test_dir = Path(__file__).parent
-cli_dir = test_dir.parent
-sys.path.insert(0, str(cli_dir))
-
-from cmds.build import build_command, setup_build_command
+from distro_cli.cmds.build import build_command, setup_build_command
 
 
 class TestBuildCommand(unittest.TestCase):
@@ -41,23 +35,29 @@ class TestBuildCommand(unittest.TestCase):
         self.assertTrue(callable(build_command))
         self.assertTrue(callable(setup_build_command))
 
-    @patch('lib.builder.subprocess.run')
-    @patch('lib.builder.Path.exists')
-    @patch('lib.builder.shutil.move')
-    def test_build_all_stub(self, _mock_move, mock_exists, mock_run):
+    @patch('distro_cli.lib.builder.shutil.move')
+    @patch('distro_cli.lib.builder.Path.exists')
+    @patch('distro_cli.lib.builder.build_fboss_builder_image')
+    @patch('distro_cli.lib.builder.run_container')
+    def test_build_all_stub(self, mock_run_container, mock_build_image, mock_exists, mock_move):
         """Test build command with no components (build all)"""
-        # Mock the build script and output ISO existence
+        # Mock Docker operations to avoid actual builds
+        mock_build_image.return_value = None
+        mock_run_container.return_value = 0
         mock_exists.return_value = True
-        mock_run.return_value = MagicMock(returncode=0)
+        mock_move.return_value = None
 
         # Create mock args object
         args = argparse.Namespace(
             manifest=str(self.manifest_path),
             components=[]
         )
-        # Call build command - just verify it doesn't crash
-        # When implemented, should verify full image build
         build_command(args)
+
+        # Verify Docker image build was called
+        mock_build_image.assert_called_once()
+        # Verify container was run
+        self.assertTrue(mock_run_container.called)
 
     def test_build_specific_components_stub(self):
         """Test build command with specific components"""

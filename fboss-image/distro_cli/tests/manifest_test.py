@@ -12,17 +12,11 @@ Unit tests for ImageManifest class
 """
 
 import json
-import sys
 import tempfile
 import unittest
 from pathlib import Path
 
-# Add parent directory to path to import the modules
-test_dir = Path(__file__).parent
-cli_dir = test_dir.parent
-sys.path.insert(0, str(cli_dir))
-
-from lib.manifest import ImageManifest
+from distro_cli.lib.manifest import ImageManifest
 
 
 class TestImageManifest(unittest.TestCase):

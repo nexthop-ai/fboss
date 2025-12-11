@@ -19,24 +19,24 @@ The directories here are:
     output      - all build output go here (USB ISO and PXE Boot tarball)
 
 image_builder/bin:
-    build_image.sh                  - Build docker (if needed) and launch build_image_in_container.sh
     build_image_in_container.sh     - Script that builds the image inside docker container
 
 image_builder/templates:
     Contains the template(s) that contain the information needed by kiwi-ng-3
-    to generate 
+    to generate
         centos-09.0     - CentOS-9.0 based FBOSS image template files
 
 image_builder/output:
     All generated output goes into this directory
 
-To build a PXE bootable image the steps are as follows (all scripts support -h or --help option)
+To build a PXE bootable image the steps are as follows:
 
-    1) Build and launch the docker:
+    1) Use the distro_cli tool to build the image:
         git clone git@github.com:nexthop-ai/private-fboss.git <wsdir>
-        <wsdir>/fboss-image/image_builder/bin/build_image.sh -b          # Launch image build inside docker
-        
-    This will generate the many files in /image_builder/output, the main being:
+        cd <wsdir>/fboss-image
+        ./distro_cli/fboss-image build <manifest.json>
+
+    This will generate the distribution files specified in the manifest, typically:
         FBOSS-Distro-Image.x86_64-1.0.install.tar       - PXE bootable tarball
         FBOSS-Distro-Image.x86_64-1.0.install.iso       - Bootable USB ISO image
 
@@ -55,11 +55,11 @@ To build a PXE bootable image the steps are as follows (all scripts support -h o
         -rw-r--r--  1 ctikku ctikku 354188456 Oct 22 17:30 FBOSS-Distro-Image.x86_64-1.0.xz
         -rw-r--r--  1 ctikku ctikku  79692563 Oct 22 17:34 pxeboot.FBOSS-Distro-Image.x86_64-1.0.initrd
         -rwxr-xr-x  1 ctikku ctikku  15075368 Oct 22 17:33 pxeboot.FBOSS-Distro-Image.x86_64-1.0.kernel
-        ctikku@ds102:/vol/shared/images/tftp/FBOSS-Distro-Image$ 
+        ctikku@ds102:/vol/shared/images/tftp/FBOSS-Distro-Image$
 
     The three files we care about are are properly named and are:
         pxeboot.FBOSS-Distro-Image.x86_64-1.0.kernel
-        pxeboot.FBOSS-Distro-Image.x86_64-1.0.initrd 
+        pxeboot.FBOSS-Distro-Image.x86_64-1.0.initrd
         FBOSS-Distro-Image.x86_64-1.0.xz
 
 The Grub entry for FBOSS needs to be as follows:

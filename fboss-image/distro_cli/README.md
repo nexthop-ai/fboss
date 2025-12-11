@@ -110,7 +110,7 @@ Components are built in the following order:
 
 ### Running Tests
 
-#### With Bazel
+#### With Bazel (Recommended)
 
 ```bash
 # Run all tests
@@ -118,24 +118,48 @@ bazel test //private-fboss/fboss-image/distro_cli:all_tests
 
 # Run specific test
 bazel test //private-fboss/fboss-image/distro_cli:cli_test
+
+# Run with detailed output
+bazel test //private-fboss/fboss-image/distro_cli:all_tests --test_output=all
 ```
 
-#### Without Bazel
+#### With pytest
 
 ```bash
-# Run all tests
-cd fboss-image/distro_cli
-python3 -m unittest discover -s tests -p '*_test.py'
+# Run all tests (from fboss-image directory)
+cd fboss-image
+PYTHONPATH=. python3 -m pytest distro_cli/tests/ -v
 
-# Run specific test
-python3 -m unittest tests.cli_test
+# Run specific test file
+PYTHONPATH=. python3 -m pytest distro_cli/tests/cli_test.py -v
+
+# Run specific test class or method
+PYTHONPATH=. python3 -m pytest distro_cli/tests/cli_test.py::CLITest::test_cli_creation -v
+```
+
+#### With unittest
+
+```bash
+# Run all tests (from fboss-image directory)
+cd fboss-image
+PYTHONPATH=. python3 -m unittest discover -s distro_cli/tests -p '*_test.py'
+
+# Run specific test module
+PYTHONPATH=. python3 -m unittest distro_cli.tests.cli_test
+
+# Run specific test class
+PYTHONPATH=. python3 -m unittest distro_cli.tests.cli_test.CLITest
 ```
 
 ### Linting
 
 ```bash
+# With ruff (from distro_cli directory)
 cd fboss-image/distro_cli
 python3 -m ruff check .
+
+# With bazel (from repository root)
+bazel test //private-fboss/fboss-image/distro_cli:lint_check
 ```
 
 ### Project Structure

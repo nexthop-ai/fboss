@@ -1,3 +1,5 @@
+# Exclude build outputs and large directories
 .git
 .build_dir
 .tmp_bld_dir
+fboss-image

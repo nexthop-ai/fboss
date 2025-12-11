@@ -9,10 +9,13 @@
 
 import logging
 import shutil
-import subprocess
 import sys
 from pathlib import Path
 from typing import ClassVar
+
+from distro_cli.lib.constants import FBOSS_BUILDER_IMAGE
+from distro_cli.lib.docker.container import run_container
+from distro_cli.lib.docker.image import build_fboss_builder_image
 
 logger = logging.getLogger(__name__)
 
@@ -96,20 +99,29 @@ class ImageBuilder:
         distro_cli_dir = script_dir.parent
         fboss_image_dir = distro_cli_dir.parent
         image_builder_dir = fboss_image_dir / "image_builder"
-        build_script = image_builder_dir / "bin" / "build_image.sh"
-
-        if not build_script.exists():
-            logger.error(f"Build script not found: {build_script}")
-            sys.exit(1)
 
         logger.info(f"Using image builder: {image_builder_dir}")
-        logger.info(f"Running build script: {build_script}")
 
-        # Run the build script
-        try:
-            subprocess.run([str(build_script), "-b"], check=True)
-        except subprocess.CalledProcessError as e:
-            logger.error(f"Build script failed with exit code {e.returncode}")
+        # Ensure fboss_builder Docker image is available
+        build_fboss_builder_image()
+
+        # Set up volume mounts for the container
+        # Mount /dev from host to allow loop device partition management
+        volumes = {
+            image_builder_dir: Path("/image_builder"),
+            Path("/dev"): Path("/dev")
+        }
+
+        # Run the build script inside fboss_builder container
+        exit_code = run_container(
+            image=FBOSS_BUILDER_IMAGE,
+            command=["/image_builder/bin/build_image_in_container.sh"],
+            volumes=volumes,
+            privileged=True
+        )
+
+        if exit_code != 0:
+            logger.error(f"Build script failed with exit code {exit_code}")
             sys.exit(1)
 
         self._mv_distro_file(image_builder_dir, "usb", "iso")

@@ -3,6 +3,7 @@ exports_files(["ruff.toml"])
 py_test(
     name = "manifest_test",
     srcs = glob(["**/*.py"]),
+    imports = [".."],
     data = glob(["tests/*.json"]),
     main = "tests/manifest_test.py",
     python_version = "PY3",
@@ -13,6 +14,8 @@ py_test(
 py_test(
     name = "image_builder_test",
     srcs = glob(["**/*.py"]),
+    imports = [".."],
+    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
     data = glob(["tests/*.json"]),
     main = "tests/image_builder_test.py",
     python_version = "PY3",
@@ -23,6 +26,8 @@ py_test(
 py_test(
     name = "build_test",
     srcs = glob(["**/*.py"]),
+    imports = [".."],
+    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
     data = glob(["tests/*.json"]),
     main = "tests/build_test.py",
     python_version = "PY3",
@@ -33,6 +38,7 @@ py_test(
 py_test(
     name = "device_test",
     srcs = glob(["**/*.py"]),
+    imports = [".."],
     data = glob(["tests/*.json"]),
     main = "tests/device_test.py",
     python_version = "PY3",
@@ -43,7 +49,22 @@ py_test(
 py_test(
     name = "cli_test",
     srcs = glob(["**/*.py"]),
+    imports = [".."],
     main = "tests/cli_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "small",
+)
+
+py_test(
+    name = "docker_test",
+    srcs = glob(["**/*.py"]),
+    imports = [".."],
+    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+    data = [
+        "//fboss:fboss_builder.tar",
+    ],
+    main = "tests/docker_test.py",
     python_version = "PY3",
     srcs_version = "PY3",
     size = "small",
@@ -66,6 +87,7 @@ test_suite(
         ":build_test",
         ":device_test",
         ":cli_test",
+        ":docker_test",
         ":lint_check",
     ],
 )
