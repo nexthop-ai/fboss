@@ -278,6 +278,8 @@ class TestRunner(abc.ABC):
     WARMBOOT_SETUP_OPTION = "--setup-for-warmboot"
     COLDBOOT_PREFIX = "cold_boot."
     WARMBOOT_PREFIX = "warm_boot."
+    TESTRESULT_FILE = "/home/admin/tr.xml"
+    TESTRESULT_CURRENT_RUN_FILE = "/home/admin/tr_current_run.xml"
 
     _GTEST_RESULT_PATTERN = re.compile(
         r"""\[\s+(?P<status>(OK)|(FAILED)|(SKIPPED)|(TIMEOUT))\s+\]\s+
@@ -361,6 +363,7 @@ class TestRunner(abc.ABC):
         run_cmd = [
             test_binary_name,
             "--gtest_filter=" + test_to_run,
+            f"--gtest_output=xml:{self.TESTRESULT_CURRENT_RUN_FILE}",
             "--fruid_filepath=" + args.fruid_path,
         ]
         run_cmd += self._get_test_run_args(conf_file)
@@ -696,6 +699,7 @@ class TestRunner(abc.ABC):
             return []
 
         test_outputs = []
+        test_results = []
         num_tests = len(tests_to_run)
         for idx, test_to_run in enumerate(tests_to_run):
             test_prefix = self.COLDBOOT_PREFIX
@@ -703,7 +707,12 @@ class TestRunner(abc.ABC):
                 test_prefix, test_to_run, args.sai_replayer_logging
             )
             # Run the test for coldboot verification
+
             self._setup_coldboot_test(sai_replayer_log_path)
+            try:
+                os.unlink(self.TESTRESULT_CURRENT_RUN_FILE)
+            except FileNotFoundError:
+                pass
             print("########## Running test: " + test_to_run, flush=True)
             if args.simulator:
                 self._restart_bcmsim(args.simulator)
@@ -723,6 +732,7 @@ class TestRunner(abc.ABC):
                 flush=True,
             )
             test_outputs.append(test_output)
+            test_results.append(self.get_updated_test_result_with_classname_subscript("cold_boot"))
 
             # Run the test again for warmboot verification if the test supports it
             if warmboot and os.path.isfile(self._get_warmboot_check_file()):
@@ -751,8 +761,9 @@ class TestRunner(abc.ABC):
                     flush=True,
                 )
                 test_outputs.append(test_output)
+                test_results.append(self.get_updated_test_result_with_classname_subscript("warm_boot"))
         self._end_run()
-        return test_outputs
+        return test_outputs, test_results
 
     def _print_output_summary(self, test_outputs):
         test_summaries = []
@@ -787,6 +798,72 @@ class TestRunner(abc.ABC):
 
         print(f"\nTest output stored at: {output_csv}")
 
+    def _write_results_to_xml(self, test_results):
+        output_xml = self.TESTRESULT_FILE
+
+        output = ""
+        info = { "tests": 0, "failures": 0, "skipped": 0, "disabled": 0, "errors": 0,
+                 "time": 0, "timestamp": "", "name": "AllTests", }
+        info["timestamp"] = test_results[0].split('timestamp="')[1].split('"')[0]
+        output += '<?xml version="1.0" encoding="UTF-8"?>'
+        output += "\n"
+
+        for t in test_results:
+            if not t:
+                continue
+            lines = t.split('\n')
+            for line in lines:
+                print(line)
+                if line.startswith('  <testsuite '):
+                    info["tests"] += int(line.split('tests="')[1].split('"')[0])
+                    if "skipped" in line:
+                        info["skipped"] += int(line.split('skipped="')[1].split('"')[0])
+                    info["failures"] += int(line.split('failures="')[1].split('"')[0])
+                    info["disabled"] += int(line.split('disabled="')[1].split('"')[0])
+                    info["errors"] += int(line.split('errors="')[1].split('"')[0])
+                    info["time"] += float(line.split('time="')[1].split('"')[0])
+
+        output += f'<testsuites>'
+        output += "\n"
+        output += f'  <testsuite tests="{info["tests"]}" failures="{info["failures"]}" '
+        output += f'disabled="{info["disabled"]}" errors="{info["errors"]}" skipped="{info["skipped"]}" time="{info["time"]}" '
+        output += f'timestamp="{info["timestamp"]}" name="{info["name"]}">'
+        output += "\n"
+        output += "\n"
+
+        for t in test_results:
+            if not t:
+                continue
+            lines = t.split('\n')
+            for line in lines:
+                if line.startswith('<?xml') or line.startswith('<testsuites ') or line.startswith('</testsuites>') or \
+                    line.strip().startswith('<testsuite ') or line.strip().startswith('</testsuite>'):
+                    continue
+                output += line + "\n"
+
+        output += "  </testsuite>"
+        output += "\n"
+        output += "</testsuites>"
+        output += "\n"
+
+        with open(output_xml, 'w') as f:
+            f.write(output)
+
+        print(f"\nTest result xml stored at: {output_xml}")
+
+    def get_updated_test_result_with_classname_subscript(self, subscript):
+        test_result = None
+        try:
+            with open(self.TESTRESULT_CURRENT_RUN_FILE, 'r', encoding='utf-8') as file:
+                test_result = file.read()
+                pattern = r'testcase name="([^"]*)"'
+                match = re.search(pattern, test_result)
+                if match:
+                    test_result = re.sub(pattern, f'testcase name="{match.group(1)}[{subscript}]"', test_result)
+        except Exception as e:
+            print(f"An error occurred while reading the file: {e}")
+        return test_result
+
     def run_test(self, args):
         tests_to_run = self._get_tests_to_run()
         tests_to_run = self._filter_tests(tests_to_run)
@@ -794,11 +871,12 @@ class TestRunner(abc.ABC):
         # Check if tests need to be run or only listed
         if args.list_tests is False:
             start_time = datetime.now()
+
             original_conf_file = (
                 args.config if (args.config is not None) else self._get_config_path()
             )
             conf_file = self._backup_and_modify_config(original_conf_file)
-            output = self._run_tests(tests_to_run, conf_file, args)
+            output, results = self._run_tests(tests_to_run, conf_file, args)
             end_time = datetime.now()
             delta_time = end_time - start_time
             print(
@@ -806,6 +884,7 @@ class TestRunner(abc.ABC):
                 flush=True,
             )
             self._print_output_summary(output)
+            self._write_results_to_xml(results)
 
 
 class BcmTestRunner(TestRunner):
