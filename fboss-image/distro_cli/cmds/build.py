@@ -9,7 +9,7 @@
 
 from pathlib import Path
 
-from distro_cli.lib.builder import ImageBuilder
+from distro_cli.builder.image_builder import ImageBuilder
 from distro_cli.lib.cli import validate_path
 from distro_cli.lib.manifest import ImageManifest
 

@@ -15,7 +15,8 @@ from typing import ClassVar
 
 from distro_cli.lib.constants import FBOSS_BUILDER_IMAGE
 from distro_cli.lib.docker.container import run_container
-from distro_cli.lib.docker.image import build_fboss_builder_image
+from distro_cli.lib.docker.image import build_fboss_builder_image, get_root_dir
+from distro_cli.lib.exceptions import ComponentError, ManifestError
 
 logger = logging.getLogger(__name__)
 
@@ -56,16 +57,14 @@ class ImageBuilder:
         # Validate all requested components exist in manifest
         for component in component_names:
             if not self.manifest.has_component(component):
-                logger.error(f"Component '{component}' not found in manifest")
-                sys.exit(1)
+                raise ComponentError(f"Component '{component}' not found in manifest")
 
         # Build requested components in dependency order
         for component in self.COMPONENTS:
             if component in component_names:
                 self._build_component(component)
 
-
-    def _mv_distro_file(self, image_builder_dir: Path, format_name: str, file_extension: str):
+    def _move_distro_file(self, image_builder_dir: Path, format_name: str, file_extension: str):
         dist_formats = self.manifest.data.get("distribution_formats")
         if not dist_formats or format_name not in dist_formats:
             return
@@ -79,7 +78,6 @@ class ImageBuilder:
 
         shutil.move(str(output), str(image))
 
-
     def _build_base_image(self):
         """Build the base OS image and create distribution artifacts."""
         logger.info("Starting base OS image build")
@@ -87,18 +85,14 @@ class ImageBuilder:
         # Validate distribution formats are specified
         dist_formats = self.manifest.data.get("distribution_formats")
         if not dist_formats:
-            logger.error("No distribution formats specified in manifest")
-            sys.exit(1)
+            raise ManifestError("No distribution formats specified in manifest")
 
         if not any(k in dist_formats for k in ["usb", "pxe"]):
-            logger.error("No distribution format specified in manifest")
-            sys.exit(1)
+            raise ManifestError("No distribution format specified in manifest")
 
         # Locate the image builder directory
-        script_dir = Path(__file__).parent.resolve()
-        distro_cli_dir = script_dir.parent
-        fboss_image_dir = distro_cli_dir.parent
-        image_builder_dir = fboss_image_dir / "image_builder"
+        root_dir = get_root_dir()
+        image_builder_dir = root_dir / "fboss-image" / "image_builder"
 
         logger.info(f"Using image builder: {image_builder_dir}")
 
@@ -124,11 +118,10 @@ class ImageBuilder:
             logger.error(f"Build script failed with exit code {exit_code}")
             sys.exit(1)
 
-        self._mv_distro_file(image_builder_dir, "usb", "iso")
-        self._mv_distro_file(image_builder_dir, "pxe", "tar")
+        self._move_distro_file(image_builder_dir, "usb", "iso")
+        self._move_distro_file(image_builder_dir, "pxe", "tar")
 
         logger.info("Finished base OS image build")
-
 
     def _build_component(self, component: str):
         """Build a specific component."""

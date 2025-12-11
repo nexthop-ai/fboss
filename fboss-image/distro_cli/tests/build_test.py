@@ -35,10 +35,10 @@ class TestBuildCommand(unittest.TestCase):
         self.assertTrue(callable(build_command))
         self.assertTrue(callable(setup_build_command))
 
-    @patch('distro_cli.lib.builder.shutil.move')
-    @patch('distro_cli.lib.builder.Path.exists')
-    @patch('distro_cli.lib.builder.build_fboss_builder_image')
-    @patch('distro_cli.lib.builder.run_container')
+    @patch('distro_cli.builder.image_builder.shutil.move')
+    @patch('distro_cli.builder.image_builder.Path.exists')
+    @patch('distro_cli.builder.image_builder.build_fboss_builder_image')
+    @patch('distro_cli.builder.image_builder.run_container')
     def test_build_all_stub(self, mock_run_container, mock_build_image, mock_exists, mock_move):
         """Test build command with no components (build all)"""
         # Mock Docker operations to avoid actual builds
