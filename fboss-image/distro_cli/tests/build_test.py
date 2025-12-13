@@ -36,7 +36,7 @@ class TestBuildCommand(unittest.TestCase):
         self.assertTrue(callable(setup_build_command))
 
     @patch('distro_cli.builder.image_builder.shutil.move')
-    @patch('distro_cli.builder.image_builder.Path.exists')
+    @patch('distro_cli.builder.image_builder.find_artifact_in_dir')
     @patch('distro_cli.builder.image_builder.build_fboss_builder_image')
     @patch('distro_cli.builder.image_builder.run_container')
     def test_build_all_stub(self, mock_run_container, mock_build_image, mock_exists, mock_move):
@@ -44,7 +44,7 @@ class TestBuildCommand(unittest.TestCase):
         # Mock Docker operations to avoid actual builds
         mock_build_image.return_value = None
         mock_run_container.return_value = 0
-        mock_exists.return_value = True
+        mock_exists.return_value = Path("/fake/output.iso")
         mock_move.return_value = None
 
         # Create mock args object

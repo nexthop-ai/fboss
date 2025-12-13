@@ -13,6 +13,7 @@ import sys
 from pathlib import Path
 from typing import ClassVar
 
+from distro_cli.lib.artifact import find_artifact_in_dir
 from distro_cli.lib.constants import FBOSS_BUILDER_IMAGE
 from distro_cli.lib.docker.container import run_container
 from distro_cli.lib.docker.image import build_fboss_builder_image, get_root_dir
@@ -69,13 +70,11 @@ class ImageBuilder:
         if not dist_formats or format_name not in dist_formats:
             return
 
-        output = image_builder_dir / "output" / f"FBOSS-Distro-Image.x86_64-1.0.install.{file_extension}"
+        output = find_artifact_in_dir(
+                output_dir=image_builder_dir / "output",
+                pattern=f"FBOSS-Distro-Image.x86_64-1.0.install.{file_extension}",
+                component_name="Base image")
         image = Path(dist_formats[format_name])
-
-        if not output.exists():
-            logger.error(f"Image build output not found: {output}")
-            sys.exit(1)
-
         shutil.move(str(output), str(image))
 
     def _build_base_image(self):
