@@ -14,11 +14,11 @@
     "execute": ["fboss/fboss/oss/scripts/build.py", "platformstack"]
   },
   "bsps": [
-    {"execute": "vendor_bsp/build.make"},
-    {"execute": "fboss/oss/reference_bsp/build.py"}
+    {"execute": ["vendor_bsp/build.make"]},
+    {"execute": ["fboss/oss/reference_bsp/build.py"]}
   ],
   "sai": {
-    "execute": "fboss_brcm_sai/build.sh"
+    "execute": ["fboss_brcm_sai/build.sh"]
   },
   "fboss-forwarding-stack": {
     "execute": ["fboss/fboss/oss/scripts/build.py", "forwardingstack"]

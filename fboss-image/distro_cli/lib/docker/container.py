@@ -49,6 +49,7 @@ def run_container(
         RuntimeError: If docker command fails to start
     """
     logger.info(f"Running container from image: {image}")
+    logger.info(f"Executing: {command}")
 
     # Build docker run command
     cmd = ["docker", "run"]

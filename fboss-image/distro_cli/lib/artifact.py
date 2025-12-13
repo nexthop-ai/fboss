@@ -27,15 +27,12 @@ class ArtifactStore:
     store() persists data and metadata files separately in storage subdirectories.
     """
 
-    def __init__(self, store_dir: Path | None = None):
-        """Initialize artifact store.
+    # Artifact store directory - class attribute
+    ARTIFACT_STORE_DIR = get_root_dir() / "fboss-image" / "distro_cli" / ".artifacts"
 
-        Args:
-            store_dir: Directory to use for storage. Defaults to .artifacts in distro_cli directory.
-        """
-        if store_dir is None:
-            store_dir = get_root_dir() / "fboss-image" / "distro_cli" / ".artifacts"
-        self.store_dir = store_dir
+    def __init__(self):
+        """Initialize artifact store."""
+        self.store_dir = self.ARTIFACT_STORE_DIR
         self.store_dir.mkdir(parents=True, exist_ok=True)
         logger.debug(f"Artifact store initialized at: {self.store_dir}")
 
