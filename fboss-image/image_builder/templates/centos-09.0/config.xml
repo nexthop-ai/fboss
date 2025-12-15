@@ -21,7 +21,7 @@
 
     <preferences profiles="FBOSS">
         <type image="oem"
-            installpxe="true" 
+            installpxe="true"
             bootprofile="uefi"
             filesystem="btrfs"
             firmware="uefi"
@@ -37,9 +37,12 @@
             <oemconfig>
                 <!-- The oem-resize element should be false for a fixed-size disk -->
                 <oem-resize>true</oem-resize>
-                <oem-unattended>true</oem-unattended> 
+                <oem-unattended>true</oem-unattended>
                 <oem-skip-verify>true</oem-skip-verify>
             </oemconfig>
+            <initrd action="add">
+                <dracut module="busybox"/>
+            </initrd>
         </type>
     </preferences>
     <users>
@@ -121,6 +124,7 @@
         <package name="basesystem"/>
         <package name="pv"/>
         <package name="shim-x64" arch="x86_64"/>
+        <package name="busybox"/>
         <package name="libdb-utils"/>
         <package name="dracut-live"/>
         <package name="dracut-kiwi-live"/>
