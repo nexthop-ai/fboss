@@ -35,6 +35,7 @@ jobs:
           build_id=$(nexis-buildrunner init --repo nh/private-fboss --branch ${{ github.ref_name }} --platform xgs)
           nexis-buildrunner upload --build-id $build_id --image fboss-distro-image_usb.iso
           nexis-buildrunner upload --build-id $build_id --image fboss-distro-image_pxe.tar
+          nexis-buildrunner upload --build-id $build_id --image fboss-distro-image_onie.bin
           nexis-buildrunner commit --build-id $build_id
 
       - name: Cleanup

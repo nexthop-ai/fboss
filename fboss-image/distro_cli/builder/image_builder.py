@@ -88,7 +88,7 @@ class ImageBuilder:
         if not dist_formats:
             raise ManifestError("No distribution formats specified in manifest")
 
-        if not any(k in dist_formats for k in ["usb", "pxe"]):
+        if not any(k in dist_formats for k in ["usb", "pxe", "onie"]):
             raise ManifestError("No distribution format specified in manifest")
 
         logger.info(f"Using image builder: {self.image_builder_dir}")
@@ -103,10 +103,16 @@ class ImageBuilder:
             Path("/dev"): Path("/dev")
         }
 
+        cmd = ["/image_builder/bin/build_image_in_container.sh"]
+        if "pxe" in dist_formats or "usb" in dist_formats:
+            cmd.append("--build-pxe-usb")
+        if "onie" in dist_formats:
+            cmd.append("--build-onie")
+
         # Run the build script inside fboss_builder container
         exit_code = run_container(
             image=FBOSS_BUILDER_IMAGE,
-            command=["/image_builder/bin/build_image_in_container.sh"],
+            command=cmd,
             volumes=volumes,
             privileged=True
         )
@@ -116,6 +122,7 @@ class ImageBuilder:
 
         self._move_distro_file("usb", "iso")
         self._move_distro_file("pxe", "tar")
+        self._move_distro_file("onie", "bin")
 
         logger.info("Finished base OS image build")
 
