@@ -6,20 +6,10 @@
   "slotTypeConfigs": {
     "SCM_SLOT": {
       "numOutgoingI2cBuses": 7,
-      "idpromConfig": {
-        "busName": "FPGA 7011 I2C Adapter #6",
-        "address": "0x50",
-        "kernelDeviceName": "24c64"
-      },
       "pmUnitName": "SCM"
     },
     "SMB_SLOT": {
       "numOutgoingI2cBuses": 10,
-      "idpromConfig": {
-        "busName": "FPGA 7011 I2C Adapter #6",
-        "address": "0x50",
-        "kernelDeviceName": "24c64"
-      },
       "pmUnitName": "SMB"
     }
   },
@@ -122,7 +112,7 @@
           "busName": "SCM_IOB_I2C_6",
           "address": "0x50",
           "kernelDeviceName": "24c64",
-          "pmUnitScopedName": "SCM_FPGA_EEPROM"
+          "pmUnitScopedName": "CHASSIS_EEPROM"
         },
         {
           "busName": "SCM_IOB_I2C_6",
@@ -133,10 +123,7 @@
       ],
       "outgoingSlotConfigs": {
         "SMB_SLOT@0": {
-          "slotType": "SMB_SLOT",
-          "outgoingI2cBusNames": [
-            "FPGA 7011 I2C Adapter #6"
-          ]
+          "slotType": "SMB_SLOT"
         }
       }
     },
@@ -342,12 +329,10 @@
     "Synopsys DesignWare I2C adapter",
     "SMBus PIIX4 adapter port 0 at 0b00",
     "SMBus PIIX4 adapter port 2 at 0b00",
-    "SMBus PIIX4 adapter port 1 at 0b20",
-    "FPGA 7011 I2C Adapter #6"
+    "SMBus PIIX4 adapter port 1 at 0b20"
   ],
   "symbolicLinkToDevicePath": {
-    "/run/devmap/eeproms/SCM_EEPROM": "/[IDPROM]",
-    "/run/devmap/eeproms/SCM_FPGA_EEPROM": "/[SCM_FPGA_EEPROM]",
+    "/run/devmap/eeproms/CHASSIS_EEPROM": "/[CHASSIS_EEPROM]",
     "/run/devmap/sensors/AD5258_1": "/[AD5258_1]",
     "/run/devmap/sensors/AD5258_2": "/[AD5258_2]",
     "/run/devmap/sensors/DPM": "/[DPM]",
@@ -378,7 +363,7 @@
     "/run/devmap/sensors/MGMT_TEMP_SENSOR": "/SMB_SLOT@0/[MGMT_TEMP_SENSOR]",
     "/run/devmap/sensors/FAN_CTRL": "/SMB_SLOT@0/[FAN_CTRL]"
   },
-  "chassisEepromDevicePath": "/[IDPROM]",
+  "chassisEepromDevicePath": "/[CHASSIS_EEPROM]",
   "bspKmodsRpmName": "nexthop_bsp_kmods",
   "bspKmodsRpmVersion": "1.0.0-1",
   "requiredKmodsToLoad": [

@@ -78,5 +78,4 @@ const list<string> PLATFORMS_WITH_IDPROM_CHASSIS_EEPROM = [
   "MORGAN800CC",
   "JANGA800BIC",
   "TAHAN800BC",
-  "NH4010", // TODO: remove this
 ];
