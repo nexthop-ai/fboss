@@ -246,6 +246,12 @@ if [ -n "${BUILD_ONIE}" ]; then
         --description ${DESCRIPTION_DIR} \
         --target-dir ${TARGET_DIR}/onie \
         |& tee -a ${LOG_FILE} | awk '{print "ONIE installer| " $0}';
+    # Repack the rootfs so really long filenames are not truncated under Busybox
+    mkdir ${TARGET_DIR}/onie/rootfs;
+    pushd ${TARGET_DIR}/onie/rootfs >/dev/null;
+    xzcat --threads=0 ${TARGET_DIR}/onie/FBOSS-Distro-Image.x86_64-1.0.tar.xz | tar -x;
+    tar --format=gnu -c * | xz --threads=0 > ${TARGET_DIR}/onie/FBOSS-Distro-Image.x86_64-1.0.tar.xz;
+    popd >/dev/null;
     build_onie_installer | awk '{print "ONIE installer| " $0}';
     mv ${TARGET_DIR}/onie/FBOSS-Distro-Image.x86_64-1.0.install.* ${TARGET_DIR};
     ) &
