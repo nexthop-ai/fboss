@@ -49,6 +49,11 @@ env -i \
     PATH="/usr/bin:/usr/sbin:/bin:/sbin" \
     kernel-install add ${KERNEL_VERSION} ${VMLINUZ_PATH} --initrd-file ${INITRD_PATH}
 
+# 5. Configure SSH to allow password authentication and root login
+echo "Configuring SSH..."
+sed -i 's/^[# \t]*PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+sed -i 's/^[# \t]*PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+
 # 6. Done! Cleanup, remember that we are chrooted on the rootfs
 echo "Removing kernel rpms from rootfs..."
 rm -f /repos/*.rpm
