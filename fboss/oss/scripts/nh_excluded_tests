@@ -13,8 +13,7 @@ FsdbCgoPubSubWrapperTest
 # Racy tests
 PathPublisherTest
 
-# Flaky test
-StreamClientTest.connectAndCancel
-
 # Flaky tests
+RackmonTest.DormantRecovery
+StreamClientTest.connectAndCancel
 StreamPublisherTest.(overflowQueue|pipeResetWhenServeStreamStuck)
