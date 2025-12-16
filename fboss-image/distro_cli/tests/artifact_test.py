@@ -22,8 +22,9 @@ class TestArtifactStore(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures."""
         self.temp_dir = Path(tempfile.mkdtemp())
-        self.store_dir = self.temp_dir / "store"
-        self.store = ArtifactStore(store_dir=self.store_dir)
+        # Override class attribute for testing
+        ArtifactStore.ARTIFACT_STORE_DIR = self.temp_dir / "store"
+        self.store = ArtifactStore()
 
     def tearDown(self):
         """Clean up test directory."""

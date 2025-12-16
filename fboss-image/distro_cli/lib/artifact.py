@@ -10,6 +10,7 @@
 import hashlib
 import logging
 import shutil
+import tempfile
 from collections.abc import Callable
 from pathlib import Path
 
@@ -98,9 +99,9 @@ class ArtifactStore:
     ) -> tuple[list[Path], list[Path]]:
         """Store data and metadata files in the storage.
 
-        Files/directories are copied to store_subdir/data/ and store_subdir/metadata/.
-        If a path is a file, it's copied directly.
-        If a path is a directory, all its contents are copied.
+        Files/directories are moved to store_subdir/data/ and store_subdir/metadata/.
+        If a path is a file, it's moved directly.
+        If a path is a directory, all its contents are moved.
 
         Args:
             store_key: Store key for the artifact
@@ -118,14 +119,14 @@ class ArtifactStore:
         if data_files:
             data_dir.mkdir(parents=True, exist_ok=True)
             for file_path in data_files:
-                self._copy_to_dir(file_path, data_dir)
+                self._move_to_dir(file_path, data_dir)
             logger.info(f"Stored {len(data_files)} data file(s): {store_key}")
 
         # Store metadata files
         if metadata_files:
             metadata_dir.mkdir(parents=True, exist_ok=True)
             for file_path in metadata_files:
-                self._copy_to_dir(file_path, metadata_dir)
+                self._move_to_dir(file_path, metadata_dir)
             logger.info(f"Stored {len(metadata_files)} metadata file(s): {store_key}")
 
         # Return all stored files
@@ -134,17 +135,25 @@ class ArtifactStore:
             self._get_stored_files_in_dir(metadata_dir)
         )
 
-    def _copy_to_dir(self, source: Path, dest_dir: Path) -> None:
-        """Copy a file or directory contents to destination directory.
+    def _move_to_dir(self, source: Path, dest_dir: Path) -> None:
+        """Move a file or directory contents to destination directory.
+
+        Uses move instead of copy for better performance when source and dest
+        are on the same filesystem.
 
         Args:
             source: Source file or directory
             dest_dir: Destination directory
         """
+        dest_path = dest_dir / source.name
         if source.is_dir():
-            shutil.copytree(source, dest_dir, dirs_exist_ok=True)
+            # For directories, move the entire tree
+            if dest_path.exists():
+                shutil.rmtree(dest_path)
+            shutil.move(str(source), str(dest_path))
         else:
-            shutil.copy2(source, dest_dir / source.name)
+            # For files, move directly
+            shutil.move(str(source), str(dest_path))
 
     def invalidate(self, store_key: str) -> None:
         """Remove an artifact from the store.
@@ -163,6 +172,39 @@ class ArtifactStore:
             shutil.rmtree(self.store_dir)
             self.store_dir.mkdir(parents=True, exist_ok=True)
             logger.info("All stored artifacts cleared")
+
+    @classmethod
+    def create_temp_dir(cls, prefix: str = "temp-") -> Path:
+        """Create a temporary directory within the artifact store.
+
+        Creates temp directory on same filesystem as artifact store to enable
+        fast atomic moves and avoid filling up /tmp. Useful for parallel builds
+        that need isolation.
+
+        This is a class method so it can be called without an instance.
+
+        Args:
+            prefix: Prefix for the temporary directory name
+
+        Returns:
+            Path to the created temporary directory
+        """
+        temp_base = cls.ARTIFACT_STORE_DIR / ".tmp"
+        temp_base.mkdir(parents=True, exist_ok=True)
+        return Path(tempfile.mkdtemp(dir=temp_base, prefix=prefix))
+
+    @staticmethod
+    def delete_temp_dir(temp_dir: Path) -> None:
+        """Delete a temporary directory created by create_temp_dir().
+
+        This is a static method so it can be called without an instance.
+
+        Args:
+            temp_dir: Path to the temporary directory to delete
+        """
+        if temp_dir.exists():
+            shutil.rmtree(temp_dir, ignore_errors=True)
+            logger.debug(f"Deleted temporary directory: {temp_dir}")
 
 
 def find_artifact_in_dir(output_dir: Path, pattern: str, component_name: str = "Component") -> Path:
