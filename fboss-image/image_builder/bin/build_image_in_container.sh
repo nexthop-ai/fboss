@@ -56,13 +56,28 @@ update_docker() {
             dracut-kiwi-oem-dump \
             kiwi-systemdeps-image-validation \
             syslinux \
-            btrfs-progs
+            btrfs-progs \
+            glibc-static
+}
+
+build_zstd() {
+    if [ ! -d ${TARGET_DIR}/zstd ]; then
+        dprint "Building static zstd..."
+        git clone https://github.com/facebook/zstd.git ${TARGET_DIR}/zstd
+        pushd ${TARGET_DIR}/zstd >/dev/null
+        git checkout release
+        make -C programs zstd-frugal LDFLAGS="-static"
+        strip programs/zstd-frugal
+        popd >/dev/null
+    fi
 }
 
 build_onie_installer() {
-    echo "Creating ONIE installer..."
+    build_zstd
+
+    dprint "Creating ONIE installer..."
     out_bin=${TARGET_DIR}/onie/FBOSS-Distro-Image.x86_64-1.0.install.bin
-    rootfs=${TARGET_DIR}/onie/FBOSS-Distro-Image.x86_64-1.0.tar.xz
+    rootfs=${TARGET_DIR}/onie/FBOSS-Distro-Image.x86_64-1.0.tar.zst
 
     pushd ${TARGET_DIR}/onie >/dev/null
 
@@ -78,7 +93,10 @@ build_onie_installer() {
     cp ${templates_dir}/install.sh.tmpl onie_installer/install.sh
     chmod a+x onie_installer/install.sh
 
-    echo "  Finding kernel and initrd..."
+    cp ${TARGET_DIR}/zstd/programs/zstd-frugal onie_installer/zstd
+    chmod a+x onie_installer/zstd
+
+    dprint "  Finding kernel and initrd..."
     kernel=$(set +o pipefail; tar -tf $rootfs | awk -F / '/^boot\/vmlinuz/ {print $2; exit 0}' || exit 1)
     initrd=$(set +o pipefail; tar -tf $rootfs | awk -F / '/^boot\/initramfs/ {print $2; exit 0}' || exit 1)
 
@@ -86,9 +104,9 @@ build_onie_installer() {
            -e "s/%%INITRD_FILENAME%%/$initrd/g" \
            onie_installer/install.sh
 
-    mv $rootfs onie_installer/rootfs.tar.xz
+    mv $rootfs onie_installer/rootfs.tar.zst
 
-    echo "  Packaging installer..."
+    dprint "  Packaging installer..."
     tar -cf installer.tar onie_installer
 
     sha1=$(cat installer.tar | sha1sum | awk '{print $1}')
@@ -165,9 +183,6 @@ fi
 dprint "Updating docker image..."
 update_docker |& tee -a ${LOG_FILE}
 
-dprint "Deleting target directory: ${TARGET_DIR}"
-rm -rf ${TARGET_DIR}
-
 # Create the output directory (in case it doesn't exist)
 mkdir -p ${TARGET_DIR}
 chmod 777 ${TARGET_DIR}
@@ -223,6 +238,7 @@ ONIE_RC=0
 
 if [ -n "${BUILD_PXE}" ]; then
     dprint "Generating PXE and USB installer, this will take few minutes..."
+    rm -rf ${TARGET_DIR}/btrfs
     (set -e -o pipefail;
      kiwi-ng-3 \
         --profile FBOSS \
@@ -238,6 +254,7 @@ fi
 
 if [ -n "${BUILD_ONIE}" ]; then
     dprint "Generating ONIE installer, this will take few minutes..."
+    rm -rf ${TARGET_DIR}/onie
     (set -e -o pipefail;
      kiwi-ng-3 \
         --profile FBOSS \
@@ -247,11 +264,15 @@ if [ -n "${BUILD_ONIE}" ]; then
         --target-dir ${TARGET_DIR}/onie \
         |& tee -a ${LOG_FILE} | awk '{print "ONIE installer| " $0}';
     # Repack the rootfs so really long filenames are not truncated under Busybox
+    dprint "Repacking rootfs with zstd..."
     mkdir ${TARGET_DIR}/onie/rootfs;
     pushd ${TARGET_DIR}/onie/rootfs >/dev/null;
     xzcat --threads=0 ${TARGET_DIR}/onie/FBOSS-Distro-Image.x86_64-1.0.tar.xz | tar -x;
-    tar --format=gnu -c * | xz --threads=0 > ${TARGET_DIR}/onie/FBOSS-Distro-Image.x86_64-1.0.tar.xz;
+    rm ${TARGET_DIR}/onie/FBOSS-Distro-Image.x86_64-1.0.tar.xz;
+    tar --format=gnu -cf ${TARGET_DIR}/onie/FBOSS-Distro-Image.x86_64-1.0.tar *;
+    zstd --threads=0 -19 ${TARGET_DIR}/onie/FBOSS-Distro-Image.x86_64-1.0.tar;
     popd >/dev/null;
+
     build_onie_installer | awk '{print "ONIE installer| " $0}';
     mv ${TARGET_DIR}/onie/FBOSS-Distro-Image.x86_64-1.0.install.* ${TARGET_DIR};
     ) &

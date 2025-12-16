@@ -79,7 +79,7 @@ mount_partition
 
 cp -f distro-setup.sh ${demo_mnt}
 echo "Extract chroot environment ... to ${demo_mnt}"
-tar -Jxf rootfs.tar.xz -C ${demo_mnt}
+./zstd -c -T0 -d rootfs.tar.zst | tar -x -C ${demo_mnt}
 
 [ -e ${demo_mnt}/dev/pts ] && {
     mount -o bind /dev/pts ${demo_mnt}/dev/pts
