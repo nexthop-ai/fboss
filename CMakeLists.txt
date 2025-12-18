@@ -1031,6 +1031,7 @@ add_dependencies(fboss_platform_services
   data_corral_service
   # Utilities
   sensor_service_client
+  fixmyfboss
   # Unit Tests
   platform_config_lib_config_lib_test
   # NH TODO platform_manager_device_path_resolver_test
