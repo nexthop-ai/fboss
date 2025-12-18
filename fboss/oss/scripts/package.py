@@ -72,6 +72,27 @@ forwarding_stack_tests.update({
 	run_scripts / "brcmsim.py"            : "bin/brcmsim.py",
 })
 
+agent_benchmarks = {f"{build_dir}/{bin}": f"bin/{bin}" for bin in [
+    "sai_ecmp_shrink_speed-sai_impl",
+    "sai_ecmp_shrink_with_competing_route_updates_speed-sai_impl",
+    "sai_fsw_scale_route_add_speed-sai_impl",
+    "sai_fsw_scale_route_del_speed-sai_impl",
+    "sai_hgrid_du_scale_route_add_speed-sai_impl",
+    "sai_hgrid_du_scale_route_del_speed-sai_impl",
+    "sai_init_and_exit_100Gx100G-sai_impl",
+    "sai_init_and_exit_100Gx10G-sai_impl",
+    "sai_init_and_exit_100Gx25G-sai_impl",
+    "sai_init_and_exit_100Gx50G-sai_impl",
+    "sai_init_and_exit_40Gx10G-sai_impl",
+    "sai_rib_resolution_speed-sai_impl",
+    "sai_rx_slow_path_rate-sai_impl",
+    "sai_stats_collection_speed-sai_impl",
+    "sai_switch_reachability_change_speed-sai_impl",
+    "sai_th_alpm_scale_route_add_speed-sai_impl",
+    "sai_th_alpm_scale_route_del_speed-sai_impl",
+    "sai_tx_slow_path_rate-sai_impl",
+]}
+
 platform_stack = {f"{build_dir}/{bin}": f"bin/{bin}" for bin in [
 	"data_corral_service",
 	"fan_service",
@@ -113,11 +134,15 @@ platform_stack_tests.update({
 
 # Target to install contents and test contents
 targets = {
+        "agent-benchmarks": (agent_benchmarks, {}),
         "forwarding-stack": (forwarding_stack, forwarding_stack_tests),
         "platform-stack": (platform_stack, platform_stack_tests),
 }
 
 def write_tar(filename: str, contents: Dict[str, str]) -> None:
+    if not contents:
+        return
+
     print(f"Creating {filename}...")
     with tarfile.open(filename, "w") as tar:
         for src, dest in contents.items():
@@ -132,7 +157,7 @@ def package_fboss(target: str) -> None:
         executor.submit(write_tar, f"{target}-tests.tar", targets[target][1])
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <target>")
+    if len(sys.argv) != 2 or sys.argv[1] not in targets:
+        print(f"Usage: {sys.argv[0]} [agent-benchmarks | forwarding-stack | platform-stack]")
         sys.exit(1)
     package_fboss(sys.argv[1])

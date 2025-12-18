@@ -46,6 +46,8 @@ fi
 echo "Building deps"
 nice -n 10 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --only-deps $common_options
 
+export BENCHMARK_INSTALL=1
+
 echo "Building FBOSS"
 nice -n 10 ./build/fbcode_builder/getdeps.py build --num-jobs $num_jobs --build-type MinSizeRel --no-deps $common_options
 

@@ -31,5 +31,7 @@ else
     fi
 fi
 
+export BENCHMARK_INSTALL=1
+
 time nice -n 10 ./fboss/oss/scripts/run-getdeps.py build --num-jobs $num_jobs --build-type $BUILD_TYPE --no-deps $common_options "$@" \
   && echo "Build SUCCESS"
