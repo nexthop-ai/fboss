@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 name: Distro Image Build
 run-name: Distro Image Build
 
@@ -47,31 +46,3 @@ jobs:
           sudo rm -rf fboss-image/image_builder/output || true
           sudo rm -rf fboss-image/image_builder/logs || true
           sudo rm -rf fboss-image/image_builder/templates/centos-09.0/root || true
-||||||| 449479b9e7
-=======
-name: Distro Image Build
-run-name: Distro Image Build
-
-on:
-  pull_request:
-  # Allow manually triggering the workflow
-  workflow_dispatch:
-  push:
-    branches: [ main ]
-
-jobs:
-  Distro-Image-Build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v5
-
-      - name: Run fboss-image build
-        run: ./fboss-image/distro_cli/fboss-image build fboss-image/from_source.json
-
-      - name: Cleanup
-        if: always()
-        run: |
-          docker stop ${USER}-fboss-image-builder 2>/dev/null || true
-          docker rm ${USER}-fboss-image-builder 2>/dev/null || true
->>>>>>> 2e3f5259e0e7fb4791864e3939bdd38a408f7699

@@ -75,12 +75,9 @@ std::unique_ptr<WedgeManager> createBspWedgeManager(
     const std::shared_ptr<std::unordered_map<TransceiverID, SlotThreadHelper>>
         threads);
 
-<<<<<<< HEAD
 std::unique_ptr<WedgeManager> createNh4010WedgeManager(
     const std::string& platformMappingStr);
 
-||||||| 449479b9e7
-=======
 std::unique_ptr<PortManager> createPortManager(
     PlatformType platformType,
     WedgeManager* wedgeManager,
@@ -89,6 +86,5 @@ std::unique_ptr<PortManager> createPortManager(
     const std::shared_ptr<std::unordered_map<TransceiverID, SlotThreadHelper>>
         threads);
 
->>>>>>> 2e3f5259e0e7fb4791864e3939bdd38a408f7699
 } // namespace fboss
 } // namespace facebook

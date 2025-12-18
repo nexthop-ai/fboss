@@ -29,16 +29,8 @@ jobs:
             echo "base_ref=HEAD^" >> $GITHUB_OUTPUT
           fi
       - name: Show changed files
-<<<<<<< HEAD
         run: git diff --name-only ${{ steps.base-ref.outputs.base_ref }}...HEAD
-      - uses: pre-commit/action@v3.0.1 # v3.0.1(latest)
-||||||| 449479b9e7
-        run: git diff --name-only HEAD^...
-      - uses: pre-commit/action@v3.0.1 # v3.0.1(latest)
-=======
-        run: git diff --name-only HEAD^...
       - uses: pre-commit/action@v3.0.1
->>>>>>> 2e3f5259e0e7fb4791864e3939bdd38a408f7699
         with:
           # replace the default extra_args = "--all-files" since we only care about the changed files for now
           extra_args: "--from-ref ${{ steps.base-ref.outputs.base_ref }} --to-ref HEAD"

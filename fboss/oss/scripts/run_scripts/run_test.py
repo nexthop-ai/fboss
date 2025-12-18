@@ -629,7 +629,6 @@ class TestRunner(abc.ABC):
         except Exception as e:
             print(f"Error when replacing string in {file_path}: {str(e)}")
 
-<<<<<<< HEAD
     def _backup_and_modify_config(self, conf_file):
         """Create a copy of the config and modify settings"""
         if args.run_on_reference_board:
@@ -640,7 +639,9 @@ class TestRunner(abc.ABC):
                 self._config_file_modified = f"/tmp/modified-{config_filename}"
                 shutil.copy2(conf_file, self._config_file_modified)
 
-                print("Using a modified config file {self._config_file_modified} for test runs")
+                print(
+                    "Using a modified config file {self._config_file_modified} for test runs"
+                )
                 # Some platforms, like TH5 SVK, need to set
                 # AUTOLOAD_BOARD_SETTINGS=1 to autodetect reference board
                 self._replace_string_in_file(
@@ -655,37 +656,6 @@ class TestRunner(abc.ABC):
         return conf_file
 
     def _run_tests(self, tests_to_run, conf_file, args):
-||||||| 449479b9e7
-    def _run_tests(self, tests_to_run, args):
-=======
-    def _backup_and_modify_config(self, conf_file):
-        """Create a copy of the config and modify settings"""
-        if args.run_on_reference_board:
-            # Create a copy of the config file for modification
-            try:
-                # Create a modified copy in /tmp with standard name
-                config_filename = os.path.basename(conf_file)
-                _config_file_modified = f"/tmp/modified-{config_filename}"
-                shutil.copy2(conf_file, _config_file_modified)
-
-                print(
-                    f"Using a modified config file {_config_file_modified} for test runs"
-                )
-                # Some platforms, like TH5 SVK, need to set
-                # AUTOLOAD_BOARD_SETTINGS=1 to autodetect reference board
-                self._replace_string_in_file(
-                    _config_file_modified,
-                    "AUTOLOAD_BOARD_SETTINGS: 0",
-                    "AUTOLOAD_BOARD_SETTINGS: 1",
-                )
-                return _config_file_modified
-            except Exception as e:
-                print(f"Error creating config copy {conf_file}: {str(e)}")
-                return conf_file
-        return conf_file
-
-    def _run_tests(self, tests_to_run, conf_file, args):
->>>>>>> 2e3f5259e0e7fb4791864e3939bdd38a408f7699
         if args.sai_replayer_logging:
             if os.path.isdir(args.sai_replayer_logging) or os.path.isfile(
                 args.sai_replayer_logging
@@ -764,7 +734,9 @@ class TestRunner(abc.ABC):
                 flush=True,
             )
             test_outputs.append(test_output)
-            test_results.append(self.get_updated_test_result_with_classname_subscript("cold_boot"))
+            test_results.append(
+                self.get_updated_test_result_with_classname_subscript("cold_boot")
+            )
 
             # Run the test again for warmboot verification if the test supports it
             if warmboot and os.path.isfile(self._get_warmboot_check_file()):
@@ -793,7 +765,9 @@ class TestRunner(abc.ABC):
                     flush=True,
                 )
                 test_outputs.append(test_output)
-                test_results.append(self.get_updated_test_result_with_classname_subscript("warm_boot"))
+                test_results.append(
+                    self.get_updated_test_result_with_classname_subscript("warm_boot")
+                )
         self._end_run()
         return test_outputs, test_results
 
@@ -834,8 +808,16 @@ class TestRunner(abc.ABC):
         output_xml = self.TESTRESULT_FILE
 
         output = ""
-        info = { "tests": 0, "failures": 0, "skipped": 0, "disabled": 0, "errors": 0,
-                 "time": 0, "timestamp": "", "name": "AllTests", }
+        info = {
+            "tests": 0,
+            "failures": 0,
+            "skipped": 0,
+            "disabled": 0,
+            "errors": 0,
+            "time": 0,
+            "timestamp": "",
+            "name": "AllTests",
+        }
         info["timestamp"] = test_results[0].split('timestamp="')[1].split('"')[0]
         output += '<?xml version="1.0" encoding="UTF-8"?>'
         output += "\n"
@@ -843,10 +825,10 @@ class TestRunner(abc.ABC):
         for t in test_results:
             if not t:
                 continue
-            lines = t.split('\n')
+            lines = t.split("\n")
             for line in lines:
                 print(line)
-                if line.startswith('  <testsuite '):
+                if line.startswith("  <testsuite "):
                     info["tests"] += int(line.split('tests="')[1].split('"')[0])
                     if "skipped" in line:
                         info["skipped"] += int(line.split('skipped="')[1].split('"')[0])
@@ -855,7 +837,7 @@ class TestRunner(abc.ABC):
                     info["errors"] += int(line.split('errors="')[1].split('"')[0])
                     info["time"] += float(line.split('time="')[1].split('"')[0])
 
-        output += f'<testsuites>'
+        output += f"<testsuites>"
         output += "\n"
         output += f'  <testsuite tests="{info["tests"]}" failures="{info["failures"]}" '
         output += f'disabled="{info["disabled"]}" errors="{info["errors"]}" skipped="{info["skipped"]}" time="{info["time"]}" '
@@ -866,10 +848,15 @@ class TestRunner(abc.ABC):
         for t in test_results:
             if not t:
                 continue
-            lines = t.split('\n')
+            lines = t.split("\n")
             for line in lines:
-                if line.startswith('<?xml') or line.startswith('<testsuites ') or line.startswith('</testsuites>') or \
-                    line.strip().startswith('<testsuite ') or line.strip().startswith('</testsuite>'):
+                if (
+                    line.startswith("<?xml")
+                    or line.startswith("<testsuites ")
+                    or line.startswith("</testsuites>")
+                    or line.strip().startswith("<testsuite ")
+                    or line.strip().startswith("</testsuite>")
+                ):
                     continue
                 output += line + "\n"
 
@@ -878,7 +865,7 @@ class TestRunner(abc.ABC):
         output += "</testsuites>"
         output += "\n"
 
-        with open(output_xml, 'w') as f:
+        with open(output_xml, "w") as f:
             f.write(output)
 
         print(f"\nTest result xml stored at: {output_xml}")
@@ -886,12 +873,16 @@ class TestRunner(abc.ABC):
     def get_updated_test_result_with_classname_subscript(self, subscript):
         test_result = None
         try:
-            with open(self.TESTRESULT_CURRENT_RUN_FILE, 'r', encoding='utf-8') as file:
+            with open(self.TESTRESULT_CURRENT_RUN_FILE, "r", encoding="utf-8") as file:
                 test_result = file.read()
                 pattern = r'testcase name="([^"]*)"'
                 match = re.search(pattern, test_result)
                 if match:
-                    test_result = re.sub(pattern, f'testcase name="{match.group(1)}[{subscript}]"', test_result)
+                    test_result = re.sub(
+                        pattern,
+                        f'testcase name="{match.group(1)}[{subscript}]"',
+                        test_result,
+                    )
         except Exception as e:
             print(f"An error occurred while reading the file: {e}")
         return test_result
@@ -903,22 +894,12 @@ class TestRunner(abc.ABC):
         # Check if tests need to be run or only listed
         if args.list_tests is False:
             start_time = datetime.now()
-<<<<<<< HEAD
 
             original_conf_file = (
                 args.config if (args.config is not None) else self._get_config_path()
             )
             conf_file = self._backup_and_modify_config(original_conf_file)
             output, results = self._run_tests(tests_to_run, conf_file, args)
-||||||| 449479b9e7
-            output = self._run_tests(tests_to_run, args)
-=======
-            original_conf_file = (
-                args.config if (args.config is not None) else self._get_config_path()
-            )
-            conf_file = self._backup_and_modify_config(original_conf_file)
-            output = self._run_tests(tests_to_run, conf_file, args)
->>>>>>> 2e3f5259e0e7fb4791864e3939bdd38a408f7699
             end_time = datetime.now()
             delta_time = end_time - start_time
             print(

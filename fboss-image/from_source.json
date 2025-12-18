@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {
   "distribution_formats": {
     "usb": "fboss-distro-image_usb.iso",
@@ -20,25 +19,3 @@
   "image_build_hooks": {
   }
 }
-||||||| 449479b9e7
-=======
-{
-  "distribution_formats": {
-    "usb": "fboss-distro-image_usb.iso"
-  },
-  "kernel": {
-  },
-  "other_dependencies": [
-  ],
-  "fboss-platform-stack": {
-  },
-  "bsps": [
-  ],
-  "sai": {
-  },
-  "fboss-forwarding-stack": {
-  },
-  "image_build_hooks": {
-  }
-}
->>>>>>> 2e3f5259e0e7fb4791864e3939bdd38a408f7699
