@@ -629,6 +629,7 @@ class TestRunner(abc.ABC):
         except Exception as e:
             print(f"Error when replacing string in {file_path}: {str(e)}")
 
+<<<<<<< HEAD
     def _backup_and_modify_config(self, conf_file):
         """Create a copy of the config and modify settings"""
         if args.run_on_reference_board:
@@ -654,6 +655,37 @@ class TestRunner(abc.ABC):
         return conf_file
 
     def _run_tests(self, tests_to_run, conf_file, args):
+||||||| 449479b9e7
+    def _run_tests(self, tests_to_run, args):
+=======
+    def _backup_and_modify_config(self, conf_file):
+        """Create a copy of the config and modify settings"""
+        if args.run_on_reference_board:
+            # Create a copy of the config file for modification
+            try:
+                # Create a modified copy in /tmp with standard name
+                config_filename = os.path.basename(conf_file)
+                _config_file_modified = f"/tmp/modified-{config_filename}"
+                shutil.copy2(conf_file, _config_file_modified)
+
+                print(
+                    f"Using a modified config file {_config_file_modified} for test runs"
+                )
+                # Some platforms, like TH5 SVK, need to set
+                # AUTOLOAD_BOARD_SETTINGS=1 to autodetect reference board
+                self._replace_string_in_file(
+                    _config_file_modified,
+                    "AUTOLOAD_BOARD_SETTINGS: 0",
+                    "AUTOLOAD_BOARD_SETTINGS: 1",
+                )
+                return _config_file_modified
+            except Exception as e:
+                print(f"Error creating config copy {conf_file}: {str(e)}")
+                return conf_file
+        return conf_file
+
+    def _run_tests(self, tests_to_run, conf_file, args):
+>>>>>>> 2e3f5259e0e7fb4791864e3939bdd38a408f7699
         if args.sai_replayer_logging:
             if os.path.isdir(args.sai_replayer_logging) or os.path.isfile(
                 args.sai_replayer_logging
@@ -871,12 +903,22 @@ class TestRunner(abc.ABC):
         # Check if tests need to be run or only listed
         if args.list_tests is False:
             start_time = datetime.now()
+<<<<<<< HEAD
 
             original_conf_file = (
                 args.config if (args.config is not None) else self._get_config_path()
             )
             conf_file = self._backup_and_modify_config(original_conf_file)
             output, results = self._run_tests(tests_to_run, conf_file, args)
+||||||| 449479b9e7
+            output = self._run_tests(tests_to_run, args)
+=======
+            original_conf_file = (
+                args.config if (args.config is not None) else self._get_config_path()
+            )
+            conf_file = self._backup_and_modify_config(original_conf_file)
+            output = self._run_tests(tests_to_run, conf_file, args)
+>>>>>>> 2e3f5259e0e7fb4791864e3939bdd38a408f7699
             end_time = datetime.now()
             delta_time = end_time - start_time
             print(
@@ -1528,6 +1570,12 @@ if __name__ == "__main__":
         type=int,
         default=DEFAULT_TEST_RUN_TIMEOUT_IN_SECOND,
         help="Specify test run timeout in seconds",
+    )
+    ap.add_argument(
+        "--run-on-reference-board",
+        action="store_true",
+        help="Modify SAI settings to run on reference board instead of real product",
+        default=False,
     )
 
     # Add subparsers for different test types

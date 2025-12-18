@@ -611,7 +611,8 @@ class AgentTrafficPfcTest : public AgentHwTest {
       utility::setupMultipleEgressPoolAndQueueConfigs(
           cfg, kLosslessPgIds, asic->getMMUSizeBytes());
     }
-    if (asic->getAsicType() == cfg::AsicType::ASIC_TYPE_YUBA) {
+    if (asic->getAsicType() == cfg::AsicType::ASIC_TYPE_YUBA ||
+        asic->getAsicType() == cfg::AsicType::ASIC_TYPE_G202X) {
       // For YUBA, lossless queues needs to be configured with static
       // queue limit equal to the MMU size to ensure its lossless.
       for (auto& queueConfigs : *cfg.portQueueConfigs()) {
@@ -944,6 +945,7 @@ class AgentTrafficPfcWatchdogTest : public AgentTrafficPfcTest {
           pfcWatchdog.detectionTimeMsecs() = 200;
           break;
         case cfg::AsicType::ASIC_TYPE_YUBA:
+        case cfg::AsicType::ASIC_TYPE_G202X:
           pfcWatchdog.recoveryTimeMsecs() = 100;
           pfcWatchdog.detectionTimeMsecs() = 25;
           break;

@@ -69,6 +69,7 @@ target_link_libraries(platform_manager_data_store_test
 
 gtest_discover_tests(platform_manager_data_store_test)
 
+<<<<<<< HEAD
 # NH TODO add_executable(platform_manager_device_path_resolver_test
 # NH TODO fboss/platform/platform_manager/tests/DevicePathResolverTest.cpp
 # NH TODO )
@@ -80,6 +81,22 @@ gtest_discover_tests(platform_manager_data_store_test)
 # NH TODO )
 # NH TODO 
 # NH TODO gtest_discover_tests(platform_manager_device_path_resolver_test)
+||||||| 449479b9e7
+target_link_libraries(platform_manager_device_path_resolver_test
+  platform_manager_device_path_resolver
+  ${GTEST}
+  ${LIBGMOCK_LIBRARIES}
+)
+=======
+target_link_libraries(platform_manager_device_path_resolver_test
+  platform_manager_device_path_resolver
+  platform_fs_utils
+  ${GTEST}
+  ${LIBGMOCK_LIBRARIES}
+)
+>>>>>>> 2e3f5259e0e7fb4791864e3939bdd38a408f7699
+
+gtest_discover_tests(platform_manager_device_path_resolver_test)
 
 add_executable(platform_manager_presence_checker_test
   fboss/platform/platform_manager/tests/PresenceCheckerTest.cpp
@@ -94,3 +111,16 @@ target_link_libraries(platform_manager_presence_checker_test
 )
 
 gtest_discover_tests(platform_manager_presence_checker_test)
+
+add_executable(platform_manager_pci_explorer_test
+  fboss/platform/platform_manager/tests/PciExplorerTest.cpp
+)
+
+target_link_libraries(platform_manager_pci_explorer_test
+  platform_manager_pci_explorer
+  platform_fs_utils
+  ${GTEST}
+  ${LIBGMOCK_LIBRARIES}
+)
+
+gtest_discover_tests(platform_manager_pci_explorer_test)

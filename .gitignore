@@ -3,6 +3,7 @@
 /external
 /external.install
 .*.swp
+<<<<<<< HEAD
 /.build_dir
 /.sccache
 
@@ -12,3 +13,13 @@ __pycache__/
 *$py.class
 *.so
 .Python
+||||||| 449479b9e7
+=======
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+>>>>>>> 2e3f5259e0e7fb4791864e3939bdd38a408f7699
