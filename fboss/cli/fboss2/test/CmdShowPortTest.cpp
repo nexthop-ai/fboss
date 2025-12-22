@@ -14,12 +14,7 @@
 #include "fboss/cli/fboss2/commands/show/port/gen-cpp2/model_types.h"
 #include "fboss/cli/fboss2/test/CmdHandlerTestBase.h"
 
-#ifdef IS_OSS
-#define BGP_DRAINED_TRUE false
-#define BGP_DRAINED_YES "No"
-#else
-#define BGP_DRAINED_TRUE true
-#define BGP_DRAINED_YES "Yes"
+#ifndef IS_OSS
 #include "configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h"
 #include "neteng/fboss/bgp/if/gen-cpp2/TBgpService.h"
 using namespace facebook::neteng::fboss::bgp::thrift;
@@ -113,7 +108,11 @@ std::map<int32_t, PortInfoThrift> createPortEntries() {
   TransceiverIdxThrift tcvr4;
   tcvr4.transceiverId() = 3;
   portEntry4.transceiverIdx() = tcvr4;
-  portEntry4.isDrained() = BGP_DRAINED_TRUE;
+#ifdef IS_OSS
+  portEntry4.isDrained() = false;
+#else
+  portEntry4.isDrained() = true;
+#endif
 
   PortInfoThrift portEntry5;
   portEntry5.portId() = 7;
@@ -223,7 +222,11 @@ cli::ShowPortModel createPortModel() {
   entry1.numUnicastQueues() = 0;
   // when pfc exists, pause shouldn't
   entry1.pfc() = "TX RX WD";
-  entry1.isDrained() = BGP_DRAINED_YES;
+#ifdef IS_OSS
+  entry1.isDrained() = "No";
+#else
+  entry1.isDrained() = "Yes";
+#endif
   entry1.activeErrors() = "--";
   entry1.peerSwitchDrained() = "--";
   entry1.peerPortDrainedOrDown() = "--";
@@ -283,7 +286,11 @@ cli::ShowPortModel createPortModel() {
   entry4.tcvrPresent() = "Absent";
   entry4.numUnicastQueues() = 0;
   entry4.pause() = "";
-  entry4.isDrained() = BGP_DRAINED_YES;
+#ifdef IS_OSS
+  entry4.isDrained() = "No";
+#else
+  entry4.isDrained() = "Yes";
+#endif
   entry4.activeErrors() = "--";
   entry4.peerSwitchDrained() = "--";
   entry4.peerPortDrainedOrDown() = "--";
@@ -323,7 +330,11 @@ cli::ShowPortModel createPortModel() {
   entry6.tcvrPresent() = "Present";
   entry6.numUnicastQueues() = 0;
   entry6.pause() = "";
-  entry6.isDrained() = BGP_DRAINED_YES;
+#ifdef IS_OSS
+  entry6.isDrained() = "No";
+#else
+  entry6.isDrained() = "Yes";
+#endif
   entry6.activeErrors() = "--";
   entry6.peerSwitchDrained() = "--";
   entry6.peerPortDrainedOrDown() = "--";
