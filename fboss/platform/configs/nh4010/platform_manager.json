@@ -78,28 +78,10 @@
       ],
       "i2cDeviceConfigs": [
         {
-          "busName": "SCM_IOB_I2C_1",
-          "address": "0x18",
-          "kernelDeviceName": "ad525x_dpot",
-          "pmUnitScopedName": "AD5258_1"
-        },
-        {
-          "busName": "SCM_IOB_I2C_2",
-          "address": "0x18",
-          "kernelDeviceName": "ad525x_dpot",
-          "pmUnitScopedName": "AD5258_2"
-        },
-        {
           "busName": "SCM_IOB_I2C_3",
           "address": "0x41",
           "kernelDeviceName": "adm1266",
           "pmUnitScopedName": "DPM"
-        },
-        {
-          "busName": "SCM_IOB_I2C_4",
-          "address": "0x61",
-          "kernelDeviceName": "isl68137",
-          "pmUnitScopedName": "SVI_VR"
         },
         {
           "busName": "SCM_IOB_I2C_5",
@@ -107,7 +89,6 @@
           "kernelDeviceName": "adm1266",
           "pmUnitScopedName": "DPM_2"
         },
-
         {
           "busName": "SCM_IOB_I2C_6",
           "address": "0x50",
@@ -204,40 +185,6 @@
               }
             }
           ],
-          "xcvrCtrlConfigs": [
-            {
-              "fpgaIpBlockConfig": {
-                "pmUnitScopedName": "OSFP_PORT1_XCVR",
-                "deviceName": "xcvr_ctrl",
-                "csrOffset": "0xa010"
-              },
-              "portNumber": 1
-            },
-            {
-              "fpgaIpBlockConfig": {
-                "pmUnitScopedName": "OSFP_PORT2_XCVR",
-                "deviceName": "xcvr_ctrl",
-                "csrOffset": "0xa020"
-              },
-              "portNumber": 2
-            },
-            {
-              "fpgaIpBlockConfig": {
-                "pmUnitScopedName": "OSFP_PORT3_XCVR",
-                "deviceName": "xcvr_ctrl",
-                "csrOffset": "0xa030"
-              },
-              "portNumber": 3
-            },
-            {
-              "fpgaIpBlockConfig": {
-                "pmUnitScopedName": "OSFP_PORT4_XCVR",
-                "deviceName": "xcvr_ctrl",
-                "csrOffset": "0xa040"
-              },
-              "portNumber": 4
-            }
-          ],
           "ledCtrlConfigs": [
             {
               "fpgaIpBlockConfig": {
@@ -292,31 +239,6 @@
           "numOutgoingChannels": 4
         },
         {
-          "busName": "SMB_MUX_1@1",
-          "address": "0x60",
-          "kernelDeviceName": "isl68137",
-          "pmUnitScopedName": "POWER_CTRL_ISL68225_1"
-        },
-        {
-          "busName": "SMB_MUX_1@1",
-          "address": "0x62",
-          "kernelDeviceName": "isl68137",
-          "pmUnitScopedName": "POWER_CTRL_ISL68225_2"
-        },
-        {
-          "busName": "SMB_MUX_1@1",
-          "address": "0x64",
-          "kernelDeviceName": "isl68137",
-          "pmUnitScopedName": "POWER_CTRL_ISL68225_3"
-        },
-        {
-          "busName": "SMB_MUX_1@1",
-          "address": "0x66",
-          "kernelDeviceName": "isl68137",
-          "pmUnitScopedName": "POWER_CTRL_ISL68225_4"
-        },
-
-        {
           "busName": "SMB_MUX_2@1",
           "address": "0x4c",
           "kernelDeviceName": "lm90",
@@ -333,10 +255,7 @@
   ],
   "symbolicLinkToDevicePath": {
     "/run/devmap/eeproms/CHASSIS_EEPROM": "/[CHASSIS_EEPROM]",
-    "/run/devmap/sensors/AD5258_1": "/[AD5258_1]",
-    "/run/devmap/sensors/AD5258_2": "/[AD5258_2]",
     "/run/devmap/sensors/DPM": "/[DPM]",
-    "/run/devmap/sensors/SVI_VR": "/[SVI_VR]",
     "/run/devmap/sensors/DPM_2": "/[DPM_2]",
     "/run/devmap/sensors/SCM_TEMP_SENSOR": "/[SCM_TEMP_SENSOR]",
     "/run/devmap/fpgas/SCM_IOB": "/[SCM_IOB]",
@@ -356,10 +275,6 @@
     "/run/devmap/i2c-busses/SMB_IOB_I2C_5": "/SMB_SLOT@0/[SMB_IOB_I2C_5]",
     "/run/devmap/i2c-busses/SMB_IOB_I2C_6": "/SMB_SLOT@0/[SMB_IOB_I2C_6]",
     "/run/devmap/i2c-busses/SMB_IOB_I2C_7": "/SMB_SLOT@0/[SMB_IOB_I2C_7]",
-    "/run/devmap/sensors/POWER_CTRL_ISL68225_1": "/SMB_SLOT@0/[POWER_CTRL_ISL68225_1]",
-    "/run/devmap/sensors/POWER_CTRL_ISL68225_2": "/SMB_SLOT@0/[POWER_CTRL_ISL68225_2]",
-    "/run/devmap/sensors/POWER_CTRL_ISL68225_3": "/SMB_SLOT@0/[POWER_CTRL_ISL68225_3]",
-    "/run/devmap/sensors/POWER_CTRL_ISL68225_4": "/SMB_SLOT@0/[POWER_CTRL_ISL68225_4]",
     "/run/devmap/sensors/MGMT_TEMP_SENSOR": "/SMB_SLOT@0/[MGMT_TEMP_SENSOR]",
     "/run/devmap/sensors/FAN_CTRL": "/SMB_SLOT@0/[FAN_CTRL]"
   },
