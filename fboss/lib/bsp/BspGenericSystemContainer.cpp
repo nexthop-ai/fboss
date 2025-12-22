@@ -19,6 +19,7 @@
 #include "fboss/lib/bsp/tahan800bc/Tahan800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/tahansb800bc/Tahansb800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/wedge800bact/Wedge800BACTBspPlatformMapping.h"
+#include "fboss/lib/bsp/wedge800cact/Wedge800CACTBspPlatformMapping.h"
 
 DEFINE_string(
     bsp_platform_mapping_override_path,
@@ -182,6 +183,15 @@ template <>
 std::shared_ptr<Wedge800BACTSystemContainer>
 Wedge800BACTSystemContainer::getInstance() {
   return _wedge800bactSystemContainer.try_get();
+}
+
+using Wedge800CACTSystemContainer =
+    BspGenericSystemContainer<Wedge800CACTBspPlatformMapping>;
+folly::Singleton<Wedge800CACTSystemContainer> _wedge800cactSystemContainer;
+template <>
+std::shared_ptr<Wedge800CACTSystemContainer>
+Wedge800CACTSystemContainer::getInstance() {
+  return _wedge800cactSystemContainer.try_get();
 }
 
 using Ladakh800bclsSystemContainer =

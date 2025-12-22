@@ -13,7 +13,8 @@ import time
 
 class ElapsedTimeFormatter(logging.Formatter):
     """Formatter that shows elapsed time since CLI start."""
-    def __init__(self, fmt='[%(elapsed).2fs] %(message)s'):
+
+    def __init__(self, fmt="[%(elapsed).2fs] %(message)s"):
         super().__init__(fmt)
         self.start_time = time.time()
 
@@ -24,7 +25,7 @@ class ElapsedTimeFormatter(logging.Formatter):
 
 def setup_logging(verbose=False):
     """Setup logging with elapsed time formatter."""
-    logger = logging.getLogger('fboss-image')
+    logger = logging.getLogger("fboss-image")
     logger.setLevel(logging.DEBUG if verbose else logging.INFO)
     logger.handlers = []
 

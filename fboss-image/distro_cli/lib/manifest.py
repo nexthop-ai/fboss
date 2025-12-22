@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class ImageManifest:
     """Represents an FBOSS image manifest."""
 
-    REQUIRED_FIELDS: ClassVar[list[str]] = ['distribution_formats', 'kernel']
+    REQUIRED_FIELDS: ClassVar[list[str]] = ["distribution_formats", "kernel"]
 
     def __init__(self, manifest_path: Path):
         self.manifest_path = manifest_path.resolve()
@@ -43,9 +43,13 @@ class ImageManifest:
 
     def _validate_manifest(self):
         """Validate manifest has required fields."""
-        missing_required = [field for field in self.REQUIRED_FIELDS if field not in self.data]
+        missing_required = [
+            field for field in self.REQUIRED_FIELDS if field not in self.data
+        ]
         if missing_required:
-            logger.error(f"Missing required fields in manifest: {', '.join(missing_required)}")
+            logger.error(
+                f"Missing required fields in manifest: {', '.join(missing_required)}"
+            )
             sys.exit(1)
 
     def has_component(self, component: str) -> bool:
@@ -60,6 +64,6 @@ class ImageManifest:
 
     def resolve_path(self, path: str) -> Path:
         """Resolve a path relative to the manifest file."""
-        if path.startswith('http://') or path.startswith('https://'):
+        if path.startswith("http://") or path.startswith("https://"):
             return path
         return (self.manifest_dir / path).resolve()

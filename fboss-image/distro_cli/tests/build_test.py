@@ -39,11 +39,13 @@ class TestBuildCommand(unittest.TestCase):
         self.assertTrue(callable(build_command))
         self.assertTrue(callable(setup_build_command))
 
-    @patch('distro_cli.builder.image_builder.shutil.move')
-    @patch('distro_cli.builder.image_builder.find_artifact_in_dir')
-    @patch('distro_cli.builder.image_builder.build_fboss_builder_image')
-    @patch('distro_cli.builder.image_builder.run_container')
-    def test_build_all_stub(self, mock_run_container, mock_build_image, mock_exists, mock_move):
+    @patch("distro_cli.builder.image_builder.shutil.move")
+    @patch("distro_cli.builder.image_builder.find_artifact_in_dir")
+    @patch("distro_cli.builder.image_builder.build_fboss_builder_image")
+    @patch("distro_cli.builder.image_builder.run_container")
+    def test_build_all_stub(
+        self, mock_run_container, mock_build_image, mock_exists, mock_move
+    ):
         """Test build command with no components (build all)"""
         # Mock Docker operations to avoid actual builds
         mock_build_image.return_value = None
@@ -52,10 +54,7 @@ class TestBuildCommand(unittest.TestCase):
         mock_move.return_value = None
 
         # Create mock args object
-        args = argparse.Namespace(
-            manifest=str(self.manifest_path),
-            components=[]
-        )
+        args = argparse.Namespace(manifest=str(self.manifest_path), components=[])
         build_command(args)
 
         # Verify Docker image build was called
@@ -66,10 +65,7 @@ class TestBuildCommand(unittest.TestCase):
     def test_build_components(self):
         """Test build command with specific components"""
         manifest_path = self.test_dir / "echo.json"
-        args = argparse.Namespace(
-            manifest=str(manifest_path),
-            components=['kernel']
-        )
+        args = argparse.Namespace(manifest=str(manifest_path), components=["kernel"])
 
         # Load manifest to extract expected output file from execute command
         manifest = ImageManifest(manifest_path)
@@ -84,7 +80,10 @@ class TestBuildCommand(unittest.TestCase):
         # Verify the output file was created
         root_dir = get_root_dir()
         output_path = root_dir / "fboss-image" / "image_builder" / output_file
-        self.assertTrue(output_path.exists(), f"Expected output file not found: {output_path}")
+        self.assertTrue(
+            output_path.exists(), f"Expected output file not found: {output_path}"
+        )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

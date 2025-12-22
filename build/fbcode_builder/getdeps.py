@@ -973,6 +973,13 @@ class TestCmd(ProjectCmdBase):
             default=None,
             help="Timeout in seconds for each individual test",
         )
+        parser.add_argument(
+            "--build-type",
+            help="Set the build type explicitly.  Cmake and cargo builders act on them. Only Debug and RelWithDebInfo widely supported.",
+            choices=["Debug", "Release", "RelWithDebInfo", "MinSizeRel"],
+            action="store",
+            default=None,
+        )
 
 
 @cmd(
@@ -1057,6 +1064,13 @@ class GenerateGitHubActionsCmd(ProjectCmdBase):
         run_tests = (
             args.enable_tests
             and manifest.get("github.actions", "run_tests", ctx=manifest_ctx) != "off"
+        )
+        rust_version = (
+            manifest.get("github.actions", "rust_version", ctx=manifest_ctx) or "stable"
+        )
+
+        override_build_type = args.build_type or manifest.get(
+            "github.actions", "build_type", ctx=manifest_ctx
         )
         if run_tests:
             manifest_ctx.set("test", "on")
@@ -1169,11 +1183,14 @@ jobs:
                 # && is not supported on default windows powershell, so use cmd
                 out.write("      shell: cmd\n")
 
-            out.write("    - uses: actions/checkout@v4\n")
+            out.write("    - uses: actions/checkout@v6\n")
 
             build_type_arg = ""
-            if args.build_type:
-                build_type_arg = f"--build-type {args.build_type} "
+            if override_build_type:
+                build_type_arg = f"--build-type {override_build_type} "
+
+            if args.shared_libs:
+                build_type_arg += "--shared-libs "
 
             if build_opts.free_up_disk:
                 free_up_disk = "--free-up-disk "
@@ -1250,8 +1267,8 @@ jobs:
                     or builder_name == "cargo"
                     or mbuilder_name == "cargo"
                 ):
-                    out.write("    - name: Install Rust Stable\n")
-                    out.write("      uses: dtolnay/rust-toolchain@stable\n")
+                    out.write(f"    - name: Install Rust {rust_version.capitalize()}\n")
+                    out.write(f"      uses: dtolnay/rust-toolchain@{rust_version}\n")
                     break
 
             # Normal deps that have manifests
@@ -1357,7 +1374,7 @@ jobs:
                 f"--final-install-prefix /usr/local\n"
             )
 
-            out.write("    - uses: actions/upload-artifact@v4\n")
+            out.write("    - uses: actions/upload-artifact@v6\n")
             out.write("      with:\n")
             out.write("        name: %s\n" % manifest.name)
             out.write("        path: _artifacts\n")
@@ -1369,7 +1386,7 @@ jobs:
 
                 out.write("    - name: Test %s\n" % manifest.name)
                 out.write(
-                    f"      run: {getdepscmd}{allow_sys_arg} test {num_jobs_arg}--src-dir=. {manifest.name}{project_prefix}\n"
+                    f"      run: {getdepscmd}{allow_sys_arg} test {build_type_arg}{num_jobs_arg}--src-dir=. {manifest.name}{project_prefix}\n"
                 )
             if build_opts.free_up_disk and not build_opts.is_windows():
                 out.write("    - name: Show disk space at end\n")

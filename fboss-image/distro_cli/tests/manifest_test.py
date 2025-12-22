@@ -41,40 +41,36 @@ class TestImageManifest(unittest.TestCase):
         manifest = ImageManifest(self.manifest_path)
 
         # All components should be present in the test manifest
-        self.assertTrue(manifest.has_component('kernel'))
-        self.assertTrue(manifest.has_component('other_dependencies'))
-        self.assertTrue(manifest.has_component('fboss-platform-stack'))
-        self.assertTrue(manifest.has_component('bsps'))
-        self.assertTrue(manifest.has_component('sai'))
-        self.assertTrue(manifest.has_component('fboss-forwarding-stack'))
+        self.assertTrue(manifest.has_component("kernel"))
+        self.assertTrue(manifest.has_component("other_dependencies"))
+        self.assertTrue(manifest.has_component("fboss-platform-stack"))
+        self.assertTrue(manifest.has_component("bsps"))
+        self.assertTrue(manifest.has_component("sai"))
+        self.assertTrue(manifest.has_component("fboss-forwarding-stack"))
 
         # Non-existent component should return False
-        self.assertFalse(manifest.has_component('nonexistent'))
+        self.assertFalse(manifest.has_component("nonexistent"))
 
     def test_missing_components(self):
         """Test manifest with missing optional components"""
         minimal_manifest = {
-            "distribution_formats": {
-                "onie": "FBOSS-minimal.bin"
-            },
-            "kernel": {
-                "download": "https://example.com/kernel.tar"
-            }
+            "distribution_formats": {"onie": "FBOSS-minimal.bin"},
+            "kernel": {"download": "https://example.com/kernel.tar"},
         }
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump(minimal_manifest, f)
             minimal_path = Path(f.name)
 
         try:
             manifest = ImageManifest(minimal_path)
             # Should have kernel but not other optional components
-            self.assertTrue(manifest.has_component('kernel'))
-            self.assertFalse(manifest.has_component('other_dependencies'))
-            self.assertFalse(manifest.has_component('fboss-platform-stack'))
-            self.assertFalse(manifest.has_component('bsps'))
-            self.assertFalse(manifest.has_component('sai'))
-            self.assertFalse(manifest.has_component('fboss-forwarding-stack'))
+            self.assertTrue(manifest.has_component("kernel"))
+            self.assertFalse(manifest.has_component("other_dependencies"))
+            self.assertFalse(manifest.has_component("fboss-platform-stack"))
+            self.assertFalse(manifest.has_component("bsps"))
+            self.assertFalse(manifest.has_component("sai"))
+            self.assertFalse(manifest.has_component("fboss-forwarding-stack"))
         finally:
             minimal_path.unlink()
 
@@ -97,5 +93,5 @@ class TestImageManifest(unittest.TestCase):
         self.assertEqual(resolved, url)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

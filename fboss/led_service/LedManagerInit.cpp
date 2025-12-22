@@ -19,6 +19,7 @@
 #include "fboss/led_service/Tahansb800bcLedManager.h"
 #include "fboss/led_service/Wedge400LedManager.h"
 #include "fboss/led_service/Wedge800BACTLedManager.h"
+#include "fboss/led_service/Wedge800CACTLedManager.h"
 #include "fboss/led_service/YampLedManager.h"
 #include "fboss/lib/platforms/PlatformProductInfo.h"
 
@@ -78,6 +79,8 @@ std::unique_ptr<LedManager> createLedManager() {
     return std::make_unique<Nh4010LedManager>();
   } else if (mode == PlatformType::PLATFORM_WEDGE800BACT) {
     return std::make_unique<Wedge800BACTLedManager>();
+  } else if (mode == PlatformType::PLATFORM_WEDGE800CACT) {
+    return std::make_unique<Wedge800CACTLedManager>();
   } else if (mode == PlatformType::PLATFORM_LADAKH800BCLS) {
     return std::make_unique<Ladakh800bclsLedManager>();
   }

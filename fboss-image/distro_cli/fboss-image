@@ -22,7 +22,7 @@ from distro_cli.lib.logger import setup_logging
 
 def main():
     """Main entry point for fboss-image CLI"""
-    cli = CLI(description='FBOSS Distro Image CLI')
+    cli = CLI(description="FBOSS Distro Image CLI")
 
     setup_build_command(cli)
     setup_device_commands(cli)
@@ -30,5 +30,5 @@ def main():
     return cli.run(setup_logging_func=setup_logging)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

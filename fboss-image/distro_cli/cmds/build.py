@@ -29,15 +29,20 @@ def build_command(args):
 def setup_build_command(cli):
     """Setup the build command"""
     cli.add_command(
-        'build',
+        "build",
         build_command,
-        help_text='Build FBOSS image or components',
+        help_text="Build FBOSS image or components",
         arguments=[
-            ('manifest', {
-                'type': lambda p: validate_path(p, must_exist=True),
-                'help': 'Path to manifest JSON file'}),
-            ('components', {
-                'nargs': '*',
-                'help': 'Specific components to build (default: all)'}),
-        ]
+            (
+                "manifest",
+                {
+                    "type": lambda p: validate_path(p, must_exist=True),
+                    "help": "Path to manifest JSON file",
+                },
+            ),
+            (
+                "components",
+                {"nargs": "*", "help": "Specific components to build (default: all)"},
+            ),
+        ],
     )

@@ -11,7 +11,7 @@ import logging
 
 from distro_cli.lib.cli import validate_path
 
-logger = logging.getLogger('fboss-image')
+logger = logging.getLogger("fboss-image")
 
 
 def image_upstream_command(args):
@@ -55,36 +55,55 @@ def ssh_command(args):
 def setup_device_commands(cli):
     """Setup the device commands"""
     device = cli.add_command_group(
-        'device',
-        help_text='Manage FBOSS devices',
-        arguments=[('mac', {'help': 'Device MAC address'})]
+        "device",
+        help_text="Manage FBOSS devices",
+        arguments=[("mac", {"help": "Device MAC address"})],
     )
 
-    device.add_command('image-upstream', image_upstream_command,
-                       help_text='Download and set upstream Distro Image to be loaded onto device',
-                       arguments=[])
-
-    device.add_command('image', image_command,
-                       help_text='Set Distro Image file to be loaded onto device',
-                       arguments=[('image_path', {'type': lambda p: validate_path(p, must_exist=True),
-                                                  'help': 'Path to image file'})])
-
-    device.add_command('reprovision', reprovision_command,
-                       help_text='Reprovision device', arguments=[])
+    device.add_command(
+        "image-upstream",
+        image_upstream_command,
+        help_text="Download and set upstream Distro Image to be loaded onto device",
+        arguments=[],
+    )
 
     device.add_command(
-        'update', update_command,
-        help_text='Update specific components on device',
+        "image",
+        image_command,
+        help_text="Set Distro Image file to be loaded onto device",
         arguments=[
-            ('manifest', {
-                'type': lambda p: validate_path(p, must_exist=True),
-                'help': 'Path to manifest JSON file'}),
-            ('components', {
-                'nargs': '+',
-                'help': 'Component names to update'})])
+            (
+                "image_path",
+                {
+                    "type": lambda p: validate_path(p, must_exist=True),
+                    "help": "Path to image file",
+                },
+            )
+        ],
+    )
 
-    device.add_command('getip', getip_command,
-                       help_text='Get device IP address', arguments=[])
+    device.add_command(
+        "reprovision", reprovision_command, help_text="Reprovision device", arguments=[]
+    )
 
-    device.add_command('ssh', ssh_command,
-                       help_text='SSH to device', arguments=[])
+    device.add_command(
+        "update",
+        update_command,
+        help_text="Update specific components on device",
+        arguments=[
+            (
+                "manifest",
+                {
+                    "type": lambda p: validate_path(p, must_exist=True),
+                    "help": "Path to manifest JSON file",
+                },
+            ),
+            ("components", {"nargs": "+", "help": "Component names to update"}),
+        ],
+    )
+
+    device.add_command(
+        "getip", getip_command, help_text="Get device IP address", arguments=[]
+    )
+
+    device.add_command("ssh", ssh_command, help_text="SSH to device", arguments=[])

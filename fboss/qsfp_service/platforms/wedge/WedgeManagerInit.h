@@ -41,6 +41,7 @@ std::pair<std::unique_ptr<WedgeManager>, std::unique_ptr<PortManager>>
 createQsfpManagers();
 
 std::shared_ptr<FbossMacsecHandler> createFbossMacsecHandler(
+    PortManager* portMgr,
     WedgeManager* wedgeMgr);
 
 /**
@@ -76,6 +77,14 @@ std::unique_ptr<WedgeManager> createBspWedgeManager(
 
 std::unique_ptr<WedgeManager> createNh4010WedgeManager(
     const std::string& platformMappingStr);
+
+std::unique_ptr<PortManager> createPortManager(
+    PlatformType platformType,
+    WedgeManager* wedgeManager,
+    std::unique_ptr<PhyManager> phyManager,
+    const std::shared_ptr<const PlatformMapping> platformMapping,
+    const std::shared_ptr<std::unordered_map<TransceiverID, SlotThreadHelper>>
+        threads);
 
 } // namespace fboss
 } // namespace facebook

@@ -27,7 +27,9 @@ class CommandGroup:
         if arguments:
             for arg_name, arg_attrs in arguments:
                 self.parser.add_argument(arg_name, **arg_attrs)
-        self.subparsers = self.parser.add_subparsers(dest=f'{name}_command', required=True)
+        self.subparsers = self.parser.add_subparsers(
+            dest=f"{name}_command", required=True
+        )
 
     def add_command(self, name, func, help_text=None, arguments=None):
         """Add a subcommand to this group."""
@@ -45,17 +47,20 @@ class CLI:
     def __init__(self, description, verbose_flag=True):
         self.parser = argparse.ArgumentParser(
             description=description,
-            formatter_class=argparse.RawDescriptionHelpFormatter
+            formatter_class=argparse.RawDescriptionHelpFormatter,
         )
 
         if verbose_flag:
             self.parser.add_argument(
-                '-v', '--verbose', action='store_true',
-                help='Enable verbose (DEBUG) logging')
+                "-v",
+                "--verbose",
+                action="store_true",
+                help="Enable verbose (DEBUG) logging",
+            )
 
         self.subparsers = self.parser.add_subparsers(
-            dest='command', required=True,
-            help='Command to execute')
+            dest="command", required=True, help="Command to execute"
+        )
 
     def add_command(self, name, func, help_text=None, arguments=None):
         """Add a simple command."""
@@ -74,7 +79,7 @@ class CLI:
         """Parse arguments and execute the command."""
         args = self.parser.parse_args()
 
-        if setup_logging_func and hasattr(args, 'verbose'):
+        if setup_logging_func and hasattr(args, "verbose"):
             setup_logging_func(verbose=args.verbose)
 
         return args.func(args)

@@ -44,13 +44,13 @@ class TestDeviceCommands(unittest.TestCase):
         self.test_mac = "aa:bb:cc:dd:ee:ff"
 
         # Create a temporary manifest file for tests that need it
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             f.write('{"test": "manifest"}')
             self.manifest_path = Path(f.name)
 
         # Create a temporary image file for tests that need it
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.bin', delete=False) as f:
-            f.write('fake image data')
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".bin", delete=False) as f:
+            f.write("fake image data")
             self.image_path = Path(f.name)
 
     def tearDown(self):
@@ -70,19 +70,13 @@ class TestDeviceCommands(unittest.TestCase):
 
     def test_image_upstream_stub(self):
         """Test image-upstream command (stub)"""
-        args = argparse.Namespace(
-            mac=self.test_mac,
-            components=['kernel', 'sai']
-        )
+        args = argparse.Namespace(mac=self.test_mac, components=["kernel", "sai"])
         # Call command - just verify it doesn't crash
         image_upstream_command(args)
 
     def test_image_stub(self):
         """Test image command (stub)"""
-        args = argparse.Namespace(
-            mac=self.test_mac,
-            image_path=str(self.image_path)
-        )
+        args = argparse.Namespace(mac=self.test_mac, image_path=str(self.image_path))
         # Call command - just verify it doesn't crash
         image_command(args)
 
@@ -97,7 +91,7 @@ class TestDeviceCommands(unittest.TestCase):
         args = argparse.Namespace(
             mac=self.test_mac,
             manifest=str(self.manifest_path),
-            components=['kernel', 'sai']
+            components=["kernel", "sai"],
         )
         # Call command - just verify it doesn't crash
         update_command(args)
@@ -115,5 +109,5 @@ class TestDeviceCommands(unittest.TestCase):
         ssh_command(args)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

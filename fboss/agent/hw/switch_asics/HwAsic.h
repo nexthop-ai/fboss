@@ -453,6 +453,15 @@ class HwAsic {
     // pool size given the buffer pool size determination is
     // left to vendor SAI implementation.
     INGRESS_BUFFER_POOL_SIZE_EXCLUDES_HEADROOM,
+    // Set to true if port level buffer configuration is supported.
+    // This is configured via bufer profiles and attached to ports
+    // with SAI_PORT_ATTR_QOS_INGRESS_BUFFER_PROFILE_LIST
+    // and SAI_PORT_ATTR_QOS_EGRESS_BUFFER_PROFILE_LIST.
+    PORT_LEVEL_BUFFER_CONFIGURATION_SUPPORT,
+    // This feature should be true for platforms supporting CPU
+    // side queuing along with CPU ports given not all platforms
+    // are capable of CPU queuing.
+    CPU_QUEUES,
   };
 
   enum class AsicMode {
