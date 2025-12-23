@@ -4,7 +4,7 @@ py_test(
     name = "manifest_test",
     srcs = glob(["**/*.py"]),
     imports = [".."],
-    data = glob(["tests/*.json"]),
+    data = glob(["tests/data/*.json"]),
     main = "tests/manifest_test.py",
     python_version = "PY3",
     srcs_version = "PY3",
@@ -16,7 +16,7 @@ py_test(
     srcs = glob(["**/*.py"]),
     imports = [".."],
     deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
-    data = glob(["tests/*.json"]),
+    data = glob(["tests/data/*.json"]),
     main = "tests/image_builder_test.py",
     python_version = "PY3",
     srcs_version = "PY3",
@@ -28,7 +28,7 @@ py_test(
     srcs = glob(["**/*.py"]),
     imports = [".."],
     deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
-    data = glob(["tests/*.json"]),
+    data = glob(["tests/data/*.json"]),
     main = "tests/build_test.py",
     python_version = "PY3",
     srcs_version = "PY3",
@@ -39,7 +39,7 @@ py_test(
     name = "device_test",
     srcs = glob(["**/*.py"]),
     imports = [".."],
-    data = glob(["tests/*.json"]),
+    data = glob(["tests/data/*.json"]),
     main = "tests/device_test.py",
     python_version = "PY3",
     srcs_version = "PY3",
@@ -70,6 +70,66 @@ py_test(
     size = "small",
 )
 
+py_test(
+    name = "kernel_build_test",
+    srcs = glob(["**/*.py"]),
+    imports = [".."],
+    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+    data = glob(["tests/data/*.json", "tests/data/*.tar.gz"]),
+    main = "tests/kernel_build_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "small",
+)
+
+py_test(
+    name = "artifact_test",
+    srcs = glob(["**/*.py"]),
+    imports = [".."],
+    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+    data = glob(["tests/data/*.json"]),
+    main = "tests/artifact_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "small",
+)
+
+py_test(
+    name = "download_test",
+    srcs = glob(["**/*.py"]),
+    imports = [".."],
+    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+    data = glob(["tests/data/*.json"]),
+    main = "tests/download_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "small",
+)
+
+py_test(
+    name = "kernel_download_test",
+    srcs = glob(["**/*.py"]),
+    imports = [".."],
+    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+    data = glob(["tests/data/*.json", "tests/data/*.tar.gz"]),
+    main = "tests/kernel_download_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "small",
+)
+
+py_test(
+    name = "docker_image_test",
+    srcs = glob(["**/*.py"]),
+    imports = [".."],
+    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+    data = glob(["tests/data/*.json"]),
+    main = "tests/docker_image_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "small",
+)
+
 load("//bazel_lib:python_lint.bzl", "py_lint_test")
 
 
@@ -88,6 +148,11 @@ test_suite(
         ":device_test",
         ":cli_test",
         ":docker_test",
+        ":kernel_build_test",
+        ":artifact_test",
+        ":download_test",
+        ":kernel_download_test",
+        ":docker_image_test",
         ":lint_check",
     ],
 )

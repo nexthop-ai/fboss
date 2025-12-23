@@ -1,0 +1,9 @@
+{
+  "kernel": {
+    "execute": ["touch", "/output/kernel-test.rpms.tar.gz"],
+    "artifact": "kernel-test.rpms.tar.gz"
+  },
+  "distribution_formats": {
+    "usb": "output/test-stub-component.iso"
+  }
+}

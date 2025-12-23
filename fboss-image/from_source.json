@@ -5,6 +5,8 @@
     "onie": "fboss-distro-image_onie.bin"
   },
   "kernel": {
+    "execute": ["fboss-image/kernel/scripts/build_kernel.sh", "6.11.1", "/output"],
+    "artifact": "kernel-6.11.1.rpms.tar.gz"
   },
   "other_dependencies": [
   ],

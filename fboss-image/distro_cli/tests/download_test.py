@@ -19,6 +19,7 @@ import unittest
 from pathlib import Path
 
 from distro_cli.lib.download import HTTP_METADATA_FILENAME, download_artifact
+from distro_cli.tests.test_helpers import override_artifact_store_dir, sandbox_tempdir
 
 
 class TestDownloadArtifact(unittest.TestCase):
@@ -26,14 +27,22 @@ class TestDownloadArtifact(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures."""
-        self.temp_dir = Path(tempfile.mkdtemp())
+        # Use sandbox-safe temporary directory
+        self._tempdir_ctx = sandbox_tempdir("download_test_")
+        self.temp_dir = self._tempdir_ctx.__enter__()
         self.manifest_dir = self.temp_dir / "manifest"
         self.manifest_dir.mkdir()
 
+        # Override artifact store directory for testing
+        self.artifact_store_dir = self.temp_dir / ".artifacts"
+        self._artifact_store_ctx = override_artifact_store_dir(self.artifact_store_dir)
+        self._artifact_store_ctx.__enter__()
+
     def tearDown(self):
         """Clean up test directory."""
-        if self.temp_dir.exists():
-            shutil.rmtree(self.temp_dir)
+        # Exit context managers in reverse order
+        self._artifact_store_ctx.__exit__(None, None, None)
+        self._tempdir_ctx.__exit__(None, None, None)
 
     def test_download_file_url(self):
         """Test downloading from file:// URL."""
@@ -94,10 +103,11 @@ class TestDownloadArtifact(unittest.TestCase):
         """Test that metadata files are created with correct structure."""
         # Create a test metadata file
         meta_file = self.temp_dir / HTTP_METADATA_FILENAME
-        meta_file.write_text(json.dumps({
-            "etag": "test-etag",
-            "last_modified": "Mon, 01 Jan 2024 00:00:00 GMT"
-        }))
+        meta_file.write_text(
+            json.dumps(
+                {"etag": "test-etag", "last_modified": "Mon, 01 Jan 2024 00:00:00 GMT"}
+            )
+        )
 
         # Verify structure
         metadata = json.loads(meta_file.read_text())
@@ -121,6 +131,7 @@ class SimpleHTTPServer:
         self.port = port
         self.server = None
         self.server_thread = None
+        self._ready = threading.Event()
 
     def start(self):
         """Start the HTTP server in a background thread."""
@@ -131,12 +142,22 @@ class SimpleHTTPServer:
             ("127.0.0.1", self.port),
             lambda *args, **kwargs: http.server.SimpleHTTPRequestHandler(
                 *args, directory=str(self.directory), **kwargs
-            )
+            ),
         )
 
-        self.server_thread = threading.Thread(target=self.server.serve_forever, daemon=True)
+        def serve_with_ready_signal():
+            """Serve forever and signal when ready."""
+            self._ready.set()
+            self.server.serve_forever()
+
+        self.server_thread = threading.Thread(
+            target=serve_with_ready_signal, daemon=True
+        )
         self.server_thread.start()
-        time.sleep(0.5)  # Give server time to start
+
+        # Wait for server to be ready (with timeout)
+        if not self._ready.wait(timeout=180):  # 3 minutes max
+            raise RuntimeError("HTTP server failed to start within 3 minutes")
 
     def stop(self):
         """Stop the HTTP server."""
@@ -181,14 +202,22 @@ class TestDownloadHTTP(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures."""
-        self.temp_dir = Path(tempfile.mkdtemp())
+        # Use sandbox-safe temporary directory
+        self._tempdir_ctx = sandbox_tempdir("download_http_test_")
+        self.temp_dir = self._tempdir_ctx.__enter__()
         self.manifest_dir = self.temp_dir / "manifest"
         self.manifest_dir.mkdir()
 
+        # Override artifact store directory for testing
+        self.artifact_store_dir = self.temp_dir / ".artifacts"
+        self._artifact_store_ctx = override_artifact_store_dir(self.artifact_store_dir)
+        self._artifact_store_ctx.__enter__()
+
     def tearDown(self):
         """Clean up test directory."""
-        if self.temp_dir.exists():
-            shutil.rmtree(self.temp_dir)
+        # Exit context managers in reverse order
+        self._artifact_store_ctx.__exit__(None, None, None)
+        self._tempdir_ctx.__exit__(None, None, None)
 
     def test_download_http_url(self):
         """Test downloading from HTTP URL."""

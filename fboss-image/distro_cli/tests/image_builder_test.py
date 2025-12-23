@@ -25,7 +25,7 @@ class TestImageBuilder(unittest.TestCase):
 
     def setUp(self):
         """Use the test manifest"""
-        self.test_dir = Path(__file__).parent
+        self.test_dir = Path(__file__).parent / "data"
         self.manifest_path = self.test_dir / "dev_image.json"
         self.manifest = ImageManifest(self.manifest_path)
         self.builder = ImageBuilder(self.manifest)
@@ -37,9 +37,15 @@ class TestImageBuilder(unittest.TestCase):
 
     @patch("distro_cli.builder.image_builder.run_container")
     @patch("distro_cli.builder.image_builder.build_fboss_builder_image")
-    def test_build_all(self, mock_build_image, mock_run_container):
-        """Test build_all method with mocked container execution"""
-        # Mock successful container execution
+    @patch("distro_cli.builder.component.ComponentBuilder.build")
+    def test_build_all(
+        self, mock_component_build, mock_build_image, mock_run_container
+    ):
+        """Test build_all method with mocked component builds"""
+        # Mock component builds to return fake artifact paths
+        mock_component_build.return_value = Path("/fake/artifact.tar.gz")
+
+        # Mock successful container execution for base image build
         mock_run_container.return_value = 0
 
         # Mock the _move_distro_file method to avoid file operations
@@ -49,43 +55,36 @@ class TestImageBuilder(unittest.TestCase):
         # Verify Docker image build was called
         mock_build_image.assert_called_once()
 
-        # Verify run_container was called multiple times:
-        # - Once for each component with "execute" directive (fboss-platform-stack, sai, fboss-forwarding-stack)
-        # - Once for the base image build script
-        # Total: 4 calls
-        self.assertEqual(mock_run_container.call_count, 4)
+        # Verify component build was called for each component element in manifest
+        # dev_image.json has: kernel (1), other_dependencies (2 elements), fboss-platform-stack (1),
+        # bsps (2 elements), sai (1), fboss-forwarding-stack (1) = 8 total
+        self.assertEqual(mock_component_build.call_count, 8)
 
-        # Verify the last call was for the base image build script
-        last_call = mock_run_container.call_args_list[-1]
-        command = last_call.kwargs["command"]
+        # Verify run_container was called once for the base image build script
+        mock_run_container.assert_called_once()
+        command = mock_run_container.call_args.kwargs["command"]
         self.assertIn(
             "/image_builder/bin/build_image_in_container.sh", " ".join(command)
         )
 
-    @patch("distro_cli.builder.image_builder.run_container")
-    def test_build_components(self, mock_run_container):
-        """Test build_components method with mocked container execution"""
-        # Mock successful container execution
-        mock_run_container.return_value = 0
+    @patch("distro_cli.builder.component.ComponentBuilder.build")
+    def test_build_components(self, mock_component_build):
+        """Test build_components method with mocked component builds"""
+        # Mock component builds to return fake artifact paths
+        mock_component_build.return_value = Path("/fake/artifact.tar.gz")
 
         # Request 'sai' and 'fboss-platform-stack' which both have execute commands
         components = ["sai", "fboss-platform-stack"]
         self.builder.build_components(components)
 
-        # Verify run_container was called for each component with execute command
-        # Both components have execute commands in dev_image.json
-        self.assertEqual(mock_run_container.call_count, 2)
+        # Verify component build was called for each requested component
+        self.assertEqual(mock_component_build.call_count, 2)
 
-        # Verify commands are passed as lists (no shell wrapping)
-        sai_call = mock_run_container.call_args_list[
-            1
-        ]  # sai is second in COMPONENTS order
-        command = sai_call.kwargs["command"]
-        self.assertIsInstance(command, list)
-        self.assertEqual(command[0], "fboss_brcm_sai/build.sh")
+        # Verify artifacts were stored
+        self.assertIn("sai", self.builder.component_artifacts)
+        self.assertIn("fboss-platform-stack", self.builder.component_artifacts)
 
-    @patch("distro_cli.builder.image_builder.run_container")
-    def test_build_component_not_found(self, mock_run_container):
+    def test_build_component_not_found(self):
         """Test building a component that doesn't exist in manifest"""
         with self.assertRaises(ComponentError) as cm:
             self.builder.build_components(["nonexistent_component"])
@@ -94,14 +93,13 @@ class TestImageBuilder(unittest.TestCase):
         self.assertIn("nonexistent_component", str(cm.exception))
         self.assertIn("not found", str(cm.exception))
 
-        # run_container should not be called
-        mock_run_container.assert_not_called()
-
-    @patch("distro_cli.builder.image_builder.run_container")
-    def test_build_component_execution_failure(self, mock_run_container):
+    @patch("distro_cli.builder.component.ComponentBuilder.build")
+    def test_build_component_execution_failure(self, mock_component_build):
         """Test handling of component build failure"""
-        # Mock failed container execution
-        mock_run_container.return_value = 1
+        # Mock failed component build
+        mock_component_build.side_effect = BuildError(
+            "sai build failed with exit code 1"
+        )
 
         with self.assertRaises(BuildError) as cm:
             self.builder.build_components(["sai"])
@@ -110,8 +108,8 @@ class TestImageBuilder(unittest.TestCase):
         self.assertIn("sai", str(cm.exception))
         self.assertIn("exit code 1", str(cm.exception))
 
-        # run_container should have been called once (for sai)
-        mock_run_container.assert_called_once()
+        # Component build should have been called once (for sai)
+        mock_component_build.assert_called_once()
 
 
 if __name__ == "__main__":

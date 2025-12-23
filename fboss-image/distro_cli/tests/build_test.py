@@ -20,9 +20,11 @@ from pathlib import Path
 from unittest.mock import patch
 
 from distro_cli.cmds.build import build_command, setup_build_command
-from distro_cli.lib.docker.image import get_root_dir
-from distro_cli.lib.manifest import ImageManifest
-from distro_cli.tests.test_helpers import ensure_test_docker_image
+from distro_cli.tests.test_helpers import (
+    ensure_test_docker_image,
+    override_artifact_store_dir,
+    sandbox_tempdir,
+)
 
 
 class TestBuildCommand(unittest.TestCase):
@@ -30,7 +32,7 @@ class TestBuildCommand(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures"""
-        self.test_dir = Path(__file__).parent
+        self.test_dir = Path(__file__).parent / "data"
         self.manifest_path = self.test_dir / "dev_image.json"
         ensure_test_docker_image()
 
@@ -39,50 +41,42 @@ class TestBuildCommand(unittest.TestCase):
         self.assertTrue(callable(build_command))
         self.assertTrue(callable(setup_build_command))
 
-    @patch("distro_cli.builder.image_builder.shutil.move")
-    @patch("distro_cli.builder.image_builder.find_artifact_in_dir")
-    @patch("distro_cli.builder.image_builder.build_fboss_builder_image")
-    @patch("distro_cli.builder.image_builder.run_container")
-    def test_build_all_stub(
-        self, mock_run_container, mock_build_image, mock_exists, mock_move
-    ):
-        """Test build command with no components (build all)"""
-        # Mock Docker operations to avoid actual builds
-        mock_build_image.return_value = None
-        mock_run_container.return_value = 0
-        mock_exists.return_value = Path("/fake/output.iso")
-        mock_move.return_value = None
+    @patch("distro_cli.builder.image_builder.get_root_dir")
+    def test_build_components(self, mock_get_root_dir):
+        """Test build command with specific components using stub manifest.
 
-        # Create mock args object
-        args = argparse.Namespace(manifest=str(self.manifest_path), components=[])
-        build_command(args)
+        This test uses a temporary directory as root_dir to avoid writing to
+        the real workspace (which is read-only in sandboxed test environments).
+        """
+        with sandbox_tempdir("build_test_root_") as temp_root, sandbox_tempdir(
+            "build_test_artifacts_"
+        ) as temp_artifacts:
+            # Override get_root_dir to return temp directory
+            mock_get_root_dir.return_value = temp_root
 
-        # Verify Docker image build was called
-        mock_build_image.assert_called_once()
-        # Verify container was run
-        self.assertTrue(mock_run_container.called)
+            with override_artifact_store_dir(temp_artifacts):
+                # Copy test manifest to temp root (so paths resolve correctly)
+                manifest_path = self.test_dir / "test-stub-component.json"
+                args = argparse.Namespace(
+                    manifest=str(manifest_path), components=["kernel"]
+                )
 
-    def test_build_components(self):
-        """Test build command with specific components"""
-        manifest_path = self.test_dir / "echo.json"
-        args = argparse.Namespace(manifest=str(manifest_path), components=["kernel"])
+                build_command(args)
 
-        # Load manifest to extract expected output file from execute command
-        manifest = ImageManifest(manifest_path)
-        execute_cmd = manifest.get_component("kernel")["execute"]
-        # Execute command is now a list like ["sh", "-c", "echo 'test' > /image_builder/kernel-component.output"]
-        # Extract output filename from the shell command (last element of the list)
-        shell_cmd = execute_cmd[-1]  # Get the actual command string
-        output_file = shell_cmd.split(">")[1].strip().split()[0].split("/")[-1]
+                # Verify the artifact was created in the artifact store
+                self.assertTrue(
+                    temp_artifacts.exists(),
+                    f"Artifacts directory not found: {temp_artifacts}",
+                )
 
-        build_command(args)
-
-        # Verify the output file was created
-        root_dir = get_root_dir()
-        output_path = root_dir / "fboss-image" / "image_builder" / output_file
-        self.assertTrue(
-            output_path.exists(), f"Expected output file not found: {output_path}"
-        )
+                # Find the artifact in the store
+                matching_files = list(
+                    temp_artifacts.glob("*/data/kernel-test.rpms.tar.gz")
+                )
+                self.assertTrue(
+                    len(matching_files) > 0,
+                    f"Expected artifact file not found in artifact store: {temp_artifacts}",
+                )
 
 
 if __name__ == "__main__":

@@ -1,9 +1,0 @@
-{
-  "distribution_formats": {
-    "onie": "FBOSS-k6.4.3.bin",
-    "usb": "FBOSS-k6.4.3.iso"
-  },
-  "kernel": {
-    "execute": ["sh", "-c", "echo 'test output' > /image_builder/kernel-component.output"]
-  }
-}

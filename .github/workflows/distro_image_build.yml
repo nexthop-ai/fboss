@@ -18,8 +18,6 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -46,3 +44,5 @@ jobs:
           sudo rm -rf fboss-image/image_builder/output || true
           sudo rm -rf fboss-image/image_builder/logs || true
           sudo rm -rf fboss-image/image_builder/templates/centos-09.0/root || true
+          sudo rm -rf fboss-image/kernel/dist || true
+          sudo rm -rf fboss-image/.cache || true
