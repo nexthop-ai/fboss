@@ -182,12 +182,26 @@ TEST_F(CmdShowHostTestFixture, printOutput) {
 
   std::string output = ss.str();
   std::string expectOutput =
+<<<<<<< HEAD
       " Port      ID   Queue ID  Hostname                     Admin State  Link State  Speed  FEC       InErr  InDiscard  OutErr  OutDiscard \n"
       "---------------------------------------------------------------------------------------------------------------------------------------------------\n"
 #ifdef IS_OSS
       " eth4/3/1  1    Olympic   edge-star-mini6-shv-01-bru2  Enabled      Down        200G   RS528     10     43         2       98         \n"
       " eth5/5/1  106  22        edge-star-mini6-shv-01-sjc6  Disabled     Up          549G   RS544_2N  56     72         12      9          \n\n";
 #else
+||||||| 2e3f5259e0
+      " Port      ID   Queue ID  Hostname                       Admin State  Link State  Speed  FEC       InErr  InDiscard  OutErr  OutDiscard \n"
+      "-----------------------------------------------------------------------------------------------------------------------------------------------------\n"
+=======
+#ifdef IS_OSS
+      " Port      ID   Queue ID  Hostname                     Admin State  Link State  Speed  FEC       InErr  InDiscard  OutErr  OutDiscard \n"
+      "---------------------------------------------------------------------------------------------------------------------------------------------------\n"
+      " eth4/3/1  1    Olympic   edge-star-mini6-shv-01-bru2  Enabled      Down        200G   RS528     10     43         2       98         \n"
+      " eth5/5/1  106  22        edge-star-mini6-shv-01-sjc6  Disabled     Up          549G   RS544_2N  56     72         12      9          \n\n";
+#else
+      " Port      ID   Queue ID  Hostname                       Admin State  Link State  Speed  FEC       InErr  InDiscard  OutErr  OutDiscard \n"
+      "-----------------------------------------------------------------------------------------------------------------------------------------------------\n"
+>>>>>>> 00fa99208dab6ae3f08e0256ec6ef8d0b93e0564
       " eth4/3/1  1    Olympic   eth3-6-1.fsw005.p031.f01.pnb6  Enabled      Down        200G   RS528     10     43         2       98         \n"
       " eth5/5/1  106  22        eth3-6-1.fsw005.p045.f01.pnb6  Disabled     Up          549G   RS544_2N  56     72         12      9          \n\n";
 #endif
