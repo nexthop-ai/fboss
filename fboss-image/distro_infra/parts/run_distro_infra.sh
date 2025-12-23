@@ -53,8 +53,7 @@ v4_ip=$(ip -4 addr show dev $INTERFACE | awk -F '[[:space:]/]+' '/inet/{print $3
 v6_ip=$(ip -6 addr show dev $INTERFACE scope global | awk -F '[[:space:]/]+' '/inet6/{print $3; exit}')
 echo "Listening on ${INTERFACE} - ${v4_ip} & ${v6_ip}"
 
-mkdir -p /distro_infra/persistent/cache
-chmod 777 /distro_infra/persistent/cache
+mkdir -m 777 /distro_infra/persistent/cache 2>/dev/null
 cp /distro_infra/ipxev4.efi /distro_infra/persistent/cache
 cp /distro_infra/ipxev6.efi /distro_infra/persistent/cache
 cp /distro_infra/autoexec.ipxe /distro_infra/persistent/cache
@@ -96,8 +95,7 @@ while read -rp "Enter MAC address (blank to exit): " mac; do
   dashmac=$(echo $mac | tr '[:upper:]:' '[:lower:]-')
   colonmac=$(echo $dashmac | tr '-' ':')
 
-  mkdir -p /distro_infra/persistent/${dashmac}
-  chmod 777 /distro_infra/persistent/${dashmac}
+  mkdir -m 777 /distro_infra/persistent/${dashmac} 2>/dev/null
   ln -f /distro_infra/persistent/cache/ipxev4.efi /distro_infra/persistent/${dashmac}/ipxev4.efi
   ln -f /distro_infra/persistent/cache/ipxev6.efi /distro_infra/persistent/${dashmac}/ipxev6.efi
   ln -f /distro_infra/persistent/cache/autoexec.ipxe /distro_infra/persistent/${dashmac}/autoexec.ipxe

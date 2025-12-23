@@ -6,21 +6,24 @@
 set -euo pipefail
 
 action=$1
-if [[ "$action" != "tftp" ]]; then
-    exit 0
+if [[ $action != "tftp" ]]; then
+  exit 0
 fi
 
+# Document the script arguments even though we ignore some of them
+#shellcheck disable=SC2034
 filesize=$2
+#shellcheck disable=SC2034
 address=$3
 filepath=$4
 
 case $filepath in
-    /distro_infra/persistent/*/pxeboot_complete)
-        mac=$(echo $filepath | cut -d/ -f4)
-        rm -rf /distro_infra/dnsmasq_conf.d/$mac
-        killall -HUP dnsmasq
-        echo "$mac PXE booted, disabling future PXE boot provisioning"
-        ;;
+/distro_infra/persistent/*/pxeboot_complete)
+  mac=$(echo $filepath | cut -d/ -f4)
+  rm -rf /distro_infra/dnsmasq_conf.d/$mac
+  killall -HUP dnsmasq
+  echo "$mac PXE booted, disabling future PXE boot provisioning"
+  ;;
 esac
 
 exit 0
