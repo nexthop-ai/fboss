@@ -11,8 +11,9 @@ import shutil
 import subprocess
 import sys
 import time
+import xml.etree.ElementTree as ET
 from argparse import ArgumentParser
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from fboss_agent_utils import (
@@ -804,69 +805,108 @@ class TestRunner(abc.ABC):
 
         print(f"\nTest output stored at: {output_csv}")
 
-    def _write_results_to_xml(self, test_results):
-        output_xml = self.TESTRESULT_FILE
+    def _parse_test_result_xml(
+        self, test_result_xml: Optional[str]
+    ) -> Optional[ET.Element]:
+        """Safely parse a test result XML string"""
+        if not test_result_xml:
+            return None
+        try:
+            return ET.fromstring(test_result_xml)
+        except ET.ParseError as e:
+            print(f"Warning: Failed to parse test result XML: {e}")
+            return None
 
-        output = ""
+    def _extract_timestamp_from_results(self, test_results: List[Optional[str]]) -> str:
+        """Extract the first valid timestamp from test results"""
+        for result in test_results:
+            root = self._parse_test_result_xml(result)
+            if root is None:
+                continue
+
+            # Try to find timestamp in testsuites or testsuite element
+            timestamp = root.get("timestamp")
+            if timestamp:
+                return timestamp
+
+            # Check nested testsuite elements
+            for testsuite in root.iter("testsuite"):
+                timestamp = testsuite.get("timestamp")
+                if timestamp:
+                    return timestamp
+
+        # Fallback to current time if no timestamp found
+        print(
+            "Warning: No timestamp found in test results, using current UTC time as fallback"
+        )
+        return datetime.now(timezone.utc).isoformat()
+
+    def _aggregate_testsuite_info(self, test_results: List[Optional[str]]) -> dict:
+        """Aggregate test information from all test results using XML parsing"""
         info = {
             "tests": 0,
             "failures": 0,
             "skipped": 0,
             "disabled": 0,
             "errors": 0,
-            "time": 0,
-            "timestamp": "",
+            "time": 0.0,
+            "timestamp": self._extract_timestamp_from_results(test_results),
             "name": "AllTests",
         }
-        info["timestamp"] = test_results[0].split('timestamp="')[1].split('"')[0]
-        output += '<?xml version="1.0" encoding="UTF-8"?>'
-        output += "\n"
 
-        for t in test_results:
-            if not t:
+        for result in test_results:
+            root = self._parse_test_result_xml(result)
+            if root is None:
                 continue
-            lines = t.split("\n")
-            for line in lines:
-                print(line)
-                if line.startswith("  <testsuite "):
-                    info["tests"] += int(line.split('tests="')[1].split('"')[0])
-                    if "skipped" in line:
-                        info["skipped"] += int(line.split('skipped="')[1].split('"')[0])
-                    info["failures"] += int(line.split('failures="')[1].split('"')[0])
-                    info["disabled"] += int(line.split('disabled="')[1].split('"')[0])
-                    info["errors"] += int(line.split('errors="')[1].split('"')[0])
-                    info["time"] += float(line.split('time="')[1].split('"')[0])
 
-        output += f"<testsuites>"
-        output += "\n"
-        output += f'  <testsuite tests="{info["tests"]}" failures="{info["failures"]}" '
-        output += f'disabled="{info["disabled"]}" errors="{info["errors"]}" skipped="{info["skipped"]}" time="{info["time"]}" '
-        output += f'timestamp="{info["timestamp"]}" name="{info["name"]}">'
-        output += "\n"
-        output += "\n"
+            # Find all testsuite elements and aggregate their attributes
+            for testsuite in root.iter("testsuite"):
+                info["tests"] += int(testsuite.get("tests", 0))
+                info["failures"] += int(testsuite.get("failures", 0))
+                info["skipped"] += int(testsuite.get("skipped", 0))
+                info["disabled"] += int(testsuite.get("disabled", 0))
+                info["errors"] += int(testsuite.get("errors", 0))
+                info["time"] += float(testsuite.get("time", 0.0))
 
-        for t in test_results:
-            if not t:
+        return info
+
+    def _write_results_to_xml(self, test_results: List[Optional[str]]) -> None:
+        """Write aggregated test results to XML file"""
+        output_xml = self.TESTRESULT_FILE
+
+        # Aggregate test information using proper XML parsing
+        info = self._aggregate_testsuite_info(test_results)
+
+        # Build XML tree programmatically
+        testsuites = ET.Element("testsuites")
+        testsuite = ET.SubElement(
+            testsuites,
+            "testsuite",
+            tests=str(info["tests"]),
+            failures=str(info["failures"]),
+            disabled=str(info["disabled"]),
+            errors=str(info["errors"]),
+            skipped=str(info["skipped"]),
+            time=str(info["time"]),
+            timestamp=info["timestamp"],
+            name=info["name"],
+        )
+
+        # Add testcase elements from all results
+        for result in test_results:
+            root = self._parse_test_result_xml(result)
+            if root is None:
                 continue
-            lines = t.split("\n")
-            for line in lines:
-                if (
-                    line.startswith("<?xml")
-                    or line.startswith("<testsuites ")
-                    or line.startswith("</testsuites>")
-                    or line.strip().startswith("<testsuite ")
-                    or line.strip().startswith("</testsuite>")
-                ):
-                    continue
-                output += line + "\n"
+            for testcase in root.iter("testcase"):
+                testsuite.append(testcase)
 
-        output += "  </testsuite>"
-        output += "\n"
-        output += "</testsuites>"
-        output += "\n"
+        # Pretty print with indentation
+        ET.indent(testsuites)
 
+        # Write to file with XML declaration
         with open(output_xml, "w") as f:
-            f.write(output)
+            f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+            f.write(ET.tostring(testsuites, encoding="unicode"))
 
         print(f"\nTest result xml stored at: {output_xml}")
 
