@@ -12,12 +12,6 @@
 #include "fboss/cli/fboss2/commands/show/cpuport/CmdShowCpuPort.h"
 #include "fboss/cli/fboss2/commands/show/cpuport/gen-cpp2/model_types.h"
 #include "fboss/cli/fboss2/test/CmdHandlerTestBase.h"
-<<<<<<< HEAD
-#include <thrift/lib/cpp2/reflection/testing.h>
-||||||| 2e3f5259e0
-#include "nettools/common/TestUtils.h"
-=======
->>>>>>> 00fa99208dab6ae3f08e0256ec6ef8d0b93e0564
 
 using namespace ::testing;
 

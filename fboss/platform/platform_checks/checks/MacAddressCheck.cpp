@@ -36,32 +36,14 @@ CheckResult MacAddressCheck::run() {
       return makeError("No EEPROM MAC address found");
     }
 
-<<<<<<< HEAD
-    if (ifaceMac != eepromMac) {
-      std::string errorMsg = "MAC address mismatch: " + interfaceName_ + "=" +
-          ifaceMac.toString() + " EEPROM=" + eepromMac.toString();
-      std::string remediationMsg = "RMA device to correct MAC address";
-      return makeProblem(
-          errorMsg, RemediationType::RMA_REQUIRED, remediationMsg);
-||||||| 2e3f5259e0
-    if (eth0Mac != eepromMac) {
-      std::string errorMsg =
-          "MAC address mismatch: eth0=" + eth0Mac.toString() +
-          " EEPROM=" + eepromMac.toString();
-      std::string remediationMsg = "RMA device to correct MAC address";
-      return makeProblem(
-          errorMsg, RemediationType::RMA_REQUIRED, remediationMsg);
-=======
     for (const auto& [eepromName, eepromMac] : eepromMacList) {
-      if (eth0Mac != eepromMac) {
-        std::string errorMsg =
-            "MAC address mismatch: eth0=" + eth0Mac.toString() + " " +
-            eepromName + "=" + eepromMac.toString();
+      if (ifaceMac != eepromMac) {
+        std::string errorMsg = "MAC address mismatch: " + interfaceName_ + "=" +
+            ifaceMac.toString() + " EEPROM=" + eepromMac.toString();
         std::string remediationMsg = "RMA device to correct MAC address";
         return makeProblem(
             errorMsg, RemediationType::RMA_REQUIRED, remediationMsg);
       }
->>>>>>> 00fa99208dab6ae3f08e0256ec6ef8d0b93e0564
     }
   } catch (const std::exception& ex) {
     return makeError("Unexpected error: " + std::string(ex.what()));
