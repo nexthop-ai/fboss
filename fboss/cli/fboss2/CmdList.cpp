@@ -20,8 +20,6 @@
 #include "fboss/cli/fboss2/commands/clear/interface/counters/phy/CmdClearInterfaceCountersPhy.h"
 #include "fboss/cli/fboss2/commands/clear/interface/prbs/CmdClearInterfacePrbs.h"
 #include "fboss/cli/fboss2/commands/clear/interface/prbs/stats/CmdClearInterfacePrbsStats.h"
-#include "fboss/cli/fboss2/commands/config/CmdConfigAppliedInfo.h"
-#include "fboss/cli/fboss2/commands/config/CmdConfigReload.h"
 #include "fboss/cli/fboss2/commands/get/pcap/CmdGetPcap.h"
 #include "fboss/cli/fboss2/commands/help/CmdHelp.h"
 #include "fboss/cli/fboss2/commands/set/interface/CmdSetInterface.h"
@@ -525,18 +523,6 @@ const CommandTree& kCommandTree() {
          "Show Product Detail Information",
          commandHandler<CmdShowProductDetails>,
          argTypeHandler<CmdShowProductDetailsTraits>}}},
-
-      {"config",
-       "applied-info",
-       "Show config applied information",
-       commandHandler<CmdConfigAppliedInfo>,
-       argTypeHandler<CmdConfigAppliedInfoTraits>},
-
-      {"config",
-       "reload",
-       "Reload agent configuration",
-       commandHandler<CmdConfigReload>,
-       argTypeHandler<CmdConfigReloadTraits>},
   };
   sort(root.begin(), root.end());
   return root;
