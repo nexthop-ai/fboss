@@ -17,7 +17,6 @@ When build command is fully implemented, these tests should be expanded.
 import argparse
 import unittest
 from pathlib import Path
-from unittest.mock import patch
 
 from distro_cli.cmds.build import build_command, setup_build_command
 from distro_cli.tests.test_helpers import (
@@ -41,42 +40,31 @@ class TestBuildCommand(unittest.TestCase):
         self.assertTrue(callable(build_command))
         self.assertTrue(callable(setup_build_command))
 
-    @patch("distro_cli.builder.image_builder.get_root_dir")
-    def test_build_components(self, mock_get_root_dir):
-        """Test build command with specific components using stub manifest.
-
-        This test uses a temporary directory as root_dir to avoid writing to
-        the real workspace (which is read-only in sandboxed test environments).
-        """
-        with sandbox_tempdir("build_test_root_") as temp_root, sandbox_tempdir(
+    def test_build_components(self):
+        """Test build command with specific components using stub manifest."""
+        with sandbox_tempdir(
             "build_test_artifacts_"
-        ) as temp_artifacts:
-            # Override get_root_dir to return temp directory
-            mock_get_root_dir.return_value = temp_root
+        ) as temp_artifacts, override_artifact_store_dir(temp_artifacts):
+            manifest_path = self.test_dir / "test-stub-component.json"
 
-            with override_artifact_store_dir(temp_artifacts):
-                # Copy test manifest to temp root (so paths resolve correctly)
-                manifest_path = self.test_dir / "test-stub-component.json"
-                args = argparse.Namespace(
-                    manifest=str(manifest_path), components=["kernel"]
-                )
+            args = argparse.Namespace(
+                manifest=str(manifest_path), components=["kernel"]
+            )
 
-                build_command(args)
+            build_command(args)
 
-                # Verify the artifact was created in the artifact store
-                self.assertTrue(
-                    temp_artifacts.exists(),
-                    f"Artifacts directory not found: {temp_artifacts}",
-                )
+            # Verify the artifact was created in the artifact store
+            self.assertTrue(
+                temp_artifacts.exists(),
+                f"Artifacts directory not found: {temp_artifacts}",
+            )
 
-                # Find the artifact in the store
-                matching_files = list(
-                    temp_artifacts.glob("*/data/kernel-test.rpms.tar.gz")
-                )
-                self.assertTrue(
-                    len(matching_files) > 0,
-                    f"Expected artifact file not found in artifact store: {temp_artifacts}",
-                )
+            # Find the artifact in the store
+            matching_files = list(temp_artifacts.glob("*/data/kernel-test.rpms.tar.gz"))
+            self.assertTrue(
+                len(matching_files) > 0,
+                f"Expected artifact file not found in artifact store: {temp_artifacts}",
+            )
 
 
 if __name__ == "__main__":

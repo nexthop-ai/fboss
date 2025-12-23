@@ -11,11 +11,14 @@
 Unit tests for ImageBuilder class
 """
 
+import shutil
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
 from distro_cli.builder.image_builder import ImageBuilder
+from distro_cli.lib.artifact import ArtifactStore
 from distro_cli.lib.exceptions import BuildError, ComponentError
 from distro_cli.lib.manifest import ImageManifest
 
@@ -28,7 +31,22 @@ class TestImageBuilder(unittest.TestCase):
         self.test_dir = Path(__file__).parent / "data"
         self.manifest_path = self.test_dir / "dev_image.json"
         self.manifest = ImageManifest(self.manifest_path)
+
+        # Override ARTIFACT_STORE_DIR to use temp directory for Bazel sandbox compatibility
+        self.temp_dir = Path(tempfile.mkdtemp())
+        self.original_store_dir = ArtifactStore.ARTIFACT_STORE_DIR
+        ArtifactStore.ARTIFACT_STORE_DIR = self.temp_dir
+
         self.builder = ImageBuilder(self.manifest)
+
+    def tearDown(self):
+        """Clean up test fixtures"""
+        # Restore original ARTIFACT_STORE_DIR
+        ArtifactStore.ARTIFACT_STORE_DIR = self.original_store_dir
+
+        # Clean up temp directory
+        if self.temp_dir.exists():
+            shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_builder_initialization(self):
         """Test that builder initializes correctly"""
@@ -74,13 +92,19 @@ class TestImageBuilder(unittest.TestCase):
         mock_component_build.return_value = Path("/fake/artifact.tar.gz")
 
         # Request 'sai' and 'fboss-platform-stack' which both have execute commands
+        # Note: 'sai' depends on 'kernel', so kernel will be built first
+        # 'fboss-forwarding-stack' depends on 'sai', so sai will be built first
         components = ["sai", "fboss-platform-stack"]
         self.builder.build_components(components)
 
-        # Verify component build was called for each requested component
-        self.assertEqual(mock_component_build.call_count, 2)
+        # Verify component build was called for:
+        # 1. kernel (dependency of sai)
+        # 2. sai (requested)
+        # 3. fboss-platform-stack (requested)
+        self.assertEqual(mock_component_build.call_count, 3)
 
         # Verify artifacts were stored
+        self.assertIn("kernel", self.builder.component_artifacts)  # Built as dependency
         self.assertIn("sai", self.builder.component_artifacts)
         self.assertIn("fboss-platform-stack", self.builder.component_artifacts)
 

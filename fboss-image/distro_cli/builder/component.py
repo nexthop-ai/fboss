@@ -40,6 +40,7 @@ class ComponentBuilder:
         root_dir: Path | None = None,
         build_artifact_subdir: str | None = None,
         artifact_pattern: str | None = None,
+        dependency_artifacts: dict[str, Path] | None = None,
     ):
         """Initialize the component builder.
 
@@ -55,6 +56,7 @@ class ComponentBuilder:
                          If None, component cannot use execute mode
             artifact_pattern: Glob pattern for finding build artifacts (e.g., "kernel-*.rpms.tar.gz")
                              If None, component cannot use execute mode
+            dependency_artifacts: Optional dict mapping dependency names to their artifact paths
         """
         self.component_name = component_name
         self.component_data = component_data
@@ -63,6 +65,7 @@ class ComponentBuilder:
         self.root_dir = root_dir
         self.build_artifact_subdir = build_artifact_subdir
         self.artifact_pattern = artifact_pattern
+        self.dependency_artifacts = dependency_artifacts or {}
 
     def build(self) -> Path:
         """Build or download the component.
@@ -232,6 +235,18 @@ class ComponentBuilder:
             dist_dir: Path("/output"),
         }
 
+        # Mount dependency artifacts into the container
+        # Each dependency is mounted at /dependencies/{dep_name}/
+        # The build_entrypoint.py will handle extraction and RPM installation
+        dependency_install_paths = {}
+        for dep_name, dep_artifact in self.dependency_artifacts.items():
+            dep_mount_point = Path(f"/dependencies/{dep_name}")
+            volumes[dep_artifact] = dep_mount_point
+            dependency_install_paths[dep_name] = dep_mount_point
+            logger.info(
+                f"Mounting dependency '{dep_name}' at {dep_mount_point}: {dep_artifact}"
+            )
+
         # Working directory is always /workspace (root)
         # Execute command paths are relative to /workspace
         working_dir = "/workspace"
@@ -247,6 +262,9 @@ class ComponentBuilder:
             component_name=self.component_name,
             privileged=False,
             working_dir=working_dir,
+            dependency_install_paths=(
+                dependency_install_paths if dependency_install_paths else None
+            ),
         )
 
         return find_artifact_in_dir(

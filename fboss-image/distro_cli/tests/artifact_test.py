@@ -23,11 +23,15 @@ class TestArtifactStore(unittest.TestCase):
         """Set up test fixtures."""
         self.temp_dir = Path(tempfile.mkdtemp())
         # Override class attribute for testing
+        self.original_store_dir = ArtifactStore.ARTIFACT_STORE_DIR
         ArtifactStore.ARTIFACT_STORE_DIR = self.temp_dir / "store"
         self.store = ArtifactStore()
 
     def tearDown(self):
         """Clean up test directory."""
+        # Restore original ARTIFACT_STORE_DIR
+        ArtifactStore.ARTIFACT_STORE_DIR = self.original_store_dir
+
         if self.temp_dir.exists():
             shutil.rmtree(self.temp_dir)
 
@@ -50,7 +54,9 @@ class TestArtifactStore(unittest.TestCase):
         meta_file = Path(self.temp_dir) / "meta.json"
         meta_file.write_text('{"etag": "abc123"}')
 
-        stored_data, stored_meta = self.store.store("test-key", [data_file], [meta_file])
+        stored_data, stored_meta = self.store.store(
+            "test-key", [data_file], [meta_file]
+        )
 
         self.assertEqual(len(stored_data), 1)
         self.assertEqual(len(stored_meta), 1)

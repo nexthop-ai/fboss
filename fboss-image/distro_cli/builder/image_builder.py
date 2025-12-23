@@ -64,16 +64,17 @@ def _get_component_directory(component_name: str, script_path: str) -> str:
 class ImageBuilder:
     """Handles building FBOSS images from manifests."""
 
-    # Component list - build order based on dependencies
-    # TODO: Convert to DAG for parallel builds and easier extensibility
-    COMPONENTS: ClassVar[list[str]] = [
-        "kernel",
-        "other_dependencies",
-        "fboss-platform-stack",
-        "bsps",
-        "sai",
-        "fboss-forwarding-stack",
-    ]
+    # Component dependencies - defines build order and dependencies
+    # Format: {component: [list of dependencies]}
+    # The order of keys defines the build order (dependencies first)
+    COMPONENTS: ClassVar[dict[str, list[str]]] = {
+        "kernel": [],
+        "other_dependencies": [],
+        "fboss-platform-stack": [],
+        "bsps": ["kernel"],  # Each BSP needs kernel headers/modules
+        "sai": ["kernel"],  # SAI needs kernel headers/RPMs
+        "fboss-forwarding-stack": ["sai"],  # Forwarding stack needs SAI library
+    }
 
     def __init__(self, manifest):
         self.manifest = manifest
@@ -85,9 +86,12 @@ class ImageBuilder:
         self.image_builder_dir = root_dir / "fboss-image" / "image_builder"
 
     def _create_component_builder(
-        self, component_name: str, component_data: dict
+        self,
+        component_name: str,
+        component_data: dict,
+        dependency_artifacts: dict[str, Path] | None = None,
     ) -> ComponentBuilder:
-        """Create a ComponentBuilder for the given component.
+        """Create a ComponentBuilder for the given component using conventions.
 
         Build artifacts (.build and dist directories) are created at the component
         root directory if known, otherwise beside the component's build script.
@@ -95,6 +99,7 @@ class ImageBuilder:
         Args:
             component_name: Name of the component (from JSON key)
             component_data: Component data dict from manifest
+            dependency_artifacts: Dictionary mapping dependency names to their artifact paths
 
         Returns:
             ComponentBuilder instance configured for the component
@@ -102,9 +107,7 @@ class ImageBuilder:
         root_dir = get_root_dir()
 
         # For array elements, extract the base name
-        base_name = (
-            component_name.split("[")[0] if "[" in component_name else component_name
-        )
+        base_name = component_name.split("[")[0]
 
         # Derive build_artifact_subdir from the execute directive path
         build_artifact_subdir = None
@@ -128,6 +131,7 @@ class ImageBuilder:
             root_dir=root_dir,
             build_artifact_subdir=build_artifact_subdir,
             artifact_pattern=artifact_pattern,
+            dependency_artifacts=dependency_artifacts or {},
         )
 
     def build_all(self):
@@ -209,6 +213,58 @@ class ImageBuilder:
 
         logger.info("Finished base OS image build")
 
+    def _get_dependency_artifacts(self, component: str) -> dict[str, Path]:
+        """Get artifacts for all dependencies of a component.
+
+        For array elements like 'bsps[0]', extracts base name 'bsps' to look up dependencies.
+
+        Args:
+            component: Component name (e.g., 'kernel' or 'bsps[0]')
+
+        Returns:
+            Dictionary mapping dependency names to their artifact paths
+        """
+        # Extract base component name for array elements (e.g., 'bsps[0]' -> 'bsps')
+        base_component = component.split("[")[0]
+        dependencies = self.COMPONENTS.get(base_component, [])
+        return {
+            dep: self.component_artifacts[dep]
+            for dep in dependencies
+            if dep in self.component_artifacts
+        }
+
+    def _ensure_dependencies_built(self, component: str):
+        """Ensure all dependencies for a component are built.
+
+        For array elements like 'bsps[0]', extracts base name 'bsps' to look up dependencies.
+
+        Args:
+            component: Component name (e.g., 'kernel' or 'bsps[0]')
+
+        Raises:
+            ComponentError: If a dependency cannot be built
+        """
+        # Extract base component name for array elements (e.g., 'bsps[0]' -> 'bsps')
+        base_component = component.split("[")[0]
+        dependencies = self.COMPONENTS.get(base_component, [])
+
+        for dep in dependencies:
+            # Skip if dependency is already built
+            if dep in self.component_artifacts:
+                logger.debug(f"Dependency '{dep}' already built for '{component}'")
+                continue
+
+            # Check if dependency exists in manifest
+            if not self.manifest.has_component(dep):
+                raise ComponentError(
+                    f"Component '{component}' depends on '{dep}', "
+                    f"but '{dep}' is not defined in the manifest"
+                )
+
+            # Build the dependency
+            logger.info(f"Building dependency '{dep}' for '{component}'")
+            self._build_component(dep)
+
     def _build_component(self, component: str):
         """Build a specific component by delegating to component builder."""
         logger.info(f"Building: {component}")
@@ -222,9 +278,15 @@ class ImageBuilder:
                 element_name = f"{component}[{idx}]"
                 logger.info(f"Building: {element_name}")
 
+                # Ensure dependencies are built before building this array element
+                self._ensure_dependencies_built(element_name)
+
+                # Get dependency artifacts to pass to the builder
+                dependency_artifacts = self._get_dependency_artifacts(element_name)
+
                 # Create a ComponentBuilder for this array element
                 component_builder = self._create_component_builder(
-                    element_name, element_data
+                    element_name, element_data, dependency_artifacts
                 )
                 artifact_path = component_builder.build()
                 if artifact_path:
@@ -235,7 +297,15 @@ class ImageBuilder:
             )
             return
 
+        # Ensure dependencies are built before building this component
+        self._ensure_dependencies_built(component)
+
+        # Get dependency artifacts to pass to the builder
+        dependency_artifacts = self._get_dependency_artifacts(component)
+
         # Create the component builder and build it
-        component_builder = self._create_component_builder(component, component_data)
+        component_builder = self._create_component_builder(
+            component, component_data, dependency_artifacts
+        )
         artifact_path = component_builder.build()
         self.component_artifacts[component] = artifact_path

@@ -25,6 +25,7 @@ def execute_build_in_container(
     component_name: str,
     privileged: bool = False,
     working_dir: str | None = None,
+    dependency_install_paths: dict[str, Path] | None = None,
 ) -> None:
     """Execute build command in Docker container.
 
@@ -35,6 +36,9 @@ def execute_build_in_container(
         component_name: Component name
         privileged: Run in privileged mode
         working_dir: Working directory in container
+        dependency_install_paths: Dict mapping dependency names to their container mount paths
+                                  (e.g., {'kernel': Path('/dependencies/kernel')})
+                                  RPMs from these paths will be installed before running the build
 
     Raises:
         BuildError: If build fails
@@ -44,12 +48,25 @@ def execute_build_in_container(
     # Ensure fboss_builder image is built
     build_fboss_builder_image()
 
-    logger.info(f"Running in container: {' '.join(command)}")
+    # Use build_entrypoint.py to install dependencies first and execute the actual build command
+    entrypoint_path = "/workspace/fboss-image/distro_cli/lib/build_entrypoint.py"
+
+    if dependency_install_paths:
+        logger.info(
+            f"Build entry point will process {len(dependency_install_paths)} dependencies"
+        )
+
+    # Build the command: python3 /workspace/.../build_entrypoint.py <build_command>
+    # The entry point will look for dependencies in /dependencies and install them.
+    # Only list-form commands are supported
+    cmd_list = ["python3", entrypoint_path, *command]
+
+    logger.info(f"Running in container: {' '.join(cmd_list)}")
 
     try:
         exit_code = run_container(
             image=image_name,
-            command=command,
+            command=cmd_list,
             volumes=volumes,
             privileged=privileged,
             working_dir=working_dir,
