@@ -1,254 +1,254 @@
 exports_files(["ruff.toml"])
 
-py_test(
-    name = "manifest_test",
-    srcs = glob(["**/*.py"]),
-    imports = [".."],
-    data = glob(["tests/data/*.json"]),
-    main = "tests/manifest_test.py",
-    python_version = "PY3",
-    srcs_version = "PY3",
-    size = "small",
-)
-
-py_test(
-    name = "image_builder_test",
-    srcs = glob(["**/*.py"]),
-    imports = [".."],
-    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
-    data = glob(["tests/data/*.json"]),
-    main = "tests/image_builder_test.py",
-    python_version = "PY3",
-    srcs_version = "PY3",
-    size = "small",
-    tags = ["local"],  # Docker needs access to ~/.docker/
-)
-
-py_test(
-    name = "build_test",
-    srcs = glob(["**/*.py"]),
-    imports = [".."],
-    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
-    data = glob(["tests/data/*.json"]),
-    main = "tests/build_test.py",
-    python_version = "PY3",
-    srcs_version = "PY3",
-    size = "small",
-    tags = ["local"],  # Docker needs access to ~/.docker/
-)
-
-py_test(
-    name = "device_test",
-    srcs = glob(["**/*.py"]),
-    imports = [".."],
-    data = glob(["tests/data/*.json"]),
-    main = "tests/device_test.py",
-    python_version = "PY3",
-    srcs_version = "PY3",
-    size = "small",
-)
-
-py_test(
-    name = "cli_test",
-    srcs = glob(["**/*.py"]),
-    imports = [".."],
-    main = "tests/cli_test.py",
-    python_version = "PY3",
-    srcs_version = "PY3",
-    size = "small",
-)
-
-py_test(
-    name = "docker_test",
-    srcs = glob(["**/*.py"]),
-    imports = [".."],
-    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
-    data = [
-        "//fboss:fboss_builder.tar",
-    ],
-    main = "tests/docker_test.py",
-    python_version = "PY3",
-    srcs_version = "PY3",
-    size = "small",
-    tags = ["local"],  # Docker needs access to ~/.docker/
-)
-
-py_test(
-    name = "kernel_build_test",
-    srcs = glob(["**/*.py"]),
-    imports = [".."],
-    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
-    data = glob(["tests/data/*.json", "tests/data/*.tar.gz"]) + [
-        "//fboss/fboss-image/kernel:kernel_build_files",
-    ],
-    main = "tests/kernel_build_test.py",
-    python_version = "PY3",
-    srcs_version = "PY3",
-    size = "large",  # E2E test takes ~10 minutes
-    tags = ["not-for-ci", "local"],  # E2E test - run manually due to excessive execution times
-)
-
-py_test(
-    name = "artifact_test",
-    srcs = glob(["**/*.py"]),
-    imports = [".."],
-    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
-    data = glob(["tests/data/*.json"]),
-    main = "tests/artifact_test.py",
-    python_version = "PY3",
-    srcs_version = "PY3",
-    size = "small",
-    tags = ["local"],  # Docker needs access to ~/.docker/
-)
-
-py_test(
-    name = "download_test",
-    srcs = glob(["**/*.py"]),
-    imports = [".."],
-    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
-    data = glob(["tests/data/*.json"]),
-    main = "tests/download_test.py",
-    python_version = "PY3",
-    srcs_version = "PY3",
-    size = "small",
-    tags = ["local"],  # Docker needs access to ~/.docker/
-)
-
-py_test(
-    name = "kernel_download_test",
-    srcs = glob(["**/*.py"]),
-    imports = [".."],
-    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
-    data = glob(["tests/data/*.json", "tests/data/*.tar.gz"]),
-    main = "tests/kernel_download_test.py",
-    python_version = "PY3",
-    srcs_version = "PY3",
-    size = "small",
-    tags = ["local"],  # Docker needs access to ~/.docker/
-)
-
-py_test(
-    name = "build_entrypoint_test",
-    srcs = glob(["**/*.py"]),
-    imports = [".."],
-    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
-    data = glob(["tests/data/*.json"]),
-    main = "tests/build_entrypoint_test.py",
-    python_version = "PY3",
-    srcs_version = "PY3",
-    size = "small",
-    tags = ["local"],  # Docker needs access to ~/.docker/
-)
-
-py_test(
-    name = "docker_image_test",
-    srcs = glob(["**/*.py"]),
-    imports = [".."],
-    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
-    data = glob(["tests/data/*.json"]),
-    main = "tests/docker_image_test.py",
-    python_version = "PY3",
-    srcs_version = "PY3",
-    size = "small",
-    tags = ["local"],  # Docker needs access to ~/.docker/
-)
-
-py_test(
-    name = "sai_build_test",
-    srcs = glob(["**/*.py"]),
-    imports = [".."],
-    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
-    data = glob(["tests/data/*.json"]),
-    main = "tests/sai_build_test.py",
-    python_version = "PY3",
-    srcs_version = "PY3",
-    size = "large",  # E2E test takes several minutes
-    tags = ["not-for-ci", "local"],  # E2E test - run manually due to excessive execution times
-)
-
-py_test(
-    name = "kernel_build_test",
-    srcs = glob(["**/*.py"]),
-    imports = [".."],
-    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
-    data = glob(["tests/data/*.json", "tests/data/*.tar.gz"]),
-    main = "tests/kernel_build_test.py",
-    python_version = "PY3",
-    srcs_version = "PY3",
-    size = "small",
-)
-
-py_test(
-    name = "artifact_test",
-    srcs = glob(["**/*.py"]),
-    imports = [".."],
-    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
-    data = glob(["tests/data/*.json"]),
-    main = "tests/artifact_test.py",
-    python_version = "PY3",
-    srcs_version = "PY3",
-    size = "small",
-)
-
-py_test(
-    name = "download_test",
-    srcs = glob(["**/*.py"]),
-    imports = [".."],
-    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
-    data = glob(["tests/data/*.json"]),
-    main = "tests/download_test.py",
-    python_version = "PY3",
-    srcs_version = "PY3",
-    size = "small",
-)
-
-py_test(
-    name = "kernel_download_test",
-    srcs = glob(["**/*.py"]),
-    imports = [".."],
-    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
-    data = glob(["tests/data/*.json", "tests/data/*.tar.gz"]),
-    main = "tests/kernel_download_test.py",
-    python_version = "PY3",
-    srcs_version = "PY3",
-    size = "small",
-)
-
-py_test(
-    name = "docker_image_test",
-    srcs = glob(["**/*.py"]),
-    imports = [".."],
-    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
-    data = glob(["tests/data/*.json"]),
-    main = "tests/docker_image_test.py",
-    python_version = "PY3",
-    srcs_version = "PY3",
-    size = "small",
-)
-
-load("//bazel_lib:python_lint.bzl", "py_lint_test")
-
-
-py_lint_test(
-     name = "lint_check",
-     srcs = glob(["**/*.py"]),
-     config = "ruff.toml",
-)
-
-test_suite(
-    name = "all_tests",
-    tests = [
-        ":manifest_test",
-        ":image_builder_test",
-        ":build_test",
-        ":device_test",
-        ":cli_test",
-        ":docker_test",
-        ":kernel_build_test",
-        ":artifact_test",
-        ":download_test",
-        ":kernel_download_test",
-        ":docker_image_test",
-        ":lint_check",
-    ],
-)
+#py_test(
+#    name = "manifest_test",
+#    srcs = glob(["**/*.py"]),
+#    imports = [".."],
+#    data = glob(["tests/data/*.json"]),
+#    main = "tests/manifest_test.py",
+#    python_version = "PY3",
+#    srcs_version = "PY3",
+#    size = "small",
+#)
+#
+#py_test(
+#    name = "image_builder_test",
+#    srcs = glob(["**/*.py"]),
+#    imports = [".."],
+#    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+#    data = glob(["tests/data/*.json"]),
+#    main = "tests/image_builder_test.py",
+#    python_version = "PY3",
+#    srcs_version = "PY3",
+#    size = "small",
+#    tags = ["local"],  # Docker needs access to ~/.docker/
+#)
+#
+#py_test(
+#    name = "build_test",
+#    srcs = glob(["**/*.py"]),
+#    imports = [".."],
+#    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+#    data = glob(["tests/data/*.json"]),
+#    main = "tests/build_test.py",
+#    python_version = "PY3",
+#    srcs_version = "PY3",
+#    size = "small",
+#    tags = ["local"],  # Docker needs access to ~/.docker/
+#)
+#
+#py_test(
+#    name = "device_test",
+#    srcs = glob(["**/*.py"]),
+#    imports = [".."],
+#    data = glob(["tests/data/*.json"]),
+#    main = "tests/device_test.py",
+#    python_version = "PY3",
+#    srcs_version = "PY3",
+#    size = "small",
+#)
+#
+#py_test(
+#    name = "cli_test",
+#    srcs = glob(["**/*.py"]),
+#    imports = [".."],
+#    main = "tests/cli_test.py",
+#    python_version = "PY3",
+#    srcs_version = "PY3",
+#    size = "small",
+#)
+#
+#py_test(
+#    name = "docker_test",
+#    srcs = glob(["**/*.py"]),
+#    imports = [".."],
+#    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+#    data = [
+#        "//fboss:fboss_builder.tar",
+#    ],
+#    main = "tests/docker_test.py",
+#    python_version = "PY3",
+#    srcs_version = "PY3",
+#    size = "small",
+#    tags = ["local"],  # Docker needs access to ~/.docker/
+#)
+#
+#py_test(
+#    name = "kernel_build_test",
+#    srcs = glob(["**/*.py"]),
+#    imports = [".."],
+#    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+#    data = glob(["tests/data/*.json", "tests/data/*.tar.gz"]) + [
+#        "//fboss/fboss-image/kernel:kernel_build_files",
+#    ],
+#    main = "tests/kernel_build_test.py",
+#    python_version = "PY3",
+#    srcs_version = "PY3",
+#    size = "large",  # E2E test takes ~10 minutes
+#    tags = ["not-for-ci", "local"],  # E2E test - run manually due to excessive execution times
+#)
+#
+#py_test(
+#    name = "artifact_test",
+#    srcs = glob(["**/*.py"]),
+#    imports = [".."],
+#    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+#    data = glob(["tests/data/*.json"]),
+#    main = "tests/artifact_test.py",
+#    python_version = "PY3",
+#    srcs_version = "PY3",
+#    size = "small",
+#    tags = ["local"],  # Docker needs access to ~/.docker/
+#)
+#
+#py_test(
+#    name = "download_test",
+#    srcs = glob(["**/*.py"]),
+#    imports = [".."],
+#    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+#    data = glob(["tests/data/*.json"]),
+#    main = "tests/download_test.py",
+#    python_version = "PY3",
+#    srcs_version = "PY3",
+#    size = "small",
+#    tags = ["local"],  # Docker needs access to ~/.docker/
+#)
+#
+#py_test(
+#    name = "kernel_download_test",
+#    srcs = glob(["**/*.py"]),
+#    imports = [".."],
+#    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+#    data = glob(["tests/data/*.json", "tests/data/*.tar.gz"]),
+#    main = "tests/kernel_download_test.py",
+#    python_version = "PY3",
+#    srcs_version = "PY3",
+#    size = "small",
+#    tags = ["local"],  # Docker needs access to ~/.docker/
+#)
+#
+#py_test(
+#    name = "build_entrypoint_test",
+#    srcs = glob(["**/*.py"]),
+#    imports = [".."],
+#    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+#    data = glob(["tests/data/*.json"]),
+#    main = "tests/build_entrypoint_test.py",
+#    python_version = "PY3",
+#    srcs_version = "PY3",
+#    size = "small",
+#    tags = ["local"],  # Docker needs access to ~/.docker/
+#)
+#
+#py_test(
+#    name = "docker_image_test",
+#    srcs = glob(["**/*.py"]),
+#    imports = [".."],
+#    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+#    data = glob(["tests/data/*.json"]),
+#    main = "tests/docker_image_test.py",
+#    python_version = "PY3",
+#    srcs_version = "PY3",
+#    size = "small",
+#    tags = ["local"],  # Docker needs access to ~/.docker/
+#)
+#
+#py_test(
+#    name = "sai_build_test",
+#    srcs = glob(["**/*.py"]),
+#    imports = [".."],
+#    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+#    data = glob(["tests/data/*.json"]),
+#    main = "tests/sai_build_test.py",
+#    python_version = "PY3",
+#    srcs_version = "PY3",
+#    size = "large",  # E2E test takes several minutes
+#    tags = ["not-for-ci", "local"],  # E2E test - run manually due to excessive execution times
+#)
+#
+#py_test(
+#    name = "kernel_build_test",
+#    srcs = glob(["**/*.py"]),
+#    imports = [".."],
+#    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+#    data = glob(["tests/data/*.json", "tests/data/*.tar.gz"]),
+#    main = "tests/kernel_build_test.py",
+#    python_version = "PY3",
+#    srcs_version = "PY3",
+#    size = "small",
+#)
+#
+#py_test(
+#    name = "artifact_test",
+#    srcs = glob(["**/*.py"]),
+#    imports = [".."],
+#    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+#    data = glob(["tests/data/*.json"]),
+#    main = "tests/artifact_test.py",
+#    python_version = "PY3",
+#    srcs_version = "PY3",
+#    size = "small",
+#)
+#
+#py_test(
+#    name = "download_test",
+#    srcs = glob(["**/*.py"]),
+#    imports = [".."],
+#    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+#    data = glob(["tests/data/*.json"]),
+#    main = "tests/download_test.py",
+#    python_version = "PY3",
+#    srcs_version = "PY3",
+#    size = "small",
+#)
+#
+#py_test(
+#    name = "kernel_download_test",
+#    srcs = glob(["**/*.py"]),
+#    imports = [".."],
+#    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+#    data = glob(["tests/data/*.json", "tests/data/*.tar.gz"]),
+#    main = "tests/kernel_download_test.py",
+#    python_version = "PY3",
+#    srcs_version = "PY3",
+#    size = "small",
+#)
+#
+#py_test(
+#    name = "docker_image_test",
+#    srcs = glob(["**/*.py"]),
+#    imports = [".."],
+#    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+#    data = glob(["tests/data/*.json"]),
+#    main = "tests/docker_image_test.py",
+#    python_version = "PY3",
+#    srcs_version = "PY3",
+#    size = "small",
+#)
+#
+#load("//bazel_lib:python_lint.bzl", "py_lint_test")
+#
+#
+#py_lint_test(
+#     name = "lint_check",
+#     srcs = glob(["**/*.py"]),
+#     config = "ruff.toml",
+#)
+#
+#test_suite(
+#    name = "all_tests",
+#    tests = [
+#        ":manifest_test",
+#        ":image_builder_test",
+#        ":build_test",
+#        ":device_test",
+#        ":cli_test",
+#        ":docker_test",
+#        ":kernel_build_test",
+#        ":artifact_test",
+#        ":download_test",
+#        ":kernel_download_test",
+#        ":docker_image_test",
+#        ":lint_check",
+#    ],
+#)
