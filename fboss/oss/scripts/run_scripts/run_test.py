@@ -1093,7 +1093,9 @@ class QsfpTestRunner(TestRunner):
         return ""
 
     def _get_known_bad_tests_file(self):
-        return QSFP_KNOWN_BAD_TESTS
+        if not args.known_bad_tests_file:
+            return QSFP_KNOWN_BAD_TESTS
+        return args.known_bad_tests_file
 
     def _get_unsupported_tests_file(self):
         return QSFP_UNSUPPORTED_TESTS
@@ -1179,7 +1181,9 @@ class LinkTestRunner(TestRunner):
         return ""
 
     def _get_known_bad_tests_file(self):
-        return LINK_KNOWN_BAD_TESTS
+        if not args.known_bad_tests_file:
+            return LINK_KNOWN_BAD_TESTS
+        return args.known_bad_tests_file
 
     def _get_unsupported_tests_file(self):
         return ""

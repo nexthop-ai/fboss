@@ -50,4 +50,3 @@ target_link_libraries(fboss2_cmd_test
 )
 
 gtest_discover_tests(fboss2_cmd_test)
-
