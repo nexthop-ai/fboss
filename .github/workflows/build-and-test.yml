@@ -14,6 +14,11 @@ on:
         required: false
         default: false
         type: boolean
+      ref:
+        description: 'Git ref to checkout (branch, tag, or SHA)'
+        required: false
+        default: ''
+        type: string
 
 jobs:
   Build-and-Test:
@@ -21,11 +26,12 @@ jobs:
     runs-on: [self-hosted, fboss-gha]
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           # We'll clean the workspace ourselves to preserve most of .build_dir
           # so keep vendored dependencies across builds.
           clean: false
+          ref: ${{ inputs.ref || github.ref }}
 
       - name: Clean workspace
         run: |

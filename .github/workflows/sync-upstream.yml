@@ -1,0 +1,127 @@
+name: Sync Upstream Stable Commits
+
+on:
+  # Check for upstream changes periodically
+  schedule:
+    # Run every 6 hours at :30 (4 times per day)
+    - cron: "30 */6 * * *"
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  sync-upstream:
+    name: Sync with upstream stable commits
+    runs-on: ubuntu-latest
+    outputs:
+      sync_branch: ${{ steps.sync.outputs.sync_branch }}
+      stable_commit: ${{ steps.sync.outputs.stable_commit }}
+      push_direct: ${{ steps.sync.outputs.push_direct }}
+      conflicting_files: ${{ steps.sync.outputs.conflicting_files }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "rabbit-nexthop"
+          git config --global user.email "rabbit@nexthop.ai"
+
+      - name: Run sync script
+        id: sync
+        run: |
+          .github/scripts/sync_upstream.sh
+
+      - name: Push sync branch for testing
+        if: steps.sync.outputs.sync_branch != ''
+        run: |
+          git push --set-upstream origin ${{ steps.sync.outputs.sync_branch }}
+
+  # Run build and tests on the sync branch before merging (no conflicts case)
+  build-and-test:
+    name: Build and Test
+    needs: sync-upstream
+    if: needs.sync-upstream.outputs.push_direct == 'true'
+    uses: ./.github/workflows/build-and-test.yml
+    with:
+      sai_version: "1.16.1"
+      use_clang: true
+      ref: ${{ needs.sync-upstream.outputs.sync_branch }}
+
+  # Push to main after successful build (no conflicts case)
+  push-to-main:
+    name: Push to main
+    needs: [sync-upstream, build-and-test]
+    if: needs.sync-upstream.outputs.push_direct == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.sync-upstream.outputs.sync_branch }}
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "rabbit-nexthop"
+          git config --global user.email "rabbit@nexthop.ai"
+
+      - name: Merge to main and push
+        run: |
+          git checkout main
+          git pull origin main
+          git merge --ff-only ${{ needs.sync-upstream.outputs.sync_branch }} || \
+            git merge --no-edit ${{ needs.sync-upstream.outputs.sync_branch }}
+
+          # Try to push, retry once if main moved due to concurrent PR merge
+          if ! git push origin main; then
+            echo "⚠️ Push failed, likely due to concurrent merge. Retrying..."
+            git fetch origin main
+            git reset --hard origin/main
+            git merge --no-edit ${{ needs.sync-upstream.outputs.sync_branch }}
+            git push origin main
+          fi
+          echo "✅ Successfully pushed sync to main"
+
+      - name: Delete sync branch
+        run: |
+          git push origin --delete ${{ needs.sync-upstream.outputs.sync_branch }} || true
+
+  # Create PR for manual conflict resolution
+  create-pr:
+    name: Create PR for conflicts
+    needs: sync-upstream
+    if: needs.sync-upstream.outputs.push_direct == 'false' && needs.sync-upstream.outputs.sync_branch != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.sync-upstream.outputs.sync_branch }}
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+
+      - name: Create PR
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          PR_BODY="This PR syncs private-fboss with upstream stable commit.
+
+          **Stable Commit:** \`${{ needs.sync-upstream.outputs.stable_commit }}\`
+
+          ⚠️ **Manual conflict resolution required**
+
+          The following files have conflicts that need to be resolved:
+          ${{ needs.sync-upstream.outputs.conflicting_files }}
+
+          Please resolve these conflicts and merge when ready."
+
+          gh pr create \
+            --title "[sync] Sync with upstream stable commit" \
+            --body "$PR_BODY" \
+            --base main \
+            --head ${{ needs.sync-upstream.outputs.sync_branch }} \
+            --assignee benoit-nexthop \
+            --draft
