@@ -5,25 +5,35 @@ on:
   workflow_call:
     inputs:
       sai_version:
-        description: 'SAI version to build against'
+        description: "SAI version to build against"
         required: false
-        default: '1.16.1'
+        default: "1.16.1"
         type: string
       use_clang:
-        description: 'Use Clang instead of GCC'
+        description: "Use Clang instead of GCC"
         required: false
         default: false
         type: boolean
       ref:
-        description: 'Git ref to checkout (branch, tag, or SHA)'
+        description: "Git ref to checkout (branch, tag, or SHA)"
         required: false
-        default: ''
+        default: ""
         type: string
+    outputs:
+      failed_tests:
+        description: "List of failed tests (up to 10)"
+        value: ${{ jobs.Build-and-Test.outputs.failed_tests }}
+      failed_test_count:
+        description: "Total number of failed tests"
+        value: ${{ jobs.Build-and-Test.outputs.failed_test_count }}
 
 jobs:
   Build-and-Test:
     if: github.repository_owner == 'nexthop-ai'
     runs-on: [self-hosted, fboss-gha]
+    outputs:
+      failed_tests: ${{ steps.parse-test-results.outputs.failed_tests }}
+      failed_test_count: ${{ steps.parse-test-results.outputs.failed_test_count }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v6
@@ -77,8 +87,42 @@ jobs:
           docker exec FBOSS_build_${USER} sccache -s
 
       - name: Run unit tests
+        id: run-tests
         run: |
-          docker exec FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-test.sh
+          docker exec FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-test.sh 2>&1 | tee /tmp/test_output.log
+          exit ${PIPESTATUS[0]}
+
+      - name: Parse test results
+        id: parse-test-results
+        if: always()
+        run: |
+          if [[ -f /tmp/test_output.log ]]; then
+            # Extract failed test names from CTest output
+            # Format: "	 46 - CmdShowHostTestFixture.sortModel (Failed)"
+            all_failed=$(sed -nE '/The following tests FAILED:/,$ s/^\s+[0-9]+ - (.+) \(Failed\)$/\1/p' /tmp/test_output.log)
+            failed_tests=$(echo "$all_failed" | head -5)
+            if [[ -n "$all_failed" ]]; then
+              failed_count=$(echo "$all_failed" | wc -l)
+            else
+              failed_count=0
+            fi
+
+            echo "failed_test_count=$failed_count" >> "$GITHUB_OUTPUT"
+            echo "failed_tests<<EOF" >> "$GITHUB_OUTPUT"
+            echo "$failed_tests" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
+
+            echo "Found $failed_count failed test(s)"
+            if [[ -n "$all_failed" ]]; then
+              echo "Failed tests:"
+              echo "$all_failed"
+            fi
+          else
+            # File doesn't exist - tests never ran (build likely failed earlier)
+            echo "failed_test_count=" >> "$GITHUB_OUTPUT"
+            echo "failed_tests=" >> "$GITHUB_OUTPUT"
+            echo "Test output not found - tests did not run (build may have failed)"
+          fi
 
       - name: Cleanup FBOSS container
         if: always()

@@ -26,6 +26,59 @@ jobs:
     needs: [build-and-test-gcc, build-and-test-clang]
     if: failure()
     steps:
+      - name: Determine which builds failed and collect test failures
+        id: check-failures
+        run: |
+          GCC_RESULT="${{ needs.build-and-test-gcc.result }}"
+          CLANG_RESULT="${{ needs.build-and-test-clang.result }}"
+          GCC_FAILED_TESTS="${{ needs.build-and-test-gcc.outputs.failed_tests }}"
+          GCC_FAILED_COUNT="${{ needs.build-and-test-gcc.outputs.failed_test_count }}"
+          CLANG_FAILED_TESTS="${{ needs.build-and-test-clang.outputs.failed_tests }}"
+          CLANG_FAILED_COUNT="${{ needs.build-and-test-clang.outputs.failed_test_count }}"
+
+          # Determine which builds failed
+          if [[ "$GCC_RESULT" == "failure" && "$CLANG_RESULT" == "failure" ]]; then
+            echo "failed_builds=GCC and Clang builds" >> "$GITHUB_OUTPUT"
+            echo "emoji=:x::x:" >> "$GITHUB_OUTPUT"
+          elif [[ "$GCC_RESULT" == "failure" ]]; then
+            echo "failed_builds=GCC build" >> "$GITHUB_OUTPUT"
+            echo "emoji=:x:" >> "$GITHUB_OUTPUT"
+          elif [[ "$CLANG_RESULT" == "failure" ]]; then
+            echo "failed_builds=Clang build" >> "$GITHUB_OUTPUT"
+            echo "emoji=:x:" >> "$GITHUB_OUTPUT"
+          else
+            echo "failed_builds=Unknown" >> "$GITHUB_OUTPUT"
+            echo "emoji=:warning:" >> "$GITHUB_OUTPUT"
+          fi
+
+          # Build test failure details (show max 5 inline, full list in workflow logs)
+          format_failures() {
+            local label="$1" count="$2" tests="$3"
+            local details="" shown=0
+            if [[ -n "$tests" ]]; then
+              details="*${label} (${count:-?} failed):* "
+              while IFS= read -r test && [[ $shown -lt 5 ]]; do
+                [[ -n "$test" ]] && details+="\`$test\` " && ((shown++))
+              done <<< "$tests"
+              [[ "${count:-0}" -gt 5 ]] && details+="_(+$((count - 5)) more)_"
+            fi
+            echo "$details"
+          }
+
+          test_details=""
+          [[ "$GCC_RESULT" == "failure" ]] && test_details+=$(format_failures "GCC" "$GCC_FAILED_COUNT" "$GCC_FAILED_TESTS")
+          [[ "$CLANG_RESULT" == "failure" && -n "$test_details" ]] && test_details+="\n"
+          [[ "$CLANG_RESULT" == "failure" ]] && test_details+=$(format_failures "Clang" "$CLANG_FAILED_COUNT" "$CLANG_FAILED_TESTS")
+
+          # If no test details, might be a build failure
+          if [[ -z "$test_details" ]]; then
+            test_details="Build or infrastructure failure (no test results available)"
+          fi
+
+          echo "test_details<<EOF" >> "$GITHUB_OUTPUT"
+          echo -e "$test_details" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
       - name: Send Slack notification
         uses: slackapi/slack-github-action@v2.1.1
         with:
@@ -33,13 +86,27 @@ jobs:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           payload: |
             {
-              "text": ":x: Nightly Build Failed",
+              "text": "${{ steps.check-failures.outputs.emoji }} Nightly Build Failed: ${{ steps.check-failures.outputs.failed_builds }}",
               "blocks": [
                 {
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": ":x: Nightly Build Failed"
+                    "text": "${{ steps.check-failures.outputs.emoji }} Nightly Build Failed"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Failed:* ${{ steps.check-failures.outputs.failed_builds }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "${{ steps.check-failures.outputs.test_details }}"
                   }
                 },
                 {
