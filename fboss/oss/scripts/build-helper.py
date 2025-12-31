@@ -64,6 +64,12 @@ def _get_sha256(version):
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-s",
+        "--server_only",
+        action="store_true",
+        help="Skip file manipulation and start the http server",
+    )
     parser.add_argument("libsai_impl_path", help="Full path to libsai_impl.a")
     parser.add_argument(
         "experiments_path", help="Full path to SAI spec experiments dir"
@@ -113,7 +119,11 @@ class BuildHelper:
         self._experiments_path = args.experiments_path
         self._output_path = args.output_path
         self._sai_info = SaiSdkInfo(args.sai_version)
+<<<<<<< HEAD
         self._skip_archive_creation = args.skip_archive_creation
+=======
+        self._server_only = args.server_only
+>>>>>>> 9a98310ae1d12b8677a8e6560d1b8380322d1ff2
 
     def _kill_http_server(self):
         try:
@@ -244,6 +254,7 @@ class BuildHelper:
         os.chdir(self._script_dir)
 
     def run(self):
+<<<<<<< HEAD
         if self._skip_archive_creation:
             # Verify that the tarball exists
             tarball_path = os.path.join(self._output_path, BuildHelper.LIBSAI_IMPL_COMPRESSED_TAR)
@@ -257,6 +268,15 @@ class BuildHelper:
         self._edit_sai_manifest()
         self._edit_sai_impl_manifest()
         self._edit_fboss_manifest()
+=======
+        if not self._server_only:
+            self._cleanup()
+            self._copy_input_files()
+            self._create_archive()
+            self._edit_sai_manifest()
+            self._edit_sai_impl_manifest()
+            self._edit_fboss_manifest()
+>>>>>>> 9a98310ae1d12b8677a8e6560d1b8380322d1ff2
         self._start_http_server()
 
 
