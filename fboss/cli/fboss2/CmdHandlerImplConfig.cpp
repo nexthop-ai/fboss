@@ -8,21 +8,15 @@
  *
  */
 
+#include "fboss/cli/fboss2/CmdHandler.cpp"
+
+#include "fboss/cli/fboss2/commands/config/CmdConfigAppliedInfo.h"
 #include "fboss/cli/fboss2/commands/config/CmdConfigReload.h"
 
 namespace facebook::fboss {
 
-CmdConfigReloadTraits::RetType CmdConfigReload::queryClient(
-    const HostInfo& hostInfo) {
-  auto client =
-      utils::createClient<facebook::fboss::FbossCtrlAsyncClient>(hostInfo);
-
-  client->sync_reloadConfig();
-  return "Config reloaded successfully";
-}
-
-void CmdConfigReload::printOutput(const RetType& logMsg) {
-  std::cout << logMsg << std::endl;
-}
+template void
+CmdHandler<CmdConfigAppliedInfo, CmdConfigAppliedInfoTraits>::run();
+template void CmdHandler<CmdConfigReload, CmdConfigReloadTraits>::run();
 
 } // namespace facebook::fboss

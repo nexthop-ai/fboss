@@ -64,6 +64,12 @@ def _get_sha256(version):
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-s",
+        "--server_only",
+        action="store_true",
+        help="Skip file manipulation and start the http server",
+    )
     parser.add_argument("libsai_impl_path", help="Full path to libsai_impl.a")
     parser.add_argument(
         "experiments_path", help="Full path to SAI spec experiments dir"
@@ -114,6 +120,7 @@ class BuildHelper:
         self._output_path = args.output_path
         self._sai_info = SaiSdkInfo(args.sai_version)
         self._skip_archive_creation = args.skip_archive_creation
+        self._server_only = args.server_only
 
     def _kill_http_server(self):
         try:
@@ -239,24 +246,29 @@ class BuildHelper:
             ["python3", "-m", "http.server"],
             stdin=subprocess.DEVNULL,
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
+            stderr=subprocess.DEVNULL,
         )
         os.chdir(self._script_dir)
 
     def run(self):
         if self._skip_archive_creation:
             # Verify that the tarball exists
-            tarball_path = os.path.join(self._output_path, BuildHelper.LIBSAI_IMPL_COMPRESSED_TAR)
+            tarball_path = os.path.join(
+                self._output_path, BuildHelper.LIBSAI_IMPL_COMPRESSED_TAR
+            )
             if not os.path.isfile(tarball_path):
-                raise FileNotFoundError(f"ERROR: {tarball_path} not found. Cannot skip archive creation.")
+                raise FileNotFoundError(
+                    f"ERROR: {tarball_path} not found. Cannot skip archive creation."
+                )
             print(f"Using existing tarball at {tarball_path}")
-        else:
+        elif not self._server_only:
             self._cleanup()
             self._copy_input_files()
             self._create_archive()
-        self._edit_sai_manifest()
-        self._edit_sai_impl_manifest()
-        self._edit_fboss_manifest()
+        if not self._server_only:
+            self._edit_sai_manifest()
+            self._edit_sai_impl_manifest()
+            self._edit_fboss_manifest()
         self._start_http_server()
 
 

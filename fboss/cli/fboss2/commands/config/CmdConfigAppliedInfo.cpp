@@ -27,11 +27,12 @@ std::string formatTimestamp(int64_t timestampMs) {
   int64_t milliseconds = timestampMs % 1000;
 
   // Convert to local time
-  std::tm* localTime = std::localtime(&timeInSeconds);
+  std::tm localTime;
+  localtime_r(&timeInSeconds, &localTime);
 
   // Format the timestamp
   std::ostringstream oss;
-  oss << std::put_time(localTime, "%Y-%m-%d %H:%M:%S");
+  oss << std::put_time(&localTime, "%Y-%m-%d %H:%M:%S");
   oss << "." << std::setfill('0') << std::setw(3) << milliseconds;
 
   return oss.str();
