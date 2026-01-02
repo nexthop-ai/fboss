@@ -17,17 +17,8 @@ CmdConfigReloadTraits::RetType CmdConfigReload::queryClient(
   auto client =
       utils::createClient<facebook::fboss::FbossCtrlAsyncClient>(hostInfo);
 
-<<<<<<< HEAD
-  try {
-    client->sync_reloadConfig();
-    return "Config reloaded successfully";
-  } catch (const std::exception& ex) {
-    return "Failed to reload config: " + std::string(ex.what());
-  }
-=======
   client->sync_reloadConfig();
   return "Config reloaded successfully";
->>>>>>> 9a98310ae1d12b8677a8e6560d1b8380322d1ff2
 }
 
 void CmdConfigReload::printOutput(const RetType& logMsg) {
