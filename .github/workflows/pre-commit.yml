@@ -3,7 +3,7 @@ name: pre-commit
 on:
   pull_request:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   pre-commit:
@@ -18,9 +18,9 @@ jobs:
       - name: Determine base ref for pre-commit
         id: base-ref
         run: |
-          # For sync PRs, find the merge commit titled "Sync with upstream main"
+          # For sync PRs, find the merge commit titled "Sync with upstream stable commit <sha>"
           # and use it as the base ref (so we only lint commits after the merge)
-          SYNC_MERGE_COMMIT=$(git log --oneline --merges --grep="^Sync with upstream main$" -1 --format="%H" 2>/dev/null || true)
+          SYNC_MERGE_COMMIT=$(git log --oneline --merges --grep="^Sync with upstream stable commit" -1 --format="%H" 2>/dev/null || true)
           if [ -n "$SYNC_MERGE_COMMIT" ]; then
             echo "Detected sync PR with merge commit: $SYNC_MERGE_COMMIT"
             echo "base_ref=$SYNC_MERGE_COMMIT" >> $GITHUB_OUTPUT
