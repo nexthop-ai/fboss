@@ -103,7 +103,30 @@ jobs:
           ref: ${{ needs.sync-upstream.outputs.sync_branch }}
           token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
 
+      - name: Check for existing sync PR
+        id: check-existing-pr
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          NEW_STABLE_COMMIT: ${{ needs.sync-upstream.outputs.stable_commit }}
+        run: |
+          title='[sync] Sync with upstream stable commit'
+          existing_pr=$(gh pr list --state open --search "$title" --json number,title,body --jq '.[] | select(.title == "'"$title"'") | {number, body}' | head -1)
+          if [[ -n "$existing_pr" ]]; then
+            pr_number=$(echo "$existing_pr" | jq -r '.number')
+            pr_commit=$(echo "$existing_pr" | jq -r '.body' | grep -oP '(?<=\*\*Stable Commit:\*\* `)[a-f0-9]+(?=`)' || true)
+            echo "existing_pr=$pr_number" >> "$GITHUB_OUTPUT"
+            echo "⚠️ Sync PR #$pr_number already exists (commit: $pr_commit), skipping PR creation"
+
+            if [[ -n "$pr_commit" && "$pr_commit" != "$NEW_STABLE_COMMIT" ]]; then
+              gh pr comment "$pr_number" \
+                --body "⚠️ A newer stable commit is available: $NEW_STABLE_COMMIT, if not much work has been done yet on this sync, considering closing this PR so that a new one can be created automatically."
+            fi
+          else
+            echo "existing_pr=" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Create PR
+        if: steps.check-existing-pr.outputs.existing_pr == ''
         env:
           GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
         run: |
