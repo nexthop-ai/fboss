@@ -1,0 +1,51 @@
+name: Monobuild
+run-name: Build and Test the world
+
+on:
+  pull_request:
+  # Allow manually triggering the workflow
+  workflow_dispatch:
+
+jobs:
+  monobuild:
+    name: Monobuild
+    runs-on: [self-hosted, fboss-gha]
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+    - name: Checkout code
+      env:
+        GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+      shell: bash
+      run: |
+        submodule="fboss"
+        nh_branch="main"
+
+        git clone --jobs 64 --reference-if-able /home/gha/git_reference_repo --recurse-submodule https://x-access-token:${GH_TOKEN}@github.com/nexthop-ai/nh.git monobuild
+        cd monobuild
+        git checkout ${nh_branch}
+
+        pushd ${submodule}
+        git checkout ${{ github.event.pull_request.head.sha }}
+        popd
+
+    - uses: bazel-contrib/setup-bazel@0.15.0
+      with:
+        # Avoid downloading Bazel every time.
+        bazelisk-cache: true
+        # Store build cache per workflow.
+        disk-cache: ${{ github.workflow }}
+        # Share repository cache between workflows.
+        repository-cache: true
+
+    - name: Build and test
+      run: |
+        cd monobuild
+        bazel test --build_tag_filters=-not-for-ci,-disabled --test_tag_filters=-not-for-ci,-disabled -- //fboss/fboss-image/distro_cli/...
+
+    - name: Cleanup
+      if: always()
+      run: |
+        sudo rm -rf monobuild

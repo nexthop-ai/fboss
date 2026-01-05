@@ -189,19 +189,19 @@ exports_files(["ruff.toml"])
 #    srcs_version = "PY3",
 #    size = "small",
 #)
-#
-#py_test(
-#    name = "download_test",
-#    srcs = glob(["**/*.py"]),
-#    imports = [".."],
-#    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
-#    data = glob(["tests/data/*.json"]),
-#    main = "tests/download_test.py",
-#    python_version = "PY3",
-#    srcs_version = "PY3",
-#    size = "small",
-#)
-#
+
+py_test(
+    name = "download_test",
+    srcs = glob(["**/*.py"]),
+    imports = [".."],
+    deps = ["//fboss/fboss-image/distro_cli/lib/docker"],
+    data = glob(["tests/data/*.json"]),
+    main = "tests/download_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "small",
+)
+
 #py_test(
 #    name = "kernel_download_test",
 #    srcs = glob(["**/*.py"]),
