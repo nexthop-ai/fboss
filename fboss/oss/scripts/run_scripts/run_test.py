@@ -288,10 +288,6 @@ class TestRunner(abc.ABC):
         re.VERBOSE,
     )
 
-    def __init__(self):
-        super().__init__()
-        self._config_file_modified = None
-
     @abc.abstractmethod
     def _get_config_path(self):
         pass
@@ -637,20 +633,20 @@ class TestRunner(abc.ABC):
             try:
                 # Create a modified copy in /tmp with standard name
                 config_filename = os.path.basename(conf_file)
-                self._config_file_modified = f"/tmp/modified-{config_filename}"
-                shutil.copy2(conf_file, self._config_file_modified)
+                _config_file_modified = f"/tmp/modified-{config_filename}"
+                shutil.copy2(conf_file, _config_file_modified)
 
                 print(
-                    "Using a modified config file {self._config_file_modified} for test runs"
+                    f"Using a modified config file {_config_file_modified} for test runs"
                 )
                 # Some platforms, like TH5 SVK, need to set
                 # AUTOLOAD_BOARD_SETTINGS=1 to autodetect reference board
                 self._replace_string_in_file(
-                    self._config_file_modified,
+                    _config_file_modified,
                     "AUTOLOAD_BOARD_SETTINGS: 0",
                     "AUTOLOAD_BOARD_SETTINGS: 1",
                 )
-                return self._config_file_modified
+                return _config_file_modified
             except Exception as e:
                 print(f"Error creating config copy {conf_file}: {str(e)}")
                 return conf_file
@@ -1583,12 +1579,6 @@ if __name__ == "__main__":
         type=str,
         default=None,
         help=("run script before warm boot run"),
-    )
-    ap.add_argument(
-        "--run-on-reference-board",
-        action="store_true",
-        help="Modify SAI settings to run on reference board instead of real product",
-        default=False,
     )
     ap.add_argument(
         OPT_ARG_TEST_RUN_TIMEOUT,
