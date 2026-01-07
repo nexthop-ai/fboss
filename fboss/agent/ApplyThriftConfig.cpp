@@ -2848,13 +2848,14 @@ shared_ptr<Port> ThriftConfigApplier::updatePort(
       << ", pinConfigs: " << (pinConfigsUnchanged ? "UNCHANGED" : "CHANGED")
       << ", with matcher:" << matcher.toString();
 
-  // Port drain is applicable to only fabric ports.
+  // Port drain is applicable to fabric ports and interface ports.
   if (*portConf->drainState() == cfg::PortDrainState::DRAINED &&
-      *portConf->portType() != cfg::PortType::FABRIC_PORT) {
+      *portConf->portType() != cfg::PortType::FABRIC_PORT &&
+      *portConf->portType() != cfg::PortType::INTERFACE_PORT) {
     throw FbossError(
         "Port ",
         orig->getID(),
-        " cannot be drained as it's NOT a DSF fabric port");
+        " cannot be drained as it's neither a DSF fabric port nor an interface port");
   }
 
   bool portFlowletConfigUnchanged = true;
@@ -5266,14 +5267,6 @@ shared_ptr<SwitchSettings> ThriftConfigApplier::updateSwitchSettings(
 
   if (origSwitchSettings->getSwitchDrainState() !=
       *cfg_->switchSettings()->switchDrainState()) {
-    auto numVoqSwtitches =
-        newSwitchSettings->getSwitchIdsOfType(cfg::SwitchType::VOQ).size();
-    auto numFabSwtitches =
-        newSwitchSettings->getSwitchIdsOfType(cfg::SwitchType::FABRIC).size();
-    if (numFabSwtitches == 0 && numVoqSwtitches == 0) {
-      throw FbossError(
-          "Switch drain/isolate is supported only on VOQ, Fabric switches");
-    }
     newSwitchSettings->setSwitchDrainState(
         *cfg_->switchSettings()->switchDrainState());
     switchSettingsChange = true;
