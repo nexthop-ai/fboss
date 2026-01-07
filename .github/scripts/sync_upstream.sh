@@ -45,6 +45,25 @@ autoresolve_stable_hashes() {
     temp_dir=$(mktemp -d)
     tar xzf fboss/oss/stable_commits/latest_stable_hashes.tar.gz -C "$temp_dir"
 
+    # Detect files removed from tarball (present in previous but not in latest)
+    if [[ -f fboss/oss/stable_commits/previous_stable_hashes.tar.gz ]]; then
+      prev_dir=$(mktemp -d)
+      tar xzf fboss/oss/stable_commits/previous_stable_hashes.tar.gz -C "$prev_dir"
+
+      # Find files in previous but not in latest, and git rm them
+      comm -23 \
+        <(find "$prev_dir/build/deps/github_hashes" -type f 2>/dev/null | sed "s|$prev_dir/||" | sort) \
+        <(find "$temp_dir/build/deps/github_hashes" -type f 2>/dev/null | sed "s|$temp_dir/||" | sort) |
+        while read -r removed_file; do
+          if [[ -f $removed_file ]]; then
+            echo_debug "Removing file no longer in stable hashes: $removed_file"
+            git rm -f "$removed_file" 2>/dev/null || true
+          fi
+        done
+
+      rm -rf "$prev_dir"
+    fi
+
     # Sync files from tarball
     rsync -rc --ignore-existing "$temp_dir/build/deps/github_hashes/" build/deps/github_hashes/ || true
     rsync -rc --existing "$temp_dir/build/deps/github_hashes/" build/deps/github_hashes/ || true
