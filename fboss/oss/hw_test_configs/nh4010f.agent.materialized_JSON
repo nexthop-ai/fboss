@@ -10,38 +10,38 @@
   "sw": {
     "version": 0,
     "ports": [
-      
+
     ],
     "vlans": [
-      
+
     ],
     "vlanPorts": [
-      
+
     ],
     "defaultVlan": 0,
     "interfaces": [
-      
+
     ],
     "arpTimeoutSeconds": 60,
     "arpRefreshSeconds": 20,
     "arpAgerInterval": 5,
     "proactiveArp": false,
     "staticRoutesWithNhops": [
-      
+
     ],
     "staticRoutesToNull": [
-      
+
     ],
     "staticRoutesToCPU": [
-      
+
     ],
     "acls": [
-      
+
     ],
     "maxNeighborProbes": 300,
     "staleEntryInterval": 10,
     "aggregatePorts": [
-      
+
     ],
     "clientIdToAdminDistance": {
       "0": 20,
@@ -53,40 +53,40 @@
       "786": 10
     },
     "sFlowCollectors": [
-      
+
     ],
     "cpuQueues": [
-      
+
     ],
     "loadBalancers": [
-      
+
     ],
     "mirrors": [
-      
+
     ],
     "trafficCounters": [
-      
+
     ],
     "qosPolicies": [
-      
+
     ],
     "defaultPortQueues": [
-      
+
     ],
     "staticMplsRoutesWithNhops": [
-      
+
     ],
     "staticMplsRoutesToNull": [
-      
+
     ],
     "staticMplsRoutesToCPU": [
-      
+
     ],
     "staticIp2MplsRoutes": [
-      
+
     ],
     "portQueueConfigs": {
-      
+
     },
     "switchSettings": {
       "l2LearningMode": 0,
@@ -95,17 +95,17 @@
       "l2AgeTimerSeconds": 300,
       "maxRouteCounterIDs": 0,
       "blockNeighbors": [
-        
+
       ],
       "macAddrsToBlock": [
-        
+
       ],
       "switchType": 0,
       "exactMatchTableConfigs": [
-        
+
       ],
       "switchIdToSwitchType_DEPRECATED": {
-        
+
       },
       "switchDrainState": 0,
       "switchIdToSwitchInfo": {
@@ -118,15 +118,15 @@
               "maximum": 2047
             },
             "firmwareNameToFirmwareInfo": {
-              
+
             }
         }
       },
       "vendorMacOuis": [
-        
+
       ],
       "metaMacOuis": [
-        
+
       ],
       "needL2EntryForNeighbor": true
     },
@@ -137,16 +137,16 @@
           "name": "AclTable1",
           "priority": 0,
           "aclEntries": [
-            
+
           ],
           "actionTypes": [
-            
+
           ],
           "qualifiers": [
-            
+
           ],
           "udfGroups": [
-            
+
           ]
         }
       ],
@@ -157,10 +157,10 @@
       "saiSdk": "sai"
     },
     "dsfNodes": {
-      
+
     },
     "defaultVoqConfig": [
-      
+
     ],
     "aclTableGroups": [
       {
@@ -170,16 +170,16 @@
             "name": "AclTable1",
             "priority": 0,
             "aclEntries": [
-              
+
             ],
             "actionTypes": [
-              
+
             ],
             "qualifiers": [
-              
+
             ],
             "udfGroups": [
-              
+
             ]
           }
         ],
@@ -187,7 +187,7 @@
       }
     ],
     "mirrorOnDropReports": [
-      
+
     ]
   },
   "platform": {
@@ -200,4 +200,3 @@
     }
   }
 }
-
