@@ -794,10 +794,24 @@ cpp_library(
         "session/ConfigSession.h",
     ],
     exported_deps = [
+        "fbsource//third-party/fmt:fmt",
+        "fbsource//third-party/re2:re2",
+        ":cmd-common-utils",
         ":cmd-handler",
         ":fboss2-lib",
+        "//fboss/agent:agent_config-cpp2-types",
+        "//fboss/agent:agent_dir_util",
         "//fboss/agent/if:ctrl-cpp2-types",
         "//folly:conv",
+        "//folly:file_util",
+        "//folly:likely",
+        "//folly:string",
+        "//folly/json:dynamic",
+        "//thrift/lib/cpp2/protocol:protocol",
+    ],
+    exported_external_deps = [
+        "glog",
+        ("boost", None, "boost_filesystem"),
     ],
 )
 

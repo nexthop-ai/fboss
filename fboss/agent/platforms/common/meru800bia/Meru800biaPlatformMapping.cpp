@@ -333357,6 +333357,18 @@ std::string getPlatformMappingString() {
   return kJsonPlatformMappingStr;
 }
 
+std::string getPlatformMappingStringFromRole(
+    HwAsic::InterfaceNodeRole intfRole) {
+  if (intfRole == HwAsic::InterfaceNodeRole::DUAL_STAGE_EDGE_NODE) {
+    return kJsonDualStageEdsw3q2qPlatformMappingStr;
+  } else if (intfRole == HwAsic::InterfaceNodeRole::HYPER_PORT_EDGE_NODE) {
+    return kJsonEdswHyperPortPlatformMappingStr;
+  } else if (isDualStage3Q2QMode()) {
+    return kJsonDualStageRdsw3q2qPlatformMappingStr;
+  }
+  return kJsonPlatformMappingStr;
+}
+
 } // namespace
 
 Meru800biaPlatformMapping::Meru800biaPlatformMapping()
@@ -333368,12 +333380,7 @@ Meru800biaPlatformMapping::Meru800biaPlatformMapping(
 
 Meru800biaPlatformMapping::Meru800biaPlatformMapping(
     HwAsic::InterfaceNodeRole intfRole)
-    : PlatformMapping(
-          intfRole == HwAsic::InterfaceNodeRole::DUAL_STAGE_EDGE_NODE
-              ? kJsonDualStageEdsw3q2qPlatformMappingStr
-              : (isDualStage3Q2QMode()
-                     ? kJsonDualStageRdsw3q2qPlatformMappingStr
-                     : kJsonPlatformMappingStr)) {}
+    : PlatformMapping(getPlatformMappingStringFromRole(intfRole)) {}
 
 std::map<uint32_t, std::pair<uint32_t, uint32_t>>
 Meru800biaPlatformMapping::getCpuPortsCoreAndPortIdx() const {
