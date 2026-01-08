@@ -577,6 +577,7 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/CmdConfigAppliedInfo.cpp
   fboss/cli/fboss2/commands/config/CmdConfigReload.h
   fboss/cli/fboss2/commands/config/CmdConfigReload.cpp
+<<<<<<< HEAD
   fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h
   fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceDescription.h
   fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceDescription.cpp
@@ -590,6 +591,10 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/session/CmdConfigSessionCommit.cpp
   fboss/cli/fboss2/commands/config/session/CmdConfigSessionDiff.h
   fboss/cli/fboss2/commands/config/session/CmdConfigSessionDiff.cpp
+=======
+  fboss/cli/fboss2/commands/config/session/CmdConfigSessionCommit.h
+  fboss/cli/fboss2/commands/config/session/CmdConfigSessionCommit.cpp
+>>>>>>> 6df5658d0257618faa3a968ba4a99f8eeb355fbe
   fboss/cli/fboss2/session/ConfigSession.h
   fboss/cli/fboss2/session/ConfigSession.cpp
   fboss/cli/fboss2/CmdListConfig.cpp

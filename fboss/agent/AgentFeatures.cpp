@@ -390,6 +390,8 @@ DEFINE_bool(
     false,
     "Enable sending and receiving port drain state in LLDP packets");
 
+DEFINE_bool(enable_agent_drain, false, "Enable drain in wedge agent");
+
 DEFINE_bool(
     enable_state_delta_logging,
     false,
@@ -437,3 +439,10 @@ DEFINE_bool(
     montblanc_odd_ports_8x100G,
     false,
     "Enables platform mapping with 8x100G on odd ports");
+
+DEFINE_bool(can_warm_boot, true, "Enable/disable warm boot functionality");
+
+DEFINE_string(
+    thrift_switch_state_file,
+    "thrift_switch_state",
+    "File for dumping switch state in serialized thrift format on exit");

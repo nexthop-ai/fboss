@@ -12,6 +12,7 @@
 
 #include "fboss/cli/fboss2/commands/config/CmdConfigAppliedInfo.h"
 #include "fboss/cli/fboss2/commands/config/CmdConfigReload.h"
+<<<<<<< HEAD
 #include "fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceDescription.h"
@@ -19,12 +20,16 @@
 #include "fboss/cli/fboss2/commands/config/rollback/CmdConfigRollback.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionCommit.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionDiff.h"
+=======
+#include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionCommit.h"
+>>>>>>> 6df5658d0257618faa3a968ba4a99f8eeb355fbe
 
 namespace facebook::fboss {
 
 template void
 CmdHandler<CmdConfigAppliedInfo, CmdConfigAppliedInfoTraits>::run();
 template void CmdHandler<CmdConfigReload, CmdConfigReloadTraits>::run();
+<<<<<<< HEAD
 template void CmdHandler<CmdConfigInterface, CmdConfigInterfaceTraits>::run();
 template void CmdHandler<
     CmdConfigInterfaceDescription,
@@ -37,5 +42,9 @@ template void
 CmdHandler<CmdConfigSessionCommit, CmdConfigSessionCommitTraits>::run();
 template void
 CmdHandler<CmdConfigSessionDiff, CmdConfigSessionDiffTraits>::run();
+=======
+template void
+CmdHandler<CmdConfigSessionCommit, CmdConfigSessionCommitTraits>::run();
+>>>>>>> 6df5658d0257618faa3a968ba4a99f8eeb355fbe
 
 } // namespace facebook::fboss
