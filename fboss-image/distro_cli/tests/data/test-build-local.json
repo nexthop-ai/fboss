@@ -1,0 +1,8 @@
+{
+  "distribution_formats": {
+    "usb": "output/test-image.iso"
+  },
+  "kernel": {
+    "download": "file:kernel-test.tar.gz"
+  }
+}
