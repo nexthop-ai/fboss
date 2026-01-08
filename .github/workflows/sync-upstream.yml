@@ -121,6 +121,8 @@ jobs:
               gh pr comment "$pr_number" \
                 --body "⚠️ A newer stable commit is available: $NEW_STABLE_COMMIT, if not much work has been done yet on this sync, considering closing this PR so that a new one can be created automatically."
             fi
+            # Delete the sync branch if the PR already exists
+            git push origin --delete ${{ needs.sync-upstream.outputs.sync_branch }} || true
           else
             echo "existing_pr=" >> "$GITHUB_OUTPUT"
           fi
