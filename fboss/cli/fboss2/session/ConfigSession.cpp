@@ -167,7 +167,6 @@ void ensureDirectoryExists(const std::string& dirPath) {
   }
 }
 
-<<<<<<< HEAD
 /*
  * Get the current revision number by reading the symlink target.
  * Returns -1 if unable to determine the current revision.
@@ -187,8 +186,6 @@ int getCurrentRevisionNumber(const std::string& systemConfigPath) {
   return ConfigSession::extractRevisionNumber(target);
 }
 
-=======
->>>>>>> 6df5658d0257618faa3a968ba4a99f8eeb355fbe
 } // anonymous namespace
 
 ConfigSession::ConfigSession() {
@@ -219,7 +216,6 @@ ConfigSession::ConfigSession(
   initializeSession();
 }
 
-<<<<<<< HEAD
 namespace {
 std::unique_ptr<ConfigSession>& getInstancePtr() {
   static std::unique_ptr<ConfigSession> instance;
@@ -237,11 +233,6 @@ ConfigSession& ConfigSession::getInstance() {
 
 void ConfigSession::setInstance(std::unique_ptr<ConfigSession> newInstance) {
   getInstancePtr() = std::move(newInstance);
-=======
-ConfigSession& ConfigSession::getInstance() {
-  static ConfigSession instance;
-  return instance;
->>>>>>> 6df5658d0257618faa3a968ba4a99f8eeb355fbe
 }
 
 std::string ConfigSession::getSessionConfigPath() const {
@@ -252,13 +243,10 @@ std::string ConfigSession::getSystemConfigPath() const {
   return systemConfigPath_;
 }
 
-<<<<<<< HEAD
 std::string ConfigSession::getCliConfigDir() const {
   return cliConfigDir_;
 }
 
-=======
->>>>>>> 6df5658d0257618faa3a968ba4a99f8eeb355fbe
 bool ConfigSession::sessionExists() const {
   return fs::exists(sessionConfigPath_);
 }
@@ -487,7 +475,6 @@ int ConfigSession::commit(const HostInfo& hostInfo) {
   return revision;
 }
 
-<<<<<<< HEAD
 int ConfigSession::rollback(const HostInfo& hostInfo) {
   // Get the current revision number
   int currentRevision = getCurrentRevisionNumber(systemConfigPath_);
@@ -584,6 +571,4 @@ int ConfigSession::rollback(
   return newRevision;
 }
 
-=======
->>>>>>> 6df5658d0257618faa3a968ba4a99f8eeb355fbe
 } // namespace facebook::fboss

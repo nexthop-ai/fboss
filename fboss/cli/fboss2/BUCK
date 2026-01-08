@@ -773,22 +773,17 @@ cpp_library(
         "CmdListConfig.cpp",
         "commands/config/CmdConfigAppliedInfo.cpp",
         "commands/config/CmdConfigReload.cpp",
-<<<<<<< HEAD
         "commands/config/history/CmdConfigHistory.cpp",
         "commands/config/interface/CmdConfigInterfaceDescription.cpp",
         "commands/config/interface/CmdConfigInterfaceMtu.cpp",
         "commands/config/rollback/CmdConfigRollback.cpp",
         "commands/config/session/CmdConfigSessionCommit.cpp",
         "commands/config/session/CmdConfigSessionDiff.cpp",
-=======
-        "commands/config/session/CmdConfigSessionCommit.cpp",
->>>>>>> 6df5658d0257618faa3a968ba4a99f8eeb355fbe
         "session/ConfigSession.cpp",
     ],
     headers = [
         "commands/config/CmdConfigAppliedInfo.h",
         "commands/config/CmdConfigReload.h",
-<<<<<<< HEAD
         "commands/config/history/CmdConfigHistory.h",
         "commands/config/interface/CmdConfigInterface.h",
         "commands/config/interface/CmdConfigInterfaceDescription.h",
@@ -796,9 +791,6 @@ cpp_library(
         "commands/config/rollback/CmdConfigRollback.h",
         "commands/config/session/CmdConfigSessionCommit.h",
         "commands/config/session/CmdConfigSessionDiff.h",
-=======
-        "commands/config/session/CmdConfigSessionCommit.h",
->>>>>>> 6df5658d0257618faa3a968ba4a99f8eeb355fbe
         "session/ConfigSession.h",
     ],
     exported_deps = [

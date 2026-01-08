@@ -23,12 +23,9 @@ class TestableConfigSession : public ConfigSession {
       const std::string& systemConfigPath,
       const std::string& cliConfigDir)
       : ConfigSession(sessionConfigPath, systemConfigPath, cliConfigDir) {}
-<<<<<<< HEAD
 
   // Expose protected setInstance() for testing
   using ConfigSession::setInstance;
-=======
->>>>>>> 6df5658d0257618faa3a968ba4a99f8eeb355fbe
 };
 
 } // namespace facebook::fboss

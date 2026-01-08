@@ -13,7 +13,6 @@
 #include "fboss/cli/fboss2/CmdHandler.h"
 #include "fboss/cli/fboss2/commands/config/CmdConfigAppliedInfo.h"
 #include "fboss/cli/fboss2/commands/config/CmdConfigReload.h"
-<<<<<<< HEAD
 #include "fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceDescription.h"
@@ -21,9 +20,6 @@
 #include "fboss/cli/fboss2/commands/config/rollback/CmdConfigRollback.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionCommit.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionDiff.h"
-=======
-#include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionCommit.h"
->>>>>>> 6df5658d0257618faa3a968ba4a99f8eeb355fbe
 
 namespace facebook::fboss {
 

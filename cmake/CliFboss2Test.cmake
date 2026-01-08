@@ -8,10 +8,7 @@ add_executable(fboss2_cmd_test
   fboss/cli/fboss2/test/CmdConfigInterfaceDescriptionTest.cpp
   fboss/cli/fboss2/test/CmdConfigInterfaceMtuTest.cpp
   fboss/cli/fboss2/test/CmdConfigReloadTest.cpp
-<<<<<<< HEAD
   fboss/cli/fboss2/test/CmdConfigSessionDiffTest.cpp
-=======
->>>>>>> 6df5658d0257618faa3a968ba4a99f8eeb355fbe
   fboss/cli/fboss2/test/CmdConfigSessionTest.cpp
   fboss/cli/fboss2/test/CmdSetPortStateTest.cpp
   fboss/cli/fboss2/test/CmdShowAclTest.cpp

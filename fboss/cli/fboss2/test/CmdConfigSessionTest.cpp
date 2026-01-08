@@ -530,7 +530,6 @@ TEST_F(ConfigSessionTestFixture, revisionNumberExtraction) {
       999);
 }
 
-<<<<<<< HEAD
 TEST_F(ConfigSessionTestFixture, rollbackCreatesNewRevision) {
   // This test actually calls the rollback() method with a specific revision
   fs::path cliConfigDir = testEtcDir_ / "coop" / "cli";
@@ -638,6 +637,4 @@ TEST_F(ConfigSessionTestFixture, rollbackToPreviousRevision) {
   EXPECT_TRUE(fs::exists(cliConfigDir / "agent-r3.conf"));
 }
 
-=======
->>>>>>> 6df5658d0257618faa3a968ba4a99f8eeb355fbe
 } // namespace facebook::fboss

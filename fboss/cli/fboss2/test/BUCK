@@ -60,10 +60,7 @@ cpp_unittest(
         "CmdConfigInterfaceDescriptionTest.cpp",
         "CmdConfigInterfaceMtuTest.cpp",
         "CmdConfigReloadTest.cpp",
-<<<<<<< HEAD
         "CmdConfigSessionDiffTest.cpp",
-=======
->>>>>>> 6df5658d0257618faa3a968ba4a99f8eeb355fbe
         "CmdConfigSessionTest.cpp",
         "CmdGetPcapTest.cpp",
         "CmdSetPortStateTest.cpp",
