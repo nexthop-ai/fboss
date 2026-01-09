@@ -31,18 +31,6 @@ const CommandTree& kConfigCommandTree() {
        commandHandler<CmdConfigAppliedInfo>,
        argTypeHandler<CmdConfigAppliedInfoTraits>},
 
-      {
-          "config",
-          "session",
-          "Manage config session",
-          {{
-              "commit",
-              "Commit the current config session",
-              commandHandler<CmdConfigSessionCommit>,
-              argTypeHandler<CmdConfigSessionCommitTraits>,
-          }},
-      },
-
       {"config",
        "history",
        "Show history of committed config revisions",

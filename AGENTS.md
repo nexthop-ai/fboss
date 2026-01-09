@@ -12,7 +12,7 @@
 - To run the tests, use this script: ./fboss/oss/scripts/nhfboss-test.sh --timeout 30 --retry 0
 - To run a subset of the tests, additionally pass --filter <regexp> where the regexp is matching the test case name in the code, not the cmake target.
 - Always rebuild the code and the test binary and re-run unit tests to check your work.
-- This project uses both cmake and BUCK, however we cannot build it with BUCK. Changes made to cmake files must also be reflected in the corresponding BUCK files, even though we cannot test them.
+- This project uses both cmake and BUCK, however we cannot build it with BUCK. Changes made to cmake files must also be reflected in the corresponding BUCK files, even though we cannot test them. Make sure the files are listed alphabetically.
 
 ## Coding rules
 
