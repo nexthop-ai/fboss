@@ -6,6 +6,10 @@ on:
   # Allow manually triggering the workflow
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   monobuild:
     name: Monobuild
