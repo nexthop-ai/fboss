@@ -16,8 +16,51 @@ from distro_cli.lib.constants import FBOSS_BUILDER_IMAGE
 from distro_cli.lib.download import download_artifact
 from distro_cli.lib.exceptions import ComponentError
 from distro_cli.lib.execute import execute_build_in_container
+from distro_cli.lib.paths import get_root_dir
 
 logger = logging.getLogger(__name__)
+
+
+def _get_component_directory(component_name: str, script_path: str) -> str:
+    """Determine the component directory for build artifacts.
+
+    For scripts_path that has the component_name, we return the path in script_path
+    leading to the component_name. Otherwise, the script's parent directory is returned.
+
+    Examples:
+        kernel component:
+            component_name="kernel"
+            script_path="fboss-image/kernel/scripts/build_kernel.sh"
+            returns: "fboss-image/kernel" (component_name found in path)
+
+        sai component:
+            component_name="sai"
+            script_path="broadcom-sai-sdk/build_fboss_sai.sh"
+            returns: "broadcom-sai-sdk" (fallback to script's parent)
+
+    Args:
+        component_name: Base component name (without array index)
+        script_path: Path to the build script from the execute directive
+
+    Returns:
+        Component directory path (relative to workspace root)
+
+    """
+    script_path_obj = Path(script_path)
+
+    # Check if component_name appears in the script path
+    if component_name in script_path_obj.parts:
+        # Find the last occurrence of component_name in the path
+        # Handle cases where component name appears multiple times
+        # e.g., /src/kernel/fboss/12345/kernel/build.sh -> use the last "kernel"
+        parts = script_path_obj.parts
+        # Find last occurrence by reversing and using index
+        component_index = len(parts) - 1 - parts[::-1].index(component_name)
+        # Return the path up to and including the component_name
+        return str(Path(*parts[: component_index + 1]))
+
+    # Fall back to script's parent directory
+    return str(script_path_obj.parent)
 
 
 class ComponentBuilder:
@@ -37,8 +80,6 @@ class ComponentBuilder:
         component_data: dict,
         manifest_dir: Path,
         store,
-        root_dir: Path | None = None,
-        build_artifact_subdir: str | None = None,
         artifact_pattern: str | None = None,
         dependency_artifacts: dict[str, Path] | None = None,
     ):
@@ -49,11 +90,6 @@ class ComponentBuilder:
             component_data: Component data dict from manifest
             manifest_dir: Path to the manifest directory
             store: ArtifactStore instance
-            root_dir: Path to the root directory (workspace root).
-                         If None, component cannot use execute mode
-            build_artifact_subdir: Subpath under root_dir where .build and dist directories
-                         will be created (e.g., "fboss-image/kernel").
-                         If None, component cannot use execute mode
             artifact_pattern: Glob pattern for finding build artifacts (e.g., "kernel-*.rpms.tar.gz")
                              If None, component cannot use execute mode
             dependency_artifacts: Optional dict mapping dependency names to their artifact paths
@@ -62,8 +98,6 @@ class ComponentBuilder:
         self.component_data = component_data
         self.manifest_dir = manifest_dir
         self.store = store
-        self.root_dir = root_dir
-        self.build_artifact_subdir = build_artifact_subdir
         self.artifact_pattern = artifact_pattern
         self.dependency_artifacts = dependency_artifacts or {}
 
@@ -198,21 +232,26 @@ class ComponentBuilder:
         Raises:
             ComponentError: If build fails or artifact not found
         """
-        if not self.root_dir:
-            raise ComponentError(
-                f"Component '{self.component_name}' cannot use execute mode. "
-                "No root_dir specified."
-            )
+        # Get script path and find the top-level directory to mount
+        script_path_str = (
+            cmd_line[0] if isinstance(cmd_line, list) else cmd_line.split()[0]
+        )
+        top_level_dir = script_path_str.split("/")[0]
+        src_dir = get_root_dir(top_level_dir)
+        container_script_path = Path("/src") / script_path_str
 
-        # Create build and dist directories under build_artifact_subdir
-        if self.build_artifact_subdir:
-            artifact_base_dir = self.root_dir / self.build_artifact_subdir
-        else:
-            artifact_base_dir = self.root_dir
-            logger.warning(
-                f"Component '{self.component_name}' has no build_artifact_subdir specified. "
-                f"Using root directory: {artifact_base_dir}"
-            )
+        # For array elements, extract the base name
+        base_name = (
+            self.component_name.split("[")[0]
+            if "[" in self.component_name
+            else self.component_name
+        )
+
+        # Determine component directory (component root if known, else script's parent)
+        component_dir = _get_component_directory(base_name, script_path_str)
+
+        # Create build and dist directories under the component directory
+        artifact_base_dir = src_dir / component_dir
 
         # Use artifact_pattern from parameter, or fall back to instance pattern, or use generic pattern
         if artifact_pattern is None:
@@ -229,35 +268,48 @@ class ComponentBuilder:
         dist_dir = artifact_base_dir / "dist"
         dist_dir.mkdir(parents=True, exist_ok=True)
 
+        # Mount src_dir as /src in the container
+        logger.info(f"Mounting {src_dir} as /src")
+
+        # Mount distro_cli/tools as /tools for build utilities
+        tools_dir = get_root_dir() / "fboss-image" / "distro_cli" / "tools"
+
         volumes = {
-            self.root_dir: Path("/workspace"),
+            src_dir: Path("/src"),
             build_dir: Path("/build"),
             dist_dir: Path("/output"),
+            tools_dir: Path("/tools"),
         }
 
         # Mount dependency artifacts into the container
-        # Each dependency is mounted at /dependencies/{dep_name}/
-        # The build_entrypoint.py will handle extraction and RPM installation
         dependency_install_paths = {}
         for dep_name, dep_artifact in self.dependency_artifacts.items():
-            dep_mount_point = Path(f"/dependencies/{dep_name}")
+            dep_mount_point = Path(f"/deps/{dep_name}")
             volumes[dep_artifact] = dep_mount_point
             dependency_install_paths[dep_name] = dep_mount_point
             logger.info(
                 f"Mounting dependency '{dep_name}' at {dep_mount_point}: {dep_artifact}"
             )
 
-        # Working directory is always /workspace (root)
-        # Execute command paths are relative to /workspace
-        working_dir = "/workspace"
+        # Working directory is the parent of the script
+        working_dir = str(container_script_path.parent)
 
-        # Normalize command to list (handle both string and list from manifest)
-        cmd_list = [cmd_line] if isinstance(cmd_line, str) else cmd_line
+        # Build the container command using the container script path
+        if isinstance(cmd_line, list):
+            # Replace first element with container path, keep the rest
+            container_cmd = [str(container_script_path), *cmd_line[1:]]
+        else:
+            # For string commands, replace the first token
+            tokens = cmd_line.split()
+            tokens[0] = str(container_script_path)
+            container_cmd = " ".join(tokens)
+
+        logger.info(f"Container command: {container_cmd}")
 
         # Execute build command
         execute_build_in_container(
             image_name=FBOSS_BUILDER_IMAGE,
-            command=cmd_list,
+            command=container_cmd,
             volumes=volumes,
             component_name=self.component_name,
             privileged=False,

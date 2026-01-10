@@ -66,6 +66,13 @@ class TestBuildCommand(unittest.TestCase):
                 f"Expected artifact file not found in artifact store: {temp_artifacts}",
             )
 
+            # Find the artifact in the store
+            matching_files = list(temp_artifacts.glob("*/data/kernel-test.rpms.tar.gz"))
+            self.assertTrue(
+                len(matching_files) > 0,
+                f"Expected artifact file not found in artifact store: {temp_artifacts}",
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

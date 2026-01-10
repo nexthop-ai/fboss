@@ -37,7 +37,7 @@ def execute_build_in_container(
         privileged: Run in privileged mode
         working_dir: Working directory in container
         dependency_install_paths: Dict mapping dependency names to their container mount paths
-                                  (e.g., {'kernel': Path('/dependencies/kernel')})
+                                  (e.g., {'kernel': Path('/deps/kernel')})
                                   RPMs from these paths will be installed before running the build
 
     Raises:
@@ -48,18 +48,15 @@ def execute_build_in_container(
     # Ensure fboss_builder image is built
     build_fboss_builder_image()
 
-    # Use build_entrypoint.py to install dependencies first and execute the actual build command
-    entrypoint_path = "/workspace/fboss-image/distro_cli/lib/build_entrypoint.py"
-
+    # Use build_entrypoint.py from /tools (mounted from distro_cli/tools)
     if dependency_install_paths:
         logger.info(
             f"Build entry point will process {len(dependency_install_paths)} dependencies"
         )
 
-    # Build the command: python3 /workspace/.../build_entrypoint.py <build_command>
-    # The entry point will look for dependencies in /dependencies and install them.
-    # Only list-form commands are supported
-    cmd_list = ["python3", entrypoint_path, *command]
+    # Build the command: python3 /tools/build_entrypoint.py <build_command>
+    # The entry point will look for dependencies in /deps and install them.
+    cmd_list = ["python3", "/tools/build_entrypoint.py", *command]
 
     logger.info(f"Running in container: {' '.join(cmd_list)}")
 

@@ -1,6 +1,6 @@
 {
   "kernel": {
-    "execute": ["touch", "/output/kernel-test.rpms.tar.gz"],
+    "execute": ["fboss-image/distro_cli/tests/data/kernel/stub_build.sh"],
     "artifact": "kernel-test.rpms.tar.gz"
   },
   "distribution_formats": {

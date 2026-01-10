@@ -29,21 +29,19 @@ class TestBuildEntrypoint(unittest.TestCase):
         with sandbox_tempdir("entrypoint_no_deps_") as tmpdir_path:
             output_file = tmpdir_path / "build_output.txt"
 
-            # Mount workspace (contains build_entrypoint.py)
-            # No /dependencies mount - simulates build without dependencies
+            # Mount tools directory (contains build_entrypoint.py)
+            # No /deps mount - simulates build without dependencies
+            tools_dir = get_root_dir() / "fboss-image" / "distro_cli" / "tools"
             exit_code = run_container(
                 image=FBOSS_BUILDER_IMAGE,
                 command=[
                     "python3",
-                    "/workspace/fboss-image/distro_cli/lib/build_entrypoint.py",
+                    "/tools/build_entrypoint.py",
                     "sh",
                     "-c",
                     "echo 'build completed' > /output/build_output.txt",
                 ],
-                volumes={
-                    get_root_dir(): Path("/workspace"),  # Mount repo root
-                    tmpdir_path: Path("/output"),
-                },
+                volumes={tools_dir: Path("/tools"), tmpdir_path: Path("/output")},
                 ephemeral=True,
             )
 
@@ -52,26 +50,27 @@ class TestBuildEntrypoint(unittest.TestCase):
             self.assertEqual(output_file.read_text().strip(), "build completed")
 
     def test_entrypoint_with_empty_dependencies(self):
-        """Test build_entrypoint.py handles empty /dependencies directory gracefully."""
+        """Test build_entrypoint.py handles empty /deps directory gracefully."""
         with sandbox_tempdir("entrypoint_empty_deps_") as tmpdir_path:
             output_file = tmpdir_path / "build_output.txt"
             deps_dir = tmpdir_path / "deps"
             deps_dir.mkdir(exist_ok=True)
 
-            # Mount empty /dependencies directory
+            # Mount empty /deps directory
+            tools_dir = get_root_dir() / "fboss-image" / "distro_cli" / "tools"
             exit_code = run_container(
                 image=FBOSS_BUILDER_IMAGE,
                 command=[
                     "python3",
-                    "/workspace/fboss-image/distro_cli/lib/build_entrypoint.py",
+                    "/tools/build_entrypoint.py",
                     "sh",
                     "-c",
                     "echo 'build with empty deps' > /output/build_output.txt",
                 ],
                 volumes={
-                    get_root_dir(): Path("/workspace"),
+                    tools_dir: Path("/tools"),
                     tmpdir_path: Path("/output"),
-                    deps_dir: Path("/dependencies"),
+                    deps_dir: Path("/deps"),
                 },
                 ephemeral=True,
             )

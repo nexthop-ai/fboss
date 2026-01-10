@@ -188,7 +188,7 @@ fboss-image/distro_cli/
 The CLI uses a custom OOP wrapper around argparse (stdlib only, no external dependencies):
 
 ```python
-from lib.cli import CLI
+from distro_cli.lib.cli import CLI
 
 # Create CLI
 cli = CLI(description='My CLI')

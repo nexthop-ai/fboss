@@ -25,7 +25,7 @@ Source1: fboss-reference.config
 Source2: fboss-local-overrides.config
 
 # Default in-container scripts dir (override via --define container_scripts_dir if needed)
-%global container_scripts_dir /workspace/fboss-image/kernel/scripts
+%global container_scripts_dir /src/fboss-image/kernel/scripts
 
 # Build requirements
 BuildRequires: gcc, make
@@ -164,4 +164,3 @@ dd if=/dev/zero of=%{buildroot}/boot/initramfs-%{version}-%{release}.%{_arch}.im
 %changelog
 * Fri Oct 03 2025 Project Mosaic Team <meta-support@nexthop.ai> - %{version}-1.fboss
 - Initial FBOSS kernel package for v%{version}
-

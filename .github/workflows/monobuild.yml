@@ -47,7 +47,7 @@ jobs:
     - name: Build and test
       run: |
         cd monobuild
-        bazel test --build_tag_filters=-not-for-ci,-disabled --test_tag_filters=-not-for-ci,-disabled -- //fboss/fboss-image/distro_cli/...
+        bazel test --strategy=TestRunner=standalone --build_tag_filters=-not-for-ci,-disabled --test_tag_filters=-not-for-ci,-disabled -- //fboss/fboss-image/distro_cli/...
 
     - name: Cleanup
       if: always()

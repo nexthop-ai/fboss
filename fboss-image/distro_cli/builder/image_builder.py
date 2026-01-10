@@ -33,34 +33,6 @@ COMPONENT_ARTIFACT_PATTERNS = {
 }
 
 
-def _get_component_directory(component_name: str, script_path: str) -> str:
-    """Determine the component directory for build artifacts.
-
-    For scripts_path that has the component_name, we return the path in script_path
-    leading to the component_name. Otherwise, the script's parent directory is returned.
-
-    Args:
-        component_name: Base component name (without array index)
-        script_path: Path to the build script from the execute directive
-
-    Returns:
-        Component directory path (relative to workspace root)
-
-    """
-    script_path_obj = Path(script_path)
-
-    # Check if component_name appears in the script path
-    if component_name in script_path_obj.parts:
-        # Find the index of component_name in the path
-        parts = script_path_obj.parts
-        component_index = parts.index(component_name)
-        # Return the path up to and including the component_name
-        return str(Path(*parts[: component_index + 1]))
-
-    # Fall back to script's parent directory
-    return str(script_path_obj.parent)
-
-
 class ImageBuilder:
     """Handles building FBOSS images from manifests."""
 
@@ -93,9 +65,6 @@ class ImageBuilder:
     ) -> ComponentBuilder:
         """Create a ComponentBuilder for the given component using conventions.
 
-        Build artifacts (.build and dist directories) are created at the component
-        root directory if known, otherwise beside the component's build script.
-
         Args:
             component_name: Name of the component (from JSON key)
             component_data: Component data dict from manifest
@@ -104,21 +73,8 @@ class ImageBuilder:
         Returns:
             ComponentBuilder instance configured for the component
         """
-        root_dir = get_root_dir()
-
         # For array elements, extract the base name
         base_name = component_name.split("[")[0]
-
-        # Derive build_artifact_subdir from the execute directive path
-        build_artifact_subdir = None
-        if "execute" in component_data:
-            execute_cmd = component_data["execute"]
-            # Get the first element (script path) whether it's a string or list
-            script_path = (
-                execute_cmd if isinstance(execute_cmd, str) else execute_cmd[0]
-            )
-            # Determine component directory (component root if known, else script's parent)
-            build_artifact_subdir = _get_component_directory(base_name, script_path)
 
         # Get artifact pattern from the predefined patterns
         artifact_pattern = COMPONENT_ARTIFACT_PATTERNS.get(base_name)
@@ -128,8 +84,6 @@ class ImageBuilder:
             component_data=component_data,
             manifest_dir=self.manifest.manifest_dir,
             store=self.store,
-            root_dir=root_dir,
-            build_artifact_subdir=build_artifact_subdir,
             artifact_pattern=artifact_pattern,
             dependency_artifacts=dependency_artifacts or {},
         )
@@ -193,15 +147,20 @@ class ImageBuilder:
             Path("/dev"): Path("/dev"),
         }
 
-        cmd = ["/image_builder/bin/build_image_in_container.sh"]
-        if "pxe" in dist_formats or "usb" in dist_formats:
-            cmd.append("--build-pxe-usb")
+        # Build command with appropriate flags based on distribution formats
+        command = ["/image_builder/bin/build_image_in_container.sh"]
+
+        # Add flags for PXE/USB if either is requested
+        if "usb" in dist_formats or "pxe" in dist_formats:
+            command.append("--build-pxe-usb")
+
+        # Add flag for ONIE if requested
         if "onie" in dist_formats:
-            cmd.append("--build-onie")
+            command.append("--build-onie")
 
         # Run the build script inside fboss_builder container
         exit_code = run_container(
-            image=FBOSS_BUILDER_IMAGE, command=cmd, volumes=volumes, privileged=True
+            image=FBOSS_BUILDER_IMAGE, command=command, volumes=volumes, privileged=True
         )
 
         if exit_code != 0:

@@ -3,7 +3,7 @@
 Build entry point for component builds inside the container.
 
 This is the standard entry point for all component builds. It:
-1. Discovers dependencies mounted at /dependencies/
+1. Discovers dependencies mounted at /deps/
 2. Extracts tarballs if needed
 3. Installs RPMs from dependencies
 4. Executes the component build script
@@ -16,6 +16,7 @@ Example:
 """
 
 import logging
+import os
 import subprocess
 import sys
 import tempfile
@@ -25,7 +26,7 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 # Standard location where dependencies are mounted
-DEPENDENCIES_DIR = Path("/dependencies")
+DEPENDENCIES_DIR = Path("/deps")
 
 
 def extract_tarball(tarball_path: Path, extract_dir: Path) -> None:
@@ -40,10 +41,10 @@ def extract_tarball(tarball_path: Path, extract_dir: Path) -> None:
         # Use tar command for better compression support (zstd) and multithreading
         cmd = ["tar", "-xf", str(tarball_path), "-C", str(extract_dir)]
         logger.info(f"Running: {' '.join(cmd)}")
-        subprocess.run(cmd, check=True)
+        subprocess.run(cmd, check=True, capture_output=True, text=True)
         logger.info(f"Successfully extracted {tarball_path}")
     except subprocess.CalledProcessError as e:
-        logger.error(f"Failed to extract {tarball_path}: {e}")
+        logger.error(f"Failed to extract {tarball_path}: {e.stderr}")
         raise
     except Exception as e:
         logger.error(f"Failed to extract {tarball_path}: {e}")
@@ -86,7 +87,7 @@ def install_rpms(rpm_paths: list[Path]) -> None:
 
 
 def discover_dependencies() -> list[Path]:
-    """Discover all dependencies in the standard /dependencies directory.
+    """Discover all dependencies in the standard /deps directory.
 
     Returns:
         List of paths to dependency artifacts (files or directories)
@@ -177,8 +178,22 @@ def main():
         logger.info("=" * 60)
         logger.info(f"Executing build: {' '.join(build_command)}")
         logger.info("=" * 60)
+
+        # Set SKIP_KERNEL_INSTALL environment variable if kernel dependency was installed
+        # This should be eventually replaced with sanity checks for installed dependencies
+        # as the manifest builder is expected to support this.
+        env = os.environ.copy()
+        if dependencies:
+            # Check if any dependency is named 'kernel'
+            kernel_deps = [d for d in dependencies if "kernel" in d.name.lower()]
+            if kernel_deps:
+                env["SKIP_KERNEL_INSTALL"] = "1"
+                logger.info(
+                    "Setting SKIP_KERNEL_INSTALL=1 (kernel dependency was installed)"
+                )
+
         try:
-            result = subprocess.run(build_command, check=False)
+            result = subprocess.run(build_command, check=False, env=env)
             sys.exit(result.returncode)
         except Exception as e:
             logger.error(f"Failed to execute build command: {e}")

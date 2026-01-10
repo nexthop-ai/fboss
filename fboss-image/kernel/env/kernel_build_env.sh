@@ -12,8 +12,10 @@
 KERNEL_BUILD_ENV_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Base directories
-export KERNEL_BUILD_ROOT="$(cd "$KERNEL_BUILD_ENV_DIR/.." && pwd)"
-export PROJECT_ROOT="$(cd "$KERNEL_BUILD_ROOT/../.." && pwd)"
+KERNEL_BUILD_ROOT="$(cd "$KERNEL_BUILD_ENV_DIR/.." && pwd)"
+export KERNEL_BUILD_ROOT
+PROJECT_ROOT="$(cd "$KERNEL_BUILD_ROOT/../.." && pwd)"
+export PROJECT_ROOT
 
 # Kernel build structure
 export KERNEL_ENV_DIR="$KERNEL_BUILD_ROOT/env"
@@ -36,7 +38,7 @@ export KERNEL_BUILD_ALL_SCRIPT="$KERNEL_SCRIPTS_DIR/build_all_kernels.sh"
 export FBOSS_REFERENCE_CONFIG="$KERNEL_CONFIGS_DIR/fboss-reference.config"
 
 # RPM build paths (inside container)
-export CONTAINER_WORKSPACE="/workspace"
+export CONTAINER_WORKSPACE="/src"
 export CONTAINER_KERNEL_ROOT="$CONTAINER_WORKSPACE/fboss-image/kernel"
 export CONTAINER_DIST_DIR="$CONTAINER_KERNEL_ROOT/dist"
 export CONTAINER_SPECS_DIR="$CONTAINER_KERNEL_ROOT/specs"
@@ -45,4 +47,3 @@ export CONTAINER_CONFIGS_DIR="$CONTAINER_KERNEL_ROOT/configs"
 
 # FBOSS supported kernel versions
 export FBOSS_KERNEL_VERSIONS=("6.4.3" "6.11.1")
-

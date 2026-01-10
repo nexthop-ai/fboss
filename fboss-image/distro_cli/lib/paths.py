@@ -10,26 +10,29 @@
 from pathlib import Path
 
 
-def get_root_dir() -> Path:
-    """Find the root directory containing fboss-image
+def get_root_dir(dir_name: str = "fboss-image") -> Path:
+    """Find the root directory containing the specified directory.
 
     This works by walking up from the current file until we find
-    the fboss-image directory, then going up one more level.
+    the specified directory, then returning its parent.
+
+    Args:
+        dir_name: Name of the directory to search for (default: "fboss-image")
 
     Returns:
-        Path to root directory
+        Path to root directory (parent of dir_name)
 
     Raises:
         RuntimeError: If the root directory cannot be determined
     """
     current = Path(__file__).resolve()
 
-    # Walk up the directory tree looking for fboss-image
+    # Walk up the directory tree looking for dir_name
     for parent in current.parents:
-        if (parent / "fboss-image").is_dir():
+        if (parent / dir_name).is_dir():
             return parent
 
     raise RuntimeError(
         f"Could not find root from {current}. "
-        "Expected to find 'fboss-image' directory in parent path."
+        f"Expected to find '{dir_name}' directory in parent path."
     )

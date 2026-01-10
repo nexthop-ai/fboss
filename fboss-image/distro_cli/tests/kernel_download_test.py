@@ -21,7 +21,6 @@ from pathlib import Path
 from distro_cli.builder.component import ComponentBuilder
 from distro_cli.lib.artifact import ArtifactStore
 from distro_cli.lib.manifest import ImageManifest
-from distro_cli.lib.paths import get_root_dir
 
 
 class SimpleHTTPServer:
@@ -141,8 +140,6 @@ class KernelDownloadTestHelper:
             component_data=kernel_data,
             manifest_dir=manifest.manifest_dir,
             store=store,
-            root_dir=get_root_dir(),
-            build_artifact_subdir="fboss-image/kernel",
             artifact_pattern="kernel-*.rpms.tar.gz",
         )
         return kernel_builder.build()
