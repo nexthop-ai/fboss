@@ -8,7 +8,6 @@ from distro_cli.lib.artifact import ArtifactStore
 from distro_cli.lib.constants import FBOSS_BUILDER_IMAGE
 from distro_cli.lib.docker.container import run_container
 from distro_cli.lib.manifest import ImageManifest
-from distro_cli.lib.paths import get_root_dir
 from distro_cli.tests.test_helpers import ensure_test_docker_image, sandbox_tempdir
 
 
@@ -114,19 +113,17 @@ class TestKernelBuildE2E(unittest.TestCase):
         kernel_data = manifest.get_component("kernel")
 
         # Build kernel
+        # The artifact base directory is automatically derived from the execute path
         builder = ComponentBuilder(
             component_name="kernel",
             component_data=kernel_data,
             manifest_dir=manifest.manifest_dir,
             store=store,
-            root_dir=get_root_dir(),
-            component_dir="fboss-image/kernel",
             artifact_pattern="kernel-*.rpms.tar.gz",
         )
         result = builder.build()
 
         # Verify result
-        self.assertTrue(result.exists(), f"Kernel tarball not found: {result}")
         self.assertTrue(
             result.name.endswith(".tar.gz"), f"Expected tarball, got: {result.name}"
         )

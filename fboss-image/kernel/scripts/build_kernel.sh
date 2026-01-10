@@ -17,13 +17,13 @@ set -euo pipefail
 KERNEL_VERSION="${1:?kernel version required}"
 OUT_DIR="${2:?output dir required}"
 
-# Compute container paths (avoid relying on host-exported env)
-CONTAINER_WORKSPACE="/src"
-KERNEL_ROOT="$CONTAINER_WORKSPACE/fboss-image/kernel"
+# Compute container paths
+# Determine KERNEL_ROOT from the script's location
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+KERNEL_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 CONTAINER_DIST_DIR="$KERNEL_ROOT/dist"
 CONTAINER_SPECS_DIR="$KERNEL_ROOT/specs"
 CONTAINER_CONFIGS_DIR="$KERNEL_ROOT/configs"
-
 CONTAINER_SCRIPTS_DIR="$KERNEL_ROOT/scripts"
 
 # Install kernel build dependencies
