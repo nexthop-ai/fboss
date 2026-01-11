@@ -5,8 +5,8 @@
 
 interactive=""
 if [ "$1" = "bash" ]; then
-    interactive="-it"
+  interactive="-it"
 fi
 
 docker run $interactive --rm --volume $PWD:/var/src --volume $HOME/.config/gh:/root/.config/gh \
-    --env BASH_ENV=/root/.bashrc fboss_builder /bin/bash -c $@
+  --env BASH_ENV=/root/.bashrc fboss_builder /bin/bash -c "$@"

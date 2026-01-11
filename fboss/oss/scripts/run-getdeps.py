@@ -32,10 +32,7 @@ def detect_toolchain():
     """
     try:
         gxx_version = subprocess.run(
-            ["g++", "--version"],
-            capture_output=True,
-            text=True,
-            timeout=5
+            ["g++", "--version"], capture_output=True, text=True, timeout=5
         )
     except (subprocess.TimeoutExpired, FileNotFoundError, OSError) as e:
         print(f"Warning: Could not detect compiler: {e}", file=sys.stderr)
@@ -83,14 +80,14 @@ def detect_toolchain():
         print(
             f"Warning: Could not detect toolchain from g++ --version output. "
             f"Expected 'clang' or 'GCC' in output, got:\n{gxx_version.stdout}",
-            file=sys.stderr
+            file=sys.stderr,
         )
         return None
 
     return {
-        'type': toolchain_type,
-        'target_triple': target_triple,
-        'install_dir': install_dir
+        "type": toolchain_type,
+        "target_triple": target_triple,
+        "install_dir": install_dir,
     }
 
 
@@ -105,11 +102,13 @@ def setup_clang_environment(toolchain_info):
     """
     print("Detected clang compiler, setting clang-specific flags", file=sys.stderr)
 
-    target_triple = toolchain_info.get('target_triple')
-    llvm_bin_dir = toolchain_info.get('install_dir')
+    target_triple = toolchain_info.get("target_triple")
+    llvm_bin_dir = toolchain_info.get("install_dir")
 
     if not llvm_bin_dir:
-        print("Warning: Could not determine LLVM installation directory", file=sys.stderr)
+        print(
+            "Warning: Could not determine LLVM installation directory", file=sys.stderr
+        )
         return
     if not target_triple:
         print("Warning: Could not determine target triple", file=sys.stderr)
@@ -122,14 +121,17 @@ def setup_clang_environment(toolchain_info):
             content = f.read()
     except FileNotFoundError:
         # CMakeLists.txt not found - this can happen during Docker build
-        print("Warning: CMakeLists.txt not found, skipping clang-specific flags", file=sys.stderr)
+        print(
+            "Warning: CMakeLists.txt not found, skipping clang-specific flags",
+            file=sys.stderr,
+        )
         return
 
     # Extract the clang-specific section: if (CMAKE_CXX_COMPILER_ID MATCHES "Clang") ... endif()
     clang_section_match = re.search(
         r'if\s*\(\s*CMAKE_CXX_COMPILER_ID\s+MATCHES\s+"Clang"\s*\)(.*?)endif\(\)',
         content,
-        re.DOTALL | re.IGNORECASE
+        re.DOTALL | re.IGNORECASE,
     )
 
     if clang_section_match:
@@ -138,7 +140,7 @@ def setup_clang_environment(toolchain_info):
         for line_match in re.finditer(r'CMAKE_CXX_FLAGS.*?"([^"]*)"', clang_section):
             flags_part = line_match.group(1)
             # Extract individual flags (e.g., -Wno-something, -DFMT_USE_CONSTEVAL=0)
-            for flag in re.findall(r'(-[A-Za-z0-9_\-=]+)', flags_part):
+            for flag in re.findall(r"(-[A-Za-z0-9_\-=]+)", flags_part):
                 cxxflags.append(flag)
 
     # Add additional flags needed for third-party dependencies
@@ -182,7 +184,9 @@ def setup_clang_environment(toolchain_info):
 
     # Make sure we don't install binutils when we use clang.
     # This is ugly but makes gcc compatibility simpler.
-    for manifest in glob.glob(os.path.join(path_to("build", "fbcode_builder", "manifests"), "*")):
+    for manifest in glob.glob(
+        os.path.join(path_to("build", "fbcode_builder", "manifests"), "*")
+    ):
         with open(manifest, "r") as f:
             content = f.read()
         if "\nbinutils" in content:
@@ -192,11 +196,14 @@ def setup_clang_environment(toolchain_info):
     # XXX temporary hack: make sure we revert fmt/range-v3 if they have a diff
     # due to stable hashes overwriting those files. Hopefully won't be needed
     # anymore once clang support merges upstream.
-    subprocess.check_call([
-        "git", "checkout",
-        "build/fbcode_builder/manifests/fmt",
-        "build/fbcode_builder/manifests/range-v3"
-    ])
+    subprocess.check_call(
+        [
+            "git",
+            "checkout",
+            "build/fbcode_builder/manifests/fmt",
+            "build/fbcode_builder/manifests/range-v3",
+        ]
+    )
 
 
 def main():
@@ -204,10 +211,10 @@ def main():
     toolchain_info = detect_toolchain()
 
     if toolchain_info:
-        if toolchain_info['type'] == "clang":
+        if toolchain_info["type"] == "clang":
             setup_clang_environment(toolchain_info)
-        elif toolchain_info['type'] == "gcc":
-            pass # No action needed for GCC
+        elif toolchain_info["type"] == "gcc":
+            pass  # No action needed for GCC
     # If toolchain_info is None, detect_toolchain() already printed a warning
     # and we'll proceed without environment setup
 

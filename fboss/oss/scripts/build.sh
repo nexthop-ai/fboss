@@ -5,25 +5,25 @@ export SCCACHE_DIR=/var/src/.sccache
 export SCCACHE_CACHE_SIZE=30G
 
 # Don't overload the system
-num_jobs=$(( $(nproc) - 2 ))
+num_jobs=$(($(nproc) - 2))
 
 SAI_DIR=/var/src/.build_dir/sai
 source $SAI_DIR/sai_build.env
 
 if [ -n "$BUILD_SAI_FAKE" ]; then
-    sai_name="sai-fake"
+  sai_name="sai-fake"
 else
-    if [ -n "$SAI_BRCM_IMPL" ]; then
-        sai_name="sai-bcm-$SAI_SDK_VERSION"
-    else
-        sai_name="sai-unknown"
-    fi
+  if [ -n "$SAI_BRCM_IMPL" ]; then
+    sai_name="sai-bcm-$SAI_SDK_VERSION"
+  else
+    sai_name="sai-unknown"
+  fi
 fi
 
 build_dir="/var/src/.build_dir/${sai_name}"
 mkdir -p $build_dir
 
-common_options="--allow-system-packages --scratch-path ${build_dir} --src-dir . --extra-cmake-defines {\"CMAKE_C_COMPILER_LAUNCHER\":\"sccache\",\"CMAKE_CXX_COMPILER_LAUNCHER\":\"sccache\"} fboss"
+common_options="--allow-system-packages --scratch-path ${build_dir} --src-dir . --extra-cmake-defines {'CMAKE_C_COMPILER_LAUNCHER':'sccache','CMAKE_CXX_COMPILER_LAUNCHER':'sccache'} fboss"
 
 # Share download caches
 mkdir -p /var/src/.build_dir/downloads
@@ -40,7 +40,7 @@ tar -cf manifests_snapshot.tar build/fbcode_builder/manifests/fboss build/fbcode
 ./build/fbcode_builder/getdeps.py install-system-deps --recursive fboss
 
 if [ -z "$BUILD_SAI_FAKE" ]; then
-    ./fboss/oss/scripts/build-helper.py $SAI_DIR/lib/libsai_impl.a $SAI_DIR/include $build_dir/sai_impl $SAI_VERSION
+  ./fboss/oss/scripts/build-helper.py $SAI_DIR/lib/libsai_impl.a $SAI_DIR/include $build_dir/sai_impl $SAI_VERSION
 fi
 
 echo "Building deps"
