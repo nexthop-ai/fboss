@@ -19,32 +19,41 @@ jobs:
       contents: read
 
     steps:
-    - name: Checkout code
-      env:
-        GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
-      shell: bash
-      run: |
-        submodule="fboss"
-        nh_branch="main"
+      - name: Checkout nh repo
+        uses: actions/checkout@v6
+        with:
+          repository: nexthop-ai/nh
+          ref: main
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
 
-        git clone --jobs 64 --reference-if-able /home/gha/git_reference_repo --recurse-submodule https://x-access-token:${GH_TOKEN}@github.com/nexthop-ai/nh.git monobuild
-        cd monobuild
-        git checkout ${nh_branch}
+      - name: Update fboss submodule to PR commit
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          git config --global url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
+          git submodule update --init fboss
+          cd fboss
+          git checkout ${{ github.event.pull_request.head.sha }}
 
-        pushd ${submodule}
-        git checkout ${{ github.event.pull_request.head.sha }}
-        popd
+      - uses: bazel-contrib/setup-bazel@0.18.0
+        with:
+          # Avoid downloading Bazel every time.
+          bazelisk-cache: true
+          # Store build cache per workflow.
+          disk-cache: ${{ github.workflow }}
+          # Share repository cache between workflows.
+          repository-cache: true
 
-    - uses: bazel-contrib/setup-bazel@0.15.0
-      with:
-        # Avoid downloading Bazel every time.
-        bazelisk-cache: true
-        # Store build cache per workflow.
-        disk-cache: ${{ github.workflow }}
-        # Share repository cache between workflows.
-        repository-cache: true
+      - name: Build and test
+        run: bazel test --strategy=TestRunner=standalone --build_tag_filters=-not-for-ci,-disabled --test_tag_filters=-not-for-ci,-disabled -- //fboss/fboss-image/distro_cli/...
 
-    - name: Build and test
-      run: |
-        cd monobuild
-        bazel test --strategy=TestRunner=standalone --build_tag_filters=-not-for-ci,-disabled --test_tag_filters=-not-for-ci,-disabled -- //fboss/fboss-image/distro_cli/...
+      - name: Print failed test logs
+        if: failure()
+        run: |
+          for log in $(find ~/.bazel/execroot/_main/bazel-out/*/testlogs -name 'test.log' 2>/dev/null); do
+            echo "=========================================="
+            echo "Test log: $log"
+            echo "=========================================="
+            cat "$log"
+            echo ""
+          done

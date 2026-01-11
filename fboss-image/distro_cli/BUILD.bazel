@@ -60,7 +60,7 @@ py_test(
     main = "tests/build_test.py",
     python_version = "PY3",
     srcs_version = "PY3",
-    size = "small",
+    size = "medium",
     tags = ["local"],  # Docker needs access to ~/.docker/
 )
 
@@ -186,7 +186,7 @@ py_test(
     main = "tests/build_entrypoint_test.py",
     python_version = "PY3",
     srcs_version = "PY3",
-    size = "small",
+    size = "medium",
     tags = ["local"],  # Docker needs access to ~/.docker/
 )
 
