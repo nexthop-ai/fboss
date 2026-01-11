@@ -13,7 +13,7 @@ concurrency:
 jobs:
   monobuild:
     name: Monobuild
-    runs-on: [self-hosted, fboss-gha]
+    runs-on: cloudstack-ubuntu24-large
     permissions:
       id-token: write
       contents: read
@@ -48,8 +48,3 @@ jobs:
       run: |
         cd monobuild
         bazel test --strategy=TestRunner=standalone --build_tag_filters=-not-for-ci,-disabled --test_tag_filters=-not-for-ci,-disabled -- //fboss/fboss-image/distro_cli/...
-
-    - name: Cleanup
-      if: always()
-      run: |
-        sudo rm -rf monobuild
