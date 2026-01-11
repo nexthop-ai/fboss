@@ -9,14 +9,15 @@
 
 import hashlib
 import logging
+from os.path import commonpath
 from pathlib import Path
 
 from distro_cli.lib.artifact import find_artifact_in_dir
 from distro_cli.lib.constants import FBOSS_BUILDER_IMAGE
+from distro_cli.lib.docker.image import get_git_dir
 from distro_cli.lib.download import download_artifact
 from distro_cli.lib.exceptions import ComponentError
 from distro_cli.lib.execute import execute_build_in_container
-from distro_cli.lib.paths import get_root_dir
 
 logger = logging.getLogger(__name__)
 
@@ -232,13 +233,30 @@ class ComponentBuilder:
         Raises:
             ComponentError: If build fails or artifact not found
         """
-        # Get script path and find the top-level directory to mount
+        # Get script path from command line
         script_path_str = (
             cmd_line[0] if isinstance(cmd_line, list) else cmd_line.split()[0]
         )
-        top_level_dir = script_path_str.split("/")[0]
-        src_dir = get_root_dir(top_level_dir)
-        container_script_path = Path("/src") / script_path_str
+
+        # Resolve script path: if absolute, use as-is; if relative, resolve from manifest_dir
+        script_path = Path(script_path_str)
+        resolved_script_path = (
+            script_path
+            if script_path.is_absolute()
+            else (self.manifest_dir / script_path).resolve()
+        )
+
+        # Verify the script exists
+        if not resolved_script_path.exists():
+            raise ComponentError(
+                f"Build script not found: {resolved_script_path} "
+                f"(from manifest path: {script_path_str})"
+            )
+
+        # We mount the common parent of the script path and manifest dir
+        src_dir = Path(commonpath([resolved_script_path, self.manifest_dir]))
+        script_relative_to_src = resolved_script_path.relative_to(src_dir)
+        container_script_path = Path("/src") / script_relative_to_src
 
         # For array elements, extract the base name
         base_name = (
@@ -248,7 +266,9 @@ class ComponentBuilder:
         )
 
         # Determine component directory (component root if known, else script's parent)
-        component_dir = _get_component_directory(base_name, script_path_str)
+        # Use the resolved script path relative to src_dir
+        script_relative_to_src = resolved_script_path.relative_to(src_dir)
+        component_dir = _get_component_directory(base_name, str(script_relative_to_src))
 
         # Create build and dist directories under the component directory
         artifact_base_dir = src_dir / component_dir
@@ -272,7 +292,7 @@ class ComponentBuilder:
         logger.info(f"Mounting {src_dir} as /src")
 
         # Mount distro_cli/tools as /tools for build utilities
-        tools_dir = get_root_dir() / "fboss-image" / "distro_cli" / "tools"
+        tools_dir = get_git_dir() / "fboss-image" / "distro_cli" / "tools"
 
         volumes = {
             src_dir: Path("/src"),

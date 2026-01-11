@@ -3,6 +3,6 @@
     "usb": "output/test-image.iso"
   },
   "kernel": {
-    "execute": ["fboss-image/kernel/scripts/build_kernel.sh", "--kernel-version", "6.4.3"]
+    "execute": ["../../../kernel/scripts/build_kernel.sh", "--kernel-version", "6.4.3"]
   }
 }

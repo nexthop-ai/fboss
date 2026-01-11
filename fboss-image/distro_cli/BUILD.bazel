@@ -203,22 +203,21 @@ py_test(
     tags = ["local"],  # Docker needs access to ~/.docker/
 )
 
-# Commented out - sai_build_test.py doesn't exist yet
-# py_test(
-#     name = "sai_build_test",
-#     srcs = [
-#         "tests/sai_build_test.py",
-#         "tests/test_helpers.py",
-#     ],
-#     imports = [".."],
-#     deps = [":distro_cli_lib"],
-#     data = glob(["tests/data/*.json"]),
-#     main = "tests/sai_build_test.py",
-#     python_version = "PY3",
-#     srcs_version = "PY3",
-#     size = "large",  # E2E test takes several minutes
-#     tags = ["not-for-ci", "local"],  # E2E test - run manually due to excessive execution times
-# )
+py_test(
+    name = "sai_build_test",
+    srcs = [
+        "tests/sai_build_test.py",
+        "tests/test_helpers.py",
+    ],
+    imports = [".."],
+    deps = [":distro_cli_lib"],
+    data = glob(["tests/data/*.json"]),
+    main = "tests/sai_build_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "large",  # E2E test takes several minutes
+    tags = ["not-for-ci", "local"],  # E2E test - run manually due to excessive execution times
+)
 
 # Disabling linting due to ruff not getting installed during build.
 # Until this is resolved, we depend on pre-commit checks.

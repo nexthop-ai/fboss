@@ -24,8 +24,6 @@ def run_container(
     ephemeral: bool = True,
     working_dir: str | None = None,
     name: str | None = None,
-    stdout=None,
-    stderr=None,
 ) -> int:
     """Run a command in a Docker container.
 
@@ -39,8 +37,6 @@ def run_container(
         ephemeral: Remove container after it exits (--rm, default: True)
         working_dir: Working directory inside container
         name: Name for the container
-        stdout: File object for stdout (default: inherit)
-        stderr: File object for stderr (default: inherit)
 
     Returns:
         Exit code from the container
@@ -91,9 +87,7 @@ def run_container(
     try:
         result = subprocess.run(
             cmd,
-            stdout=stdout,
-            stderr=stderr,
-            check=False  # Don't raise on non-zero exit
+            check=False,  # Don't raise on non-zero exit
         )
         logger.info(f"Container exited with code: {result.returncode}")
         return result.returncode

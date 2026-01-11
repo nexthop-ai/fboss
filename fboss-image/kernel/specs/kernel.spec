@@ -25,7 +25,7 @@ Source1: fboss-reference.config
 Source2: fboss-local-overrides.config
 
 # Default in-container scripts dir (override via --define container_scripts_dir if needed)
-%global container_scripts_dir /src/fboss-image/kernel/scripts
+%{!?container_scripts_dir:%global container_scripts_dir /src/fboss-image/kernel/scripts}
 
 # Build requirements
 BuildRequires: gcc, make

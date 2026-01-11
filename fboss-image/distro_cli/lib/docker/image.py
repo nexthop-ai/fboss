@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 DEFAULT_CACHE_EXPIRATION_SECONDS = 24 * 60 * 60
 
 
-def get_root_dir() -> Path:
+def get_git_dir() -> Path:
     """Find the repository root directory by looking for .git marker.
 
     Returns:
@@ -40,7 +40,9 @@ def get_root_dir() -> Path:
     raise RuntimeError("Could not find repository root (no .git directory found)")
 
 
-def _hash_directory_tree(directory: Path, exclude_patterns: list[str] | None = None) -> str:
+def _hash_directory_tree(
+    directory: Path, exclude_patterns: list[str] | None = None
+) -> str:
     """Hash all files in a directory tree.
 
     Args:
@@ -124,10 +126,17 @@ def _get_image_build_timestamp(image_tag: str) -> int | None:
     """
     try:
         result = subprocess.run(
-            ["docker", "image", "inspect", image_tag, "--format", "{{json .Config.Labels}}"],
+            [
+                "docker",
+                "image",
+                "inspect",
+                image_tag,
+                "--format",
+                "{{json .Config.Labels}}",
+            ],
             capture_output=True,
             text=True,
-            check=False
+            check=False,
         )
         if result.returncode != 0:
             return None
@@ -199,7 +208,7 @@ def build_fboss_builder_image() -> None:
     """
 
     # Find paths
-    root_dir = get_root_dir()
+    root_dir = get_git_dir()
     dockerfile = root_dir / "fboss" / "oss" / "docker" / "Dockerfile.builder"
     build_script = root_dir / "fboss" / "oss" / "scripts" / "build_docker.sh"
 
@@ -239,33 +248,31 @@ def build_fboss_builder_image() -> None:
                 **os.environ,
                 "DOCKER_BUILDKIT": "1",
                 "BUILDKIT_PROGRESS": "plain",
-            }
+            },
         )
         logger.info(f"Successfully built {FBOSS_BUILDER_IMAGE} image")
 
         # Tag with checksum and add timestamp label
         subprocess.run(
-            [
-                "docker", "tag",
-                f"{FBOSS_BUILDER_IMAGE}:latest",
-                checksum_tag
-            ],
-            check=True
+            ["docker", "tag", f"{FBOSS_BUILDER_IMAGE}:latest", checksum_tag], check=True
         )
 
         # Add build timestamp label to the checksum-tagged image
         # We do this by creating a new image with the label
         subprocess.run(
             [
-                "docker", "build",
-                "--label", f"build_timestamp={current_timestamp}",
-                "--tag", checksum_tag,
+                "docker",
+                "build",
+                "--label",
+                f"build_timestamp={current_timestamp}",
+                "--tag",
+                checksum_tag,
                 "-",
             ],
             input=f"FROM {FBOSS_BUILDER_IMAGE}:latest\n",
             text=True,
             check=True,
-            capture_output=True
+            capture_output=True,
         )
 
         logger.info(f"Tagged image with checksum: {checksum[:12]}")

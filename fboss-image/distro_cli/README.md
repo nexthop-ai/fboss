@@ -207,3 +207,27 @@ device.add_command('ssh', ssh_func, help_text='SSH to device')
 # Run
 cli.run(setup_logging_func=setup_logging)
 ```
+
+## Running Tests
+
+### Quick Tests (Default)
+Run all fast unit tests (excludes long-running E2E tests):
+```bash
+python3 -m pytest distro_cli/tests/ -v
+# or explicitly exclude e2e tests:
+python3 -m pytest distro_cli/tests/ -m "not e2e" -v
+```
+
+### E2E Tests Only
+Run only the end-to-end tests (kernel build, SAI build):
+```bash
+python3 -m pytest distro_cli/tests/ -m e2e -v -s
+```
+
+### All Tests (Including E2E)
+Run everything:
+```bash
+python3 -m pytest distro_cli/tests/ -v -s
+```
+
+**Note:** E2E tests can take 10-60 minutes and require actual source files (kernel sources, SAI SDK, etc.).

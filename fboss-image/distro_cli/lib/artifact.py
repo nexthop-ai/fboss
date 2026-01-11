@@ -14,7 +14,7 @@ import tempfile
 from collections.abc import Callable
 from pathlib import Path
 
-from distro_cli.lib.docker.image import get_root_dir
+from distro_cli.lib.docker.image import get_git_dir
 
 from .exceptions import ArtifactError
 
@@ -29,7 +29,7 @@ class ArtifactStore:
     """
 
     # Artifact store directory - class attribute
-    ARTIFACT_STORE_DIR = get_root_dir() / "fboss-image" / "distro_cli" / ".artifacts"
+    ARTIFACT_STORE_DIR = get_git_dir() / "fboss-image" / "distro_cli" / ".artifacts"
 
     def __init__(self):
         """Initialize artifact store."""
@@ -40,7 +40,9 @@ class ArtifactStore:
     def get(
         self,
         store_key: str,
-        fetch_fn: Callable[[list[Path], list[Path]], tuple[bool, list[Path], list[Path]]]
+        fetch_fn: Callable[
+            [list[Path], list[Path]], tuple[bool, list[Path], list[Path]]
+        ],
     ) -> tuple[list[Path], list[Path]]:
         """Retrieve artifact files using caller-provided fetch function.
 
@@ -56,7 +58,9 @@ class ArtifactStore:
         stored_metadata_files = self._get_stored_files_in_dir(store_subdir / "metadata")
 
         logger.info(f"Executing fetch function for: {store_key}")
-        store_hit, new_data_files, new_metadata_files = fetch_fn(stored_data_files, stored_metadata_files)
+        store_hit, new_data_files, new_metadata_files = fetch_fn(
+            stored_data_files, stored_metadata_files
+        )
 
         if store_hit:
             logger.info(f"Store hit: {store_key}")
@@ -92,10 +96,7 @@ class ArtifactStore:
         return [f for f in dir_path.iterdir() if f.is_file()]
 
     def store(
-        self,
-        store_key: str,
-        data_files: list[Path],
-        metadata_files: list[Path]
+        self, store_key: str, data_files: list[Path], metadata_files: list[Path]
     ) -> tuple[list[Path], list[Path]]:
         """Store data and metadata files in the storage.
 
@@ -132,7 +133,7 @@ class ArtifactStore:
         # Return all stored files
         return (
             self._get_stored_files_in_dir(data_dir),
-            self._get_stored_files_in_dir(metadata_dir)
+            self._get_stored_files_in_dir(metadata_dir),
         )
 
     def _move_to_dir(self, source: Path, dest_dir: Path) -> None:
@@ -207,7 +208,9 @@ class ArtifactStore:
             logger.debug(f"Deleted temporary directory: {temp_dir}")
 
 
-def find_artifact_in_dir(output_dir: Path, pattern: str, component_name: str = "Component") -> Path:
+def find_artifact_in_dir(
+    output_dir: Path, pattern: str, component_name: str = "Component"
+) -> Path:
     """Find a single artifact matching a glob pattern in a directory.
 
     Args:
@@ -227,10 +230,14 @@ def find_artifact_in_dir(output_dir: Path, pattern: str, component_name: str = "
     artifacts = list(output_dir.glob(pattern))
 
     if not artifacts:
-        raise ArtifactError(f"{component_name} build output not found in: {output_dir} (pattern: {pattern})")
+        raise ArtifactError(
+            f"{component_name} build output not found in: {output_dir} (pattern: {pattern})"
+        )
 
     if len(artifacts) > 1:
-        logger.warning(f"Multiple artifacts found matching '{pattern}', using first: {artifacts[0]}")
+        logger.warning(
+            f"Multiple artifacts found matching '{pattern}', using first: {artifacts[0]}"
+        )
 
     artifact_path = artifacts[0]
     logger.info(f"Found {component_name} artifact: {artifact_path}")

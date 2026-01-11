@@ -3,6 +3,7 @@
 import unittest
 from pathlib import Path
 
+import pytest
 from distro_cli.builder.component import ComponentBuilder
 from distro_cli.lib.artifact import ArtifactStore
 from distro_cli.lib.constants import FBOSS_BUILDER_IMAGE
@@ -87,6 +88,7 @@ class TestKernelBuildE2E(unittest.TestCase):
     """End-to-end test for actual kernel build."""
 
     @unittest.skip("E2E test - run manually, takes ~10 minutes")
+    @pytest.mark.e2e
     def test_real_kernel_build(self):
         """E2E test: Actually build a kernel using Docker infrastructure.
 
@@ -97,6 +99,8 @@ class TestKernelBuildE2E(unittest.TestCase):
 
         To run:
         python3 -m pytest distro_cli/tests/kernel_build_test.py::TestKernelBuildE2E::test_real_kernel_build -v -s
+        Or to run all e2e tests:
+        python3 -m pytest -m e2e -v -s
         """
         # Use the test manifest
         test_manifest_path = Path(__file__).parent / "data" / "test-kernel-execute.json"

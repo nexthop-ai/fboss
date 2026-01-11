@@ -1,0 +1,13 @@
+{
+  "sai": {
+    "execute": ["../../../../../../broadcom-sai-sdk/build_fboss_sai.sh"],
+    "artifact": "sai-devel.tar"
+  },
+  "kernel": {
+    "execute": ["../../../kernel/scripts/build_kernel.sh", "6.11.1", "/output"],
+    "artifact": "kernel-*.rpms.tar.gz"
+  },
+  "distribution_formats": {
+    "usb": "output/test-sai.iso"
+  }
+}
