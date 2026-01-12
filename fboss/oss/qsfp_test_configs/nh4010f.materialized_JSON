@@ -1,0 +1,20 @@
+{
+  "defaultCommandLineArgs": {
+    "mode": "nh4010"
+  },
+  "transceiverConfigOverrides": [],
+  "qsfpTestConfig": {
+    "cabledPortPairs": [
+      {
+        "aPortName": "eth1/2/1",
+        "zPortName": "eth1/1/1",
+        "profileID": 38
+      },
+      {
+        "aPortName": "eth1/4/1",
+        "zPortName": "eth1/3/1",
+        "profileID": 38
+      }
+    ]
+  }
+}
