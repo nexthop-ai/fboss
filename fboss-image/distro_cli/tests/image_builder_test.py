@@ -11,16 +11,14 @@
 Unit tests for ImageBuilder class
 """
 
-import shutil
-import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
 from distro_cli.builder.image_builder import ImageBuilder
-from distro_cli.lib.artifact import ArtifactStore
 from distro_cli.lib.exceptions import BuildError, ComponentError
 from distro_cli.lib.manifest import ImageManifest
+from distro_cli.tests.test_helpers import enter_tempdir, override_artifact_store_dir
 
 
 class TestImageBuilder(unittest.TestCase):
@@ -32,21 +30,21 @@ class TestImageBuilder(unittest.TestCase):
         self.manifest_path = self.test_dir / "dev_image.json"
         self.manifest = ImageManifest(self.manifest_path)
 
-        # Override ARTIFACT_STORE_DIR to use temp directory for Bazel sandbox compatibility
-        self.temp_dir = Path(tempfile.mkdtemp())
-        self.original_store_dir = ArtifactStore.ARTIFACT_STORE_DIR
-        ArtifactStore.ARTIFACT_STORE_DIR = self.temp_dir
+        # Use sandbox-safe temporary directory
+        self._tempdir_ctx = enter_tempdir("image_builder_test_")
+        self.temp_dir = self._tempdir_ctx.__enter__()
+
+        # Override artifact store directory for testing
+        self._artifact_store_ctx = override_artifact_store_dir(self.temp_dir)
+        self._artifact_store_ctx.__enter__()
 
         self.builder = ImageBuilder(self.manifest)
 
     def tearDown(self):
         """Clean up test fixtures"""
-        # Restore original ARTIFACT_STORE_DIR
-        ArtifactStore.ARTIFACT_STORE_DIR = self.original_store_dir
-
-        # Clean up temp directory
-        if self.temp_dir.exists():
-            shutil.rmtree(self.temp_dir, ignore_errors=True)
+        # Exit context managers in reverse order
+        self._artifact_store_ctx.__exit__(None, None, None)
+        self._tempdir_ctx.__exit__(None, None, None)
 
     def test_builder_initialization(self):
         """Test that builder initializes correctly"""

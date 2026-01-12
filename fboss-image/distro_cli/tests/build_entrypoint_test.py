@@ -13,7 +13,7 @@ from pathlib import Path
 from distro_cli.lib.constants import FBOSS_BUILDER_IMAGE
 from distro_cli.lib.docker.container import run_container
 from distro_cli.lib.paths import get_root_dir
-from distro_cli.tests.test_helpers import ensure_test_docker_image, sandbox_tempdir
+from distro_cli.tests.test_helpers import ensure_test_docker_image, enter_tempdir
 
 
 class TestBuildEntrypoint(unittest.TestCase):
@@ -26,7 +26,7 @@ class TestBuildEntrypoint(unittest.TestCase):
 
     def test_entrypoint_without_dependencies(self):
         """Test build_entrypoint.py executes build command when no dependencies exist."""
-        with sandbox_tempdir("entrypoint_no_deps_") as tmpdir_path:
+        with enter_tempdir("entrypoint_no_deps_") as tmpdir_path:
             output_file = tmpdir_path / "build_output.txt"
 
             # Mount tools directory (contains build_entrypoint.py)
@@ -50,8 +50,8 @@ class TestBuildEntrypoint(unittest.TestCase):
             self.assertEqual(output_file.read_text().strip(), "build completed")
 
     def test_entrypoint_with_empty_dependencies(self):
-        """Test build_entrypoint.py handles empty /deps directory gracefully."""
-        with sandbox_tempdir("entrypoint_empty_deps_") as tmpdir_path:
+        """Test build_entrypoint.py handles empty /dependencies directory gracefully."""
+        with enter_tempdir("entrypoint_empty_deps_") as tmpdir_path:
             output_file = tmpdir_path / "build_output.txt"
             deps_dir = tmpdir_path / "deps"
             deps_dir.mkdir(exist_ok=True)

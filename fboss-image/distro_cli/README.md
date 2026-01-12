@@ -114,13 +114,13 @@ Components are built in the following order:
 
 ```bash
 # Run all tests
-bazel test //private-fboss/fboss-image/distro_cli:all_tests
+bazel test //fboss/fboss-image/distro_cli:all
 
 # Run specific test
-bazel test //private-fboss/fboss-image/distro_cli:cli_test
+bazel test //fboss/fboss-image/distro_cli:cli_test
 
 # Run with detailed output
-bazel test //private-fboss/fboss-image/distro_cli:all_tests --test_output=all
+bazel test //fboss/fboss-image/distro_cli:all --test_output=all
 ```
 
 #### With pytest

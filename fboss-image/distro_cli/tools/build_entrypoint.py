@@ -191,7 +191,6 @@ def main():
                 logger.info(
                     "Setting SKIP_KERNEL_INSTALL=1 (kernel dependency was installed)"
                 )
-
         try:
             result = subprocess.run(build_command, check=False, env=env)
             sys.exit(result.returncode)

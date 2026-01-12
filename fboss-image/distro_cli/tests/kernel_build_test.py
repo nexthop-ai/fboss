@@ -9,7 +9,7 @@ from distro_cli.lib.artifact import ArtifactStore
 from distro_cli.lib.constants import FBOSS_BUILDER_IMAGE
 from distro_cli.lib.docker.container import run_container
 from distro_cli.lib.manifest import ImageManifest
-from distro_cli.tests.test_helpers import ensure_test_docker_image, sandbox_tempdir
+from distro_cli.tests.test_helpers import ensure_test_docker_image, enter_tempdir
 
 
 class TestDockerInfrastructure(unittest.TestCase):
@@ -29,7 +29,7 @@ class TestDockerInfrastructure(unittest.TestCase):
 
     def test_container_with_volume_mount(self):
         """Test container with volume mount - simulates build output."""
-        with sandbox_tempdir("volume_test_") as tmpdir_path:
+        with enter_tempdir("volume_test_") as tmpdir_path:
             output_file = tmpdir_path / "build_output.txt"
 
             # Run container that writes to mounted volume (simulates build)
@@ -50,7 +50,7 @@ class TestDockerInfrastructure(unittest.TestCase):
 
     def test_container_with_env_vars(self):
         """Test container with environment variables."""
-        with sandbox_tempdir("env_test_") as tmpdir_path:
+        with enter_tempdir("env_test_") as tmpdir_path:
             output_file = tmpdir_path / "env_output.txt"
 
             # Run container that uses env var

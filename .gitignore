@@ -6,6 +6,10 @@
 /.build_dir
 /.sccache
 
+# Build artifacts
+.build/
+dist/
+
 # Python
 __pycache__/
 *.py[cod]

@@ -19,7 +19,7 @@ import unittest
 from pathlib import Path
 
 from distro_cli.lib.download import HTTP_METADATA_FILENAME, download_artifact
-from distro_cli.tests.test_helpers import override_artifact_store_dir, sandbox_tempdir
+from distro_cli.tests.test_helpers import enter_tempdir, override_artifact_store_dir
 
 
 class TestDownloadArtifact(unittest.TestCase):
@@ -28,7 +28,7 @@ class TestDownloadArtifact(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures."""
         # Use sandbox-safe temporary directory
-        self._tempdir_ctx = sandbox_tempdir("download_test_")
+        self._tempdir_ctx = enter_tempdir("download_test_")
         self.temp_dir = self._tempdir_ctx.__enter__()
         self.manifest_dir = self.temp_dir / "manifest"
         self.manifest_dir.mkdir()
@@ -203,7 +203,7 @@ class TestDownloadHTTP(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures."""
         # Use sandbox-safe temporary directory
-        self._tempdir_ctx = sandbox_tempdir("download_http_test_")
+        self._tempdir_ctx = enter_tempdir("download_http_test_")
         self.temp_dir = self._tempdir_ctx.__enter__()
         self.manifest_dir = self.temp_dir / "manifest"
         self.manifest_dir.mkdir()

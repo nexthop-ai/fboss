@@ -21,8 +21,8 @@ from pathlib import Path
 from distro_cli.cmds.build import build_command, setup_build_command
 from distro_cli.tests.test_helpers import (
     ensure_test_docker_image,
+    enter_tempdir,
     override_artifact_store_dir,
-    sandbox_tempdir,
 )
 
 
@@ -42,7 +42,7 @@ class TestBuildCommand(unittest.TestCase):
 
     def test_build_components(self):
         """Test build command with specific components using stub manifest."""
-        with sandbox_tempdir(
+        with enter_tempdir(
             "build_test_artifacts_"
         ) as temp_artifacts, override_artifact_store_dir(temp_artifacts):
             manifest_path = self.test_dir / "test-stub-component.json"

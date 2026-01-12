@@ -34,10 +34,10 @@ def ensure_test_docker_image():
 
 
 @contextmanager
-def sandbox_tempdir(prefix: str = "test_") -> Generator[Path, None, None]:
-    """Create a temporary directory that works in sandboxed test environments.
+def enter_tempdir(prefix: str = "test_") -> Generator[Path, None, None]:
+    """Create a temporary directory that works in both Bazel and non-Bazel test environments.
 
-    When TEST_TMPDIR environment variable is set (e.g., in Bazel sandbox), creates
+    When TEST_TMPDIR environment variable is set (e.g., in Bazel sandboxed tests), creates
     the temporary directory under TEST_TMPDIR which is guaranteed to be writable.
     Otherwise, uses the system's default temporary directory.
 
@@ -48,7 +48,7 @@ def sandbox_tempdir(prefix: str = "test_") -> Generator[Path, None, None]:
         Path to the temporary directory
 
     Example:
-        with sandbox_tempdir("my_test_") as tmpdir:
+        with enter_tempdir("my_test_") as tmpdir:
             test_file = tmpdir / "test.txt"
             test_file.write_text("test content")
     """
@@ -84,7 +84,7 @@ def override_artifact_store_dir(store_dir: Path) -> Generator[None, None, None]:
         None
 
     Example:
-        with sandbox_tempdir("artifacts_") as tmpdir:
+        with enter_tempdir("artifacts_") as tmpdir:
             with override_artifact_store_dir(tmpdir):
                 # ArtifactStore will now use tmpdir
                 store = ArtifactStore()

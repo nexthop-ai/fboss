@@ -39,12 +39,15 @@ py_test(
     name = "image_builder_test",
     srcs = ["tests/image_builder_test.py"],
     imports = [".."],
-    deps = [":distro_cli_lib"],
+    deps = [
+        ":distro_cli_lib",
+        ":test_helpers",
+    ],
     data = glob(["tests/data/*.json"]),
     main = "tests/image_builder_test.py",
     python_version = "PY3",
     srcs_version = "PY3",
-    size = "small",
+    size = "medium",
     tags = ["local"],  # Docker needs access to ~/.docker/
 )
 
