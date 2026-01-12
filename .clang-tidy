@@ -167,13 +167,13 @@ CheckOptions:
   value: true
 - key: bugprone-unsafe-functions.CustomFunctions
   value: >-
-    ::localtime,use localtime_r from folly/portability/Time.h instead;
-    ::gmtime,use gmtime_r from folly/portability/Time.h instead;
-    ::ctime,use ctime_r from folly/portability/Time.h instead;
-    ::asctime,use asctime_r from folly/portability/Time.h instead;
-    ::strerror,use folly::errnoStr from folly/String.h instead;
-    ::strtok,use folly::split from folly/String.h instead;
-    ::rand,use folly::Random from folly/Random.h instead;
-    ::system,use folly::Subprocess from folly/Subprocess.h instead;
-    ::stat,use open() + fstat() to avoid TOCTOU races
+    ^localtime$,use localtime_r from folly/portability/Time.h instead;
+    ^gmtime$,use gmtime_r from folly/portability/Time.h instead;
+    ^ctime$,use ctime_r from folly/portability/Time.h instead;
+    ^asctime$,use asctime_r from folly/portability/Time.h instead;
+    ^strerror$,use folly::errnoStr from folly/String.h instead;
+    ^strtok$,use folly::split from folly/String.h instead;
+    ^rand$,use folly::Random from folly/Random.h instead;
+    ^system$,use folly::Subprocess from folly/Subprocess.h instead;
+    ^stat$,use open() + fstat() to avoid TOCTOU races
 ...

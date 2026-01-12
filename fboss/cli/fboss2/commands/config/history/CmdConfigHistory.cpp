@@ -51,8 +51,9 @@ std::string formatTime(int64_t timeNsec) {
   long nsec = timeNsec % 1000000000;
 
   char buffer[100];
-  struct tm* timeinfo = std::localtime(&timeSec);
-  std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
+  tm timeinfo{};
+  localtime_r(&timeSec, &timeinfo);
+  std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timeinfo);
 
   // Add milliseconds
   long milliseconds = nsec / 1000000;
