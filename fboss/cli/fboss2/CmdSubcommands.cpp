@@ -229,6 +229,12 @@ CLI::App* CmdSubcommands::addCommand(
           subCmd->add_option(
               "revisions", args, "Revision(s) in the form 'rN' or 'current'");
           break;
+        case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_BUFFER_POOL_NAME:
+          subCmd->add_option("buffer_pool_name", args, "Buffer pool name");
+          break;
+        case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_BUFFER_BYTES:
+          subCmd->add_option("bytes", args, "Buffer size in bytes");
+          break;
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_UNINITIALIZE:
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_NONE:
           break;
