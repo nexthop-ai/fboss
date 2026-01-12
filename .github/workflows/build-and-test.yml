@@ -86,6 +86,70 @@ jobs:
         run: |
           docker exec FBOSS_build_${USER} sccache -s
 
+      - name: Run clang-tidy
+        run: |
+          # Fetch base branch to enable diff comparison
+          git fetch origin ${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }} --depth=100
+          echo "Current HEAD: $(git rev-parse HEAD)"
+          echo "Base ref: origin/${{ github.base_ref }} = $(git rev-parse origin/${{ github.base_ref }})"
+          # Get changed C++ files in this PR (compared to base branch)
+          # Use two-dot diff since we have shallow clones
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}..HEAD -- '*.cpp' '*.h' 2>/dev/null | grep -E '^fboss/' || true)
+          echo "Found files: $CHANGED_FILES"
+          if [[ -z "$CHANGED_FILES" ]]; then
+            echo "No C++ files changed in this PR, skipping clang-tidy"
+            exit 0
+          fi
+          echo "Changed C++ files:"
+          echo "$CHANGED_FILES"
+          # Write changed files to a temp file for the container
+          echo "$CHANGED_FILES" > /tmp/changed_files.txt
+          docker cp /tmp/changed_files.txt FBOSS_build_${USER}:/tmp/changed_files.txt
+          # Run clang-tidy and save output for reviewdog
+          docker exec FBOSS_build_${USER} bash -c '
+            cd /var/FBOSS/fboss
+            BUILD_DIR=/var/FBOSS/tmp_bld_dir/build/fboss
+            if [[ ! -f "$BUILD_DIR/compile_commands.json" ]]; then
+              echo "ERROR: compile_commands.json not found"
+              exit 1
+            fi
+            # Run clang-tidy on all changed files
+            cat /tmp/changed_files.txt | xargs -P$(nproc) -I{} clang-tidy -p "$BUILD_DIR" {} 2>&1
+          ' | tee /tmp/clang-tidy-output.txt
+          # Post-process clang-tidy output:
+          # - Strip container path prefix so reviewdog can find files
+          # - Add helpful suggestions for banned headers
+          sed -i \
+            -e 's|/var/FBOSS/fboss/||g' \
+            -e 's/system include regex not allowed/system include regex not allowed (use RE2 instead)/g' \
+            /tmp/clang-tidy-output.txt
+          # Always succeed here - reviewdog will report issues as PR comments
+
+      - name: Setup reviewdog
+        if: github.event_name == 'pull_request'
+        uses: reviewdog/action-setup@v1
+        with:
+          reviewdog_version: latest
+
+      - name: Post clang-tidy comments
+        if: github.event_name == 'pull_request'
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [[ ! -f /tmp/clang-tidy-output.txt ]]; then
+            echo "No clang-tidy output file found, skipping reviewdog"
+            exit 0
+          fi
+          cat /tmp/clang-tidy-output.txt | \
+            reviewdog \
+              -efm="%f:%l:%c: %tarning: %m" \
+              -efm="%f:%l:%c: %trror: %m" \
+              -name="clang-tidy" \
+              -reporter=github-pr-review \
+              -filter-mode=diff_context \
+              -fail-level=error \
+              -diff="git diff origin/${{ github.base_ref }}..HEAD"
+
       - name: Run unit tests
         id: run-tests
         run: |
