@@ -294,11 +294,15 @@ class ComponentBuilder:
         # Mount distro_cli/tools as /tools for build utilities
         tools_dir = get_git_dir() / "fboss-image" / "distro_cli" / "tools"
 
+        # Mount fboss/oss/scripts for common build utilities (sccache config, etc.)
+        common_scripts_dir = get_git_dir() / "fboss" / "oss" / "scripts"
+
         volumes = {
             src_dir: Path("/src"),
             build_dir: Path("/build"),
             dist_dir: Path("/output"),
             tools_dir: Path("/tools"),
+            common_scripts_dir: Path("/fboss/oss/scripts"),
         }
 
         # Mount dependency artifacts into the container

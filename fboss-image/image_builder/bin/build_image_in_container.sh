@@ -261,7 +261,7 @@ if [ -n "${BUILD_PXE}" ]; then
       ${KIWI_DEBUG} system build \
       --description ${DESCRIPTION_DIR} \
       --target-dir ${TARGET_DIR}/btrfs |&
-      tee -a ${LOG_FILE} | awk '{print "PXE/USB Installer| " $0}'
+      stdbuf -oL tee -a ${LOG_FILE} | stdbuf -oL awk '{print "PXE/USB Installer| " $0}'
     mv ${TARGET_DIR}/btrfs/FBOSS-Distro-Image.x86_64-1.0.install.* ${TARGET_DIR}
   ) &
   PXE_PID=$!
@@ -278,7 +278,7 @@ if [ -n "${BUILD_ONIE}" ]; then
       ${KIWI_DEBUG} system build \
       --description ${DESCRIPTION_DIR} \
       --target-dir ${TARGET_DIR}/onie |&
-      tee -a ${LOG_FILE} | awk '{print "ONIE installer| " $0}'
+      stdbuf -oL tee -a ${LOG_FILE} | stdbuf -oL awk '{print "ONIE installer| " $0}'
 
     # Repack the rootfs so really long filenames are not truncated under Busybox
     dprint "Repacking rootfs with zstd..."

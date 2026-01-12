@@ -22,6 +22,9 @@ logger = logging.getLogger(__name__)
 # Default cache expiration time in seconds (24 hours)
 DEFAULT_CACHE_EXPIRATION_SECONDS = 24 * 60 * 60
 
+# Container registry for caching builder images across ephemeral VMs
+CONTAINER_REGISTRY = "container-registry.sw.internal.nexthop.ai"
+
 
 def get_git_dir() -> Path:
     """Find the repository root directory by looking for .git marker.
@@ -154,6 +157,95 @@ def _get_image_build_timestamp(image_tag: str) -> int | None:
         return None
 
 
+def _try_pull_from_registry(checksum: str) -> bool:
+    """Try to pull the builder image from the container registry.
+
+    Args:
+        checksum: The checksum tag to pull
+
+    Returns:
+        True if pull succeeded and image is now available locally, False otherwise
+    """
+    registry_tag = f"{CONTAINER_REGISTRY}/{FBOSS_BUILDER_IMAGE}:{checksum}"
+    local_tag = f"{FBOSS_BUILDER_IMAGE}:{checksum}"
+
+    logger.info(
+        f"Trying to pull {FBOSS_BUILDER_IMAGE}:{checksum[:12]} from registry..."
+    )
+
+    try:
+        result = subprocess.run(
+            ["docker", "pull", registry_tag],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            logger.debug(f"Pull failed: {result.stderr}")
+            return False
+
+        # Tag as local image
+        subprocess.run(
+            ["docker", "tag", registry_tag, local_tag],
+            check=True,
+        )
+        subprocess.run(
+            ["docker", "tag", registry_tag, f"{FBOSS_BUILDER_IMAGE}:latest"],
+            check=True,
+        )
+
+        logger.info(
+            f"Successfully pulled {FBOSS_BUILDER_IMAGE}:{checksum[:12]} from registry"
+        )
+        return True
+
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+        logger.debug(f"Failed to pull from registry: {e}")
+        return False
+
+
+def _push_to_registry(checksum: str) -> None:
+    """Push the builder image to the container registry.
+
+    Pushes fboss_builder:latest (the actual built image) with the checksum tag.
+    We don't push the timestamp-labeled image because that has an extra layer
+    and we want to cache the exact image that was built.
+
+    Args:
+        checksum: The checksum tag to use in the registry
+    """
+    # Push the :latest image (the actual build output) with the checksum tag
+    local_tag = f"{FBOSS_BUILDER_IMAGE}:latest"
+    registry_tag = f"{CONTAINER_REGISTRY}/{FBOSS_BUILDER_IMAGE}:{checksum}"
+
+    logger.info(f"Pushing {FBOSS_BUILDER_IMAGE}:{checksum[:12]} to registry...")
+
+    try:
+        # Tag for registry
+        subprocess.run(
+            ["docker", "tag", local_tag, registry_tag],
+            check=True,
+        )
+
+        # Push to registry
+        result = subprocess.run(
+            ["docker", "push", registry_tag],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            logger.warning(f"Failed to push to registry: {result.stderr}")
+            return
+
+        logger.info(
+            f"Successfully pushed {FBOSS_BUILDER_IMAGE}:{checksum[:12]} to registry"
+        )
+
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+        logger.warning(f"Failed to push to registry: {e}")
+
+
 def _should_build_image(root_dir: Path) -> tuple[bool, str, str]:
     """Determine if the fboss_builder image should be rebuilt.
 
@@ -193,15 +285,14 @@ def _should_build_image(root_dir: Path) -> tuple[bool, str, str]:
 def build_fboss_builder_image() -> None:
     """Build the fboss_builder Docker image if needed.
 
-    Uses a two-tier caching strategy:
-    1. Checksum-based tagging: Computes a checksum of all Dockerfile dependencies
-       (Dockerfile, getdeps.py, all manifests, all Python modules) and checks if
-       an image with that checksum tag exists.
-    2. Time-based expiration: Even if checksum matches, rebuilds if image is older
-       than the expiration time (default: 24 hours, configurable via
-       FBOSS_BUILDER_CACHE_EXPIRATION_HOURS environment variable).
+    Uses a three-tier caching strategy:
+    1. Local cache: Check if image with checksum tag exists locally
+    2. Registry cache: Try to pull from container registry if not local
+    3. Build: Build the image if not found in either cache, then push to registry
 
-    Provides fast skips when nothing changed (~115ms vs ~53s for Docker build).
+    Time-based expiration: Even if checksum matches, rebuilds if image is older
+    than the expiration time (default: 24 hours, configurable via
+    FBOSS_BUILDER_CACHE_EXPIRATION_HOURS environment variable).
 
     Raises:
         RuntimeError: If the build script is not found or build fails
@@ -218,7 +309,7 @@ def build_fboss_builder_image() -> None:
     if not build_script.exists():
         raise RuntimeError(f"Build script not found: {build_script}")
 
-    # Check if we should rebuild
+    # Check if we should rebuild (checks local cache)
     should_build, checksum, reason = _should_build_image(root_dir)
 
     if not should_build:
@@ -228,9 +319,17 @@ def build_fboss_builder_image() -> None:
         )
         return
 
+    # Image not in local cache - try pulling from registry
+    if _try_pull_from_registry(checksum):
+        logger.info(
+            f"{FBOSS_BUILDER_IMAGE} image with checksum {checksum[:12]} "
+            f"pulled from registry, skipping build"
+        )
+        return
+
     logger.info(
         f"{FBOSS_BUILDER_IMAGE} image with checksum {checksum[:12]} "
-        f"{reason}, building"
+        f"{reason} (not in registry either), building"
     )
 
     # Build the image
@@ -276,6 +375,9 @@ def build_fboss_builder_image() -> None:
         )
 
         logger.info(f"Tagged image with checksum: {checksum[:12]}")
+
+        # Push to registry for future builds on other VMs
+        _push_to_registry(checksum)
 
     except subprocess.CalledProcessError as e:
         raise RuntimeError(f"Failed to build {FBOSS_BUILDER_IMAGE} image: {e}")

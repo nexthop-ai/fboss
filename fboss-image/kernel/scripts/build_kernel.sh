@@ -13,7 +13,7 @@ set -euo pipefail
 # Args:
 #   $1: Kernel version (required)
 #   $2: Output directory inside container (required), e.g. /output
-
+set -x
 KERNEL_VERSION="${1:?kernel version required}"
 OUT_DIR="${2:?output dir required}"
 
@@ -25,6 +25,18 @@ CONTAINER_DIST_DIR="$KERNEL_ROOT/dist"
 CONTAINER_SPECS_DIR="$KERNEL_ROOT/specs"
 CONTAINER_CONFIGS_DIR="$KERNEL_ROOT/configs"
 CONTAINER_SCRIPTS_DIR="$KERNEL_ROOT/scripts"
+
+# Source common configuration for sccache distributed build and caching
+# The component builder mounts fboss/oss/scripts at /fboss/oss/scripts
+# shellcheck source=fboss/oss/scripts/nhfboss-common.sh
+source "/fboss/oss/scripts/nhfboss-common.sh"
+# Set CC to use sccache for kernel compilation
+export CC="sccache gcc"
+echo "Using sccache for kernel build with $COMPILE_JOBS compile jobs"
+
+# Debug: verify sccache config before build
+sccache --stop-server 2>/dev/null || true
+sccache --start-server
 
 # Install kernel build dependencies
 bash "$CONTAINER_SCRIPTS_DIR/setup_kernel_build_deps.sh"
@@ -53,7 +65,13 @@ rpmbuild -ba "$CONTAINER_SPECS_DIR/kernel.spec" \
   --define "_topdir $BUILD_DIR" \
   --define "_sourcedir $BUILD_DIR/SOURCES" \
   --define "container_scripts_dir $CONTAINER_SCRIPTS_DIR" \
-  --define "kernel_version $KERNEL_VERSION"
+  --define "kernel_version $KERNEL_VERSION" || {
+  rv=$?
+  echo "$(date) Kernel build failed with rv=$rv" >&2
+  exit 1
+}
+echo "$(date) Kernel build completed successfully"
+sccache -s
 
 # Copy RPMs to output directory
 cp -r RPMS/* "$OUT_DIR"/ 2>/dev/null

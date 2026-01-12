@@ -56,7 +56,7 @@ jobs_for_ram() {
 COMMON_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Stop any existing sccache server to ensure clean state
-sccache --stop-server >/dev/null 2>&1
+sccache --stop-server >/dev/null 2>&1 || true
 # Make sure if OOM that the build gets the short end of the stick.
 echo 1000 >/proc/self/oom_score_adj
 
@@ -81,7 +81,7 @@ if timeout 1 bash -c ">/dev/tcp/$SCCACHE_SCHEDULER_HOST/10600" 2>/dev/null; then
   ram_jobs=$((SERVER_RAM_GB * 5))
   COMPILE_JOBS=$((nproc_jobs < ram_jobs ? nproc_jobs : ram_jobs))
 
-  if [[ ${BUILD_TYPE} == "Debug" ]]; then
+  if [[ ${BUILD_TYPE:-} == "Debug" ]]; then
     # PathValidator.cpp takes at least 32 minutes to build in debug mode
     # Increase timeout to 45 minutes
     export SCCACHE_DIST_REQUEST_TIMEOUT=2700
@@ -106,7 +106,7 @@ fi
 
 # Link parallelism is different from compilation because linking always happens
 # on the local machine.
-if [[ ${BUILD_TYPE} == "Debug" ]]; then
+if [[ ${BUILD_TYPE:-} == "Debug" ]]; then
   # Even 1 job is too much for 32GB
   # 2 link jobs works with 64GB of RAM, with 7.5GB available at the low point
   # 1 link job on 64GB VM peaks at 48GB of RAM
