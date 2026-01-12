@@ -195,14 +195,16 @@ def setup_clang_environment(toolchain_info):
 
     # XXX temporary hack: make sure we revert fmt/range-v3 if they have a diff
     # due to stable hashes overwriting those files. Hopefully won't be needed
-    # anymore once clang support merges upstream.
-    subprocess.check_call(
+    # anymore once clang support merges upstream. Best effort because the root
+    # of the git repo is not available in bazel or distro image builds.
+    subprocess.run(
         [
             "git",
             "checkout",
             "build/fbcode_builder/manifests/fmt",
             "build/fbcode_builder/manifests/range-v3",
-        ]
+        ],
+        check=False,
     )
 
 

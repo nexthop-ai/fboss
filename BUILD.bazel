@@ -9,8 +9,8 @@ genrule(
     visibility = ["//visibility:public"],
     srcs = [
         "fboss/oss/scripts/build_docker.sh",
-        "fboss/oss/docker/Dockerfile.builder",
-        "fboss/oss/docker/Dockerfile.builder.dockerignore",
+        "fboss/oss/docker/Dockerfile",
+        ".dockerignore",
     ] + glob(["build/**"]),
     outs = ["fboss_builder.tar"],
     cmd = """

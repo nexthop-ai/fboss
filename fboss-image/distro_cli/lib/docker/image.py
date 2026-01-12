@@ -300,7 +300,7 @@ def build_fboss_builder_image() -> None:
 
     # Find paths
     root_dir = get_git_dir()
-    dockerfile = root_dir / "fboss" / "oss" / "docker" / "Dockerfile.builder"
+    dockerfile = root_dir / "fboss" / "oss" / "docker" / "Dockerfile"
     build_script = root_dir / "fboss" / "oss" / "scripts" / "build_docker.sh"
 
     if not dockerfile.exists():

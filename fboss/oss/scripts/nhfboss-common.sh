@@ -142,9 +142,11 @@ fi
 
 BUILD_TYPE=${BUILD_TYPE:-MinSizeRel}
 
+build_dir=${build_dir:-/var/FBOSS/tmp_bld_dir}
+
 # Build common_options for getdeps.py
 common_options='--allow-system-packages'
-common_options+=' --scratch-path /var/FBOSS/tmp_bld_dir'
+common_options+=' --scratch-path '$build_dir
 common_options+=' --src-dir .'
 common_options+=' --extra-cmake-defines {"CMAKE_C_COMPILER_LAUNCHER":"sccache"'
 common_options+=',"CMAKE_CXX_COMPILER_LAUNCHER":"sccache"'
