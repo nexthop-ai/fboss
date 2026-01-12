@@ -85,7 +85,7 @@ def _compute_dependency_checksum(root_dir: Path) -> str:
     """Compute checksum of Dockerfile and all its dependencies.
 
     This includes:
-    - Dockerfile.builder
+    - Dockerfile
     - All files in build/ directory (manifests, getdeps.py, Python modules, etc.)
 
     Args:
@@ -96,8 +96,8 @@ def _compute_dependency_checksum(root_dir: Path) -> str:
     """
     hasher = hashlib.sha256()
 
-    # Hash Dockerfile.builder
-    dockerfile = root_dir / "fboss" / "oss" / "docker" / "Dockerfile.builder"
+    # Hash Dockerfile
+    dockerfile = root_dir / "fboss" / "oss" / "docker" / "Dockerfile"
     if not dockerfile.exists():
         raise RuntimeError(f"Dockerfile not found: {dockerfile}")
     hasher.update(dockerfile.read_bytes())
