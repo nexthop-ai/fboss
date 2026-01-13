@@ -16,9 +16,10 @@ Start the container by running the 'distro_infra.sh' script which will start the
 arguments:
 
 - interface: The interface to attach to. This must have L2 adjacency with the management port of the FBOSS duts
+  - Nexthop Specific: Right now it's always `f"vlan{1000 + testbed ID}"` and you can get the testbed ID from `nh tb details`
 - persistent directory: The directory to use for persistent storage, primarily of images to load
 
-For example, `mkdir images; ./distro_infra.sh vlan1033 images`.
+For example, `mkdir images; ./distro_infra.sh --intf vlan1033 --persist-dir images`.
 
 This will start an interactive tool to configure supplying PXE boot options to a given MAC address. Exiting the tool
 terminates the container.
@@ -44,7 +45,7 @@ precise names:
 
 ```
 $ cd images/dc-da-4d-fc-ad-2d
-$ tar -xf fboss-distro-image_pxe.tar
+$ tar -xf ../../../fboss-distro-image_pxe.tar
 $ ls -1
 FBOSS-Distro-Image.x86_64-1.0.config.bootoptions
 FBOSS-Distro-Image.x86_64-1.0.initrd
