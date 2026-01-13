@@ -15,6 +15,15 @@ thrift_library(
     thrift_srcs = {"cli.thrift": []},
 )
 
+thrift_library(
+    name = "cli_metadata",
+    languages = [
+        "cpp2",
+    ],
+    thrift_cpp2_options = "json",
+    thrift_srcs = {"cli_metadata.thrift": []},
+)
+
 # NOTE: all of the actual command tree is managed inside CmdList.cpp
 # CmdList.h defines the data structure
 cpp_library(
@@ -804,6 +813,7 @@ cpp_library(
     exported_deps = [
         "fbsource//third-party/fmt:fmt",
         "fbsource//third-party/re2:re2",
+        ":cli_metadata-cpp2-types",
         ":cmd-common-utils",
         ":cmd-handler",
         ":fboss2-lib",

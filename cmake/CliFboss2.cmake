@@ -4,6 +4,13 @@
 # cmake/FooBar.cmake
 
 add_fbthrift_cpp_library(
+  cli_metadata
+  fboss/cli/fboss2/cli_metadata.thrift
+  OPTIONS
+    json
+)
+
+add_fbthrift_cpp_library(
   cli_model
   fboss/cli/fboss2/cli.thrift
   OPTIONS
@@ -605,6 +612,7 @@ add_library(fboss2_config_lib
 )
 
 target_link_libraries(fboss2_config_lib
+  cli_metadata
   fboss2_lib
   agent_dir_util
 )

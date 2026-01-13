@@ -16,7 +16,6 @@
 #include <string>
 
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
-#include "fboss/cli/fboss2/ConfigActionLevel.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 
 namespace facebook::fboss {
@@ -75,7 +74,7 @@ std::string setBufferPoolConfigField(
 
   // Save the updated config and update the required action level
   // Buffer pool changes always require agent restart
-  session.saveConfig(ConfigActionLevel::AGENT_RESTART);
+  session.saveConfig(cli::ConfigActionLevel::AGENT_RESTART);
 
   return fmt::format(
       "Successfully set {} for buffer-pool '{}' to {}",

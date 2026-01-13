@@ -26,7 +26,7 @@ CmdConfigSessionCommitTraits::RetType CmdConfigSessionCommit::queryClient(
   auto result = session.commit(hostInfo);
 
   std::string message;
-  if (result.actionLevel == ConfigActionLevel::AGENT_RESTART) {
+  if (result.actionLevel == cli::ConfigActionLevel::AGENT_RESTART) {
     message = fmt::format(
         "Config session committed successfully as r{} and wedge_agent restarted.",
         result.revision);

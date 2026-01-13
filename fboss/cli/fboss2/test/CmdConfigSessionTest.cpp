@@ -17,7 +17,6 @@
 #include <fstream>
 #include <thread>
 
-#include "fboss/cli/fboss2/ConfigActionLevel.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/test/CmdHandlerTestBase.h"
 #include "fboss/cli/fboss2/test/TestableConfigSession.h"
@@ -650,8 +649,8 @@ TEST_F(ConfigSessionTestFixture, actionLevelDefaultIsHitless) {
 
   // Default action level should be HITLESS
   EXPECT_EQ(
-      session.getRequiredAction(ConfigSession::AgentType::WEDGE_AGENT),
-      ConfigActionLevel::HITLESS);
+      session.getRequiredAction(cli::AgentType::WEDGE_AGENT),
+      cli::ConfigActionLevel::HITLESS);
 }
 
 TEST_F(ConfigSessionTestFixture, actionLevelUpdateAndGet) {
@@ -666,12 +665,12 @@ TEST_F(ConfigSessionTestFixture, actionLevelUpdateAndGet) {
 
   // Update to AGENT_RESTART
   session.updateRequiredAction(
-      ConfigActionLevel::AGENT_RESTART, ConfigSession::AgentType::WEDGE_AGENT);
+      cli::ConfigActionLevel::AGENT_RESTART, cli::AgentType::WEDGE_AGENT);
 
   // Verify the action level was updated
   EXPECT_EQ(
-      session.getRequiredAction(ConfigSession::AgentType::WEDGE_AGENT),
-      ConfigActionLevel::AGENT_RESTART);
+      session.getRequiredAction(cli::AgentType::WEDGE_AGENT),
+      cli::ConfigActionLevel::AGENT_RESTART);
 }
 
 TEST_F(ConfigSessionTestFixture, actionLevelHigherTakesPrecedence) {
@@ -686,16 +685,16 @@ TEST_F(ConfigSessionTestFixture, actionLevelHigherTakesPrecedence) {
 
   // Update to AGENT_RESTART first
   session.updateRequiredAction(
-      ConfigActionLevel::AGENT_RESTART, ConfigSession::AgentType::WEDGE_AGENT);
+      cli::ConfigActionLevel::AGENT_RESTART, cli::AgentType::WEDGE_AGENT);
 
   // Try to "downgrade" to HITLESS - should be ignored
   session.updateRequiredAction(
-      ConfigActionLevel::HITLESS, ConfigSession::AgentType::WEDGE_AGENT);
+      cli::ConfigActionLevel::HITLESS, cli::AgentType::WEDGE_AGENT);
 
   // Verify action level remains at AGENT_RESTART
   EXPECT_EQ(
-      session.getRequiredAction(ConfigSession::AgentType::WEDGE_AGENT),
-      ConfigActionLevel::AGENT_RESTART);
+      session.getRequiredAction(cli::AgentType::WEDGE_AGENT),
+      cli::ConfigActionLevel::AGENT_RESTART);
 }
 
 TEST_F(ConfigSessionTestFixture, actionLevelReset) {
@@ -710,15 +709,15 @@ TEST_F(ConfigSessionTestFixture, actionLevelReset) {
 
   // Set to AGENT_RESTART
   session.updateRequiredAction(
-      ConfigActionLevel::AGENT_RESTART, ConfigSession::AgentType::WEDGE_AGENT);
+      cli::ConfigActionLevel::AGENT_RESTART, cli::AgentType::WEDGE_AGENT);
 
   // Reset the action level
-  session.resetRequiredAction(ConfigSession::AgentType::WEDGE_AGENT);
+  session.resetRequiredAction(cli::AgentType::WEDGE_AGENT);
 
   // Verify action level was reset to HITLESS
   EXPECT_EQ(
-      session.getRequiredAction(ConfigSession::AgentType::WEDGE_AGENT),
-      ConfigActionLevel::HITLESS);
+      session.getRequiredAction(cli::AgentType::WEDGE_AGENT),
+      cli::ConfigActionLevel::HITLESS);
 }
 
 TEST_F(ConfigSessionTestFixture, actionLevelPersistsToMetadataFile) {
@@ -735,15 +734,14 @@ TEST_F(ConfigSessionTestFixture, actionLevelPersistsToMetadataFile) {
 
     // Set to AGENT_RESTART
     session.updateRequiredAction(
-        ConfigActionLevel::AGENT_RESTART,
-        ConfigSession::AgentType::WEDGE_AGENT);
+        cli::ConfigActionLevel::AGENT_RESTART, cli::AgentType::WEDGE_AGENT);
   }
 
   // Verify metadata file exists and has correct JSON format
   EXPECT_TRUE(fs::exists(metadataFile));
   std::string content = readFile(metadataFile);
 
-  // Parse the JSON and verify structure
+  // Parse the JSON and verify structure - uses symbolic enum names
   folly::dynamic json = folly::parseJson(content);
   EXPECT_TRUE(json.isObject());
   EXPECT_TRUE(json.count("action"));
@@ -760,6 +758,7 @@ TEST_F(ConfigSessionTestFixture, actionLevelLoadsFromMetadataFile) {
   // Create session directory and metadata file manually
   fs::create_directories(sessionDir);
   std::ofstream metaFile(metadataFile);
+  // Use symbolic enum names for human readability
   metaFile << R"({"action":{"WEDGE_AGENT":"AGENT_RESTART"}})";
   metaFile.close();
 
@@ -775,8 +774,8 @@ TEST_F(ConfigSessionTestFixture, actionLevelLoadsFromMetadataFile) {
 
   // Verify action level was loaded
   EXPECT_EQ(
-      session.getRequiredAction(ConfigSession::AgentType::WEDGE_AGENT),
-      ConfigActionLevel::AGENT_RESTART);
+      session.getRequiredAction(cli::AgentType::WEDGE_AGENT),
+      cli::ConfigActionLevel::AGENT_RESTART);
 }
 
 TEST_F(ConfigSessionTestFixture, actionLevelPersistsAcrossSessions) {
@@ -791,8 +790,7 @@ TEST_F(ConfigSessionTestFixture, actionLevelPersistsAcrossSessions) {
         (testEtcDir_ / "coop" / "cli").string());
 
     session1.updateRequiredAction(
-        ConfigActionLevel::AGENT_RESTART,
-        ConfigSession::AgentType::WEDGE_AGENT);
+        cli::ConfigActionLevel::AGENT_RESTART, cli::AgentType::WEDGE_AGENT);
   }
 
   // Second session: verify action level was persisted
@@ -803,8 +801,8 @@ TEST_F(ConfigSessionTestFixture, actionLevelPersistsAcrossSessions) {
         (testEtcDir_ / "coop" / "cli").string());
 
     EXPECT_EQ(
-        session2.getRequiredAction(ConfigSession::AgentType::WEDGE_AGENT),
-        ConfigActionLevel::AGENT_RESTART);
+        session2.getRequiredAction(cli::AgentType::WEDGE_AGENT),
+        cli::ConfigActionLevel::AGENT_RESTART);
   }
 }
 

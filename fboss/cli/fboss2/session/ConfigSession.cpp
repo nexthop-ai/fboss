@@ -22,6 +22,7 @@
 #include <pwd.h>
 #include <re2/re2.h>
 #include <sys/types.h>
+#include <thrift/lib/cpp2/folly_dynamic/folly_dynamic.h>
 #include <thrift/lib/cpp2/protocol/Serializer.h>
 #include <unistd.h>
 #include <cerrno>
@@ -32,6 +33,7 @@
 #include <thread>
 #include <utility>
 #include "fboss/agent/AgentDirectoryUtil.h"
+#include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
 #include "fboss/cli/fboss2/utils/CmdClientUtils.h"
 #include "fboss/cli/fboss2/utils/PortMap.h"
 
@@ -285,8 +287,8 @@ const utils::PortMap& ConfigSession::getPortMap() const {
 }
 
 void ConfigSession::saveConfig(
-    std::optional<ConfigActionLevel> actionLevel,
-    AgentType agent) {
+    std::optional<cli::ConfigActionLevel> actionLevel,
+    cli::AgentType agent) {
   if (!configLoaded_) {
     throw std::runtime_error("No config loaded to save");
   }
@@ -340,9 +342,9 @@ std::string ConfigSession::getMetadataPath() const {
   return (sessionPath.parent_path() / "conf_metadata.json").string();
 }
 
-std::string ConfigSession::getServiceName(AgentType agent) {
+std::string ConfigSession::getServiceName(cli::AgentType agent) {
   switch (agent) {
-    case AgentType::WEDGE_AGENT:
+    case cli::AgentType::WEDGE_AGENT:
       return "wedge_agent";
   }
   throw std::runtime_error("Unknown agent type");
@@ -364,18 +366,17 @@ void ConfigSession::loadActionLevel() {
     return;
   }
 
-  // Parse JSON format: {"action": {"WEDGE_AGENT": "AGENT_RESTART"}}
+  // Parse JSON with symbolic enum names using fbthrift's folly_dynamic API
+  // LENIENT adherence allows parsing both string names and integer values
   try {
     folly::dynamic json = folly::parseJson(content);
-    if (json.isObject() && json.count("action")) {
-      const auto& actionObj = json["action"];
-      if (actionObj.isObject() && actionObj.count("WEDGE_AGENT")) {
-        std::string levelStr = actionObj["WEDGE_AGENT"].asString();
-        requiredActions_[AgentType::WEDGE_AGENT] = (levelStr == "AGENT_RESTART")
-            ? ConfigActionLevel::AGENT_RESTART
-            : ConfigActionLevel::HITLESS;
-      }
-    }
+    cli::ConfigSessionMetadata metadata;
+    facebook::thrift::from_dynamic(
+        metadata,
+        json,
+        facebook::thrift::dynamic_format::PORTABLE,
+        facebook::thrift::format_adherence::LENIENT);
+    requiredActions_ = *metadata.action();
   } catch (const std::exception& ex) {
     // If JSON parsing fails, keep defaults
     LOG(WARNING) << "Failed to parse metadata file: " << ex.what();
@@ -385,33 +386,24 @@ void ConfigSession::loadActionLevel() {
 void ConfigSession::saveActionLevel() {
   std::string metadataPath = getMetadataPath();
 
-  // Build JSON content: {"action": {"WEDGE_AGENT": "AGENT_RESTART"}}
-  folly::dynamic actionObj = folly::dynamic::object;
-  for (const auto& [agent, level] : requiredActions_) {
-    std::string agentStr;
-    switch (agent) {
-      case AgentType::WEDGE_AGENT:
-        agentStr = "WEDGE_AGENT";
-        break;
-    }
-    std::string levelStr = (level == ConfigActionLevel::AGENT_RESTART)
-        ? "AGENT_RESTART"
-        : "HITLESS";
-    actionObj[agentStr] = levelStr;
-  }
+  // Build Thrift metadata struct and serialize to JSON with symbolic enum names
+  // Using PORTABLE format for human-readable enum names instead of integers
+  cli::ConfigSessionMetadata metadata;
+  metadata.action() = requiredActions_;
 
-  folly::dynamic json = folly::dynamic::object("action", actionObj);
-  std::string content = folly::toJson(json);
+  folly::dynamic json = facebook::thrift::to_dynamic(
+      metadata, facebook::thrift::dynamic_format::PORTABLE);
+  std::string prettyJson = folly::toPrettyJson(json);
   folly::writeFileAtomic(
-      metadataPath, content, 0644, folly::SyncType::WITH_SYNC);
+      metadataPath, prettyJson, 0644, folly::SyncType::WITH_SYNC);
 }
 
 void ConfigSession::updateRequiredAction(
-    ConfigActionLevel actionLevel,
-    AgentType agent) {
+    cli::ConfigActionLevel actionLevel,
+    cli::AgentType agent) {
   // Initialize to HITLESS if not present
   if (requiredActions_.find(agent) == requiredActions_.end()) {
-    requiredActions_[agent] = ConfigActionLevel::HITLESS;
+    requiredActions_[agent] = cli::ConfigActionLevel::HITLESS;
   }
 
   // Only update if the new action level is higher (more impactful)
@@ -422,21 +414,22 @@ void ConfigSession::updateRequiredAction(
   }
 }
 
-ConfigActionLevel ConfigSession::getRequiredAction(AgentType agent) const {
+cli::ConfigActionLevel ConfigSession::getRequiredAction(
+    cli::AgentType agent) const {
   auto it = requiredActions_.find(agent);
   if (it != requiredActions_.end()) {
     return it->second;
   }
-  return ConfigActionLevel::HITLESS;
+  return cli::ConfigActionLevel::HITLESS;
 }
 
-void ConfigSession::resetRequiredAction(AgentType agent) {
-  requiredActions_[agent] = ConfigActionLevel::HITLESS;
+void ConfigSession::resetRequiredAction(cli::AgentType agent) {
+  requiredActions_[agent] = cli::ConfigActionLevel::HITLESS;
 
   // If all agents are HITLESS, remove the file entirely
   bool allHitless = true;
   for (const auto& [a, level] : requiredActions_) {
-    if (level != ConfigActionLevel::HITLESS) {
+    if (level != cli::ConfigActionLevel::HITLESS) {
       allHitless = false;
       break;
     }
@@ -452,7 +445,7 @@ void ConfigSession::resetRequiredAction(AgentType agent) {
   }
 }
 
-void ConfigSession::restartAgent(AgentType agent) {
+void ConfigSession::restartAgent(cli::AgentType agent) {
   std::string serviceName = getServiceName(agent);
 
   LOG(INFO) << "Restarting " << serviceName << " via systemd...";
@@ -611,14 +604,14 @@ ConfigSession::CommitResult ConfigSession::commit(const HostInfo& hostInfo) {
   atomicSymlinkUpdate(systemConfigPath_, targetConfigPath);
 
   // Check the required action level for this commit
-  ConfigActionLevel actionLevel = getRequiredAction(AgentType::WEDGE_AGENT);
+  auto actionLevel = getRequiredAction(cli::AgentType::WEDGE_AGENT);
 
   // Apply the config based on the required action level
   try {
-    if (actionLevel == ConfigActionLevel::AGENT_RESTART) {
+    if (actionLevel == cli::ConfigActionLevel::AGENT_RESTART) {
       // For AGENT_RESTART changes, restart the agent via systemd
       // This will cause the agent to pick up the new config on startup
-      restartAgent(AgentType::WEDGE_AGENT);
+      restartAgent(cli::AgentType::WEDGE_AGENT);
       LOG(INFO) << "Config committed as revision r" << revision
                 << " (agent restarted)";
     } else {
@@ -636,8 +629,8 @@ ConfigSession::CommitResult ConfigSession::commit(const HostInfo& hostInfo) {
       // If this was an AGENT_RESTART change, we need to restart the agent again
       // so it picks up the old config (in case the restart was partially
       // successful before failing)
-      if (actionLevel == ConfigActionLevel::AGENT_RESTART) {
-        restartAgent(AgentType::WEDGE_AGENT);
+      if (actionLevel == cli::ConfigActionLevel::AGENT_RESTART) {
+        restartAgent(cli::AgentType::WEDGE_AGENT);
       }
     } catch (const std::exception& rollbackEx) {
       // If rollback also fails, include both errors in the message
@@ -664,7 +657,7 @@ ConfigSession::CommitResult ConfigSession::commit(const HostInfo& hostInfo) {
   }
 
   // Reset action level after successful commit
-  resetRequiredAction(AgentType::WEDGE_AGENT);
+  resetRequiredAction(cli::AgentType::WEDGE_AGENT);
 
   return CommitResult{revision, actionLevel};
 }
