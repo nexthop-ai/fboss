@@ -117,6 +117,7 @@
         <package name="vi"/>
         <package name="btrfs-progs"/>
         <package name="re2"/>
+        <package name="libnl3"/>
         <package name="libsodium"/>
         <package name="double-conversion"/>
         <package name="libdwarf"/>
@@ -125,6 +126,7 @@
         <package name="libgpiod"/>
         <package name="glog"/>
         <package name="python3-pip"/>
+        <package name="python3.12"/>
         <package name="lz4"/>
         <package name="zstd"/>
         <package name="libusbx"/>
