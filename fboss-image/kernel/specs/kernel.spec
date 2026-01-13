@@ -158,6 +158,14 @@ mkdir -p $KERNELDEV/arch/x86
 cp -a arch/x86/include $KERNELDEV/arch/x86/
 cp arch/x86/Makefile $KERNELDEV/arch/x86/
 
+# Create symlinks in /lib/modules for kernel module building
+# These symlinks allow external modules to find kernel headers and build files
+# build -> /usr/src/kernels/<version>
+# source -> build (relative symlink, following standard CentOS kernel pattern)
+ln -sf /usr/src/kernels/%{version}-%{release}.%{_arch} \
+    %{buildroot}/lib/modules/%{version}-%{release}.%{_arch}/build
+(cd %{buildroot}/lib/modules/%{version}-%{release}.%{_arch} && ln -s build source)
+
 # Create placeholder initramfs (will be generated at install time)
 # We estimate the size of the initramfs because rpm needs to take this size
 # into consideration when performing disk space calculations
@@ -175,8 +183,8 @@ dd if=/dev/zero of=%{buildroot}/boot/initramfs-%{version}-%{release}.%{_arch}.im
 %files modules
 %defattr(-,root,root)
 /lib/modules/%{version}-%{release}.%{_arch}/
-%exclude /lib/modules/%{version}-%{release}.%{_arch}/build
-%exclude /lib/modules/%{version}-%{release}.%{_arch}/source
+/lib/modules/%{version}-%{release}.%{_arch}/build
+/lib/modules/%{version}-%{release}.%{_arch}/source
 
 %files headers
 %defattr(-,root,root)
