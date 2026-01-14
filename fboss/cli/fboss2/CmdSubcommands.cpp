@@ -235,6 +235,9 @@ CLI::App* CmdSubcommands::addCommand(
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_BUFFER_BYTES:
           subCmd->add_option("bytes", args, "Buffer size in bytes");
           break;
+        case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_VLAN_ID:
+          subCmd->add_option("vlan_id", args, "VLAN ID (1-4094)");
+          break;
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_UNINITIALIZE:
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_NONE:
           break;
