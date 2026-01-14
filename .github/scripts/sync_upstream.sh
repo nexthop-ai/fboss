@@ -96,12 +96,12 @@ tarball_content=$(git show "$stable_commits_ref:fboss/oss/stable_commits/latest_
 if [[ $tarball_content =~ ^[a-zA-Z0-9_]+\.tar\.gz$ ]]; then
   echo_debug "latest_stable_hashes.tar.gz is a symlink to $tarball_content"
   stable_commit=$(git show "$stable_commits_ref:fboss/oss/stable_commits/$tarball_content" |
-    tar -xzO build/deps/github_hashes/facebook/fboss-rev.txt |
+    tar -xzO --wildcards '*/fboss-rev.txt' |
     sed -n 's/^Subproject commit //p')
 else
   echo_debug "latest_stable_hashes.tar.gz is an actual tarball"
   stable_commit=$(echo "$tarball_content" |
-    tar -xzO build/deps/github_hashes/facebook/fboss-rev.txt |
+    tar -xzO --wildcards '*/fboss-rev.txt' |
     sed -n 's/^Subproject commit //p')
 fi
 
