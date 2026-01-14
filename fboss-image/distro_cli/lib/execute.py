@@ -57,6 +57,7 @@ def execute_build_in_container(
     # Build the command: python3 /tools/build_entrypoint.py <build_command>
     # The entry point will look for dependencies in /deps and install them.
     cmd_list = ["python3", "/tools/build_entrypoint.py", *command]
+    logger.info("Build will produce uncompressed artifacts (.tar)")
 
     logger.info(f"Running in container: {' '.join(cmd_list)}")
 

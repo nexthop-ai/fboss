@@ -9,6 +9,7 @@
 
 import logging
 import shutil
+import subprocess
 from pathlib import Path
 from typing import ClassVar
 
@@ -24,12 +25,14 @@ logger = logging.getLogger(__name__)
 
 # Component-specific artifact patterns
 # These are used when the manifest doesn't specify an "artifact" field
+# Patterns use base .tar extension - the artifact finder will automatically
+# try both uncompressed (.tar) and zstd-compressed (.tar.zst) variants
 COMPONENT_ARTIFACT_PATTERNS = {
-    "kernel": "kernel-*.rpms.tar.gz",
-    "sai": "sai-*.tar.gz",
-    "fboss-platform-stack": "fboss-platform-stack-*.tar.gz",
-    "fboss-forwarding-stack": "fboss-forwarding-stack-*.tar.gz",
-    "bsps": "bsp-*.tar.gz",
+    "kernel": "kernel-*.rpms.tar",
+    "sai": "sai-*.tar",
+    "fboss-platform-stack": "fboss-platform-stack-*.tar",
+    "fboss-forwarding-stack": "fboss-forwarding-stack-*.tar",
+    "bsps": "bsp-*.tar",
 }
 
 
@@ -65,6 +68,32 @@ class ImageBuilder:
         self.after_pkgs_execute_file = (
             self.centos_template_dir / "after_pkgs_execute_file.json"
         )
+        self.compress_artifacts = False
+
+    def _compress_artifact(self, artifact_path: Path, component_name: str) -> Path:
+        """Compress artifact using zstd."""
+        if not self.compress_artifacts:
+            return artifact_path
+
+        if artifact_path.name.endswith(".tar.zst"):
+            return artifact_path
+
+        compressed_path = artifact_path.with_suffix(".tar.zst")
+        logger.info(f"{component_name}: Compressing {artifact_path.name}")
+
+        try:
+            subprocess.run(
+                ["zstd", "-T0", str(artifact_path), "-o", str(compressed_path)],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            artifact_path.unlink()
+            logger.info(f"{component_name}: Compressed to {compressed_path.name}")
+            return compressed_path
+
+        except subprocess.CalledProcessError as e:
+            raise BuildError(f"{component_name}: Compression failed: {e.stderr}") from e
 
     def _create_component_builder(
         self,
@@ -88,6 +117,10 @@ class ImageBuilder:
         # Get artifact pattern from the predefined patterns
         artifact_pattern = COMPONENT_ARTIFACT_PATTERNS.get(base_name)
 
+        # Determine artifact key salt based on whether we'll compress the artifact
+        # This ensures compressed and uncompressed builds use different artifact store keys
+        artifact_key_salt = "compressed" if self.compress_artifacts else "uncompressed"
+
         return ComponentBuilder(
             component_name=component_name,
             component_data=component_data,
@@ -95,11 +128,16 @@ class ImageBuilder:
             store=self.store,
             artifact_pattern=artifact_pattern,
             dependency_artifacts=dependency_artifacts or {},
+            artifact_key_salt=artifact_key_salt,
         )
 
     def build_all(self):
         """Build all components and distribution artifacts."""
         logger.info("Building FBOSS Image")
+
+        # Full build: components will be immediately extracted and used
+        # Skip compression to save several minutes of overhead
+        self.compress_artifacts = False
 
         for component in self.COMPONENTS:
             if self.manifest.has_component(component):
@@ -110,6 +148,10 @@ class ImageBuilder:
     def build_components(self, component_names: list[str]):
         """Build specific components."""
         logger.info(f"Building components: {', '.join(component_names)}")
+
+        # Component-only build: artifacts may be stored/reused later
+        # Enable compression for component builds (not the default)
+        self.compress_artifacts = True
 
         for component in component_names:
             if not self.manifest.has_component(component):
@@ -298,7 +340,10 @@ class ImageBuilder:
                     element_name, element_data, dependency_artifacts
                 )
                 artifact_path = component_builder.build()
+
+                # Compress artifact if needed (happens on host, outside container)
                 if artifact_path:
+                    artifact_path = self._compress_artifact(artifact_path, element_name)
                     artifact_paths.append(artifact_path)
 
             self.component_artifacts[component] = (
@@ -317,4 +362,9 @@ class ImageBuilder:
             component, component_data, dependency_artifacts
         )
         artifact_path = component_builder.build()
+
+        # Compress artifact if needed (happens on host, outside container)
+        if artifact_path:
+            artifact_path = self._compress_artifact(artifact_path, component)
+
         self.component_artifacts[component] = artifact_path

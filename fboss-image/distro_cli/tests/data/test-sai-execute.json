@@ -5,7 +5,7 @@
   },
   "kernel": {
     "execute": ["../../../kernel/scripts/build_kernel.sh", "6.11.1", "/output"],
-    "artifact": "kernel-*.rpms.tar.gz"
+    "artifact": "kernel-*.rpms.tar"
   },
   "distribution_formats": {
     "usb": "output/test-sai.iso"

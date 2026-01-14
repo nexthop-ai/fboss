@@ -213,9 +213,12 @@ def find_artifact_in_dir(
 ) -> Path:
     """Find a single artifact matching a glob pattern in a directory.
 
+    Supports both uncompressed (.tar) and zstd-compressed (.tar.zst) variants.
+    Tries uncompressed first, and then compressed.
+
     Args:
         output_dir: Directory to search in
-        pattern: Glob pattern to match (e.g., "kernel-*.rpms.tar.gz")
+        pattern: Glob pattern to match (e.g., "kernel-*.rpms.tar")
         component_name: Name of component for error messages
 
     Returns:
@@ -225,20 +228,24 @@ def find_artifact_in_dir(
         ArtifactError: If no artifacts found
 
     Note:
-        If multiple artifacts match, returns the first one with a warning.
+        If multiple artifacts match, returns the most recent one based on modification time.
     """
-    artifacts = list(output_dir.glob(pattern))
+    # Find both uncompressed and compressed versions
+    artifacts = list(output_dir.glob(pattern)) + list(output_dir.glob(f"{pattern}.zst"))
 
     if not artifacts:
         raise ArtifactError(
-            f"{component_name} build output not found in: {output_dir} (pattern: {pattern})"
+            f"{component_name} build output not found in: {output_dir} "
+            f"(patterns: {pattern}, {pattern}.zst)"
         )
 
+    # If multiple artifacts found, use the most recent one based on modification time
     if len(artifacts) > 1:
+        artifacts.sort(key=lambda p: p.stat().st_mtime, reverse=True)
         logger.warning(
-            f"Multiple artifacts found matching '{pattern}', using first: {artifacts[0]}"
+            f"Multiple artifacts found matching '{pattern}' or '{pattern}.zst', "
+            f"using most recent: {artifacts[0]}"
         )
 
-    artifact_path = artifacts[0]
-    logger.info(f"Found {component_name} artifact: {artifact_path}")
-    return artifact_path
+    logger.info(f"Found {component_name} artifact: {artifacts[0]}")
+    return artifacts[0]

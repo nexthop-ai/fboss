@@ -83,6 +83,7 @@ class ComponentBuilder:
         store,
         artifact_pattern: str | None = None,
         dependency_artifacts: dict[str, Path] | None = None,
+        artifact_key_salt: str | None = None,
     ):
         """Initialize the component builder.
 
@@ -94,6 +95,7 @@ class ComponentBuilder:
             artifact_pattern: Glob pattern for finding build artifacts (e.g., "kernel-*.rpms.tar.gz")
                              If None, component cannot use execute mode
             dependency_artifacts: Optional dict mapping dependency names to their artifact paths
+            artifact_key_salt: Salt added to artifact store key to differentiate variants
         """
         self.component_name = component_name
         self.component_data = component_data
@@ -101,6 +103,7 @@ class ComponentBuilder:
         self.store = store
         self.artifact_pattern = artifact_pattern
         self.dependency_artifacts = dependency_artifacts or {}
+        self.artifact_key_salt = artifact_key_salt
 
     def build(self) -> Path:
         """Build or download the component.
@@ -167,11 +170,6 @@ class ComponentBuilder:
         if not data_files:
             raise ComponentError(f"No artifact files found for {self.component_name}")
 
-        if len(data_files) != 1:
-            raise ComponentError(
-                f"Expected exactly 1 data file for {self.component_name}, got {len(data_files)}"
-            )
-
         artifact_path = data_files[0]
         logger.info(f"{self.component_name} artifact ready: {artifact_path}")
         if metadata_files:
@@ -191,7 +189,8 @@ class ComponentBuilder:
             Path to build artifact in cache
         """
         # For store key, convert to string (works for both str and list)
-        store_key_str = str(cmd_line)
+        # Include artifact_key_salt to differentiate cache variants (e.g., compressed vs uncompressed)
+        store_key_str = f"{cmd_line}-salt={self.artifact_key_salt}"
 
         # _execute_build as a fetch_fn always starts a build expecting the underlying
         # build system to provide build specific optimizations. The objects are returned
@@ -208,11 +207,6 @@ class ComponentBuilder:
 
         if not data_files:
             raise ComponentError(f"No artifact files found for {self.component_name}")
-
-        if len(data_files) != 1:
-            raise ComponentError(
-                f"Expected exactly 1 data file for {self.component_name}, got {len(data_files)}"
-            )
 
         artifact_path = data_files[0]
         logger.info(f"{self.component_name} build complete: {artifact_path}")
@@ -274,8 +268,9 @@ class ComponentBuilder:
         artifact_base_dir = src_dir / component_dir
 
         # Use artifact_pattern from parameter, or fall back to instance pattern, or use generic pattern
+        # Generic pattern uses .tar (will match both .tar and .tar.zst via compression variant finder)
         if artifact_pattern is None:
-            artifact_pattern = self.artifact_pattern or "*.tar.gz"
+            artifact_pattern = self.artifact_pattern or "*.tar"
         if not artifact_pattern:
             logger.warning(
                 f"Component '{self.component_name}' has no artifact_pattern specified. "

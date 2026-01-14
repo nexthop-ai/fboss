@@ -58,13 +58,13 @@ class TestDockerInfrastructure(unittest.TestCase):
                 image=FBOSS_BUILDER_IMAGE,
                 command=["sh", "-c", "echo $BUILD_VERSION > /output/env_output.txt"],
                 volumes={tmpdir_path: Path("/output")},
-                env={"BUILD_VERSION": "6.4.3"},
+                env={"BUILD_VERSION": "6.11.1"},
                 ephemeral=True,
             )
 
             self.assertEqual(exit_code, 0)
             self.assertTrue(output_file.exists())
-            self.assertEqual(output_file.read_text().strip(), "6.4.3")
+            self.assertEqual(output_file.read_text().strip(), "6.11.1")
 
     def test_container_with_working_dir(self):
         """Test container with custom working directory."""
@@ -87,21 +87,32 @@ class TestDockerInfrastructure(unittest.TestCase):
 class TestKernelBuildE2E(unittest.TestCase):
     """End-to-end test for actual kernel build."""
 
+    @classmethod
+    def setUpClass(cls):
+        """Ensure fboss_builder image exists before running tests."""
+        ensure_test_docker_image()
+
     @unittest.skip("E2E test - run manually, takes ~10 minutes")
     @pytest.mark.e2e
     def test_real_kernel_build(self):
-        """E2E test: Actually build a kernel using Docker infrastructure.
+        """E2E test: Build kernel
 
-        This test is skipped by default because it:
-        - Takes ~10 minutes to run
-        - Requires Docker image to be built
-        - Downloads and builds a real kernel
+        This test verifies that the kernel build produces a .tar artifact.
 
         To run:
-        python3 -m pytest distro_cli/tests/kernel_build_test.py::TestKernelBuildE2E::test_real_kernel_build -v -s
-        Or to run all e2e tests:
-        python3 -m pytest -m e2e -v -s
+        python3 -m pytest distro_cli/tests/kernel_build_test.py::TestKernelBuildE2E::\
+test_real_kernel_build -v -s  # noqa: E501
         """
+        # Selectively delete the specific artifact if present in store
+        store = ArtifactStore()
+        store_dir = store.store_dir / "kernel"
+        if store_dir.exists():
+            # Delete any kernel-*.rpms.tar files
+            for artifact in store_dir.glob("kernel-*.rpms.tar"):
+                # Skip .tar.zst files - only delete plain .tar
+                if not artifact.name.endswith(".tar.zst"):
+                    artifact.unlink()
+
         # Use the test manifest
         test_manifest_path = Path(__file__).parent / "data" / "test-kernel-execute.json"
         self.assertTrue(
@@ -111,28 +122,30 @@ class TestKernelBuildE2E(unittest.TestCase):
 
         # Load manifest
         manifest = ImageManifest(test_manifest_path)
-        store = ArtifactStore()
 
         # Get kernel component data
         kernel_data = manifest.get_component("kernel")
 
         # Build kernel
-        # The artifact base directory is automatically derived from the execute path
         builder = ComponentBuilder(
             component_name="kernel",
             component_data=kernel_data,
             manifest_dir=manifest.manifest_dir,
             store=store,
-            artifact_pattern="kernel-*.rpms.tar.gz",
+            artifact_pattern="kernel-*.rpms.tar",
         )
         result = builder.build()
 
         # Verify result
-        self.assertTrue(
-            result.name.endswith(".tar.gz"), f"Expected tarball, got: {result.name}"
-        )
+        self.assertTrue(result.exists(), f"Kernel tarball not found: {result}")
         self.assertGreater(
             result.stat().st_size, 1024 * 1024, "Tarball seems too small"
+        )
+
+        # Verify the artifact to be .tar
+        self.assertTrue(
+            result.name.endswith(".tar"),
+            f"Expected .tar, got: {result.name}",
         )
 
 

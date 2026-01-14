@@ -140,7 +140,7 @@ class KernelDownloadTestHelper:
             component_data=kernel_data,
             manifest_dir=manifest.manifest_dir,
             store=store,
-            artifact_pattern="kernel-*.rpms.tar.gz",
+            artifact_pattern="kernel-*.rpms.tar",
         )
         return kernel_builder.build()
 
@@ -233,8 +233,9 @@ class TestKernelDownloadFile(unittest.TestCase):
 
         # Copy test data file to temp source directory
         # This way the original test data file is preserved when download moves it
-        self.source_file = self.test_dir / "data" / "kernel-test.tar.gz"
-        temp_source_file = self.temp_source_dir / "kernel-test.tar.gz"
+        # Downloads should use compressed files to save bandwidth
+        self.source_file = self.test_dir / "data" / "kernel-test.tar.zst"
+        temp_source_file = self.temp_source_dir / "kernel-test.tar.zst"
         shutil.copy2(self.source_file, temp_source_file)
 
         # Create test manifest that points to temp source file
@@ -303,7 +304,7 @@ class TestKernelDownloadHTTP(unittest.TestCase):
         manifest_data = {
             "name": "test-http-download",
             "version": "1.0.0",
-            "kernel": {"download": self.http_server.get_url("kernel-test.tar.gz")},
+            "kernel": {"download": self.http_server.get_url("kernel-test.tar.zst")},
             "distribution_formats": {"usb": "output/test.iso"},
         }
 

@@ -3,6 +3,6 @@
     "usb": "output/test-image.iso"
   },
   "kernel": {
-    "download": "file:kernel-test.tar.gz"
+    "download": "file:kernel-test.tar.zst"
   }
 }

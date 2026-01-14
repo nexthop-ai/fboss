@@ -151,6 +151,29 @@ PYTHONPATH=. python3 -m unittest distro_cli.tests.cli_test
 PYTHONPATH=. python3 -m unittest distro_cli.tests.cli_test.CLITest
 ```
 
+### Running manual tests
+A few tests are deliberately skipped while unit testing due to longer execution times. They can however be run manually as needed. The following are some of the examples.
+
+# Testing kernel build with compressed artifacts
+```bash
+python -m pytest distro_cli/tests/kernel_build_test.py::TestKernelBuildE2E::test_real_kernel_build_compressed -v -s -m e2e
+```
+
+# Testing kernel build with uncompressed artifacts
+```bash
+python -m pytest distro_cli/tests/kernel_build_test.py::TestKernelBuildE2E::test_real_kernel_build_uncompressed -v -s -m e2e
+```
+
+# Testing SAI build with compressed artifacts
+```bash
+python -m pytest distro_cli/tests/sai_build_test.py::TestSAIBuildE2E::test_real_sai_build -v -s -m e2e
+```
+
+# Testing SAI build with uncompressed artifacts
+```bash
+python -m pytest distro_cli/tests/sai_build_test.py::TestSAIBuildE2E::test_real_sai_build_full_mode -v -s -m e2e
+```
+
 ### Linting
 
 ```bash

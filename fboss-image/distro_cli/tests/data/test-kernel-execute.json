@@ -1,7 +1,7 @@
 {
   "kernel": {
     "execute": ["../../../kernel/scripts/build_kernel.sh", "6.4.3", "/output"],
-    "artifact": "kernel-6.4.3.rpms.tar.gz"
+    "artifact": "kernel-6.4.3.rpms.tar"
   },
   "distribution_formats": {
     "usb": "output/test-kernel-execute.iso"

@@ -3,7 +3,7 @@
 Build entry point for component builds inside the container.
 
 This is the standard entry point for all component builds. It:
-1. Discovers dependencies mounted at /dependencies/
+1. Discovers dependencies mounted at /deps
 2. Extracts tarballs if needed
 3. Installs RPMs from dependencies
 4. Executes the component build script
@@ -25,7 +25,7 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 # Standard location where dependencies are mounted
-DEPENDENCIES_DIR = Path("/dependencies")
+DEPENDENCIES_DIR = Path("/deps")
 
 
 def extract_tarball(tarball_path: Path, extract_dir: Path) -> None:
@@ -86,7 +86,7 @@ def install_rpms(rpm_paths: list[Path]) -> None:
 
 
 def discover_dependencies() -> list[Path]:
-    """Discover all dependencies in the standard /dependencies directory.
+    """Discover all dependencies in the standard /deps directory.
 
     Returns:
         List of paths to dependency artifacts (files or directories)

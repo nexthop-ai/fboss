@@ -59,15 +59,8 @@ class TestBuildCommand(unittest.TestCase):
                 f"Artifacts directory not found: {temp_artifacts}",
             )
 
-            # Find the artifact in the store
-            matching_files = list(temp_artifacts.glob("*/data/kernel-test.rpms.tar.gz"))
-            self.assertTrue(
-                len(matching_files) > 0,
-                f"Expected artifact file not found in artifact store: {temp_artifacts}",
-            )
-
-            # Find the artifact in the store
-            matching_files = list(temp_artifacts.glob("*/data/kernel-test.rpms.tar.gz"))
+            # Find the artifact in the store (supports both .tar and .tar.zst)
+            matching_files = list(temp_artifacts.glob("*/data/kernel-test.rpms.tar*"))
             self.assertTrue(
                 len(matching_files) > 0,
                 f"Expected artifact file not found in artifact store: {temp_artifacts}",

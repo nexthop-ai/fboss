@@ -13,6 +13,7 @@ set -euo pipefail
 # Args:
 #   $1: Kernel version (required)
 #   $2: Output directory inside container (required), e.g. /output
+
 set -x
 KERNEL_VERSION="${1:?kernel version required}"
 OUT_DIR="${2:?output dir required}"
@@ -77,11 +78,17 @@ sccache -s
 cp -r RPMS/* "$OUT_DIR"/ 2>/dev/null
 cp -r SRPMS/* "$OUT_DIR"/ 2>/dev/null
 
-find RPMS -name "*.rpm" -print0 | tar czf "$OUT_DIR/kernel-$KERNEL_VERSION.rpms.tar.gz" \
+# Create uncompressed tarball
+# Compression will be handled by ImageBuilder on the host if needed
+echo "Creating uncompressed tarball..."
+
+# Create tarball with common transform rules
+# shellcheck disable=SC2046
+tar -cf $OUT_DIR/kernel-$KERNEL_VERSION.rpms.tar \
   --transform 's|.*/||' \
   --transform 's|^\(kernel-[^-]\+\)-.*\.\(x86_64\)\.rpm$|\1-\2.rpm|' \
-  --null -T -
+  $(find RPMS -name "*.rpm")
 
 echo 'Kernel RPM build complete!'
 echo 'Output files:'
-find "$OUT_DIR" \( -name '*.rpm' -o -name '*.gz' \) -type f
+find "$OUT_DIR" \( -name '*.rpm' -o -name "*.tar" \) -type f

@@ -85,7 +85,7 @@ class TestSAIBuildE2E(unittest.TestCase):
             builder.component_artifacts,
             "SAI artifact not found in component_artifacts",
         )
-        result = builder.component_artifacts["sai"]
+        sai_artifact = builder.component_artifacts["sai"]
 
         # Verify kernel was also built as a dependency
         self.assertIn(
@@ -93,14 +93,118 @@ class TestSAIBuildE2E(unittest.TestCase):
             builder.component_artifacts,
             "Kernel artifact not found (should be built as dependency)",
         )
+        kernel_artifact = builder.component_artifacts["kernel"]
 
-        # Verify result
-        self.assertTrue(result.exists(), f"SAI tarball not found: {result}")
+        # Verify SAI artifact
+        self.assertTrue(sai_artifact.exists(), f"SAI tarball not found: {sai_artifact}")
         self.assertTrue(
-            result.name.endswith(".tar"), f"Expected .tar, got: {result.name}"
+            sai_artifact.name.endswith(".tar.zst"),
+            f"Expected compressed .tar.zst in component mode, got: {sai_artifact.name}",
         )
         self.assertGreater(
-            result.stat().st_size, 1024 * 1024, "Tarball seems too small"
+            sai_artifact.stat().st_size, 1024 * 1024, "SAI tarball seems too small"
+        )
+
+        # Verify kernel artifact
+        self.assertTrue(
+            kernel_artifact.exists(), f"Kernel tarball not found: {kernel_artifact}"
+        )
+
+        # In component mode, ImageBuilder compresses artifacts after build
+        self.assertTrue(
+            kernel_artifact.name.endswith(".tar.zst"),
+            f"Expected compressed .tar.zst in component mode, got: {kernel_artifact.name}",
+        )
+
+        self.assertGreater(
+            kernel_artifact.stat().st_size,
+            1024 * 1024,
+            "Kernel tarball seems too small",
+        )
+
+    @unittest.skip(
+        "E2E test - run manually to verify full build mode produces uncompressed artifacts"
+    )
+    @pytest.mark.e2e
+    def test_real_sai_build_full_mode(self):
+        """Test real SAI build in full build mode (uncompressed artifacts).
+
+        This test verifies that:
+        1. When building ALL components (full build), artifacts are UNCOMPRESSED
+        2. Kernel artifact should be .tar (uncompressed) for immediate use
+        3. SAI artifact should be .tar (uncompressed) for immediate use
+        4. This saves "several minutes" of compression overhead
+
+        To run manually (outside bazel to avoid read-only filesystem issues):
+        PYTHONPATH=fboss-image timeout 3600 python3 -m pytest \
+            fboss-image/distro_cli/tests/sai_build_test.py::TestSAIBuildE2E::test_real_sai_build_full_mode -v -s
+
+        Note: Use 60-minute timeout (3600 seconds) as the SAI build takes ~20 minutes.
+        """
+
+        # Use the test manifest
+        test_manifest_path = Path(__file__).parent / "data" / "test-sai-execute.json"
+        self.assertTrue(
+            test_manifest_path.exists(),
+            f"Test manifest not found: {test_manifest_path}",
+        )
+
+        # Load manifest
+        manifest = ImageManifest(test_manifest_path)
+
+        # Use ImageBuilder to build ALL components
+        builder = ImageBuilder(manifest)
+
+        # Build ALL components - this is FULL BUILD MODE
+        # Artifacts should be UNCOMPRESSED to save compression overhead
+        builder.build_all()
+
+        # Verify SAI artifact was created
+        self.assertIn(
+            "sai",
+            builder.component_artifacts,
+            "SAI artifact not found in component_artifacts",
+        )
+        sai_artifact = builder.component_artifacts["sai"]
+
+        # Verify kernel was also built
+        self.assertIn(
+            "kernel", builder.component_artifacts, "Kernel artifact not found"
+        )
+        kernel_artifact = builder.component_artifacts["kernel"]
+
+        # Verify SAI artifact
+        self.assertTrue(sai_artifact.exists(), f"SAI tarball not found: {sai_artifact}")
+        self.assertGreater(
+            sai_artifact.stat().st_size, 1024 * 1024, "SAI tarball seems too small"
+        )
+
+        # Verify kernel artifact
+        self.assertTrue(
+            kernel_artifact.exists(), f"Kernel tarball not found: {kernel_artifact}"
+        )
+        self.assertGreater(
+            kernel_artifact.stat().st_size,
+            1024 * 1024,
+            "Kernel tarball seems too small",
+        )
+
+        # In full build mode, artifacts should be UNCOMPRESSED (.tar)
+        # Verify kernel is uncompressed
+        self.assertTrue(
+            kernel_artifact.name.endswith(".tar"),
+            f"Expected uncompressed .tar in full build mode, got: {kernel_artifact.name}",
+        )
+
+        # Verify SAI is uncompressed
+        self.assertTrue(
+            sai_artifact.name.endswith(".tar")
+            and not sai_artifact.name.endswith(".tar.zst"),
+            f"Expected uncompressed .tar in full build mode, got: {sai_artifact.name}",
+        )
+
+        self.assertGreater(
+            sai_artifact.stat().st_size, 1024 * 1024, "Tarball seems too small"
         )
 
 

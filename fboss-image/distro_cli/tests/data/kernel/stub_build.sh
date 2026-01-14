@@ -3,7 +3,8 @@
 # Creates a minimal kernel artifact tarball for testing purposes
 set -e
 
-OUTPUT_DIR="${1:-/output}"
+# Parse arguments
+OUTPUT_DIR="/output"
 
 echo "Stub kernel build - creating test artifact"
 
@@ -14,10 +15,8 @@ cd "$OUTPUT_DIR"
 # Create a dummy kernel RPM file
 echo "dummy kernel rpm" >kernel-test.rpm
 
-# Create the tarball
-tar -czf kernel-test.rpms.tar.gz kernel-test.rpm
+tar -cf kernel-test.rpms.tar kernel-test.rpm
+echo "Stub kernel artifact created: $OUTPUT_DIR/kernel-test.rpms.tar"
 
 # Clean up
 rm kernel-test.rpm
-
-echo "Stub kernel artifact created: $OUTPUT_DIR/kernel-test.rpms.tar.gz"

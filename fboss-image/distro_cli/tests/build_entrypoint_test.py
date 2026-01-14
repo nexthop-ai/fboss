@@ -7,6 +7,8 @@
 
 """Test build_entrypoint.py behavior."""
 
+import subprocess
+import tarfile
 import unittest
 from pathlib import Path
 
@@ -50,7 +52,7 @@ class TestBuildEntrypoint(unittest.TestCase):
             self.assertEqual(output_file.read_text().strip(), "build completed")
 
     def test_entrypoint_with_empty_dependencies(self):
-        """Test build_entrypoint.py handles empty /dependencies directory gracefully."""
+        """Test build_entrypoint.py handles empty /deps directory gracefully."""
         with enter_tempdir("entrypoint_empty_deps_") as tmpdir_path:
             output_file = tmpdir_path / "build_output.txt"
             deps_dir = tmpdir_path / "deps"
@@ -80,6 +82,109 @@ class TestBuildEntrypoint(unittest.TestCase):
             )
             self.assertTrue(output_file.exists())
             self.assertEqual(output_file.read_text().strip(), "build with empty deps")
+
+    def test_entrypoint_with_compressed_dependency(self):
+        """Test build_entrypoint.py can extract zstd-compressed dependency tarballs."""
+        with enter_tempdir("entrypoint_compressed_deps_") as tmpdir_path:
+            # Create a dummy file to include in the tarball
+            deps_content_dir = tmpdir_path / "deps_content"
+            deps_content_dir.mkdir()
+            dummy_file = deps_content_dir / "test.txt"
+            dummy_file.write_text("compressed dependency content")
+
+            # Create uncompressed tarball first
+            uncompressed_tar = tmpdir_path / "dependency.tar"
+            with tarfile.open(uncompressed_tar, "w") as tar:
+                tar.add(dummy_file, arcname="test.txt")
+
+            # Compress with zstd
+            compressed_tar = tmpdir_path / "dependency.tar.zst"
+            subprocess.run(
+                ["zstd", str(uncompressed_tar), "-o", str(compressed_tar)],
+                check=True,
+                capture_output=True,
+            )
+            uncompressed_tar.unlink()  # Remove uncompressed version
+
+            # Create deps directory and move compressed tarball there
+            deps_dir = tmpdir_path / "deps"
+            deps_dir.mkdir()
+            final_dep = deps_dir / "dependency.tar.zst"
+            compressed_tar.rename(final_dep)
+
+            output_file = tmpdir_path / "build_output.txt"
+
+            # Run build_entrypoint.py with compressed dependency
+            tools_dir = get_root_dir() / "fboss-image" / "distro_cli" / "tools"
+            exit_code = run_container(
+                image=FBOSS_BUILDER_IMAGE,
+                command=[
+                    "python3",
+                    "/tools/build_entrypoint.py",
+                    "sh",
+                    "-c",
+                    "echo 'build with compressed deps' > /output/build_output.txt",
+                ],
+                volumes={
+                    tools_dir: Path("/tools"),
+                    tmpdir_path: Path("/output"),
+                    deps_dir: Path("/deps"),
+                },
+                ephemeral=True,
+            )
+
+            self.assertEqual(
+                exit_code, 0, "Build should succeed with compressed dependencies"
+            )
+            self.assertTrue(output_file.exists())
+            self.assertEqual(
+                output_file.read_text().strip(), "build with compressed deps"
+            )
+
+    def test_entrypoint_with_uncompressed_dependency(self):
+        """Test build_entrypoint.py can extract uncompressed dependency tarballs."""
+        with enter_tempdir("entrypoint_uncompressed_deps_") as tmpdir_path:
+            # Create a dummy file to include in the tarball
+            deps_content_dir = tmpdir_path / "deps_content"
+            deps_content_dir.mkdir()
+            dummy_file = deps_content_dir / "test.txt"
+            dummy_file.write_text("uncompressed dependency content")
+
+            # Create uncompressed tarball
+            deps_dir = tmpdir_path / "deps"
+            deps_dir.mkdir()
+            uncompressed_tar = deps_dir / "dependency.tar"
+            with tarfile.open(uncompressed_tar, "w") as tar:
+                tar.add(dummy_file, arcname="test.txt")
+
+            output_file = tmpdir_path / "build_output.txt"
+
+            # Run build_entrypoint.py with uncompressed dependency
+            tools_dir = get_root_dir() / "fboss-image" / "distro_cli" / "tools"
+            exit_code = run_container(
+                image=FBOSS_BUILDER_IMAGE,
+                command=[
+                    "python3",
+                    "/tools/build_entrypoint.py",
+                    "sh",
+                    "-c",
+                    "echo 'build with uncompressed deps' > /output/build_output.txt",
+                ],
+                volumes={
+                    tools_dir: Path("/tools"),
+                    tmpdir_path: Path("/output"),
+                    deps_dir: Path("/deps"),
+                },
+                ephemeral=True,
+            )
+
+            self.assertEqual(
+                exit_code, 0, "Build should succeed with uncompressed dependencies"
+            )
+            self.assertTrue(output_file.exists())
+            self.assertEqual(
+                output_file.read_text().strip(), "build with uncompressed deps"
+            )
 
 
 if __name__ == "__main__":

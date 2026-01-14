@@ -1,7 +1,7 @@
 {
   "kernel": {
-    "execute": ["../fixtures/minimal_build.sh", "/output/kernel-test.rpms.tar.gz"],
-    "artifact": "kernel-test.rpms.tar.gz"
+    "execute": ["distro_cli/tests/fixtures/minimal_build.sh", "/output/kernel-test.rpms.tar.zst"],
+    "artifact": "kernel-test.rpms.tar.zst"
   },
   "distribution_formats": {
     "usb": "output/test-minimal-build.iso"

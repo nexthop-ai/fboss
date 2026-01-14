@@ -118,7 +118,7 @@ py_test(
         ":distro_cli_lib",
         ":test_helpers",
     ],
-    data = glob(["tests/data/*.json", "tests/data/*.tar.gz"]) + [
+    data = glob(["tests/data/*.json", "tests/data/*.tar.zst"]) + [
         "//fboss/fboss-image/kernel:kernel_build_files",
     ],
     main = "tests/kernel_build_test.py",
@@ -165,7 +165,7 @@ py_test(
         ":distro_cli_lib",
         ":test_helpers",
     ],
-    data = glob(["tests/data/*.json", "tests/data/*.tar.gz"]),
+    data = glob(["tests/data/*.json", "tests/data/*.tar.zst"]),
     main = "tests/kernel_download_test.py",
     python_version = "PY3",
     srcs_version = "PY3",

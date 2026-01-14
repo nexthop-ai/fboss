@@ -1,10 +1,10 @@
 {
   "distribution_formats": {
-    "onie": "FBOSS-k6.4.3.bin",
-    "usb": "FBOSS-k6.4.3.iso"
+    "onie": "FBOSS-k6.11.1.bin",
+    "usb": "FBOSS-k6.11.1iso"
   },
   "kernel": {
-    "download": "https://artifact.github.com/nexthop-ai/fboss/fboss-oss_kernel_v6.4.3.tar"
+    "download": "https://artifact.github.com/nexthop-ai/fboss/fboss-oss_kernel_v6.11.1.tar"
   },
   "other_dependencies": [
     {"download": "https://artifact.github.com/nexthop-ai/fsdb/fsdb.rpm"},
