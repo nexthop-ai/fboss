@@ -73,8 +73,8 @@ class TestImageBuilder(unittest.TestCase):
 
         # Verify component build was called for each component element in manifest
         # dev_image.json has: kernel (1), other_dependencies (2 elements), fboss-platform-stack (1),
-        # bsps (2 elements), sai (1), fboss-forwarding-stack (1) = 8 total
-        self.assertEqual(mock_component_build.call_count, 8)
+        # bsps (2 elements), sai (1), fboss-forwarding-stack (1), image_build_hooks (1) = 9 total
+        self.assertEqual(mock_component_build.call_count, 9)
 
         # Verify run_container was called once for the base image build script
         mock_run_container.assert_called_once()

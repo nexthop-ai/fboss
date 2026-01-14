@@ -46,16 +46,25 @@ class ImageBuilder:
         "bsps": ["kernel"],  # Each BSP needs kernel headers/modules
         "sai": ["kernel"],  # SAI needs kernel headers/RPMs
         "fboss-forwarding-stack": ["sai"],  # Forwarding stack needs SAI library
+        "image_build_hooks": [],
     }
 
-    def __init__(self, manifest):
+    def __init__(self, manifest, kiwi_ng_debug=False):
         self.manifest = manifest
         self.workspace_root = manifest.manifest_dir
         self.store = ArtifactStore()
         self.component_artifacts = {}
+        self.kiwi_ng_debug = kiwi_ng_debug
         # Setup the image builder directory
         root_dir = get_root_dir()
         self.image_builder_dir = root_dir / "fboss-image" / "image_builder"
+        self.centos_template_dir = self.image_builder_dir / "templates" / "centos-09.0"
+        self.after_pkgs_install_file = (
+            self.centos_template_dir / "after_pkgs_install_file.json"
+        )
+        self.after_pkgs_execute_file = (
+            self.centos_template_dir / "after_pkgs_execute_file.json"
+        )
 
     def _create_component_builder(
         self,
@@ -129,11 +138,10 @@ class ImageBuilder:
 
         # Validate distribution formats are specified
         dist_formats = self.manifest.data.get("distribution_formats")
-        if not dist_formats:
+        if not dist_formats or not any(
+            k in dist_formats for k in ["usb", "pxe", "onie"]
+        ):
             raise ManifestError("No distribution formats specified in manifest")
-
-        if not any(k in dist_formats for k in ["usb", "pxe", "onie"]):
-            raise ManifestError("No distribution format specified in manifest")
 
         logger.info(f"Using image builder: {self.image_builder_dir}")
 
@@ -157,6 +165,48 @@ class ImageBuilder:
         # Add flag for ONIE if requested
         if "onie" in dist_formats:
             command.append("--build-onie")
+
+        if self.kiwi_ng_debug:
+            command.append("--debug")
+
+        image_build_hooks = self.manifest.data.get("image_build_hooks")
+        try:
+            Path.unlink(self.after_pkgs_install_file)  # Best effort
+            Path.unlink(self.after_pkgs_execute_file)
+        except FileNotFoundError:
+            pass
+
+        # Helper function to process hook files
+        def process_hook_file(hook_key: str, target_file: Path, cmd_flag: str):
+            if hook_key in image_build_hooks:
+                user_input_file = Path(image_build_hooks[hook_key])
+
+                if user_input_file.is_file():
+                    # Copy to fixed name in template/centos-09.0 directory
+                    shutil.copy(str(user_input_file), target_file)
+                    logger.info(
+                        f"Copied {user_input_file.name} to {self.centos_template_dir}"
+                    )
+
+                    # Pass the filename as an argument to the build_image_in_container.sh script
+                    command.append(cmd_flag)
+                    command.append(target_file.name)
+                else:
+                    raise BuildError(
+                        f"User specified {hook_key}, but file not found: {user_input_file.name}"
+                    )
+
+        # Process both hook files
+        process_hook_file(
+            "after_pkgs_install",
+            self.after_pkgs_install_file,
+            "--after-pkgs-input-file",
+        )
+        process_hook_file(
+            "after_pkgs_execute",
+            self.after_pkgs_execute_file,
+            "--after-pkgs-execute-file",
+        )
 
         # Run the build script inside fboss_builder container
         exit_code = run_container(

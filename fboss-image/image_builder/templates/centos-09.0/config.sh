@@ -183,4 +183,67 @@ echo "Removing kernel rpms from rootfs..."
 rm -f /repos/*.rpm
 rmdir /repos
 
+JQ_INSTALLED=false
+# Ensure jq is installed (needed to parse JSON)
+if ! rpm -q jq >/dev/null 2>&1; then
+  dnf install -y jq
+  JQ_INSTALLED=true
+fi
+
+#8. Install additional packages from after_pkgs input file user "may" have passed in
+if [ -f /var/tmp/after_pkgs_install_file.json ]; then
+
+  echo "Processing after_pkgs_install JSON file..."
+  EXTRA_PACKAGES=$(jq -r '.packages[]' /var/tmp/after_pkgs_install_file.json)
+
+  if [ -n "$EXTRA_PACKAGES" ]; then
+    mapfile -t PACKAGE_ARRAY <<<"$EXTRA_PACKAGES"
+    echo "Installing packages: ${PACKAGE_ARRAY[*]}"
+    dnf install -y --setopt=install_weak_deps=False "${PACKAGE_ARRAY[@]}"
+
+    # Clean up, don't leave traces of the user's JSON file in the image
+    rm -f /var/tmp/after_pkgs_install_file.json
+  else
+    echo "No extra packages specified in after_pkgs_install JSON file"
+  fi
+else
+  echo "No after_pkgs_install JSON file"
+fi
+
+#9. Excute additional commands from after_pkgs_execute_file.json user "may" have passed in
+if [ -f /var/tmp/after_pkgs_execute_file.json ]; then
+
+  echo "Processing after_pkgs_execute JSON file..."
+  EXTRA_COMMANDS=$(jq -r '.execute[]' /var/tmp/after_pkgs_execute_file.json)
+
+  if [ -n "$EXTRA_COMMANDS" ]; then
+    # Get the number of commands in the execute array
+    NUM_COMMANDS=$(jq -r '.execute | length' /var/tmp/after_pkgs_execute_file.json)
+
+    for ((i = 0; i < NUM_COMMANDS; i++)); do
+      # Extract the command array for this index
+      CMD_ARRAY=$(jq -r ".execute[$i] | @sh" /var/tmp/after_pkgs_execute_file.json)
+
+      echo "Executing command $((i + 1))/$NUM_COMMANDS: $CMD_ARRAY"
+
+      # Execute the command using eval to properly handle the shell-quoted array
+      eval "$CMD_ARRAY"
+
+      if [ $? -ne 0 ]; then
+        echo "Warning: Command $((i + 1)) failed with exit code != 0"
+      fi
+    done
+
+    # Clean up, don't leave traces of the user's JSON file in the image
+    rm -f /var/tmp/after_pkgs_execute_file.json
+  else
+    echo "No commands specified in after_pkgs_execute JSON file"
+  fi
+fi
+
+# Clean up, remove jq if we installed it
+if [ "$JQ_INSTALLED" = true ]; then
+  dnf remove -y jq
+fi
+
 exit 0

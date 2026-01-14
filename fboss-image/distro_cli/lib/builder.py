@@ -29,6 +29,7 @@ class ImageBuilder:
         "bsps",
         "sai",
         "fboss-forwarding-stack",
+        "image_build_hooks",
     ]
 
     def __init__(self, manifest):

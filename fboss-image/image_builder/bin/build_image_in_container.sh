@@ -22,6 +22,8 @@ TARGET_DIR="${WSROOT}/output"
 BUILD_PXE=""
 BUILD_ONIE=""
 KIWI_DEBUG=""
+AFTER_PKGS_INSTALL_FILE=""
+AFTER_PKGS_EXECUTE_FILE=""
 
 # User configurable variables (fboss tarfile and kernel rpm directory)
 FBOSS_TARFILE=""
@@ -37,6 +39,9 @@ help() {
   echo ""
   echo "  -f|--fboss-tarfile          Location of compressed FBOSS tar file to add to image"
   echo "  -k|--kernel-rpm-dir         Directory containing kernel rpms to install (default: download LTS 6.12)"
+  echo "  -a|--after-pkgs-install     JSON File (in templates/centos-09.0 directory) containing additional packages to install to the image"
+  echo "  -e|--after-pkgs-execute     JSON File (in templates/centos-09.0 directory) containing list of commands to execute after packages are installed"
+  echo ""
   echo "  -p|--build-pxe-usb          Build PXE and USB installers image (default: no)"
   echo "  -o|--build-onie             Build ONIE installer image (default: no)"
   echo ""
@@ -160,6 +165,16 @@ while [[ $# -gt 0 ]]; do
     shift 1
     ;;
 
+  -a | --after-pkgs-input-file)
+    AFTER_PKGS_INSTALL_FILE=$2
+    shift 2
+    ;;
+
+  -e | --after-pkgs-execute-file)
+    AFTER_PKGS_EXECUTE_FILE=$2
+    shift 2
+    ;;
+
   -h | --help)
     help
     exit 0
@@ -245,6 +260,26 @@ cp /etc/resolv.conf ${DESCRIPTION_DIR}/root/etc/
 
 # Add build timestamp to the image
 echo "Built on: $(date -u)" >$DESCRIPTION_DIR/root/etc/build-info
+
+# Remove any existing after_pkgs files from previous runs
+rm -f ${DESCRIPTION_DIR}/root/var/tmp/after_pkgs_install_file.json
+rm -f ${DESCRIPTION_DIR}/root/var/tmp/after_pkgs_execute_file.json
+
+# Copy the after_pkgs input file in the rootfs so that we can access it the chrooted environment
+# The file, if provided by the user, should already copied into the centos-09.0 directory as part
+# of the image build process. Copy to fixed location in rootfs where config.sh checks for it.
+# These will be deleted once they are processed.
+if [[ -n ${AFTER_PKGS_INSTALL_FILE} && -f "${DESCRIPTION_DIR}/${AFTER_PKGS_INSTALL_FILE}" ]]; then
+  mkdir -p ${DESCRIPTION_DIR}/root/var/tmp
+  dprint "Copying ${DESCRIPTION_DIR}/${AFTER_PKGS_INSTALL_FILE} to ${DESCRIPTION_DIR}/root/var/tmp/after_pkgs_install_file.json"
+  cp ${DESCRIPTION_DIR}/${AFTER_PKGS_INSTALL_FILE} ${DESCRIPTION_DIR}/root/var/tmp/after_pkgs_install_file.json
+fi
+
+if [[ -n ${AFTER_PKGS_EXECUTE_FILE} && -f "${DESCRIPTION_DIR}/${AFTER_PKGS_EXECUTE_FILE}" ]]; then
+  mkdir -p ${DESCRIPTION_DIR}/root/var/tmp
+  dprint "Copying ${DESCRIPTION_DIR}/${AFTER_PKGS_EXECUTE_FILE} to ${DESCRIPTION_DIR}/root/var/tmp/after_pkgs_execute_file.json"
+  cp ${DESCRIPTION_DIR}/${AFTER_PKGS_EXECUTE_FILE} ${DESCRIPTION_DIR}/root/var/tmp/after_pkgs_execute_file.json
+fi
 
 # Generate the images
 PXE_RC=0
