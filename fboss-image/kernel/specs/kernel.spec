@@ -161,9 +161,11 @@ cp arch/x86/Makefile $KERNELDEV/arch/x86/
 # Create symlinks in /lib/modules for kernel module building
 # These symlinks allow external modules to find kernel headers and build files
 # build -> /usr/src/kernels/<version>
-# source -> build (relative symlink, following standard CentOS kernel pattern)
+# We are replacing the symlink created by make modules_install above
+rm -f %{buildroot}/lib/modules/%{version}-%{release}.%{_arch}/build
 ln -sf /usr/src/kernels/%{version}-%{release}.%{_arch} \
     %{buildroot}/lib/modules/%{version}-%{release}.%{_arch}/build
+# source -> build (relative symlink, following standard CentOS kernel pattern)
 (cd %{buildroot}/lib/modules/%{version}-%{release}.%{_arch} && ln -s build source)
 
 # Create placeholder initramfs (will be generated at install time)
@@ -183,8 +185,6 @@ dd if=/dev/zero of=%{buildroot}/boot/initramfs-%{version}-%{release}.%{_arch}.im
 %files modules
 %defattr(-,root,root)
 /lib/modules/%{version}-%{release}.%{_arch}/
-/lib/modules/%{version}-%{release}.%{_arch}/build
-/lib/modules/%{version}-%{release}.%{_arch}/source
 
 %files headers
 %defattr(-,root,root)
