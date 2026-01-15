@@ -139,7 +139,7 @@ jobs:
           ⚠️ **Manual conflict resolution required**
 
           The following files have conflicts that need to be resolved:
-          ${{ needs.sync-upstream.outputs.conflicting_files }}
+          $(for file in ${{ needs.sync-upstream.outputs.conflicting_files }}; do echo "- [ ] $file"; done)
 
           Please resolve these conflicts and merge when ready."
 
