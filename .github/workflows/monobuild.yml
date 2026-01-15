@@ -1,10 +1,9 @@
 name: Monobuild
-run-name: Build and Test the world
 
 on:
   pull_request:
-  # Allow manually triggering the workflow
-  workflow_dispatch:
+  push:
+    branches: [ main ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
@@ -12,48 +11,13 @@ concurrency:
 
 jobs:
   monobuild:
-    name: Monobuild
-    runs-on: cloudstack-ubuntu24-large
     permissions:
       id-token: write
       contents: read
-
-    steps:
-      - name: Checkout nh repo
-        uses: actions/checkout@v6
-        with:
-          repository: nexthop-ai/nh
-          ref: main
-          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
-
-      - name: Update fboss submodule to PR commit
-        env:
-          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
-        run: |
-          git config --global url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
-          git submodule update --init fboss
-          cd fboss
-          git checkout ${{ github.event.pull_request.head.sha }}
-
-      - uses: bazel-contrib/setup-bazel@0.18.0
-        with:
-          # Avoid downloading Bazel every time.
-          bazelisk-cache: true
-          # Store build cache per workflow.
-          disk-cache: ${{ github.workflow }}
-          # Share repository cache between workflows.
-          repository-cache: true
-
-      - name: Build and test
-        run: bazel test --strategy=TestRunner=standalone --build_tag_filters=-not-for-ci,-disabled --test_tag_filters=-not-for-ci,-disabled -- //fboss/fboss-image/distro_cli/...
-
-      - name: Print failed test logs
-        if: failure()
-        run: |
-          for log in $(find ~/.bazel/execroot/_main/bazel-out/*/testlogs -name 'test.log' 2>/dev/null); do
-            echo "=========================================="
-            echo "Test log: $log"
-            echo "=========================================="
-            cat "$log"
-            echo ""
-          done
+    uses: nexthop-ai/nh/.github/workflows/monobuild.reusable.yml@main
+    with:
+      submodule: fboss
+      nh_branch: main
+    secrets:
+      GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+    name: Monobuild
