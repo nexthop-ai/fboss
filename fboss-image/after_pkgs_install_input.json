@@ -10,6 +10,7 @@
     "bc", "rsync", "wget", "curl",
     "net-tools", "tcpdump",
     "strace",
-    "lsof"
+    "lsof",
+    "podman-docker"
   ]
 }
