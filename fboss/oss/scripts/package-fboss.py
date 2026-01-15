@@ -207,7 +207,7 @@ class PackageFboss:
         )
 
     def _copy_unsupported_tests(self, tmp_dir_name):
-        unsupported_tests_dirs = [ "qsfp_unsupported_tests","sai_hw_unsupported_tests"]
+        unsupported_tests_dirs = ["qsfp_unsupported_tests", "sai_hw_unsupported_tests"]
         for unsupported_tests_dir in unsupported_tests_dirs:
             unsupported_tests_path = os.path.join(
                 self.git_path, "fboss/oss", unsupported_tests_dir
@@ -215,8 +215,7 @@ class PackageFboss:
             print(f"Copying {unsupported_tests_path} to {tmp_dir_name}")
             shutil.copytree(
                 os.path.join("fboss/oss", unsupported_tests_dir),
-                os.path.join(tmp_dir_name, PackageFboss.DATA, unsupported_tests_dir
-                ),
+                os.path.join(tmp_dir_name, PackageFboss.DATA, unsupported_tests_dir),
             )
 
     def _copy_binaries(self, tmp_dir_name):
@@ -326,7 +325,7 @@ class PackageFboss:
     def _compress_binaries(self):
         print("Compressing FBOSS Binaries...")
         env = os.environ.copy()
-        env['ZSTD_NBTHREADS'] = "0"
+        env["ZSTD_NBTHREADS"] = "0"
         tar_path = os.path.join(args.scratch_path, PackageFboss.FBOSS_BIN_TAR)
         subprocess.run(
             ["tar", "-cvf", tar_path, "--zstd", "-C", self.tmp_dir_name, "."],
