@@ -1,0 +1,24 @@
+{
+  "distribution_formats": {
+    "pxe": "fboss-distro-image_pxe.tar",
+    "onie": "fboss-distro-image_onie.bin"
+  },
+  "kernel": {
+    "execute": ["kernel/scripts/build_kernel.sh", "6.11.1", "/output"],
+    "artifact": "kernel-6.11.1.rpms.tar"
+  },
+  "other_dependencies": [
+  ],
+  "fboss-platform-stack": {
+  },
+  "bsps": [
+      {"execute": "../../fboss-bsp/distro_build.sh"}
+  ],
+  "sai": {
+  },
+  "fboss-forwarding-stack": {
+  },
+  "image_build_hooks": {
+     "after_pkgs_install": "nexthop-extra-pkgs.json"
+  }
+}

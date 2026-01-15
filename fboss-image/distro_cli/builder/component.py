@@ -318,10 +318,8 @@ class ComponentBuilder:
             # Replace first element with container path, keep the rest
             container_cmd = [str(container_script_path), *cmd_line[1:]]
         else:
-            # For string commands, replace the first token
-            tokens = cmd_line.split()
-            tokens[0] = str(container_script_path)
-            container_cmd = " ".join(tokens)
+            # For string commands, replace the script path with the in-container version
+            container_cmd = [str(container_script_path)]
 
         logger.info(f"Container command: {container_cmd}")
 
