@@ -653,7 +653,7 @@ class TestRunner(abc.ABC):
                 return conf_file
         return conf_file
 
-    def _run_tests(self, tests_to_run, conf_file, args):
+    def _run_tests(self, tests_to_run, conf_file, args) -> tuple(list, list):
         if args.sai_replayer_logging:
             if os.path.isdir(args.sai_replayer_logging) or os.path.isfile(
                 args.sai_replayer_logging
@@ -696,7 +696,7 @@ class TestRunner(abc.ABC):
         test_binary_name = self._get_test_binary_name()
         if test_binary_name != "qsfp_hw_test" and not os.path.exists(conf_file):
             print("########## Conf file not found: " + conf_file)
-            return []
+            return [], []
 
         test_outputs = []
         test_results = []
