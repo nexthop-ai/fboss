@@ -14,10 +14,10 @@ from pathlib import Path
 
 from distro_cli.lib.artifact import find_artifact_in_dir
 from distro_cli.lib.constants import FBOSS_BUILDER_IMAGE
-from distro_cli.lib.docker.image import get_git_dir
 from distro_cli.lib.download import download_artifact
 from distro_cli.lib.exceptions import ComponentError
 from distro_cli.lib.execute import execute_build_in_container
+from distro_cli.lib.paths import get_root_dir
 
 logger = logging.getLogger(__name__)
 
@@ -287,10 +287,10 @@ class ComponentBuilder:
         logger.info(f"Mounting {src_dir} as /src")
 
         # Mount distro_cli/tools as /tools for build utilities
-        tools_dir = get_git_dir() / "fboss-image" / "distro_cli" / "tools"
+        tools_dir = get_root_dir() / "fboss-image" / "distro_cli" / "tools"
 
         # Mount fboss/oss/scripts for common build utilities (sccache config, etc.)
-        common_scripts_dir = get_git_dir() / "fboss" / "oss" / "scripts"
+        common_scripts_dir = get_root_dir() / "fboss" / "oss" / "scripts"
 
         volumes = {
             src_dir: Path("/src"),

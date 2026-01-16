@@ -16,6 +16,7 @@ import time
 from pathlib import Path
 
 from distro_cli.lib.constants import FBOSS_BUILDER_IMAGE
+from distro_cli.lib.paths import get_root_dir
 
 logger = logging.getLogger(__name__)
 
@@ -24,23 +25,6 @@ DEFAULT_CACHE_EXPIRATION_SECONDS = 24 * 60 * 60
 
 # Container registry for caching builder images across ephemeral VMs
 CONTAINER_REGISTRY = "container-registry.sw.internal.nexthop.ai"
-
-
-def get_git_dir() -> Path:
-    """Find the repository root directory by looking for .git marker.
-
-    Returns:
-        Path to the repository root directory
-
-    Raises:
-        RuntimeError: If repository root cannot be found
-    """
-    current = Path(__file__).resolve()
-    while current != current.parent:
-        if (current / ".git").exists():
-            return current
-        current = current.parent
-    raise RuntimeError("Could not find repository root (no .git directory found)")
 
 
 def _hash_directory_tree(
@@ -299,7 +283,7 @@ def build_fboss_builder_image() -> None:
     """
 
     # Find paths
-    root_dir = get_git_dir()
+    root_dir = get_root_dir()
     dockerfile = root_dir / "fboss" / "oss" / "docker" / "Dockerfile"
     build_script = root_dir / "fboss" / "oss" / "scripts" / "build_docker.sh"
 

@@ -10,29 +10,29 @@
 from pathlib import Path
 
 
-def get_root_dir(dir_name: str = "fboss-image") -> Path:
-    """Find the root directory containing the specified directory.
+def get_root_dir() -> Path:
+    """Find the repository root directory.
 
     This works by walking up from the current file until we find
-    the specified directory, then returning its parent.
+    the 'fboss-image' directory, then returning its parent.
 
-    Args:
-        dir_name: Name of the directory to search for (default: "fboss-image")
+    Additionally verifies that both 'fboss-image' and 'fboss' directories
+    exist at the root to ensure we're in the correct repository structure.
 
     Returns:
-        Path to root directory (parent of dir_name)
+        Path to repository root directory
 
     Raises:
         RuntimeError: If the root directory cannot be determined
     """
     current = Path(__file__).resolve()
 
-    # Walk up the directory tree looking for dir_name
+    # Walk up the directory tree looking for fboss-image
     for parent in current.parents:
-        if (parent / dir_name).is_dir():
+        if (parent / "fboss-image").is_dir() and (parent / "fboss").is_dir():
             return parent
 
     raise RuntimeError(
-        f"Could not find root from {current}. "
-        f"Expected to find '{dir_name}' directory in parent path."
+        f"Could not find repository root from {current}. "
+        f"Expected to find 'fboss-image' and 'fboss' directories in parent path."
     )

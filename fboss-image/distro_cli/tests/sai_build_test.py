@@ -47,7 +47,7 @@ class TestSAIBuildE2E(unittest.TestCase):
         4. The SAI build script can use the kernel RPMs
         5. The SAI build produces the expected artifact (sai-devel.tar)
 
-        The test uses get_git_dir to find the SAI SDK directory based on the execute path
+        The test relies on get_root_dir to find the SAI SDK directory based on the execute path
         in the manifest, so it works regardless of where the SDK is located on the filesystem
         or what it's named.
 
@@ -60,7 +60,7 @@ class TestSAIBuildE2E(unittest.TestCase):
         Note: Use 60-minute timeout (3600 seconds) as the SAI build takes ~20 minutes.
         """
         # The manifest specifies the execute path (e.g., "broadcom-sai-sdk/build_fboss_sai.sh")
-        # get_git_dir finds the git repository root
+        # get_root_dir finds the repository root
         # No hardcoded paths needed
 
         # Use the test manifest
