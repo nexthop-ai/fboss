@@ -14,7 +14,7 @@ import tempfile
 from collections.abc import Callable
 from pathlib import Path
 
-from distro_cli.lib.paths import get_root_dir
+from distro_cli.lib.paths import get_abs_path
 
 from .exceptions import ArtifactError
 
@@ -29,7 +29,7 @@ class ArtifactStore:
     """
 
     # Artifact store directory - class attribute
-    ARTIFACT_STORE_DIR = get_root_dir() / "fboss-image" / "distro_cli" / ".artifacts"
+    ARTIFACT_STORE_DIR = get_abs_path("fboss-image/distro_cli/.artifacts")
 
     def __init__(self):
         """Initialize artifact store."""

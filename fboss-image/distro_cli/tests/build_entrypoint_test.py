@@ -14,7 +14,7 @@ from pathlib import Path
 
 from distro_cli.lib.constants import FBOSS_BUILDER_IMAGE
 from distro_cli.lib.docker.container import run_container
-from distro_cli.lib.paths import get_root_dir
+from distro_cli.lib.paths import get_abs_path
 from distro_cli.tests.test_helpers import ensure_test_docker_image, enter_tempdir
 
 
@@ -33,7 +33,7 @@ class TestBuildEntrypoint(unittest.TestCase):
 
             # Mount tools directory (contains build_entrypoint.py)
             # No /deps mount - simulates build without dependencies
-            tools_dir = get_root_dir() / "fboss-image" / "distro_cli" / "tools"
+            tools_dir = get_abs_path("fboss-image/distro_cli/tools")
             exit_code = run_container(
                 image=FBOSS_BUILDER_IMAGE,
                 command=[
@@ -59,7 +59,7 @@ class TestBuildEntrypoint(unittest.TestCase):
             deps_dir.mkdir(exist_ok=True)
 
             # Mount empty /deps directory
-            tools_dir = get_root_dir() / "fboss-image" / "distro_cli" / "tools"
+            tools_dir = get_abs_path("fboss-image/distro_cli/tools")
             exit_code = run_container(
                 image=FBOSS_BUILDER_IMAGE,
                 command=[
@@ -115,7 +115,7 @@ class TestBuildEntrypoint(unittest.TestCase):
             output_file = tmpdir_path / "build_output.txt"
 
             # Run build_entrypoint.py with compressed dependency
-            tools_dir = get_root_dir() / "fboss-image" / "distro_cli" / "tools"
+            tools_dir = get_abs_path("fboss-image/distro_cli/tools")
             exit_code = run_container(
                 image=FBOSS_BUILDER_IMAGE,
                 command=[
@@ -160,7 +160,7 @@ class TestBuildEntrypoint(unittest.TestCase):
             output_file = tmpdir_path / "build_output.txt"
 
             # Run build_entrypoint.py with uncompressed dependency
-            tools_dir = get_root_dir() / "fboss-image" / "distro_cli" / "tools"
+            tools_dir = get_abs_path("fboss-image/distro_cli/tools")
             exit_code = run_container(
                 image=FBOSS_BUILDER_IMAGE,
                 command=[

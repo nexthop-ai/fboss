@@ -19,7 +19,7 @@ from distro_cli.lib.constants import FBOSS_BUILDER_IMAGE
 from distro_cli.lib.docker.container import run_container
 from distro_cli.lib.docker.image import build_fboss_builder_image
 from distro_cli.lib.exceptions import BuildError, ComponentError, ManifestError
-from distro_cli.lib.paths import get_root_dir
+from distro_cli.lib.paths import get_abs_path
 
 logger = logging.getLogger(__name__)
 
@@ -59,8 +59,7 @@ class ImageBuilder:
         self.component_artifacts = {}
         self.kiwi_ng_debug = kiwi_ng_debug
         # Setup the image builder directory
-        root_dir = get_root_dir()
-        self.image_builder_dir = root_dir / "fboss-image" / "image_builder"
+        self.image_builder_dir = get_abs_path("fboss-image/image_builder")
         self.centos_template_dir = self.image_builder_dir / "templates" / "centos-09.0"
         self.after_pkgs_install_file = (
             self.centos_template_dir / "after_pkgs_install_file.json"

@@ -16,7 +16,7 @@ import time
 from pathlib import Path
 
 from distro_cli.lib.constants import FBOSS_BUILDER_IMAGE
-from distro_cli.lib.paths import get_root_dir
+from distro_cli.lib.paths import get_abs_path
 
 logger = logging.getLogger(__name__)
 
@@ -283,9 +283,8 @@ def build_fboss_builder_image() -> None:
     """
 
     # Find paths
-    root_dir = get_root_dir()
-    dockerfile = root_dir / "fboss" / "oss" / "docker" / "Dockerfile"
-    build_script = root_dir / "fboss" / "oss" / "scripts" / "build_docker.sh"
+    dockerfile = get_abs_path("fboss/oss/docker/Dockerfile")
+    build_script = get_abs_path("fboss/oss/scripts/build_docker.sh")
 
     if not dockerfile.exists():
         raise RuntimeError(f"Dockerfile not found: {dockerfile}")
@@ -294,6 +293,7 @@ def build_fboss_builder_image() -> None:
         raise RuntimeError(f"Build script not found: {build_script}")
 
     # Check if we should rebuild (checks local cache)
+    root_dir = get_abs_path(".")
     should_build, checksum, reason = _should_build_image(root_dir)
 
     if not should_build:
