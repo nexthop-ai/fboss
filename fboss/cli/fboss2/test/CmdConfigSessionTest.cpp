@@ -637,7 +637,6 @@ TEST_F(ConfigSessionTestFixture, rollbackToPreviousRevision) {
   EXPECT_TRUE(fs::exists(cliConfigDir / "agent-r3.conf"));
 }
 
-<<<<<<< HEAD
 TEST_F(ConfigSessionTestFixture, actionLevelDefaultIsHitless) {
   fs::path sessionDir = testHomeDir_ / ".fboss2";
   fs::path sessionConfig = sessionDir / "agent.conf";
@@ -807,6 +806,4 @@ TEST_F(ConfigSessionTestFixture, actionLevelPersistsAcrossSessions) {
   }
 }
 
-=======
->>>>>>> 09e647e0665c3b0199c9cb0816935bd7031ddfd4
 } // namespace facebook::fboss

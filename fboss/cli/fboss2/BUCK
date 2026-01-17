@@ -782,7 +782,6 @@ cpp_library(
         "CmdListConfig.cpp",
         "commands/config/CmdConfigAppliedInfo.cpp",
         "commands/config/CmdConfigReload.cpp",
-<<<<<<< HEAD
         "commands/config/history/CmdConfigHistory.cpp",
         "commands/config/interface/CmdConfigInterfaceDescription.cpp",
         "commands/config/interface/CmdConfigInterfaceMtu.cpp",
@@ -790,8 +789,6 @@ cpp_library(
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPoolHeadroomBytes.cpp",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPoolReservedBytes.cpp",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPoolSharedBytes.cpp",
-=======
->>>>>>> 09e647e0665c3b0199c9cb0816935bd7031ddfd4
         "commands/config/rollback/CmdConfigRollback.cpp",
         "commands/config/session/CmdConfigSessionCommit.cpp",
         "commands/config/session/CmdConfigSessionDiff.cpp",
@@ -800,7 +797,6 @@ cpp_library(
     headers = [
         "commands/config/CmdConfigAppliedInfo.h",
         "commands/config/CmdConfigReload.h",
-<<<<<<< HEAD
         "commands/config/history/CmdConfigHistory.h",
         "commands/config/interface/CmdConfigInterface.h",
         "commands/config/interface/CmdConfigInterfaceDescription.h",
@@ -813,8 +809,6 @@ cpp_library(
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPoolHeadroomBytes.h",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPoolReservedBytes.h",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPoolSharedBytes.h",
-=======
->>>>>>> 09e647e0665c3b0199c9cb0816935bd7031ddfd4
         "commands/config/rollback/CmdConfigRollback.h",
         "commands/config/session/CmdConfigSessionCommit.h",
         "commands/config/session/CmdConfigSessionDiff.h",

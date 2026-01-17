@@ -3,6 +3,9 @@
 #include <fmt/format.h>
 #include <gtest/gtest.h>
 
+#include <folly/FileUtil.h>
+#include <folly/testing/TestUtil.h>
+
 #include "fboss/platform/weutil/FbossEepromInterface.h"
 #include "fboss/platform/weutil/if/gen-cpp2/eeprom_contents_types.h"
 
@@ -82,7 +85,6 @@ EepromData kEepromV6 = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
     0xff};
 
-<<<<<<< HEAD
 // ONIE TlvInfo format test data
 // clang-format off
 EepromData eepromOnie = {
@@ -139,16 +141,6 @@ EepromData eepromOnieReal = {
 };
 // clang-format on
 
-FbossEepromInterface createFbossEepromInterface(const EepromData& data) {
-  folly::test::TemporaryDirectory tmpDir = folly::test::TemporaryDirectory();
-  std::string fileName = tmpDir.path().string() + "/eepromContent";
-  folly::writeFile(data, fileName.c_str());
-
-  return FbossEepromInterface(fileName, 0);
-}
-
-=======
->>>>>>> 09e647e0665c3b0199c9cb0816935bd7031ddfd4
 constexpr auto kProductName = "FIRST_SQUEEZE";
 constexpr auto kProductPartNumber = "20123456";
 constexpr auto kSystemAssemblyPartNumber = "SYSA1234";
@@ -300,7 +292,6 @@ TEST(FbossEepromInterfaceTest, V5ObjWrongCrc) {
   EXPECT_EQ(actualObj, expectedObj);
 }
 
-<<<<<<< HEAD
 TEST(FbossEepromOnieTest, OnieFormat) {
   std::vector<std::pair<std::string, std::string>> expectedContentsDummy = {
       {"Format", "ONIE TlvInfo"},
@@ -365,7 +356,8 @@ TEST(FbossEepromOnieTest, OnieFormat) {
       EXPECT_EQ(parsedContents[i], expectedContents[i]);
     }
   }
-=======
+}
+
 TEST(FbossEepromInterfaceTest, InvalidEepromSize) {
   std::vector<uint8_t> tooSmall = {0xfb, 0xfb};
   EXPECT_THROW((FbossEepromInterface{tooSmall}), std::runtime_error);
@@ -374,7 +366,6 @@ TEST(FbossEepromInterfaceTest, InvalidEepromSize) {
 TEST(FbossEepromInterfaceTest, InvalidVersion) {
   std::vector<uint8_t> badVersion = {0xfb, 0xfb, 0x99, 0xff};
   EXPECT_THROW((FbossEepromInterface{badVersion}), std::runtime_error);
->>>>>>> 09e647e0665c3b0199c9cb0816935bd7031ddfd4
 }
 
 } // namespace facebook::fboss::platform

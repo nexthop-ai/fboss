@@ -99,7 +99,6 @@ class ConfigSession {
   // Get the path to the CLI config directory (/etc/coop/cli)
   std::string getCliConfigDir() const;
 
-<<<<<<< HEAD
   // Result of a commit operation
   struct CommitResult {
     int revision; // The revision number that was committed
@@ -109,19 +108,12 @@ class ConfigSession {
     // - AGENT_RESTART: agent was restarted via systemd
   };
 
-=======
->>>>>>> 09e647e0665c3b0199c9cb0816935bd7031ddfd4
   // Atomically commit the session to /etc/coop/cli/agent-rN.conf,
   // update the symlink /etc/coop/agent.conf to point to it.
   // For HITLESS changes, also calls reloadConfig() on the agent.
   // For AGENT_RESTART changes, does NOT call reloadConfig() - user must restart
   // agent. Returns CommitResult with revision number and action level.
   CommitResult commit(const HostInfo& hostInfo);
-
-  // Rollback to a specific revision or to the previous revision
-  // Returns the revision that was rolled back to
-  int rollback(const HostInfo& hostInfo);
-  int rollback(const HostInfo& hostInfo, const std::string& revision);
 
   // Rollback to a specific revision or to the previous revision
   // Returns the revision that was rolled back to

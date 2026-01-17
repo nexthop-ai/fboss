@@ -163,16 +163,12 @@ std::unique_ptr<WedgeManager> createWedgeManager(
     case PlatformType::PLATFORM_TAHAN800BC:
       return createBspWedgeManager<
           Tahan800bcBspPlatformMapping,
-<<<<<<< HEAD
-          PlatformType::PLATFORM_TAHAN800BC>(platformMapping, threads);
+          PlatformType::PLATFORM_TAHAN800BC>(
+          platformMapping, qsfpServiceThreads);
     case PlatformType::PLATFORM_NH4010:
       return createBspWedgeManager<
           Nh4010BspPlatformMapping,
-          PlatformType::PLATFORM_NH4010>(platformMapping, threads);
-=======
-          PlatformType::PLATFORM_TAHAN800BC>(
-          platformMapping, qsfpServiceThreads);
->>>>>>> 09e647e0665c3b0199c9cb0816935bd7031ddfd4
+          PlatformType::PLATFORM_NH4010>(platformMapping, qsfpServiceThreads);
     case PlatformType::PLATFORM_FUJI:
     case PlatformType::PLATFORM_MINIPACK:
       return createFBWedgeManager(

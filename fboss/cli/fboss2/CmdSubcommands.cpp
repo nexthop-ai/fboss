@@ -219,20 +219,16 @@ CLI::App* CmdSubcommands::addCommand(
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_FAN_PWM:
           subCmd->add_option("pwm", args, "Fan PWM (0..100) or 'disable'");
           break;
-<<<<<<< HEAD
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_MTU:
           subCmd->add_option("mtu", args, "MTU value (68-9216)");
           break;
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_INTERFACE_LIST:
           subCmd->add_option("interfaces", args, "Interface(s)");
           break;
-=======
->>>>>>> 09e647e0665c3b0199c9cb0816935bd7031ddfd4
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_REVISION_LIST:
           subCmd->add_option(
               "revisions", args, "Revision(s) in the form 'rN' or 'current'");
           break;
-<<<<<<< HEAD
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_BUFFER_POOL_NAME:
           subCmd->add_option("buffer_pool_name", args, "Buffer pool name");
           break;
@@ -242,8 +238,6 @@ CLI::App* CmdSubcommands::addCommand(
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_VLAN_ID:
           subCmd->add_option("vlan_id", args, "VLAN ID (1-4094)");
           break;
-=======
->>>>>>> 09e647e0665c3b0199c9cb0816935bd7031ddfd4
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_UNINITIALIZE:
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_NONE:
           break;
