@@ -21,6 +21,26 @@ from .exceptions import ArtifactError
 logger = logging.getLogger(__name__)
 
 
+def get_artifact_store_dir() -> Path:
+    """Get the default artifact store directory.
+
+    Returns:
+        Path to the default artifact store directory.
+        Falls back to a temp directory if git repository is not available.
+    """
+    try:
+        return get_abs_path("fboss-image/distro_cli/.artifacts")
+    except RuntimeError:
+        # Not in a git repository (e.g., CMake build copies code outside git)
+        # Use a temp directory instead
+        temp_base = Path(tempfile.gettempdir()) / "fboss-distro-cli-artifacts"
+        temp_base.mkdir(parents=True, exist_ok=True)
+        logger.warning(
+            f"Git repository not found, using temp directory for artifacts: {temp_base}"
+        )
+        return temp_base
+
+
 class ArtifactStore:
     """Artifact storage with external cache evaluation.
 
@@ -28,12 +48,17 @@ class ArtifactStore:
     store() persists data and metadata files separately in storage subdirectories.
     """
 
-    # Artifact store directory - class attribute
-    ARTIFACT_STORE_DIR = get_abs_path("fboss-image/distro_cli/.artifacts")
+    # Artifact store directory - class attribute (lazy initialization)
+    # Can be overridden by tests before creating ArtifactStore instances
+    ARTIFACT_STORE_DIR: Path | None = None
 
     def __init__(self):
         """Initialize artifact store."""
-        self.store_dir = self.ARTIFACT_STORE_DIR
+        # Use class attribute if set, otherwise compute default
+        if self.ARTIFACT_STORE_DIR is None:
+            self.store_dir = get_artifact_store_dir()
+        else:
+            self.store_dir = self.ARTIFACT_STORE_DIR
         self.store_dir.mkdir(parents=True, exist_ok=True)
         logger.debug(f"Artifact store initialized at: {self.store_dir}")
 
@@ -214,7 +239,6 @@ def find_artifact_in_dir(
     """Find a single artifact matching a glob pattern in a directory.
 
     Supports both uncompressed (.tar) and zstd-compressed (.tar.zst) variants.
-    Tries uncompressed first, and then compressed.
 
     Args:
         output_dir: Directory to search in

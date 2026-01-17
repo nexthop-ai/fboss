@@ -26,12 +26,12 @@ from distro_cli.lib.manifest import ImageManifest
 class SimpleHTTPServer:
     """Simple HTTP server for testing downloads."""
 
-    def __init__(self, directory, port=8888):
+    def __init__(self, directory, port=0):
         """Initialize HTTP server.
 
         Args:
             directory: Directory to serve files from
-            port: Port to listen on (default: 8888)
+            port: Port to listen on (default: 0 = let OS assign random port)
         """
         self.directory = directory
         self.port = port
@@ -50,6 +50,9 @@ class SimpleHTTPServer:
                 *args, directory=str(self.directory), **kwargs
             ),
         )
+
+        # Get the actual port assigned by the OS (important when port=0)
+        self.port = self.server.server_address[1]
 
         def serve_with_ready_signal():
             """Serve forever and signal when ready."""
@@ -285,8 +288,8 @@ class TestKernelDownloadHTTP(unittest.TestCase):
         cls.test_dir = Path(__file__).parent
         cls.data_dir = cls.test_dir / "data"
 
-        # Start HTTP server using helper
-        cls.http_server = SimpleHTTPServer(cls.data_dir, port=8888)
+        # Start HTTP server using helper (port=0 lets OS assign random available port)
+        cls.http_server = SimpleHTTPServer(cls.data_dir)
         cls.http_server.start()
 
     @classmethod

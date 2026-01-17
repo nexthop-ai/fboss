@@ -13,6 +13,7 @@ import unittest
 from pathlib import Path
 
 import pytest
+
 from distro_cli.builder.image_builder import ImageBuilder
 from distro_cli.lib.manifest import ImageManifest
 from distro_cli.tests.test_helpers import ensure_test_docker_image

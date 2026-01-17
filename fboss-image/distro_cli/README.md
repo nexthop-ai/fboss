@@ -151,6 +151,15 @@ PYTHONPATH=. python3 -m unittest distro_cli.tests.cli_test
 PYTHONPATH=. python3 -m unittest distro_cli.tests.cli_test.CLITest
 ```
 
+#### With CMake
+
+```bash
+# Build and run all tests
+cmake --build . --target distro_cli_tests
+
+# Run via CTest
+ctest -R distro_cli -V
+
 ### Running manual tests
 A few tests are deliberately skipped while unit testing due to longer execution times. They can however be run manually as needed. The following are some of the examples.
 

@@ -4,6 +4,7 @@ import unittest
 from pathlib import Path
 
 import pytest
+
 from distro_cli.builder.component import ComponentBuilder
 from distro_cli.lib.artifact import ArtifactStore
 from distro_cli.lib.constants import FBOSS_BUILDER_IMAGE

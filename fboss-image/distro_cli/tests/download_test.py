@@ -120,12 +120,12 @@ class TestDownloadArtifact(unittest.TestCase):
 class SimpleHTTPServer:
     """Simple HTTP server for testing downloads."""
 
-    def __init__(self, directory, port=8888):
+    def __init__(self, directory, port=0):
         """Initialize HTTP server.
 
         Args:
             directory: Directory to serve files from
-            port: Port to listen on (default: 8888)
+            port: Port to listen on (default: 0 = let OS assign random port)
         """
         self.directory = directory
         self.port = port
@@ -144,6 +144,9 @@ class SimpleHTTPServer:
                 *args, directory=str(self.directory), **kwargs
             ),
         )
+
+        # Get the actual port assigned by the OS (important when port=0)
+        self.port = self.server.server_address[1]
 
         def serve_with_ready_signal():
             """Serve forever and signal when ready."""
@@ -189,8 +192,8 @@ class TestDownloadHTTP(unittest.TestCase):
         cls.test_file = cls.test_dir / "test_artifact.tar.gz"
         cls.test_file.write_text("test artifact content from HTTP")
 
-        # Start HTTP server
-        cls.http_server = SimpleHTTPServer(cls.test_dir, port=8889)
+        # Start HTTP server (port=0 lets OS assign random available port)
+        cls.http_server = SimpleHTTPServer(cls.test_dir)
         cls.http_server.start()
 
     @classmethod
