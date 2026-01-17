@@ -3581,9 +3581,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
         },
         {
@@ -3632,9 +3629,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
@@ -3687,9 +3681,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
         },
         {
@@ -3738,9 +3729,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
@@ -3793,9 +3781,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
         },
         {
@@ -3844,9 +3829,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
@@ -3899,9 +3881,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
         },
         {
@@ -3950,9 +3929,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
@@ -4005,9 +3981,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
         },
         {
@@ -4056,9 +4029,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
@@ -4111,9 +4081,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
         },
         {
@@ -4162,9 +4129,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
@@ -4220,9 +4184,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
         },
         {
@@ -4268,9 +4229,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
@@ -4320,9 +4278,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
         },
         {
@@ -4368,9 +4323,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
@@ -4420,9 +4372,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
         },
         {
@@ -4468,9 +4417,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
@@ -4520,9 +4466,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
         },
         {
@@ -4568,9 +4511,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
@@ -4620,9 +4560,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
         },
         {
@@ -4668,9 +4605,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
@@ -4720,9 +4654,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
         },
         {
@@ -4768,9 +4699,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
@@ -4820,9 +4748,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
         },
         {
@@ -4868,9 +4793,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
@@ -4920,9 +4842,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
         },
         {
@@ -4968,9 +4887,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
@@ -5020,9 +4936,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
         },
         {
@@ -5068,9 +4981,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
@@ -5120,9 +5030,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
         },
         {
@@ -5170,9 +5077,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
         },
         {
@@ -5218,9 +5122,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
@@ -8945,9 +8846,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
         },
         {
@@ -8996,9 +8894,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -9057,9 +8952,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
         },
         {
@@ -9108,9 +9000,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -9169,9 +9058,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
         },
         {
@@ -9220,9 +9106,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -9281,9 +9164,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
         },
         {
@@ -9332,9 +9212,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -9393,9 +9270,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
         },
         {
@@ -9444,9 +9318,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -9505,9 +9376,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
         },
         {
@@ -9556,9 +9424,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -9617,9 +9482,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
         },
         {
@@ -9665,9 +9527,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
@@ -9717,9 +9576,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
         },
         {
@@ -9765,9 +9621,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
@@ -9817,9 +9670,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
         },
         {
@@ -9865,9 +9715,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
@@ -9917,9 +9764,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
         },
         {
@@ -9965,9 +9809,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
@@ -10017,9 +9858,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
         },
         {
@@ -10065,9 +9903,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
@@ -10117,9 +9952,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
         },
         {
@@ -10165,9 +9997,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
@@ -10217,9 +10046,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
         },
         {
@@ -10265,9 +10091,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
@@ -10317,9 +10140,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
         },
         {
@@ -10365,9 +10185,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
@@ -10417,9 +10234,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
         },
         {
@@ -10465,9 +10279,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
@@ -10517,9 +10328,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
         },
         {
@@ -10567,9 +10375,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
         },
         {
@@ -10615,9 +10420,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
@@ -24044,19 +23846,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -24130,19 +23923,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -24216,19 +24000,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -24302,19 +24077,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -24388,19 +24154,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -24474,19 +24231,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -24560,19 +24308,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -24646,19 +24385,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -24732,19 +24462,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -24818,19 +24539,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -24904,19 +24616,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -24990,19 +24693,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -25079,19 +24773,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -25162,19 +24847,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -25245,19 +24921,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -25331,19 +24998,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -25417,19 +25075,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -25503,19 +25152,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -25586,19 +25226,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -25669,19 +25300,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -25752,19 +25374,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -25835,19 +25448,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -25918,19 +25522,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -26001,19 +25596,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -26084,19 +25670,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -26167,19 +25744,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -26250,19 +25818,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -26333,19 +25892,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -26416,19 +25966,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -26499,19 +26040,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -26582,19 +26114,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -26665,19 +26188,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -26748,19 +26262,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -26954,12 +26459,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
@@ -27017,12 +26516,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
@@ -27084,12 +26577,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
@@ -27147,12 +26634,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
@@ -27214,12 +26695,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
@@ -27277,12 +26752,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
@@ -27344,12 +26813,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
@@ -27407,12 +26870,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
@@ -27477,12 +26934,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
@@ -27537,12 +26988,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
@@ -27601,12 +27046,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
@@ -27661,12 +27100,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
@@ -27725,12 +27158,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
@@ -27785,12 +27212,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
@@ -27849,12 +27270,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
@@ -27909,12 +27324,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
@@ -27973,12 +27382,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
@@ -28033,12 +27436,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
@@ -28097,12 +27494,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
@@ -28157,12 +27548,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
@@ -28221,12 +27606,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
@@ -28283,12 +27662,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
@@ -28339,19 +27712,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -28431,19 +27795,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -28523,19 +27878,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -28615,19 +27961,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -28707,19 +28044,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -28799,19 +28127,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -28891,19 +28210,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -28983,19 +28293,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -29075,19 +28376,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -29167,19 +28459,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -29259,19 +28542,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -29351,19 +28625,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -29446,19 +28711,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -29535,19 +28791,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -29624,19 +28871,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -29716,19 +28954,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -29808,19 +29037,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -29900,19 +29120,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -29989,19 +29200,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -30078,19 +29280,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -30167,19 +29360,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -30256,19 +29440,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -30345,19 +29520,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -30434,19 +29600,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -30523,19 +29680,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -30612,19 +29760,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -30701,19 +29840,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -30790,19 +29920,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -30879,19 +30000,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -30968,19 +30080,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -31057,19 +30160,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -31146,19 +30240,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -31235,19 +30320,10 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -31318,16 +30394,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -31434,16 +30501,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -31550,16 +30608,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -31666,16 +30715,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -31782,16 +30822,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -31898,16 +30929,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -32014,16 +31036,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -32130,16 +31143,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -32246,16 +31250,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -32362,16 +31357,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -32478,16 +31464,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -32594,16 +31571,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -32710,16 +31678,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -32826,16 +31785,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -32942,364 +31892,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
-        },
-        {
-          "test_name_regex": "AgentEnsembleOpenBmcUpgradeTest.*$"
-        },
-        {
-          "test_name_regex": "CheckInit.AgentEnsembleMacLearningTest.l2EntryFlap"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*CR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*CR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*CR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*CR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*CR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*CR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*CR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*CR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*CR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*CR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR8_800G.*$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
-          "test_name_regex": "warm_boot.AgentEnsembleMacLearningTest.l2EntryFlap"
-        },
-        {
-          "test_name_regex": "warm_boot.Prbs_ASIC_P31_TO_ASIC_P31.prbsSanity"
-        }
-    ],
-    "morgan800cc/sai/asicsdk-24.8.3001_yuba/24.8.3001_yuba": [
-        {
-          "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.warmbootIsHitLess$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
-        },
-        {
-          "test_name_regex": "AgentEnsembleOpenBmcUpgradeTest.*$"
-        },
-        {
-          "test_name_regex": "CheckInit.AgentEnsembleMacLearningTest.l2EntryFlap"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*CR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*CR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*CR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*CR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*CR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*CR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*CR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*CR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*CR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*CR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR8_800G.*$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
-          "test_name_regex": "warm_boot.AgentEnsembleMacLearningTest.l2EntryFlap"
-        },
-        {
-          "test_name_regex": "warm_boot.Prbs_ASIC_P31_TO_ASIC_P31.prbsSanity"
-        }
-    ],
-    "morgan800cc/sai/asicsdk-24.8.3001_yuba/24.8.3001_yuba/physdk-credo-0.7.2/credo-0.7.2": [
-        {
-          "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.warmbootIsHitLess$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
-        },
-        {
-          "test_name_regex": "AgentEnsembleOpenBmcUpgradeTest.*$"
-        },
-        {
-          "test_name_regex": "CheckInit.AgentEnsembleMacLearningTest.l2EntryFlap"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*CR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*CR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*CR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*CR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*CR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*CR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*CR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*CR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*CR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*CR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR8_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR8_800G.*$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
-          "test_name_regex": "warm_boot.AgentEnsembleMacLearningTest.l2EntryFlap"
-        },
-        {
-          "test_name_regex": "warm_boot.Prbs_ASIC_P31_TO_ASIC_P31.prbsSanity"
-        }
-    ],
-    "morgan800cc/sai/asicsdk-24.8.3001_yuba/24.8.3001_yuba/physdk-credo-0.9.0/credo-0.9.0": [
-        {
-          "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.warmbootIsHitLess$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -33406,16 +31999,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -33522,16 +32106,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -33638,16 +32213,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -33754,16 +32320,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -33870,16 +32427,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -33986,16 +32534,7 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
@@ -37522,6 +36061,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -37544,6 +36086,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -37611,6 +36156,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -37633,6 +36181,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -37700,6 +36251,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -37722,6 +36276,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -37789,6 +36346,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -37811,6 +36371,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -37878,6 +36441,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -37900,6 +36466,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -37967,6 +36536,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -37989,6 +36561,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -38056,6 +36631,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -38078,6 +36656,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -38145,6 +36726,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -38167,6 +36751,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -38234,6 +36821,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -38256,6 +36846,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -38323,6 +36916,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -38345,6 +36941,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -38412,6 +37011,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -38434,6 +37036,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -38501,6 +37106,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -38523,6 +37131,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -38584,6 +37195,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -38606,6 +37220,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -38670,6 +37287,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -38692,6 +37312,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -38756,6 +37379,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -38778,6 +37404,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -38842,6 +37471,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -38864,6 +37496,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -38928,6 +37563,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -38950,6 +37588,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -39014,6 +37655,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -39036,6 +37680,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -39100,6 +37747,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -39122,6 +37772,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -39186,6 +37839,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -39208,6 +37864,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -39272,6 +37931,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -39294,6 +37956,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -39358,6 +38023,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -39380,6 +38048,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -39444,6 +38115,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -39466,6 +38140,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -39530,6 +38207,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -39552,6 +38232,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -39616,6 +38299,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -39638,6 +38324,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -39702,6 +38391,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -39724,6 +38416,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -39788,6 +38483,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -39810,6 +38508,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -39874,6 +38575,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -39896,6 +38600,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -39960,6 +38667,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -39982,6 +38692,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -40046,6 +38759,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -40068,6 +38784,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -40132,6 +38851,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -40154,6 +38876,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -40218,6 +38943,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -40240,6 +38968,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -40304,6 +39035,9 @@
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
         },
         {
+          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
+        },
+        {
           "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
         },
         {
@@ -40326,6 +39060,9 @@
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
+        },
+        {
+          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
         },
         {
           "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
@@ -42280,9 +41017,6 @@
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
         },
         {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
         }
     ],
@@ -42334,9 +41068,6 @@
         },
         {
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
@@ -42392,9 +41123,6 @@
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
         },
         {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
         }
     ],
@@ -42446,9 +41174,6 @@
         },
         {
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
@@ -42504,9 +41229,6 @@
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
         },
         {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
         }
     ],
@@ -42558,9 +41280,6 @@
         },
         {
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
@@ -42616,9 +41335,6 @@
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
         },
         {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
         }
     ],
@@ -42670,9 +41386,6 @@
         },
         {
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
@@ -42728,9 +41441,6 @@
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
         },
         {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
         }
     ],
@@ -42782,9 +41492,6 @@
         },
         {
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
@@ -42840,9 +41547,6 @@
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
         },
         {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
         }
     ],
@@ -42896,9 +41600,6 @@
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
         },
         {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
         }
     ],
@@ -42944,9 +41645,6 @@
         },
         {
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
@@ -42999,9 +41697,6 @@
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
         },
         {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
         },
         {
@@ -43050,9 +41745,6 @@
         },
         {
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
@@ -43105,9 +41797,6 @@
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
         },
         {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
         },
         {
@@ -43156,9 +41845,6 @@
         },
         {
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
@@ -43211,9 +41897,6 @@
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
         },
         {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
         },
         {
@@ -43262,9 +41945,6 @@
         },
         {
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
@@ -43317,9 +41997,6 @@
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
         },
         {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
         },
         {
@@ -43368,9 +42045,6 @@
         },
         {
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
@@ -43423,9 +42097,6 @@
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
         },
         {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
         },
         {
@@ -43474,9 +42145,6 @@
         },
         {
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
@@ -43529,9 +42197,6 @@
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
         },
         {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
         },
         {
@@ -43580,9 +42245,6 @@
         },
         {
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
@@ -43635,9 +42297,6 @@
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
         },
         {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
         },
         {
@@ -43686,9 +42345,6 @@
         },
         {
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
@@ -43741,9 +42397,6 @@
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
         },
         {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
         },
         {
@@ -43792,9 +42445,6 @@
         },
         {
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
@@ -43847,9 +42497,6 @@
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
         },
         {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
         },
         {
@@ -43898,9 +42545,6 @@
         },
         {
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
@@ -43953,9 +42597,6 @@
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
         },
         {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
         },
         {
@@ -44006,9 +42647,6 @@
           "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
         },
         {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "roundtrip.*qsfpWarmbootIsHitLess$"
         },
         {
@@ -44021,18 +42659,6 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
@@ -44060,9 +42686,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -44082,18 +42705,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -44119,9 +42730,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -44141,18 +42749,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -44178,9 +42774,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -44200,18 +42793,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -44237,9 +42818,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -44259,18 +42837,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -44296,9 +42862,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -44318,18 +42881,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -44355,9 +42906,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -44377,18 +42925,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -44414,9 +42950,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -44436,18 +42969,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -44473,9 +42994,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -44495,18 +43013,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -44532,9 +43038,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -44554,18 +43057,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -44591,9 +43082,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -44613,18 +43101,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -44650,9 +43126,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -44672,18 +43145,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -44709,9 +43170,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -44731,18 +43189,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -44768,9 +43214,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -44790,18 +43233,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -44827,9 +43258,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -44849,18 +43277,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -44886,186 +43302,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
-          "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
-        },
-        {
-          "test_name_regex": "warm_boot.AgentEnsembleLacpTest.lacpFlap$"
-        },
-        {
-          "test_name_regex": "warm_boot.AgentEnsembleMacLearningTest.l2EntryFlap"
-        }
-    ],
-    "wedge400c/sai/asicsdk-24.8.3001_yuba/24.8.3001_yuba": [
-        {
-          "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.warmbootIsHitLess$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
-        },
-        {
-          "test_name_regex": "AgentEnsembleOpenBmcUpgradeTest.*$"
-        },
-        {
-          "test_name_regex": "CheckInit.AgentEnsembleMacLearningTest.l2EntryFlap"
-        },
-        {
-          "test_name_regex": "Prbs.*$"
-        },
-        {
-          "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
-        },
-        {
-          "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.HUNDREDGToTWOHUNDREDG$"
-        },
-        {
-          "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
-          "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
-        },
-        {
-          "test_name_regex": "warm_boot.AgentEnsembleLacpTest.lacpFlap$"
-        },
-        {
-          "test_name_regex": "warm_boot.AgentEnsembleMacLearningTest.l2EntryFlap"
-        }
-    ],
-    "wedge400c/sai/asicsdk-24.8.3001_yuba/24.8.3001_yuba/physdk-credo-0.7.2/credo-0.7.2": [
-        {
-          "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.warmbootIsHitLess$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
-        },
-        {
-          "test_name_regex": "AgentEnsembleOpenBmcUpgradeTest.*$"
-        },
-        {
-          "test_name_regex": "CheckInit.AgentEnsembleMacLearningTest.l2EntryFlap"
-        },
-        {
-          "test_name_regex": "Prbs.*$"
-        },
-        {
-          "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
-        },
-        {
-          "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.HUNDREDGToTWOHUNDREDG$"
-        },
-        {
-          "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
-        },
-        {
-          "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
-        },
-        {
-          "test_name_regex": "warm_boot.AgentEnsembleLacpTest.lacpFlap$"
-        },
-        {
-          "test_name_regex": "warm_boot.AgentEnsembleMacLearningTest.l2EntryFlap"
-        }
-    ],
-    "wedge400c/sai/asicsdk-24.8.3001_yuba/24.8.3001_yuba/physdk-credo-0.9.0/credo-0.9.0": [
-        {
-          "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.warmbootIsHitLess$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
-        },
-        {
-          "test_name_regex": "AgentEnsembleOpenBmcUpgradeTest.*$"
-        },
-        {
-          "test_name_regex": "CheckInit.AgentEnsembleMacLearningTest.l2EntryFlap"
-        },
-        {
-          "test_name_regex": "Prbs.*$"
-        },
-        {
-          "test_name_regex": "QsfpFsdbTest.portStateWithResetHold$"
-        },
-        {
-          "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.HUNDREDGToTWOHUNDREDG$"
-        },
-        {
-          "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -45085,18 +43321,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -45122,9 +43346,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -45144,18 +43365,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -45181,9 +43390,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -45203,18 +43409,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -45240,9 +43434,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -45262,18 +43453,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -45299,9 +43478,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -45321,18 +43497,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -45358,9 +43522,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -45380,18 +43541,6 @@
           "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
         },
         {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableEnable$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsTxDisableRandomPorts$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.opticsVdmPerformanceMonitoring$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
@@ -45417,9 +43566,6 @@
         },
         {
           "test_name_regex": "cold_boot.AgentEnsembleSpeedChangeTest.TWOHUNDREDGToFOURHUNDREDG$"
-        },
-        {
-          "test_name_regex": "roundtrip.*.testOpticsRemediation$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_.*_2_preprod.warm_boot.*$"
@@ -50662,192 +48808,6 @@
         }
     ],
     "wedge800cact/sai/asicsdk-24.8.3001/24.8.3001/physdk-credo-0.9.0/credo-0.9.0": [
-        {
-          "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
-        },
-        {
-          "test_name_regex": "AgentEnsembleOpenBmcUpgradeTest.*$"
-        },
-        {
-          "test_name_regex": "CheckInit.AgentEnsembleMacLearningTest.l2EntryFlap"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*CR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR4_200G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*CR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR4_200G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR4_400G.*$"
-        },
-        {
-          "test_name_regex": "warm_boot.AgentEnsembleMacLearningTest.l2EntryFlap"
-        }
-    ],
-    "wedge800cact/sai/asicsdk-24.8.3001_yuba/24.8.3001_yuba": [
-        {
-          "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
-        },
-        {
-          "test_name_regex": "AgentEnsembleOpenBmcUpgradeTest.*$"
-        },
-        {
-          "test_name_regex": "CheckInit.AgentEnsembleMacLearningTest.l2EntryFlap"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*CR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR4_200G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*CR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR4_200G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR4_400G.*$"
-        },
-        {
-          "test_name_regex": "warm_boot.AgentEnsembleMacLearningTest.l2EntryFlap"
-        }
-    ],
-    "wedge800cact/sai/asicsdk-24.8.3001_yuba/24.8.3001_yuba/physdk-credo-0.7.2/credo-0.7.2": [
-        {
-          "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.ptpEnableIsHitless$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.fabricLinkHealth$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.testOpticsRemediation$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
-        },
-        {
-          "test_name_regex": "AgentEnsembleLinkTest.xPhyInfoTest"
-        },
-        {
-          "test_name_regex": "AgentEnsembleOpenBmcUpgradeTest.*$"
-        },
-        {
-          "test_name_regex": "CheckInit.AgentEnsembleMacLearningTest.l2EntryFlap"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*CR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*DR4_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR4_200G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*ASIC.*TCVR_S.*FR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*CR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*DR4_400G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*DR4_800G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR1_100G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR4_200G.*$"
-        },
-        {
-          "test_name_regex": "Prbs.*TCVR_L.*FR4_400G.*$"
-        },
-        {
-          "test_name_regex": "warm_boot.AgentEnsembleMacLearningTest.l2EntryFlap"
-        }
-    ],
-    "wedge800cact/sai/asicsdk-24.8.3001_yuba/24.8.3001_yuba/physdk-credo-0.9.0/credo-0.9.0": [
         {
           "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.ptpEnableIsHitless$"
         },

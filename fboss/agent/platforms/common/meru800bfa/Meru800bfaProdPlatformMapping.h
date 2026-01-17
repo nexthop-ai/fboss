@@ -148557,7 +148557,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148595,7 +148594,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148633,7 +148631,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148671,7 +148668,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148709,7 +148705,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148747,7 +148742,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148785,7 +148779,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148823,7 +148816,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148861,7 +148853,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148899,7 +148890,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148937,7 +148927,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148975,7 +148964,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149013,7 +149001,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149051,7 +149038,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149089,7 +149075,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149127,7 +149112,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149165,7 +149149,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149203,7 +149186,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149241,7 +149223,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149279,7 +149260,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149317,7 +149297,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149355,7 +149334,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149393,7 +149371,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149431,7 +149408,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149469,7 +149445,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149507,7 +149482,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149545,7 +149519,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149583,7 +149556,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149621,7 +149593,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149659,7 +149630,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149697,7 +149667,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149735,7 +149704,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149773,7 +149741,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149811,7 +149778,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149849,7 +149815,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149887,7 +149852,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149925,7 +149889,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149963,7 +149926,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150001,7 +149963,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150039,7 +150000,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150077,7 +150037,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150115,7 +150074,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150153,7 +150111,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150191,7 +150148,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150229,7 +150185,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150267,7 +150222,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150305,7 +150259,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150343,7 +150296,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150381,7 +150333,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150419,7 +150370,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150457,7 +150407,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150495,7 +150444,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150533,7 +150481,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150571,7 +150518,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150609,7 +150555,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150647,7 +150592,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150685,7 +150629,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150723,7 +150666,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150761,7 +150703,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150799,7 +150740,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150837,7 +150777,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150875,7 +150814,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150913,7 +150851,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150951,7 +150888,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150989,7 +150925,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151027,7 +150962,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151065,7 +150999,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151103,7 +151036,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151141,7 +151073,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151179,7 +151110,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151217,7 +151147,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151255,7 +151184,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151293,7 +151221,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151331,7 +151258,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151369,7 +151295,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151407,7 +151332,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151445,7 +151369,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151483,7 +151406,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151521,7 +151443,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151559,7 +151480,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151597,7 +151517,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151635,7 +151554,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151673,7 +151591,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151711,7 +151628,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151749,7 +151665,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151787,7 +151702,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151825,7 +151739,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151863,7 +151776,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151901,7 +151813,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151939,7 +151850,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151977,7 +151887,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152015,7 +151924,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152053,7 +151961,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152091,7 +151998,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152129,7 +152035,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152167,7 +152072,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152205,7 +152109,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152243,7 +152146,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152281,7 +152183,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152319,7 +152220,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152357,7 +152257,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152395,7 +152294,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152433,7 +152331,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152471,7 +152368,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152509,7 +152405,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152547,7 +152442,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152585,7 +152479,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152623,7 +152516,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152661,7 +152553,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152699,7 +152590,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152737,7 +152627,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152775,7 +152664,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152813,7 +152701,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152851,7 +152738,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152889,7 +152775,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152927,7 +152812,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152965,7 +152849,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153003,7 +152886,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153041,7 +152923,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153079,7 +152960,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153117,7 +152997,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153155,7 +153034,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153193,7 +153071,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153231,7 +153108,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153269,7 +153145,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153307,7 +153182,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153345,7 +153219,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153383,7 +153256,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153421,7 +153293,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153459,7 +153330,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153497,7 +153367,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153535,7 +153404,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153573,7 +153441,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153611,7 +153478,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153649,7 +153515,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153687,7 +153552,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153725,7 +153589,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153763,7 +153626,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153801,7 +153663,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153839,7 +153700,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153877,7 +153737,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153915,7 +153774,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153953,7 +153811,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153991,7 +153848,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154029,7 +153885,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154067,7 +153922,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154105,7 +153959,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154143,7 +153996,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154181,7 +154033,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154219,7 +154070,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154257,7 +154107,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154295,7 +154144,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154333,7 +154181,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154371,7 +154218,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154409,7 +154255,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154447,7 +154292,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154485,7 +154329,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154523,7 +154366,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154561,7 +154403,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154599,7 +154440,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154637,7 +154477,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154675,7 +154514,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154713,7 +154551,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154751,7 +154588,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154789,7 +154625,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154827,7 +154662,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154865,7 +154699,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154903,7 +154736,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154941,7 +154773,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -154979,7 +154810,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155017,7 +154847,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155055,7 +154884,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155093,7 +154921,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155131,7 +154958,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155169,7 +154995,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155207,7 +155032,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155245,7 +155069,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155283,7 +155106,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155321,7 +155143,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155359,7 +155180,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155397,7 +155217,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155435,7 +155254,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155473,7 +155291,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155511,7 +155328,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155549,7 +155365,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155587,7 +155402,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155625,7 +155439,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155663,7 +155476,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155701,7 +155513,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155739,7 +155550,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155777,7 +155587,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155815,7 +155624,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155853,7 +155661,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155891,7 +155698,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155929,7 +155735,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -155967,7 +155772,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156005,7 +155809,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156043,7 +155846,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156081,7 +155883,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156119,7 +155920,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156157,7 +155957,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156195,7 +155994,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156233,7 +156031,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156271,7 +156068,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156309,7 +156105,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156347,7 +156142,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156385,7 +156179,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156423,7 +156216,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156461,7 +156253,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156499,7 +156290,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156537,7 +156327,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156575,7 +156364,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156613,7 +156401,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156651,7 +156438,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156689,7 +156475,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156727,7 +156512,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156765,7 +156549,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156803,7 +156586,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156841,7 +156623,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156879,7 +156660,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156917,7 +156697,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156955,7 +156734,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -156993,7 +156771,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157031,7 +156808,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157069,7 +156845,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157107,7 +156882,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157145,7 +156919,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157183,7 +156956,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157221,7 +156993,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157259,7 +157030,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157297,7 +157067,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157335,7 +157104,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157373,7 +157141,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157411,7 +157178,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157449,7 +157215,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157487,7 +157252,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157525,7 +157289,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157563,7 +157326,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157601,7 +157363,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157639,7 +157400,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157677,7 +157437,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157715,7 +157474,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157753,7 +157511,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157791,7 +157548,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157829,7 +157585,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157867,7 +157622,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157905,7 +157659,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157943,7 +157696,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -157981,7 +157733,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158019,7 +157770,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158057,7 +157807,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158095,7 +157844,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158133,7 +157881,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158171,7 +157918,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158209,7 +157955,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158247,7 +157992,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158285,7 +158029,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158323,7 +158066,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158361,7 +158103,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158399,7 +158140,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158437,7 +158177,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158475,7 +158214,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158513,7 +158251,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158551,7 +158288,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158589,7 +158325,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158627,7 +158362,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158665,7 +158399,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158703,7 +158436,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158741,7 +158473,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158779,7 +158510,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158817,7 +158547,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158855,7 +158584,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158893,7 +158621,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158931,7 +158658,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -158969,7 +158695,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159007,7 +158732,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159045,7 +158769,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159083,7 +158806,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159121,7 +158843,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159159,7 +158880,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159197,7 +158917,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159235,7 +158954,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159273,7 +158991,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159311,7 +159028,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159349,7 +159065,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159387,7 +159102,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159425,7 +159139,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159463,7 +159176,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159501,7 +159213,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159539,7 +159250,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159577,7 +159287,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159615,7 +159324,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159653,7 +159361,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159691,7 +159398,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159729,7 +159435,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159767,7 +159472,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159805,7 +159509,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159843,7 +159546,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159881,7 +159583,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159919,7 +159620,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159957,7 +159657,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -159995,7 +159694,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160033,7 +159731,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160071,7 +159768,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160109,7 +159805,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160147,7 +159842,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160185,7 +159879,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160223,7 +159916,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160261,7 +159953,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160299,7 +159990,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160337,7 +160027,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160375,7 +160064,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160413,7 +160101,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160451,7 +160138,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160489,7 +160175,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160527,7 +160212,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160565,7 +160249,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160603,7 +160286,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160641,7 +160323,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160679,7 +160360,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160717,7 +160397,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160755,7 +160434,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160793,7 +160471,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160831,7 +160508,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160869,7 +160545,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160907,7 +160582,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160945,7 +160619,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -160983,7 +160656,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161021,7 +160693,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161059,7 +160730,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161097,7 +160767,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161135,7 +160804,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161173,7 +160841,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161211,7 +160878,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161249,7 +160915,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161287,7 +160952,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161325,7 +160989,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161363,7 +161026,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161401,7 +161063,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161439,7 +161100,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161477,7 +161137,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161515,7 +161174,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161553,7 +161211,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161591,7 +161248,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161629,7 +161285,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161667,7 +161322,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161705,7 +161359,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161743,7 +161396,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161781,7 +161433,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161819,7 +161470,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161857,7 +161507,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161895,7 +161544,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161933,7 +161581,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -161971,7 +161618,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162009,7 +161655,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162047,7 +161692,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162085,7 +161729,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162123,7 +161766,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162161,7 +161803,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162199,7 +161840,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162237,7 +161877,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162275,7 +161914,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162313,7 +161951,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162351,7 +161988,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162389,7 +162025,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162427,7 +162062,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162465,7 +162099,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162503,7 +162136,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162541,7 +162173,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162579,7 +162210,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162617,7 +162247,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162655,7 +162284,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162693,7 +162321,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162731,7 +162358,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162769,7 +162395,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162807,7 +162432,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162845,7 +162469,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162883,7 +162506,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162921,7 +162543,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162959,7 +162580,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -162997,7 +162617,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163035,7 +162654,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163073,7 +162691,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163111,7 +162728,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163149,7 +162765,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163187,7 +162802,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163225,7 +162839,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163263,7 +162876,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163301,7 +162913,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163339,7 +162950,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163377,7 +162987,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163415,7 +163024,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163453,7 +163061,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163491,7 +163098,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163529,7 +163135,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163567,7 +163172,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163605,7 +163209,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163643,7 +163246,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163681,7 +163283,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163719,7 +163320,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163757,7 +163357,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163795,7 +163394,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163833,7 +163431,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163871,7 +163468,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163909,7 +163505,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163947,7 +163542,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -163985,7 +163579,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164023,7 +163616,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164061,7 +163653,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164099,7 +163690,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164137,7 +163727,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164175,7 +163764,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164213,7 +163801,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164251,7 +163838,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164289,7 +163875,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164327,7 +163912,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164365,7 +163949,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164403,7 +163986,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164441,7 +164023,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164479,7 +164060,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164517,7 +164097,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164555,7 +164134,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164593,7 +164171,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164631,7 +164208,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164669,7 +164245,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164707,7 +164282,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164745,7 +164319,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164783,7 +164356,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164821,7 +164393,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164859,7 +164430,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164897,7 +164467,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164935,7 +164504,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -164973,7 +164541,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165011,7 +164578,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165049,7 +164615,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165087,7 +164652,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165125,7 +164689,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165163,7 +164726,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165201,7 +164763,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165239,7 +164800,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165277,7 +164837,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165315,7 +164874,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165353,7 +164911,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165391,7 +164948,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165429,7 +164985,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165467,7 +165022,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165505,7 +165059,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165543,7 +165096,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165581,7 +165133,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165619,7 +165170,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165657,7 +165207,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165695,7 +165244,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165733,7 +165281,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165771,7 +165318,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165809,7 +165355,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165847,7 +165392,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165885,7 +165429,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165923,7 +165466,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165961,7 +165503,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -165999,7 +165540,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166037,7 +165577,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166075,7 +165614,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166113,7 +165651,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166151,7 +165688,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166189,7 +165725,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166227,7 +165762,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166265,7 +165799,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166303,7 +165836,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166341,7 +165873,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166379,7 +165910,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166417,7 +165947,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166455,7 +165984,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166493,7 +166021,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166531,7 +166058,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166569,7 +166095,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166607,7 +166132,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166645,7 +166169,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166683,7 +166206,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166721,7 +166243,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166759,7 +166280,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166797,7 +166317,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166835,7 +166354,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166873,7 +166391,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166911,7 +166428,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166949,7 +166465,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -166987,7 +166502,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167025,7 +166539,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167063,7 +166576,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167101,7 +166613,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167139,7 +166650,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167177,7 +166687,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167215,7 +166724,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167253,7 +166761,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167291,7 +166798,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167329,7 +166835,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167367,7 +166872,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167405,7 +166909,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167443,7 +166946,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167481,7 +166983,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167519,7 +167020,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167557,7 +167057,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167595,7 +167094,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167633,7 +167131,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167671,7 +167168,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167709,7 +167205,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167747,7 +167242,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167785,7 +167279,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167823,7 +167316,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167861,7 +167353,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167899,7 +167390,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167937,7 +167427,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167975,7 +167464,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168013,7 +167501,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168051,7 +167538,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168089,7 +167575,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168127,7 +167612,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168165,7 +167649,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168203,7 +167686,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168241,7 +167723,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168279,7 +167760,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168317,7 +167797,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168355,7 +167834,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168393,7 +167871,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168431,7 +167908,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168469,7 +167945,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168507,7 +167982,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168545,7 +168019,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168583,7 +168056,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168621,7 +168093,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168659,7 +168130,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168697,7 +168167,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168735,7 +168204,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168773,7 +168241,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168811,7 +168278,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168849,7 +168315,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168887,7 +168352,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168925,7 +168389,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168963,7 +168426,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169001,7 +168463,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169039,7 +168500,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169077,7 +168537,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169115,7 +168574,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169153,7 +168611,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169191,7 +168648,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169229,7 +168685,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169267,7 +168722,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169305,7 +168759,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169343,7 +168796,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169381,7 +168833,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169419,7 +168870,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169457,7 +168907,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169495,7 +168944,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169533,7 +168981,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169571,7 +169018,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169609,7 +169055,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169647,7 +169092,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169685,7 +169129,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169723,7 +169166,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169761,7 +169203,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169799,7 +169240,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169837,7 +169277,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169875,7 +169314,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169913,7 +169351,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169951,7 +169388,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169989,7 +169425,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170027,7 +169462,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170065,7 +169499,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170103,7 +169536,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170141,7 +169573,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170179,7 +169610,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170217,7 +169647,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170255,7 +169684,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170293,7 +169721,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170331,7 +169758,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170369,7 +169795,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170407,7 +169832,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170445,7 +169869,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170483,7 +169906,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170521,7 +169943,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170559,7 +169980,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170597,7 +170017,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170635,7 +170054,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170673,7 +170091,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170711,7 +170128,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170749,7 +170165,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170787,7 +170202,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170825,7 +170239,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170863,7 +170276,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170901,7 +170313,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170939,7 +170350,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170977,7 +170387,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171015,7 +170424,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171053,7 +170461,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171091,7 +170498,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171129,7 +170535,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171167,7 +170572,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171205,7 +170609,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171243,7 +170646,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171281,7 +170683,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171319,7 +170720,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171357,7 +170757,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171395,7 +170794,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171433,7 +170831,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171471,7 +170868,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171509,7 +170905,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171547,7 +170942,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171585,7 +170979,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171623,7 +171016,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171661,7 +171053,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171699,7 +171090,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171737,7 +171127,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171775,7 +171164,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171813,7 +171201,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171851,7 +171238,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171889,7 +171275,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171927,7 +171312,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171965,7 +171349,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172003,7 +171386,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172041,7 +171423,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172079,7 +171460,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172117,7 +171497,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172155,7 +171534,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172193,7 +171571,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172231,7 +171608,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172269,7 +171645,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172307,7 +171682,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172345,7 +171719,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172383,7 +171756,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172421,7 +171793,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172459,7 +171830,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172497,7 +171867,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172535,7 +171904,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172573,7 +171941,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172611,7 +171978,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172649,7 +172015,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172687,7 +172052,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172725,7 +172089,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172763,7 +172126,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172801,7 +172163,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172839,7 +172200,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172877,7 +172237,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172915,7 +172274,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172953,7 +172311,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172991,7 +172348,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173029,7 +172385,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173067,7 +172422,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173105,7 +172459,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173143,7 +172496,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173181,7 +172533,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173219,7 +172570,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173257,7 +172607,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173295,7 +172644,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173333,7 +172681,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173371,7 +172718,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173409,7 +172755,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173447,7 +172792,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173485,7 +172829,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173523,7 +172866,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173561,7 +172903,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173599,7 +172940,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173637,7 +172977,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173675,7 +173014,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173713,7 +173051,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173751,7 +173088,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173789,7 +173125,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173827,7 +173162,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173865,7 +173199,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173903,7 +173236,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173941,7 +173273,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173979,7 +173310,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174017,7 +173347,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174055,7 +173384,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174093,7 +173421,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174131,7 +173458,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174169,7 +173495,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174207,7 +173532,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174245,7 +173569,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174283,7 +173606,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174321,7 +173643,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174359,7 +173680,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174397,7 +173717,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174435,7 +173754,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174473,7 +173791,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174511,7 +173828,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174549,7 +173865,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174587,7 +173902,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174625,7 +173939,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174663,7 +173976,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174701,7 +174013,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174739,7 +174050,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174777,7 +174087,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174815,7 +174124,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174853,7 +174161,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174891,7 +174198,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174929,7 +174235,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -174967,7 +174272,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175005,7 +174309,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175043,7 +174346,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175081,7 +174383,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175119,7 +174420,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175157,7 +174457,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175195,7 +174494,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175233,7 +174531,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175271,7 +174568,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175309,7 +174605,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175347,7 +174642,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175385,7 +174679,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175423,7 +174716,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175461,7 +174753,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175499,7 +174790,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175537,7 +174827,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175575,7 +174864,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175613,7 +174901,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175651,7 +174938,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175689,7 +174975,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175727,7 +175012,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175765,7 +175049,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175803,7 +175086,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175841,7 +175123,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175879,7 +175160,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175917,7 +175197,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175955,7 +175234,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -175993,7 +175271,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176031,7 +175308,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176069,7 +175345,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176107,7 +175382,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176145,7 +175419,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176183,7 +175456,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176221,7 +175493,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176259,7 +175530,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176297,7 +175567,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176335,7 +175604,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176373,7 +175641,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176411,7 +175678,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176449,7 +175715,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176487,7 +175752,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176525,7 +175789,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176563,7 +175826,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176601,7 +175863,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176639,7 +175900,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176677,7 +175937,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176715,7 +175974,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176753,7 +176011,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176791,7 +176048,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176829,7 +176085,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176867,7 +176122,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176905,7 +176159,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176943,7 +176196,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -176981,7 +176233,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177019,7 +176270,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177057,7 +176307,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177095,7 +176344,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177133,7 +176381,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177171,7 +176418,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177209,7 +176455,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177247,7 +176492,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177285,7 +176529,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177323,7 +176566,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177361,7 +176603,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177399,7 +176640,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177437,7 +176677,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177475,7 +176714,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177513,7 +176751,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177551,7 +176788,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177589,7 +176825,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177627,7 +176862,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177665,7 +176899,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177703,7 +176936,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177741,7 +176973,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177779,7 +177010,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177817,7 +177047,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177855,7 +177084,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177893,7 +177121,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177931,7 +177158,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -177969,7 +177195,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178007,7 +177232,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178045,7 +177269,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178083,7 +177306,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178121,7 +177343,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178159,7 +177380,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178197,7 +177417,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178235,7 +177454,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178273,7 +177491,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178311,7 +177528,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178349,7 +177565,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178387,7 +177602,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178425,7 +177639,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178463,7 +177676,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178501,7 +177713,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178539,7 +177750,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178577,7 +177787,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178615,7 +177824,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178653,7 +177861,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178691,7 +177898,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178729,7 +177935,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178767,7 +177972,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178805,7 +178009,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178843,7 +178046,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178881,7 +178083,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178919,7 +178120,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178957,7 +178157,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -178995,7 +178194,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179033,7 +178231,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179071,7 +178268,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179109,7 +178305,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179147,7 +178342,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179185,7 +178379,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179223,7 +178416,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179261,7 +178453,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179299,7 +178490,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179337,7 +178527,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179375,7 +178564,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179413,7 +178601,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179451,7 +178638,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179489,7 +178675,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179527,7 +178712,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179565,7 +178749,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179603,7 +178786,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179641,7 +178823,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179679,7 +178860,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179717,7 +178897,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179755,7 +178934,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179793,7 +178971,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179831,7 +179008,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179869,7 +179045,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179907,7 +179082,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179945,7 +179119,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -179983,7 +179156,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180021,7 +179193,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180059,7 +179230,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180097,7 +179267,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180135,7 +179304,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180173,7 +179341,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180211,7 +179378,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180249,7 +179415,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180287,7 +179452,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180325,7 +179489,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180363,7 +179526,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180401,7 +179563,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180439,7 +179600,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180477,7 +179637,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180515,7 +179674,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180553,7 +179711,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180591,7 +179748,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180629,7 +179785,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180667,7 +179822,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180705,7 +179859,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180743,7 +179896,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180781,7 +179933,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180819,7 +179970,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180857,7 +180007,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180895,7 +180044,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180933,7 +180081,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -180971,7 +180118,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181009,7 +180155,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181047,7 +180192,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181085,7 +180229,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181123,7 +180266,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181161,7 +180303,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181199,7 +180340,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181237,7 +180377,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181275,7 +180414,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181313,7 +180451,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181351,7 +180488,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181389,7 +180525,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181427,7 +180562,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181465,7 +180599,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181503,7 +180636,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181541,7 +180673,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181579,7 +180710,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181617,7 +180747,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181655,7 +180784,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181693,7 +180821,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181731,7 +180858,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181769,7 +180895,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181807,7 +180932,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181845,7 +180969,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181883,7 +181006,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181921,7 +181043,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181959,7 +181080,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -181997,7 +181117,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182035,7 +181154,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182073,7 +181191,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182111,7 +181228,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182149,7 +181265,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182187,7 +181302,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182225,7 +181339,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182263,7 +181376,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182301,7 +181413,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182339,7 +181450,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182377,7 +181487,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182415,7 +181524,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182453,7 +181561,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182491,7 +181598,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182529,7 +181635,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182567,7 +181672,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182605,7 +181709,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182643,7 +181746,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182681,7 +181783,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182719,7 +181820,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182757,7 +181857,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182795,7 +181894,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182833,7 +181931,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182871,7 +181968,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182909,7 +182005,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182947,7 +182042,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -182985,7 +182079,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183023,7 +182116,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183061,7 +182153,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183099,7 +182190,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183137,7 +182227,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183175,7 +182264,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183213,7 +182301,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183251,7 +182338,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183289,7 +182375,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183327,7 +182412,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183365,7 +182449,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183403,7 +182486,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183441,7 +182523,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183479,7 +182560,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183517,7 +182597,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183555,7 +182634,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183593,7 +182671,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183631,7 +182708,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183669,7 +182745,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183707,7 +182782,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183745,7 +182819,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183783,7 +182856,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183821,7 +182893,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183859,7 +182930,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183897,7 +182967,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183935,7 +183004,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -183973,7 +183041,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184011,7 +183078,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184049,7 +183115,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184087,7 +183152,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184125,7 +183189,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184163,7 +183226,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184201,7 +183263,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184239,7 +183300,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184277,7 +183337,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184315,7 +183374,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184353,7 +183411,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184391,7 +183448,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184429,7 +183485,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184467,7 +183522,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184505,7 +183559,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184543,7 +183596,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184581,7 +183633,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184619,7 +183670,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184657,7 +183707,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184695,7 +183744,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184733,7 +183781,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184771,7 +183818,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184809,7 +183855,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184847,7 +183892,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184885,7 +183929,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184923,7 +183966,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184961,7 +184003,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -184999,7 +184040,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185037,7 +184077,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185075,7 +184114,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185113,7 +184151,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185151,7 +184188,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185189,7 +184225,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185227,7 +184262,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185265,7 +184299,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185303,7 +184336,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185341,7 +184373,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185379,7 +184410,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185417,7 +184447,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185455,7 +184484,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185493,7 +184521,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185531,7 +184558,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185569,7 +184595,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185607,7 +184632,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185645,7 +184669,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185683,7 +184706,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185721,7 +184743,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185759,7 +184780,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185797,7 +184817,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185835,7 +184854,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185873,7 +184891,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185911,7 +184928,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185949,7 +184965,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -185987,7 +185002,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186025,7 +185039,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186063,7 +185076,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186101,7 +185113,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186139,7 +185150,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186177,7 +185187,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186215,7 +185224,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186253,7 +185261,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186291,7 +185298,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186329,7 +185335,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186367,7 +185372,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186405,7 +185409,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186443,7 +185446,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186481,7 +185483,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186519,7 +185520,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186557,7 +185557,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186595,7 +185594,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186633,7 +185631,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186671,7 +185668,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186709,7 +185705,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186747,7 +185742,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186785,7 +185779,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186823,7 +185816,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186861,7 +185853,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186899,7 +185890,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186937,7 +185927,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -186975,7 +185964,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -187013,7 +186001,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -187051,7 +186038,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -187089,7 +186075,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -187127,7 +186112,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -187165,7 +186149,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -187203,7 +186186,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -187241,7 +186223,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -187279,7 +186260,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -187317,7 +186297,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -187355,7 +186334,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -187393,7 +186371,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -187431,7 +186408,6 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",

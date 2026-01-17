@@ -29,13 +29,12 @@ from fboss.lib.platform_mapping_v2.read_files_utils import (
 )
 from fboss.lib.platform_mapping_v2.si_settings import SiSettings
 from fboss.lib.platform_mapping_v2.static_mapping import StaticMapping
-
 from neteng.fboss.phy.ttypes import (
     DataPlanePhyChip,
     DataPlanePhyChipType,
     PortPinConfig,
+    Side,
 )
-
 from neteng.fboss.platform_config.ttypes import (
     PlatformMapping,
     PlatformPortConfig,
@@ -356,22 +355,35 @@ class PlatformMappingV2:
                 profile, DataPlanePhyChipType.IPHY
             )
 
-            # Get XPHY speed setting (optional)
-            xphy_speed_setting = None
+            # Get XPHY line speed setting
+            xphy_line_speed_setting = None
             try:
-                xphy_speed_setting = (
+                xphy_line_speed_setting = (
                     self.pm_parser.get_profile_settings().get_speed_setting(
-                        profile, DataPlanePhyChipType.XPHY
+                        profile, DataPlanePhyChipType.XPHY, Side.LINE
                     )
                 )
             except Exception:
-                # XPHY speed setting doesn't exist for this profile, which is okay
+                # XPHY line speed setting doesn't exist for this profile, which is okay
+                pass
+
+            # Get XPHY system speed setting
+            xphy_system_speed_setting = None
+            try:
+                xphy_system_speed_setting = (
+                    self.pm_parser.get_profile_settings().get_speed_setting(
+                        profile, DataPlanePhyChipType.XPHY, Side.SYSTEM
+                    )
+                )
+            except Exception:
+                # XPHY system speed setting doesn't exist for this profile, which is okay
                 pass
 
             entry = get_platform_config_entry(
                 profile=profile,
                 npu_speed_setting=npu_speed_setting,
-                xphy_speed_setting=xphy_speed_setting,
+                xphy_line_speed_setting=xphy_line_speed_setting,
+                xphy_system_speed_setting=xphy_system_speed_setting,
             )
             if entry:
                 platform_config_entry.append(entry)

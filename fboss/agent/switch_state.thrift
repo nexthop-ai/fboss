@@ -170,6 +170,8 @@ struct PortFields {
   62: optional bool resetQueueCreditBalance;
   // Switch ID for use with fabric links in Fabric Link Monitoring
   63: optional i32 portSwitchId;
+  // Serdes custom collection JSON string
+  64: optional string serdesCustomCollection;
 }
 
 typedef ctrl.SystemPortThrift SystemPortFields
@@ -533,13 +535,9 @@ struct LabelForwardingEntryFields {
 
 struct FibContainerFields {
   1: i16 vrf;
-  @thrift.DeprecatedUnvalidatedAnnotations{
-    items = {"allow_skip_thrift_cow": "1"},
-  }
+  @common.AllowSkipThriftCow
   2: map<string, RouteFields> fibV4;
-  @thrift.DeprecatedUnvalidatedAnnotations{
-    items = {"allow_skip_thrift_cow": "1"},
-  }
+  @common.AllowSkipThriftCow
   3: map<string, RouteFields> fibV6;
 }
 
@@ -595,7 +593,7 @@ struct SflowCollectorFields {
   2: SocketAddress address;
 }
 
-@thrift.DeprecatedUnvalidatedAnnotations{items = {"allow_skip_thrift_cow": "1"}}
+@common.AllowSkipThriftCow
 struct InterfaceFields {
   1: i32 interfaceId;
   2: i32 routerId;

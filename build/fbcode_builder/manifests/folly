@@ -45,6 +45,7 @@ openssl
 zlib
 
 [dependencies.os=linux]
+libaio
 libiberty
 
 # xz depends on autoconf which does not build on

@@ -417,6 +417,7 @@ set(core_libs
   state_delta_logger
   dsfnode_utils
   hw_switch_thrift_client_table
+  file_based_warmboot_utils
 )
 
 target_link_libraries(core ${core_libs})
@@ -766,6 +767,16 @@ target_link_libraries(fboss_sw_agent
   -Wl,--no-whole-archive
 )
 
+add_library(thrift_based_warmboot_utils
+  fboss/agent/ThriftBasedWarmbootUtils.cpp
+)
+
+target_link_libraries(thrift_based_warmboot_utils
+  hw_asic_table
+  hw_switch_thrift_client_table
+  switch_state_cpp2
+)
+
 add_library(file_based_warmboot_utils
   fboss/agent/FileBasedWarmbootUtils.cpp
 )
@@ -774,8 +785,11 @@ target_link_libraries(file_based_warmboot_utils
   agent_dir_util
   agent_features
   hw_asic_table
+  switch_state_cpp2
+  standalone_rib
+  state
+  common_file_utils
   Folly::folly
- common_file_utils
 )
 
 add_library(sw_switch_warmboot_helper
@@ -788,12 +802,11 @@ target_link_libraries(sw_switch_warmboot_helper
   fboss_error
   hw_asic_table
   state
-  standalone_rib
   utils
   Folly::folly
-  switch_state_cpp2
   warm_boot_file_utils
   file_based_warmboot_utils
+  thrift_based_warmboot_utils
 )
 
 add_library(sw_agent_initializer

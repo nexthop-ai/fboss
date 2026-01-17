@@ -12,6 +12,7 @@
 
 #include "fboss/cli/fboss2/commands/config/CmdConfigAppliedInfo.h"
 #include "fboss/cli/fboss2/commands/config/CmdConfigReload.h"
+<<<<<<< HEAD
 #include "fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceDescription.h"
@@ -24,6 +25,8 @@
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolHeadroomBytes.h"
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolReservedBytes.h"
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolSharedBytes.h"
+=======
+>>>>>>> 09e647e0665c3b0199c9cb0816935bd7031ddfd4
 #include "fboss/cli/fboss2/commands/config/rollback/CmdConfigRollback.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionCommit.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionDiff.h"
@@ -33,6 +36,7 @@ namespace facebook::fboss {
 template void
 CmdHandler<CmdConfigAppliedInfo, CmdConfigAppliedInfoTraits>::run();
 template void CmdHandler<CmdConfigReload, CmdConfigReloadTraits>::run();
+<<<<<<< HEAD
 template void CmdHandler<CmdConfigInterface, CmdConfigInterfaceTraits>::run();
 template void CmdHandler<
     CmdConfigInterfaceDescription,
@@ -49,11 +53,14 @@ template void CmdHandler<
     CmdConfigInterfaceSwitchportAccessVlan,
     CmdConfigInterfaceSwitchportAccessVlanTraits>::run();
 template void CmdHandler<CmdConfigHistory, CmdConfigHistoryTraits>::run();
+=======
+>>>>>>> 09e647e0665c3b0199c9cb0816935bd7031ddfd4
 template void CmdHandler<CmdConfigRollback, CmdConfigRollbackTraits>::run();
 template void
 CmdHandler<CmdConfigSessionCommit, CmdConfigSessionCommitTraits>::run();
 template void
 CmdHandler<CmdConfigSessionDiff, CmdConfigSessionDiffTraits>::run();
+<<<<<<< HEAD
 template void CmdHandler<CmdConfigQos, CmdConfigQosTraits>::run();
 template void
 CmdHandler<CmdConfigQosBufferPool, CmdConfigQosBufferPoolTraits>::run();
@@ -66,5 +73,7 @@ template void CmdHandler<
 template void CmdHandler<
     CmdConfigQosBufferPoolReservedBytes,
     CmdConfigQosBufferPoolReservedBytesTraits>::run();
+=======
+>>>>>>> 09e647e0665c3b0199c9cb0816935bd7031ddfd4
 
 } // namespace facebook::fboss
