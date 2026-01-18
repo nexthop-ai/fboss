@@ -16,6 +16,7 @@
 #include "fboss/agent/FbossError.h"
 #include "fboss/agent/SwSwitch.h"
 #include "fboss/agent/test/TestEnsembleIf.h"
+#include "fboss/agent/test/TrunkUtils.h"
 #include "fboss/agent/test/utils/AclTestUtils.h"
 #include "fboss/agent/test/utils/PortTestUtils.h"
 #include "fboss/agent/test/utils/VoqTestUtils.h"
@@ -103,6 +104,38 @@ cfg::InterfaceType getInterfaceType(const HwAsic& asic) {
     return cfg::InterfaceType::PORT;
   }
   return cfg::InterfaceType::VLAN;
+}
+
+void populateHyperPortAggregates(
+    const PlatformMapping* platformMapping,
+    cfg::SwitchConfig& config) {
+  const auto& platformPorts = platformMapping->getPlatformPorts();
+  for (const auto& [portID, portEntry] : platformPorts) {
+    if (*portEntry.mapping()->portType() != cfg::PortType::HYPER_PORT) {
+      continue;
+    }
+    const auto& supportedProfiles = *portEntry.supportedProfiles();
+    if (supportedProfiles.empty()) {
+      continue;
+    }
+    const auto& firstProfile = supportedProfiles.begin()->second;
+    auto subsumedPorts = firstProfile.subsumedPorts();
+    if (!subsumedPorts) {
+      continue;
+    }
+    std::vector<int32_t> memberPortIDs;
+    for (auto subsumedPort : *subsumedPorts) {
+      memberPortIDs.push_back(static_cast<int32_t>(subsumedPort));
+    }
+    addAggPort(
+        static_cast<int>(portID),
+        memberPortIDs,
+        &config,
+        cfg::LacpPortRate::FAST,
+        1.0,
+        cfg::AggregatePortType::HYPER_PORT,
+        *portEntry.mapping()->name());
+  }
 }
 } // namespace
 folly::MacAddress kLocalCpuMac() {
@@ -788,6 +821,11 @@ cfg::SwitchConfig multiplePortsPerIntfConfig(
           portScope);
     }
   }
+
+  if (FLAGS_hyper_port) {
+    populateHyperPortAggregates(platformMapping, config);
+  }
+
   return config;
 }
 
@@ -898,13 +936,18 @@ cfg::SwitchConfig genPortVlanCfg(
   CHECK_GT(portToDefaultProfileID.size(), 0);
   const auto& platformPorts = platformMapping->getPlatformPorts();
   for (auto const& [portID, profileID] : portToDefaultProfileID) {
-    if (!FLAGS_hide_fabric_ports ||
-        *platformPorts.find(static_cast<int32_t>(portID))
-                ->second.mapping()
-                ->portType() != cfg::PortType::FABRIC_PORT) {
-      config.ports()->push_back(
-          createDefaultPortConfig(platformMapping, asic, portID, profileID));
+    if ((FLAGS_hide_fabric_ports &&
+         *platformPorts.find(static_cast<int32_t>(portID))
+                 ->second.mapping()
+                 ->portType() == cfg::PortType::FABRIC_PORT) ||
+        (FLAGS_hide_interface_ports &&
+         *platformPorts.find(static_cast<int32_t>(portID))
+                 ->second.mapping()
+                 ->portType() == cfg::PortType::INTERFACE_PORT)) {
+      continue;
     }
+    config.ports()->push_back(
+        createDefaultPortConfig(platformMapping, asic, portID, profileID));
   }
   auto const kFabricTxQueueConfig = "FabricTxQueueConfig";
   config.portQueueConfigs()[kFabricTxQueueConfig] = getFabTxQueueConfig();

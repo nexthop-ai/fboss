@@ -728,7 +728,7 @@ class TestRunner(abc.ABC):
             )
             output = test_output.decode("utf-8")
             print(
-                f"########## Coldboot test results ({idx+1}/{num_tests}): {output}",
+                f"########## Coldboot test results ({idx + 1}/{num_tests}): {output}",
                 flush=True,
             )
             test_outputs.append(test_output)
@@ -759,7 +759,7 @@ class TestRunner(abc.ABC):
                 )
                 output = test_output.decode("utf-8")
                 print(
-                    f"########## Warmboot test results ({idx+1}/{num_tests}): {output}",
+                    f"########## Warmboot test results ({idx + 1}/{num_tests}): {output}",
                     flush=True,
                 )
                 test_outputs.append(test_output)

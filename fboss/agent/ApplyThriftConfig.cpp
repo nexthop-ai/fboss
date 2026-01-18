@@ -1163,6 +1163,7 @@ void ThriftConfigApplier::processUpdatedDsfNodes() {
         switch (node->getAsicType()) {
           case cfg::AsicType::ASIC_TYPE_MOCK:
           case cfg::AsicType::ASIC_TYPE_FAKE:
+          case cfg::AsicType::ASIC_TYPE_FAKE_NO_WARMBOOT:
           case cfg::AsicType::ASIC_TYPE_JERICHO2:
             asicCore = 1;
             break;
@@ -2842,10 +2843,20 @@ shared_ptr<Port> ThriftConfigApplier::updatePort(
   const auto& newPinConfigs = platformMapping_->getPortIphyPinConfigs(matcher);
   auto pinConfigsUnchanged = (newPinConfigs == orig->getPinConfigs());
 
-  XLOG_IF(DBG2, !profileConfigUnchanged || !pinConfigsUnchanged)
+  const auto& newSerdesCustomCollection =
+      platformMapping_->getPortSerdesCustomCollection(matcher);
+  auto serdesCustomCollectionUnchanged =
+      (newSerdesCustomCollection == orig->getSerdesCustomCollection());
+
+  XLOG_IF(
+      DBG2,
+      !profileConfigUnchanged || !pinConfigsUnchanged ||
+          !serdesCustomCollectionUnchanged)
       << orig->getName() << " has profileConfig: "
       << (profileConfigUnchanged ? "UNCHANGED" : "CHANGED")
       << ", pinConfigs: " << (pinConfigsUnchanged ? "UNCHANGED" : "CHANGED")
+      << ", serdesCustomCollection: "
+      << (serdesCustomCollectionUnchanged ? "UNCHANGED" : "CHANGED")
       << ", with matcher:" << matcher.toString();
 
   // Port drain is applicable to fabric ports and interface ports.
@@ -2910,6 +2921,7 @@ shared_ptr<Port> ThriftConfigApplier::updatePort(
           orig->getExpectedNeighborValues()->toThrift() &&
       *portConf->maxFrameSize() == orig->getMaxFrameSize() &&
       lookupClassesUnchanged && profileConfigUnchanged && pinConfigsUnchanged &&
+      serdesCustomCollectionUnchanged &&
       *portConf->portType() == orig->getPortType() &&
       *portConf->drainState() == orig->getPortDrainState() &&
       portFlowletConfigUnchanged &&
@@ -2973,6 +2985,7 @@ shared_ptr<Port> ThriftConfigApplier::updatePort(
   newPort->resetPgConfigs(portPgCfgs);
   newPort->setProfileConfig(*newProfileConfigRef);
   newPort->resetPinConfigs(newPinConfigs);
+  newPort->setSerdesCustomCollection(newSerdesCustomCollection);
   newPort->setPortType(*portConf->portType());
   newPort->setInterfaceIDs(port2InterfaceId_[orig->getID()]);
   newPort->setExpectedNeighborReachability(

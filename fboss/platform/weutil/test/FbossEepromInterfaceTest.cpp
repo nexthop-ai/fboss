@@ -1,5 +1,6 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
+#include <fmt/format.h>
 #include <gtest/gtest.h>
 
 #include <folly/FileUtil.h>
@@ -140,14 +141,6 @@ EepromData eepromOnieReal = {
 };
 // clang-format on
 
-FbossEepromInterface createFbossEepromInterface(const EepromData& data) {
-  folly::test::TemporaryDirectory tmpDir = folly::test::TemporaryDirectory();
-  std::string fileName = tmpDir.path().string() + "/eepromContent";
-  folly::writeFile(data, fileName.c_str());
-
-  return FbossEepromInterface(fileName, 0);
-}
-
 constexpr auto kProductName = "FIRST_SQUEEZE";
 constexpr auto kProductPartNumber = "20123456";
 constexpr auto kSystemAssemblyPartNumber = "SYSA1234";
@@ -219,58 +212,80 @@ EepromContents createEepromContents(int version, bool crcMatched = true) {
   return result;
 };
 
+struct CommonEepromFields {
+  std::string productName;
+  std::string productPartNumber;
+  std::string productionState;
+  std::string productionSubState;
+  std::string variantIndicator;
+  std::string productSerialNumber;
+
+  bool operator==(const CommonEepromFields& other) const = default;
+};
+
+CommonEepromFields getCommonFields(const FbossEepromInterface& eeprom) {
+  return CommonEepromFields{
+      .productName = eeprom.getProductName(),
+      .productPartNumber = eeprom.getProductPartNumber(),
+      .productionState = eeprom.getProductionState(),
+      .productionSubState = eeprom.getProductionSubState(),
+      .variantIndicator = eeprom.getVariantVersion(),
+      .productSerialNumber = eeprom.getProductSerialNumber(),
+  };
+}
+
+const CommonEepromFields kExpectedCommonFields{
+    .productName = kProductName,
+    .productPartNumber = kProductPartNumber,
+    .productionState = kProductionState,
+    .productionSubState = kProductionSubState,
+    .variantIndicator = kVariantIndicator,
+    .productSerialNumber = kProductSerialNumber,
+};
+
+// Helper to verify common EEPROM fields parsed correctly
+void verifyCommonEepromFields(const FbossEepromInterface& eeprom) {
+  EXPECT_EQ(getCommonFields(eeprom), kExpectedCommonFields);
+}
+
 } // namespace
 
-TEST(FbossEepromInterfaceTest, V5) {
-  auto eeprom = createFbossEepromInterface(kEepromV5);
-
-  EXPECT_EQ(eeprom.getProductName(), kProductName);
-  EXPECT_EQ(eeprom.getProductPartNumber(), kProductPartNumber);
-  EXPECT_EQ(eeprom.getProductionState(), kProductionState);
-  EXPECT_EQ(eeprom.getProductionSubState(), kProductionSubState);
-  EXPECT_EQ(eeprom.getVariantVersion(), kVariantIndicator);
-  EXPECT_EQ(eeprom.getProductSerialNumber(), kProductSerialNumber);
+TEST(FbossEepromInterfaceTest, V5WithBufferConstructor) {
+  FbossEepromInterface eeprom(kEepromV5);
+  EXPECT_EQ(eeprom.getVersion(), 5);
+  verifyCommonEepromFields(eeprom);
 }
 
 TEST(FbossEepromInterfaceTest, V5WrongCRC) {
-  auto eeprom = createFbossEepromInterface(kEepromV5WrongCrc);
-  EXPECT_EQ(eeprom.getProductName(), kProductName);
-  EXPECT_EQ(eeprom.getProductPartNumber(), kProductPartNumber);
-  EXPECT_EQ(eeprom.getProductionState(), kProductionState);
-  EXPECT_EQ(eeprom.getProductionSubState(), kProductionSubState);
-  EXPECT_EQ(eeprom.getVariantVersion(), kVariantIndicator);
-  EXPECT_EQ(eeprom.getProductSerialNumber(), kProductSerialNumber);
+  FbossEepromInterface eeprom(kEepromV5WrongCrc);
+  EXPECT_EQ(eeprom.getVersion(), 5);
+  verifyCommonEepromFields(eeprom);
 }
 
-TEST(FbossEepromInterfaceTest, V6) {
-  auto eeprom = createFbossEepromInterface(kEepromV6);
-  EXPECT_EQ(eeprom.getProductName(), kProductName);
-  EXPECT_EQ(eeprom.getProductPartNumber(), kProductPartNumber);
-  EXPECT_EQ(eeprom.getProductionState(), kProductionState);
-  EXPECT_EQ(eeprom.getProductionSubState(), kProductionSubState);
-  EXPECT_EQ(eeprom.getVariantVersion(), kVariantIndicator);
-  EXPECT_EQ(eeprom.getProductSerialNumber(), kProductSerialNumber);
+TEST(FbossEepromInterfaceTest, V6WithBufferConstructor) {
+  FbossEepromInterface eeprom(kEepromV6);
+  EXPECT_EQ(eeprom.getVersion(), 6);
+  verifyCommonEepromFields(eeprom);
 }
 
 TEST(FbossEepromInterfaceTest, V5Object) {
-  auto eepromInterace = createFbossEepromInterface(kEepromV5);
-  auto actualObj = eepromInterace.getEepromContents();
-
+  FbossEepromInterface eepromInterface(kEepromV5);
+  auto actualObj = eepromInterface.getEepromContents();
   EepromContents expectedObj = createEepromContents(5);
 
   EXPECT_EQ(actualObj, expectedObj);
 }
 
 TEST(FbossEepromInterfaceTest, V6Object) {
-  auto eepromInterace = createFbossEepromInterface(kEepromV6);
-  auto actualObj = eepromInterace.getEepromContents();
+  FbossEepromInterface eepromInterface(kEepromV6);
+  auto actualObj = eepromInterface.getEepromContents();
   EepromContents expectedObj = createEepromContents(6);
 
   EXPECT_EQ(actualObj, expectedObj);
 }
 
 TEST(FbossEepromInterfaceTest, V5ObjWrongCrc) {
-  auto eeprom = createFbossEepromInterface(kEepromV5WrongCrc);
+  FbossEepromInterface eeprom(kEepromV5WrongCrc);
   auto actualObj = eeprom.getEepromContents();
   EepromContents expectedObj = createEepromContents(5, false);
 
@@ -341,6 +356,16 @@ TEST(FbossEepromOnieTest, OnieFormat) {
       EXPECT_EQ(parsedContents[i], expectedContents[i]);
     }
   }
+}
+
+TEST(FbossEepromInterfaceTest, InvalidEepromSize) {
+  std::vector<uint8_t> tooSmall = {0xfb, 0xfb};
+  EXPECT_THROW((FbossEepromInterface{tooSmall}), std::runtime_error);
+}
+
+TEST(FbossEepromInterfaceTest, InvalidVersion) {
+  std::vector<uint8_t> badVersion = {0xfb, 0xfb, 0x99, 0xff};
+  EXPECT_THROW((FbossEepromInterface{badVersion}), std::runtime_error);
 }
 
 } // namespace facebook::fboss::platform

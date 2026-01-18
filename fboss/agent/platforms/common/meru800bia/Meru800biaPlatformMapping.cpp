@@ -43000,7 +43000,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43037,7 +43036,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43074,7 +43072,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43111,7 +43108,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43148,7 +43144,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43185,7 +43180,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43222,7 +43216,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43259,7 +43252,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43296,7 +43288,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43333,7 +43324,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43370,7 +43360,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43407,7 +43396,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43444,7 +43432,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43481,7 +43468,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43518,7 +43504,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43555,7 +43540,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43592,7 +43576,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43629,7 +43612,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43666,7 +43648,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43703,7 +43684,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43740,7 +43720,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43777,7 +43756,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43814,7 +43792,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43851,7 +43828,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43888,7 +43864,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43925,7 +43900,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43962,7 +43936,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -43999,7 +43972,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44036,7 +44008,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44073,7 +44044,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44110,7 +44080,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44147,7 +44116,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44184,7 +44152,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44221,7 +44188,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44258,7 +44224,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44295,7 +44260,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44332,7 +44296,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44369,7 +44332,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44406,7 +44368,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44443,7 +44404,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44480,7 +44440,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44517,7 +44476,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44554,7 +44512,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44591,7 +44548,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44628,7 +44584,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44665,7 +44620,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44702,7 +44656,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44739,7 +44692,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44776,7 +44728,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44813,7 +44764,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44850,7 +44800,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44887,7 +44836,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44924,7 +44872,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44961,7 +44908,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -44998,7 +44944,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45035,7 +44980,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45072,7 +45016,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45109,7 +45052,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45146,7 +45088,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45183,7 +45124,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45220,7 +45160,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45257,7 +45196,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45294,7 +45232,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45331,7 +45268,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45368,7 +45304,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45405,7 +45340,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45442,7 +45376,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45479,7 +45412,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45516,7 +45448,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45553,7 +45484,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45590,7 +45520,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45627,7 +45556,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45664,7 +45592,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45701,7 +45628,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45738,7 +45664,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45775,7 +45700,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45812,7 +45736,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45849,7 +45772,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45886,7 +45808,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45923,7 +45844,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45960,7 +45880,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -45997,7 +45916,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46034,7 +45952,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46071,7 +45988,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46108,7 +46024,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46145,7 +46060,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46182,7 +46096,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46219,7 +46132,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46256,7 +46168,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46293,7 +46204,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46330,7 +46240,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46367,7 +46276,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46404,7 +46312,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46441,7 +46348,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46478,7 +46384,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46515,7 +46420,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46552,7 +46456,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46589,7 +46492,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46626,7 +46528,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46663,7 +46564,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46700,7 +46600,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46737,7 +46636,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46774,7 +46672,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46811,7 +46708,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46848,7 +46744,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46885,7 +46780,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46922,7 +46816,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46959,7 +46852,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -46996,7 +46888,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47033,7 +46924,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47070,7 +46960,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47107,7 +46996,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47144,7 +47032,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47181,7 +47068,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47218,7 +47104,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47255,7 +47140,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47292,7 +47176,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47329,7 +47212,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47366,7 +47248,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47403,7 +47284,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47440,7 +47320,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47477,7 +47356,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47514,7 +47392,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47551,7 +47428,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47588,7 +47464,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47625,7 +47500,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47662,7 +47536,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47699,7 +47572,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47736,7 +47608,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47773,7 +47644,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47810,7 +47680,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47847,7 +47716,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47884,7 +47752,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47921,7 +47788,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47958,7 +47824,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -47995,7 +47860,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48032,7 +47896,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48069,7 +47932,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48106,7 +47968,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48143,7 +48004,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48180,7 +48040,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48217,7 +48076,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48254,7 +48112,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48291,7 +48148,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48328,7 +48184,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48365,7 +48220,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48402,7 +48256,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48439,7 +48292,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48476,7 +48328,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48513,7 +48364,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48550,7 +48400,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48587,7 +48436,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48624,7 +48472,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48661,7 +48508,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48698,7 +48544,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48735,7 +48580,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48772,7 +48616,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48809,7 +48652,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48846,7 +48688,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -48883,7 +48724,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -63667,7 +63507,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -63704,7 +63543,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -63741,7 +63579,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -63778,7 +63615,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -63815,7 +63651,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -63852,7 +63687,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -63889,7 +63723,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -63926,7 +63759,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -63963,7 +63795,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64000,7 +63831,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64037,7 +63867,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64074,7 +63903,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64111,7 +63939,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64148,7 +63975,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64185,7 +64011,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64222,7 +64047,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64259,7 +64083,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64296,7 +64119,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64333,7 +64155,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64370,7 +64191,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64407,7 +64227,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64444,7 +64263,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64481,7 +64299,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64518,7 +64335,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64555,7 +64371,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64592,7 +64407,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64629,7 +64443,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64666,7 +64479,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64703,7 +64515,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64740,7 +64551,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64777,7 +64587,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64814,7 +64623,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64851,7 +64659,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64888,7 +64695,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64925,7 +64731,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64962,7 +64767,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -64999,7 +64803,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65036,7 +64839,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65073,7 +64875,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65110,7 +64911,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65147,7 +64947,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65184,7 +64983,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65221,7 +65019,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65258,7 +65055,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65295,7 +65091,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65332,7 +65127,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65369,7 +65163,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65406,7 +65199,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65443,7 +65235,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65480,7 +65271,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65517,7 +65307,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65554,7 +65343,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65591,7 +65379,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65628,7 +65415,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65665,7 +65451,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65702,7 +65487,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65739,7 +65523,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65776,7 +65559,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65813,7 +65595,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65850,7 +65631,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65887,7 +65667,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65924,7 +65703,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65961,7 +65739,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -65998,7 +65775,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66035,7 +65811,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66072,7 +65847,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66109,7 +65883,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66146,7 +65919,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66183,7 +65955,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66220,7 +65991,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66257,7 +66027,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66294,7 +66063,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66331,7 +66099,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66368,7 +66135,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66405,7 +66171,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66442,7 +66207,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66479,7 +66243,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66516,7 +66279,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66553,7 +66315,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66590,7 +66351,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66627,7 +66387,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66664,7 +66423,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66701,7 +66459,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66738,7 +66495,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66775,7 +66531,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66812,7 +66567,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66849,7 +66603,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66886,7 +66639,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66923,7 +66675,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66960,7 +66711,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -66997,7 +66747,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67034,7 +66783,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67071,7 +66819,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67108,7 +66855,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67145,7 +66891,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67182,7 +66927,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67219,7 +66963,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67256,7 +66999,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67293,7 +67035,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67330,7 +67071,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67367,7 +67107,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67404,7 +67143,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67441,7 +67179,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67478,7 +67215,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67515,7 +67251,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67552,7 +67287,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67589,7 +67323,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67626,7 +67359,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67663,7 +67395,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67700,7 +67431,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67737,7 +67467,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67774,7 +67503,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67811,7 +67539,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67848,7 +67575,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67885,7 +67611,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67922,7 +67647,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67959,7 +67683,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -67996,7 +67719,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68033,7 +67755,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68070,7 +67791,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68107,7 +67827,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68144,7 +67863,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68181,7 +67899,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68218,7 +67935,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68255,7 +67971,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68292,7 +68007,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68329,7 +68043,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68366,7 +68079,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68403,7 +68115,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68440,7 +68151,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68477,7 +68187,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68514,7 +68223,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68551,7 +68259,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68588,7 +68295,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68625,7 +68331,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68662,7 +68367,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68699,7 +68403,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68736,7 +68439,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68773,7 +68475,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68810,7 +68511,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68847,7 +68547,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68884,7 +68583,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68921,7 +68619,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68958,7 +68655,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -68995,7 +68691,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -69032,7 +68727,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -69069,7 +68763,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -69106,7 +68799,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -69143,7 +68835,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -69180,7 +68871,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -69217,7 +68907,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -69254,7 +68943,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -69291,7 +68979,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -69328,7 +69015,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -69365,7 +69051,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -69402,7 +69087,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -69439,7 +69123,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -69476,7 +69159,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -69513,7 +69195,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -69550,7 +69231,6 @@ constexpr auto kJsonEdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -112657,7 +112337,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -112694,7 +112373,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -112731,7 +112409,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -112768,7 +112445,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -112805,7 +112481,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -112842,7 +112517,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -112879,7 +112553,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -112916,7 +112589,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -112953,7 +112625,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -112990,7 +112661,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113027,7 +112697,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113064,7 +112733,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113101,7 +112769,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113138,7 +112805,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113175,7 +112841,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113212,7 +112877,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113249,7 +112913,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113286,7 +112949,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113323,7 +112985,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113360,7 +113021,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113397,7 +113057,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113434,7 +113093,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113471,7 +113129,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113508,7 +113165,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113545,7 +113201,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113582,7 +113237,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113619,7 +113273,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113656,7 +113309,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113693,7 +113345,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113730,7 +113381,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113767,7 +113417,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113804,7 +113453,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113841,7 +113489,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113878,7 +113525,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113915,7 +113561,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113952,7 +113597,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -113989,7 +113633,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114026,7 +113669,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114063,7 +113705,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114100,7 +113741,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114137,7 +113777,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114174,7 +113813,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114211,7 +113849,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114248,7 +113885,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114285,7 +113921,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114322,7 +113957,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114359,7 +113993,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114396,7 +114029,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114433,7 +114065,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114470,7 +114101,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114507,7 +114137,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114544,7 +114173,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114581,7 +114209,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114618,7 +114245,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114655,7 +114281,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114692,7 +114317,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114729,7 +114353,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114766,7 +114389,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114803,7 +114425,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114840,7 +114461,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114877,7 +114497,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114914,7 +114533,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114951,7 +114569,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -114988,7 +114605,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115025,7 +114641,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115062,7 +114677,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115099,7 +114713,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115136,7 +114749,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115173,7 +114785,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115210,7 +114821,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115247,7 +114857,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115284,7 +114893,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115321,7 +114929,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115358,7 +114965,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115395,7 +115001,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115432,7 +115037,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115469,7 +115073,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115506,7 +115109,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115543,7 +115145,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115580,7 +115181,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115617,7 +115217,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115654,7 +115253,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115691,7 +115289,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115728,7 +115325,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115765,7 +115361,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115802,7 +115397,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115839,7 +115433,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115876,7 +115469,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115913,7 +115505,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115950,7 +115541,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -115987,7 +115577,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116024,7 +115613,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116061,7 +115649,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116098,7 +115685,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116135,7 +115721,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116172,7 +115757,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116209,7 +115793,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116246,7 +115829,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116283,7 +115865,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116320,7 +115901,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116357,7 +115937,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116394,7 +115973,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116431,7 +116009,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116468,7 +116045,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116505,7 +116081,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116542,7 +116117,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116579,7 +116153,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116616,7 +116189,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116653,7 +116225,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116690,7 +116261,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116727,7 +116297,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116764,7 +116333,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116801,7 +116369,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116838,7 +116405,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116875,7 +116441,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116912,7 +116477,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116949,7 +116513,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -116986,7 +116549,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117023,7 +116585,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117060,7 +116621,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117097,7 +116657,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117134,7 +116693,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117171,7 +116729,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117208,7 +116765,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117245,7 +116801,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117282,7 +116837,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117319,7 +116873,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117356,7 +116909,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117393,7 +116945,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117430,7 +116981,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117467,7 +117017,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117504,7 +117053,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117541,7 +117089,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117578,7 +117125,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117615,7 +117161,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117652,7 +117197,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117689,7 +117233,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117726,7 +117269,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117763,7 +117305,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117800,7 +117341,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117837,7 +117377,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117874,7 +117413,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117911,7 +117449,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117948,7 +117485,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -117985,7 +117521,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -118022,7 +117557,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -118059,7 +117593,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -118096,7 +117629,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -118133,7 +117665,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -118170,7 +117701,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -118207,7 +117737,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -118244,7 +117773,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -118281,7 +117809,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -118318,7 +117845,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -118355,7 +117881,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -118392,7 +117917,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -118429,7 +117953,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -118466,7 +117989,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -118503,7 +118025,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -118540,7 +118061,6 @@ constexpr auto kJsonRdswUniformLocalOffsetPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147234,7 +146754,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147271,7 +146790,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147308,7 +146826,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147345,7 +146862,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147382,7 +146898,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147419,7 +146934,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147456,7 +146970,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147493,7 +147006,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147530,7 +147042,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147567,7 +147078,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147604,7 +147114,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147641,7 +147150,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147678,7 +147186,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147715,7 +147222,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147752,7 +147258,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147789,7 +147294,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147826,7 +147330,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147863,7 +147366,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147900,7 +147402,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147937,7 +147438,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -147974,7 +147474,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148011,7 +147510,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148048,7 +147546,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148085,7 +147582,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148122,7 +147618,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148159,7 +147654,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148196,7 +147690,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148233,7 +147726,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148270,7 +147762,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148307,7 +147798,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148344,7 +147834,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148381,7 +147870,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148418,7 +147906,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148455,7 +147942,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148492,7 +147978,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148529,7 +148014,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148566,7 +148050,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148603,7 +148086,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148640,7 +148122,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148677,7 +148158,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148714,7 +148194,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148751,7 +148230,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148788,7 +148266,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148825,7 +148302,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148862,7 +148338,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148899,7 +148374,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148936,7 +148410,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -148973,7 +148446,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149010,7 +148482,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149047,7 +148518,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149084,7 +148554,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149121,7 +148590,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149158,7 +148626,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149195,7 +148662,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149232,7 +148698,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149269,7 +148734,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149306,7 +148770,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149343,7 +148806,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149380,7 +148842,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149417,7 +148878,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149454,7 +148914,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149491,7 +148950,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149528,7 +148986,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149565,7 +149022,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149602,7 +149058,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149639,7 +149094,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149676,7 +149130,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149713,7 +149166,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149750,7 +149202,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149787,7 +149238,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149824,7 +149274,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149861,7 +149310,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149898,7 +149346,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149935,7 +149382,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -149972,7 +149418,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150009,7 +149454,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150046,7 +149490,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150083,7 +149526,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150120,7 +149562,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150157,7 +149598,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150194,7 +149634,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150231,7 +149670,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150268,7 +149706,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150305,7 +149742,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150342,7 +149778,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150379,7 +149814,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150416,7 +149850,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150453,7 +149886,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150490,7 +149922,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150527,7 +149958,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150564,7 +149994,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150601,7 +150030,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150638,7 +150066,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150675,7 +150102,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150712,7 +150138,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150749,7 +150174,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150786,7 +150210,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150823,7 +150246,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150860,7 +150282,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150897,7 +150318,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150934,7 +150354,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -150971,7 +150390,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151008,7 +150426,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151045,7 +150462,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151082,7 +150498,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151119,7 +150534,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151156,7 +150570,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151193,7 +150606,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151230,7 +150642,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151267,7 +150678,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151304,7 +150714,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151341,7 +150750,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151378,7 +150786,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151415,7 +150822,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151452,7 +150858,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151489,7 +150894,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151526,7 +150930,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151563,7 +150966,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151600,7 +151002,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151637,7 +151038,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151674,7 +151074,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151711,7 +151110,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151748,7 +151146,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151785,7 +151182,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151822,7 +151218,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151859,7 +151254,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151896,7 +151290,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151933,7 +151326,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -151970,7 +151362,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152007,7 +151398,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152044,7 +151434,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152081,7 +151470,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152118,7 +151506,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152155,7 +151542,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152192,7 +151578,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152229,7 +151614,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152266,7 +151650,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152303,7 +151686,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152340,7 +151722,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152377,7 +151758,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152414,7 +151794,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152451,7 +151830,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152488,7 +151866,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152525,7 +151902,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152562,7 +151938,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152599,7 +151974,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152636,7 +152010,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152673,7 +152046,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152710,7 +152082,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152747,7 +152118,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152784,7 +152154,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152821,7 +152190,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152858,7 +152226,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152895,7 +152262,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152932,7 +152298,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -152969,7 +152334,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153006,7 +152370,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153043,7 +152406,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153080,7 +152442,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -153117,7 +152478,6 @@ constexpr auto kJsonDsfJ3ScaleTestPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167856,7 +167216,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167893,7 +167252,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167930,7 +167288,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -167967,7 +167324,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168004,7 +167360,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168041,7 +167396,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168078,7 +167432,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168115,7 +167468,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168152,7 +167504,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168189,7 +167540,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168226,7 +167576,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168263,7 +167612,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168300,7 +167648,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168337,7 +167684,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168374,7 +167720,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168411,7 +167756,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168448,7 +167792,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168485,7 +167828,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168522,7 +167864,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168559,7 +167900,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168596,7 +167936,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168633,7 +167972,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168670,7 +168008,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168707,7 +168044,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168744,7 +168080,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168781,7 +168116,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168818,7 +168152,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168855,7 +168188,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168892,7 +168224,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168929,7 +168260,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -168966,7 +168296,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169003,7 +168332,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169040,7 +168368,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169077,7 +168404,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169114,7 +168440,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169151,7 +168476,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169188,7 +168512,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169225,7 +168548,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169262,7 +168584,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169299,7 +168620,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169336,7 +168656,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169373,7 +168692,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169410,7 +168728,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169447,7 +168764,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169484,7 +168800,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169521,7 +168836,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169558,7 +168872,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169595,7 +168908,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169632,7 +168944,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169669,7 +168980,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169706,7 +169016,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169743,7 +169052,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169780,7 +169088,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169817,7 +169124,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169854,7 +169160,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169891,7 +169196,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169928,7 +169232,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -169965,7 +169268,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170002,7 +169304,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170039,7 +169340,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170076,7 +169376,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170113,7 +169412,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170150,7 +169448,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170187,7 +169484,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170224,7 +169520,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170261,7 +169556,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170298,7 +169592,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170335,7 +169628,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170372,7 +169664,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170409,7 +169700,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170446,7 +169736,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170483,7 +169772,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170520,7 +169808,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170557,7 +169844,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170594,7 +169880,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170631,7 +169916,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170668,7 +169952,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170705,7 +169988,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170742,7 +170024,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170779,7 +170060,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170816,7 +170096,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170853,7 +170132,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170890,7 +170168,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170927,7 +170204,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -170964,7 +170240,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171001,7 +170276,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171038,7 +170312,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171075,7 +170348,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171112,7 +170384,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171149,7 +170420,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171186,7 +170456,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171223,7 +170492,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171260,7 +170528,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171297,7 +170564,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171334,7 +170600,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171371,7 +170636,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171408,7 +170672,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171445,7 +170708,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171482,7 +170744,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171519,7 +170780,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171556,7 +170816,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171593,7 +170852,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171630,7 +170888,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171667,7 +170924,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171704,7 +170960,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171741,7 +170996,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171778,7 +171032,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171815,7 +171068,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171852,7 +171104,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171889,7 +171140,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171926,7 +171176,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -171963,7 +171212,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172000,7 +171248,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172037,7 +171284,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172074,7 +171320,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172111,7 +171356,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172148,7 +171392,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172185,7 +171428,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172222,7 +171464,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172259,7 +171500,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172296,7 +171536,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172333,7 +171572,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172370,7 +171608,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172407,7 +171644,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172444,7 +171680,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172481,7 +171716,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172518,7 +171752,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172555,7 +171788,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172592,7 +171824,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172629,7 +171860,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172666,7 +171896,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172703,7 +171932,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172740,7 +171968,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172777,7 +172004,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172814,7 +172040,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172851,7 +172076,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172888,7 +172112,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172925,7 +172148,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172962,7 +172184,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -172999,7 +172220,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173036,7 +172256,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173073,7 +172292,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173110,7 +172328,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173147,7 +172364,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173184,7 +172400,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173221,7 +172436,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173258,7 +172472,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173295,7 +172508,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173332,7 +172544,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173369,7 +172580,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173406,7 +172616,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173443,7 +172652,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173480,7 +172688,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173517,7 +172724,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173554,7 +172760,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173591,7 +172796,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173628,7 +172832,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173665,7 +172868,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173702,7 +172904,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -173739,7 +172940,6 @@ constexpr auto kJsonEdswPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -188539,7 +187739,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -188576,7 +187775,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -188613,7 +187811,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -188650,7 +187847,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -188687,7 +187883,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -188724,7 +187919,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -188761,7 +187955,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -188798,7 +187991,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -188835,7 +188027,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -188872,7 +188063,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -188909,7 +188099,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -188946,7 +188135,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -188983,7 +188171,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189020,7 +188207,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189057,7 +188243,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189094,7 +188279,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189131,7 +188315,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189168,7 +188351,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189205,7 +188387,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189242,7 +188423,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189279,7 +188459,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189316,7 +188495,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189353,7 +188531,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189390,7 +188567,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189427,7 +188603,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189464,7 +188639,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189501,7 +188675,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189538,7 +188711,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189575,7 +188747,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189612,7 +188783,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189649,7 +188819,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189686,7 +188855,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189723,7 +188891,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189760,7 +188927,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189797,7 +188963,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189834,7 +188999,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189871,7 +189035,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189908,7 +189071,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189945,7 +189107,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -189982,7 +189143,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190019,7 +189179,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190056,7 +189215,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190093,7 +189251,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190130,7 +189287,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190167,7 +189323,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190204,7 +189359,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190241,7 +189395,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190278,7 +189431,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190315,7 +189467,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190352,7 +189503,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190389,7 +189539,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190426,7 +189575,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190463,7 +189611,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190500,7 +189647,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190537,7 +189683,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190574,7 +189719,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190611,7 +189755,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190648,7 +189791,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190685,7 +189827,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190722,7 +189863,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190759,7 +189899,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190796,7 +189935,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190833,7 +189971,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190870,7 +190007,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190907,7 +190043,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190944,7 +190079,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -190981,7 +190115,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191018,7 +190151,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191055,7 +190187,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191092,7 +190223,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191129,7 +190259,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191166,7 +190295,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191203,7 +190331,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191240,7 +190367,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191277,7 +190403,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191314,7 +190439,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191351,7 +190475,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191388,7 +190511,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191425,7 +190547,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191462,7 +190583,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191499,7 +190619,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191536,7 +190655,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191573,7 +190691,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191610,7 +190727,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191647,7 +190763,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191684,7 +190799,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191721,7 +190835,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191758,7 +190871,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191795,7 +190907,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191832,7 +190943,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191869,7 +190979,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191906,7 +191015,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191943,7 +191051,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -191980,7 +191087,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192017,7 +191123,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192054,7 +191159,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192091,7 +191195,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192128,7 +191231,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192165,7 +191267,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192202,7 +191303,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192239,7 +191339,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192276,7 +191375,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192313,7 +191411,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192350,7 +191447,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192387,7 +191483,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192424,7 +191519,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192461,7 +191555,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192498,7 +191591,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192535,7 +191627,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192572,7 +191663,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192609,7 +191699,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192646,7 +191735,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192683,7 +191771,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192720,7 +191807,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192757,7 +191843,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192794,7 +191879,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192831,7 +191915,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192868,7 +191951,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192905,7 +191987,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192942,7 +192023,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -192979,7 +192059,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193016,7 +192095,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193053,7 +192131,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193090,7 +192167,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193127,7 +192203,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193164,7 +192239,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193201,7 +192275,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193238,7 +192311,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193275,7 +192347,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193312,7 +192383,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193349,7 +192419,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193386,7 +192455,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193423,7 +192491,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193460,7 +192527,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193497,7 +192563,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193534,7 +192599,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193571,7 +192635,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193608,7 +192671,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193645,7 +192707,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193682,7 +192743,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193719,7 +192779,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193756,7 +192815,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193793,7 +192851,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193830,7 +192887,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193867,7 +192923,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193904,7 +192959,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193941,7 +192995,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -193978,7 +193031,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -194015,7 +193067,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -194052,7 +193103,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -194089,7 +193139,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -194126,7 +193175,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -194163,7 +193211,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -194200,7 +193247,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -194237,7 +193283,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -194274,7 +193319,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -194311,7 +193355,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -194348,7 +193391,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -194385,7 +193427,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -194422,7 +193463,6 @@ constexpr auto kJsonEdswHyperPortPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -237545,7 +236585,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -237582,7 +236621,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -237619,7 +236657,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -237656,7 +236693,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -237693,7 +236729,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -237730,7 +236765,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -237767,7 +236801,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -237804,7 +236837,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -237841,7 +236873,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -237878,7 +236909,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -237915,7 +236945,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -237952,7 +236981,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -237989,7 +237017,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238026,7 +237053,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238063,7 +237089,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238100,7 +237125,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238137,7 +237161,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238174,7 +237197,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238211,7 +237233,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238248,7 +237269,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238285,7 +237305,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238322,7 +237341,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238359,7 +237377,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238396,7 +237413,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238433,7 +237449,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238470,7 +237485,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238507,7 +237521,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238544,7 +237557,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238581,7 +237593,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238618,7 +237629,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238655,7 +237665,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238692,7 +237701,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238729,7 +237737,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238766,7 +237773,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238803,7 +237809,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238840,7 +237845,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238877,7 +237881,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238914,7 +237917,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238951,7 +237953,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -238988,7 +237989,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239025,7 +238025,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239062,7 +238061,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239099,7 +238097,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239136,7 +238133,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239173,7 +238169,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239210,7 +238205,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239247,7 +238241,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239284,7 +238277,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239321,7 +238313,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239358,7 +238349,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239395,7 +238385,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239432,7 +238421,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239469,7 +238457,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239506,7 +238493,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239543,7 +238529,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239580,7 +238565,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239617,7 +238601,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239654,7 +238637,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239691,7 +238673,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239728,7 +238709,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239765,7 +238745,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239802,7 +238781,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239839,7 +238817,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239876,7 +238853,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239913,7 +238889,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239950,7 +238925,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -239987,7 +238961,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240024,7 +238997,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240061,7 +239033,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240098,7 +239069,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240135,7 +239105,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240172,7 +239141,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240209,7 +239177,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240246,7 +239213,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240283,7 +239249,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240320,7 +239285,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240357,7 +239321,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240394,7 +239357,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240431,7 +239393,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240468,7 +239429,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240505,7 +239465,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240542,7 +239501,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240579,7 +239537,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240616,7 +239573,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240653,7 +239609,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240690,7 +239645,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240727,7 +239681,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240764,7 +239717,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240801,7 +239753,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240838,7 +239789,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240875,7 +239825,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240912,7 +239861,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240949,7 +239897,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -240986,7 +239933,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241023,7 +239969,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241060,7 +240005,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241097,7 +240041,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241134,7 +240077,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241171,7 +240113,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241208,7 +240149,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241245,7 +240185,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241282,7 +240221,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241319,7 +240257,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241356,7 +240293,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241393,7 +240329,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241430,7 +240365,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241467,7 +240401,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241504,7 +240437,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241541,7 +240473,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241578,7 +240509,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241615,7 +240545,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241652,7 +240581,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241689,7 +240617,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241726,7 +240653,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241763,7 +240689,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241800,7 +240725,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241837,7 +240761,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241874,7 +240797,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241911,7 +240833,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241948,7 +240869,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -241985,7 +240905,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242022,7 +240941,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242059,7 +240977,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242096,7 +241013,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242133,7 +241049,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242170,7 +241085,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242207,7 +241121,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242244,7 +241157,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242281,7 +241193,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242318,7 +241229,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242355,7 +241265,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242392,7 +241301,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242429,7 +241337,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242466,7 +241373,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242503,7 +241409,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242540,7 +241445,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242577,7 +241481,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242614,7 +241517,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242651,7 +241553,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242688,7 +241589,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242725,7 +241625,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242762,7 +241661,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242799,7 +241697,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242836,7 +241733,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242873,7 +241769,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242910,7 +241805,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242947,7 +241841,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -242984,7 +241877,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -243021,7 +241913,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -243058,7 +241949,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -243095,7 +241985,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -243132,7 +242021,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -243169,7 +242057,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -243206,7 +242093,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -243243,7 +242129,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -243280,7 +242165,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -243317,7 +242201,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -243354,7 +242237,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -243391,7 +242273,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -243428,7 +242309,6 @@ constexpr auto kJsonDualStageRdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -257652,7 +256532,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -257689,7 +256568,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -257726,7 +256604,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -257763,7 +256640,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -257800,7 +256676,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -257837,7 +256712,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -257874,7 +256748,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -257911,7 +256784,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -257948,7 +256820,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -257985,7 +256856,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258022,7 +256892,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258059,7 +256928,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258096,7 +256964,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258133,7 +257000,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258170,7 +257036,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258207,7 +257072,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258244,7 +257108,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258281,7 +257144,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258318,7 +257180,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258355,7 +257216,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258392,7 +257252,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258429,7 +257288,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258466,7 +257324,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258503,7 +257360,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258540,7 +257396,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258577,7 +257432,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258614,7 +257468,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258651,7 +257504,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258688,7 +257540,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258725,7 +257576,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258762,7 +257612,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258799,7 +257648,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258836,7 +257684,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258873,7 +257720,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258910,7 +257756,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258947,7 +257792,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -258984,7 +257828,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259021,7 +257864,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259058,7 +257900,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259095,7 +257936,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259132,7 +257972,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259169,7 +258008,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259206,7 +258044,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259243,7 +258080,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259280,7 +258116,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259317,7 +258152,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259354,7 +258188,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259391,7 +258224,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259428,7 +258260,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259465,7 +258296,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259502,7 +258332,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259539,7 +258368,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259576,7 +258404,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259613,7 +258440,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259650,7 +258476,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259687,7 +258512,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259724,7 +258548,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259761,7 +258584,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259798,7 +258620,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259835,7 +258656,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259872,7 +258692,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259909,7 +258728,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259946,7 +258764,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -259983,7 +258800,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260020,7 +258836,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260057,7 +258872,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260094,7 +258908,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260131,7 +258944,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260168,7 +258980,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260205,7 +259016,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260242,7 +259052,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260279,7 +259088,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260316,7 +259124,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260353,7 +259160,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260390,7 +259196,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260427,7 +259232,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260464,7 +259268,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260501,7 +259304,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260538,7 +259340,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260575,7 +259376,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260612,7 +259412,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260649,7 +259448,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260686,7 +259484,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260723,7 +259520,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260760,7 +259556,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260797,7 +259592,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260834,7 +259628,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260871,7 +259664,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260908,7 +259700,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260945,7 +259736,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -260982,7 +259772,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261019,7 +259808,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261056,7 +259844,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261093,7 +259880,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261130,7 +259916,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261167,7 +259952,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261204,7 +259988,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261241,7 +260024,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261278,7 +260060,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261315,7 +260096,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261352,7 +260132,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261389,7 +260168,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261426,7 +260204,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261463,7 +260240,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261500,7 +260276,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261537,7 +260312,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261574,7 +260348,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261611,7 +260384,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261648,7 +260420,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261685,7 +260456,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261722,7 +260492,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261759,7 +260528,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261796,7 +260564,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261833,7 +260600,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261870,7 +260636,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261907,7 +260672,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261944,7 +260708,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -261981,7 +260744,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262018,7 +260780,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262055,7 +260816,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262092,7 +260852,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262129,7 +260888,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262166,7 +260924,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262203,7 +260960,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262240,7 +260996,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262277,7 +261032,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262314,7 +261068,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262351,7 +261104,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262388,7 +261140,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262425,7 +261176,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262462,7 +261212,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262499,7 +261248,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262536,7 +261284,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262573,7 +261320,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262610,7 +261356,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262647,7 +261392,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262684,7 +261428,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262721,7 +261464,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262758,7 +261500,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262795,7 +261536,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262832,7 +261572,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262869,7 +261608,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262906,7 +261644,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262943,7 +261680,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -262980,7 +261716,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -263017,7 +261752,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -263054,7 +261788,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -263091,7 +261824,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -263128,7 +261860,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -263165,7 +261896,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -263202,7 +261932,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -263239,7 +261968,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -263276,7 +262004,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -263313,7 +262040,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -263350,7 +262076,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -263387,7 +262112,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -263424,7 +262148,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -263461,7 +262184,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -263498,7 +262220,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -263535,7 +262256,6 @@ constexpr auto kJsonDualStageEdsw3q2qPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -306642,7 +305362,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -306679,7 +305398,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -306716,7 +305434,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -306753,7 +305470,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -306790,7 +305506,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -306827,7 +305542,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -306864,7 +305578,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -306901,7 +305614,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -306938,7 +305650,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -306975,7 +305686,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307012,7 +305722,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307049,7 +305758,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307086,7 +305794,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307123,7 +305830,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307160,7 +305866,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307197,7 +305902,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307234,7 +305938,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307271,7 +305974,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307308,7 +306010,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307345,7 +306046,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307382,7 +306082,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307419,7 +306118,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307456,7 +306154,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307493,7 +306190,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307530,7 +306226,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307567,7 +306262,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307604,7 +306298,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307641,7 +306334,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307678,7 +306370,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307715,7 +306406,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307752,7 +306442,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307789,7 +306478,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307826,7 +306514,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307863,7 +306550,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307900,7 +306586,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307937,7 +306622,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -307974,7 +306658,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308011,7 +306694,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308048,7 +306730,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308085,7 +306766,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308122,7 +306802,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308159,7 +306838,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308196,7 +306874,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308233,7 +306910,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308270,7 +306946,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308307,7 +306982,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308344,7 +307018,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308381,7 +307054,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308418,7 +307090,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308455,7 +307126,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308492,7 +307162,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308529,7 +307198,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308566,7 +307234,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308603,7 +307270,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308640,7 +307306,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308677,7 +307342,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308714,7 +307378,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308751,7 +307414,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308788,7 +307450,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308825,7 +307486,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308862,7 +307522,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308899,7 +307558,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308936,7 +307594,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -308973,7 +307630,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309010,7 +307666,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309047,7 +307702,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309084,7 +307738,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309121,7 +307774,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309158,7 +307810,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309195,7 +307846,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309232,7 +307882,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309269,7 +307918,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309306,7 +307954,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309343,7 +307990,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309380,7 +308026,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309417,7 +308062,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309454,7 +308098,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309491,7 +308134,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309528,7 +308170,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309565,7 +308206,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309602,7 +308242,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309639,7 +308278,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309676,7 +308314,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309713,7 +308350,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309750,7 +308386,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309787,7 +308422,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309824,7 +308458,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309861,7 +308494,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309898,7 +308530,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309935,7 +308566,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -309972,7 +308602,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310009,7 +308638,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310046,7 +308674,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310083,7 +308710,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310120,7 +308746,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310157,7 +308782,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310194,7 +308818,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310231,7 +308854,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310268,7 +308890,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310305,7 +308926,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310342,7 +308962,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310379,7 +308998,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310416,7 +309034,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310453,7 +309070,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310490,7 +309106,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310527,7 +309142,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310564,7 +309178,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310601,7 +309214,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310638,7 +309250,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310675,7 +309286,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310712,7 +309322,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310749,7 +309358,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310786,7 +309394,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310823,7 +309430,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310860,7 +309466,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310897,7 +309502,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310934,7 +309538,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -310971,7 +309574,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311008,7 +309610,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311045,7 +309646,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311082,7 +309682,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311119,7 +309718,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311156,7 +309754,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311193,7 +309790,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311230,7 +309826,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311267,7 +309862,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311304,7 +309898,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311341,7 +309934,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311378,7 +309970,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311415,7 +310006,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311452,7 +310042,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311489,7 +310078,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311526,7 +310114,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311563,7 +310150,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311600,7 +310186,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311637,7 +310222,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311674,7 +310258,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311711,7 +310294,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311748,7 +310330,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311785,7 +310366,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311822,7 +310402,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311859,7 +310438,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311896,7 +310474,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311933,7 +310510,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -311970,7 +310546,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -312007,7 +310582,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -312044,7 +310618,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -312081,7 +310654,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -312118,7 +310690,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -312155,7 +310726,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -312192,7 +310762,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -312229,7 +310798,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -312266,7 +310834,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -312303,7 +310870,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -312340,7 +310906,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -312377,7 +310942,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -312414,7 +310978,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -312451,7 +311014,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -312488,7 +311050,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -312525,7 +311086,6 @@ constexpr auto kJsonSingleStageR192F40E32PlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -327309,7 +325869,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -327346,7 +325905,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -327383,7 +325941,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -327420,7 +325977,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -327457,7 +326013,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -327494,7 +326049,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -327531,7 +326085,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -327568,7 +326121,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -327605,7 +326157,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -327642,7 +326193,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -327679,7 +326229,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -327716,7 +326265,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -327753,7 +326301,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -327790,7 +326337,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -327827,7 +326373,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -327864,7 +326409,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -327901,7 +326445,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -327938,7 +326481,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -327975,7 +326517,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328012,7 +326553,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328049,7 +326589,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328086,7 +326625,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328123,7 +326661,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328160,7 +326697,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328197,7 +326733,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328234,7 +326769,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328271,7 +326805,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328308,7 +326841,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328345,7 +326877,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328382,7 +326913,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328419,7 +326949,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328456,7 +326985,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328493,7 +327021,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328530,7 +327057,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328567,7 +327093,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328604,7 +327129,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328641,7 +327165,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328678,7 +327201,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328715,7 +327237,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328752,7 +327273,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328789,7 +327309,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328826,7 +327345,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328863,7 +327381,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328900,7 +327417,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328937,7 +327453,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -328974,7 +327489,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329011,7 +327525,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329048,7 +327561,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329085,7 +327597,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329122,7 +327633,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329159,7 +327669,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329196,7 +327705,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329233,7 +327741,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329270,7 +327777,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329307,7 +327813,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329344,7 +327849,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329381,7 +327885,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329418,7 +327921,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329455,7 +327957,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329492,7 +327993,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329529,7 +328029,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329566,7 +328065,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329603,7 +328101,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329640,7 +328137,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329677,7 +328173,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329714,7 +328209,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329751,7 +328245,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329788,7 +328281,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329825,7 +328317,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329862,7 +328353,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329899,7 +328389,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329936,7 +328425,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -329973,7 +328461,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330010,7 +328497,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330047,7 +328533,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330084,7 +328569,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330121,7 +328605,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330158,7 +328641,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330195,7 +328677,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330232,7 +328713,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330269,7 +328749,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330306,7 +328785,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330343,7 +328821,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330380,7 +328857,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330417,7 +328893,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330454,7 +328929,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330491,7 +328965,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330528,7 +329001,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330565,7 +329037,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330602,7 +329073,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330639,7 +329109,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330676,7 +329145,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330713,7 +329181,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330750,7 +329217,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330787,7 +329253,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330824,7 +329289,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330861,7 +329325,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330898,7 +329361,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330935,7 +329397,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -330972,7 +329433,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331009,7 +329469,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331046,7 +329505,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331083,7 +329541,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331120,7 +329577,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331157,7 +329613,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331194,7 +329649,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331231,7 +329685,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331268,7 +329721,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331305,7 +329757,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331342,7 +329793,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331379,7 +329829,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331416,7 +329865,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331453,7 +329901,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331490,7 +329937,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331527,7 +329973,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331564,7 +330009,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331601,7 +330045,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331638,7 +330081,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331675,7 +330117,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331712,7 +330153,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331749,7 +330189,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331786,7 +330225,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331823,7 +330261,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331860,7 +330297,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331897,7 +330333,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331934,7 +330369,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -331971,7 +330405,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332008,7 +330441,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332045,7 +330477,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332082,7 +330513,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332119,7 +330549,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332156,7 +330585,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332193,7 +330621,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332230,7 +330657,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332267,7 +330693,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332304,7 +330729,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332341,7 +330765,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332378,7 +330801,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332415,7 +330837,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332452,7 +330873,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332489,7 +330909,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332526,7 +330945,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332563,7 +330981,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332600,7 +331017,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332637,7 +331053,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332674,7 +331089,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332711,7 +331125,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332748,7 +331161,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332785,7 +331197,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332822,7 +331233,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332859,7 +331269,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332896,7 +331305,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332933,7 +331341,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -332970,7 +331377,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -333007,7 +331413,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -333044,7 +331449,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -333081,7 +331485,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -333118,7 +331521,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -333155,7 +331557,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",
@@ -333192,7 +331593,6 @@ constexpr auto kJsonSingleStageR192F40E32Edsw800GPlatformMappingStr = R"(
         "profiles": [
           42
         ],
-        "mediaInterfaceCode": 3,
         "vendor": {
           "name": "Vendor_1",
           "oui": "",

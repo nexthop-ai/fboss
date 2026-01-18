@@ -828,6 +828,7 @@ cpp_library(
         "//folly:file_util",
         "//folly:likely",
         "//folly:string",
+        "//folly:subprocess",
         "//folly/json:dynamic",
         "//thrift/lib/cpp2/protocol:protocol",
     ],

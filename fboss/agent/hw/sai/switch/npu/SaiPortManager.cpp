@@ -747,11 +747,13 @@ SaiPortTraits::CreateAttributes SaiPortManager::attributesFromSwPort(
           cfg::AsicType::ASIC_TYPE_CHENAB) {
         arsPortLoadScalingFactor = flowletCfgPtr->getScalingFactor();
         arsPortLoadPastWeight = flowletCfgPtr->getLoadWeight();
-        arsPortLoadFutureWeight = flowletCfgPtr->getQueueWeight();
+        if (platform_->getAsic()->isSupported(
+                HwAsic::Feature::ARS_FUTURE_PORT_LOAD)) {
+          arsPortLoadFutureWeight = flowletCfgPtr->getQueueWeight();
+        }
       }
-      // exclude 14.0 until this attr is ported there by BCM
 #if SAI_API_VERSION >= SAI_VERSION(1, 16, 0) && defined(BRCM_SAI_SDK_XGS) && \
-    defined(BRCM_SAI_SDK_GTE_13_0) && !defined(BRCM_SAI_SDK_GTE_14_0)
+    defined(BRCM_SAI_SDK_GTE_13_0)
       if (swPort->getLoopbackMode() == cfg::PortLoopbackMode::MAC) {
         arsLinkState = SAI_PORT_ARS_LINK_STATE_UP;
       }
@@ -1071,7 +1073,8 @@ void SaiPortManager::programSerdes(
           saiPort->adapterKey(),
           swPort->getPinConfigs(),
           serdes,
-          swPort->getZeroPreemphasis() && supportsZeroPreemphasis);
+          swPort->getZeroPreemphasis() && supportsZeroPreemphasis,
+          swPort->getSerdesCustomCollection());
   if (serdes &&
       checkPortSerdesAttributes(serdes->attributes(), serdesAttributes)) {
     portHandle->serdes = serdes;
@@ -1183,7 +1186,8 @@ SaiPortManager::serdesAttributesFromSwPinConfigs(
     PortSaiId portSaiId,
     const std::vector<phy::PinConfig>& pinConfigs,
     const std::shared_ptr<SaiPortSerdes>& serdes,
-    bool zeroPreemphasis) {
+    bool zeroPreemphasis,
+    const std::optional<std::string>& customCollection) {
   SaiPortSerdesTraits::CreateAttributes attrs;
 
   SaiPortSerdesTraits::Attributes::TxFirPre1::ValueType txPre1;
@@ -1626,6 +1630,14 @@ SaiPortManager::serdesAttributesFromSwPinConfigs(
         SaiPortSerdesTraits::Attributes::RxAcCouplingByPass{},
         rxAcCouplingByPass);
   }
+
+#if SAI_API_VERSION >= SAI_VERSION(1, 16, 4)
+  if (customCollection.has_value()) {
+    std::get<std::optional<SaiPortSerdesTraits::Attributes::CustomCollection>>(
+        attrs) = SaiPortSerdesTraits::Attributes::CustomCollection{
+        customCollection.value()};
+  }
+#endif
   return attrs;
 }
 

@@ -10,6 +10,7 @@
 #include "fboss/agent/AsyncLogger.h"
 #include "fboss/agent/FileBasedWarmbootUtils.h"
 #include "fboss/agent/HwAsicTable.h"
+#include "fboss/agent/ThriftBasedWarmbootUtils.h"
 #include "fboss/agent/Utils.h"
 #include "fboss/agent/rib/RoutingInformationBase.h"
 #include "fboss/agent/state/SwitchState.h"
@@ -21,29 +22,70 @@ SwSwitchWarmBootHelper::SwSwitchWarmBootHelper(
     const AgentDirectoryUtil* directoryUtil,
     HwAsicTable* asicTable)
     : directoryUtil_(directoryUtil),
-      warmBootDir_(directoryUtil_->getWarmBootDir()),
-      asicTable_(asicTable) {
+      asicTable_(asicTable),
+      warmBootDir_(directoryUtil_->getWarmBootDir()) {
   if (!warmBootDir_.empty()) {
     // Make sure the warm boot directory exists.
     utilCreateDir(warmBootDir_);
 
-    canWarmBoot_ = checkAndClearWarmBootFlags(directoryUtil_, asicTable_);
-
-    auto bootType = canWarmBoot_ ? "WARM" : "COLD";
-    XLOG(DBG1) << "Will attempt " << bootType << " boot";
-
-    // Notify Async logger about the boot type
-    AsyncLogger::setBootType(canWarmBoot_);
+    forceColdBootFlag_ = checkForceColdBootFlag(directoryUtil_);
+    canWarmBootFlag_ = checkCanWarmBootFlag(directoryUtil_);
+    asicCanWarmBoot_ = checkAsicSupportsWarmboot(asicTable);
   }
 }
 
-bool SwSwitchWarmBootHelper::canWarmBoot() const {
-  return canWarmBoot_;
+bool SwSwitchWarmBootHelper::canWarmBootFromFile() const {
+  if (!forceColdBootFlag_ && canWarmBootFlag_ && asicCanWarmBoot_ &&
+      FLAGS_can_warm_boot) {
+    CHECK(checkWarmbootStateFileExists(
+        warmBootDir_, FLAGS_thrift_switch_state_file));
+    return true;
+  }
+  return false;
+}
+
+bool SwSwitchWarmBootHelper::canWarmBootFromThrift(
+    bool isRunModeMultiSwitch,
+    HwSwitchThriftClientTable* hwSwitchThriftClientTable) {
+  if (!FLAGS_recover_from_hw_switch) {
+    return false;
+  }
+  recoveredStateFromHW_ = checkAndGetWarmbootStateFromHwSwitch(
+      isRunModeMultiSwitch, asicTable_, hwSwitchThriftClientTable);
+  return recoveredStateFromHW_.has_value();
+}
+
+bool SwSwitchWarmBootHelper::canWarmBoot(
+    bool isRunModeMultiSwitch,
+    HwSwitchThriftClientTable* hwSwitchThriftClientTable) {
+  bool canWarmBoot = false;
+  bool warmBootFromThrift = false;
+  if (forceColdBootFlag_ || !asicCanWarmBoot_ || !FLAGS_can_warm_boot) {
+    // 1. First check if ASIC does not support warmboot and if there's flag
+    // override to coldboot.
+    canWarmBoot = false;
+  } else if (canWarmBootFromFile()) {
+    // 2. Check if we can warmboot from file
+    canWarmBoot = true;
+  } else if (FLAGS_recover_from_hw_switch) {
+    // 3. Check if we can warmboot from thrift
+    canWarmBoot =
+        canWarmBootFromThrift(isRunModeMultiSwitch, hwSwitchThriftClientTable);
+    warmBootFromThrift = canWarmBoot;
+  }
+
+  XLOG(DBG1) << "Will attempt " << (canWarmBoot ? "WARM" : "COLD") << " boot"
+             << (canWarmBoot ? (std::string("from") +
+                                (warmBootFromThrift ? " thrift" : " file"))
+                             : "");
+  // Notify Async logger about the boot type
+  AsyncLogger::setBootType(canWarmBoot);
+  return canWarmBoot;
 }
 
 void SwSwitchWarmBootHelper::storeWarmBootState(
     const state::WarmbootState& switchStateThrift) {
-  if (!asicTable_->isFeatureSupportedOnAllAsic(HwAsic::Feature::WARMBOOT)) {
+  if (!asicCanWarmBoot_) {
     XLOG(WARNING)
         << "skip saving warm boot state, as warm boot not supported for network hardware";
     return;
@@ -73,32 +115,6 @@ void SwSwitchWarmBootHelper::logBoot(
     const std::string& sdkVersion,
     const std::string& agentVersion) {
   logBootHistory(directoryUtil_, bootType, sdkVersion, agentVersion);
-}
-
-std::pair<std::shared_ptr<SwitchState>, std::unique_ptr<RoutingInformationBase>>
-SwSwitchWarmBootHelper::reconstructStateAndRib(
-    std::optional<state::WarmbootState> warmBootState,
-    bool hasL3) {
-  std::unique_ptr<RoutingInformationBase> rib{};
-  std::shared_ptr<SwitchState> state{nullptr};
-  if (warmBootState.has_value()) {
-    /* warm boot: reconstruct from warm boot state */
-    state = SwitchState::fromThrift(*(warmBootState->swSwitchState()));
-    rib = RoutingInformationBase::fromThrift(
-        *(warmBootState->routeTables()),
-        state->getFibsInfoMap(),
-        state->getLabelForwardingInformationBase());
-  } else {
-    state = SwitchState::fromThrift(state::SwitchState{});
-    /* cold boot, setup default rib */
-    std::map<int32_t, state::RouteTableFields> routeTables{};
-    if (hasL3) {
-      /* at least one switch supports route programming, setup default vrf */
-      routeTables.emplace(kDefaultVrf, state::RouteTableFields{});
-    }
-    rib = RoutingInformationBase::fromThrift(routeTables);
-  }
-  return std::make_pair(state, std::move(rib));
 }
 
 } // namespace facebook::fboss
