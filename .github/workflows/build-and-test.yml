@@ -43,6 +43,13 @@ jobs:
           clean: false
           ref: ${{ inputs.ref || github.ref }}
 
+      - name: Fetch PR history for sync merge detection
+        if: github.event_name == 'pull_request'
+        run: |
+          # Fetch enough history to find sync merge commits (PR commits + buffer)
+          DEPTH=$(( ${{ github.event.pull_request.commits }} + 10 ))
+          git fetch --deepen=$DEPTH --no-tags origin ${{ github.head_ref }}
+
       - name: Clean workspace
         run: |
           sudo git clean -ffdxe .build_dir
@@ -89,13 +96,29 @@ jobs:
       - name: Run clang-tidy
         if: github.event_name == 'pull_request'
         run: |
-          # Fetch base branch to enable diff comparison
-          git fetch origin ${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }} --depth=100
           echo "Current HEAD: $(git rev-parse HEAD)"
-          echo "Base ref: origin/${{ github.base_ref }} = $(git rev-parse origin/${{ github.base_ref }})"
-          # Get changed C++ files in this PR (compared to base branch)
-          # Use two-dot diff since we have shallow clones
-          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}..HEAD -- '*.cpp' '*.h' 2>/dev/null | grep -E '^fboss/' || true)
+
+          # For sync PRs, find the merge commit and use it as base (so we only lint our changes, not upstream)
+          # Search only within the PR's commits (last N commits where N = PR commit count)
+          PR_COMMITS=${{ github.event.pull_request.commits }}
+          echo "Searching for sync merge commits in last $PR_COMMITS commits"
+          echo "Merge commits in range:"
+          git log HEAD~${PR_COMMITS}..HEAD --merges --oneline || true
+          SYNC_MERGE_COMMIT=$(git log HEAD~${PR_COMMITS}..HEAD --merges --grep="^Sync with upstream stable commit" -1 --format="%H" 2>/dev/null || true)
+          if [[ -n "$SYNC_MERGE_COMMIT" ]]; then
+            echo "Detected sync PR with merge commit: $SYNC_MERGE_COMMIT"
+            BASE_REF="$SYNC_MERGE_COMMIT"
+          else
+            # For regular PRs, use HEAD~N as base (the commit before the first PR commit)
+            echo "Regular PR, using HEAD~$PR_COMMITS ($(git rev-parse HEAD~$PR_COMMITS)) as base"
+            BASE_REF="HEAD~${PR_COMMITS}"
+          fi
+
+          # Save BASE_REF for reviewdog step
+          echo "$BASE_REF" > /tmp/clang_tidy_base_ref.txt
+
+          # Get changed C++ files in this PR (compared to base ref)
+          CHANGED_FILES=$(git diff --name-only "$BASE_REF"..HEAD -- '*.cpp' '*.h' 2>/dev/null | grep -E '^fboss/' || true)
           echo "Found files: $CHANGED_FILES"
           if [[ -z "$CHANGED_FILES" ]]; then
             echo "No C++ files changed in this PR, skipping clang-tidy"
@@ -114,8 +137,11 @@ jobs:
               echo "ERROR: compile_commands.json not found"
               exit 1
             fi
-            # Run clang-tidy on all changed files
-            cat /tmp/changed_files.txt | xargs -P$(nproc) -I{} clang-tidy -p "$BUILD_DIR" {} 2>&1
+            # clang-tidy can be memory hungry, make sure it gets killed if OOM.
+            echo 1000 >/proc/self/oom_score_adj
+            # Run clang-tidy on all changed files (use ~2/3 of cores to avoid OOM)
+            JOBS=$(($(nproc) * 2 / 3 + 1))
+            cat /tmp/changed_files.txt | xargs -P$JOBS -I{} clang-tidy -p "$BUILD_DIR" {} 2>&1
           ' | tee /tmp/clang-tidy-output.txt
           # Post-process clang-tidy output:
           # - Strip container path prefix so reviewdog can find files
@@ -141,6 +167,7 @@ jobs:
             echo "No clang-tidy output file found, skipping reviewdog"
             exit 0
           fi
+          BASE_REF=$(cat /tmp/clang_tidy_base_ref.txt 2>/dev/null || echo "origin/${{ github.base_ref }}")
           cat /tmp/clang-tidy-output.txt | \
             reviewdog \
               -efm="%f:%l:%c: %tarning: %m" \
@@ -149,7 +176,7 @@ jobs:
               -reporter=github-pr-review \
               -filter-mode=diff_context \
               -fail-level=error \
-              -diff="git diff origin/${{ github.base_ref }}..HEAD"
+              -diff="git diff $BASE_REF..HEAD"
 
       - name: Run unit tests
         id: run-tests

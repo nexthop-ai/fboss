@@ -10,8 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
+      - name: Fetch PR history for sync merge detection
+        if: github.event_name == 'pull_request'
+        run: |
+          # Fetch enough history to find sync merge commits (PR commits + buffer)
+          DEPTH=$(( ${{ github.event.pull_request.commits }} + 10 ))
+          git fetch --deepen=$DEPTH --no-tags origin ${{ github.head_ref }}
       - uses: actions/setup-python@v6
         with:
           python-version: "3.9" # pre-commit-hooks requires Python 3.9+
@@ -20,7 +24,12 @@ jobs:
         run: |
           # For sync PRs, find the merge commit titled "Sync with upstream stable commit <sha>"
           # and use it as the base ref (so we only lint commits after the merge)
-          SYNC_MERGE_COMMIT=$(git log --oneline --merges --grep="^Sync with upstream stable commit" -1 --format="%H" 2>/dev/null || true)
+          # Search only within the PR's commits (last N commits where N = PR commit count)
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            SYNC_MERGE_COMMIT=$(git log HEAD~${{ github.event.pull_request.commits }}..HEAD --merges --grep="^Sync with upstream stable commit" -1 --format="%H" 2>/dev/null || true)
+          else
+            SYNC_MERGE_COMMIT=""
+          fi
           if [ -n "$SYNC_MERGE_COMMIT" ]; then
             echo "Detected sync PR with merge commit: $SYNC_MERGE_COMMIT"
             echo "base_ref=$SYNC_MERGE_COMMIT" >> $GITHUB_OUTPUT
