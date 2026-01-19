@@ -44,7 +44,7 @@ jobs:
           ref: ${{ inputs.ref || github.ref }}
 
       - name: Fetch PR history for sync merge detection
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.event.pull_request.commits > 1
         run: |
           # Fetch enough history to find sync merge commits (PR commits + buffer)
           DEPTH=$(( ${{ github.event.pull_request.commits }} + 10 ))
