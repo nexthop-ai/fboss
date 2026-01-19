@@ -96,6 +96,9 @@ jobs:
     needs: sync-upstream
     if: needs.sync-upstream.outputs.push_direct == 'false' && needs.sync-upstream.outputs.sync_branch != ''
     runs-on: ubuntu-latest
+    outputs:
+      pr_created: ${{ steps.create-pr.outputs.pr_created }}
+      pr_url: ${{ steps.create-pr.outputs.pr_url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -128,6 +131,7 @@ jobs:
           fi
 
       - name: Create PR
+        id: create-pr
         if: steps.check-existing-pr.outputs.existing_pr == ''
         env:
           GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
@@ -143,10 +147,153 @@ jobs:
 
           Please resolve these conflicts and merge when ready."
 
-          gh pr create \
+          PR_URL=$(gh pr create \
             --title "[sync] Sync with upstream stable commit" \
             --body "$PR_BODY" \
             --base main \
             --head ${{ needs.sync-upstream.outputs.sync_branch }} \
             --assignee benoit-nexthop \
-            --draft
+            --draft)
+          echo "PR created: $PR_URL"
+
+          echo "pr_created=true" >> "$GITHUB_OUTPUT"
+          echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+
+  # Slack notification: sync merged successfully
+  notify-sync-success:
+    name: Notify Slack (Success)
+    needs: [sync-upstream, push-to-main]
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          webhook-type: incoming-webhook
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          payload: |
+            {
+              "text": ":white_check_mark: Upstream Sync Successful",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": ":white_check_mark: Automated Upstream Sync Successful"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Successfully synced and merged upstream commit \`${{ needs.sync-upstream.outputs.stable_commit }}\` to main."
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow Run>"
+                  }
+                }
+              ]
+            }
+
+  # Slack notification: build/test failed
+  notify-build-failure:
+    name: Notify Slack (Build Failed)
+    needs: [sync-upstream, build-and-test]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Collect test failures
+        id: check-failures
+        run: |
+          FAILED_TESTS="${{ needs.build-and-test.outputs.failed_tests }}"
+          FAILED_COUNT="${{ needs.build-and-test.outputs.failed_test_count }}"
+
+          # Build test failure details (show max 5 inline)
+          test_details=""
+          shown=0
+          if [[ -n "$FAILED_TESTS" ]]; then
+            test_details="*Failed tests (${FAILED_COUNT:-?}):* "
+            while IFS= read -r test && [[ $shown -lt 5 ]]; do
+              [[ -n "$test" ]] && test_details+="\`$test\` " && ((shown++))
+            done <<< "$FAILED_TESTS"
+            [[ "${FAILED_COUNT:-0}" -gt 5 ]] && test_details+="_(+$((FAILED_COUNT - 5)) more)_"
+          fi
+
+          # If no test details, might be a build failure
+          if [[ -z "$test_details" ]]; then
+            test_details="Build or infrastructure failure (no test results available)"
+          fi
+
+          echo "test_details<<EOF" >> "$GITHUB_OUTPUT"
+          echo -e "$test_details" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          webhook-type: incoming-webhook
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          payload: |
+            {
+              "text": ":x: Upstream Sync Build/Test Failed",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": ":x: Upstream Sync Build/Test Failed"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Build/test failed for upstream commit \`${{ needs.sync-upstream.outputs.stable_commit }}\`: ${{ steps.check-failures.outputs.test_details }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow Run>"
+                  }
+                }
+              ]
+            }
+
+  # Slack notification: PR created for conflict resolution
+  notify-pr-created:
+    name: Notify Slack (PR Created)
+    needs: [sync-upstream, create-pr]
+    if: needs.create-pr.outputs.pr_created == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          webhook-type: incoming-webhook
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          payload: |
+            {
+              "text": ":warning: Upstream Sync Needs Conflict Resolution",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": ":warning: Upstream Sync Needs Conflict Resolution"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "A new <${{ needs.create-pr.outputs.pr_url }}|sync PR> has been created and requires manual conflict resolution."
+                  }
+                }
+              ]
+            }
