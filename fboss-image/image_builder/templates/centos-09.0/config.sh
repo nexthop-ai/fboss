@@ -181,6 +181,10 @@ echo "Copied all GRUB modules to /boot/grub2/x86_64-efi/ (root partition)"
 # 7. Enable systemd services
 echo "Enabling FBOSS systemd services..."
 systemctl enable platform_manager.service
+systemctl enable data_corral_service.service
+systemctl enable fan_service.service
+systemctl enable sensor_service.service
+systemctl enable fsdb.service
 
 # 8. Done! Cleanup, remember that we are chrooted on the rootfs
 echo "Removing kernel rpms from rootfs..."
