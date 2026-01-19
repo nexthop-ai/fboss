@@ -653,7 +653,7 @@ class TestRunner(abc.ABC):
                 return conf_file
         return conf_file
 
-    def _run_tests(self, tests_to_run, conf_file, args) -> tuple(list, list):
+    def _run_tests(self, tests_to_run, conf_file, args) -> tuple[list, list]:
         if args.sai_replayer_logging:
             if os.path.isdir(args.sai_replayer_logging) or os.path.isfile(
                 args.sai_replayer_logging
