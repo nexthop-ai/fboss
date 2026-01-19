@@ -19,6 +19,7 @@ on:
         required: false
         default: ""
         type: string
+
     outputs:
       failed_tests:
         description: "List of failed tests (up to 10)"
@@ -86,7 +87,10 @@ jobs:
 
       - name: Build FBOSS
         run: |
-          docker exec -e SAI_VERSION=${{ inputs.sai_version }} FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh
+          # Only install the final binaries for scheduled events (nightly builds).
+          # Other workflows don't need them and they're expensive to install.
+          target=${{ github.event_name == 'schedule' && 'install' || 'all' }}
+          docker exec -e SAI_VERSION=${{ inputs.sai_version }} FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh --cmake-target $target
 
       - name: Collect sccache statistics
         if: always()
