@@ -105,6 +105,11 @@ agent_benchmarks = {
         "sai_tx_slow_path_rate-sai_impl",
     ]
 }
+agent_benchmarks.update(
+    {
+        oss_dir / "hw_benchmark_tests": "share/hw_benchmark_tests",
+    }
+)
 
 platform_stack = {
     f"{build_dir}/{bin}": f"bin/{bin}"

@@ -191,6 +191,7 @@ SUB_CMD_QSFP = "qsfp"
 SUB_CMD_LINK = "link"
 SUB_CMD_SAI_AGENT = "sai_agent"
 SUB_CMD_CLI = "cli"
+SUB_CMD_BENCHMARK = "benchmark"
 SUB_ARG_AGENT_RUN_MODE = "--agent-run-mode"
 SUB_ARG_AGENT_RUN_MODE_MONO = "mono"
 SUB_ARG_AGENT_RUN_MODE_MULTI = "multi_switch"
@@ -232,6 +233,27 @@ GTEST_NAME_PREFIX = "[ RUN      ] "
 FEATURE_LIST_PREFIX = "Feature List: "
 
 DEFAULT_TEST_RUN_TIMEOUT_IN_SECOND = 1200
+
+
+def _load_from_file(file_path):
+    """Load list from a configuration file, skipping comment lines.
+
+    Args:
+        file_path: Path to the configuration file
+
+    Returns:
+        List of strings in the file
+    """
+    file_lines = []
+    if os.path.exists(file_path):
+        with open(file_path) as f:
+            file_lines = [
+                line_sanitized
+                for line in f
+                if (line_sanitized := line.strip())
+                and not line_sanitized.startswith("#")
+            ]
+    return file_lines
 
 
 def _check_working_dir():
@@ -504,13 +526,8 @@ class TestRunner(abc.ABC):
         test_names = []
         if args.filter or args.filter_file:
             if args.filter_file:
-                with open(args.filter_file) as file:
-                    gtest_regexes = [
-                        line.strip()
-                        for line in file
-                        if line.strip() and not line.strip().startswith("#")
-                    ]
-                    test_names = self._list_tests_to_run(":".join(gtest_regexes), False)
+                gtest_regexes = _load_from_file(args.filter_file)
+                test_names = self._list_tests_to_run(":".join(gtest_regexes), False)
             elif args.filter:
                 test_names = self._list_tests_to_run(args.filter, False)
         else:
@@ -1544,6 +1561,246 @@ class CliTestRunner:
             sys.exit(1)
 
 
+class BenchmarkTestRunner:
+    """
+    Runner for benchmark test binaries.
+
+    Unlike gtest-based test runners, benchmark tests are standalone performance
+    measurement binaries that output metrics like throughput, latency, and speed.
+    """
+
+    # Benchmark test suite configuration file paths
+    BENCHMARK_CONFIG_DIR = "./share/hw_benchmark_tests"
+    T1_BENCHMARKS_CONF = os.path.join(BENCHMARK_CONFIG_DIR, "t1_benchmarks.conf")
+    T2_BENCHMARKS_CONF = os.path.join(BENCHMARK_CONFIG_DIR, "t2_benchmarks.conf")
+    ALL_BENCHMARKS_CONF = os.path.join(BENCHMARK_CONFIG_DIR, "all_benchmarks.conf")
+
+    def add_subcommand_arguments(self, sub_parser: ArgumentParser):
+        """Add benchmark-specific command line arguments"""
+        sub_parser.add_argument(
+            OPT_ARG_FILTER_FILE,
+            type=str,
+            help=(
+                "File containing list of benchmark binaries to run (one per line). "
+                "If not specified, all benchmarks from all_benchmarks.conf will be run."
+            ),
+            default=None,
+        )
+        sub_parser.add_argument(
+            OPT_ARG_PLATFORM_MAPPING_OVERRIDE_PATH,
+            nargs="?",
+            type=str,
+            help="A file path to a platform mapping JSON file to be used.",
+            default=None,
+        )
+
+    def _parse_benchmark_output(self, binary_name, stdout):
+        """Parse benchmark output to extract metrics.
+
+        Returns a dict with:
+        - benchmark_binary_name: str
+        - benchmark_test_name: str
+        - test_status: str (OK, FAILED, or TIMEOUT)
+        - relative_time_per_iter: str (includes time unit)
+        - iters_per_sec: str (includes possible numeric suffix)
+        - cpu_time_usec: str
+        - max_rss: str
+        """
+        import re
+
+        result = {
+            "benchmark_binary_name": binary_name,
+            "benchmark_test_name": "",
+            "test_status": "FAILED",
+            "relative_time_per_iter": "",
+            "iters_per_sec": "",
+            "cpu_time_usec": "",
+            "max_rss": "",
+        }
+
+        # Look for the benchmark name line (e.g., "RibResolutionBenchmark                                       1.46s   684.78m")
+        # Pattern: benchmark name followed by time and rate
+        benchmark_line_pattern = (
+            r"^([A-Za-z0-9_]+)\s+(\d+\.?\d*[a-z]?s)\s+(\d+\.?\d*[a-z]?)$"
+        )
+
+        # Look for JSON output with cpu_time_usec and max_rss (multiline pattern)
+        json_pattern = r'\{[^}]*"cpu_time_usec":\s*(\d+)[^}]*"max_rss":\s*(\d+)[^}]*\}'
+
+        found_benchmark_line = False
+        found_json = False
+
+        # Parse multiline benchmark result line
+        match = re.search(benchmark_line_pattern, stdout, re.MULTILINE)
+        if match:
+            result["benchmark_test_name"] = match.group(1)
+            result["relative_time_per_iter"] = match.group(2)
+            result["iters_per_sec"] = match.group(3)
+            found_benchmark_line = True
+
+        # Parse JSON output (can be multiline)
+        match = re.search(json_pattern, stdout, re.DOTALL)
+        if match:
+            result["cpu_time_usec"] = match.group(1)
+            result["max_rss"] = match.group(2)
+            found_json = True
+
+        # Only mark as OK if we found both the benchmark line and JSON
+        if found_benchmark_line and found_json:
+            result["test_status"] = "OK"
+
+        return result
+
+    def _run_benchmark_binary(self, binary_name, args):
+        """Run a single benchmark binary and return parsed results"""
+        print(f"########## Running benchmark binary: {binary_name}", flush=True)
+
+        # Build command to run the benchmark
+        run_cmd = [binary_name]
+
+        # Add config and other args if provided
+        if args.config:
+            run_cmd.extend(["--config", args.config, "--mgmt-if", args.mgmt_if])
+        if args.platform_mapping_override_path is not None:
+            run_cmd.extend(
+                [
+                    "--platform_mapping_override_path",
+                    args.platform_mapping_override_path,
+                ]
+            )
+        if args.fruid_path is not None:
+            run_cmd.extend(["--fruid_filepath=" + args.fruid_path])
+
+        # Add logging flags
+        run_cmd.extend(["--enable_sai_log", args.sai_logging])
+        run_cmd.extend(["--logging", args.fboss_logging])
+
+        print(f"Running command: {' '.join(run_cmd)}", flush=True)
+
+        try:
+            # Run the benchmark binary
+            result = subprocess.run(
+                run_cmd,
+                timeout=args.test_run_timeout,
+                capture_output=True,
+                text=True,
+            )
+
+            print(f"########## Benchmark output for {binary_name}:")
+            print(result.stdout)
+            if result.stderr:
+                print(f"########## Benchmark stderr for {binary_name}:")
+                print(result.stderr)
+
+            if result.returncode != 0:
+                print(
+                    f"########## Benchmark {binary_name} failed with return code {result.returncode}"
+                )
+                # Parse output even on failure to get partial results
+            else:
+                print(f"########## Benchmark {binary_name} completed")
+            return self._parse_benchmark_output(binary_name, result.stdout)
+
+        except subprocess.TimeoutExpired as e:
+            print(
+                f"########## Benchmark {binary_name} timed out after {args.test_run_timeout} seconds"
+            )
+            # Return timed out result with no metrics
+            return {
+                "benchmark_binary_name": binary_name,
+                "benchmark_test_name": "",
+                "test_status": "TIMEOUT",
+                "relative_time_per_iter": "",
+                "iters_per_sec": "",
+                "cpu_time_usec": "",
+                "max_rss": "",
+            }
+        except Exception as e:
+            print(f"########## Error running benchmark {binary_name}: {str(e)}")
+            # Return failed result with no metrics
+            return {
+                "benchmark_binary_name": binary_name,
+                "benchmark_test_name": "",
+                "test_status": "FAILED",
+                "relative_time_per_iter": "",
+                "iters_per_sec": "",
+                "cpu_time_usec": "",
+                "max_rss": "",
+            }
+
+    def run_test(self, args):
+        """Run benchmark test binaries"""
+        print("Running benchmark tests...")
+
+        # Determine which benchmarks to run
+        benchmark_file = args.filter_file or self.ALL_BENCHMARKS_CONF
+
+        if not os.path.exists(benchmark_file):
+            print(f"Error: Benchmark configuration file not found: {benchmark_file}")
+            return
+
+        benchmarks_to_run = _load_from_file(benchmark_file)
+
+        if not benchmarks_to_run:
+            print(f"Error: No benchmarks found in {benchmark_file}")
+            return
+
+        print(f"Running benchmarks from {benchmark_file}")
+        print(f"Total benchmarks to run: {len(benchmarks_to_run)}")
+
+        # Run each benchmark and collect detailed results
+        results = []
+        for benchmark in benchmarks_to_run:
+            benchmark_result = self._run_benchmark_binary(benchmark, args)
+            results.append(benchmark_result)
+
+        # Write results to CSV file
+        import csv
+        from datetime import datetime
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        csv_filename = f"benchmark_results_{timestamp}.csv"
+
+        with open(csv_filename, "w", newline="") as csvfile:
+            fieldnames = [
+                "benchmark_binary_name",
+                "benchmark_test_name",
+                "test_status",
+                "relative_time_per_iter",
+                "iters_per_sec",
+                "cpu_time_usec",
+                "max_rss",
+            ]
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+            writer.writeheader()
+            for result in results:
+                writer.writerow(result)
+
+        print(f"\n########## Benchmark results written to: {csv_filename}")
+
+        # Print summary
+        print("\n" + "=" * 80)
+        print("BENCHMARK RESULTS SUMMARY")
+        print("=" * 80)
+        for result in results:
+            print(f"{result['benchmark_binary_name']}: {result['test_status']}")
+        print("=" * 80)
+
+        # Count results
+        ok = sum(1 for r in results if r["test_status"] == "OK")
+        failed = sum(1 for r in results if r["test_status"] == "FAILED")
+        timed_out = sum(1 for r in results if r["test_status"] == "TIMEOUT")
+        print(f"\nTotal: {len(results)} benchmarks")
+        print(f"OK: {ok}")
+        print(f"Failed: {failed}")
+        print(f"Timed Out: {timed_out}")
+
+        # Exit with error if any benchmarks failed or timed out
+        if failed > 0 or timed_out > 0:
+            sys.exit(1)
+
+
 if __name__ == "__main__":
     _check_working_dir()
     # Set env variables for FBOSS
@@ -1746,6 +2003,14 @@ if __name__ == "__main__":
     )
     cli_test_runner = CliTestRunner()
     cli_test_parser.set_defaults(func=cli_test_runner.run_test)
+
+    # Add subparser for Benchmark tests
+    benchmark_test_parser = subparsers.add_parser(
+        SUB_CMD_BENCHMARK, help="run benchmark tests"
+    )
+    benchmark_test_runner = BenchmarkTestRunner()
+    benchmark_test_parser.set_defaults(func=benchmark_test_runner.run_test)
+    benchmark_test_runner.add_subcommand_arguments(benchmark_test_parser)
 
     # Parse the args
     args = ap.parse_known_args()
