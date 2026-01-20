@@ -21,8 +21,8 @@
           "pmUnitScopedName": "SCM_IOB",
           "vendorId": "0x10ee",
           "deviceId": "0x7011",
-          "subSystemVendorId": "0x10ee",
-          "subSystemDeviceId": "0x0007",
+          "subSystemVendorId": "0x20a4",
+          "subSystemDeviceId": "0x0001",
           "i2cAdapterConfigs": [
             {
               "fpgaIpBlockConfig": {
@@ -1342,6 +1342,14 @@
   "bspKmodsRpmVersion": "1.0.0-1",
   "requiredKmodsToLoad": [
     "i2c_i801",
+    "i2c_mux",
+    "fbiob_pci",
+    "nh_fpga_i2c",
+    "nh_fpga_mux",
+    "nh_fpga_info",
+    "nh_fpga_fan",
+    "nh_fpga_led",
+    "nh_xcvr_ctrl",
     "tmp464",
     "lm90",
     "adm1266",
