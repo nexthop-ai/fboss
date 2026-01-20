@@ -154,7 +154,7 @@ RUN if [ "$USERNAME" != "root" ] && [ "$USER_UID" != "0" ]; then \
     fi
 
 # Download and install our own patched sccache
-RUN curl -L https://github.com/timn-nexthop/sccache/releases/download/v5-worker-busy/sccache-0.12.0-x86_64-unknown-linux-musl.zst | \
+RUN curl -L https://github.com/nexthop-ai/sccache/releases/download/v6-retry-more/sccache-0.12.0-x86_64-unknown-linux-musl.zst | \
     zstdmt -d > /usr/local/bin/sccache && \
     chmod +x /usr/local/bin/sccache
 
