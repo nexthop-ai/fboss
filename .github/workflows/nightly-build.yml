@@ -22,7 +22,7 @@ jobs:
       use_clang: true
 
   notify-slack-on-failure:
-    runs-on: ubuntu-latest
+    runs-on: cloudstack-ubuntu24-small
     needs: [build-and-test-gcc, build-and-test-clang]
     if: failure()
     steps:

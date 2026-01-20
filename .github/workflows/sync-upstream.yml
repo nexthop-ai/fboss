@@ -11,7 +11,7 @@ on:
 jobs:
   sync-upstream:
     name: Sync with upstream stable commits
-    runs-on: ubuntu-latest
+    runs-on: cloudstack-ubuntu24-small
     outputs:
       sync_branch: ${{ steps.sync.outputs.sync_branch }}
       stable_commit: ${{ steps.sync.outputs.stable_commit }}
@@ -55,7 +55,7 @@ jobs:
     name: Push to main
     needs: [sync-upstream, build-and-test]
     if: needs.sync-upstream.outputs.push_direct == 'true'
-    runs-on: ubuntu-latest
+    runs-on: cloudstack-ubuntu24-small
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -95,7 +95,7 @@ jobs:
     name: Create PR for conflicts
     needs: sync-upstream
     if: needs.sync-upstream.outputs.push_direct == 'false' && needs.sync-upstream.outputs.sync_branch != ''
-    runs-on: ubuntu-latest
+    runs-on: cloudstack-ubuntu24-small
     outputs:
       pr_created: ${{ steps.create-pr.outputs.pr_created }}
       pr_url: ${{ steps.create-pr.outputs.pr_url }}
@@ -164,7 +164,7 @@ jobs:
     name: Notify Slack (Success)
     needs: [sync-upstream, push-to-main]
     if: success()
-    runs-on: ubuntu-latest
+    runs-on: cloudstack-ubuntu24-small
     steps:
       - name: Send Slack notification
         uses: slackapi/slack-github-action@v2.1.1
@@ -204,7 +204,7 @@ jobs:
     name: Notify Slack (Build Failed)
     needs: [sync-upstream, build-and-test]
     if: failure()
-    runs-on: ubuntu-latest
+    runs-on: cloudstack-ubuntu24-small
     steps:
       - name: Collect test failures
         id: check-failures
@@ -270,7 +270,7 @@ jobs:
     name: Notify Slack (PR Created)
     needs: [sync-upstream, create-pr]
     if: needs.create-pr.outputs.pr_created == 'true'
-    runs-on: ubuntu-latest
+    runs-on: cloudstack-ubuntu24-small
     steps:
       - name: Send Slack notification
         uses: slackapi/slack-github-action@v2.1.1
