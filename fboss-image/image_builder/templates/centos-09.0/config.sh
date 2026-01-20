@@ -6,15 +6,92 @@ echo "--- Executing $0 ---"
 sed -i 's/^PRETTY_NAME=.*/PRETTY_NAME="FBOSS Distro Image"/' /usr/lib/os-release
 sed -i 's/^NAME=.*/NAME="FBOSS Distro Image"/' /usr/lib/os-release
 
-# 1. Install our custom kernel RPMs
+# 1. Process component artifacts and install RPMs
 #
-# On purpose we don't install any kernel rpms as part of
-# config.xml as that picks the default that comes with
-# the CentOS Stream 9 and is very old (5.14). We install
-# kernel rpm present in /repos directory. This will either
-# be the LTS 6.12 or whatever the user specified.
-echo "Installing kernel rpms..."
-dnf install --disablerepo=* -y /repos/*.rpm
+# Component artifacts are copied to /repos/<component_name>/
+# Each component is processed in isolation to avoid conflicts
+
+process_kernel() {
+  local component_dir=$1
+  local component_tmp=$2
+
+  echo "  Processing kernel component..."
+
+  # Discover kernel tarballs (nullglob is enabled in the caller loop)
+  local tarballs=("$component_dir"/*.tar*)
+
+  if [ ${#tarballs[@]} -eq 0 ]; then
+    echo "  No kernel tarballs found in $component_dir, skipping kernel install"
+    return 0
+  fi
+
+  if [ ${#tarballs[@]} -gt 1 ]; then
+    echo "ERROR: Found multiple kernel tarballs in $component_dir:"
+    for tb in "${tarballs[@]}"; do
+      echo "  - $(basename "$tb")"
+    done
+    echo "Only a single kernel tarball is supported"
+    return 1
+  fi
+
+  local tarball="${tarballs[0]}"
+
+  echo "  Extracting $(basename "$tarball") (excluding devel/header RPMs)..."
+  tar -xf "$tarball" -C "$component_tmp" \
+    --exclude='*-devel-*.rpm' \
+    --exclude='*-headers-*.rpm'
+
+  # Copy any unarchived RPMs that may already be in the component directory
+  if ls "$component_dir"/*.rpm >/dev/null 2>&1; then
+    cp "$component_dir"/*.rpm "$component_tmp/"
+  fi
+
+  # Install RPMs
+  if ls "$component_tmp"/*.rpm >/dev/null 2>&1; then
+    echo "  Installing kernel RPMs..."
+    dnf install --disablerepo=* -y "$component_tmp"/*.rpm
+  else
+    echo "  No RPMs found for kernel"
+  fi
+
+  return 0
+}
+
+echo "Processing component artifacts..."
+
+shopt -s nullglob
+for component_dir in /repos/*; do
+  [ -d "$component_dir" ] || continue
+  component_name=$(basename "$component_dir")
+
+  handler_rc=0
+
+  case "$component_name" in
+  kernel)
+    echo "Processing component: $component_name"
+
+    # Create temporary directory for this component
+    component_tmp=$(mktemp -d)
+
+    process_kernel "$component_dir" "$component_tmp"
+    handler_rc=$?
+
+    # Clean up temp directory
+    rm -rf "$component_tmp"
+    ;;
+
+  *)
+    echo "Skipping component: $component_name (no handler defined)"
+    ;;
+  esac
+
+  # Exit if handler failed
+  if [ $handler_rc -ne 0 ]; then
+    echo "ERROR: Failed to process $component_name"
+    exit 1
+  fi
+done
+shopt -u nullglob
 
 # 2. Define paths
 # Detect the installed kernel version from the boot directory
@@ -186,10 +263,9 @@ systemctl enable fan_service.service
 systemctl enable sensor_service.service
 systemctl enable fsdb.service
 
-# 8. Done! Cleanup, remember that we are chrooted on the rootfs
-echo "Removing kernel rpms from rootfs..."
-rm -f /repos/*.rpm
-rmdir /repos
+# 8. Done! Cleanup and install additional packages
+echo "Cleaning up /repos directory..."
+rm -rf /repos
 
 JQ_INSTALLED=false
 # Ensure jq is installed (needed to parse JSON)

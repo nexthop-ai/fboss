@@ -92,7 +92,7 @@ class ComponentBuilder:
             component_data: Component data dict from manifest
             manifest_dir: Path to the manifest directory
             store: ArtifactStore instance
-            artifact_pattern: Glob pattern for finding build artifacts (e.g., "kernel-*.rpms.tar.gz")
+            artifact_pattern: Glob pattern for finding build artifacts (e.g., "kernel-*.rpms.tar.zst")
                              If None, component cannot use execute mode
             dependency_artifacts: Optional dict mapping dependency names to their artifact paths
             artifact_key_salt: Salt added to artifact store key to differentiate variants

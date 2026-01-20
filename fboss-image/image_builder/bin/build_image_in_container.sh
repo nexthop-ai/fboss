@@ -2,6 +2,13 @@
 
 # Script that builds a PXE and USB bootable ISO an image using kiwi-ng-3.
 
+# For hardlinking component artifacts into the kiwi description tree we need
+# both source and destination to live on the same filesystem. The kiwi
+# description lives under /image_builder, so we expose the deps staging
+# directory there and create a /deps symlink pointing into it. The
+# /deps mount remains available for reading.
+ln -sfn /image_builder/deps_staging /deps
+
 # Get the full path to the workspace root directory where everything lives
 WSROOT=$(cd "$(dirname "$0")"/.. && pwd)
 
@@ -25,9 +32,8 @@ KIWI_DEBUG=""
 AFTER_PKGS_INSTALL_FILE=""
 AFTER_PKGS_EXECUTE_FILE=""
 
-# User configurable variables (fboss tarfile and kernel rpm directory)
-FBOSS_TARFILE=""
-KERNEL_RPM_DIR="" # default: download LTS 6.12
+# User configurable variables
+DEPS_DIR="" # Component artifacts directory
 
 mkdir -p ${LOG_DIR}
 LOG_FILE="${LOG_DIR}/build_image_in_container.log"
@@ -37,8 +43,7 @@ help() {
   echo ""
   echo "Options:"
   echo ""
-  echo "  -f|--fboss-tarfile          Location of compressed FBOSS tar file to add to image"
-  echo "  -k|--kernel-rpm-dir         Directory containing kernel rpms to install (default: download LTS 6.12)"
+  echo "  --deps <dir>                Directory containing component artifacts (organized by component name)"
   echo "  -a|--after-pkgs-install     JSON File (in templates/centos-09.0 directory) containing additional packages to install to the image"
   echo "  -e|--after-pkgs-execute     JSON File (in templates/centos-09.0 directory) containing list of commands to execute after packages are installed"
   echo ""
@@ -140,13 +145,8 @@ build_onie_installer() {
 while [[ $# -gt 0 ]]; do
   case "$1" in
 
-  -f | --fboss-tarfile)
-    FBOSS_TARFILE=$2
-    shift 2
-    ;;
-
-  -k | --kernel-rpm-dir)
-    KERNEL_RPM_DIR=$2
+  --deps)
+    DEPS_DIR=$2
     shift 2
     ;;
 
@@ -195,17 +195,10 @@ dprint "Script launch cmdline: ${ORIGINAL_ARGS[*]}"
 dprint " ... logging all output to: ${LOG_FILE}"
 dprint " ... output directory: ${TARGET_DIR}"
 
-# Perform some sanity checks of user input
-if [ ! -d ${KERNEL_RPM_DIR} ]; then
-  dprint "ERROR: directory of kernel rpms: ${KERNEL_RPM_DIR} not accessible, exiting..."
+# Perform some sanity checks of user input when an explicit --deps is provided
+if [ -n "${DEPS_DIR}" ] && [ ! -d "${DEPS_DIR}" ]; then
+  dprint "ERROR: deps directory: ${DEPS_DIR} not accessible, exiting..."
   exit 1
-fi
-
-if [ -n "${FBOSS_TARFILE}" ]; then
-  if [ ! -f ${FBOSS_TARFILE} ]; then
-    dprint "ERROR: FBOSS tarfile: ${FBOSS_TARFILE} not accessible, exiting..."
-    exit 1
-  fi
 fi
 
 # Update the docker image
@@ -216,41 +209,19 @@ update_docker |& tee -a ${LOG_FILE}
 mkdir -p ${TARGET_DIR}
 chmod 777 ${TARGET_DIR}
 
-# If you place a tar file in the description directory, it will be automatically extracted and
-# overlayed on top of the root file system.  We use this to deploy FBOSS binaries that are generated
-# in a different build process.
 rm -f ${DESCRIPTION_DIR}/root.tar.gz # Remove any existing tar file
-if [ -n "${FBOSS_TARFILE}" ]; then
-  if [ -f "${FBOSS_TARFILE}" ]; then
-    dprint "Copying ${FBOSS_TARFILE} to ${DESCRIPTION_DIR}/root.tar.gz ..."
-    cp ${FBOSS_TARFILE} ${DESCRIPTION_DIR}/root.tar.gz
-  else
-    dprint "ERROR: ${FBOSS_TARFILE} does not exist, exiting..."
-    exit 1
-  fi
-fi
 
-# Create a directory to hold the kernel rpms
+# Hardlink component artifacts to root/repos for processing in config.sh. When
+# no explicit --deps is provided, use /deps (which resolves into the
+# /image_builder filesystem) so that cp -la does not cross mount boundaries.
 rm -rf ${DESCRIPTION_DIR}/root/repos
 mkdir -p ${DESCRIPTION_DIR}/root/repos
 
-# If the user specified a kernel rpm directory, copy the rpms from there.  Otherwise, download them
-if [ -z "${KERNEL_RPM_DIR}" ]; then
-  dprint "Downloading LTS kernel 6.12 rpms to ${DESCRIPTION_DIR}/root/repos..."
-  dnf copr enable kwizart/kernel-longterm-6.12 -y |& tee -a ${LOG_FILE}
-  dnf download --destdir=${DESCRIPTION_DIR}/root/repos kernel-longterm-core-* kernel-longterm-modules-core-* |& tee -a ${LOG_FILE}
-  if [ $? -ne 0 ]; then
-    dprint "ERROR: Failed to download LTS kernel rpms, check logfile for errors, exiting..."
-    exit 1
-  fi
-else
-  dprint "Copying kernel rpms to ${DESCRIPTION_DIR}/root/repos..."
-  for rpm_file in ${KERNEL_RPM_DIR}/*.rpm; do
-    if [ -f "$rpm_file" ]; then
-      dprint "   ... $(basename "$rpm_file")"
-      cp "$rpm_file" ${DESCRIPTION_DIR}/root/repos/
-    fi
-  done
+EFFECTIVE_DEPS_DIR="${DEPS_DIR:-/deps}"
+
+if [ -d "${EFFECTIVE_DEPS_DIR}" ] && [ -n "$(ls -A "${EFFECTIVE_DEPS_DIR}" 2>/dev/null)" ]; then
+  dprint "Hardlinking component artifacts from ${EFFECTIVE_DEPS_DIR} to ${DESCRIPTION_DIR}/root/repos..."
+  cp -al "${EFFECTIVE_DEPS_DIR}"/* "${DESCRIPTION_DIR}/root/repos/"
 fi
 
 dprint "Copying /etc/resolv.conf to ${DESCRIPTION_DIR}/root/etc/resolv.conf..."

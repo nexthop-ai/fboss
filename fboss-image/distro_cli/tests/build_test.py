@@ -48,7 +48,9 @@ class TestBuildCommand(unittest.TestCase):
             manifest_path = self.test_dir / "test-stub-component.json"
 
             args = argparse.Namespace(
-                manifest=str(manifest_path), components=["kernel"]
+                manifest=str(manifest_path),
+                components=["kernel"],
+                kiwi_ng_debug=False,
             )
 
             build_command(args)

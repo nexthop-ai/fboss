@@ -189,7 +189,7 @@ class TestDownloadHTTP(unittest.TestCase):
         cls.test_dir = Path(tempfile.mkdtemp())
 
         # Create a test file to serve
-        cls.test_file = cls.test_dir / "test_artifact.tar.gz"
+        cls.test_file = cls.test_dir / "test_artifact.tar.zst"
         cls.test_file.write_text("test artifact content from HTTP")
 
         # Start HTTP server (port=0 lets OS assign random available port)
@@ -224,7 +224,7 @@ class TestDownloadHTTP(unittest.TestCase):
 
     def test_download_http_url(self):
         """Test downloading from HTTP URL."""
-        url = self.http_server.get_url("test_artifact.tar.gz")
+        url = self.http_server.get_url("test_artifact.tar.zst")
 
         cache_hit, data_files, meta_files = download_artifact(
             url, self.manifest_dir, [], []
@@ -242,7 +242,7 @@ class TestDownloadHTTP(unittest.TestCase):
 
     def test_download_http_caching(self):
         """Test HTTP caching with ETag/Last-Modified."""
-        url = self.http_server.get_url("test_artifact.tar.gz")
+        url = self.http_server.get_url("test_artifact.tar.zst")
 
         # First download
         cache_hit1, data_files1, meta_files1 = download_artifact(

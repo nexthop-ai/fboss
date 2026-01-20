@@ -173,11 +173,44 @@ class ImageBuilder:
         image = Path(dist_formats[format_name])
         shutil.move(str(output), str(image))
 
+    def _stage_component_artifacts(self) -> Path:
+        """Stage component artifacts for container mounting.
+
+        Returns the *container* path where artifacts will be visible.
+        Artifacts are staged under image_builder_dir/deps_staging on the host,
+        which is exposed inside the container via the /image_builder bind mount.
+        This allows for hardlink operations (cp -la) within a single filesystem.
+        """
+        deps_tmpdir = self.image_builder_dir / "deps_staging"
+        deps_tmpdir.mkdir(parents=True, exist_ok=True)
+
+        if not self.component_artifacts:
+            raise BuildError("No component artifacts found; cannot build image.")
+
+        logger.info(f"Staging component artifacts in {deps_tmpdir}")
+
+        for component_name, artifact in self.component_artifacts.items():
+            if artifact is None:
+                continue
+
+            component_dir = deps_tmpdir / component_name
+            component_dir.mkdir(parents=True, exist_ok=True)
+
+            artifacts_to_copy = (
+                [artifact] if not isinstance(artifact, list) else artifact
+            )
+
+            for artifact_path in artifacts_to_copy:
+                dest_path = component_dir / artifact_path.name
+                shutil.copy2(artifact_path, dest_path)
+                logger.info(f"Staged {component_name}: {artifact_path.name}")
+
+        return Path("/image_builder/deps_staging")
+
     def _build_base_image(self):
         """Build the base OS image and create distribution artifacts."""
         logger.info("Starting base OS image build")
 
-        # Validate distribution formats are specified
         dist_formats = self.manifest.data.get("distribution_formats")
         if not dist_formats or not any(
             k in dist_formats for k in ["usb", "pxe", "onie"]
@@ -186,18 +219,18 @@ class ImageBuilder:
 
         logger.info(f"Using image builder: {self.image_builder_dir}")
 
-        # Ensure fboss_builder Docker image is available
         build_fboss_builder_image()
 
-        # Set up volume mounts for the container
-        # Mount /dev from host to allow loop device partition management
         volumes = {
             self.image_builder_dir: Path("/image_builder"),
             Path("/dev"): Path("/dev"),
         }
 
-        # Build command with appropriate flags based on distribution formats
-        command = ["/image_builder/bin/build_image_in_container.sh"]
+        self._stage_component_artifacts()
+
+        command = [
+            "/image_builder/bin/build_image_in_container.sh",
+        ]
 
         # Add flags for PXE/USB if either is requested
         if "usb" in dist_formats or "pxe" in dist_formats:
@@ -250,18 +283,27 @@ class ImageBuilder:
         )
 
         # Run the build script inside fboss_builder container
-        exit_code = run_container(
-            image=FBOSS_BUILDER_IMAGE, command=command, volumes=volumes, privileged=True
-        )
+        try:
+            exit_code = run_container(
+                image=FBOSS_BUILDER_IMAGE,
+                command=command,
+                volumes=volumes,
+                privileged=True,
+            )
 
-        if exit_code != 0:
-            raise BuildError(f"Base image build failed with exit code {exit_code}")
+            if exit_code != 0:
+                raise BuildError(f"Base image build failed with exit code {exit_code}")
 
-        self._move_distro_file("usb", "iso")
-        self._move_distro_file("pxe", "tar")
-        self._move_distro_file("onie", "bin")
+            self._move_distro_file("usb", "iso")
+            self._move_distro_file("pxe", "tar")
+            self._move_distro_file("onie", "bin")
 
-        logger.info("Finished base OS image build")
+            logger.info("Finished base OS image build")
+        finally:
+            deps_tmpdir = self.image_builder_dir / "deps_staging"
+            if deps_tmpdir.exists():
+                shutil.rmtree(deps_tmpdir)
+                logger.debug(f"Cleaned up temporary deps directory: {deps_tmpdir}")
 
     def _get_dependency_artifacts(self, component: str) -> dict[str, Path]:
         """Get artifacts for all dependencies of a component.
@@ -307,8 +349,7 @@ class ImageBuilder:
             # Check if dependency exists in manifest
             if not self.manifest.has_component(dep):
                 raise ComponentError(
-                    f"Component '{component}' depends on '{dep}', "
-                    f"but '{dep}' is not defined in the manifest"
+                    f"Component '{component}' depends on '{dep}', but '{dep}' is not defined in the manifest"
                 )
 
             # Build the dependency

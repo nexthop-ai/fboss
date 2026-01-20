@@ -11,6 +11,8 @@
 Unit tests for ImageBuilder class
 """
 
+import shutil
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -40,8 +42,15 @@ class TestImageBuilder(unittest.TestCase):
 
         self.builder = ImageBuilder(self.manifest)
 
+        # Create a temporary directory for kernel artifacts
+        self.kernel_artifacts_dir = Path(tempfile.mkdtemp(prefix="kernel-artifacts-"))
+
     def tearDown(self):
         """Clean up test fixtures"""
+        # Clean up kernel artifacts directory
+        if hasattr(self, "kernel_artifacts_dir") and self.kernel_artifacts_dir.exists():
+            shutil.rmtree(self.kernel_artifacts_dir)
+
         # Exit context managers in reverse order
         self._artifact_store_ctx.__exit__(None, None, None)
         self._tempdir_ctx.__exit__(None, None, None)
@@ -58,8 +67,10 @@ class TestImageBuilder(unittest.TestCase):
         self, mock_component_build, mock_build_image, mock_run_container
     ):
         """Test build_all method with mocked component builds"""
-        # Mock component builds to return fake artifact paths
-        mock_component_build.return_value = Path("/fake/artifact.tar.gz")
+        # Create a real kernel tarball in temp directory
+        kernel_artifact = self.kernel_artifacts_dir / "kernel.tar.zst"
+        kernel_artifact.touch()
+        mock_component_build.return_value = kernel_artifact
 
         # Mock successful container execution for base image build
         mock_run_container.return_value = 0
@@ -194,6 +205,111 @@ class TestImageBuilder(unittest.TestCase):
 
         # Component build should have been called once (for sai)
         mock_component_build.assert_called_once()
+
+    @patch("distro_cli.builder.image_builder.run_container")
+    @patch("distro_cli.builder.image_builder.build_fboss_builder_image")
+    @patch("distro_cli.builder.component.ComponentBuilder.build")
+    def test_kernel_rpms_extracted_and_mounted(
+        self, mock_component_build, mock_build_image, mock_run_container
+    ):
+        """Test that component artifacts are staged under deps_staging and passed via --deps"""
+        # Create a real kernel tarball in temp directory
+        kernel_artifact = self.kernel_artifacts_dir / "kernel-6.11.1.rpms.tar.zst"
+        kernel_artifact.touch()
+        mock_component_build.return_value = kernel_artifact
+
+        # Capture and verify staging during run_container call
+        captured_deps_dir = None
+
+        def capture_and_verify(*_, **__):
+            nonlocal captured_deps_dir
+
+            # On the host, artifacts should be staged under
+            # image_builder_dir/deps_staging/<component_name>/
+            deps_dir = self.builder.image_builder_dir / "deps_staging"
+            kernel_dir = deps_dir / "kernel"
+            assert kernel_dir.exists(), f"kernel directory not found in {deps_dir}"
+            kernel_files = list(kernel_dir.glob("kernel-*.rpms.tar.zst"))
+            assert len(kernel_files) == 1, "Kernel artifact not staged correctly"
+
+            captured_deps_dir = deps_dir
+            return 0
+
+        mock_run_container.side_effect = capture_and_verify
+
+        # Mock the _move_distro_file method to avoid file operations
+        with patch.object(self.builder, "_move_distro_file"):
+            self.builder.build_all()
+
+        # Verify run_container was called
+        mock_run_container.assert_called_once()
+
+        # Verify deps directory was staged
+        self.assertIsNotNone(captured_deps_dir, "Deps directory not staged")
+
+        # Verify the build command invokes the image builder script
+        command = mock_run_container.call_args.kwargs["command"]
+        self.assertIn("/image_builder/bin/build_image_in_container.sh", command)
+
+    @patch("distro_cli.builder.image_builder.run_container")
+    @patch("distro_cli.builder.image_builder.build_fboss_builder_image")
+    @patch("distro_cli.builder.component.ComponentBuilder.build")
+    def test_no_kernel_rpms_when_kernel_not_built(
+        self, mock_component_build, mock_build_image, mock_run_container
+    ):
+        """Test that deps directory is passed even when components produce no artifacts"""
+        mock_component_build.return_value = None
+
+        # Capture and verify during run_container call while deps_staging still exists
+        deps_checked = False
+
+        def capture_and_verify(*_, **__):
+            nonlocal deps_checked
+            deps_dir = self.builder.image_builder_dir / "deps_staging"
+            assert deps_dir.exists(), "deps_staging directory should exist during build"
+            deps_checked = True
+            return 0
+
+        mock_run_container.side_effect = capture_and_verify
+
+        with patch.object(self.builder, "_move_distro_file"):
+            self.builder.build_all()
+
+        mock_run_container.assert_called_once()
+        self.assertTrue(
+            deps_checked, "deps_staging directory was not checked during build"
+        )
+
+        command = mock_run_container.call_args.kwargs["command"]
+        self.assertIn("/image_builder/bin/build_image_in_container.sh", command)
+
+    @patch("distro_cli.builder.image_builder.run_container")
+    @patch("distro_cli.builder.image_builder.build_fboss_builder_image")
+    @patch("distro_cli.builder.component.ComponentBuilder.build")
+    def test_kernel_artifact_staging(
+        self, mock_component_build, mock_build_image, mock_run_container
+    ):
+        """Test that kernel artifacts are properly staged in tmpdir"""
+        # Create a kernel tarball
+        kernel_artifact = self.kernel_artifacts_dir / "kernel-6.11.1.rpms.tar.zst"
+        kernel_artifact.touch()
+        mock_component_build.return_value = kernel_artifact
+
+        # Capture and verify during run_container call
+        def capture_and_verify(*_, **__):
+            deps_dir = self.builder.image_builder_dir / "deps_staging"
+            kernel_staged = deps_dir / "kernel" / "kernel-6.11.1.rpms.tar.zst"
+            assert kernel_staged.exists(), "Kernel artifact not staged in deps_staging"
+            return 0
+
+        mock_run_container.side_effect = capture_and_verify
+
+        # Mock the _move_distro_file method to avoid file operations
+        with patch.object(self.builder, "_move_distro_file"):
+            self.builder.build_all()
+
+        # Verify run_container was called
+        mock_run_container.assert_called_once()
 
 
 if __name__ == "__main__":
