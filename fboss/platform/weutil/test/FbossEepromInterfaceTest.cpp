@@ -1,6 +1,5 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
-#include <fmt/format.h>
 #include <gtest/gtest.h>
 
 #include <folly/FileUtil.h>
@@ -16,7 +15,7 @@ using EepromData = std::vector<uint8_t>;
 
 // Based on the Spec for V5 EEPROM:
 // https://github.com/facebook/fboss/blob/main/fboss/docs/meta_eeprom_format_v5.md
-EepromData kEepromV5 = {
+const EepromData kEepromV5 = {
     0xfb, 0xfb, 0x05, 0xff, 0x01, 0x0d, 0x46, 0x49, 0x52, 0x53, 0x54, 0x5f,
     0x53, 0x51, 0x55, 0x45, 0x45, 0x5a, 0x45, 0x02, 0x08, 0x32, 0x30, 0x31,
     0x32, 0x33, 0x34, 0x35, 0x36, 0x03, 0x08, 0x53, 0x59, 0x53, 0x41, 0x31,
@@ -39,7 +38,7 @@ EepromData kEepromV5 = {
 
 // EEPROM V5 with wrong CRC Programmed (same as the one above, but last 2
 // bytes have wrong CRC value programmed.)
-EepromData kEepromV5WrongCrc = {
+const EepromData kEepromV5WrongCrc = {
     0xfb, 0xfb, 0x05, 0xff, 0x01, 0x0d, 0x46, 0x49, 0x52, 0x53, 0x54, 0x5f,
     0x53, 0x51, 0x55, 0x45, 0x45, 0x5a, 0x45, 0x02, 0x08, 0x32, 0x30, 0x31,
     0x32, 0x33, 0x34, 0x35, 0x36, 0x03, 0x08, 0x53, 0x59, 0x53, 0x41, 0x31,
@@ -62,7 +61,7 @@ EepromData kEepromV5WrongCrc = {
 
 // Based on the Spec for V6 EEPROM:
 // https://github.com/facebook/fboss/blob/main/fboss/docs/meta_eeprom_format_v6.md
-EepromData kEepromV6 = {
+const EepromData kEepromV6 = {
     0xfb, 0xfb, 0x06, 0xff, 0x01, 0x0d, 0x46, 0x49, 0x52, 0x53, 0x54, 0x5f,
     0x53, 0x51, 0x55, 0x45, 0x45, 0x5a, 0x45, 0x02, 0x08, 0x32, 0x30, 0x31,
     0x32, 0x33, 0x34, 0x35, 0x36, 0x03, 0x08, 0x53, 0x59, 0x53, 0x41, 0x31,
@@ -85,6 +84,7 @@ EepromData kEepromV6 = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
     0xff};
 
+<<<<<<< HEAD
 // ONIE TlvInfo format test data
 // clang-format off
 EepromData eepromOnie = {
@@ -140,6 +140,15 @@ EepromData eepromOnieReal = {
     0xfe, 0x04, 0xb0, 0x6f, 0xdc, 0x7b,
 };
 // clang-format on
+=======
+FbossEepromInterface createFbossEepromInterface(const EepromData& data) {
+  folly::test::TemporaryDirectory tmpDir = folly::test::TemporaryDirectory();
+  std::string fileName = tmpDir.path().string() + "/eepromContent";
+  folly::writeFile(data, fileName.c_str());
+
+  return FbossEepromInterface(fileName, 0);
+}
+>>>>>>> f95e8352f83df74e648827992c286fae2483e692
 
 constexpr auto kProductName = "FIRST_SQUEEZE";
 constexpr auto kProductPartNumber = "20123456";
@@ -165,10 +174,9 @@ constexpr auto kRma = "1";
 constexpr auto kVendorDefinedField1 = "0x0101010101";
 constexpr auto kVendorDefinedField2 = "0x48656c6c6f";
 constexpr auto kVendorDefinedField3 = "";
-constexpr auto kCrc16V5 = "0xd5c6";
-constexpr auto kCrc16V6 = "0x4a05";
-constexpr auto kCrcCorrectTemplate = "{} (CRC Matched)";
-constexpr auto kCrc16WrongTemplate = "0xa6b7 (CRC Mismatch. Expected {})";
+constexpr auto kCrc16V5 = "0xd5c6 (CRC Matched)";
+constexpr auto kCrc16V6 = "0x4a05 (CRC Matched)";
+constexpr auto kCrc16V5Wrong = "0xa6b7 (CRC Mismatch. Expected 0xd5c6)";
 
 EepromContents createEepromContents(int version, bool crcMatched = true) {
   EepromContents result;
@@ -193,15 +201,13 @@ EepromContents createEepromContents(int version, bool crcMatched = true) {
   result.bmcMac() = kBmcMac;
   result.switchAsicMac() = kSwitchAsicMac;
   result.metaReservedMac() = kMetaReservedMac;
-  const std::string crc16 = version == 5 ? kCrc16V5 : kCrc16V6;
 
-  if (crcMatched) {
-    result.crc16() = fmt::format(kCrcCorrectTemplate, crc16);
-  } else {
-    result.crc16() = fmt::format(kCrc16WrongTemplate, crc16);
+  if (version == 5) {
+    result.crc16() = crcMatched ? kCrc16V5 : kCrc16V5Wrong;
+  } else if (version == 6) {
+    result.crc16() = kCrc16V6;
   }
 
-  // V6 unique fields
   if (version == 6) {
     result.rma() = kRma;
     result.vendorDefinedField1() = kVendorDefinedField1;
@@ -212,86 +218,65 @@ EepromContents createEepromContents(int version, bool crcMatched = true) {
   return result;
 };
 
-struct CommonEepromFields {
-  std::string productName;
-  std::string productPartNumber;
-  std::string productionState;
-  std::string productionSubState;
-  std::string variantIndicator;
-  std::string productSerialNumber;
-
-  bool operator==(const CommonEepromFields& other) const = default;
-};
-
-CommonEepromFields getCommonFields(const FbossEepromInterface& eeprom) {
-  return CommonEepromFields{
-      .productName = eeprom.getProductName(),
-      .productPartNumber = eeprom.getProductPartNumber(),
-      .productionState = eeprom.getProductionState(),
-      .productionSubState = eeprom.getProductionSubState(),
-      .variantIndicator = eeprom.getVariantVersion(),
-      .productSerialNumber = eeprom.getProductSerialNumber(),
-  };
-}
-
-const CommonEepromFields kExpectedCommonFields{
-    .productName = kProductName,
-    .productPartNumber = kProductPartNumber,
-    .productionState = kProductionState,
-    .productionSubState = kProductionSubState,
-    .variantIndicator = kVariantIndicator,
-    .productSerialNumber = kProductSerialNumber,
-};
-
-// Helper to verify common EEPROM fields parsed correctly
-void verifyCommonEepromFields(const FbossEepromInterface& eeprom) {
-  EXPECT_EQ(getCommonFields(eeprom), kExpectedCommonFields);
-}
-
 } // namespace
 
-TEST(FbossEepromInterfaceTest, V5WithBufferConstructor) {
-  FbossEepromInterface eeprom(kEepromV5);
-  EXPECT_EQ(eeprom.getVersion(), 5);
-  verifyCommonEepromFields(eeprom);
+TEST(FbossEepromInterfaceTest, V5) {
+  auto eeprom = createFbossEepromInterface(kEepromV5);
+
+  EXPECT_EQ(eeprom.getProductName(), kProductName);
+  EXPECT_EQ(eeprom.getProductPartNumber(), kProductPartNumber);
+  EXPECT_EQ(eeprom.getProductionState(), kProductionState);
+  EXPECT_EQ(eeprom.getProductionSubState(), kProductionSubState);
+  EXPECT_EQ(eeprom.getVariantVersion(), kVariantIndicator);
+  EXPECT_EQ(eeprom.getProductSerialNumber(), kProductSerialNumber);
 }
 
 TEST(FbossEepromInterfaceTest, V5WrongCRC) {
-  FbossEepromInterface eeprom(kEepromV5WrongCrc);
-  EXPECT_EQ(eeprom.getVersion(), 5);
-  verifyCommonEepromFields(eeprom);
+  auto eeprom = createFbossEepromInterface(kEepromV5WrongCrc);
+  EXPECT_EQ(eeprom.getProductName(), kProductName);
+  EXPECT_EQ(eeprom.getProductPartNumber(), kProductPartNumber);
+  EXPECT_EQ(eeprom.getProductionState(), kProductionState);
+  EXPECT_EQ(eeprom.getProductionSubState(), kProductionSubState);
+  EXPECT_EQ(eeprom.getVariantVersion(), kVariantIndicator);
+  EXPECT_EQ(eeprom.getProductSerialNumber(), kProductSerialNumber);
 }
 
-TEST(FbossEepromInterfaceTest, V6WithBufferConstructor) {
-  FbossEepromInterface eeprom(kEepromV6);
-  EXPECT_EQ(eeprom.getVersion(), 6);
-  verifyCommonEepromFields(eeprom);
+TEST(FbossEepromInterfaceTest, V6) {
+  auto eeprom = createFbossEepromInterface(kEepromV6);
+  EXPECT_EQ(eeprom.getProductName(), kProductName);
+  EXPECT_EQ(eeprom.getProductPartNumber(), kProductPartNumber);
+  EXPECT_EQ(eeprom.getProductionState(), kProductionState);
+  EXPECT_EQ(eeprom.getProductionSubState(), kProductionSubState);
+  EXPECT_EQ(eeprom.getVariantVersion(), kVariantIndicator);
+  EXPECT_EQ(eeprom.getProductSerialNumber(), kProductSerialNumber);
 }
 
 TEST(FbossEepromInterfaceTest, V5Object) {
-  FbossEepromInterface eepromInterface(kEepromV5);
-  auto actualObj = eepromInterface.getEepromContents();
+  auto eepromInterace = createFbossEepromInterface(kEepromV5);
+  auto actualObj = eepromInterace.getEepromContents();
+
   EepromContents expectedObj = createEepromContents(5);
 
   EXPECT_EQ(actualObj, expectedObj);
 }
 
 TEST(FbossEepromInterfaceTest, V6Object) {
-  FbossEepromInterface eepromInterface(kEepromV6);
-  auto actualObj = eepromInterface.getEepromContents();
+  auto eepromInterace = createFbossEepromInterface(kEepromV6);
+  auto actualObj = eepromInterace.getEepromContents();
   EepromContents expectedObj = createEepromContents(6);
 
   EXPECT_EQ(actualObj, expectedObj);
 }
 
 TEST(FbossEepromInterfaceTest, V5ObjWrongCrc) {
-  FbossEepromInterface eeprom(kEepromV5WrongCrc);
+  auto eeprom = createFbossEepromInterface(kEepromV5WrongCrc);
   auto actualObj = eeprom.getEepromContents();
   EepromContents expectedObj = createEepromContents(5, false);
 
   EXPECT_EQ(actualObj, expectedObj);
 }
 
+<<<<<<< HEAD
 TEST(FbossEepromOnieTest, OnieFormat) {
   std::vector<std::pair<std::string, std::string>> expectedContentsDummy = {
       {"Format", "ONIE TlvInfo"},
@@ -368,4 +353,6 @@ TEST(FbossEepromInterfaceTest, InvalidVersion) {
   EXPECT_THROW((FbossEepromInterface{badVersion}), std::runtime_error);
 }
 
+=======
+>>>>>>> f95e8352f83df74e648827992c286fae2483e692
 } // namespace facebook::fboss::platform
