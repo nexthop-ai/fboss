@@ -10,6 +10,9 @@
 
 #include "fboss/cli/fboss2/CmdHandler.cpp"
 
+// Current linter doesn't properly handle the template functions which need the
+// following headers
+// @lint-ignore-every CLANGTIDY facebook-unused-include-check
 #include "fboss/cli/fboss2/commands/config/CmdConfigAppliedInfo.h"
 #include "fboss/cli/fboss2/commands/config/CmdConfigReload.h"
 #include "fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h"

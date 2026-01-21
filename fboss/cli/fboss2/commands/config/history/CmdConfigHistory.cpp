@@ -28,9 +28,9 @@ namespace facebook::fboss {
 namespace {
 
 struct RevisionInfo {
-  int revisionNumber;
+  int revisionNumber{};
   std::string owner;
-  int64_t commitTimeNsec; // Commit time in nanoseconds since epoch
+  int64_t commitTimeNsec{}; // Commit time in nanoseconds since epoch
   std::string filePath;
 };
 
@@ -89,7 +89,7 @@ std::vector<RevisionInfo> collectRevisions(const std::string& cliConfigDir) {
     }
 
     // Get file metadata using statx to get birth time (creation time)
-    struct statx stx;
+    struct statx stx{};
     if (statx(
             AT_FDCWD, entry.path().c_str(), 0, STATX_BTIME | STATX_UID, &stx) !=
         0) {
@@ -128,7 +128,7 @@ std::vector<RevisionInfo> collectRevisions(const std::string& cliConfigDir) {
 } // namespace
 
 CmdConfigHistoryTraits::RetType CmdConfigHistory::queryClient(
-    const HostInfo& hostInfo) {
+    const HostInfo& /* hostInfo */) {
   auto& session = ConfigSession::getInstance();
   const std::string cliConfigDir = session.getCliConfigDir();
 
