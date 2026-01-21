@@ -8,7 +8,7 @@
  *
  */
 
-#include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <filesystem>
@@ -18,9 +18,10 @@
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolHeadroomBytes.h"
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolReservedBytes.h"
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolSharedBytes.h"
+#include "fboss/cli/fboss2/session/Git.h"
 #include "fboss/cli/fboss2/test/CmdHandlerTestBase.h"
 #include "fboss/cli/fboss2/test/TestableConfigSession.h"
-#include "fboss/cli/fboss2/utils/PortMap.h"
+#include "fboss/cli/fboss2/utils/PortMap.h" // NOLINT(misc-include-cleaner)
 
 namespace fs = std::filesystem;
 
@@ -48,16 +49,19 @@ class CmdConfigQosBufferPoolTestFixture : public CmdHandlerTestBase {
 
     // Create test directories
     fs::create_directories(testHomeDir_);
-    fs::create_directories(testEtcDir_ / "coop");
-    fs::create_directories(testEtcDir_ / "coop" / "cli");
+    systemConfigDir_ = testEtcDir_ / "coop";
+    sessionConfigDir_ = testHomeDir_ / ".fboss2";
+    fs::create_directories(systemConfigDir_ / "cli");
 
     // Set environment variables
+    // NOLINTNEXTLINE(concurrency-mt-unsafe) - acceptable in unit tests
     setenv("HOME", testHomeDir_.c_str(), 1);
+    // NOLINTNEXTLINE(concurrency-mt-unsafe) - acceptable in unit tests
     setenv("USER", "testuser", 1);
 
-    // Create a test system config file
-    fs::path initialRevision = testEtcDir_ / "coop" / "cli" / "agent-r1.conf";
-    createTestConfig(initialRevision, R"({
+    // Create a test system config file at cli/agent.conf
+    fs::path cliConfigPath = systemConfigDir_ / "cli" / "agent.conf";
+    createTestConfig(cliConfigPath, R"({
   "sw": {
     "ports": [
       {
@@ -70,13 +74,13 @@ class CmdConfigQosBufferPoolTestFixture : public CmdHandlerTestBase {
   }
 })");
 
-    // Create symlink
-    systemConfigPath_ = testEtcDir_ / "coop" / "agent.conf";
-    fs::create_symlink(initialRevision, systemConfigPath_);
+    // Create symlink at agent.conf -> cli/agent.conf
+    fs::create_symlink("cli/agent.conf", systemConfigDir_ / "agent.conf");
 
-    // Create session config path
-    sessionConfigPath_ = testHomeDir_ / ".fboss2" / "agent.conf";
-    cliConfigDir_ = testEtcDir_ / "coop" / "cli";
+    // Initialize Git repository and create initial commit
+    Git git(systemConfigDir_.string());
+    git.init();
+    git.commit({"cli/agent.conf"}, "Initial commit");
   }
 
   void TearDown() override {
@@ -109,9 +113,8 @@ class CmdConfigQosBufferPoolTestFixture : public CmdHandlerTestBase {
 
   fs::path testHomeDir_;
   fs::path testEtcDir_;
-  fs::path systemConfigPath_;
-  fs::path sessionConfigPath_;
-  fs::path cliConfigDir_;
+  fs::path systemConfigDir_;
+  fs::path sessionConfigDir_;
 };
 
 // Test BufferPoolName argument validation
@@ -169,11 +172,10 @@ TEST_F(CmdConfigQosBufferPoolTestFixture, bufferBytesValueValidation) {
 
 // Test shared-bytes command creates buffer pool config
 TEST_F(CmdConfigQosBufferPoolTestFixture, sharedBytesCreatesBufferPool) {
+  fs::create_directories(sessionConfigDir_);
   TestableConfigSession::setInstance(
       std::make_unique<TestableConfigSession>(
-          sessionConfigPath_.string(),
-          systemConfigPath_.string(),
-          cliConfigDir_.string()));
+          sessionConfigDir_.string(), systemConfigDir_.string()));
 
   auto cmd = CmdConfigQosBufferPoolSharedBytes();
   BufferPoolName poolName({"test_pool"});
@@ -198,11 +200,10 @@ TEST_F(CmdConfigQosBufferPoolTestFixture, sharedBytesCreatesBufferPool) {
 
 // Test headroom-bytes command creates buffer pool config
 TEST_F(CmdConfigQosBufferPoolTestFixture, headroomBytesCreatesBufferPool) {
+  fs::create_directories(sessionConfigDir_);
   TestableConfigSession::setInstance(
       std::make_unique<TestableConfigSession>(
-          sessionConfigPath_.string(),
-          systemConfigPath_.string(),
-          cliConfigDir_.string()));
+          sessionConfigDir_.string(), systemConfigDir_.string()));
 
   auto cmd = CmdConfigQosBufferPoolHeadroomBytes();
   BufferPoolName poolName({"headroom_pool"});
@@ -229,11 +230,10 @@ TEST_F(CmdConfigQosBufferPoolTestFixture, headroomBytesCreatesBufferPool) {
 
 // Test reserved-bytes command creates buffer pool config
 TEST_F(CmdConfigQosBufferPoolTestFixture, reservedBytesCreatesBufferPool) {
+  fs::create_directories(sessionConfigDir_);
   TestableConfigSession::setInstance(
       std::make_unique<TestableConfigSession>(
-          sessionConfigPath_.string(),
-          systemConfigPath_.string(),
-          cliConfigDir_.string()));
+          sessionConfigDir_.string(), systemConfigDir_.string()));
 
   auto cmd = CmdConfigQosBufferPoolReservedBytes();
   BufferPoolName poolName({"reserved_pool"});
@@ -260,11 +260,10 @@ TEST_F(CmdConfigQosBufferPoolTestFixture, reservedBytesCreatesBufferPool) {
 
 // Test updating an existing buffer pool
 TEST_F(CmdConfigQosBufferPoolTestFixture, updateExistingBufferPool) {
+  fs::create_directories(sessionConfigDir_);
   TestableConfigSession::setInstance(
       std::make_unique<TestableConfigSession>(
-          sessionConfigPath_.string(),
-          systemConfigPath_.string(),
-          cliConfigDir_.string()));
+          sessionConfigDir_.string(), systemConfigDir_.string()));
 
   // First, create a buffer pool with shared-bytes
   auto sharedCmd = CmdConfigQosBufferPoolSharedBytes();

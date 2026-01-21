@@ -13,6 +13,7 @@
 - To run a subset of the tests, additionally pass --filter <regexp> where the regexp is matching the test case name in the code, not the cmake target.
 - Always rebuild the code and the test binary and re-run unit tests to check your work.
 - This project uses both cmake and BUCK, however we cannot build it with BUCK. Changes made to cmake files must also be reflected in the corresponding BUCK files, even though we cannot test them. Make sure the files are listed alphabetically.
+- To run end to end tests, you need to use a real FBOSS device, usually we use fboss101 but if you're not sure ask which device to use. You need to scp the fboss2-dev binary to the device e.g. scp /var/FBOSS/tmp_bld_dir/build/fboss/fboss2-dev fboss101:~/benoit/fboss2-dev (if you modified some of the end to end test Python scripts you need to scp them also under /opt/fboss/share/) and then run the end to end tests by executing the following command over ssh on fboss101 or whichever test device we're using: cd /opt/fboss && FBOSS_CLI_PATH=/home/admin/benoit/fboss2-dev ./bin/run_test.py cli
 
 ## Coding rules
 
