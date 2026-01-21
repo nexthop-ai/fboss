@@ -267,6 +267,8 @@ systemctl enable data_corral_service.service
 systemctl enable fan_service.service
 systemctl enable sensor_service.service
 systemctl enable fsdb.service
+systemctl enable qsfp_service.service
+systemctl enable wedge_agent.service
 
 # 8. Done! Cleanup and install additional packages
 echo "Cleaning up /repos directory..."
