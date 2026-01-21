@@ -43,6 +43,8 @@ jobs:
           # so keep vendored dependencies across builds.
           clean: false
           ref: ${{ inputs.ref || github.ref }}
+          # Fetch at least 2 commits so HEAD~1 exists for clang-tidy diffing
+          fetch-depth: 2
 
       - name: Fetch PR history for sync merge detection
         if: github.event_name == 'pull_request' && github.event.pull_request.commits > 1
