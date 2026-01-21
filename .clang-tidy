@@ -138,6 +138,7 @@ readability-uniqueptr-delete-release,
 WarningsAsErrors: '
 bugprone-unsafe-functions,
 bugprone-use-after-move,
+misc-include-cleaner,
 portability-restrict-system-includes,
 '
 
@@ -162,6 +163,8 @@ CheckOptions:
   value: '::std::basic_string'
 - key: portability-restrict-system-includes.Includes
   value: '*,-regex'
+- key: misc-include-cleaner.MissingIncludes
+  value: false
 - key: bugprone-unsafe-functions.ReportDefaultFunctions
   value: true
 - key: bugprone-unsafe-functions.ReportMoreUnsafeFunctions
