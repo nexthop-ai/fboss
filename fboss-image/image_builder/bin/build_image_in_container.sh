@@ -240,6 +240,7 @@ cp -R ${DESCRIPTION_DIR}/root_files/* ${DESCRIPTION_DIR}/root/
 rm -f ${DESCRIPTION_DIR}/root/var/tmp/after_pkgs_install_file.json
 rm -f ${DESCRIPTION_DIR}/root/var/tmp/after_pkgs_execute_file.json
 
+<<<<<<< HEAD
 # Copy the after_pkgs input file in the rootfs so that we can access it the chrooted environment
 # The file, if provided by the user, should already copied into the centos-09.0 directory as part
 # of the image build process. Copy to fixed location in rootfs where config.sh checks for it.
@@ -324,5 +325,7 @@ if [ ${ONIE_RC} -ne 0 ]; then
 fi
 
 RC=$((PXE_RC + ONIE_RC))
+=======
+>>>>>>> 0e35616122f7d062f97d0b1c389609a538710485
 dprint "Image generation completed with exit code ${RC}"
 exit ${RC}

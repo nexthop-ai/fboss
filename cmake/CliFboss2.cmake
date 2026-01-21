@@ -516,6 +516,8 @@ target_link_libraries(fboss2_lib
   fsdb_cpp2
   fsdb_oper_cpp2
   fsdb_model_cpp2
+  fsdb_path_converter
+  thrift_visitors
   Folly::folly
   input_balance_util
   cli_model
@@ -584,6 +586,7 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/CmdConfigAppliedInfo.cpp
   fboss/cli/fboss2/commands/config/CmdConfigReload.h
   fboss/cli/fboss2/commands/config/CmdConfigReload.cpp
+<<<<<<< HEAD
   fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h
   fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceDescription.h
   fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceDescription.cpp
@@ -601,6 +604,8 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolReservedBytes.cpp
   fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolSharedBytes.h
   fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolSharedBytes.cpp
+=======
+>>>>>>> 0e35616122f7d062f97d0b1c389609a538710485
   fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h
   fboss/cli/fboss2/commands/config/history/CmdConfigHistory.cpp
   fboss/cli/fboss2/commands/config/rollback/CmdConfigRollback.h
