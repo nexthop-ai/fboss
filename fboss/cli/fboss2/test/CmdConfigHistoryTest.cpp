@@ -161,6 +161,22 @@ TEST_F(CmdConfigHistoryTestFixture, historyListsRevisions) {
   EXPECT_NE(result.find("Author"), std::string::npos);
   EXPECT_NE(result.find("Commit Time"), std::string::npos);
   EXPECT_NE(result.find("Message"), std::string::npos);
+
+  // Verify the timestamp is formatted correctly (not epoch).
+  // Git returns Unix timestamps in seconds, so if the code incorrectly
+  // treats them as nanoseconds, we'd see dates near the Unix epoch.
+  // Depending on timezone, epoch could show as 1970-01-01 or 1969-12-31.
+  EXPECT_EQ(result.find("1970-"), std::string::npos)
+      << "Timestamp appears to be incorrectly parsed (showing 1970 epoch)";
+  EXPECT_EQ(result.find("1969-"), std::string::npos)
+      << "Timestamp appears to be incorrectly parsed (showing 1969 epoch)";
+  // Check that the current year appears in the output
+  std::time_t now = std::time(nullptr);
+  std::tm tm{};
+  localtime_r(&now, &tm);
+  std::string currentYear = std::to_string(1900 + tm.tm_year);
+  EXPECT_NE(result.find(currentYear + "-"), std::string::npos)
+      << "Expected timestamp with year " << currentYear << ", got: " << result;
 }
 
 TEST_F(CmdConfigHistoryTestFixture, historyShowsOnlyConfigFileCommits) {

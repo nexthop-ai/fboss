@@ -10,7 +10,6 @@
 
 #include "fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h"
 #include <ctime>
-#include <iomanip>
 #include <sstream>
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/utils/Table.h"
@@ -19,22 +18,14 @@ namespace facebook::fboss {
 
 namespace {
 
-// Format time as a human-readable string with milliseconds
-std::string formatTime(int64_t timeNsec) {
-  // Convert nanoseconds to seconds and remaining nanoseconds
-  std::time_t timeSec = timeNsec / 1000000000;
-  long nsec = timeNsec % 1000000000;
-
-  char buffer[100];
+// Format Unix timestamp (seconds) as a human-readable string
+std::string formatTime(int64_t timeSec) {
+  char buffer[32];
   tm timeinfo{};
-  localtime_r(&timeSec, &timeinfo);
+  std::time_t time = timeSec;
+  localtime_r(&time, &timeinfo);
   std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timeinfo);
-
-  // Add milliseconds
-  long milliseconds = nsec / 1000000;
-  std::ostringstream oss;
-  oss << buffer << '.' << std::setfill('0') << std::setw(3) << milliseconds;
-  return oss.str();
+  return buffer;
 }
 
 } // namespace
