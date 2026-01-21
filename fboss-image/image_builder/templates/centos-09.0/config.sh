@@ -84,6 +84,15 @@ for component_dir in /repos/*; do
     rm -rf "$component_tmp"
     ;;
 
+  bsps)
+    echo "Processing component: $component_name"
+    for bsp in $component_dir/*.tar*; do
+      echo "Processing BSP: $bsp"
+      tar -C /usr/local/share/local_rpm_repo -xf "$bsp"
+    done
+    createrepo /usr/local/share/local_rpm_repo
+    ;;
+
   *)
     echo "Skipping component: $component_name (no handler defined)"
     ;;
