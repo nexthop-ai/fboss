@@ -155,7 +155,6 @@ cpp_library(
     name = "cmd-common-utils",
     srcs = [
         "utils/CmdUtilsCommon.cpp",
-        "utils/InterfaceList.cpp",
     ],
     headers = [
         "commands/clear/CmdClearUtils.h",
@@ -164,7 +163,6 @@ cpp_library(
         "utils/CmdUtilsCommon.h",
         "utils/FilterUtils.h",
         "utils/HostInfo.h",
-        "utils/InterfaceList.h",
     ],
     exported_deps = [
         ":cmd-global-options",
@@ -794,6 +792,7 @@ cpp_library(
         "commands/config/session/CmdConfigSessionCommit.cpp",
         "commands/config/session/CmdConfigSessionDiff.cpp",
         "session/ConfigSession.cpp",
+        "utils/InterfaceList.cpp",
     ],
     headers = [
         "commands/config/CmdConfigAppliedInfo.h",
@@ -814,6 +813,7 @@ cpp_library(
         "commands/config/session/CmdConfigSessionCommit.h",
         "commands/config/session/CmdConfigSessionDiff.h",
         "session/ConfigSession.h",
+        "utils/InterfaceList.h",
     ],
     exported_deps = [
         "fbsource//third-party/fmt:fmt",

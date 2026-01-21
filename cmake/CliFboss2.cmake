@@ -487,8 +487,6 @@ add_library(fboss2_lib
   fboss/cli/fboss2/utils/PortMap.cpp
   fboss/cli/fboss2/utils/Table.cpp
   fboss/cli/fboss2/utils/HostInfo.h
-  fboss/cli/fboss2/utils/InterfaceList.h
-  fboss/cli/fboss2/utils/InterfaceList.cpp
   fboss/cli/fboss2/utils/FilterOp.h
   fboss/cli/fboss2/utils/AggregateOp.h
   fboss/cli/fboss2/utils/AggregateUtils.h
@@ -613,6 +611,8 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/session/CmdConfigSessionDiff.cpp
   fboss/cli/fboss2/session/ConfigSession.h
   fboss/cli/fboss2/session/ConfigSession.cpp
+  fboss/cli/fboss2/utils/InterfaceList.h
+  fboss/cli/fboss2/utils/InterfaceList.cpp
   fboss/cli/fboss2/CmdListConfig.cpp
   fboss/cli/fboss2/CmdHandlerImplConfig.cpp
 )
