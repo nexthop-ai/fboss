@@ -14,7 +14,6 @@
 #include "fboss/cli/fboss2/commands/config/CmdConfigAppliedInfo.h"
 #include "fboss/cli/fboss2/commands/config/CmdConfigReload.h"
 #include "fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h"
-<<<<<<< HEAD
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceDescription.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceMtu.h"
@@ -26,8 +25,6 @@
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolHeadroomBytes.h"
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolReservedBytes.h"
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolSharedBytes.h"
-=======
->>>>>>> 0e35616122f7d062f97d0b1c389609a538710485
 #include "fboss/cli/fboss2/commands/config/rollback/CmdConfigRollback.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionCommit.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionDiff.h"
@@ -48,7 +45,6 @@ const CommandTree& kConfigCommandTree() {
        commandHandler<CmdConfigHistory>,
        argTypeHandler<CmdConfigHistoryTraits>},
 
-<<<<<<< HEAD
       {
           "config",
           "interface",
@@ -120,8 +116,6 @@ const CommandTree& kConfigCommandTree() {
           }},
       },
 
-=======
->>>>>>> 0e35616122f7d062f97d0b1c389609a538710485
       {
           "config",
           "session",

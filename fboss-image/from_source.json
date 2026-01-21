@@ -1,12 +1,8 @@
 {
   "distribution_formats": {
     "usb": "fboss-distro-image_usb.iso",
-<<<<<<< HEAD
     "pxe": "fboss-distro-image_pxe.tar",
     "onie": "fboss-distro-image_onie.bin"
-=======
-    "pxe": "fboss-distro-image_pxe.tar"
->>>>>>> 0e35616122f7d062f97d0b1c389609a538710485
   },
   "kernel": {
     "execute": ["kernel/scripts/build_kernel.sh", "6.11.1", "/output"],

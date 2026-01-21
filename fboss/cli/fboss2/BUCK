@@ -784,15 +784,12 @@ cpp_library(
         "commands/config/CmdConfigAppliedInfo.cpp",
         "commands/config/CmdConfigReload.cpp",
         "commands/config/history/CmdConfigHistory.cpp",
-<<<<<<< HEAD
         "commands/config/interface/CmdConfigInterfaceDescription.cpp",
         "commands/config/interface/CmdConfigInterfaceMtu.cpp",
         "commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.cpp",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPoolHeadroomBytes.cpp",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPoolReservedBytes.cpp",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPoolSharedBytes.cpp",
-=======
->>>>>>> 0e35616122f7d062f97d0b1c389609a538710485
         "commands/config/rollback/CmdConfigRollback.cpp",
         "commands/config/session/CmdConfigSessionCommit.cpp",
         "commands/config/session/CmdConfigSessionDiff.cpp",
@@ -802,7 +799,6 @@ cpp_library(
         "commands/config/CmdConfigAppliedInfo.h",
         "commands/config/CmdConfigReload.h",
         "commands/config/history/CmdConfigHistory.h",
-<<<<<<< HEAD
         "commands/config/interface/CmdConfigInterface.h",
         "commands/config/interface/CmdConfigInterfaceDescription.h",
         "commands/config/interface/CmdConfigInterfaceMtu.h",
@@ -814,8 +810,6 @@ cpp_library(
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPoolHeadroomBytes.h",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPoolReservedBytes.h",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPoolSharedBytes.h",
-=======
->>>>>>> 0e35616122f7d062f97d0b1c389609a538710485
         "commands/config/rollback/CmdConfigRollback.h",
         "commands/config/session/CmdConfigSessionCommit.h",
         "commands/config/session/CmdConfigSessionDiff.h",

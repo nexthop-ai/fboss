@@ -63,13 +63,10 @@ cpp_unittest(
     srcs = [
         "CmdConfigAppliedInfoTest.cpp",
         "CmdConfigHistoryTest.cpp",
-<<<<<<< HEAD
         "CmdConfigInterfaceDescriptionTest.cpp",
         "CmdConfigInterfaceMtuTest.cpp",
         "CmdConfigInterfaceSwitchportAccessVlanTest.cpp",
         "CmdConfigQosBufferPoolTest.cpp",
-=======
->>>>>>> 0e35616122f7d062f97d0b1c389609a538710485
         "CmdConfigReloadTest.cpp",
         "CmdConfigSessionDiffTest.cpp",
         "CmdConfigSessionTest.cpp",

@@ -36,13 +36,10 @@ add_executable(fboss2_cmd_test
   fboss/cli/fboss2/test/TestMain.cpp
   fboss/cli/fboss2/test/CmdConfigAppliedInfoTest.cpp
   fboss/cli/fboss2/test/CmdConfigHistoryTest.cpp
-<<<<<<< HEAD
   fboss/cli/fboss2/test/CmdConfigInterfaceDescriptionTest.cpp
   fboss/cli/fboss2/test/CmdConfigInterfaceMtuTest.cpp
   fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
   fboss/cli/fboss2/test/CmdConfigQosBufferPoolTest.cpp
-=======
->>>>>>> 0e35616122f7d062f97d0b1c389609a538710485
   fboss/cli/fboss2/test/CmdConfigReloadTest.cpp
   fboss/cli/fboss2/test/CmdConfigSessionDiffTest.cpp
   fboss/cli/fboss2/test/CmdConfigSessionTest.cpp
