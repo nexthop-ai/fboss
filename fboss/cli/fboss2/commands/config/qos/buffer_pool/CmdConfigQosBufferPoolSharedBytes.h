@@ -37,7 +37,7 @@ class BufferBytesValue : public utils::BaseObjectArgType<int32_t> {
             "Buffer bytes must be non-negative, got: " + std::to_string(bytes));
       }
       data_.push_back(bytes);
-    } catch (const folly::ConversionError& e) {
+    } catch (const folly::ConversionError&) {
       throw std::invalid_argument("Invalid buffer bytes value: " + v[0]);
     }
   }

@@ -40,7 +40,7 @@ class VlanIdValue : public utils::BaseObjectArgType<int32_t> {
             std::to_string(vlanId));
       }
       data_.push_back(vlanId);
-    } catch (const folly::ConversionError& e) {
+    } catch (const folly::ConversionError&) {
       throw std::invalid_argument("Invalid VLAN ID: " + v[0]);
     }
   }
