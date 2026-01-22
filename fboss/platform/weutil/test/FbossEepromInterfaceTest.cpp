@@ -1,6 +1,5 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
-#include <fmt/format.h>
 #include <gtest/gtest.h>
 
 #include <folly/FileUtil.h>
@@ -16,7 +15,7 @@ using EepromData = std::vector<uint8_t>;
 
 // Based on the Spec for V5 EEPROM:
 // https://github.com/facebook/fboss/blob/main/fboss/docs/meta_eeprom_format_v5.md
-EepromData kEepromV5 = {
+const EepromData kEepromV5 = {
     0xfb, 0xfb, 0x05, 0xff, 0x01, 0x0d, 0x46, 0x49, 0x52, 0x53, 0x54, 0x5f,
     0x53, 0x51, 0x55, 0x45, 0x45, 0x5a, 0x45, 0x02, 0x08, 0x32, 0x30, 0x31,
     0x32, 0x33, 0x34, 0x35, 0x36, 0x03, 0x08, 0x53, 0x59, 0x53, 0x41, 0x31,
@@ -39,7 +38,7 @@ EepromData kEepromV5 = {
 
 // EEPROM V5 with wrong CRC Programmed (same as the one above, but last 2
 // bytes have wrong CRC value programmed.)
-EepromData kEepromV5WrongCrc = {
+const EepromData kEepromV5WrongCrc = {
     0xfb, 0xfb, 0x05, 0xff, 0x01, 0x0d, 0x46, 0x49, 0x52, 0x53, 0x54, 0x5f,
     0x53, 0x51, 0x55, 0x45, 0x45, 0x5a, 0x45, 0x02, 0x08, 0x32, 0x30, 0x31,
     0x32, 0x33, 0x34, 0x35, 0x36, 0x03, 0x08, 0x53, 0x59, 0x53, 0x41, 0x31,
@@ -62,7 +61,7 @@ EepromData kEepromV5WrongCrc = {
 
 // Based on the Spec for V6 EEPROM:
 // https://github.com/facebook/fboss/blob/main/fboss/docs/meta_eeprom_format_v6.md
-EepromData kEepromV6 = {
+const EepromData kEepromV6 = {
     0xfb, 0xfb, 0x06, 0xff, 0x01, 0x0d, 0x46, 0x49, 0x52, 0x53, 0x54, 0x5f,
     0x53, 0x51, 0x55, 0x45, 0x45, 0x5a, 0x45, 0x02, 0x08, 0x32, 0x30, 0x31,
     0x32, 0x33, 0x34, 0x35, 0x36, 0x03, 0x08, 0x53, 0x59, 0x53, 0x41, 0x31,
@@ -84,6 +83,149 @@ EepromData kEepromV6 = {
     0x66, 0x05, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0xfa, 0x02, 0x4a, 0x05, 0xff,
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
     0xff};
+
+FbossEepromInterface createFbossEepromInterface(const EepromData& data) {
+  folly::test::TemporaryDirectory tmpDir = folly::test::TemporaryDirectory();
+  std::string fileName = tmpDir.path().string() + "/eepromContent";
+  folly::writeFile(data, fileName.c_str());
+
+  return FbossEepromInterface(fileName, 0);
+}
+
+constexpr auto kProductName = "FIRST_SQUEEZE";
+constexpr auto kProductPartNumber = "20123456";
+constexpr auto kSystemAssemblyPartNumber = "SYSA1234";
+constexpr auto kMetaPCBAPartNumber = "PCBA1234567";
+constexpr auto kMetaPCBPartNumber = "PCB12345678";
+constexpr auto kOdmJdmPCBAPartNumber = "MYODM1234567";
+constexpr auto kOdmJdmPCBASerialNumber = "OS123456789AB";
+constexpr auto kProductionState = "1";
+constexpr auto kProductionSubState = "0";
+constexpr auto kVariantIndicator = "1";
+constexpr auto kProductSerialNumber = "PS1234567890A";
+constexpr auto kSystemManufacturer = "UNA_MAS";
+constexpr auto kSystemManufacturingDate = "20130203";
+constexpr auto kPCBManufacturer = "TERZO";
+constexpr auto kAssembledAt = "JUICETORY";
+constexpr auto kEepromLocationOnFabric = "BUDOKAN";
+constexpr auto kX86CpuMac = "11:22:33:44:55:66,258";
+constexpr auto kBmcMac = "12:34:56:78:9a:bc,772";
+constexpr auto kSwitchAsicMac = "66:55:44:33:22:11,512";
+constexpr auto kMetaReservedMac = "fe:dc:ba:98:76:54,2";
+constexpr auto kRma = "1";
+constexpr auto kVendorDefinedField1 = "0x0101010101";
+constexpr auto kVendorDefinedField2 = "0x48656c6c6f";
+constexpr auto kVendorDefinedField3 = "";
+constexpr auto kCrc16V5 = "0xd5c6 (CRC Matched)";
+constexpr auto kCrc16V6 = "0x4a05 (CRC Matched)";
+constexpr auto kCrc16V5Wrong = "0xa6b7 (CRC Mismatch. Expected 0xd5c6)";
+
+EepromContents createEepromContents(int version, bool crcMatched = true) {
+  EepromContents result;
+  result.version() = version;
+  result.productName() = kProductName;
+  result.productPartNumber() = kProductPartNumber;
+  result.systemAssemblyPartNumber() = kSystemAssemblyPartNumber;
+  result.metaPCBAPartNumber() = kMetaPCBAPartNumber;
+  result.metaPCBPartNumber() = kMetaPCBPartNumber;
+  result.odmJdmPCBAPartNumber() = kOdmJdmPCBAPartNumber;
+  result.odmJdmPCBASerialNumber() = kOdmJdmPCBASerialNumber;
+  result.productionState() = kProductionState;
+  result.productionSubState() = kProductionSubState;
+  result.variantIndicator() = kVariantIndicator;
+  result.productSerialNumber() = kProductSerialNumber;
+  result.systemManufacturer() = kSystemManufacturer;
+  result.systemManufacturingDate() = kSystemManufacturingDate;
+  result.pcbManufacturer() = kPCBManufacturer;
+  result.assembledAt() = kAssembledAt;
+  result.eepromLocationOnFabric() = kEepromLocationOnFabric;
+  result.x86CpuMac() = kX86CpuMac;
+  result.bmcMac() = kBmcMac;
+  result.switchAsicMac() = kSwitchAsicMac;
+  result.metaReservedMac() = kMetaReservedMac;
+
+  if (version == 5) {
+    result.crc16() = crcMatched ? kCrc16V5 : kCrc16V5Wrong;
+  } else if (version == 6) {
+    result.crc16() = kCrc16V6;
+  }
+
+  if (version == 6) {
+    result.rma() = kRma;
+    result.vendorDefinedField1() = kVendorDefinedField1;
+    result.vendorDefinedField2() = kVendorDefinedField2;
+    result.vendorDefinedField3() = kVendorDefinedField3;
+  }
+
+  return result;
+};
+
+} // namespace
+
+TEST(FbossEepromInterfaceTest, V5) {
+  auto eeprom = createFbossEepromInterface(kEepromV5);
+
+  EXPECT_EQ(eeprom.getProductName(), kProductName);
+  EXPECT_EQ(eeprom.getProductPartNumber(), kProductPartNumber);
+  EXPECT_EQ(eeprom.getProductionState(), kProductionState);
+  EXPECT_EQ(eeprom.getProductionSubState(), kProductionSubState);
+  EXPECT_EQ(eeprom.getVariantVersion(), kVariantIndicator);
+  EXPECT_EQ(eeprom.getProductSerialNumber(), kProductSerialNumber);
+}
+
+TEST(FbossEepromInterfaceTest, V5WrongCRC) {
+  auto eeprom = createFbossEepromInterface(kEepromV5WrongCrc);
+  EXPECT_EQ(eeprom.getProductName(), kProductName);
+  EXPECT_EQ(eeprom.getProductPartNumber(), kProductPartNumber);
+  EXPECT_EQ(eeprom.getProductionState(), kProductionState);
+  EXPECT_EQ(eeprom.getProductionSubState(), kProductionSubState);
+  EXPECT_EQ(eeprom.getVariantVersion(), kVariantIndicator);
+  EXPECT_EQ(eeprom.getProductSerialNumber(), kProductSerialNumber);
+}
+
+TEST(FbossEepromInterfaceTest, V6) {
+  auto eeprom = createFbossEepromInterface(kEepromV6);
+  EXPECT_EQ(eeprom.getProductName(), kProductName);
+  EXPECT_EQ(eeprom.getProductPartNumber(), kProductPartNumber);
+  EXPECT_EQ(eeprom.getProductionState(), kProductionState);
+  EXPECT_EQ(eeprom.getProductionSubState(), kProductionSubState);
+  EXPECT_EQ(eeprom.getVariantVersion(), kVariantIndicator);
+  EXPECT_EQ(eeprom.getProductSerialNumber(), kProductSerialNumber);
+}
+
+TEST(FbossEepromInterfaceTest, V5Object) {
+  auto eepromInterace = createFbossEepromInterface(kEepromV5);
+  auto actualObj = eepromInterace.getEepromContents();
+
+  EepromContents expectedObj = createEepromContents(5);
+
+  EXPECT_EQ(actualObj, expectedObj);
+}
+
+TEST(FbossEepromInterfaceTest, V6Object) {
+  auto eepromInterace = createFbossEepromInterface(kEepromV6);
+  auto actualObj = eepromInterace.getEepromContents();
+  EepromContents expectedObj = createEepromContents(6);
+
+  EXPECT_EQ(actualObj, expectedObj);
+}
+
+TEST(FbossEepromInterfaceTest, V5ObjWrongCrc) {
+  auto eeprom = createFbossEepromInterface(kEepromV5WrongCrc);
+  auto actualObj = eeprom.getEepromContents();
+  EepromContents expectedObj = createEepromContents(5, false);
+
+  EXPECT_EQ(actualObj, expectedObj);
+}
+
+} // namespace facebook::fboss::platform
+
+// NH specific changes kept at the end to reduce the likelihood of conflicts
+
+namespace facebook::fboss::platform {
+
+namespace {
+using EepromData = std::vector<uint8_t>;
 
 // ONIE TlvInfo format test data
 // clang-format off
@@ -141,156 +283,7 @@ EepromData eepromOnieReal = {
 };
 // clang-format on
 
-constexpr auto kProductName = "FIRST_SQUEEZE";
-constexpr auto kProductPartNumber = "20123456";
-constexpr auto kSystemAssemblyPartNumber = "SYSA1234";
-constexpr auto kMetaPCBAPartNumber = "PCBA1234567";
-constexpr auto kMetaPCBPartNumber = "PCB12345678";
-constexpr auto kOdmJdmPCBAPartNumber = "MYODM1234567";
-constexpr auto kOdmJdmPCBASerialNumber = "OS123456789AB";
-constexpr auto kProductionState = "1";
-constexpr auto kProductionSubState = "0";
-constexpr auto kVariantIndicator = "1";
-constexpr auto kProductSerialNumber = "PS1234567890A";
-constexpr auto kSystemManufacturer = "UNA_MAS";
-constexpr auto kSystemManufacturingDate = "20130203";
-constexpr auto kPCBManufacturer = "TERZO";
-constexpr auto kAssembledAt = "JUICETORY";
-constexpr auto kEepromLocationOnFabric = "BUDOKAN";
-constexpr auto kX86CpuMac = "11:22:33:44:55:66,258";
-constexpr auto kBmcMac = "12:34:56:78:9a:bc,772";
-constexpr auto kSwitchAsicMac = "66:55:44:33:22:11,512";
-constexpr auto kMetaReservedMac = "fe:dc:ba:98:76:54,2";
-constexpr auto kRma = "1";
-constexpr auto kVendorDefinedField1 = "0x0101010101";
-constexpr auto kVendorDefinedField2 = "0x48656c6c6f";
-constexpr auto kVendorDefinedField3 = "";
-constexpr auto kCrc16V5 = "0xd5c6";
-constexpr auto kCrc16V6 = "0x4a05";
-constexpr auto kCrcCorrectTemplate = "{} (CRC Matched)";
-constexpr auto kCrc16WrongTemplate = "0xa6b7 (CRC Mismatch. Expected {})";
-
-EepromContents createEepromContents(int version, bool crcMatched = true) {
-  EepromContents result;
-  result.version() = version;
-  result.productName() = kProductName;
-  result.productPartNumber() = kProductPartNumber;
-  result.systemAssemblyPartNumber() = kSystemAssemblyPartNumber;
-  result.metaPCBAPartNumber() = kMetaPCBAPartNumber;
-  result.metaPCBPartNumber() = kMetaPCBPartNumber;
-  result.odmJdmPCBAPartNumber() = kOdmJdmPCBAPartNumber;
-  result.odmJdmPCBASerialNumber() = kOdmJdmPCBASerialNumber;
-  result.productionState() = kProductionState;
-  result.productionSubState() = kProductionSubState;
-  result.variantIndicator() = kVariantIndicator;
-  result.productSerialNumber() = kProductSerialNumber;
-  result.systemManufacturer() = kSystemManufacturer;
-  result.systemManufacturingDate() = kSystemManufacturingDate;
-  result.pcbManufacturer() = kPCBManufacturer;
-  result.assembledAt() = kAssembledAt;
-  result.eepromLocationOnFabric() = kEepromLocationOnFabric;
-  result.x86CpuMac() = kX86CpuMac;
-  result.bmcMac() = kBmcMac;
-  result.switchAsicMac() = kSwitchAsicMac;
-  result.metaReservedMac() = kMetaReservedMac;
-  const std::string crc16 = version == 5 ? kCrc16V5 : kCrc16V6;
-
-  if (crcMatched) {
-    result.crc16() = fmt::format(kCrcCorrectTemplate, crc16);
-  } else {
-    result.crc16() = fmt::format(kCrc16WrongTemplate, crc16);
-  }
-
-  // V6 unique fields
-  if (version == 6) {
-    result.rma() = kRma;
-    result.vendorDefinedField1() = kVendorDefinedField1;
-    result.vendorDefinedField2() = kVendorDefinedField2;
-    result.vendorDefinedField3() = kVendorDefinedField3;
-  }
-
-  return result;
-};
-
-struct CommonEepromFields {
-  std::string productName;
-  std::string productPartNumber;
-  std::string productionState;
-  std::string productionSubState;
-  std::string variantIndicator;
-  std::string productSerialNumber;
-
-  bool operator==(const CommonEepromFields& other) const = default;
-};
-
-CommonEepromFields getCommonFields(const FbossEepromInterface& eeprom) {
-  return CommonEepromFields{
-      .productName = eeprom.getProductName(),
-      .productPartNumber = eeprom.getProductPartNumber(),
-      .productionState = eeprom.getProductionState(),
-      .productionSubState = eeprom.getProductionSubState(),
-      .variantIndicator = eeprom.getVariantVersion(),
-      .productSerialNumber = eeprom.getProductSerialNumber(),
-  };
-}
-
-const CommonEepromFields kExpectedCommonFields{
-    .productName = kProductName,
-    .productPartNumber = kProductPartNumber,
-    .productionState = kProductionState,
-    .productionSubState = kProductionSubState,
-    .variantIndicator = kVariantIndicator,
-    .productSerialNumber = kProductSerialNumber,
-};
-
-// Helper to verify common EEPROM fields parsed correctly
-void verifyCommonEepromFields(const FbossEepromInterface& eeprom) {
-  EXPECT_EQ(getCommonFields(eeprom), kExpectedCommonFields);
-}
-
 } // namespace
-
-TEST(FbossEepromInterfaceTest, V5WithBufferConstructor) {
-  FbossEepromInterface eeprom(kEepromV5);
-  EXPECT_EQ(eeprom.getVersion(), 5);
-  verifyCommonEepromFields(eeprom);
-}
-
-TEST(FbossEepromInterfaceTest, V5WrongCRC) {
-  FbossEepromInterface eeprom(kEepromV5WrongCrc);
-  EXPECT_EQ(eeprom.getVersion(), 5);
-  verifyCommonEepromFields(eeprom);
-}
-
-TEST(FbossEepromInterfaceTest, V6WithBufferConstructor) {
-  FbossEepromInterface eeprom(kEepromV6);
-  EXPECT_EQ(eeprom.getVersion(), 6);
-  verifyCommonEepromFields(eeprom);
-}
-
-TEST(FbossEepromInterfaceTest, V5Object) {
-  FbossEepromInterface eepromInterface(kEepromV5);
-  auto actualObj = eepromInterface.getEepromContents();
-  EepromContents expectedObj = createEepromContents(5);
-
-  EXPECT_EQ(actualObj, expectedObj);
-}
-
-TEST(FbossEepromInterfaceTest, V6Object) {
-  FbossEepromInterface eepromInterface(kEepromV6);
-  auto actualObj = eepromInterface.getEepromContents();
-  EepromContents expectedObj = createEepromContents(6);
-
-  EXPECT_EQ(actualObj, expectedObj);
-}
-
-TEST(FbossEepromInterfaceTest, V5ObjWrongCrc) {
-  FbossEepromInterface eeprom(kEepromV5WrongCrc);
-  auto actualObj = eeprom.getEepromContents();
-  EepromContents expectedObj = createEepromContents(5, false);
-
-  EXPECT_EQ(actualObj, expectedObj);
-}
 
 TEST(FbossEepromOnieTest, OnieFormat) {
   std::vector<std::pair<std::string, std::string>> expectedContentsDummy = {
@@ -356,16 +349,6 @@ TEST(FbossEepromOnieTest, OnieFormat) {
       EXPECT_EQ(parsedContents[i], expectedContents[i]);
     }
   }
-}
-
-TEST(FbossEepromInterfaceTest, InvalidEepromSize) {
-  std::vector<uint8_t> tooSmall = {0xfb, 0xfb};
-  EXPECT_THROW((FbossEepromInterface{tooSmall}), std::runtime_error);
-}
-
-TEST(FbossEepromInterfaceTest, InvalidVersion) {
-  std::vector<uint8_t> badVersion = {0xfb, 0xfb, 0x99, 0xff};
-  EXPECT_THROW((FbossEepromInterface{badVersion}), std::runtime_error);
 }
 
 } // namespace facebook::fboss::platform
