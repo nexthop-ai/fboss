@@ -17,6 +17,10 @@
 
 namespace facebook::fboss::utils {
 
+// MTU bounds constants
+constexpr int kMtuMin = 68;
+constexpr int kMtuMax = 9216;
+
 struct LocalOption {
   std::string name;
   std::string helpMsg;

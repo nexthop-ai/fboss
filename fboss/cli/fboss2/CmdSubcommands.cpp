@@ -220,7 +220,10 @@ CLI::App* CmdSubcommands::addCommand(
           subCmd->add_option("pwm", args, "Fan PWM (0..100) or 'disable'");
           break;
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_MTU:
-          subCmd->add_option("mtu", args, "MTU value (68-9216)");
+          subCmd->add_option(
+              "mtu",
+              args,
+              fmt::format("MTU value ({}-{})", utils::kMtuMin, utils::kMtuMax));
           break;
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_INTERFACE_LIST:
           subCmd->add_option("interfaces", args, "Interface(s)");

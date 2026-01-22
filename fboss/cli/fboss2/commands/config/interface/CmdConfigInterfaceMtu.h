@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <fmt/format.h>
 #include <folly/Conv.h>
 #include <folly/String.h>
 #include "fboss/cli/fboss2/CmdHandler.h"
@@ -33,13 +34,16 @@ class MtuValue : public utils::BaseObjectArgType<int32_t> {
 
     try {
       int32_t mtu = folly::to<int32_t>(v[0]);
-      if (mtu < 68 || mtu > 9216) {
+      if (mtu < utils::kMtuMin || mtu > utils::kMtuMax) {
         throw std::invalid_argument(
-            "MTU must be between 68 and 9216 inclusive, got: " +
-            std::to_string(mtu));
+            fmt::format(
+                "MTU must be between {} and {} inclusive, got: {}",
+                utils::kMtuMin,
+                utils::kMtuMax,
+                mtu));
       }
       data_.push_back(mtu);
-    } catch (const folly::ConversionError& e) {
+    } catch (const folly::ConversionError&) {
       throw std::invalid_argument("Invalid MTU value: " + v[0]);
     }
   }
