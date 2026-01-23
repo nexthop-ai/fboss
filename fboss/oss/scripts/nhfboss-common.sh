@@ -95,6 +95,9 @@ if timeout 1 bash -c ">/dev/tcp/$SCCACHE_SCHEDULER_HOST/10600" 2>/dev/null; then
     echo Remote sccache not working!
     exit 1
   fi
+
+  # Stop the server because we haven't configured S3 yet.
+  sccache --stop-server >/dev/null 2>&1 || true
 else
   echo "Only using local sccache cache"
   COMPILE_JOBS=$(jobs_for_ram 6)
