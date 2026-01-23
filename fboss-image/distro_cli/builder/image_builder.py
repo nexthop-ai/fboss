@@ -382,8 +382,12 @@ class ImageBuilder:
                 artifact_path = component_builder.build()
 
                 # Compress artifact if needed (happens on host, outside container)
+                # Skip compression for downloaded artifacts - use them as-is
                 if artifact_path:
-                    artifact_path = self._compress_artifact(artifact_path, element_name)
+                    if "download" not in element_data:
+                        artifact_path = self._compress_artifact(
+                            artifact_path, element_name
+                        )
                     artifact_paths.append(artifact_path)
 
             self.component_artifacts[component] = (
@@ -404,7 +408,8 @@ class ImageBuilder:
         artifact_path = component_builder.build()
 
         # Compress artifact if needed (happens on host, outside container)
-        if artifact_path:
+        # Skip compression for downloaded artifacts - use them as-is
+        if artifact_path and "download" not in component_data:
             artifact_path = self._compress_artifact(artifact_path, component)
 
         self.component_artifacts[component] = artifact_path

@@ -143,6 +143,10 @@ class ArtifactStore:
 
         # Store data files
         if data_files:
+            # Replace any previously stored data for this key so we don't mix
+            # old and new artifacts (e.g., uncompressed + compressed variants).
+            if data_dir.exists():
+                shutil.rmtree(data_dir)
             data_dir.mkdir(parents=True, exist_ok=True)
             for file_path in data_files:
                 self._move_to_dir(file_path, data_dir)
@@ -150,12 +154,16 @@ class ArtifactStore:
 
         # Store metadata files
         if metadata_files:
+            # Likewise, keep metadata for this key in a clean directory so callers
+            # always see the current set from the latest operation.
+            if metadata_dir.exists():
+                shutil.rmtree(metadata_dir)
             metadata_dir.mkdir(parents=True, exist_ok=True)
             for file_path in metadata_files:
                 self._move_to_dir(file_path, metadata_dir)
             logger.info(f"Stored {len(metadata_files)} metadata file(s): {store_key}")
 
-        # Return all stored files
+        # Return all stored files (after updating the directories)
         return (
             self._get_stored_files_in_dir(data_dir),
             self._get_stored_files_in_dir(metadata_dir),
@@ -215,7 +223,14 @@ class ArtifactStore:
         Returns:
             Path to the created temporary directory
         """
-        temp_base = cls.ARTIFACT_STORE_DIR / ".tmp"
+        # Get artifact store directory
+        store_dir = (
+            get_artifact_store_dir()
+            if cls.ARTIFACT_STORE_DIR is None
+            else cls.ARTIFACT_STORE_DIR
+        )
+
+        temp_base = store_dir / ".tmp"
         temp_base.mkdir(parents=True, exist_ok=True)
         return Path(tempfile.mkdtemp(dir=temp_base, prefix=prefix))
 

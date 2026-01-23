@@ -27,7 +27,7 @@ def download_artifact(
     url: str,
     manifest_dir: Path | None = None,
     cached_data_files: list[Path] | None = None,
-    cached_metadata_files: list[Path] | None = None
+    cached_metadata_files: list[Path] | None = None,
 ) -> tuple[bool, list[Path], list[Path]]:
     """Download artifact from URL.
 
@@ -70,7 +70,7 @@ def download_artifact(
             metadata_path = cached_metadata_files[0]
             if metadata_path.name == HTTP_METADATA_FILENAME:
                 metadata = _load_http_metadata(metadata_path)
-                cached_mtime = metadata.get('mtime')
+                cached_mtime = metadata.get("mtime")
 
         # Check if file has been modified
         if cached_mtime is not None and current_mtime == cached_mtime:
@@ -80,9 +80,9 @@ def download_artifact(
         # File is new or modified - create metadata with mtime
         temp_download_dir = ArtifactStore.create_temp_dir(prefix="download-")
         metadata_path = temp_download_dir / HTTP_METADATA_FILENAME
-        metadata = {'mtime': current_mtime}
+        metadata = {"mtime": current_mtime}
         try:
-            with metadata_path.open('w') as f:
+            with metadata_path.open("w") as f:
                 json.dump(metadata, f, indent=2)
         except Exception as e:
             logger.warning(f"Failed to save file:// metadata to {metadata_path}: {e}")
@@ -114,7 +114,9 @@ def _load_http_metadata(metadata_path: Path) -> dict:
     return {}
 
 
-def _save_http_metadata(artifact_dir: Path, etag: str | None, last_modified: str | None):
+def _save_http_metadata(
+    artifact_dir: Path, etag: str | None, last_modified: str | None
+):
     """Save HTTP metadata to file.
 
     Args:
@@ -124,11 +126,11 @@ def _save_http_metadata(artifact_dir: Path, etag: str | None, last_modified: str
     """
     metadata_path = artifact_dir / HTTP_METADATA_FILENAME
     metadata = {
-        'etag': etag,
-        'last_modified': last_modified,
+        "etag": etag,
+        "last_modified": last_modified,
     }
     try:
-        with metadata_path.open('w') as f:
+        with metadata_path.open("w") as f:
             json.dump(metadata, f, indent=2)
     except Exception as e:
         logger.warning(f"Failed to save HTTP metadata to {metadata_path}: {e}")
@@ -137,7 +139,7 @@ def _save_http_metadata(artifact_dir: Path, etag: str | None, last_modified: str
 def _download_http_with_cache(
     url: str,
     cached_data_files: list[Path] | None,
-    cached_metadata_files: list[Path] | None
+    cached_metadata_files: list[Path] | None,
 ) -> tuple[bool, list[Path], list[Path]]:
     """Download from HTTP/HTTPS with caching support using ETag and Last-Modified headers.
 
@@ -165,11 +167,11 @@ def _download_http_with_cache(
 
     request = urllib.request.Request(url)
     if http_metadata:
-        if http_metadata.get('etag'):
-            request.add_header('If-None-Match', http_metadata['etag'])
+        if http_metadata.get("etag"):
+            request.add_header("If-None-Match", http_metadata["etag"])
             logger.debug(f"Added If-None-Match: {http_metadata['etag']}")
-        if http_metadata.get('last_modified'):
-            request.add_header('If-Modified-Since', http_metadata['last_modified'])
+        if http_metadata.get("last_modified"):
+            request.add_header("If-Modified-Since", http_metadata["last_modified"])
             logger.debug(f"Added If-Modified-Since: {http_metadata['last_modified']}")
 
     temp_download_dir = None
@@ -178,14 +180,14 @@ def _download_http_with_cache(
 
         # Use temporary directory on same filesystem as artifact store
         temp_download_dir = ArtifactStore.create_temp_dir(prefix="download-")
-        filename = url.split('/')[-1]
+        filename = url.split("/")[-1]
         artifact_path = temp_download_dir / filename
 
-        with artifact_path.open('wb') as f:
+        with artifact_path.open("wb") as f:
             shutil.copyfileobj(response, f)
 
-        etag = response.headers.get('ETag')
-        last_modified = response.headers.get('Last-Modified')
+        etag = response.headers.get("ETag")
+        last_modified = response.headers.get("Last-Modified")
         metadata_path = temp_download_dir / HTTP_METADATA_FILENAME
         _save_http_metadata(temp_download_dir, etag, last_modified)
         logger.debug(f"Saved HTTP metadata: ETag={etag}, Last-Modified={last_modified}")

@@ -17,10 +17,11 @@ Example:
 
 import logging
 import os
+import shutil
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
+from typing import Optional
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
@@ -107,24 +108,29 @@ def discover_dependencies() -> list[Path]:
     return dependencies
 
 
-def process_dependency(dep_path: Path, temp_dir: Path) -> None:
+def process_dependency(dep_path: Path) -> Optional[Path]:
     """Process a dependency: extract if tarball, then install RPMs.
 
     Args:
         dep_path: Path to the dependency (file or directory)
-        temp_dir: Temporary directory for extraction
+
+    Returns:
+        The directory where the dependency was extracted, or None if nothing
+        was extracted (for directory deps or missing paths).
     """
     dep_name = dep_path.name
     logger.info(f"Processing dependency '{dep_name}' at {dep_path}")
 
+    extract_dir: Optional[Path] = None
+
     if not dep_path.exists():
         logger.warning(f"Dependency path does not exist: {dep_path}")
-        return
+        return None
 
     # Determine the directory to search for RPMs
     if dep_path.is_file():
-        # It's a tarball - extract it
-        extract_dir = temp_dir / dep_name
+        # It's a tarball - extract it to /deps/<name>-extracted
+        extract_dir = DEPENDENCIES_DIR / f"{dep_name}-extracted"
         extract_dir.mkdir(parents=True, exist_ok=True)
         extract_tarball(dep_path, extract_dir)
         search_dir = extract_dir
@@ -138,6 +144,7 @@ def process_dependency(dep_path: Path, temp_dir: Path) -> None:
         install_rpms(rpms)
     else:
         logger.info(f"No RPMs found in dependency '{dep_name}'")
+    return extract_dir
 
 
 def main():
@@ -157,46 +164,50 @@ def main():
     logger.info("Dependency Installation and Build Entry Point")
     logger.info("=" * 60)
 
-    # Create temporary directory for extractions
-    with tempfile.TemporaryDirectory(prefix="dep-install-") as temp_dir:
-        temp_path = Path(temp_dir)
+    # Discover and process all dependencies
+    dependencies = discover_dependencies()
+    extract_dirs: list[Path] = []
+    if dependencies:
+        logger.info(f"Found {len(dependencies)} dependency/dependencies")
+        for dep_path in dependencies:
+            try:
+                extract_dir = process_dependency(dep_path)
+                if extract_dir is not None:
+                    extract_dirs.append(extract_dir)
+            except Exception as e:
+                logger.error(f"Failed to process dependency '{dep_path.name}': {e}")
+                sys.exit(1)
+    else:
+        logger.info("No dependencies found - proceeding with build")
 
-        # Discover and process all dependencies
-        dependencies = discover_dependencies()
-        if dependencies:
-            logger.info(f"Found {len(dependencies)} dependency/dependencies")
-            for dep_path in dependencies:
-                try:
-                    process_dependency(dep_path, temp_path)
-                except Exception as e:
-                    logger.error(f"Failed to process dependency '{dep_path.name}': {e}")
-                    sys.exit(1)
-        else:
-            logger.info("No dependencies found - proceeding with build")
+    # Execute the build command
+    logger.info("=" * 60)
+    logger.info(f"Executing build: {' '.join(build_command)}")
+    logger.info("=" * 60)
 
-        # Execute the build command
-        logger.info("=" * 60)
-        logger.info(f"Executing build: {' '.join(build_command)}")
-        logger.info("=" * 60)
+    # Set SKIP_KERNEL_INSTALL environment variable if kernel dependency was installed
+    # This should be eventually replaced with sanity checks for installed dependencies
+    # as the manifest builder is expected to support this.
+    env = os.environ.copy()
+    if dependencies:
+        # Check if any dependency is named 'kernel'
+        kernel_deps = [d for d in dependencies if "kernel" in d.name.lower()]
+        if kernel_deps:
+            env["SKIP_KERNEL_INSTALL"] = "1"
+            logger.info(
+                "Setting SKIP_KERNEL_INSTALL=1 (kernel dependency was installed)"
+            )
+    try:
+        result = subprocess.run(build_command, check=False, env=env)
+        returncode = result.returncode
+    except Exception as e:
+        logger.error(f"Failed to execute build command: {e}")
+        returncode = 1
+    finally:
+        for extract_dir in extract_dirs:
+            shutil.rmtree(extract_dir)
 
-        # Set SKIP_KERNEL_INSTALL environment variable if kernel dependency was installed
-        # This should be eventually replaced with sanity checks for installed dependencies
-        # as the manifest builder is expected to support this.
-        env = os.environ.copy()
-        if dependencies:
-            # Check if any dependency is named 'kernel'
-            kernel_deps = [d for d in dependencies if "kernel" in d.name.lower()]
-            if kernel_deps:
-                env["SKIP_KERNEL_INSTALL"] = "1"
-                logger.info(
-                    "Setting SKIP_KERNEL_INSTALL=1 (kernel dependency was installed)"
-                )
-        try:
-            result = subprocess.run(build_command, check=False, env=env)
-            sys.exit(result.returncode)
-        except Exception as e:
-            logger.error(f"Failed to execute build command: {e}")
-            sys.exit(1)
+    sys.exit(returncode)
 
 
 if __name__ == "__main__":

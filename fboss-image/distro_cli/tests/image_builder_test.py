@@ -108,13 +108,15 @@ class TestImageBuilder(unittest.TestCase):
         self.builder.build_components(components)
 
         # Verify component build was called for:
-        # 1. kernel (dependency of sai)
-        # 2. sai (requested)
-        # 3. fboss-platform-stack (requested)
+        # 1. kernel (dependency of sai, downloaded artifact)
+        # 2. sai (requested, execute build)
+        # 3. fboss-platform-stack (requested, execute build)
         self.assertEqual(mock_component_build.call_count, 3)
 
-        # Verify compression was called for each component (component mode enables compression)
-        self.assertEqual(mock_compress.call_count, 3)
+        # Only artifacts produced by execute builds are compressed; downloaded
+        # artifacts are used as-is. In this manifest, kernel is a download, so
+        # we expect compression for sai and fboss-platform-stack only.
+        self.assertEqual(mock_compress.call_count, 2)
 
         # Verify artifacts were stored
         self.assertIn("kernel", self.builder.component_artifacts)  # Built as dependency
