@@ -79,6 +79,7 @@ add_library(led_manager_lib
 
 target_link_libraries(led_manager_lib
   bsp_platform_mapping_cpp2
+  common_port_utils
   qsfp_bsp_core
   ledIO
   led_config
@@ -112,6 +113,7 @@ target_link_libraries(led_manager_lib
   tahan800bc_platform_mapping
   tahansb800bc_platform_mapping
   ladakh800bcls_platform_mapping
+  wedge400_fpga
   wedge400_platform_mapping
   wedge800bact_platform_mapping
   wedge800cact_platform_mapping
