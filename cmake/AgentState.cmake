@@ -118,7 +118,8 @@ add_library(state
 
 target_link_libraries(state
   address_utils
-  error
+  agent_features
+  fboss_error
   platform_config_cpp2
   switch_config_cpp2
   switch_state_cpp2
@@ -134,7 +135,6 @@ target_link_libraries(state
   thrift_cow_nodes
   Folly::folly
   lacp_types
-  agent_features
 )
 
 set_target_properties(state PROPERTIES COMPILE_FLAGS "-DENABLE_DYNAMIC_APIS")
@@ -144,7 +144,7 @@ add_library(state_utils
 )
 
 target_link_libraries(state_utils
-  error
+  fboss_error
   fboss_types
   hwswitch_matcher
   state
@@ -157,7 +157,8 @@ add_library(label_forwarding_action
 )
 
 target_link_libraries(label_forwarding_action
-  error
+  ctrl_cpp2
+  fboss_error
   fboss_cpp2
   Folly::folly
 )
