@@ -15,8 +15,12 @@
       {"execute": "../../fboss-bsp/distro_build.sh"}
   ],
   "sai": {
+    "execute": "../../nhbroadcomsai/fboss-xgs/build_fboss_sai.sh",
+    "artifact": "sai-devel.tar"
   },
   "fboss-forwarding-stack": {
+    "execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "forwarding"],
+    "artifact": "forwarding-stack.tar"
   },
   "image_build_hooks": {
      "after_pkgs_install": "nexthop-extra-pkgs.json"

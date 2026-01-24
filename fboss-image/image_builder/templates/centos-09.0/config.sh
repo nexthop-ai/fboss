@@ -93,6 +93,21 @@ for component_dir in /repos/*; do
     createrepo /usr/local/share/local_rpm_repo
     ;;
 
+  fboss-forwarding-stack)
+    echo "Processing component: $component_name"
+    tarballs=("$component_dir"/*.tar*)
+    if [ ${#tarballs[@]} -eq 0 ]; then
+      echo "  No $component_name tarball found in $component_dir, skipping $component_name install"
+    elif [ ${#tarballs[@]} -gt 1 ]; then
+      echo "  Multiple $component_name tarballs found in $component_dir, skipping $component_name install"
+    else
+      tarball="${tarballs[0]}"
+      echo "  Extracting $component_name tarball..."
+      mkdir -p /opt/fboss
+      tar -C /opt/fboss -xf "$tarball"
+    fi
+    ;;
+
   *)
     echo "Skipping component: $component_name (no handler defined)"
     ;;
