@@ -1087,7 +1087,6 @@ add_dependencies(fboss2_targets
 
 if (SAI_IMPL OR BUILD_SAI_FAKE)
   add_custom_target(fboss_forwarding_stack)
-
   # Common forwarding services
   add_dependencies(fboss_forwarding_stack
     diag_shell_client

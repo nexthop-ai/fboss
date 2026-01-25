@@ -10,6 +10,8 @@
   "other_dependencies": [
   ],
   "fboss-platform-stack": {
+    "execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "platform"],
+    "artifact": "platform-stack.tar"
   },
   "bsps": [
       {"execute": "../../fboss-bsp/distro_build.sh"}

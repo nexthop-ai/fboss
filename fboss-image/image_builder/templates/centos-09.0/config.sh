@@ -93,7 +93,7 @@ for component_dir in /repos/*; do
     createrepo /usr/local/share/local_rpm_repo
     ;;
 
-  fboss-forwarding-stack)
+  fboss-forwarding-stack | fboss-platform-stack)
     echo "Processing component: $component_name"
     tarballs=("$component_dir"/*.tar*)
     if [ ${#tarballs[@]} -eq 0 ]; then
