@@ -1,8 +1,0 @@
-{
-  "distribution_formats": {
-    "usb": "output/test-image.iso"
-  },
-  "kernel": {
-    "execute": ["../../../kernel/scripts/build_kernel.sh", "--kernel-version", "6.11.1"]
-  }
-}
