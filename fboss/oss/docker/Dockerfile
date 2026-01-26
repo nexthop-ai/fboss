@@ -49,7 +49,7 @@ RUN dnf install -y 'dnf-command(config-manager)' && \
     dnf download libtool && \
     rpm -ivh --nodeps libtool-*.rpm && \
     rm -f libtool-*.rpm && \
-    python3 -m pip install boto3 botocore gitpython meson jinja2
+    python3 -m pip install boto3 botocore gitpython meson jinja2 pytest
 
 # Install clang-format version 21 from LLVM official releases because CentOS Stream 9 is still on version 20.
 # Extract the version from .pre-commit-config.yaml to ensure consistency.
