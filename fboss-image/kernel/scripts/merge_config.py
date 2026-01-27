@@ -12,6 +12,7 @@ import sys
 import pathlib
 import re
 
+
 def main(argv):
     if len(argv) != 3:
         sys.stderr.write("Usage: merge_config.py <config_path> <overlay_path>\n")
@@ -20,8 +21,8 @@ def main(argv):
     cfg_lines = pathlib.Path(cfg_path).read_text().splitlines()
     overlay_lines = pathlib.Path(overlay_path).read_text().splitlines()
 
-    VAL_RE = re.compile(r'^CONFIG_([^=]+)=(.*)$')
-    NS_RE  = re.compile(r'^#\s*CONFIG_([^\s]+)\s+is\s+not\s+set\s*$')
+    VAL_RE = re.compile(r"^CONFIG_([^=]+)=(.*)$")
+    NS_RE = re.compile(r"^#\s*CONFIG_([^\s]+)\s+is\s+not\s+set\s*$")
 
     # Build updates from overlay, keeping only the last occurrence per key
     updates = {}
@@ -31,14 +32,16 @@ def main(argv):
         if not line:
             continue
         # Skip pure comments except the canonical "not set" form
-        if line.startswith('#') and not NS_RE.match(line):
+        if line.startswith("#") and not NS_RE.match(line):
             continue
         m_val = VAL_RE.match(line)
         m_ns = None if m_val else NS_RE.match(line)
         if not (m_val or m_ns):
             continue
         key = (m_val or m_ns).group(1)
-        repl = f'CONFIG_{key}={m_val.group(2)}' if m_val else f'# CONFIG_{key} is not set'
+        repl = (
+            f"CONFIG_{key}={m_val.group(2)}" if m_val else f"# CONFIG_{key} is not set"
+        )
         if key in updates:
             try:
                 order.remove(key)
@@ -61,9 +64,9 @@ def main(argv):
     for k in order:
         out.append(updates[k])
 
-    pathlib.Path(cfg_path).write_text('\n'.join(out) + '\n')
+    pathlib.Path(cfg_path).write_text("\n".join(out) + "\n")
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
-

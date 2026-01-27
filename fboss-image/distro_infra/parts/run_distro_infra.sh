@@ -42,7 +42,7 @@ else
       ;;
     *)
       if [[ $1 != "" ]]; then
-        echo "Error: Unrecognized arst command option: '${1}'"
+        echo "Error: Unrecognized command option: '${1}'"
         help
         exit 1
       fi
@@ -58,8 +58,8 @@ if [[ -z $INTERFACE ]]; then
   exit 1
 fi
 
-v4_ip=$(ip -4 addr show dev $INTERFACE | awk -F '[[:space:]/]+' '/inet/{print $3}')
-v6_ip=$(ip -6 addr show dev $INTERFACE scope global | awk -F '[[:space:]/]+' '/inet6/{print $3; exit}')
+v4_ip=$(ip -4 addr show dev "$INTERFACE" | awk -F '[[:space:]/]+' '/inet/{print $3}')
+v6_ip=$(ip -6 addr show dev "$INTERFACE" scope global | awk -F '[[:space:]/]+' '/inet6/{print $3; exit}')
 echo "Listening on ${INTERFACE} - ${v4_ip} & ${v6_ip}"
 
 mkdir -m 777 /distro_infra/persistent/cache 2>/dev/null
@@ -82,7 +82,7 @@ else
   --dhcp-option=tag:fbossdut,option6:bootfile-url,tftp://[${v6_ip}]/ipxev6.efi"
 fi
 
-dnsmasq --interface=${INTERFACE} --no-daemon \
+dnsmasq --interface="${INTERFACE}" --no-daemon \
   --log-debug --log-dhcp \
   --port=0 \
   --enable-tftp \
@@ -91,7 +91,7 @@ dnsmasq --interface=${INTERFACE} --no-daemon \
   --tftp-secure \
   --dhcp-script=/distro_infra/post_tftp.sh \
   --dhcp-hostsdir=/distro_infra/dnsmasq_conf.d \
-  --dhcp-range=tag:fbossdut,${v4_ip},proxy \
+  --dhcp-range=tag:fbossdut,"${v4_ip}",proxy \
   --pxe-service=tag:fbossdut,x86-64_EFI,ipxe,ipxev4.efi \
   ${dhcpv6_conf} &
 
@@ -107,26 +107,26 @@ while read -rp "Enter MAC address (blank to exit): " mac; do
     continue
   fi
 
-  dashmac=$(echo $mac | tr '[:upper:]:' '[:lower:]-')
-  colonmac=$(echo $dashmac | tr '-' ':')
+  dashmac=$(echo "$mac" | tr '[:upper:]:' '[:lower:]-')
+  colonmac=$(echo "$dashmac" | tr '-' ':')
 
-  mkdir -m 777 /distro_infra/persistent/${dashmac} 2>/dev/null
-  ln -f /distro_infra/persistent/cache/ipxev4.efi /distro_infra/persistent/${dashmac}/ipxev4.efi
-  ln -f /distro_infra/persistent/cache/ipxev6.efi /distro_infra/persistent/${dashmac}/ipxev6.efi
-  ln -f /distro_infra/persistent/cache/autoexec.ipxe /distro_infra/persistent/${dashmac}/autoexec.ipxe
-  touch /distro_infra/persistent/${dashmac}/pxeboot_complete
+  mkdir -m 777 "/distro_infra/persistent/${dashmac}" 2>/dev/null
+  ln -f /distro_infra/persistent/cache/ipxev4.efi "/distro_infra/persistent/${dashmac}/ipxev4.efi"
+  ln -f /distro_infra/persistent/cache/ipxev6.efi "/distro_infra/persistent/${dashmac}/ipxev6.efi"
+  ln -f /distro_infra/persistent/cache/autoexec.ipxe "/distro_infra/persistent/${dashmac}/autoexec.ipxe"
+  touch "/distro_infra/persistent/${dashmac}/pxeboot_complete"
 
   # IPv6
   # When booting over IPv6, iPXE only receives a fully-formed bootfile-url DHCPv6 option and it appears there is no
   # way to give just iPXE other options. bootfile-url becomes the iPXE ${filename} setting, but is a full URL and iPXE
   # scripting is not powerful enough to extract just the server IP from it so we can use HTTP downloading for the
   # large artifacts.  Thus we autogenerate this iPXE script simply to set the server IP to be used by autoexec.ipxe.
-  echo "#!ipxe" >/distro_infra/persistent/${dashmac}/ipxev6.efi-serverip
-  echo "set server_ip [${v6_ip}]" >>/distro_infra/persistent/${dashmac}/ipxev6.efi-serverip
-  echo "imgexec autoexec.ipxe" >>/distro_infra/persistent/${dashmac}/ipxev6.efi-serverip
+  echo "#!ipxe" >"/distro_infra/persistent/${dashmac}/ipxev6.efi-serverip"
+  echo "set server_ip [${v6_ip}]" >>"/distro_infra/persistent/${dashmac}/ipxev6.efi-serverip"
+  echo "imgexec autoexec.ipxe" >>"/distro_infra/persistent/${dashmac}/ipxev6.efi-serverip"
 
   # Activate IPv4 and IPv6
-  echo "${colonmac},id:*,set:fbossdut" >/distro_infra/dnsmasq_conf.d/${dashmac}
+  echo "${colonmac},id:*,set:fbossdut" >"/distro_infra/dnsmasq_conf.d/${dashmac}"
 
   sleep 1 # Wait for dnsmasq log spew
 done

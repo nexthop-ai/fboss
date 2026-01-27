@@ -7,9 +7,9 @@ handle_error() {
   RC=$1
   msg=$2
 
-  if [ ${RC} -ne 0 ]; then
+  if [ "${RC}" -ne 0 ]; then
     dprint "ERROR: rc=${RC}, ${msg}"
-    exit ${RC}
+    exit "${RC}"
   fi
 }
 
@@ -18,7 +18,7 @@ PREVIOUS_TS=$SECONDS
 dprint() {
   NOW=$(date "+%T")
   DELTA=$((SECONDS - PREVIOUS_TS))
-  MSG=$(TZ=UTC0 printf '%s | %(%H:%M:%S)T | %(%H:%M:%S)T | %s' $NOW $DELTA $SECONDS "$*")
+  MSG=$(TZ=UTC0 printf '%s | %(%H:%M:%S)T | %(%H:%M:%S)T | %s' "$NOW" "$DELTA" "$SECONDS" "$*")
   echo "${MSG}"
   if [[ -n ${LOG_FILE} ]]; then
     echo "${MSG}" >>"${LOG_FILE}"
@@ -39,11 +39,13 @@ validate_kernel_version() {
 delete_docker_containers() {
   # Delete all containers using the specified image
   DOCKER_INAME=$1
-  docker stop "$(docker ps -a -q --filter ancestor=${DOCKER_INAME})" >>${LOG_FILE} 2>&1
-  docker rm "$(docker ps -a -q --filter ancestor=${DOCKER_INAME})" >>${LOG_FILE} 2>&1
+  # shellcheck disable=SC2046
+  docker stop $(docker ps -a -q --filter ancestor="${DOCKER_INAME}") >>"${LOG_FILE}" 2>&1
+  # shellcheck disable=SC2046
+  docker rm $(docker ps -a -q --filter ancestor="${DOCKER_INAME}") >>"${LOG_FILE}" 2>&1
 }
 
 delete_docker_image() {
   DOCKER_INAME=$1
-  docker rmi "${DOCKER_INAME}" >>${LOG_FILE} 2>&1
+  docker rmi "${DOCKER_INAME}" >>"${LOG_FILE}" 2>&1
 }

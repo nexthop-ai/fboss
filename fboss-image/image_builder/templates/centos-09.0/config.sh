@@ -123,6 +123,7 @@ shopt -u nullglob
 
 # 2. Define paths
 # Detect the installed kernel version from the boot directory
+# shellcheck disable=SC2012
 VMLINUZ_PATH=$(ls /boot/vmlinuz-* 2>/dev/null | head -n 1)
 if [ -z "$VMLINUZ_PATH" ]; then
   echo "Error: No vmlinuz found in /boot"
@@ -131,6 +132,7 @@ fi
 
 KERNEL_VERSION=$(basename "$VMLINUZ_PATH" | sed 's/^vmlinuz-//')
 # Detect the initrd path from the boot directory
+# shellcheck disable=SC2012
 INITRD_PATH=$(ls /boot/initramfs-* 2>/dev/null | head -n 1)
 if [ -z "$INITRD_PATH" ]; then
   echo "Error: No initramfs found in /boot"
@@ -145,14 +147,14 @@ echo "Initrd path: ${INITRD_PATH}"
 #    --force is needed to overwrite any existing file
 #    --kver specifies the kernel version to build for
 echo "Running dracut manually..."
-dracut --force --kver ${KERNEL_VERSION} ${INITRD_PATH}
+dracut --force --kver "${KERNEL_VERSION}" "${INITRD_PATH}"
 
 # 4. Run kernel-install for grub config
 # This wipes ALL interfering variables set by kiwi-ng
 # and runs kernel-install in a "sterile" environment.
 env -i \
   PATH="/usr/bin:/usr/sbin:/bin:/sbin" \
-  kernel-install add ${KERNEL_VERSION} ${VMLINUZ_PATH} --initrd-file ${INITRD_PATH}
+  kernel-install add "${KERNEL_VERSION}" "${VMLINUZ_PATH}" --initrd-file "${INITRD_PATH}"
 echo "Custom kernel ${KERNEL_VERSION} install complete."
 
 # 5. Configure SSH to allow password authentication and root login

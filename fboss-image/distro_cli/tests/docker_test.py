@@ -20,7 +20,7 @@ class TestDockerInfrastructure(unittest.TestCase):
         exit_code = run_container(
             image=FBOSS_BUILDER_IMAGE,
             command=["echo", "hello from container"],
-            ephemeral=True
+            ephemeral=True,
         )
         self.assertEqual(exit_code, 0)
 

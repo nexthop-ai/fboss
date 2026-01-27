@@ -33,14 +33,14 @@ trap cleanup EXIT
 # Use the first kernel version from FBOSS_KERNEL_VERSIONS array
 TEST_KERNEL_VERSION="${FBOSS_KERNEL_VERSIONS[0]}"
 python3 "$KERNEL_SCRIPTS_DIR/generate_config_overrides.py" \
-    "$KERNEL_CONFIGS_DIR/fboss-local-overrides.yaml" \
-    "$TEST_KERNEL_VERSION" \
-    "$OVR_CONFIG"
+  "$KERNEL_CONFIGS_DIR/fboss-local-overrides.yaml" \
+  "$TEST_KERNEL_VERSION" \
+  "$OVR_CONFIG"
 
 mkdir -p "$FAKE_KERNEL_DIR"
 
 # Minimal fake kernel Makefile providing defconfig and olddefconfig
-cat > "$FAKE_KERNEL_DIR/Makefile" << 'EOF'
+cat >"$FAKE_KERNEL_DIR/Makefile" <<'EOF'
 ARCH ?= x86_64
 
 defconfig:
@@ -60,7 +60,9 @@ cd "$FAKE_KERNEL_DIR"
 
 # Helper: assert a grep matches
 assert_grep() {
-  local pattern="$1"; local file="$2"; local msg="$3"
+  local pattern="$1"
+  local file="$2"
+  local msg="$3"
   if ! grep -qE "$pattern" "$file"; then
     echo "FAIL: $msg" >&2
     echo "Searched pattern: $pattern" >&2
@@ -72,7 +74,9 @@ assert_grep() {
 
 # Helper: assert a grep does NOT match
 assert_not_grep() {
-  local pattern="$1"; local file="$2"; local msg="$3"
+  local pattern="$1"
+  local file="$2"
+  local msg="$3"
   if grep -qE "$pattern" "$file"; then
     echo "FAIL: $msg" >&2
     echo "Unexpectedly matched pattern: $pattern" >&2
@@ -85,9 +89,9 @@ assert_not_grep() {
 CFG=".config"
 
 # 1) FBOSS reference presence (pick stable, known entries)
-assert_grep '^CONFIG_NET_NS=y$'        "$CFG" "FBOSS ref: NET_NS present"
-assert_grep '^CONFIG_BRIDGE=m$'        "$CFG" "FBOSS ref: BRIDGE=m present"
-assert_grep '^CONFIG_VLAN_8021Q=m$'    "$CFG" "FBOSS ref: VLAN_8021Q=m present"
+assert_grep '^CONFIG_NET_NS=y$' "$CFG" "FBOSS ref: NET_NS present"
+assert_grep '^CONFIG_BRIDGE=m$' "$CFG" "FBOSS ref: BRIDGE=m present"
+assert_grep '^CONFIG_VLAN_8021Q=m$' "$CFG" "FBOSS ref: VLAN_8021Q=m present"
 
 # 2) Overrides are applied exactly (set to empty string) and no duplicates remain
 # CONFIG_BOOT_CONFIG_EMBED_FILE
@@ -118,8 +122,7 @@ else
 fi
 
 # 3) Sanity: defconfig contributions still present
-assert_grep '^CONFIG_64BIT=y$'  "$CFG" "defconfig: 64BIT present"
+assert_grep '^CONFIG_64BIT=y$' "$CFG" "defconfig: 64BIT present"
 assert_grep '^CONFIG_X86_64=y$' "$CFG" "defconfig: X86_64 present"
 
 echo "All real-merge assertions passed."
-

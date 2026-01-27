@@ -364,4 +364,4 @@ def build_fboss_builder_image() -> None:
         _push_to_registry(checksum)
 
     except subprocess.CalledProcessError as e:
-        raise RuntimeError(f"Failed to build {FBOSS_BUILDER_IMAGE} image: {e}")
+        raise RuntimeError(f"Failed to build {FBOSS_BUILDER_IMAGE} image: {e}") from e

@@ -2,7 +2,7 @@ Distro Infrastructure
 =====================
 
 This directory contains the FBOSS Distro Infracture container. Right now it provides only the necessary support for IPv4
-PXE boot.
+and IPv6 PXE boot. Under IPv4 the network must have a DHCP server providing IP addresses.
 
 Building
 --------

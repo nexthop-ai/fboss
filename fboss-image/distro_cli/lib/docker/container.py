@@ -91,5 +91,7 @@ def run_container(
         )
         logger.info(f"Container exited with code: {result.returncode}")
         return result.returncode
-    except FileNotFoundError:
-        raise RuntimeError("Docker command not found. Is Docker installed and in PATH?")
+    except FileNotFoundError as e:
+        raise RuntimeError(
+            "Docker command not found. Is Docker installed and in PATH?"
+        ) from e

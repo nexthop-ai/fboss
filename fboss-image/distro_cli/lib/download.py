@@ -212,10 +212,10 @@ def _download_http_with_cache(
         # Clean up temp dir on error
         if temp_download_dir:
             ArtifactStore.delete_temp_dir(temp_download_dir)
-        raise ArtifactError(f"HTTP error {e.code} downloading {url}: {e}")
+        raise ArtifactError(f"HTTP error {e.code} downloading {url}: {e}") from e
 
     except Exception as e:
         # Clean up temp dir on error
         if temp_download_dir:
             ArtifactStore.delete_temp_dir(temp_download_dir)
-        raise ArtifactError(f"Failed to download {url}: {e}")
+        raise ArtifactError(f"Failed to download {url}: {e}") from e

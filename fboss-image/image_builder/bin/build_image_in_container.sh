@@ -10,15 +10,15 @@
 ln -sfn /image_builder/deps_staging /deps
 
 # Get the full path to the workspace root directory where everything lives
-WSROOT=$(cd "$(dirname "$0")"/.. && pwd)
+WSROOT=$(cd "$(dirname "$0")/.." && pwd)
 
 # Change directory full path to correct levels up from the script location so that we can include
 # the functions.sh file
-SCRIPT_DIR="${WSROOT}/bin"
 LOG_DIR="${WSROOT}/logs"
 
 # Source common functions
-source ${WSROOT}/lib/functions.sh
+# shellcheck disable=SC1091
+source "${WSROOT}/lib/functions.sh"
 
 # Save all arguments for later use
 ORIGINAL_ARGS=("$0" "$@")
@@ -35,7 +35,7 @@ AFTER_PKGS_EXECUTE_FILE=""
 # User configurable variables
 DEPS_DIR="" # Component artifacts directory
 
-mkdir -p ${LOG_DIR}
+mkdir -p "${LOG_DIR}"
 LOG_FILE="${LOG_DIR}/build_image_in_container.log"
 
 help() {
@@ -94,7 +94,7 @@ build_onie_installer() {
   pushd ${TARGET_DIR}/onie >/dev/null
 
   mkdir -p onie_installer
-  templates_dir="${SCRIPT_DIR}/../templates/onie"
+  templates_dir="${WSROOT}/templates/onie"
 
   cp ${templates_dir}/distro-setup.sh.tmpl onie_installer/distro-setup.sh
   chmod a+x onie_installer/distro-setup.sh
@@ -188,7 +188,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Log everything for posterity ;-)
-true >${LOG_FILE} # Truncate log file
+true >"${LOG_FILE}" # Truncate log file
 export LOG_FILE
 
 dprint "Script launch cmdline: ${ORIGINAL_ARGS[*]}"
@@ -203,19 +203,19 @@ fi
 
 # Update the docker image
 dprint "Updating docker image..."
-update_docker |& tee -a ${LOG_FILE}
+update_docker |& tee -a "${LOG_FILE}"
 
 # Create the output directory (in case it doesn't exist)
-mkdir -p ${TARGET_DIR}
-chmod 777 ${TARGET_DIR}
+mkdir -p "${TARGET_DIR}"
+chmod 777 "${TARGET_DIR}"
 
-rm -f ${DESCRIPTION_DIR}/root.tar.gz # Remove any existing tar file
+rm -f "${DESCRIPTION_DIR}/root.tar.gz" # Remove any existing tar file
 
 # Hardlink component artifacts to root/repos for processing in config.sh. When
 # no explicit --deps is provided, use /deps (which resolves into the
 # /image_builder filesystem) so that cp -la does not cross mount boundaries.
-rm -rf ${DESCRIPTION_DIR}/root/repos
-mkdir -p ${DESCRIPTION_DIR}/root/repos
+rm -rf "${DESCRIPTION_DIR}/root/repos"
+mkdir -p "${DESCRIPTION_DIR}/root/repos"
 
 EFFECTIVE_DEPS_DIR="${DEPS_DIR:-/deps}"
 
@@ -226,11 +226,11 @@ fi
 
 dprint "Copying /etc/resolv.conf to ${DESCRIPTION_DIR}/root/etc/resolv.conf..."
 # Pass /etc/resolv.conf to the chrooted environment
-mkdir -p ${DESCRIPTION_DIR}/root/etc
-cp /etc/resolv.conf ${DESCRIPTION_DIR}/root/etc/
+mkdir -p "${DESCRIPTION_DIR}/root/etc"
+cp /etc/resolv.conf "${DESCRIPTION_DIR}/root/etc/"
 
 # Add build timestamp to the image
-echo "Built on: $(date -u)" >$DESCRIPTION_DIR/root/etc/build-info
+echo "Built on: $(date -u)" >"$DESCRIPTION_DIR/root/etc/build-info"
 
 # Copy rootfs template files to overlay
 dprint "Copying rootfs files to overlay..."
@@ -325,4 +325,4 @@ fi
 
 RC=$((PXE_RC + ONIE_RC))
 dprint "Image generation completed with exit code ${RC}"
-exit ${RC}
+exit "${RC}"
