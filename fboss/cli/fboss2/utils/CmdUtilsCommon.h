@@ -69,6 +69,7 @@ enum class ObjectArgTypeId : uint8_t {
   OBJECT_ARG_TYPE_ID_BUFFER_POOL_NAME,
   OBJECT_ARG_TYPE_ID_BUFFER_BYTES,
   OBJECT_ARG_TYPE_VLAN_ID,
+  OBJECT_ARG_TYPE_MAC_AND_PORT,
 };
 
 template <typename T>

@@ -32,6 +32,10 @@
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionCommit.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionDiff.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionRebase.h"
+#include "fboss/cli/fboss2/commands/config/vlan/CmdConfigVlan.h"
+#include "fboss/cli/fboss2/commands/config/vlan/static_mac/CmdConfigVlanStaticMac.h"
+#include "fboss/cli/fboss2/commands/config/vlan/static_mac/add/CmdConfigVlanStaticMacAdd.h"
+#include "fboss/cli/fboss2/commands/config/vlan/static_mac/delete/CmdConfigVlanStaticMacDelete.h"
 // NOLINTEND(misc-include-cleaner)
 
 namespace facebook::fboss {
@@ -74,5 +78,13 @@ template void CmdHandler<
 template void CmdHandler<
     CmdConfigQosBufferPoolReservedBytes,
     CmdConfigQosBufferPoolReservedBytesTraits>::run();
+template void CmdHandler<CmdConfigVlan, CmdConfigVlanTraits>::run();
+template void
+CmdHandler<CmdConfigVlanStaticMac, CmdConfigVlanStaticMacTraits>::run();
+template void
+CmdHandler<CmdConfigVlanStaticMacAdd, CmdConfigVlanStaticMacAddTraits>::run();
+template void CmdHandler<
+    CmdConfigVlanStaticMacDelete,
+    CmdConfigVlanStaticMacDeleteTraits>::run();
 
 } // namespace facebook::fboss
