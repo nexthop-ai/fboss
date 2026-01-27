@@ -20,9 +20,13 @@ filepath=$4
 case "$filepath" in
 /distro_infra/persistent/*/pxeboot_complete)
   mac=$(echo "$filepath" | cut -d/ -f4)
+<<<<<<< HEAD
   # Prevent PXE boot from succeeding if there is an external authoritative DHCPv6 server with an unchanging config
   rm /distro_infra/persistent/$mac/ipxev*.efi
   # Prevent dnsmasq from responding to this MAC if it is authoritative
+||||||| f95e8352f8
+=======
+>>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
   rm -rf "/distro_infra/dnsmasq_conf.d/$mac"
   killall -HUP dnsmasq
   echo "$mac PXE booted, disabling future PXE boot provisioning"

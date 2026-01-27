@@ -84,7 +84,12 @@ target_link_libraries(hw_switch_fb303_stats
 
 target_link_libraries(hw_fb303_stats
   counter_utils
+<<<<<<< HEAD
   fboss_error
+||||||| f95e8352f8
+=======
+  error
+>>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
   fb303::fb303
   Folly::folly
   switch_config_cpp2

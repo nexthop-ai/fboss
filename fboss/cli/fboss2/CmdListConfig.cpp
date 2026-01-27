@@ -17,6 +17,7 @@
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceDescription.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceMtu.h"
+<<<<<<< HEAD
 #include "fboss/cli/fboss2/commands/config/interface/switchport/CmdConfigInterfaceSwitchport.h"
 #include "fboss/cli/fboss2/commands/config/interface/switchport/access/CmdConfigInterfaceSwitchportAccess.h"
 #include "fboss/cli/fboss2/commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.h"
@@ -25,6 +26,9 @@
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolHeadroomBytes.h"
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolReservedBytes.h"
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolSharedBytes.h"
+||||||| f95e8352f8
+=======
+>>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
 #include "fboss/cli/fboss2/commands/config/rollback/CmdConfigRollback.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionCommit.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionDiff.h"
@@ -63,6 +67,7 @@ const CommandTree& kConfigCommandTree() {
                "Set interface MTU",
                commandHandler<CmdConfigInterfaceMtu>,
                argTypeHandler<CmdConfigInterfaceMtuTraits>,
+<<<<<<< HEAD
            },
            {
                "switchport",
@@ -115,6 +120,10 @@ const CommandTree& kConfigCommandTree() {
                    argTypeHandler<CmdConfigQosBufferPoolReservedBytesTraits>,
                }},
           }},
+||||||| f95e8352f8
+=======
+           }},
+>>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
       },
 
       {

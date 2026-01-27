@@ -32,7 +32,12 @@ add_library(switch_asics
 
 target_link_libraries(switch_asics
   agent_features
+<<<<<<< HEAD
   fboss_error
+||||||| f95e8352f8
+=======
+  error
+>>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
   fboss_cpp2
   fboss_types
   phy_cpp2

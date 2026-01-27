@@ -191,3 +191,12 @@ target_link_libraries(bmc_rest_client
   rest_client
   Folly::folly
 )
+
+add_library(thrift_service_utils
+  fboss/lib/oss/ThriftServiceUtils.cpp
+)
+
+target_link_libraries(thrift_service_utils
+  Folly::folly
+  FBThrift::thriftcpp2
+)

@@ -10,7 +10,11 @@ add_library(qsfp_stats
 
 target_link_libraries(qsfp_stats
   fboss_types
+<<<<<<< HEAD
   transceiver_cpp2
+||||||| f95e8352f8
+=======
+>>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
   transceiver_manager
   Folly::folly
 )
@@ -190,6 +194,7 @@ add_library(tahansb800bc_bsp
 
 target_link_libraries(tahansb800bc_bsp
   bsp_platform_mapping
+<<<<<<< HEAD
   bsp_platform_mapping_cpp2
   FBThrift::thriftcpp2
 )
@@ -200,6 +205,9 @@ add_library(nh4010_bsp
 
 target_link_libraries(nh4010_bsp
   bsp_platform_mapping
+||||||| f95e8352f8
+=======
+>>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
   bsp_platform_mapping_cpp2
   FBThrift::thriftcpp2
 )
@@ -370,6 +378,7 @@ add_library(qsfp_core
 
 target_link_libraries(qsfp_core
   qsfp_handler
+  thrift_service_utils
 )
 
 set(QSFP_SERVICE_SRCS

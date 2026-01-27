@@ -118,8 +118,14 @@ add_library(state
 
 target_link_libraries(state
   address_utils
+<<<<<<< HEAD
   agent_features
   fboss_error
+||||||| f95e8352f8
+  error
+=======
+  error
+>>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
   platform_config_cpp2
   switch_config_cpp2
   switch_state_cpp2

@@ -12,8 +12,15 @@ add_library(standalone_rib
 
 target_link_libraries(standalone_rib
   network_to_route_map
+  nexthop_id_manager
   address_utils
+<<<<<<< HEAD
   fboss_error
+||||||| f95e8352f8
+  error
+=======
+  error
+>>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
   fboss_event_base
   fboss_types
   switch_config_cpp2
@@ -42,8 +49,19 @@ add_library(fib_updater
 
 target_link_libraries(fib_updater
   network_to_route_map
+  nexthop_id_manager
   standalone_rib
   fboss_types
   state
   Folly::folly
+)
+
+add_library(nexthop_id_manager
+  fboss/agent/rib/NextHopIDManager.cpp
+)
+
+target_link_libraries(nexthop_id_manager
+  error
+  fboss_types
+  state
 )

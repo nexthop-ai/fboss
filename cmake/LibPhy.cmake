@@ -11,7 +11,11 @@ add_library(external_phy
 target_link_libraries(external_phy
   alert_logger
   ctrl_cpp2
+<<<<<<< HEAD
   fboss_error
+||||||| f95e8352f8
+=======
+>>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
   fboss_types
   mdio
   platform_config_cpp2

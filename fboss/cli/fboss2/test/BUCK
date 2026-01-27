@@ -1,3 +1,4 @@
+load("@fbcode_macros//build_defs:cpp_binary.bzl", "cpp_binary")
 load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")
 load("@fbcode_macros//build_defs:cpp_unittest.bzl", "cpp_unittest")
 
@@ -20,6 +21,7 @@ cpp_library(
         "//fboss/cli/fboss2:fboss2-config-lib",
         "//fboss/cli/fboss2:fboss2-lib",
         "//fboss/cli/fboss2:options",
+        "//fboss/lib:thrift_service_utils",
         "//fboss/qsfp_service/if:qsfp-cpp2-services",
         "//fboss/qsfp_service/if:transceiver-cpp2-types",
         "//folly:network_address",
@@ -65,8 +67,12 @@ cpp_unittest(
         "CmdConfigHistoryTest.cpp",
         "CmdConfigInterfaceDescriptionTest.cpp",
         "CmdConfigInterfaceMtuTest.cpp",
+<<<<<<< HEAD
         "CmdConfigInterfaceSwitchportAccessVlanTest.cpp",
         "CmdConfigQosBufferPoolTest.cpp",
+||||||| f95e8352f8
+=======
+>>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
         "CmdConfigReloadTest.cpp",
         "CmdConfigSessionDiffTest.cpp",
         "CmdConfigSessionTest.cpp",
@@ -120,6 +126,7 @@ cpp_unittest(
         "//fboss/agent:address_utils",
         "//fboss/agent/if:common-cpp2-types",
         "//fboss/agent/if:ctrl-cpp2-types",
+        "//fboss/cli/fboss2:cmd-common-utils",
         "//fboss/cli/fboss2:fboss2-config-lib",
         "//fboss/cli/fboss2:fboss2-lib",
         "//fboss/cli/fboss2/commands/show/acl:model-cpp2-types",
@@ -157,5 +164,29 @@ cpp_unittest(
     external_deps = [
         ("boost", None, "boost_algorithm"),
         ("boost", None, "boost_filesystem"),
+    ],
+)
+
+# Thrift RPC Latency Test - Comprehensive Backend Comparison
+#
+# This test demonstrates the performance difference between various EventBase
+# backends for Thrift RPC calls. It runs all three backends (LibEvent, Epoll,
+# IoUring) sequentially and reports average/max latency for each.
+#
+# Run with: buck2 run fbcode//fboss/cli/fboss2/test:thrift_latency_test
+cpp_binary(
+    name = "thrift_latency_test",
+    srcs = [
+        "thrift_latency_test.cpp",
+    ],
+    deps = [
+        "//fboss/agent/if:ctrl-cpp2-services",
+        "//fboss/lib:thrift_service_utils_oss",
+        "//folly/init:init",
+        "//folly/io/async:async_base",
+        "//folly/io/async:epoll",
+        "//thrift/lib/cpp2:server",
+        "//thrift/lib/cpp2/async:rocket_client_channel",
+        "//thrift/lib/cpp2/util:util",
     ],
 )
