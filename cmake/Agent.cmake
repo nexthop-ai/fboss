@@ -11,11 +11,7 @@ add_library(setup_thrift
 target_link_libraries(setup_thrift
   load_agent_config
   thrift_method_rate_limit
-<<<<<<< HEAD
-||||||| f95e8352f8
-=======
   thrift_service_utils
->>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
   Folly::folly
   FBThrift::thriftcpp2
 )
@@ -510,13 +506,7 @@ target_link_libraries(platform_base
   agent_config_cpp2
   agent_dir_util
   ctrl_cpp2
-<<<<<<< HEAD
   fboss_error
-||||||| f95e8352f8
-  error
-=======
-  error
->>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
   fboss_event_base
   fboss_types
   Folly::folly

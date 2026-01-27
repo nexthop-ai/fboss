@@ -795,24 +795,16 @@ cpp_library(
         "commands/config/history/CmdConfigHistory.cpp",
         "commands/config/interface/CmdConfigInterfaceDescription.cpp",
         "commands/config/interface/CmdConfigInterfaceMtu.cpp",
-<<<<<<< HEAD
         "commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.cpp",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPoolHeadroomBytes.cpp",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPoolReservedBytes.cpp",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPoolSharedBytes.cpp",
-||||||| f95e8352f8
-=======
->>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
         "commands/config/rollback/CmdConfigRollback.cpp",
         "commands/config/session/CmdConfigSessionCommit.cpp",
         "commands/config/session/CmdConfigSessionDiff.cpp",
         "commands/config/session/CmdConfigSessionRebase.cpp",
         "session/ConfigSession.cpp",
-<<<<<<< HEAD
         "session/Git.cpp",
-||||||| f95e8352f8
-=======
->>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
         "utils/InterfaceList.cpp",
     ],
     headers = [
@@ -822,7 +814,6 @@ cpp_library(
         "commands/config/interface/CmdConfigInterface.h",
         "commands/config/interface/CmdConfigInterfaceDescription.h",
         "commands/config/interface/CmdConfigInterfaceMtu.h",
-<<<<<<< HEAD
         "commands/config/interface/switchport/CmdConfigInterfaceSwitchport.h",
         "commands/config/interface/switchport/access/CmdConfigInterfaceSwitchportAccess.h",
         "commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.h",
@@ -831,19 +822,12 @@ cpp_library(
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPoolHeadroomBytes.h",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPoolReservedBytes.h",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPoolSharedBytes.h",
-||||||| f95e8352f8
-=======
->>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
         "commands/config/rollback/CmdConfigRollback.h",
         "commands/config/session/CmdConfigSessionCommit.h",
         "commands/config/session/CmdConfigSessionDiff.h",
         "commands/config/session/CmdConfigSessionRebase.h",
         "session/ConfigSession.h",
-<<<<<<< HEAD
         "session/Git.h",
-||||||| f95e8352f8
-=======
->>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
         "utils/InterfaceList.h",
     ],
     exported_deps = [

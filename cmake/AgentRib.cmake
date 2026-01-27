@@ -14,13 +14,7 @@ target_link_libraries(standalone_rib
   network_to_route_map
   nexthop_id_manager
   address_utils
-<<<<<<< HEAD
   fboss_error
-||||||| f95e8352f8
-  error
-=======
-  error
->>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
   fboss_event_base
   fboss_types
   switch_config_cpp2
@@ -61,7 +55,7 @@ add_library(nexthop_id_manager
 )
 
 target_link_libraries(nexthop_id_manager
-  error
+  fboss_error
   fboss_types
   state
 )

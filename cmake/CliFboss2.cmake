@@ -592,7 +592,6 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceDescription.cpp
   fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceMtu.h
   fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceMtu.cpp
-<<<<<<< HEAD
   fboss/cli/fboss2/commands/config/interface/switchport/CmdConfigInterfaceSwitchport.h
   fboss/cli/fboss2/commands/config/interface/switchport/access/CmdConfigInterfaceSwitchportAccess.h
   fboss/cli/fboss2/commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.h
@@ -605,9 +604,6 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolReservedBytes.cpp
   fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolSharedBytes.h
   fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolSharedBytes.cpp
-||||||| f95e8352f8
-=======
->>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
   fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h
   fboss/cli/fboss2/commands/config/history/CmdConfigHistory.cpp
   fboss/cli/fboss2/commands/config/rollback/CmdConfigRollback.h
@@ -620,12 +616,8 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/session/CmdConfigSessionRebase.cpp
   fboss/cli/fboss2/session/ConfigSession.h
   fboss/cli/fboss2/session/ConfigSession.cpp
-<<<<<<< HEAD
   fboss/cli/fboss2/session/Git.h
   fboss/cli/fboss2/session/Git.cpp
-||||||| f95e8352f8
-=======
->>>>>>> 2557220e618db768e1a3b031cb8b951ab4b7a637
   fboss/cli/fboss2/utils/InterfaceList.h
   fboss/cli/fboss2/utils/InterfaceList.cpp
   fboss/cli/fboss2/CmdListConfig.cpp
