@@ -2,6 +2,9 @@
 
 echo "--- Executing $0 ---"
 
+LOCAL_RPM_REPO_DIR="/usr/local/share/local_rpm_repo"
+mkdir -p "$LOCAL_RPM_REPO_DIR"
+
 # Modify the PRETTY_NAME entry in /usr/lib/os-release
 sed -i 's/^PRETTY_NAME=.*/PRETTY_NAME="FBOSS Distro Image"/' /usr/lib/os-release
 sed -i 's/^NAME=.*/NAME="FBOSS Distro Image"/' /usr/lib/os-release
@@ -61,6 +64,63 @@ process_kernel() {
   return 0
 }
 
+process_sai_tarball() {
+  local component_dir=$1
+  local component_name
+  component_name=$(basename "$component_dir")
+
+  # Discover SAI tarballs
+  local tarballs=("$component_dir"/*.tar*)
+
+  if [ ${#tarballs[@]} -eq 0 ]; then
+    echo "  No SAI tarballs found in $component_dir, skipping SAI processing"
+    return 0
+  fi
+
+  if [ ${#tarballs[@]} -gt 1 ]; then
+    echo "ERROR: Found multiple SAI tarballs in $component_dir:"
+    for tb in "${tarballs[@]}"; do
+      echo "  - $(basename "$tb")"
+    done
+    echo "Only a single SAI tarball is supported"
+    return 1
+  fi
+
+  local tarball="${tarballs[0]}"
+
+  set -x
+  # Extract only sai-runtime.rpm from the tarball
+  echo "  Extracting sai-runtime.rpm from $(basename "$tarball")..."
+  tar -xf "$tarball" -C "$component_dir" 'sai-runtime.rpm'
+
+  # Check if the file was extracted successfully
+  if [ -f "$component_dir/sai-runtime.rpm" ]; then
+    echo "  Installing $component_dir/sai-runtime.rpm..."
+    dnf install -y $component_dir/sai-runtime.rpm
+    if [ $? -ne 0 ]; then
+      echo "ERROR: Failed to install $component_dir/sai-runtime.rpm"
+      return 1
+    fi
+  else
+    echo "No sai-runtime.rpm found in $tarball"
+  fi
+
+  rm -f "$tarball"
+  return 0
+
+}
+
+install_component_rpms() {
+  local component_dir=$1
+  local component_name
+  component_name=$(basename "$component_dir")
+
+  echo "  Installing RPMs for $component_name..."
+  dnf install -y "$component_dir"/*.rpm
+
+  return $?
+}
+
 echo "Processing component artifacts..."
 
 shopt -s nullglob
@@ -82,6 +142,17 @@ for component_dir in /repos/*; do
 
     # Clean up temp directory
     rm -rf "$component_tmp"
+    ;;
+
+  sai)
+    # This is a tarfile with many files - just copy it to the local repo
+    process_sai_tarball "$component_dir"
+    handler_rc=$?
+    ;;
+
+  other_dependencies)
+    install_component_rpms "$component_dir"
+    handler_rc=$?
     ;;
 
   bsps)
