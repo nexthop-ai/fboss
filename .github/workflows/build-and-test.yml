@@ -228,3 +228,22 @@ jobs:
         run: |
           docker stop FBOSS_build_${USER} 2>/dev/null || true
           docker rm FBOSS_build_${USER} 2>/dev/null || true
+
+      - name: Check PR is based on latest sync
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Read the upstream sync commit from fboss-rev.txt on the target branch
+          # The file contains "Subproject commit <sha>", so extract just the SHA
+          SYNC_COMMIT=$(gh api "repos/${{ github.repository }}/contents/build/deps/github_hashes/facebook/fboss-rev.txt?ref=${{ github.base_ref }}" --jq '.content' | base64 -d | awk '{print $3}')
+          # Use GitHub API to check if sync commit is an ancestor of PR HEAD,
+          # this way we don't need fetch history to make this check locally.
+          COMPARE=$(gh api "repos/${{ github.repository }}/compare/${SYNC_COMMIT}...${{ github.event.pull_request.head.sha }}" --jq '.status')
+          echo "We are $COMPARE relative to upstream sync commit $SYNC_COMMIT"
+
+          if [[ "$COMPARE" != "ahead" && "$COMPARE" != "identical" ]]; then
+            echo "❌ Your PR is not based on the latest upstream sync commit ($SYNC_COMMIT). Please rebase your branch."
+            exit 1
+          fi
+          echo "✅ PR is based on latest sync commit"
