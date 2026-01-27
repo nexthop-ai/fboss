@@ -28,6 +28,9 @@ jobs:
         run: |
           git config --global user.name "rabbit-nexthop"
           git config --global user.email "rabbit@nexthop.ai"
+          git config --global merge.conflictstyle zdiff3
+          git config --global diff.algorithm histogram
+          git config --global merge.ignoreWhitespace change
 
       - name: Run sync script
         id: sync
