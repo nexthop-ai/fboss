@@ -370,6 +370,7 @@ add_library(qsfp_core
 
 target_link_libraries(qsfp_core
   qsfp_handler
+  thrift_service_utils
 )
 
 set(QSFP_SERVICE_SRCS
