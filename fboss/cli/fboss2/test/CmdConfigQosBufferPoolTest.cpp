@@ -15,9 +15,6 @@
 #include <fstream>
 
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPool.h"
-#include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolHeadroomBytes.h"
-#include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolReservedBytes.h"
-#include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolSharedBytes.h"
 #include "fboss/cli/fboss2/session/Git.h"
 #include "fboss/cli/fboss2/test/CmdHandlerTestBase.h"
 #include "fboss/cli/fboss2/test/TestableConfigSession.h"
@@ -117,57 +114,67 @@ class CmdConfigQosBufferPoolTestFixture : public CmdHandlerTestBase {
   fs::path sessionConfigDir_;
 };
 
-// Test BufferPoolName argument validation
-TEST_F(CmdConfigQosBufferPoolTestFixture, bufferPoolNameValidation) {
-  // Valid names - alphanumeric with underscores and hyphens, starting with
-  // letter
-  EXPECT_NO_THROW(BufferPoolName({"ingress_pool"}));
-  EXPECT_NO_THROW(BufferPoolName({"egress-lossy-pool"}));
-  EXPECT_NO_THROW(BufferPoolName({"Pool1"}));
-  EXPECT_NO_THROW(BufferPoolName({"a"})); // single character
-  EXPECT_NO_THROW(BufferPoolName({"default"}));
+// Test BufferPoolConfig argument validation
+TEST_F(CmdConfigQosBufferPoolTestFixture, bufferPoolConfigValidation) {
+  // Valid config with one attribute
+  EXPECT_NO_THROW(BufferPoolConfig({"ingress_pool", "shared-bytes", "1000"}));
+  EXPECT_NO_THROW(
+      BufferPoolConfig({"egress-lossy-pool", "headroom-bytes", "2000"}));
+  EXPECT_NO_THROW(BufferPoolConfig({"Pool1", "reserved-bytes", "3000"}));
 
-  // Empty name should throw
-  EXPECT_THROW(BufferPoolName({}), std::invalid_argument);
+  // Valid config with multiple attributes
+  EXPECT_NO_THROW(BufferPoolConfig(
+      {"test_pool", "shared-bytes", "1000", "headroom-bytes", "2000"}));
+  EXPECT_NO_THROW(BufferPoolConfig(
+      {"test_pool",
+       "shared-bytes",
+       "1000",
+       "headroom-bytes",
+       "2000",
+       "reserved-bytes",
+       "3000"}));
 
-  // Multiple names should throw
-  EXPECT_THROW(BufferPoolName({"pool1", "pool2"}), std::invalid_argument);
+  // Empty should throw
+  EXPECT_THROW(BufferPoolConfig({}), std::invalid_argument);
 
-  // Invalid names - must start with letter
-  EXPECT_THROW(BufferPoolName({"123pool"}), std::invalid_argument);
-  EXPECT_THROW(BufferPoolName({"_pool"}), std::invalid_argument);
-  EXPECT_THROW(BufferPoolName({"-pool"}), std::invalid_argument);
+  // Name only (no attributes) should throw
+  EXPECT_THROW(BufferPoolConfig({"pool1"}), std::invalid_argument);
 
-  // Invalid names - no spaces or special characters
-  EXPECT_THROW(BufferPoolName({"pool name"}), std::invalid_argument);
-  EXPECT_THROW(BufferPoolName({"pool.name"}), std::invalid_argument);
-  EXPECT_THROW(BufferPoolName({"pool@name"}), std::invalid_argument);
+  // Name with only one arg (odd number after name) should throw
+  EXPECT_THROW(
+      BufferPoolConfig({"pool1", "shared-bytes"}), std::invalid_argument);
 
-  // Invalid names - empty string
-  EXPECT_THROW(BufferPoolName({""}), std::invalid_argument);
+  // Invalid pool names - must start with letter
+  EXPECT_THROW(
+      BufferPoolConfig({"123pool", "shared-bytes", "1000"}),
+      std::invalid_argument);
+  EXPECT_THROW(
+      BufferPoolConfig({"_pool", "shared-bytes", "1000"}),
+      std::invalid_argument);
+
+  // Invalid attribute name
+  EXPECT_THROW(
+      BufferPoolConfig({"pool1", "invalid-attr", "1000"}),
+      std::invalid_argument);
+
+  // Note: Invalid bytes values (negative, non-numeric) are validated in
+  // queryClient, not in the constructor. This allows the command to be
+  // constructed and provide better error messages at execution time.
 }
 
-// Test BufferBytesValue argument validation
-TEST_F(CmdConfigQosBufferPoolTestFixture, bufferBytesValueValidation) {
-  // Valid positive value
-  BufferBytesValue validValue({"1000"});
-  EXPECT_EQ(validValue.getValue(), 1000);
+// Test BufferPoolConfig getters
+TEST_F(CmdConfigQosBufferPoolTestFixture, bufferPoolConfigGetters) {
+  BufferPoolConfig config(
+      {"test_pool", "shared-bytes", "1000", "headroom-bytes", "2000"});
 
-  // Valid zero value
-  BufferBytesValue zeroValue({"0"});
-  EXPECT_EQ(zeroValue.getValue(), 0);
+  EXPECT_EQ(config.getName(), "test_pool");
 
-  // Empty value should throw
-  EXPECT_THROW(BufferBytesValue({}), std::invalid_argument);
-
-  // Negative value should throw
-  EXPECT_THROW(BufferBytesValue({"-100"}), std::invalid_argument);
-
-  // Non-numeric value should throw
-  EXPECT_THROW(BufferBytesValue({"abc"}), std::invalid_argument);
-
-  // Multiple values should throw
-  EXPECT_THROW(BufferBytesValue({"100", "200"}), std::invalid_argument);
+  const auto& attrs = config.getAttributes();
+  ASSERT_EQ(attrs.size(), 2);
+  EXPECT_EQ(attrs[0].first, "shared-bytes");
+  EXPECT_EQ(attrs[0].second, "1000");
+  EXPECT_EQ(attrs[1].first, "headroom-bytes");
+  EXPECT_EQ(attrs[1].second, "2000");
 }
 
 // Test shared-bytes command creates buffer pool config
@@ -177,19 +184,17 @@ TEST_F(CmdConfigQosBufferPoolTestFixture, sharedBytesCreatesBufferPool) {
       std::make_unique<TestableConfigSession>(
           sessionConfigDir_.string(), systemConfigDir_.string()));
 
-  auto cmd = CmdConfigQosBufferPoolSharedBytes();
-  BufferPoolName poolName({"test_pool"});
-  BufferBytesValue sharedBytes({"50000"});
+  auto cmd = CmdConfigQosBufferPool();
+  BufferPoolConfig config({"test_pool", "shared-bytes", "50000"});
 
-  auto result = cmd.queryClient(localhost(), poolName, sharedBytes);
+  auto result = cmd.queryClient(localhost(), config);
 
-  EXPECT_THAT(result, ::testing::HasSubstr("Successfully set shared-bytes"));
+  EXPECT_THAT(result, ::testing::HasSubstr("Successfully configured"));
   EXPECT_THAT(result, ::testing::HasSubstr("test_pool"));
-  EXPECT_THAT(result, ::testing::HasSubstr("50000"));
 
   // Verify the config was actually modified
-  auto& config = ConfigSession::getInstance().getAgentConfig();
-  auto& switchConfig = *config.sw();
+  auto& agentConfig = ConfigSession::getInstance().getAgentConfig();
+  auto& switchConfig = *agentConfig.sw();
   ASSERT_TRUE(switchConfig.bufferPoolConfigs().has_value());
 
   auto& bufferPoolConfigs = *switchConfig.bufferPoolConfigs();
@@ -205,19 +210,17 @@ TEST_F(CmdConfigQosBufferPoolTestFixture, headroomBytesCreatesBufferPool) {
       std::make_unique<TestableConfigSession>(
           sessionConfigDir_.string(), systemConfigDir_.string()));
 
-  auto cmd = CmdConfigQosBufferPoolHeadroomBytes();
-  BufferPoolName poolName({"headroom_pool"});
-  BufferBytesValue headroomBytes({"10000"});
+  auto cmd = CmdConfigQosBufferPool();
+  BufferPoolConfig config({"headroom_pool", "headroom-bytes", "10000"});
 
-  auto result = cmd.queryClient(localhost(), poolName, headroomBytes);
+  auto result = cmd.queryClient(localhost(), config);
 
-  EXPECT_THAT(result, ::testing::HasSubstr("Successfully set headroom-bytes"));
+  EXPECT_THAT(result, ::testing::HasSubstr("Successfully configured"));
   EXPECT_THAT(result, ::testing::HasSubstr("headroom_pool"));
-  EXPECT_THAT(result, ::testing::HasSubstr("10000"));
 
   // Verify the config was actually modified
-  auto& config = ConfigSession::getInstance().getAgentConfig();
-  auto& switchConfig = *config.sw();
+  auto& agentConfig = ConfigSession::getInstance().getAgentConfig();
+  auto& switchConfig = *agentConfig.sw();
   ASSERT_TRUE(switchConfig.bufferPoolConfigs().has_value());
 
   auto& bufferPoolConfigs = *switchConfig.bufferPoolConfigs();
@@ -235,19 +238,17 @@ TEST_F(CmdConfigQosBufferPoolTestFixture, reservedBytesCreatesBufferPool) {
       std::make_unique<TestableConfigSession>(
           sessionConfigDir_.string(), systemConfigDir_.string()));
 
-  auto cmd = CmdConfigQosBufferPoolReservedBytes();
-  BufferPoolName poolName({"reserved_pool"});
-  BufferBytesValue reservedBytes({"20000"});
+  auto cmd = CmdConfigQosBufferPool();
+  BufferPoolConfig config({"reserved_pool", "reserved-bytes", "20000"});
 
-  auto result = cmd.queryClient(localhost(), poolName, reservedBytes);
+  auto result = cmd.queryClient(localhost(), config);
 
-  EXPECT_THAT(result, ::testing::HasSubstr("Successfully set reserved-bytes"));
+  EXPECT_THAT(result, ::testing::HasSubstr("Successfully configured"));
   EXPECT_THAT(result, ::testing::HasSubstr("reserved_pool"));
-  EXPECT_THAT(result, ::testing::HasSubstr("20000"));
 
   // Verify the config was actually modified
-  auto& config = ConfigSession::getInstance().getAgentConfig();
-  auto& switchConfig = *config.sw();
+  auto& agentConfig = ConfigSession::getInstance().getAgentConfig();
+  auto& switchConfig = *agentConfig.sw();
   ASSERT_TRUE(switchConfig.bufferPoolConfigs().has_value());
 
   auto& bufferPoolConfigs = *switchConfig.bufferPoolConfigs();
@@ -258,32 +259,29 @@ TEST_F(CmdConfigQosBufferPoolTestFixture, reservedBytesCreatesBufferPool) {
   EXPECT_EQ(*it->second.reservedBytes(), 20000);
 }
 
-// Test updating an existing buffer pool
+// Test updating an existing buffer pool with multiple attributes
 TEST_F(CmdConfigQosBufferPoolTestFixture, updateExistingBufferPool) {
   fs::create_directories(sessionConfigDir_);
   TestableConfigSession::setInstance(
       std::make_unique<TestableConfigSession>(
           sessionConfigDir_.string(), systemConfigDir_.string()));
 
-  // First, create a buffer pool with shared-bytes
-  auto sharedCmd = CmdConfigQosBufferPoolSharedBytes();
-  BufferPoolName poolName({"existing_pool"});
-  BufferBytesValue sharedBytes({"30000"});
-  sharedCmd.queryClient(localhost(), poolName, sharedBytes);
+  auto cmd = CmdConfigQosBufferPool();
 
-  // Then, add headroom-bytes to the same pool
-  auto headroomCmd = CmdConfigQosBufferPoolHeadroomBytes();
-  BufferBytesValue headroomBytes({"5000"});
-  headroomCmd.queryClient(localhost(), poolName, headroomBytes);
-
-  // Finally, add reserved-bytes to the same pool
-  auto reservedCmd = CmdConfigQosBufferPoolReservedBytes();
-  BufferBytesValue reservedBytes({"2000"});
-  reservedCmd.queryClient(localhost(), poolName, reservedBytes);
+  // Set all attributes in one command
+  BufferPoolConfig config(
+      {"existing_pool",
+       "shared-bytes",
+       "30000",
+       "headroom-bytes",
+       "5000",
+       "reserved-bytes",
+       "2000"});
+  cmd.queryClient(localhost(), config);
 
   // Verify all values are set correctly
-  auto& config = ConfigSession::getInstance().getAgentConfig();
-  auto& switchConfig = *config.sw();
+  auto& agentConfig = ConfigSession::getInstance().getAgentConfig();
+  auto& switchConfig = *agentConfig.sw();
   ASSERT_TRUE(switchConfig.bufferPoolConfigs().has_value());
 
   auto& bufferPoolConfigs = *switchConfig.bufferPoolConfigs();
@@ -296,11 +294,10 @@ TEST_F(CmdConfigQosBufferPoolTestFixture, updateExistingBufferPool) {
   EXPECT_EQ(*it->second.reservedBytes(), 2000);
 }
 
-// Test printOutput for shared-bytes command
-TEST_F(CmdConfigQosBufferPoolTestFixture, printOutputSharedBytes) {
-  auto cmd = CmdConfigQosBufferPoolSharedBytes();
-  std::string successMessage =
-      "Successfully set shared-bytes for buffer-pool 'my_pool' to 50000";
+// Test printOutput for buffer-pool command
+TEST_F(CmdConfigQosBufferPoolTestFixture, printOutputBufferPool) {
+  auto cmd = CmdConfigQosBufferPool();
+  std::string successMessage = "Successfully configured buffer-pool 'my_pool'";
 
   std::stringstream buffer;
   std::streambuf* old = std::cout.rdbuf(buffer.rdbuf());

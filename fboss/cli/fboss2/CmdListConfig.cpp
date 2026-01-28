@@ -22,9 +22,6 @@
 #include "fboss/cli/fboss2/commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.h"
 #include "fboss/cli/fboss2/commands/config/qos/CmdConfigQos.h"
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPool.h"
-#include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolHeadroomBytes.h"
-#include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolReservedBytes.h"
-#include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPoolSharedBytes.h"
 #include "fboss/cli/fboss2/commands/config/rollback/CmdConfigRollback.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionCommit.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionDiff.h"
@@ -100,24 +97,6 @@ const CommandTree& kConfigCommandTree() {
               "Configure buffer pool settings",
               commandHandler<CmdConfigQosBufferPool>,
               argTypeHandler<CmdConfigQosBufferPoolTraits>,
-              {{
-                   "shared-bytes",
-                   "Set buffer pool shared bytes",
-                   commandHandler<CmdConfigQosBufferPoolSharedBytes>,
-                   argTypeHandler<CmdConfigQosBufferPoolSharedBytesTraits>,
-               },
-               {
-                   "headroom-bytes",
-                   "Set buffer pool headroom bytes",
-                   commandHandler<CmdConfigQosBufferPoolHeadroomBytes>,
-                   argTypeHandler<CmdConfigQosBufferPoolHeadroomBytesTraits>,
-               },
-               {
-                   "reserved-bytes",
-                   "Set buffer pool reserved bytes",
-                   commandHandler<CmdConfigQosBufferPoolReservedBytes>,
-                   argTypeHandler<CmdConfigQosBufferPoolReservedBytesTraits>,
-               }},
           }},
       },
 
