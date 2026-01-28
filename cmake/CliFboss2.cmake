@@ -430,7 +430,9 @@ add_library(fboss2_lib
   fboss/cli/fboss2/commands/show/hwagent/CmdShowHwAgentStatus.h
   fboss/cli/fboss2/commands/show/hwagent/CmdShowHwAgentStatus.cpp
   fboss/cli/fboss2/commands/show/hwobject/CmdShowHwObject.h
+  fboss/cli/fboss2/commands/show/hwobject/CmdShowHwObject.cpp
   fboss/cli/fboss2/commands/show/l2/CmdShowL2.h
+  fboss/cli/fboss2/commands/show/l2/CmdShowL2.cpp
   fboss/cli/fboss2/commands/show/lldp/CmdShowLldp.h
   fboss/cli/fboss2/commands/show/lldp/CmdShowLldp.cpp
   fboss/cli/fboss2/commands/show/ndp/CmdShowNdp.h
@@ -438,15 +440,18 @@ add_library(fboss2_lib
   fboss/cli/fboss2/commands/show/port/CmdShowPort.h
   fboss/cli/fboss2/commands/show/port/CmdShowPort.cpp
   fboss/cli/fboss2/commands/show/port/CmdShowPortQueue.h
+  fboss/cli/fboss2/commands/show/port/CmdShowPortQueue.cpp
   fboss/cli/fboss2/commands/show/product/CmdShowProduct.h
   fboss/cli/fboss2/commands/show/product/CmdShowProductDetails.h
   fboss/cli/fboss2/commands/show/route/utils.cpp
   fboss/cli/fboss2/commands/show/route/CmdShowRouteDetails.h
   fboss/cli/fboss2/commands/show/mpls/CmdShowMplsRoute.h
   fboss/cli/fboss2/commands/show/mac/CmdShowMacAddrToBlock.h
+  fboss/cli/fboss2/commands/show/mac/CmdShowMacAddrToBlock.cpp
   fboss/cli/fboss2/commands/show/mac/CmdShowMacDetails.h
   fboss/cli/fboss2/commands/show/mac/CmdShowMacDetails.cpp
   fboss/cli/fboss2/commands/show/mirror/CmdShowMirror.h
+  fboss/cli/fboss2/commands/show/mirror/CmdShowMirror.cpp
   fboss/cli/fboss2/commands/show/interface/CmdShowInterface.h
   fboss/cli/fboss2/commands/show/interface/flaps/CmdShowInterfaceFlaps.h
   fboss/cli/fboss2/commands/show/interface/errors/CmdShowInterfaceErrors.h
@@ -475,6 +480,7 @@ add_library(fboss2_lib
   fboss/cli/fboss2/commands/show/cpuport/CmdShowCpuPort.cpp
   fboss/cli/fboss2/commands/show/teflow/CmdShowTeFlow.h
   fboss/cli/fboss2/commands/show/transceiver/CmdShowTransceiver.h
+  fboss/cli/fboss2/commands/show/transceiver/CmdShowTransceiver.cpp
   fboss/cli/fboss2/commands/start/pcap/CmdStartPcap.h
   fboss/cli/fboss2/commands/stop/pcap/CmdStopPcap.h
   fboss/cli/fboss2/CmdSubcommands.cpp
