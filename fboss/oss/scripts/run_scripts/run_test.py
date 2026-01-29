@@ -1730,8 +1730,6 @@ class BenchmarkTestRunner:
 
     def run_test(self, args):
         """Run benchmark test binaries"""
-        print("Running benchmark tests...")
-
         # Determine which benchmarks to run
         benchmarks_to_run = set()
 
@@ -1763,6 +1761,12 @@ class BenchmarkTestRunner:
 
         if not benchmarks_to_run:
             print("Error: No benchmarks found in configuration files")
+            return
+
+        # If --list_tests is specified, just list the benchmarks and exit
+        if args.list_tests:
+            for benchmark in benchmarks_to_run:
+                print(benchmark)
             return
 
         print(f"Total benchmarks to run: {len(benchmarks_to_run)}")
