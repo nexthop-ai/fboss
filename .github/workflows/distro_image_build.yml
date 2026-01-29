@@ -18,7 +18,13 @@ permissions:
 
 jobs:
   Distro-Image-Build:
+<<<<<<< HEAD
     runs-on: cloudstack-ubuntu24-large
+||||||| 4f99cb4cb5
+    runs-on: ubuntu-latest
+=======
+    runs-on: 32-core-ubuntu
+>>>>>>> 81da1b3a3fa99d857056154b8808819de509001e
     steps:
       - name: Check out repository code
         uses: actions/checkout@v6

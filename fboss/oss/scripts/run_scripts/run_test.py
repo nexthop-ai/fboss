@@ -191,7 +191,11 @@ SUB_CMD_QSFP = "qsfp"
 SUB_CMD_LINK = "link"
 SUB_CMD_SAI_AGENT = "sai_agent"
 SUB_CMD_CLI = "cli"
+<<<<<<< HEAD
 SUB_CMD_BENCHMARK = "benchmark"
+||||||| 4f99cb4cb5
+=======
+>>>>>>> 81da1b3a3fa99d857056154b8808819de509001e
 SUB_ARG_AGENT_RUN_MODE = "--agent-run-mode"
 SUB_ARG_AGENT_RUN_MODE_MONO = "mono"
 SUB_ARG_AGENT_RUN_MODE_MULTI = "multi_switch"
@@ -1561,6 +1565,7 @@ class CliTestRunner:
             sys.exit(1)
 
 
+<<<<<<< HEAD
 class BenchmarkTestRunner:
     """
     Runner for benchmark test binaries.
@@ -1801,6 +1806,9 @@ class BenchmarkTestRunner:
             sys.exit(1)
 
 
+||||||| 4f99cb4cb5
+=======
+>>>>>>> 81da1b3a3fa99d857056154b8808819de509001e
 if __name__ == "__main__":
     _check_working_dir()
     # Set env variables for FBOSS
@@ -2004,6 +2012,7 @@ if __name__ == "__main__":
     cli_test_runner = CliTestRunner()
     cli_test_parser.set_defaults(func=cli_test_runner.run_test)
 
+<<<<<<< HEAD
     # Add subparser for Benchmark tests
     benchmark_test_parser = subparsers.add_parser(
         SUB_CMD_BENCHMARK, help="run benchmark tests"
@@ -2012,6 +2021,9 @@ if __name__ == "__main__":
     benchmark_test_parser.set_defaults(func=benchmark_test_runner.run_test)
     benchmark_test_runner.add_subcommand_arguments(benchmark_test_parser)
 
+||||||| 4f99cb4cb5
+=======
+>>>>>>> 81da1b3a3fa99d857056154b8808819de509001e
     # Parse the args
     args = ap.parse_known_args()
     args = ap.parse_args(args[1], args[0])
