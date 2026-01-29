@@ -138,19 +138,11 @@ echo "Output directory: $OUT_DIR"
 # Navigate to FBOSS source root
 cd /var/FBOSS/fboss
 
-if [ "$stack_type" = "forwarding" ]; then
-  # Snapshot manifests (will be modified during build)
-  if [ -f "build/fbcode_builder/manifests/fboss" ] &&
-    [ -f "build/fbcode_builder/manifests/libsai" ] &&
-    [ -f "build/fbcode_builder/manifests/sai_impl" ]; then
-    tar -cf manifests_snapshot.tar \
-      build/fbcode_builder/manifests/fboss \
-      build/fbcode_builder/manifests/libsai \
-      build/fbcode_builder/manifests/sai_impl
-  else
-    echo "Skipping manifest snapshot (one or more manifests not found"
-  fi
+# Save the manifests because we must modify them, at a minimum to use the stable dependency hashes.
+tar -cf manifests_snapshot.tar build
+tar -xf fboss/oss/stable_commits/latest_stable_hashes.tar.gz
 
+if [ "$stack_type" = "forwarding" ]; then
   # Setup SAI implementation
   SAI_INCLUDE_PATH="$SAI_DIR/include"
   echo "Using SAI include path for build-helper: $SAI_INCLUDE_PATH"
@@ -177,14 +169,6 @@ if [ "$stack_type" = "forwarding" ]; then
     echo "BUILD_SAI_FAKE is set; skipping build-helper.py (no vendor SAI manifests)"
   fi
 elif [ "$stack_type" = "platform" ]; then
-  # Snapshot manifest (will be modified during build)
-  if [ -f "build/fbcode_builder/manifests/fboss" ]; then
-    tar -cf manifests_snapshot.tar \
-      build/fbcode_builder/manifests/fboss
-  else
-    echo "Skipping manifest snapshot (fboss manifest not found)"
-  fi
-
   # For a platform-only build we do not need the vendor SAI implementation.
   # Temporarily drop sai_impl from the fboss manifest so getdeps will not try
   # to fetch it. The open-source SAI headers (libsai) remain in the manifest.
