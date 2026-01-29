@@ -4,7 +4,7 @@ RUN dnf install -y 'dnf-command(config-manager)' && \
     dnf config-manager --set-enabled crb && \
     dnf install -y epel-release epel-next-release && \
     dnf install -y --allowerasing \
-    wget curl tcpdump zstd iputils which net-tools iproute \
+    wget curl tcpdump zstd iputils which net-tools iproute jq \
     man dnsmasq vim nginx procps-ng && \
     dnf clean all && rm -rf /var/cache/dnf
 
