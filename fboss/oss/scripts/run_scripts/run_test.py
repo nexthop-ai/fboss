@@ -1573,17 +1573,17 @@ class BenchmarkTestRunner:
     BENCHMARK_CONFIG_DIR = "./share/hw_benchmark_tests"
     T1_BENCHMARKS_CONF = os.path.join(BENCHMARK_CONFIG_DIR, "t1_benchmarks.conf")
     T2_BENCHMARKS_CONF = os.path.join(BENCHMARK_CONFIG_DIR, "t2_benchmarks.conf")
-    ALL_BENCHMARKS_CONF = os.path.join(BENCHMARK_CONFIG_DIR, "all_benchmarks.conf")
+    ADDITIONAL_BENCHMARKS_CONF = os.path.join(
+        BENCHMARK_CONFIG_DIR, "additional_benchmarks.conf"
+    )
+    BENCHMARK_BIN_DIR = "/opt/fboss/bin"
 
     def add_subcommand_arguments(self, sub_parser: ArgumentParser):
         """Add benchmark-specific command line arguments"""
         sub_parser.add_argument(
             OPT_ARG_FILTER_FILE,
             type=str,
-            help=(
-                "File containing list of benchmark binaries to run (one per line). "
-                "If not specified, all benchmarks from all_benchmarks.conf will be run."
-            ),
+            help=("File containing list of benchmark binaries to run (one per line)."),
             default=None,
         )
         sub_parser.add_argument(
@@ -1733,25 +1733,71 @@ class BenchmarkTestRunner:
         print("Running benchmark tests...")
 
         # Determine which benchmarks to run
-        benchmark_file = args.filter_file or self.ALL_BENCHMARKS_CONF
+        benchmarks_to_run = set()
 
-        if not os.path.exists(benchmark_file):
-            print(f"Error: Benchmark configuration file not found: {benchmark_file}")
-            return
-
-        benchmarks_to_run = _load_from_file(benchmark_file)
+        if args.filter_file:
+            # User specified a custom filter file
+            if not os.path.exists(args.filter_file):
+                print(
+                    f"Error: Benchmark configuration file not found: {args.filter_file}"
+                )
+                return
+            benchmarks_to_run = set(_load_from_file(args.filter_file))
+            print(f"Running benchmarks from {args.filter_file}")
+        else:
+            # Default: concatenate T1, T2, and additional benchmarks
+            print("Running all benchmarks (T1 + T2 + additional)")
+            for conf_file in [
+                self.T1_BENCHMARKS_CONF,
+                self.T2_BENCHMARKS_CONF,
+                self.ADDITIONAL_BENCHMARKS_CONF,
+            ]:
+                if os.path.exists(conf_file):
+                    benchmarks_from_file = _load_from_file(conf_file)
+                    benchmarks_to_run.update(benchmarks_from_file)
+                    print(
+                        f"  Loaded {len(benchmarks_from_file)} benchmarks from {conf_file}"
+                    )
+                else:
+                    print(f"  Warning: Configuration file not found: {conf_file}")
 
         if not benchmarks_to_run:
-            print(f"Error: No benchmarks found in {benchmark_file}")
+            print("Error: No benchmarks found in configuration files")
             return
 
-        print(f"Running benchmarks from {benchmark_file}")
         print(f"Total benchmarks to run: {len(benchmarks_to_run)}")
+
+        # Filter out binaries that don't exist
+        existing_benchmarks = []
+        missing_benchmarks = []
+        for benchmark in benchmarks_to_run:
+            # Construct full path to binary
+            binary_path = os.path.join(self.BENCHMARK_BIN_DIR, benchmark)
+            if os.path.exists(binary_path) and os.path.isfile(binary_path):
+                existing_benchmarks.append(binary_path)
+            else:
+                missing_benchmarks.append(benchmark)
+
+        if missing_benchmarks:
+            print(
+                f"\nWarning: {len(missing_benchmarks)} benchmark binaries not found in {self.BENCHMARK_BIN_DIR}:"
+            )
+            for benchmark in missing_benchmarks:
+                print(f"  - {benchmark}")
+
+        if not existing_benchmarks:
+            print(f"\nError: No benchmark binaries found in {self.BENCHMARK_BIN_DIR}.")
+            print(
+                f"Make sure you have built the benchmarks with BENCHMARK_INSTALL=1 and copied them to {self.BENCHMARK_BIN_DIR} directory."
+            )
+            return
+
+        print(f"\nFound {len(existing_benchmarks)} benchmark binaries to run")
 
         # Run each benchmark and collect detailed results
         results = []
-        for benchmark in benchmarks_to_run:
-            benchmark_result = self._run_benchmark_binary(benchmark, args)
+        for benchmark_path in existing_benchmarks:
+            benchmark_result = self._run_benchmark_binary(benchmark_path, args)
             results.append(benchmark_result)
 
         # Write results to CSV file

@@ -114,7 +114,7 @@ The `run_test.py` script provides automated execution of benchmark suites with C
 cd /opt/fboss
 source ./bin/setup_fboss_env
 
-# Run all benchmarks
+# Run all benchmarks (T1 + T2 + additional)
 ./bin/run_test.py benchmark
 
 # Run T1 benchmark suite
@@ -124,6 +124,10 @@ source ./bin/setup_fboss_env
 # Run T2 benchmark suite
 ./bin/run_test.py benchmark \
 --filter_file ./share/hw_benchmark_tests/t2_benchmarks.conf
+
+# Run only additional benchmarks (not in T1 or T2)
+./bin/run_test.py benchmark \
+--filter_file ./share/hw_benchmark_tests/additional_benchmarks.conf
 ```
 
 Results are written to a timestamped CSV file (e.g., `benchmark_results_20260119_143022.csv`) with detailed metrics.
