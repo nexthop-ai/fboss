@@ -1,0 +1,270 @@
+#!/usr/bin/env bash
+#
+# Helper functions for building FBOSS forwarding and platform stacks
+#
+
+# Global variables set by helper functions in this file
+need_sai=""
+stack_label=""
+cmake_target=""
+package_target=""
+build_dir=""
+sai_name=""
+SAI_DIR=""
+
+# Global variables set by calling scripts
+num_jobs=""
+common_options=""
+BUILD_TYPE=""
+
+# Setup build environment based on stack type
+# Arguments:
+#   $1 - stack_type: "forwarding" or "platform"
+# Outputs (via global variables):
+#   need_sai - 1 if SAI is needed, 0 otherwise
+#   stack_label - human-readable stack label
+#   cmake_target - CMake target to build
+#   package_target - package name for tarball
+#   build_dir - build directory path
+#   sai_name - SAI implementation name (only set if need_sai=1)
+#   SAI_DIR - SAI directory path (only set if need_sai=1)
+setup_build_env() {
+  local stack_type="$1"
+  local scratch_root="/var/FBOSS/fboss/.build_dir"
+
+  need_sai=0
+  stack_label=""
+  cmake_target=""
+  package_target=""
+
+  case "$stack_type" in
+  forwarding)
+    need_sai=1
+    stack_label="forwarding"
+    cmake_target="fboss_forwarding_stack"
+    package_target="forwarding-stack"
+    ;;
+  platform)
+    stack_label="platform"
+    cmake_target="fboss_platform_services"
+    package_target="platform-stack"
+    ;;
+  *)
+    echo "Unsupported stack type: $stack_type (only 'forwarding' and 'platform' are supported)" >&2
+    exit 1
+    ;;
+  esac
+
+  # Setup FBOSS build environment compatibility:
+  #    build_entrypoint provides: /src (repo), /deps/*-extracted (dependencies)
+  #    FBOSS build expects: /var/FBOSS/fboss (repo), /opt/sdk (SAI)
+  echo "Setting up symlinks for FBOSS build environment"
+
+  # Link /var/FBOSS/fboss -> /src (the worktree root)
+  mkdir -p /var/FBOSS
+  rm -rf /var/FBOSS/fboss # Remove any stale symlink or directory
+  ln -sf /src /var/FBOSS/fboss
+  echo "  Created: /var/FBOSS/fboss -> /src"
+
+  if [ "$need_sai" -eq 1 ]; then
+    # Link /opt/sdk -> extracted SAI dependency
+    # build_entrypoint extracts /deps/sai to /deps/sai-extracted
+    if [ ! -e "/opt/sdk" ]; then
+      ln -sf /deps/sai-extracted /opt/sdk
+      echo "  Created: /opt/sdk -> /deps/sai-extracted"
+    fi
+  fi
+
+  if [ "$need_sai" -eq 1 ]; then
+    # Look for SAI installation at /opt/sdk
+    if [ -d "/opt/sdk" ]; then
+      SAI_DIR="/opt/sdk"
+    else
+      echo "ERROR: No SAI found at /opt/sdk"
+      exit 1
+    fi
+    echo "Found SAI at $SAI_DIR (installed by build_entrypoint.py)"
+
+    # Source SAI build environment
+    source "$SAI_DIR/sai_build.env"
+    echo "SAI environment loaded from $SAI_DIR/sai_build.env"
+
+    echo "Using SAI_SDK_VERSION=${SAI_SDK_VERSION:-N/A} for SAI_VERSION=${SAI_VERSION:-Unknown}"
+
+    if [ -n "${BUILD_SAI_FAKE:-}" ]; then
+      sai_name="sai-fake"
+    elif [ -n "${SAI_BRCM_IMPL:-}" ]; then
+      sai_name="sai-bcm-${SAI_SDK_VERSION}"
+    else
+      sai_name="sai-unknown-${SAI_SDK_VERSION}"
+    fi
+    echo "Using SAI implementation: $sai_name"
+  fi
+
+  # Setup build directories based on scratch_root
+  if [ "$need_sai" -eq 1 ]; then
+    build_dir="${scratch_root}/forwarding-stack/${sai_name}"
+  else
+    build_dir="${scratch_root}/platform-stack"
+  fi
+  mkdir -p "$build_dir"
+
+  # Share download / repo / extracted caches across different types of builds
+  mkdir -p "${build_dir}/downloads"
+  if [ ! -L "${build_dir}/downloads" ]; then
+    ln -s "${build_dir}/downloads" "${build_dir}/downloads"
+  fi
+  mkdir -p "${build_dir}/repos"
+  if [ ! -L "${build_dir}/repos" ]; then
+    ln -s "${build_dir}/repos" "${build_dir}/repos"
+  fi
+  mkdir -p "${build_dir}/extracted"
+  if [ ! -L "${build_dir}/extracted" ]; then
+    ln -s "${build_dir}/extracted" "${build_dir}/extracted"
+  fi
+
+}
+
+# Save manifest snapshot
+# Should be called after build directory exists (after first getdeps.py run)
+# Side effects:
+#   - Creates manifests_snapshot.tar from build directory
+save_manifest_snapshot() {
+  # Save the manifests because we must modify them
+  tar -cf manifests_snapshot.tar build
+  # Temporarily disabled due to build errors with latest stable hashes
+  # tar -xf fboss/oss/stable_commits/latest_stable_hashes.tar.gz
+}
+
+# Setup SAI environment based on stack type
+# Arguments:
+#   $1 - stack_type: "forwarding" or "platform"
+# Requires (global variables):
+#   SAI_DIR - SAI directory path (for forwarding stack)
+#   build_dir - build directory path
+# Side effects:
+#   - For forwarding: runs build-helper.py to setup SAI implementation
+#   - For platform: removes sai_impl from fboss manifest
+setup_sai_env() {
+  local stack_type="$1"
+
+  if [ "$stack_type" = "forwarding" ]; then
+    # Setup SAI implementation
+    SAI_INCLUDE_PATH="$SAI_DIR/include"
+    echo "Using SAI include path for build-helper: $SAI_INCLUDE_PATH"
+
+    SAI_IMPL_OUTPUT_DIR="$build_dir/sai_impl_output"
+    echo "Preparing SAI manifests and HTTP server via build-helper.py into $SAI_IMPL_OUTPUT_DIR"
+
+    # This will:
+    #   * Copy libsai_impl.a and headers into $SAI_IMPL_OUTPUT_DIR
+    #   * Create libsai_impl.tar.gz
+    #   * Rewrite libsai and sai_impl manifests
+    #   * Ensure fboss manifest depends on sai_impl
+    #   * Start a local http.server on port 8000 serving libsai_impl.tar.gz
+    #
+    # getdeps.py will then be able to download sai_impl from
+    # http://localhost:8000/libsai_impl.tar.gz using these manifests
+    if [ -z "${BUILD_SAI_FAKE:-}" ]; then
+      ./fboss/oss/scripts/build-helper.py \
+        "$SAI_DIR/lib/libsai_impl.a" \
+        "$SAI_INCLUDE_PATH" \
+        "$SAI_IMPL_OUTPUT_DIR" \
+        "$SAI_VERSION"
+    else
+      echo "BUILD_SAI_FAKE is set; skipping build-helper.py (no vendor SAI manifests)"
+    fi
+  elif [ "$stack_type" = "platform" ]; then
+    # For a platform-only build we do not need the vendor SAI implementation.
+    # Temporarily drop sai_impl from the fboss manifest so getdeps will not try
+    # to fetch it. The open-source SAI headers (libsai) remain in the manifest.
+    if grep -q '^[[:space:]]*sai_impl[[:space:]]*$' build/fbcode_builder/manifests/fboss; then
+      tmp_manifest="$(mktemp)"
+      sed '/^[[:space:]]*sai_impl[[:space:]]*$/d' \
+        build/fbcode_builder/manifests/fboss >"$tmp_manifest"
+      mv "$tmp_manifest" build/fbcode_builder/manifests/fboss
+      echo "Temporarily removed sai_impl from fboss manifest for platform-only build"
+    fi
+  fi
+}
+
+# Setup build dependencies
+# Requires (global variables):
+#   num_jobs - number of parallel jobs
+#   common_options - common options for run-getdeps.py
+#   BUILD_TYPE - build type (e.g., MinSizeRel)
+# Side effects:
+#   - Installs system dependencies
+#   - Builds FBOSS dependencies
+setup_build_deps() {
+  # Install system dependencies
+  echo "Installing system dependencies..."
+  time nice -n 10 ./fboss/oss/scripts/run-getdeps.py install-system-deps \
+    --num-jobs $num_jobs --recursive $common_options
+
+  # Build dependencies
+  echo "Building FBOSS dependencies..."
+  time nice -n 10 ./fboss/oss/scripts/run-getdeps.py build \
+    --num-jobs $num_jobs \
+    --build-type $BUILD_TYPE \
+    --only-deps $common_options
+
+  echo "Get deps SUCCESS"
+}
+
+# build and package
+# Requires (global variables):
+#   stack_label - human-readable stack label
+#   cmake_target - CMake target to build
+#   package_target - package name for tarball
+#   build_dir - build directory path
+#   num_jobs - number of parallel jobs
+#   BUILD_TYPE - build type (e.g., MinSizeRel)
+#   common_options - common options for run-getdeps.py
+# Side effects:
+#   - Builds FBOSS stack
+#   - Packages the stack into tarball
+#   - Copies artifact to /output directory
+run_build() {
+  # Build FBOSS stack
+  echo "Building FBOSS ${stack_label} stack..."
+
+  time nice -n 10 ./fboss/oss/scripts/run-getdeps.py build \
+    --num-jobs ${num_jobs:?} \
+    --no-deps \
+    --build-type "${BUILD_TYPE:-MinSizeRel}" \
+    --cmake-target "$cmake_target" \
+    ${common_options}
+
+  echo "${cmake_target} Build SUCCESS"
+
+  # Package the stack
+  # Note: package.py creates both <target>.tar (production binaries)
+  # and <target>-tests.tar (test binaries). We only ship the production tar.
+  echo "Packaging ${stack_label} stack..."
+  python3 /var/FBOSS/fboss/fboss/oss/scripts/package.py \
+    --build-dir "$build_dir" \
+    "$package_target"
+
+  # Copy production artifact to output directory
+  # Tests are NOT included in production image
+  OUT_DIR=/output
+  echo "Output directory: $OUT_DIR"
+  mkdir -p "$OUT_DIR"
+  mv "${package_target}.tar" "$OUT_DIR/"
+
+  echo "FBOSS ${stack_label} stack build complete!"
+  echo "Production artifact:"
+  ls -lh "$OUT_DIR"/"${package_target}.tar"
+}
+
+# Restore manuifest snapshot
+# Side effects:
+#   - Restores manifests from snapshot if it exists
+restore_manifest_snapshot() {
+  # Restore modified manifests if we took a snapshot earlier.
+  if [ -f manifests_snapshot.tar ]; then
+    tar -xf manifests_snapshot.tar
+    rm manifests_snapshot.tar
+  fi
+}
