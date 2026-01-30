@@ -25,7 +25,7 @@ get_platform_dir() {
   fi
   log "Detected platform: $platform"
 
-  local platform_dir="${FBOSS_SHARE}/${platform}"
+  local platform_dir="${FBOSS_SHARE}/default_configs/${platform}"
   if [[ ! -d $platform_dir ]]; then
     error "Platform config directory not found: $platform_dir"
     return 1
