@@ -10,7 +10,7 @@
   "other_dependencies": [
   ],
   "fboss-platform-stack": {
-    "execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "platform"],
+    "execute": ["../fboss/oss/scripts/nhfboss-stack.sh", "platform"],
     "artifact": "platform-stack.tar"
   },
   "bsps": [
@@ -22,7 +22,7 @@
     "artifact": "sai-devel.tar"
   },
   "fboss-forwarding-stack": {
-    "execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "forwarding"],
+    "execute": ["../fboss/oss/scripts/nhfboss-stack.sh", "forwarding"],
     "artifact": "forwarding-stack.tar"
   },
   "image_build_hooks": {
