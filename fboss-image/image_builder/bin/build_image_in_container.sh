@@ -29,12 +29,8 @@ TARGET_DIR="${WSROOT}/output"
 BUILD_PXE=""
 BUILD_ONIE=""
 KIWI_DEBUG=""
-<<<<<<< HEAD
 AFTER_PKGS_INSTALL_FILE=""
 AFTER_PKGS_EXECUTE_FILE=""
-||||||| 81da1b3a3f
-=======
->>>>>>> 285e7f8dbe069e649de933f0e791f98560c6c2dd
 
 # User configurable variables
 DEPS_DIR="" # Component artifacts directory
@@ -47,27 +43,13 @@ help() {
   echo ""
   echo "Options:"
   echo ""
-<<<<<<< HEAD
   echo "  --deps <dir>                Directory containing component artifacts (organized by component name)"
   echo "  -a|--after-pkgs-install     JSON File (in templates/centos-09.0 directory) containing additional packages to install to the image"
   echo "  -e|--after-pkgs-execute     JSON File (in templates/centos-09.0 directory) containing list of commands to execute after packages are installed"
-||||||| 81da1b3a3f
-  echo "  -f|--fboss-tarfile          Location of compressed FBOSS tar file to add to image"
-  echo "  -k|--kernel-rpm-dir         Directory containing kernel rpms to install (default: download LTS 6.12)"
-=======
-  echo "  -f|--fboss-tarfile          Location of compressed FBOSS tar file to add to image"
-  echo "  -k|--kernel-rpm-dir         Directory containing kernel rpms to install (default: download LTS 6.12)"
-  echo "  -p|--build-pxe-usb          Build PXE and USB installers image (default: no)"
-  echo "  -o|--build-onie             Build ONIE installer image (default: no)"
->>>>>>> 285e7f8dbe069e649de933f0e791f98560c6c2dd
   echo ""
-<<<<<<< HEAD
   echo "  -p|--build-pxe-usb          Build PXE and USB installers image (default: no)"
   echo "  -o|--build-onie             Build ONIE installer image (default: no)"
   echo ""
-||||||| 81da1b3a3f
-=======
->>>>>>> 285e7f8dbe069e649de933f0e791f98560c6c2dd
   echo "  -d|--debug                  Enable kiwi-ng debug"
   echo "  -h|--help                   Print this help message"
   echo ""
@@ -193,21 +175,6 @@ while [[ $# -gt 0 ]]; do
     shift 2
     ;;
 
-  -p | --build-pxe-usb)
-    BUILD_PXE="yes"
-    shift 1
-    ;;
-
-  -o | --build-onie)
-    BUILD_ONIE="yes"
-    shift 1
-    ;;
-
-  -d | --debug)
-    KIWI_DEBUG=" --debug "
-    shift 1
-    ;;
-
   -h | --help)
     help
     exit 0
@@ -236,17 +203,7 @@ fi
 
 # Update the docker image
 dprint "Updating docker image..."
-<<<<<<< HEAD
 update_docker |& tee -a "${LOG_FILE}"
-||||||| 81da1b3a3f
-update_docker >>"${LOG_FILE}" 2>&1
-
-dprint "Deleting target directory: ${TARGET_DIR}"
-rm -rf "${TARGET_DIR}"
-
-=======
-update_docker >>"${LOG_FILE}" 2>&1
->>>>>>> 285e7f8dbe069e649de933f0e791f98560c6c2dd
 
 # Create the output directory (in case it doesn't exist)
 mkdir -p "${TARGET_DIR}"
@@ -311,19 +268,10 @@ if [ -n "${BUILD_PXE}" ]; then
     kiwi-ng-3 \
       --profile FBOSS \
       --type oem \
-<<<<<<< HEAD
       ${KIWI_DEBUG} system build \
       --description ${DESCRIPTION_DIR} \
       --target-dir ${TARGET_DIR}/btrfs |&
       stdbuf -oL tee -a ${LOG_FILE} | stdbuf -oL awk '{print "PXE/USB Installer| " $0}'
-||||||| 81da1b3a3f
-RC=$?
-=======
-      system build \
-      --description ${DESCRIPTION_DIR} \
-      --target-dir ${TARGET_DIR}/btrfs |&
-      tee -a ${LOG_FILE} | awk '{print "PXE/USB Installer| " $0}'
->>>>>>> 285e7f8dbe069e649de933f0e791f98560c6c2dd
     mv ${TARGET_DIR}/btrfs/FBOSS-Distro-Image.x86_64-1.0.install.* ${TARGET_DIR}
   ) &
   PXE_PID=$!
@@ -337,19 +285,11 @@ if [ -n "${BUILD_ONIE}" ]; then
     kiwi-ng-3 \
       --profile FBOSS \
       --type tbz \
-<<<<<<< HEAD
       ${KIWI_DEBUG} system build \
       --description ${DESCRIPTION_DIR} \
       --target-dir ${TARGET_DIR}/onie |&
       stdbuf -oL tee -a ${LOG_FILE} | stdbuf -oL awk '{print "ONIE installer| " $0}'
 
-||||||| 81da1b3a3f
-=======
-      system build \
-      --description ${DESCRIPTION_DIR} \
-      --target-dir ${TARGET_DIR}/onie |&
-      tee -a ${LOG_FILE} | awk '{print "ONIE installer| " $0}'
->>>>>>> 285e7f8dbe069e649de933f0e791f98560c6c2dd
     # Repack the rootfs so really long filenames are not truncated under Busybox
     dprint "Repacking rootfs with zstd..."
     mkdir ${TARGET_DIR}/onie/rootfs

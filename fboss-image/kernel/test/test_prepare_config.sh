@@ -44,22 +44,12 @@ cat >"$FAKE_KERNEL_DIR/Makefile" <<'EOF'
 ARCH ?= x86_64
 
 defconfig:
-<<<<<<< HEAD
-	@echo "# Fake kernel defconfig" > .config
-	@echo "CONFIG_64BIT=y" >> .config
-	@echo "CONFIG_X86_64=y" >> .config
-
-olddefconfig:
-	@echo "# Reconciled by olddefconfig" >> .config
-||||||| 81da1b3a3f
-=======
   @echo "# Fake kernel defconfig" > .config
   @echo "CONFIG_64BIT=y" >> .config
   @echo "CONFIG_X86_64=y" >> .config
 
 olddefconfig:
   @echo "# Reconciled by olddefconfig" >> .config
->>>>>>> 285e7f8dbe069e649de933f0e791f98560c6c2dd
 
 .PHONY: defconfig olddefconfig
 EOF
