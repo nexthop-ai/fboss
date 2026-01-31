@@ -189,9 +189,7 @@ def parse_args():
         OPT_ARG_CACHE_CONFIG,
         type=str,
         required=False,
-        help=(
-            "Cache config passed to getdeps.py."
-        ),
+        help=("Cache config passed to getdeps.py."),
     )
     parser.add_argument(
         OPT_ARG_EXTRA_CMAKE_DEFINES,
@@ -366,12 +364,17 @@ def run_fboss_build(
     # Add args for image name
     cmd_args.append(f"{FBOSS_IMAGE_NAME}:latest")
     # Add build command args
-<<<<<<< HEAD
     if build:
         extra_defines = {
             "CMAKE_BUILD_TYPE": "MinSizeRel",
             "CMAKE_CXX_STANDARD": "20",
         }
+        if use_clang:
+            clang_defines = {
+                "RANGE_V3_TESTS": "OFF",
+                "RANGE_V3_PERF": "OFF",
+            }
+            extra_defines.update(clang_defines)
         if extra_cmake_defines:
             for k, v in json.loads(extra_cmake_defines).items():
                 extra_defines[k] = v
@@ -399,67 +402,6 @@ def run_fboss_build(
         build_cmd.append("fboss")
     else:
         build_cmd = ["sleep", "infinity"] if daemon else ["bash"]
-||||||| 81da1b3a3f
-    extra_defines = {
-        "CMAKE_BUILD_TYPE": "MinSizeRel",
-        "CMAKE_CXX_STANDARD": "20",
-        "CMAKE_C_COMPILER": "/opt/rh/gcc-toolset-12/root/usr/bin/gcc",
-        "CMAKE_CXX_COMPILER": "/opt/rh/gcc-toolset-12/root/usr/bin/g++",
-    }
-    if extra_cmake_defines:
-        for k, v in json.loads(extra_cmake_defines).items():
-            extra_defines[k] = v
-    build_cmd = [
-        "./build/fbcode_builder/getdeps.py",
-        "build",
-        f"--extra-cmake-defines={json.dumps(extra_defines)}",
-        "--scratch-path",
-        f"{CONTAINER_SCRATCH_PATH}",
-    ]
-    if num_jobs is not None:
-        build_cmd.append("--num-jobs")
-        build_cmd.append(str(num_jobs))
-    if use_system_deps:
-        build_cmd.append("--allow-system-packages")
-    if target is not None:
-        build_cmd.append("--cmake-target")
-        build_cmd.append(target)
-    if use_local:
-        build_cmd.extend(["--src-dir", "."])
-    build_cmd.append("fboss")
-=======
-    extra_defines = {
-        "CMAKE_BUILD_TYPE": "MinSizeRel",
-        "CMAKE_CXX_STANDARD": "20",
-    }
-    if use_clang:
-        clang_defines = {
-            "RANGE_V3_TESTS": "OFF",
-            "RANGE_V3_PERF": "OFF",
-        }
-        extra_defines.update(clang_defines)
-    if extra_cmake_defines:
-        for k, v in json.loads(extra_cmake_defines).items():
-            extra_defines[k] = v
-    build_cmd = [
-        "./fboss/oss/scripts/run-getdeps.py",
-        "build",
-        f"--extra-cmake-defines={json.dumps(extra_defines)}",
-        "--scratch-path",
-        f"{CONTAINER_SCRATCH_PATH}",
-    ]
-    if num_jobs is not None:
-        build_cmd.append("--num-jobs")
-        build_cmd.append(str(num_jobs))
-    if use_system_deps:
-        build_cmd.append("--allow-system-packages")
-    if target is not None:
-        build_cmd.append("--cmake-target")
-        build_cmd.append(target)
-    if use_local:
-        build_cmd.extend(["--src-dir", "."])
-    build_cmd.append("fboss")
->>>>>>> 285e7f8dbe069e649de933f0e791f98560c6c2dd
     cmd_args.extend(build_cmd)
     build_cp = subprocess.run(cmd_args)
     if build_cp.returncode != 0:
