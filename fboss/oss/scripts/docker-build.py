@@ -189,9 +189,7 @@ def parse_args():
         OPT_ARG_CACHE_CONFIG,
         type=str,
         required=False,
-        help=(
-            "Cache config passed to getdeps.py."
-        ),
+        help=("Cache config passed to getdeps.py."),
     )
     parser.add_argument(
         OPT_ARG_EXTRA_CMAKE_DEFINES,
@@ -306,6 +304,7 @@ def run_fboss_build(
     use_system_deps: bool,
     env_vars: List[str],
     use_local: bool,
+    use_clang: bool,
     num_jobs: Optional[int],
     schedule_type: Optional[str],
     cache_config: Optional[str],
@@ -370,6 +369,12 @@ def run_fboss_build(
             "CMAKE_BUILD_TYPE": "MinSizeRel",
             "CMAKE_CXX_STANDARD": "20",
         }
+        if use_clang:
+            clang_defines = {
+                "RANGE_V3_TESTS": "OFF",
+                "RANGE_V3_PERF": "OFF",
+            }
+            extra_defines.update(clang_defines)
         if extra_cmake_defines:
             for k, v in json.loads(extra_cmake_defines).items():
                 extra_defines[k] = v
@@ -448,6 +453,7 @@ def main():
         args.use_system_deps,
         args.env_vars,
         args.local,
+        args.use_clang,
         args.num_jobs,
         args.schedule_type,
         args.cache_config,

@@ -49,13 +49,16 @@ def is_container_available(check_all: bool = False) -> bool:
     if check_all:
         cmd.append("-a")
     proc = subprocess.run(
-        cmd, capture_output=True, check=True,
+        cmd,
+        capture_output=True,
+        check=True,
     )
     return (
         proc.returncode == 0
         and re.search(rf"\b{docker_build.FBOSS_CONTAINER_NAME}\b", proc.stdout.decode())
         is not None
     )
+
 
 # Check if we're in an interactive environment (has a TTY)
 is_interactive = sys.stdout.isatty()
@@ -70,7 +73,9 @@ if not is_container_available(check_all=True):
     extra_cmake_defines = (
         '{"CMAKE_C_COMPILER_LAUNCHER":"sccache","CMAKE_CXX_COMPILER_LAUNCHER":"sccache"}',
     )
-    scratch_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.build_dir"))
+    scratch_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "../../../.build_dir")
+    )
     caches_dir = os.path.expandvars("$HOME/work/caches")
     os.makedirs(caches_dir, exist_ok=True)
     # Transition away from building as root:
@@ -92,20 +97,25 @@ if not is_container_available(check_all=True):
             "SCCACHE_CACHE_SIZE:30G",
         ],  # Caching to speed up build within container
         use_local=True,
+        use_clang=True,
         num_jobs=None,
         schedule_type=None,
         cache_config=None,
         extras_dir=caches_dir,
         extra_cmake_defines=extra_cmake_defines,
         dot_files=[
-            ".bashrc", ".bash_history",
-            ".zshrc", ".zsh_history",
+            ".bashrc",
+            ".bash_history",
+            ".zshrc",
+            ".zsh_history",
             ".config",
-            ".emacs", ".emacs.d",
+            ".emacs",
+            ".emacs.d",
             ".gitconfig",
             ".gnupg",
             ".ssh",
-            ".vim", ".vimrc",
+            ".vim",
+            ".vimrc",
             ".vscode-server",
             "bin",
         ],
@@ -120,6 +130,10 @@ else:
 
     if is_interactive:
         shell = os.getenv("SHELL", "/bin/bash")
-        subprocess.run(["docker", "exec", "-it", docker_build.FBOSS_CONTAINER_NAME, shell])
+        subprocess.run(
+            ["docker", "exec", "-it", docker_build.FBOSS_CONTAINER_NAME, shell]
+        )
     else:
-        print(f"Container {docker_build.FBOSS_CONTAINER_NAME} is running and ready for commands")
+        print(
+            f"Container {docker_build.FBOSS_CONTAINER_NAME} is running and ready for commands"
+        )

@@ -26,7 +26,7 @@ unset SAI_TAJO_IMPL
 export SAI_BRCM_PAI_IMPL=1
 
 # Start the build with specific cmake-target `qsfp_targets`
-time ./build/fbcode_builder/getdeps.py build --allow-system-packages \
+time ./fboss/oss/scripts/run-getdeps.py build --allow-system-packages \
   --build-type MinSizeRel \
   --extra-cmake-defines='{"CMAKE_CXX_STANDARD": "20"}' \
   --scratch-path /var/FBOSS/tmp_bld_dir --cmake-target qsfp_targets fboss

@@ -471,8 +471,6 @@ class SaiSwitch : public HwSwitch {
       bool fwIsolated = false,
       const std::optional<uint32_t>& numActiveFabricPortsAtFwIsolate =
           std::nullopt);
-  void fwDisabledLinksCallbackBottomHalf(
-      const std::vector<int32_t>& fwDisabledPortIds);
 
   void setSwitchReachabilityChangePending();
   std::map<SwitchID, std::set<PortID>> getSwitchReachabilityChange();
@@ -703,6 +701,8 @@ class SaiSwitch : public HwSwitch {
   reconstructMultiSwitchAclTableGroupMap() const;
   std::shared_ptr<MultiSwitchAclMap> reconstructMultiSwitchAclMap() const;
 
+  void startThreads();
+  void stopThreads();
   /*
    * SaiSwitch must support a few varieties of concurrent access:
    * 1. state updates on the SwSwitch update thread calling stateChanged
