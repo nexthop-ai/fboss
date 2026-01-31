@@ -39,6 +39,7 @@ FORWARDING_EXTRA = {
     RUN_SCRIPTS_DIR / "setup.py": "bin/setup.py",
     RUN_SCRIPTS_DIR / "setup_fboss_env": "bin/setup_fboss_env",
     RUN_SCRIPTS_DIR / "topology.cdf": "bin/topology.cdf",
+<<<<<<< HEAD
     RUN_CONFIGS_DIR / "default_configs": "share/default_configs",
     RUN_CONFIGS_DIR / "j2cp": "share/j2cp",
     RUN_CONFIGS_DIR / "j3b": "share/j3b",
@@ -53,6 +54,21 @@ FORWARDING_EXTRA = {
 
 FORWARDING_TEST_BINARIES = [
     "fboss-asic-config-gen",
+||||||| 81da1b3a3f
+=======
+    RUN_CONFIGS_DIR / "j2cp": "share/j2cp",
+    RUN_CONFIGS_DIR / "j3b": "share/j3b",
+    RUN_CONFIGS_DIR / "janga800bic": "share/janga800bic",
+    RUN_CONFIGS_DIR / "r3": "share/r3",
+    RUN_CONFIGS_DIR / "tahan800bc": "share/tahan800bc",
+    RUN_CONFIGS_DIR / "th": "share/th",
+    RUN_CONFIGS_DIR / "th3": "share/th3",
+    RUN_CONFIGS_DIR / "th4": "share/th4",
+    RUN_CONFIGS_DIR / "th5": "share/th5",
+}
+
+FORWARDING_TEST_BINARIES = [
+>>>>>>> 285e7f8dbe069e649de933f0e791f98560c6c2dd
     "fboss-platform-mapping-gen",
     "led_service_hw_test",
     "multi_switch_agent_hw_test",

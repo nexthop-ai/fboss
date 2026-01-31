@@ -51,7 +51,12 @@ set -e
 
 cd $(dirname $0)
 if [ -r ./machine.conf ]; then
+<<<<<<< HEAD
     read_conf_file "./machine.conf"
+||||||| 81da1b3a3f
+=======
+  read_conf_file "./machine.conf"
+>>>>>>> 285e7f8dbe069e649de933f0e791f98560c6c2dd
 fi
 
 # get running machine from conf file

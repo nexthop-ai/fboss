@@ -29,8 +29,16 @@
             primary="true"
             installiso="true"
             bootpartition="false"
+<<<<<<< HEAD
             editbootinstall="editbootinstall.sh"
             kernelcmdline="nomodeset console=ttyS0,57600n8 8250.nr_uarts=1 biosdevname=0 net.ifnames=0 quiet rootfstype=btrfs">
+||||||| 81da1b3a3f
+            bootpartition="true"
+            bootfilesystem="ext4"
+            kernelcmdline="nomodeset console=ttyS4,57600n8 quiet rootfstype=btrfs">
+=======
+            kernelcmdline="nomodeset console=ttyS4,57600n8 biosdevname=0 net.ifnames=0 quiet rootfstype=btrfs">
+>>>>>>> 285e7f8dbe069e649de933f0e791f98560c6c2dd
 
             <bootloader name="grub2" console="serial" serial_line="ttyS0,57600n8"/>
             <size unit="G">16</size>
@@ -117,6 +125,7 @@
         <package name="vi"/>
         <package name="btrfs-progs"/>
         <package name="re2"/>
+<<<<<<< HEAD
         <package name="libnl3"/>
         <package name="libsodium"/>
         <package name="double-conversion"/>
@@ -133,6 +142,21 @@
         <package name="dmidecode"/>
         <package name="nvme-cli"/>
         <package name="createrepo"/>
+||||||| 81da1b3a3f
+=======
+        <package name="libsodium"/>
+        <package name="double-conversion"/>
+        <package name="libdwarf"/>
+        <package name="libunwind"/>
+        <package name="xxhash-libs"/>
+        <package name="libgpiod"/>
+        <package name="glog"/>
+        <package name="python3-pip"/>
+        <package name="lz4"/>
+        <package name="zstd"/>
+        <package name="libusbx"/>
+        <package name="dmidecode"/>
+>>>>>>> 285e7f8dbe069e649de933f0e791f98560c6c2dd
     </packages>
 
     <packages type="bootstrap">
