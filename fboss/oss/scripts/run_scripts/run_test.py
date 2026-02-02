@@ -1728,23 +1728,26 @@ class BenchmarkTestRunner:
                 "max_rss": "",
             }
 
-    def run_test(self, args):
-        """Run benchmark test binaries"""
-        # Determine which benchmarks to run
+    def _get_benchmarks_to_run(self, filter_file=None):
+        """Get list of benchmarks to run based on filter_file or default config.
+
+        Args:
+            filter_file: Optional path to file containing list of benchmarks.
+                        If None, loads from T1, T2, and additional benchmark configs
+
+        Returns:
+            List of benchmark names to run, or None if no benchmarks found
+        """
         benchmarks_to_run = set()
 
-        if args.filter_file:
+        if filter_file:
             # User specified a custom filter file
-            if not os.path.exists(args.filter_file):
-                print(
-                    f"Error: Benchmark configuration file not found: {args.filter_file}"
-                )
-                return
-            benchmarks_to_run = set(_load_from_file(args.filter_file))
-            print(f"Running benchmarks from {args.filter_file}")
+            if not os.path.exists(filter_file):
+                print(f"Error: Benchmark configuration file not found: {filter_file}")
+                return None
+            benchmarks_to_run = set(_load_from_file(filter_file))
         else:
             # Default: concatenate T1, T2, and additional benchmarks
-            print("Running all benchmarks (T1 + T2 + additional)")
             for conf_file in [
                 self.T1_BENCHMARKS_CONF,
                 self.T2_BENCHMARKS_CONF,
@@ -1753,14 +1756,20 @@ class BenchmarkTestRunner:
                 if os.path.exists(conf_file):
                     benchmarks_from_file = _load_from_file(conf_file)
                     benchmarks_to_run.update(benchmarks_from_file)
-                    print(
-                        f"  Loaded {len(benchmarks_from_file)} benchmarks from {conf_file}"
-                    )
                 else:
                     print(f"  Warning: Configuration file not found: {conf_file}")
 
         if not benchmarks_to_run:
             print("Error: No benchmarks found in configuration files")
+            return None
+
+        return list(benchmarks_to_run)
+
+    def run_test(self, args):
+        """Run benchmark test binaries"""
+        benchmarks_to_run = self._get_benchmarks_to_run(args.filter_file)
+
+        if benchmarks_to_run is None:
             return
 
         # If --list_tests is specified, just list the benchmarks and exit
