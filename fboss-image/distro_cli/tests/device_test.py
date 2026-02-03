@@ -21,11 +21,13 @@ These tests verify that:
 """
 
 import argparse
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
 
 from distro_cli.cmds.device import (
+    DISTRO_CONTAINER_NAME,
     getip_command,
     image_command,
     image_upstream_command,
@@ -34,10 +36,53 @@ from distro_cli.cmds.device import (
     ssh_command,
     update_command,
 )
+from distro_cli.lib.docker import container
 
 
 class TestDeviceCommands(unittest.TestCase):
     """Test device command group and subcommands (stubs)"""
+
+    @classmethod
+    def setUpClass(cls):
+        """Set up test container before all tests"""
+        # Check if fboss_distro_infra image exists
+        try:
+            result = subprocess.run(
+                ["docker", "images", "-q", "fboss_distro_infra"],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            if not result.stdout.strip():
+                raise unittest.SkipTest(
+                    "fboss_distro_infra Docker image not found. "
+                    "Please build it with: cd fboss-image/distro_infra && ./build.sh"
+                )
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            raise unittest.SkipTest("Docker not available or image not built")
+
+        # Clean up any existing container with the same name
+        if container.container_is_running(DISTRO_CONTAINER_NAME):
+            container.stop_and_remove_container(DISTRO_CONTAINER_NAME)
+
+        # Start the fboss-distro-infra container in background
+        # Use a minimal command that keeps the container running
+        exit_code = container.run_container(
+            image="fboss_distro_infra",
+            command=["sleep", "1"],
+            ephemeral=False,
+            name=DISTRO_CONTAINER_NAME,
+            privileged=True,  # Required for network operations
+        )
+
+        if exit_code != 0:
+            raise RuntimeError(f"Failed to start {DISTRO_CONTAINER_NAME} container")
+
+    @classmethod
+    def tearDownClass(cls):
+        """Clean up test container after all tests"""
+        if container.container_is_running(DISTRO_CONTAINER_NAME):
+            container.stop_and_remove_container(DISTRO_CONTAINER_NAME)
 
     def setUp(self):
         """Set up test fixtures"""
@@ -98,7 +143,7 @@ class TestDeviceCommands(unittest.TestCase):
 
     def test_getip_stub(self):
         """Test getip command (stub)"""
-        args = argparse.Namespace(mac=self.test_mac)
+        args = argparse.Namespace(mac=self.test_mac, interface=None)
         # Call command - just verify it doesn't crash
         getip_command(args)
 

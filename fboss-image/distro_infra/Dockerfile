@@ -15,6 +15,7 @@ COPY parts/ipxe/ipxev4.efi /distro_infra
 COPY parts/ipxe/ipxev6.efi /distro_infra
 COPY parts/autoexec.ipxe /distro_infra
 COPY parts/nginx.conf /distro_infra
+COPY parts/getip.sh /distro_infra
 
 RUN mkdir -p /distro_infra/persistent
 WORKDIR /distro_infra/persistent

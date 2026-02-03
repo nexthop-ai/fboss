@@ -7,11 +7,22 @@
 
 """Device command implementation."""
 
+import json
 import logging
 
 from distro_cli.lib.cli import validate_path
+from distro_cli.lib.docker import container
+
+# This should match DISTRO_CONTAINER_NAME in distro_infra/distro_infra.sh
+DISTRO_CONTAINER_NAME = "fboss-distro-infra"
+GETIP_SCRIPT_CONTAINER_PATH = "/distro_infra/getip.sh"
 
 logger = logging.getLogger("fboss-image")
+
+
+def print_to_console(message: str) -> None:
+    """Print message to console"""
+    print(message)  # noqa: T201
 
 
 def image_upstream_command(args):
@@ -43,7 +54,53 @@ def update_command(args):
 def getip_command(args):
     """Get device IP address"""
     logger.info(f"Getting IP for device {args.mac}")
-    logger.info("Device getip command (stub)")
+
+    # Check if container is running
+    if not container.container_is_running(DISTRO_CONTAINER_NAME):
+        logger.error(f"Container '{DISTRO_CONTAINER_NAME}' is not running")
+        logger.error("Please start the distro-infra container first")
+        return
+
+    # Build command
+    cmd = [GETIP_SCRIPT_CONTAINER_PATH, args.mac]
+    if args.interface:
+        cmd.append(args.interface)
+
+    # Execute in container
+    exit_code, stdout, stderr = container.exec_in_container(DISTRO_CONTAINER_NAME, cmd)
+
+    if exit_code != 0:
+        logger.error(f"getip.sh failed with exit code {exit_code}")
+        if stderr:
+            logger.error(f"stderr: {stderr}")
+        if stdout:
+            logger.error(f"stdout: {stdout}")
+        return
+
+    # Parse JSON output
+    try:
+        result = json.loads(stdout)
+
+        # Check for error in JSON
+        if "error_code" in result:
+            logger.error(f"Error: {result.get('error', 'Unknown error')}")
+            logger.error(f"Error code: {result['error_code']}")
+            return
+
+        # Extract IP addresses
+        ipv4 = result.get("ipv4")
+        ipv6 = result.get("ipv6")
+
+        if ipv4:
+            print_to_console(ipv4)
+        elif ipv6:
+            print_to_console(ipv6)
+        else:
+            logger.error("No IP address found in response")
+
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse JSON output: {e}")
+        logger.error(f"Output was: {stdout}")
 
 
 def ssh_command(args):
@@ -103,7 +160,12 @@ def setup_device_commands(cli):
     )
 
     device.add_command(
-        "getip", getip_command, help_text="Get device IP address", arguments=[]
+        "getip",
+        getip_command,
+        help_text="Get device IP address",
+        arguments=[
+            ("interface", {"help": "Network interface to use", "nargs": "?"}),
+        ],
     )
 
     device.add_command("ssh", ssh_command, help_text="SSH to device", arguments=[])
