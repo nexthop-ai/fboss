@@ -105,13 +105,13 @@ fi
 # across container runs
 scratch_root="/build"
 if [ "$need_sai" -eq 1 ]; then
-  common_root="${scratch_root}/forwarding-stack/common"
   build_dir="${scratch_root}/forwarding-stack/${sai_name}"
 else
-  common_root="${scratch_root}/platform-stack/common"
   build_dir="${scratch_root}/platform-stack"
 fi
 mkdir -p "$build_dir"
+
+common_root="${scratch_root}/common"
 
 common_options='--allow-system-packages'
 common_options+=' --scratch-path '$build_dir

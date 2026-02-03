@@ -103,18 +103,20 @@ else
 fi
 mkdir -p "$build_dir"
 
+common_root="${scratch_root}/common"
+
 # Share download / repo / extracted caches across different types of builds
-mkdir -p "${build_dir}/downloads"
+mkdir -p "${common_root}/downloads"
 if [ ! -L "${build_dir}/downloads" ]; then
-  ln -s "${build_dir}/downloads" "${build_dir}/downloads"
+  ln -s "${common_root}/downloads" "${build_dir}/downloads"
 fi
-mkdir -p "${build_dir}/repos"
+mkdir -p "${common_root}/repos"
 if [ ! -L "${build_dir}/repos" ]; then
-  ln -s "${build_dir}/repos" "${build_dir}/repos"
+  ln -s "${common_root}/repos" "${build_dir}/repos"
 fi
-mkdir -p "${build_dir}/extracted"
+mkdir -p "${common_root}/extracted"
 if [ ! -L "${build_dir}/extracted" ]; then
-  ln -s "${build_dir}/extracted" "${build_dir}/extracted"
+  ln -s "${common_root}/extracted" "${build_dir}/extracted"
 fi
 
 # Navigate to FBOSS source root
