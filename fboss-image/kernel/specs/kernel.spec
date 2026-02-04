@@ -84,16 +84,15 @@ Requires: kernel-headers = %{epoch}:%{version}-%{release}
 # Must pass CC= on make command line because Makefile variables override env vars
 KERNEL_CC="${CC:-gcc}"
 
+JOBS="${JOBS:-$(($(nproc) * 5 / 4 ))}"
 # When using sccache:
 # - Use num_jobs for parallelism (set by nhfboss-common.sh)
 # - Set reproducible build variables to allow cache hits
 if [[ "$KERNEL_CC" == *sccache* ]]; then
-  JOBS="${num_jobs:-$(nproc)}"
+  JOBS="${num_jobs:-${JOBS}}"
   export KBUILD_BUILD_TIMESTAMP="$(date -u -d "$(date +%Y-%m)-01 00:42:42")"
   export KBUILD_BUILD_HOST="fboss-build"
   export KBUILD_BUILD_USER="build"
-else
-  JOBS="$(nproc)"
 fi
 
 # Build kernel and modules with correct KERNELRELEASE
@@ -107,7 +106,7 @@ KERNELRELEASE=%{version}-%{release}.%{_arch}
 # the main build just because CC changed from "gcc" to "sccache gcc".
 NOCMDDEP=""
 if [[ "$KERNEL_CC" == *sccache* ]]; then
-  make %{?_smp_mflags} CC=gcc KERNELRELEASE=$KERNELRELEASE kernel/configs.o kernel/kheaders.o
+  make -j"$JOBS" CC=gcc KERNELRELEASE=$KERNELRELEASE kernel/configs.o kernel/kheaders.o
   NOCMDDEP="KBUILD_NOCMDDEP=1"
 fi
 make -j"$JOBS" CC="$KERNEL_CC" $NOCMDDEP KERNELRELEASE=$KERNELRELEASE bzImage modules
