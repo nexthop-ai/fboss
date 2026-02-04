@@ -6,7 +6,8 @@
     "disable_neighbor_updates": "true",
     "enable_replayer": "true",
     "log_variable_name": "true",
-    "sai_configure_six_tap": "true"
+    "sai_configure_six_tap": "true",
+    "enable_lldp": "true"
   },
   "sw": {
     "version": 0,
@@ -199,7 +200,8 @@
         "routerID": 0,
         "vlanID": 2001,
         "ipAddresses": [
-          "10.0.0.1/24"
+          "10.0.0.1/24",
+          "2001:db8:0:1::1/64"
         ]
       },
       {
@@ -207,7 +209,8 @@
         "routerID": 0,
         "vlanID": 2002,
         "ipAddresses": [
-          "10.0.1.1/24"
+          "10.0.1.1/24",
+          "2001:db8:0:2::1/64"
         ]
       },
       {
@@ -215,7 +218,8 @@
         "routerID": 0,
         "vlanID": 2003,
         "ipAddresses": [
-          "10.0.2.1/24"
+          "10.0.2.1/24",
+          "2001:db8:0:3::1/64"
         ]
       },
       {
@@ -223,7 +227,8 @@
         "routerID": 0,
         "vlanID": 2004,
         "ipAddresses": [
-          "10.0.3.1/24"
+          "10.0.3.1/24",
+          "2001:db8:0:4::1/64"
         ]
       }
     ],
@@ -323,7 +328,51 @@
         "stage": 0
       }
     ],
-    "mirrorOnDropReports": []
+    "mirrorOnDropReports": [],
+    "cpuTrafficPolicy": {
+      "rxReasonToQueueOrderedList": [
+        {
+          "rxReason": 9,
+          "queueId": 2
+        },
+        {
+          "rxReason": 8,
+          "queueId": 9
+        },
+        {
+          "rxReason": 1,
+          "queueId": 9
+        },
+        {
+          "rxReason": 10,
+          "queueId": 9
+        },
+        {
+          "rxReason": 11,
+          "queueId": 9
+        },
+        {
+          "rxReason": 12,
+          "queueId": 9
+        },
+        {
+          "rxReason": 13,
+          "queueId": 9
+        },
+        {
+          "rxReason": 7,
+          "queueId": 2
+        },
+        {
+          "rxReason": 2,
+          "queueId": 2
+        },
+        {
+          "rxReason": 0,
+          "queueId": 1
+        }
+      ]
+    }
   },
   "platform": {
     "chip": {

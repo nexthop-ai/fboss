@@ -1147,6 +1147,24 @@
               "portNumber": -1,
               "ledId": 1
             }
+          ],
+          "ledCtrlBlockConfigs": [
+            {
+              "pmUnitScopedNamePrefix": "SMB_PORT_LED",
+              "deviceName": "port_led",
+              "csrOffsetCalc": "0x60 + (2 - {ledNum})*0x8",
+              "numPorts": 32,
+              "ledPerPort": 2,
+              "startPort": 1
+            },
+            {
+              "pmUnitScopedNamePrefix": "SMB_PORT_LED",
+              "deviceName": "port_led",
+              "csrOffsetCalc": "0x64 + (2 - {ledNum})*0x8",
+              "numPorts": 32,
+              "ledPerPort": 2,
+              "startPort": 33
+            }
           ]
         }
       ],
@@ -1349,6 +1367,7 @@
     "nh_fpga_info",
     "nh_fpga_fan",
     "nh_fpga_led",
+    "nh_fpga_port_led",
     "nh_xcvr_ctrl",
     "tmp464",
     "lm90",

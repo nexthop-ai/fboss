@@ -39,7 +39,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_1"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 1, "2": 1, "3": 1, "4": 1, "5": 1, "6": 1, "7": 1, "8": 1}
         },
         "2": {
           "tcvrId": 2,
@@ -65,7 +65,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_2"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 2, "2": 2, "3": 2, "4": 2, "5": 2, "6": 2, "7": 2, "8": 2}
         },
         "3": {
           "tcvrId": 3,
@@ -91,7 +91,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_3"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 3, "2": 3, "3": 3, "4": 3, "5": 3, "6": 3, "7": 3, "8": 3}
         },
         "4": {
           "tcvrId": 4,
@@ -117,7 +117,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_4"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 4, "2": 4, "3": 4, "4": 4, "5": 4, "6": 4, "7": 4, "8": 4}
         },
         "5": {
           "tcvrId": 5,
@@ -143,7 +143,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_5"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 5, "2": 5, "3": 5, "4": 5, "5": 5, "6": 5, "7": 5, "8": 5}
         },
         "6": {
           "tcvrId": 6,
@@ -169,7 +169,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_6"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 6, "2": 6, "3": 6, "4": 6, "5": 6, "6": 6, "7": 6, "8": 6}
         },
         "7": {
           "tcvrId": 7,
@@ -195,7 +195,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_7"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 7, "2": 7, "3": 7, "4": 7, "5": 7, "6": 7, "7": 7, "8": 7}
         },
         "8": {
           "tcvrId": 8,
@@ -221,7 +221,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_8"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 8, "2": 8, "3": 8, "4": 8, "5": 8, "6": 8, "7": 8, "8": 8}
         },
         "9": {
           "tcvrId": 9,
@@ -247,7 +247,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_9"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 9, "2": 9, "3": 9, "4": 9, "5": 9, "6": 9, "7": 9, "8": 9}
         },
         "10": {
           "tcvrId": 10,
@@ -273,7 +273,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_10"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 10, "2": 10, "3": 10, "4": 10, "5": 10, "6": 10, "7": 10, "8": 10}
         },
         "11": {
           "tcvrId": 11,
@@ -299,7 +299,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_11"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 11, "2": 11, "3": 11, "4": 11, "5": 11, "6": 11, "7": 11, "8": 11}
         },
         "12": {
           "tcvrId": 12,
@@ -325,7 +325,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_12"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 12, "2": 12, "3": 12, "4": 12, "5": 12, "6": 12, "7": 12, "8": 12}
         },
         "13": {
           "tcvrId": 13,
@@ -351,7 +351,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_13"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 13, "2": 13, "3": 13, "4": 13, "5": 13, "6": 13, "7": 13, "8": 13}
         },
         "14": {
           "tcvrId": 14,
@@ -377,7 +377,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_14"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 14, "2": 14, "3": 14, "4": 14, "5": 14, "6": 14, "7": 14, "8": 14}
         },
         "15": {
           "tcvrId": 15,
@@ -403,7 +403,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_15"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 15, "2": 15, "3": 15, "4": 15, "5": 15, "6": 15, "7": 15, "8": 15}
         },
         "16": {
           "tcvrId": 16,
@@ -429,7 +429,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_16"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 16, "2": 16, "3": 16, "4": 16, "5": 16, "6": 16, "7": 16, "8": 16}
         },
         "17": {
           "tcvrId": 17,
@@ -455,7 +455,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_17"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 17, "2": 17, "3": 17, "4": 17, "5": 17, "6": 17, "7": 17, "8": 17}
         },
         "18": {
           "tcvrId": 18,
@@ -481,7 +481,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_18"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 18, "2": 18, "3": 18, "4": 18, "5": 18, "6": 18, "7": 18, "8": 18}
         },
         "19": {
           "tcvrId": 19,
@@ -507,7 +507,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_19"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 19, "2": 19, "3": 19, "4": 19, "5": 19, "6": 19, "7": 19, "8": 19}
         },
         "20": {
           "tcvrId": 20,
@@ -533,7 +533,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_20"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 20, "2": 20, "3": 20, "4": 20, "5": 20, "6": 20, "7": 20, "8": 20}
         },
         "21": {
           "tcvrId": 21,
@@ -559,7 +559,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_21"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 21, "2": 21, "3": 21, "4": 21, "5": 21, "6": 21, "7": 21, "8": 21}
         },
         "22": {
           "tcvrId": 22,
@@ -585,7 +585,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_22"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 22, "2": 22, "3": 22, "4": 22, "5": 22, "6": 22, "7": 22, "8": 22}
         },
         "23": {
           "tcvrId": 23,
@@ -611,7 +611,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_23"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 23, "2": 23, "3": 23, "4": 23, "5": 23, "6": 23, "7": 23, "8": 23}
         },
         "24": {
           "tcvrId": 24,
@@ -637,7 +637,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_24"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 24, "2": 24, "3": 24, "4": 24, "5": 24, "6": 24, "7": 24, "8": 24}
         },
         "25": {
           "tcvrId": 25,
@@ -663,7 +663,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_25"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 25, "2": 25, "3": 25, "4": 25, "5": 25, "6": 25, "7": 25, "8": 25}
         },
         "26": {
           "tcvrId": 26,
@@ -689,7 +689,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_26"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 26, "2": 26, "3": 26, "4": 26, "5": 26, "6": 26, "7": 26, "8": 26}
         },
         "27": {
           "tcvrId": 27,
@@ -715,7 +715,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_27"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 27, "2": 27, "3": 27, "4": 27, "5": 27, "6": 27, "7": 27, "8": 27}
         },
         "28": {
           "tcvrId": 28,
@@ -741,7 +741,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_28"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 28, "2": 28, "3": 28, "4": 28, "5": 28, "6": 28, "7": 28, "8": 28}
         },
         "29": {
           "tcvrId": 29,
@@ -767,7 +767,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_29"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 29, "2": 29, "3": 29, "4": 29, "5": 29, "6": 29, "7": 29, "8": 29}
         },
         "30": {
           "tcvrId": 30,
@@ -793,7 +793,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_30"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 30, "2": 30, "3": 30, "4": 30, "5": 30, "6": 30, "7": 30, "8": 30}
         },
         "31": {
           "tcvrId": 31,
@@ -819,7 +819,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_31"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 31, "2": 31, "3": 31, "4": 31, "5": 31, "6": 31, "7": 31, "8": 31}
         },
         "32": {
           "tcvrId": 32,
@@ -845,7 +845,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_32"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 32, "2": 32, "3": 32, "4": 32, "5": 32, "6": 32, "7": 32, "8": 32}
         },
         "33": {
           "tcvrId": 33,
@@ -871,7 +871,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_33"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 33, "2": 33, "3": 33, "4": 33, "5": 33, "6": 33, "7": 33, "8": 33}
         },
         "34": {
           "tcvrId": 34,
@@ -897,7 +897,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_34"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 34, "2": 34, "3": 34, "4": 34, "5": 34, "6": 34, "7": 34, "8": 34}
         },
         "35": {
           "tcvrId": 35,
@@ -923,7 +923,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_35"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 35, "2": 35, "3": 35, "4": 35, "5": 35, "6": 35, "7": 35, "8": 35}
         },
         "36": {
           "tcvrId": 36,
@@ -949,7 +949,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_36"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 36, "2": 36, "3": 36, "4": 36, "5": 36, "6": 36, "7": 36, "8": 36}
         },
         "37": {
           "tcvrId": 37,
@@ -975,7 +975,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_37"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 37, "2": 37, "3": 37, "4": 37, "5": 37, "6": 37, "7": 37, "8": 37}
         },
         "38": {
           "tcvrId": 38,
@@ -1001,7 +1001,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_38"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 38, "2": 38, "3": 38, "4": 38, "5": 38, "6": 38, "7": 38, "8": 38}
         },
         "39": {
           "tcvrId": 39,
@@ -1027,7 +1027,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_39"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 39, "2": 39, "3": 39, "4": 39, "5": 39, "6": 39, "7": 39, "8": 39}
         },
         "40": {
           "tcvrId": 40,
@@ -1053,7 +1053,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_40"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 40, "2": 40, "3": 40, "4": 40, "5": 40, "6": 40, "7": 40, "8": 40}
         },
         "41": {
           "tcvrId": 41,
@@ -1079,7 +1079,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_41"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 41, "2": 41, "3": 41, "4": 41, "5": 41, "6": 41, "7": 41, "8": 41}
         },
         "42": {
           "tcvrId": 42,
@@ -1105,7 +1105,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_42"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 42, "2": 42, "3": 42, "4": 42, "5": 42, "6": 42, "7": 42, "8": 42}
         },
         "43": {
           "tcvrId": 43,
@@ -1131,7 +1131,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_43"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 43, "2": 43, "3": 43, "4": 43, "5": 43, "6": 43, "7": 43, "8": 43}
         },
         "44": {
           "tcvrId": 44,
@@ -1157,7 +1157,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_44"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 44, "2": 44, "3": 44, "4": 44, "5": 44, "6": 44, "7": 44, "8": 44}
         },
         "45": {
           "tcvrId": 45,
@@ -1183,7 +1183,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_45"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 45, "2": 45, "3": 45, "4": 45, "5": 45, "6": 45, "7": 45, "8": 45}
         },
         "46": {
           "tcvrId": 46,
@@ -1209,7 +1209,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_46"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 46, "2": 46, "3": 46, "4": 46, "5": 46, "6": 46, "7": 46, "8": 46}
         },
         "47": {
           "tcvrId": 47,
@@ -1235,7 +1235,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_47"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 47, "2": 47, "3": 47, "4": 47, "5": 47, "6": 47, "7": 47, "8": 47}
         },
         "48": {
           "tcvrId": 48,
@@ -1261,7 +1261,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_48"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 48, "2": 48, "3": 48, "4": 48, "5": 48, "6": 48, "7": 48, "8": 48}
         },
         "49": {
           "tcvrId": 49,
@@ -1287,7 +1287,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_49"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 49, "2": 49, "3": 49, "4": 49, "5": 49, "6": 49, "7": 49, "8": 49}
         },
         "50": {
           "tcvrId": 50,
@@ -1313,7 +1313,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_50"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 50, "2": 50, "3": 50, "4": 50, "5": 50, "6": 50, "7": 50, "8": 50}
         },
         "51": {
           "tcvrId": 51,
@@ -1339,7 +1339,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_51"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 51, "2": 51, "3": 51, "4": 51, "5": 51, "6": 51, "7": 51, "8": 51}
         },
         "52": {
           "tcvrId": 52,
@@ -1365,7 +1365,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_52"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 52, "2": 52, "3": 52, "4": 52, "5": 52, "6": 52, "7": 52, "8": 52}
         },
         "53": {
           "tcvrId": 53,
@@ -1391,7 +1391,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_53"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 53, "2": 53, "3": 53, "4": 53, "5": 53, "6": 53, "7": 53, "8": 53}
         },
         "54": {
           "tcvrId": 54,
@@ -1417,7 +1417,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_54"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 54, "2": 54, "3": 54, "4": 54, "5": 54, "6": 54, "7": 54, "8": 54}
         },
         "55": {
           "tcvrId": 55,
@@ -1443,7 +1443,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_55"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 55, "2": 55, "3": 55, "4": 55, "5": 55, "6": 55, "7": 55, "8": 55}
         },
         "56": {
           "tcvrId": 56,
@@ -1469,7 +1469,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_56"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 56, "2": 56, "3": 56, "4": 56, "5": 56, "6": 56, "7": 56, "8": 56}
         },
         "57": {
           "tcvrId": 57,
@@ -1495,7 +1495,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_57"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 57, "2": 57, "3": 57, "4": 57, "5": 57, "6": 57, "7": 57, "8": 57}
         },
         "58": {
           "tcvrId": 58,
@@ -1521,7 +1521,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_58"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 58, "2": 58, "3": 58, "4": 58, "5": 58, "6": 58, "7": 58, "8": 58}
         },
         "59": {
           "tcvrId": 59,
@@ -1547,7 +1547,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_59"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 59, "2": 59, "3": 59, "4": 59, "5": 59, "6": 59, "7": 59, "8": 59}
         },
         "60": {
           "tcvrId": 60,
@@ -1573,7 +1573,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_60"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 60, "2": 60, "3": 60, "4": 60, "5": 60, "6": 60, "7": 60, "8": 60}
         },
         "61": {
           "tcvrId": 61,
@@ -1599,7 +1599,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_61"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 61, "2": 61, "3": 61, "4": 61, "5": 61, "6": 61, "7": 61, "8": 61}
         },
         "62": {
           "tcvrId": 62,
@@ -1625,7 +1625,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_62"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 62, "2": 62, "3": 62, "4": 62, "5": 62, "6": 62, "7": 62, "8": 62}
         },
         "63": {
           "tcvrId": 63,
@@ -1651,7 +1651,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_63"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 63, "2": 63, "3": 63, "4": 63, "5": 63, "6": 63, "7": 63, "8": 63}
         },
         "64": {
           "tcvrId": 64,
@@ -1677,11 +1677,397 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "type": 1,
             "devicePath": "/run/devmap/xcvrs/xcvr_io_64"
           },
-          "tcvrLaneToLedId": {}
+          "tcvrLaneToLedId": {"1": 64, "2": 64, "3": 64, "4": 64, "5": 64, "6": 64, "7": 64, "8": 64}
         }
       },
       "phyMapping": {},
-      "phyIOControllers": {}
+      "phyIOControllers": {},
+      "ledMapping": {
+        "1": {
+          "id": 1,
+          "bluePath": "/sys/class/leds/port1_led:blue:status",
+          "yellowPath": "/sys/class/leds/port1_led:amber:status",
+          "transceiverId": 1
+        },
+        "2": {
+          "id": 2,
+          "bluePath": "/sys/class/leds/port2_led:blue:status",
+          "yellowPath": "/sys/class/leds/port2_led:amber:status",
+          "transceiverId": 2
+        },
+        "3": {
+          "id": 3,
+          "bluePath": "/sys/class/leds/port3_led:blue:status",
+          "yellowPath": "/sys/class/leds/port3_led:amber:status",
+          "transceiverId": 3
+        },
+        "4": {
+          "id": 4,
+          "bluePath": "/sys/class/leds/port4_led:blue:status",
+          "yellowPath": "/sys/class/leds/port4_led:amber:status",
+          "transceiverId": 4
+        },
+        "5": {
+          "id": 5,
+          "bluePath": "/sys/class/leds/port5_led:blue:status",
+          "yellowPath": "/sys/class/leds/port5_led:amber:status",
+          "transceiverId": 5
+        },
+        "6": {
+          "id": 6,
+          "bluePath": "/sys/class/leds/port6_led:blue:status",
+          "yellowPath": "/sys/class/leds/port6_led:amber:status",
+          "transceiverId": 6
+        },
+        "7": {
+          "id": 7,
+          "bluePath": "/sys/class/leds/port7_led:blue:status",
+          "yellowPath": "/sys/class/leds/port7_led:amber:status",
+          "transceiverId": 7
+        },
+        "8": {
+          "id": 8,
+          "bluePath": "/sys/class/leds/port8_led:blue:status",
+          "yellowPath": "/sys/class/leds/port8_led:amber:status",
+          "transceiverId": 8
+        },
+        "9": {
+          "id": 9,
+          "bluePath": "/sys/class/leds/port9_led:blue:status",
+          "yellowPath": "/sys/class/leds/port9_led:amber:status",
+          "transceiverId": 9
+        },
+        "10": {
+          "id": 10,
+          "bluePath": "/sys/class/leds/port10_led:blue:status",
+          "yellowPath": "/sys/class/leds/port10_led:amber:status",
+          "transceiverId": 10
+        },
+        "11": {
+          "id": 11,
+          "bluePath": "/sys/class/leds/port11_led:blue:status",
+          "yellowPath": "/sys/class/leds/port11_led:amber:status",
+          "transceiverId": 11
+        },
+        "12": {
+          "id": 12,
+          "bluePath": "/sys/class/leds/port12_led:blue:status",
+          "yellowPath": "/sys/class/leds/port12_led:amber:status",
+          "transceiverId": 12
+        },
+        "13": {
+          "id": 13,
+          "bluePath": "/sys/class/leds/port13_led:blue:status",
+          "yellowPath": "/sys/class/leds/port13_led:amber:status",
+          "transceiverId": 13
+        },
+        "14": {
+          "id": 14,
+          "bluePath": "/sys/class/leds/port14_led:blue:status",
+          "yellowPath": "/sys/class/leds/port14_led:amber:status",
+          "transceiverId": 14
+        },
+        "15": {
+          "id": 15,
+          "bluePath": "/sys/class/leds/port15_led:blue:status",
+          "yellowPath": "/sys/class/leds/port15_led:amber:status",
+          "transceiverId": 15
+        },
+        "16": {
+          "id": 16,
+          "bluePath": "/sys/class/leds/port16_led:blue:status",
+          "yellowPath": "/sys/class/leds/port16_led:amber:status",
+          "transceiverId": 16
+        },
+        "17": {
+          "id": 17,
+          "bluePath": "/sys/class/leds/port17_led:blue:status",
+          "yellowPath": "/sys/class/leds/port17_led:amber:status",
+          "transceiverId": 17
+        },
+        "18": {
+          "id": 18,
+          "bluePath": "/sys/class/leds/port18_led:blue:status",
+          "yellowPath": "/sys/class/leds/port18_led:amber:status",
+          "transceiverId": 18
+        },
+        "19": {
+          "id": 19,
+          "bluePath": "/sys/class/leds/port19_led:blue:status",
+          "yellowPath": "/sys/class/leds/port19_led:amber:status",
+          "transceiverId": 19
+        },
+        "20": {
+          "id": 20,
+          "bluePath": "/sys/class/leds/port20_led:blue:status",
+          "yellowPath": "/sys/class/leds/port20_led:amber:status",
+          "transceiverId": 20
+        },
+        "21": {
+          "id": 21,
+          "bluePath": "/sys/class/leds/port21_led:blue:status",
+          "yellowPath": "/sys/class/leds/port21_led:amber:status",
+          "transceiverId": 21
+        },
+        "22": {
+          "id": 22,
+          "bluePath": "/sys/class/leds/port22_led:blue:status",
+          "yellowPath": "/sys/class/leds/port22_led:amber:status",
+          "transceiverId": 22
+        },
+        "23": {
+          "id": 23,
+          "bluePath": "/sys/class/leds/port23_led:blue:status",
+          "yellowPath": "/sys/class/leds/port23_led:amber:status",
+          "transceiverId": 23
+        },
+        "24": {
+          "id": 24,
+          "bluePath": "/sys/class/leds/port24_led:blue:status",
+          "yellowPath": "/sys/class/leds/port24_led:amber:status",
+          "transceiverId": 24
+        },
+        "25": {
+          "id": 25,
+          "bluePath": "/sys/class/leds/port25_led:blue:status",
+          "yellowPath": "/sys/class/leds/port25_led:amber:status",
+          "transceiverId": 25
+        },
+        "26": {
+          "id": 26,
+          "bluePath": "/sys/class/leds/port26_led:blue:status",
+          "yellowPath": "/sys/class/leds/port26_led:amber:status",
+          "transceiverId": 26
+        },
+        "27": {
+          "id": 27,
+          "bluePath": "/sys/class/leds/port27_led:blue:status",
+          "yellowPath": "/sys/class/leds/port27_led:amber:status",
+          "transceiverId": 27
+        },
+        "28": {
+          "id": 28,
+          "bluePath": "/sys/class/leds/port28_led:blue:status",
+          "yellowPath": "/sys/class/leds/port28_led:amber:status",
+          "transceiverId": 28
+        },
+        "29": {
+          "id": 29,
+          "bluePath": "/sys/class/leds/port29_led:blue:status",
+          "yellowPath": "/sys/class/leds/port29_led:amber:status",
+          "transceiverId": 29
+        },
+        "30": {
+          "id": 30,
+          "bluePath": "/sys/class/leds/port30_led:blue:status",
+          "yellowPath": "/sys/class/leds/port30_led:amber:status",
+          "transceiverId": 30
+        },
+        "31": {
+          "id": 31,
+          "bluePath": "/sys/class/leds/port31_led:blue:status",
+          "yellowPath": "/sys/class/leds/port31_led:amber:status",
+          "transceiverId": 31
+        },
+        "32": {
+          "id": 32,
+          "bluePath": "/sys/class/leds/port32_led:blue:status",
+          "yellowPath": "/sys/class/leds/port32_led:amber:status",
+          "transceiverId": 32
+        },
+        "33": {
+          "id": 33,
+          "bluePath": "/sys/class/leds/port33_led:blue:status",
+          "yellowPath": "/sys/class/leds/port33_led:amber:status",
+          "transceiverId": 33
+        },
+        "34": {
+          "id": 34,
+          "bluePath": "/sys/class/leds/port34_led:blue:status",
+          "yellowPath": "/sys/class/leds/port34_led:amber:status",
+          "transceiverId": 34
+        },
+        "35": {
+          "id": 35,
+          "bluePath": "/sys/class/leds/port35_led:blue:status",
+          "yellowPath": "/sys/class/leds/port35_led:amber:status",
+          "transceiverId": 35
+        },
+        "36": {
+          "id": 36,
+          "bluePath": "/sys/class/leds/port36_led:blue:status",
+          "yellowPath": "/sys/class/leds/port36_led:amber:status",
+          "transceiverId": 36
+        },
+        "37": {
+          "id": 37,
+          "bluePath": "/sys/class/leds/port37_led:blue:status",
+          "yellowPath": "/sys/class/leds/port37_led:amber:status",
+          "transceiverId": 37
+        },
+        "38": {
+          "id": 38,
+          "bluePath": "/sys/class/leds/port38_led:blue:status",
+          "yellowPath": "/sys/class/leds/port38_led:amber:status",
+          "transceiverId": 38
+        },
+        "39": {
+          "id": 39,
+          "bluePath": "/sys/class/leds/port39_led:blue:status",
+          "yellowPath": "/sys/class/leds/port39_led:amber:status",
+          "transceiverId": 39
+        },
+        "40": {
+          "id": 40,
+          "bluePath": "/sys/class/leds/port40_led:blue:status",
+          "yellowPath": "/sys/class/leds/port40_led:amber:status",
+          "transceiverId": 40
+        },
+        "41": {
+          "id": 41,
+          "bluePath": "/sys/class/leds/port41_led:blue:status",
+          "yellowPath": "/sys/class/leds/port41_led:amber:status",
+          "transceiverId": 41
+        },
+        "42": {
+          "id": 42,
+          "bluePath": "/sys/class/leds/port42_led:blue:status",
+          "yellowPath": "/sys/class/leds/port42_led:amber:status",
+          "transceiverId": 42
+        },
+        "43": {
+          "id": 43,
+          "bluePath": "/sys/class/leds/port43_led:blue:status",
+          "yellowPath": "/sys/class/leds/port43_led:amber:status",
+          "transceiverId": 43
+        },
+        "44": {
+          "id": 44,
+          "bluePath": "/sys/class/leds/port44_led:blue:status",
+          "yellowPath": "/sys/class/leds/port44_led:amber:status",
+          "transceiverId": 44
+        },
+        "45": {
+          "id": 45,
+          "bluePath": "/sys/class/leds/port45_led:blue:status",
+          "yellowPath": "/sys/class/leds/port45_led:amber:status",
+          "transceiverId": 45
+        },
+        "46": {
+          "id": 46,
+          "bluePath": "/sys/class/leds/port46_led:blue:status",
+          "yellowPath": "/sys/class/leds/port46_led:amber:status",
+          "transceiverId": 46
+        },
+        "47": {
+          "id": 47,
+          "bluePath": "/sys/class/leds/port47_led:blue:status",
+          "yellowPath": "/sys/class/leds/port47_led:amber:status",
+          "transceiverId": 47
+        },
+        "48": {
+          "id": 48,
+          "bluePath": "/sys/class/leds/port48_led:blue:status",
+          "yellowPath": "/sys/class/leds/port48_led:amber:status",
+          "transceiverId": 48
+        },
+        "49": {
+          "id": 49,
+          "bluePath": "/sys/class/leds/port49_led:blue:status",
+          "yellowPath": "/sys/class/leds/port49_led:amber:status",
+          "transceiverId": 49
+        },
+        "50": {
+          "id": 50,
+          "bluePath": "/sys/class/leds/port50_led:blue:status",
+          "yellowPath": "/sys/class/leds/port50_led:amber:status",
+          "transceiverId": 50
+        },
+        "51": {
+          "id": 51,
+          "bluePath": "/sys/class/leds/port51_led:blue:status",
+          "yellowPath": "/sys/class/leds/port51_led:amber:status",
+          "transceiverId": 51
+        },
+        "52": {
+          "id": 52,
+          "bluePath": "/sys/class/leds/port52_led:blue:status",
+          "yellowPath": "/sys/class/leds/port52_led:amber:status",
+          "transceiverId": 52
+        },
+        "53": {
+          "id": 53,
+          "bluePath": "/sys/class/leds/port53_led:blue:status",
+          "yellowPath": "/sys/class/leds/port53_led:amber:status",
+          "transceiverId": 53
+        },
+        "54": {
+          "id": 54,
+          "bluePath": "/sys/class/leds/port54_led:blue:status",
+          "yellowPath": "/sys/class/leds/port54_led:amber:status",
+          "transceiverId": 54
+        },
+        "55": {
+          "id": 55,
+          "bluePath": "/sys/class/leds/port55_led:blue:status",
+          "yellowPath": "/sys/class/leds/port55_led:amber:status",
+          "transceiverId": 55
+        },
+        "56": {
+          "id": 56,
+          "bluePath": "/sys/class/leds/port56_led:blue:status",
+          "yellowPath": "/sys/class/leds/port56_led:amber:status",
+          "transceiverId": 56
+        },
+        "57": {
+          "id": 57,
+          "bluePath": "/sys/class/leds/port57_led:blue:status",
+          "yellowPath": "/sys/class/leds/port57_led:amber:status",
+          "transceiverId": 57
+        },
+        "58": {
+          "id": 58,
+          "bluePath": "/sys/class/leds/port58_led:blue:status",
+          "yellowPath": "/sys/class/leds/port58_led:amber:status",
+          "transceiverId": 58
+        },
+        "59": {
+          "id": 59,
+          "bluePath": "/sys/class/leds/port59_led:blue:status",
+          "yellowPath": "/sys/class/leds/port59_led:amber:status",
+          "transceiverId": 59
+        },
+        "60": {
+          "id": 60,
+          "bluePath": "/sys/class/leds/port60_led:blue:status",
+          "yellowPath": "/sys/class/leds/port60_led:amber:status",
+          "transceiverId": 60
+        },
+        "61": {
+          "id": 61,
+          "bluePath": "/sys/class/leds/port61_led:blue:status",
+          "yellowPath": "/sys/class/leds/port61_led:amber:status",
+          "transceiverId": 61
+        },
+        "62": {
+          "id": 62,
+          "bluePath": "/sys/class/leds/port62_led:blue:status",
+          "yellowPath": "/sys/class/leds/port62_led:amber:status",
+          "transceiverId": 62
+        },
+        "63": {
+          "id": 63,
+          "bluePath": "/sys/class/leds/port63_led:blue:status",
+          "yellowPath": "/sys/class/leds/port63_led:amber:status",
+          "transceiverId": 63
+        },
+        "64": {
+          "id": 64,
+          "bluePath": "/sys/class/leds/port64_led:blue:status",
+          "yellowPath": "/sys/class/leds/port64_led:amber:status",
+          "transceiverId": 64
+        }
+      }
     }
   }
 }
