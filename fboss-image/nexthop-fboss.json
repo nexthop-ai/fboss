@@ -8,6 +8,7 @@
     "artifact": "kernel-6.11.1.rpms.tar"
   },
   "other_dependencies": [
+      {"execute": ["../../fboss_extras/asic_init/distro_build.sh"]}
   ],
   "fboss-platform-stack": {
     "execute": ["../fboss/oss/scripts/nhfboss-stack.sh", "platform"],
