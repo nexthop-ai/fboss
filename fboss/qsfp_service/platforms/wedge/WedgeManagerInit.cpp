@@ -27,6 +27,7 @@
 #include "fboss/lib/bsp/tahan800bc/Tahan800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/tahansb800bc/Tahansb800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/wedge800bact/Wedge800BACTBspPlatformMapping.h"
+#include "fboss/lib/bsp/wedge800bnhp/Wedge800BNHPBspPlatformMapping.h"
 #include "fboss/lib/bsp/wedge800cact/Wedge800CACTBspPlatformMapping.h"
 #include "fboss/lib/platforms/PlatformProductInfo.h"
 #include "fboss/qsfp_service/PortManager.h"
@@ -185,6 +186,11 @@ std::unique_ptr<WedgeManager> createWedgeManager(
       return createBspWedgeManager<
           Wedge800BACTBspPlatformMapping,
           PlatformType::PLATFORM_WEDGE800BACT>(
+          platformMapping, qsfpServiceThreads);
+    case PlatformType::PLATFORM_WEDGE800BNHP:
+      return createBspWedgeManager<
+          Wedge800BNHPBspPlatformMapping,
+          PlatformType::PLATFORM_WEDGE800BNHP>(
           platformMapping, qsfpServiceThreads);
     case PlatformType::PLATFORM_WEDGE800CACT:
       return createBspWedgeManager<

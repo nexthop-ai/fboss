@@ -19,6 +19,7 @@
 #include "fboss/lib/bsp/tahan800bc/Tahan800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/tahansb800bc/Tahansb800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/wedge800bact/Wedge800BACTBspPlatformMapping.h"
+#include "fboss/lib/bsp/wedge800bnhp/Wedge800BNHPBspPlatformMapping.h"
 #include "fboss/lib/bsp/wedge800cact/Wedge800CACTBspPlatformMapping.h"
 
 DEFINE_string(
@@ -183,6 +184,15 @@ template <>
 std::shared_ptr<Wedge800BACTSystemContainer>
 Wedge800BACTSystemContainer::getInstance() {
   return _wedge800bactSystemContainer.try_get();
+}
+
+using Wedge800BNHPSystemContainer =
+    BspGenericSystemContainer<Wedge800BNHPBspPlatformMapping>;
+folly::Singleton<Wedge800BNHPSystemContainer> _wedge800bnhpSystemContainer;
+template <>
+std::shared_ptr<Wedge800BNHPSystemContainer>
+Wedge800BNHPSystemContainer::getInstance() {
+  return _wedge800bnhpSystemContainer.try_get();
 }
 
 using Wedge800CACTSystemContainer =
