@@ -75,6 +75,9 @@ _PLATFORM_VARIANTS_MAP: Dict[str, List[str]] = {
         "montblanc_odd_ports_8x100G",
         "montblanc",
     ],
+    "wedge800bact": [
+        "wedge800bnhp",
+    ],
 }
 
 _PLATFORM_TO_BASE_PLATFORM: Dict[str, str] = {
@@ -431,9 +434,11 @@ class PlatformMappingV2:
                     si_settings=self.pm_parser.get_si_settings(),
                     profile=profile,
                     # pyre-fixme[6]: Expected `PortSpeed` for 4th param, but got `float`.
-                    lane_speed=0
-                    if speed_setting.num_lanes == 0
-                    else speed_setting.speed / speed_setting.num_lanes,
+                    lane_speed=(
+                        0
+                        if speed_setting.num_lanes == 0
+                        else speed_setting.speed / speed_setting.num_lanes
+                    ),
                     port_id=port_detail.global_port_id,
                 )
                 if len(platform_port_config_override) > 0:
