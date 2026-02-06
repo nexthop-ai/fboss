@@ -86,6 +86,9 @@ RUN if [ "$USERNAME" != "root" ] && [ "$USER_UID" != "0" ]; then \
     chown -R $USERNAME /var/FBOSS; \
     fi
 
+# Support sudo in a privileged container
+RUN chmod 600 /etc/shadow
+
 # Download and install our own patched sccache
 RUN curl -L https://github.com/nexthop-ai/sccache/releases/download/v7-outer-retry/sccache-0.12.0-x86_64-unknown-linux-musl.zst | \
     zstdmt -d > /usr/local/bin/sccache && \
