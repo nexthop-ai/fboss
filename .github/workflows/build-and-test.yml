@@ -107,18 +107,22 @@ jobs:
 
           # For sync PRs, find the merge commit and use it as base (so we only lint our changes, not upstream)
           # Search only within the PR's commits (last N commits where N = PR commit count)
-          PR_COMMITS=${{ github.event.pull_request.commits }}
-          echo "Searching for sync merge commits in last $PR_COMMITS commits"
-          echo "Merge commits in range:"
-          git log HEAD~${PR_COMMITS}..HEAD --merges --oneline || true
-          SYNC_MERGE_COMMIT=$(git log HEAD~${PR_COMMITS}..HEAD --merges --grep="^Sync with upstream stable commit" -1 --format="%H" 2>/dev/null || true)
+          if [[ "${{ github.event.pull_request.title }}" == "[sync]"* ]]; then
+            PR_COMMITS=${{ github.event.pull_request.commits }}
+            echo "Searching for sync merge commits in last $PR_COMMITS commits"
+            echo "Merge commits in range:"
+            git log HEAD~${PR_COMMITS}..HEAD --merges --oneline || true
+            SYNC_MERGE_COMMIT=$(git log HEAD~${PR_COMMITS}..HEAD --merges --grep="^Sync with upstream stable commit" -1 --format="%H" 2>/dev/null || true)
+          else
+            SYNC_MERGE_COMMIT=""
+          fi
           if [[ -n "$SYNC_MERGE_COMMIT" ]]; then
             echo "Detected sync PR with merge commit: $SYNC_MERGE_COMMIT"
             BASE_REF="$SYNC_MERGE_COMMIT"
           else
-            # For regular PRs, use HEAD~N as base (the commit before the first PR commit)
-            echo "Regular PR, using HEAD~$PR_COMMITS ($(git rev-parse HEAD~$PR_COMMITS)) as base"
-            BASE_REF="HEAD~${PR_COMMITS}"
+            # For regular PRs, use the base branch (e.g., origin/main)
+            BASE_REF="origin/${{ github.base_ref }}"
+            echo "Regular PR, using $BASE_REF as base"
           fi
 
           # Save BASE_REF for reviewdog step
