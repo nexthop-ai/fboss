@@ -46,7 +46,6 @@ help() {
   echo "  --deps <dir>                Directory containing component artifacts (organized by component name)"
   echo "  -a|--after-pkgs-install     JSON File (in templates/centos-09.0 directory) containing additional packages to install to the image"
   echo "  -e|--after-pkgs-execute     JSON File (in templates/centos-09.0 directory) containing list of commands to execute after packages are installed"
-  echo ""
   echo "  -p|--build-pxe-usb          Build PXE and USB installers image (default: no)"
   echo "  -o|--build-onie             Build ONIE installer image (default: no)"
   echo ""
