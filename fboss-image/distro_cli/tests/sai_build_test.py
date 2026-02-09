@@ -78,15 +78,15 @@ class TestSAIBuildE2E(unittest.TestCase):
         builder = ImageBuilder(manifest)
 
         # Build SAI component (kernel will be built automatically as a dependency)
-        builder.build_components(["sai"])
+        builder.build_components(["hw_agent_sai"])
 
         # Verify SAI artifact was created
         self.assertIn(
-            "sai",
+            "hw_agent_sai",
             builder.component_artifacts,
             "SAI artifact not found in component_artifacts",
         )
-        sai_artifact = builder.component_artifacts["sai"]
+        hw_agent_sai_artifact = builder.component_artifacts["hw_agent_sai"]
 
         # Verify kernel was also built as a dependency
         self.assertIn(
@@ -97,13 +97,22 @@ class TestSAIBuildE2E(unittest.TestCase):
         kernel_artifact = builder.component_artifacts["kernel"]
 
         # Verify SAI artifact
-        self.assertTrue(sai_artifact.exists(), f"SAI tarball not found: {sai_artifact}")
         self.assertTrue(
-            sai_artifact.name.endswith(".tar.zst"),
-            f"Expected compressed .tar.zst in component mode, got: {sai_artifact.name}",
+            hw_agent_sai_artifact.exists(),
+            f"SAI tarball not found: {hw_agent_sai_artifact}",
+        )
+        self.assertTrue(
+            hw_agent_sai_artifact.name.endswith(".tar.zst"),
+            f"Expected compressed .tar.zst in component mode, got: {hw_agent_sai_artifact.name}",
         )
         self.assertGreater(
-            sai_artifact.stat().st_size, 1024 * 1024, "SAI tarball seems too small"
+            hw_agent_sai_artifact.stat().st_size,
+            1024 * 1024,
+        )
+        self.assertGreater(
+            hw_agent_sai_artifact.stat().st_size,
+            1024 * 1024,
+            "SAI tarball seems too small",
         )
 
         # Verify kernel artifact
@@ -162,11 +171,11 @@ class TestSAIBuildE2E(unittest.TestCase):
 
         # Verify SAI artifact was created
         self.assertIn(
-            "sai",
+            "hw_agent_sai",
             builder.component_artifacts,
             "SAI artifact not found in component_artifacts",
         )
-        sai_artifact = builder.component_artifacts["sai"]
+        hw_agent_sai_artifact = builder.component_artifacts["hw_agent_sai"]
 
         # Verify kernel was also built
         self.assertIn(
@@ -175,9 +184,14 @@ class TestSAIBuildE2E(unittest.TestCase):
         kernel_artifact = builder.component_artifacts["kernel"]
 
         # Verify SAI artifact
-        self.assertTrue(sai_artifact.exists(), f"SAI tarball not found: {sai_artifact}")
+        self.assertTrue(
+            hw_agent_sai_artifact.exists(),
+            f"SAI tarball not found: {hw_agent_sai_artifact}",
+        )
         self.assertGreater(
-            sai_artifact.stat().st_size, 1024 * 1024, "SAI tarball seems too small"
+            hw_agent_sai_artifact.stat().st_size,
+            1024 * 1024,
+            "SAI tarball seems too small",
         )
 
         # Verify kernel artifact
@@ -199,13 +213,13 @@ class TestSAIBuildE2E(unittest.TestCase):
 
         # Verify SAI is uncompressed
         self.assertTrue(
-            sai_artifact.name.endswith(".tar")
-            and not sai_artifact.name.endswith(".tar.zst"),
-            f"Expected uncompressed .tar in full build mode, got: {sai_artifact.name}",
+            hw_agent_sai_artifact.name.endswith(".tar")
+            and not hw_agent_sai_artifact.name.endswith(".tar.zst"),
+            f"Expected uncompressed .tar in full build mode, got: {hw_agent_sai_artifact.name}",
         )
 
         self.assertGreater(
-            sai_artifact.stat().st_size, 1024 * 1024, "Tarball seems too small"
+            hw_agent_sai_artifact.stat().st_size, 1024 * 1024, "Tarball seems too small"
         )
 
 

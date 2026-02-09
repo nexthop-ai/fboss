@@ -115,7 +115,9 @@ class TestDeviceCommands(unittest.TestCase):
 
     def test_image_upstream_stub(self):
         """Test image-upstream command (stub)"""
-        args = argparse.Namespace(mac=self.test_mac, components=["kernel", "sai"])
+        args = argparse.Namespace(
+            mac=self.test_mac, components=["kernel", "hw_agent_sai"]
+        )
         # Call command - just verify it doesn't crash
         image_upstream_command(args)
 
@@ -136,7 +138,7 @@ class TestDeviceCommands(unittest.TestCase):
         args = argparse.Namespace(
             mac=self.test_mac,
             manifest=str(self.manifest_path),
-            components=["kernel", "sai"],
+            components=["kernel", "hw_agent_sai"],
         )
         # Call command - just verify it doesn't crash
         update_command(args)

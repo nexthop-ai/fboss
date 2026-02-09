@@ -104,23 +104,23 @@ class TestImageBuilder(unittest.TestCase):
         # Request 'sai' and 'fboss-platform-stack' which both have execute commands
         # Note: 'sai' depends on 'kernel', so kernel will be built first
         # 'fboss-forwarding-stack' depends on 'sai', so sai will be built first
-        components = ["sai", "fboss-platform-stack"]
+        components = ["hw_agent_sai", "fboss-platform-stack"]
         self.builder.build_components(components)
 
         # Verify component build was called for:
-        # 1. kernel (dependency of sai, downloaded artifact)
-        # 2. sai (requested, execute build)
+        # 1. kernel (dependency of hw_agent_sai, downloaded artifact)
+        # 2. hw_agent_sai (requested, execute build)
         # 3. fboss-platform-stack (requested, execute build)
         self.assertEqual(mock_component_build.call_count, 3)
 
         # Only artifacts produced by execute builds are compressed; downloaded
         # artifacts are used as-is. In this manifest, kernel is a download, so
-        # we expect compression for sai and fboss-platform-stack only.
+        # we expect compression for hw_agent_sai and fboss-platform-stack only.
         self.assertEqual(mock_compress.call_count, 2)
 
         # Verify artifacts were stored
         self.assertIn("kernel", self.builder.component_artifacts)  # Built as dependency
-        self.assertIn("sai", self.builder.component_artifacts)
+        self.assertIn("hw_agent_sai", self.builder.component_artifacts)
         self.assertIn("fboss-platform-stack", self.builder.component_artifacts)
 
     @patch("distro_cli.builder.image_builder.ImageBuilder._compress_artifact")
@@ -195,17 +195,17 @@ class TestImageBuilder(unittest.TestCase):
         """Test handling of component build failure"""
         # Mock failed component build
         mock_component_build.side_effect = BuildError(
-            "sai build failed with exit code 1"
+            "hw_agent_sai build failed with exit code 1"
         )
 
         with self.assertRaises(BuildError) as cm:
-            self.builder.build_components(["sai"])
+            self.builder.build_components(["hw_agent_sai"])
 
         # Verify error message contains component name and exit code
-        self.assertIn("sai", str(cm.exception))
+        self.assertIn("hw_agent_sai", str(cm.exception))
         self.assertIn("exit code 1", str(cm.exception))
 
-        # Component build should have been called once (for sai)
+        # Component build should have been called once (for hw_agent_sai)
         mock_component_build.assert_called_once()
 
     @patch("distro_cli.builder.image_builder.run_container")
