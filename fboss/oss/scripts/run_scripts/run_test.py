@@ -1196,19 +1196,9 @@ class LinkTestRunner(TestRunner):
 
     def _get_test_binary_name(self):
         if args.agent_run_mode == SUB_ARG_AGENT_RUN_MODE_MONO:
-<<<<<<< HEAD
             return "/opt/fboss/bin/sai_mono_link_test-sai_impl"
-        # if args.agent_run_mode == SUB_ARG_AGENT_RUN_MODE_MULTI:
-        # return "/opt/fboss/bin/sai_multi_link_test-sai_impl"
-||||||| 285e7f8dbe
-            return "sai_mono_link_test-sai_impl"
-        # if args.agent_run_mode == SUB_ARG_AGENT_RUN_MODE_MULTI:
-        # return "sai_multi_link_test-sai_impl"
-=======
-            return "sai_mono_link_test-sai_impl"
         if args.agent_run_mode == SUB_ARG_AGENT_RUN_MODE_MULTI:
-            return "sai_multi_link_test-sai_impl"
->>>>>>> 7e29d6aa34237562b62e243cce053427fffd9f09
+            return "/opt/fboss/bin/sai_multi_link_test-sai_impl"
         # Deprecate legacy mode when we finish testing mono mode on all platforms
         return "/opt/fboss/bin/sai_link_test-sai_impl"
 

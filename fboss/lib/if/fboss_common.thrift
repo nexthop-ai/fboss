@@ -56,17 +56,11 @@ enum PlatformType {
   PLATFORM_TAHANSB800BC = 43,
   PLATFORM_WEDGE800CACT = 44,
   PLATFORM_LADAKH800BCLS = 45,
-<<<<<<< HEAD
-  PLATFORM_WEDGE800BNHP = 46,
-
-||||||| 285e7f8dbe
-
-=======
   PLATFORM_MINIPACK3BTA = 46,
->>>>>>> 7e29d6aa34237562b62e243cce053427fffd9f09
   # Placeholder for unknown platform type
   PLATFORM_UNKNOWN = 1000,
   PLATFORM_NH4010 = 999, # Not intended to go upstream, keep here to avoid merge conflicts
+  PLATFORM_WEDGE800BNHP = 998,
 }
 
 enum SdkVersionRolloutType {

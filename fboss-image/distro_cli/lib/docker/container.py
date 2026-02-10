@@ -95,7 +95,6 @@ def run_container(  # noqa: PLR0913
         raise RuntimeError(
             "Docker command not found. Is Docker installed and in PATH?"
         ) from e
-<<<<<<< HEAD
     except subprocess.CalledProcessError as e:
         logger.error(f"Command failed: {e}")
         return e.returncode
@@ -251,6 +250,3 @@ def stop_and_remove_container(name: str) -> int:
     if stop_exit_code != 0:
         return stop_exit_code
     return remove_container(name)
-||||||| 285e7f8dbe
-=======
->>>>>>> 7e29d6aa34237562b62e243cce053427fffd9f09

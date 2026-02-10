@@ -18,7 +18,6 @@ import time
 import unittest
 from pathlib import Path
 
-<<<<<<< HEAD
 from distro_cli.lib.artifact import ArtifactStore
 from distro_cli.lib.download import HTTP_METADATA_FILENAME, download_artifact
 from distro_cli.tests.test_helpers import enter_tempdir, override_artifact_store_dir
@@ -91,54 +90,6 @@ class TestDownloadArtifact(unittest.TestCase):
         self.assertNotEqual(data_files[0], source_file)
         self.assertTrue(data_files[0].exists())
         self.assertEqual(data_files[0].read_text(), "file content")
-||||||| 285e7f8dbe
-=======
-from distro_cli.lib.download import download_artifact, HTTP_METADATA_FILENAME
-from distro_cli.tests.test_helpers import enter_tempdir, override_artifact_store_dir
-
-
-class TestDownloadArtifact(unittest.TestCase):
-    """Test download_artifact function."""
-
-    def setUp(self):
-        """Set up test fixtures."""
-        # Use sandbox-safe temporary directory
-        self._tempdir_ctx = enter_tempdir("download_test_")
-        self.temp_dir = self._tempdir_ctx.__enter__()
-        self.manifest_dir = self.temp_dir / "manifest"
-        self.manifest_dir.mkdir()
-
-        # Override artifact store directory for testing
-        self.artifact_store_dir = self.temp_dir / ".artifacts"
-        self._artifact_store_ctx = override_artifact_store_dir(self.artifact_store_dir)
-        self._artifact_store_ctx.__enter__()
-
-    def tearDown(self):
-        """Clean up test directory."""
-        # Exit context managers in reverse order
-        self._artifact_store_ctx.__exit__(None, None, None)
-        self._tempdir_ctx.__exit__(None, None, None)
-
-    def test_download_file_url(self):
-        """Test downloading from file:// URL."""
-        source_file = self.temp_dir / "source.txt"
-        source_file.write_text("file content")
-
-        url = f"file://{source_file}"
-        cache_hit, data_files, meta_files = download_artifact(
-            url, self.manifest_dir, [], []
-        )
-
-        self.assertFalse(cache_hit)
-        self.assertEqual(len(data_files), 1)
-        self.assertEqual(len(meta_files), 1)  # Now includes mtime metadata
-        self.assertTrue(data_files[0].exists())
-        self.assertEqual(data_files[0].read_text(), "file content")
-
-        # Verify metadata contains mtime
-        metadata = json.loads(meta_files[0].read_text())
-        self.assertIn("mtime", metadata)
->>>>>>> 7e29d6aa34237562b62e243cce053427fffd9f09
 
     def test_download_file_url_mtime_caching(self):
         """Test that file:// URLs use mtime for cache detection."""
