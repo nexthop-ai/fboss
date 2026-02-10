@@ -1,0 +1,128 @@
+[local-baseos]
+name=CentOS Stream $releasever - BaseOS
+baseurl=http://mirror.us-west-1.nexthop.ai/centos-$stream/BaseOS/$basearch/os
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+gpgcheck=1
+repo_gpgcheck=0
+metadata_expire=6h
+countme=1
+enabled=1
+cost=500
+
+[local-appstream]
+name=CentOS Stream $releasever - AppStream
+baseurl=http://mirror.us-west-1.nexthop.ai/centos-$stream/AppStream/$basearch/os
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+gpgcheck=1
+repo_gpgcheck=0
+metadata_expire=6h
+countme=1
+enabled=1
+cost=500
+
+[local-NFV]
+name=Centos Stream $releasever - NFV
+baseurl=http://mirror.us-west-1.nexthop.ai/centos-$stream/NFV/$basearch/os
+gpgcheck=0
+repo_gpgcheck=0
+metadata_expire=6h
+countme=1
+enabled=1
+cost=500
+
+[local-CRB]
+name=Centos Stream $releasever - CRB
+baseurl=http://mirror.us-west-1.nexthop.ai/centos-$stream/CRB/$basearch/os
+gpgcheck=0
+repo_gpgcheck=0
+metadata_expire=6h
+countme=1
+enabled=1
+cost=500
+
+[local-HighAvailability]
+name=Centos Stream $releasever - High Availability
+baseurl=http://mirror.us-west-1.nexthop.ai/centos-$stream/HighAvailability/$basearch/os
+gpgcheck=0
+repo_gpgcheck=0
+metadata_expire=6h
+countme=1
+enabled=1
+cost=500
+
+[local-RT]
+name=Centos Stream $releasever - RT
+baseurl=http://mirror.us-west-1.nexthop.ai/centos-$stream/RT/$basearch/os
+gpgcheck=0
+repo_gpgcheck=0
+metadata_expire=6h
+countme=1
+enabled=1
+cost=500
+
+[local-ResilientStorage]
+name=Centos Stream $releasever - Resilient Storage
+baseurl=http://mirror.us-west-1.nexthop.ai/centos-$stream/ResilientStorage/$basearch/os
+gpgcheck=0
+repo_gpgcheck=0
+metadata_expire=6h
+countme=1
+enabled=1
+cost=500
+
+[local-epel]
+name=Extra Packages for Enterprise Linux $releasever - $basearch
+baseurl=http://mirror.us-west-1.nexthop.ai/epel/$releasever/Everything/$basearch/
+enabled=1
+gpgcheck=0
+countme=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-$releasever
+cost=500
+
+[local-epel-debuginfo]
+name=Extra Packages for Enterprise Linux $releasever - $basearch - Debug
+baseurl=http://mirror.us-west-1.nexthop.ai/epel/$releasever/Everything/$basearch/debug/
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-$releasever
+gpgcheck=1
+cost=500
+
+[local-epel-source]
+name=Extra Packages for Enterprise Linux $releasever - $basearch - Source
+baseurl=http://mirror.us-west-1.nexthop.ai/epel/$releasever/Everything/source/tree/
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-$releasever
+gpgcheck=1
+cost=500
+
+[local-centos-kmods-kernel-6.12]
+name=CentOS - Kmods - Kernel - 6.12
+baseurl=http://mirror.us-west-1.nexthop.ai/centos-sig/$releasever/kmods/$basearch/kernel-6.12
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Kmods
+gpgcheck=1
+repo_gpgcheck=0
+metadata_expire=6h
+countme=1
+enabled=1
+exclude=kernel-headers,kernel-cross-headers
+cost=500
+
+[local-centos-kmods-kernel-6.12-source]
+name=CentOS - Kmods - Kernel - 6.12 - Source
+baseurl=http://mirror.us-west-1.nexthop.ai/centos-sig/$releasever/kmods/source/kernel-6.12
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Kmods
+gpgcheck=1
+repo_gpgcheck=0
+metadata_expire=6h
+enabled=0
+cost=500
+
+[local-centos-kmods-kernel-6.12-debug]
+name=CentOS - Kmods - Kernel - 6.12 - Debug
+baseurl=http://mirror.us-west-1.nexthop.ai/centos-sig/$releasever/kmods/$basearch/kernel-6.12/debug
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Kmods
+gpgcheck=1
+repo_gpgcheck=0
+metadata_expire=6h
+enabled=0
+cost=500

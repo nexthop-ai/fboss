@@ -10,6 +10,8 @@ ARG USE_CLANG=false
 # Mount point for extra files.
 RUN mkdir -p /var/extras
 
+COPY fboss/oss/docker/local_mirror.repo* /etc/yum.repos.d/
+
 RUN dnf install -y 'dnf-command(config-manager)' && \
     dnf config-manager --set-enabled crb && \
     dnf install -y epel-release epel-next-release && \
