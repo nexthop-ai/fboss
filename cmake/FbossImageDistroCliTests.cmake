@@ -3,6 +3,7 @@
 # In general, libraries and binaries in fboss/foo/bar are built by
 # cmake/FooBar.cmake
 
+<<<<<<< HEAD
 # distro_cli requires Python 3.10+ with widespread use of union type syntax
 # Save and temporarily override Python3_EXECUTABLE
 if(DEFINED Python3_EXECUTABLE)
@@ -14,6 +15,24 @@ find_package(Python3 3.10 COMPONENTS Interpreter REQUIRED)
 message(STATUS "Using Python ${Python3_VERSION} (${Python3_EXECUTABLE}) for distro_cli tests")
 
 include(FBPythonBinary)
+||||||| 285e7f8dbe
+=======
+# Prevent multiple inclusions
+include_guard(GLOBAL)
+
+# distro_cli requires Python 3.10+ with widespread use of union type syntax
+# Save and temporarily override Python3_EXECUTABLE
+if(DEFINED Python3_EXECUTABLE)
+  set(SAVED_Python3_EXECUTABLE "${Python3_EXECUTABLE}")
+endif()
+
+# Find the highest available Python version >= 3.10
+find_package(Python3 3.10 COMPONENTS Interpreter REQUIRED)
+message(STATUS "Using Python ${Python3_VERSION} (${Python3_EXECUTABLE}) for distro_cli tests")
+
+include(FBPythonBinary)
+
+>>>>>>> 7e29d6aa34237562b62e243cce053427fffd9f09
 file(GLOB DISTRO_CLI_TEST_SOURCES
   "fboss-image/distro_cli/tests/*_test.py"
 )

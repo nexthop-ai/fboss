@@ -77,6 +77,7 @@ def download_artifact(
             logger.info(f"Using cached file:// artifact (unchanged): {source_path}")
             return (True, cached_data_files, cached_metadata_files)
 
+<<<<<<< HEAD
         # File is new or modified - create metadata with mtime and copy the
         # source file into a temporary directory within the artifact store.
         #
@@ -102,6 +103,24 @@ def download_artifact(
 
         logger.info(f"Using local file copy: {copied_path} (source: {source_path})")
         return (False, [copied_path], [metadata_path])
+||||||| 285e7f8dbe
+=======
+        # File is new or modified - create metadata with mtime
+        temp_download_dir = ArtifactStore.create_temp_dir(prefix="download-")
+        metadata_path = temp_download_dir / HTTP_METADATA_FILENAME
+        metadata = {"mtime": current_mtime}
+        try:
+            with metadata_path.open("w") as f:
+                json.dump(metadata, f, indent=2)
+        except Exception as e:
+            logger.warning(f"Failed to save file:// metadata to {metadata_path}: {e}")
+            # Clean up temp dir on error
+            ArtifactStore.delete_temp_dir(temp_download_dir)
+            raise
+
+        logger.info(f"Using local file: {source_path}")
+        return (False, [source_path], [metadata_path])
+>>>>>>> 7e29d6aa34237562b62e243cce053427fffd9f09
 
     return _download_http_with_cache(url, cached_data_files, cached_metadata_files)
 

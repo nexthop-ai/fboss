@@ -23,6 +23,7 @@ def execute_build_in_container(
     command: list[str],
     volumes: dict[Path, Path],
     component_name: str,
+<<<<<<< HEAD
     working_dir: str | None = None,
     dependency_install_paths: dict[str, Path] | None = None,
 ) -> None:
@@ -65,6 +66,53 @@ def execute_build_in_container(
             command=cmd_list,
             volumes=volumes,
             privileged=True,
+||||||| 285e7f8dbe
+=======
+    privileged: bool = False,
+    working_dir: str | None = None,
+    dependency_install_paths: dict[str, Path] | None = None,
+) -> None:
+    """Execute build command in Docker container.
+
+    Args:
+        image_name: Docker image name
+        command: Command to execute as list
+        volumes: Host to container path mappings
+        component_name: Component name
+        privileged: Run in privileged mode
+        working_dir: Working directory in container
+        dependency_install_paths: Dict mapping dependency names to their container mount paths
+                                  (e.g., {'kernel': Path('/deps/kernel')})
+                                  RPMs from these paths will be installed before running the build
+
+    Raises:
+        BuildError: If build fails
+    """
+    logger.info(f"Executing {component_name} build in Docker container: {image_name}")
+
+    # Ensure fboss_builder image is built
+    build_fboss_builder_image()
+
+    # Use build_entrypoint.py from /tools (mounted from distro_cli/tools)
+    if dependency_install_paths:
+        logger.info(
+            f"Build entry point will process {len(dependency_install_paths)} dependencies"
+        )
+
+    # Build the command: python3 /tools/build_entrypoint.py <build_command>
+    # The entry point will look for dependencies in /deps and install them.
+    cmd_list = ["python3", "/tools/build_entrypoint.py", *command]
+    logger.info("Build will produce uncompressed artifacts (.tar)")
+
+    logger.info(f"Running in container: {' '.join(cmd_list)}")
+
+    try:
+        exit_code = run_container(
+            image=image_name,
+            command=cmd_list,
+            volumes=volumes,
+            privileged=privileged,
+>>>>>>> 7e29d6aa34237562b62e243cce053427fffd9f09
             working_dir=working_dir,
         )
 

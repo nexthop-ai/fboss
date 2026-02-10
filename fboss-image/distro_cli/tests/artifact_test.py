@@ -256,6 +256,7 @@ class TestFindArtifactInDir(unittest.TestCase):
         artifact = self.temp_dir / "sai-1.0.tar.zst"
         artifact.write_text("zstd compressed")
 
+<<<<<<< HEAD
         result = find_artifact_in_dir(self.temp_dir, "sai-*.tar", "hw_agent_sai")
 
         self.assertEqual(result, artifact)
@@ -287,6 +288,40 @@ class TestFindArtifactInDir(unittest.TestCase):
         zstd.write_text("zstd only")
 
         result = find_artifact_in_dir(self.temp_dir, "sai-*.tar", "hw_agent_sai")
+||||||| 285e7f8dbe
+=======
+        result = find_artifact_in_dir(self.temp_dir, "sai-*.tar", "sai")
+
+        self.assertEqual(result, artifact)
+
+    def test_uses_most_recent_when_both_exist(self):
+        """Test that most recent file is used when both .tar and .tar.zst exist."""
+        # Test 1: Uncompressed is newer
+        zstd = self.temp_dir / "kernel-6.11.1.rpms.tar.zst"
+        zstd.write_text("zstd")
+        old_time = time.time() - 10  # 10 seconds ago
+        os.utime(zstd, (old_time, old_time))
+
+        uncompressed = self.temp_dir / "kernel-6.11.1.rpms.tar"
+        uncompressed.write_text("uncompressed")
+
+        result = find_artifact_in_dir(self.temp_dir, "kernel-*.rpms.tar", "kernel")
+        self.assertEqual(result, uncompressed, "Should use newer uncompressed file")
+
+        # Test 2: Compressed is newer
+        new_time = time.time()
+        os.utime(zstd, (new_time, new_time))
+
+        result = find_artifact_in_dir(self.temp_dir, "kernel-*.rpms.tar", "kernel")
+        self.assertEqual(result, zstd, "Should use newer compressed file")
+
+    def test_falls_back_to_zstd_if_no_uncompressed(self):
+        """Test falling back to .tar.zst when .tar doesn't exist."""
+        zstd = self.temp_dir / "sai-1.0.tar.zst"
+        zstd.write_text("zstd only")
+
+        result = find_artifact_in_dir(self.temp_dir, "sai-*.tar", "sai")
+>>>>>>> 7e29d6aa34237562b62e243cce053427fffd9f09
 
         self.assertEqual(result, zstd)
 
