@@ -177,8 +177,16 @@ jobs:
         if: github.event_name == 'pull_request' && steps.clang-tidy.outputs.skip != 'true'
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_BODY: ${{ github.event.pull_request.body }}
         run: |
           BASE_REF=$(cat /tmp/clang_tidy_base_ref.txt 2>/dev/null || echo "origin/${{ github.base_ref }}")
+          # Check for escape hatch in PR body to skip failing on clang-tidy errors
+          # This is useful for sync PRs where we modify upstream files but don't want to fix all their includes
+          FAIL_LEVEL="error"
+          if echo "$PR_BODY" | grep -qF "NHCI: no-clang-tidy-errors"; then
+            echo "Found 'NHCI: no-clang-tidy-errors' in PR body, clang-tidy errors will not fail the build"
+            FAIL_LEVEL="none"
+          fi
           cat /tmp/clang-tidy-output.txt | \
             reviewdog \
               -efm="%f:%l:%c: %tarning: %m" \
@@ -186,7 +194,7 @@ jobs:
               -name="clang-tidy" \
               -reporter=github-pr-review \
               -filter-mode=diff_context \
-              -fail-level=error \
+              -fail-level="$FAIL_LEVEL" \
               -diff="git diff $BASE_REF..HEAD"
 
       - name: Run unit tests
