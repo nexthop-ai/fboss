@@ -28,7 +28,7 @@ jobs:
           # For sync PRs, find the merge commit titled "Sync with upstream stable commit <sha>"
           # and use it as the base ref (so we only lint commits after the merge)
           # Search only within the PR's commits (last N commits where N = PR commit count)
-          if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.event.pull_request.title }}" == "[sync]"* ]]; then
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             SYNC_MERGE_COMMIT=$(git log HEAD~${{ github.event.pull_request.commits }}..HEAD --merges --grep="^Sync with upstream stable commit" -1 --format="%H" 2>/dev/null || true)
           else
             SYNC_MERGE_COMMIT=""

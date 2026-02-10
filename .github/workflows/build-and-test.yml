@@ -99,30 +99,45 @@ jobs:
         run: |
           docker exec FBOSS_build_${USER} sccache -s
 
+      - name: Parse NHCI annotations
+        id: nhci
+        if: github.event_name == 'pull_request'
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          # Parse NHCI annotations from PR body
+          # Format: NHCI: key=value
+          # Supported: clang-tidy=skip|warn-only
+          CLANG_TIDY_MODE="normal"
+          if echo "$PR_BODY" | grep -qF "NHCI: clang-tidy=skip"; then
+            echo "Found 'NHCI: clang-tidy=skip' in PR body, skipping clang-tidy entirely"
+            CLANG_TIDY_MODE="skip"
+          elif echo "$PR_BODY" | grep -qF "NHCI: clang-tidy=warn-only"; then
+            echo "Found 'NHCI: clang-tidy=warn-only' in PR body, clang-tidy errors will not fail the build"
+            CLANG_TIDY_MODE="warn-only"
+          fi
+          echo "clang_tidy_mode=$CLANG_TIDY_MODE" >> "$GITHUB_OUTPUT"
+
       - name: Run clang-tidy
         id: clang-tidy
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.nhci.outputs.clang_tidy_mode != 'skip'
         run: |
           echo "Current HEAD: $(git rev-parse HEAD)"
 
           # For sync PRs, find the merge commit and use it as base (so we only lint our changes, not upstream)
           # Search only within the PR's commits (last N commits where N = PR commit count)
-          if [[ "${{ github.event.pull_request.title }}" == "[sync]"* ]]; then
-            PR_COMMITS=${{ github.event.pull_request.commits }}
-            echo "Searching for sync merge commits in last $PR_COMMITS commits"
-            echo "Merge commits in range:"
-            git log HEAD~${PR_COMMITS}..HEAD --merges --oneline || true
-            SYNC_MERGE_COMMIT=$(git log HEAD~${PR_COMMITS}..HEAD --merges --grep="^Sync with upstream stable commit" -1 --format="%H" 2>/dev/null || true)
-          else
-            SYNC_MERGE_COMMIT=""
-          fi
+          PR_COMMITS=${{ github.event.pull_request.commits }}
+          echo "Searching for sync merge commits in last $PR_COMMITS commits"
+          echo "Merge commits in range:"
+          git log HEAD~${PR_COMMITS}..HEAD --merges --oneline || true
+          SYNC_MERGE_COMMIT=$(git log HEAD~${PR_COMMITS}..HEAD --merges --grep="^Sync with upstream stable commit" -1 --format="%H" 2>/dev/null || true)
           if [[ -n "$SYNC_MERGE_COMMIT" ]]; then
             echo "Detected sync PR with merge commit: $SYNC_MERGE_COMMIT"
             BASE_REF="$SYNC_MERGE_COMMIT"
           else
-            # For regular PRs, use the base branch (e.g., origin/main)
-            BASE_REF="origin/${{ github.base_ref }}"
-            echo "Regular PR, using $BASE_REF as base"
+            # For regular PRs, use HEAD~N as base (the commit before the first PR commit)
+            echo "Regular PR, using HEAD~$PR_COMMITS ($(git rev-parse HEAD~$PR_COMMITS)) as base"
+            BASE_REF="HEAD~${PR_COMMITS}"
           fi
 
           # Save BASE_REF for reviewdog step
@@ -152,7 +167,7 @@ jobs:
             # clang-tidy can be memory hungry, make sure it gets killed if OOM.
             echo 1000 >/proc/self/oom_score_adj
             # Run clang-tidy on all changed files (use ~2/3 of cores to avoid OOM)
-            JOBS=$(($(nproc) * 2 / 3 + 1))
+            JOBS=$(($(nproc) / 2 + 1))
             cat /tmp/changed_files.txt | xargs -P$JOBS -I{} clang-tidy -p "$BUILD_DIR" {} 2>&1
           ' | tee /tmp/clang-tidy-output.txt
           # Post-process clang-tidy output:
@@ -168,25 +183,18 @@ jobs:
           fi
 
       - name: Setup reviewdog
-        if: github.event_name == 'pull_request' && steps.clang-tidy.outputs.skip != 'true'
+        if: github.event_name == 'pull_request' && steps.nhci.outputs.clang_tidy_mode != 'skip' && steps.clang-tidy.outputs.skip != 'true'
         uses: reviewdog/action-setup@v1
         with:
           reviewdog_version: latest
 
       - name: Post clang-tidy comments
-        if: github.event_name == 'pull_request' && steps.clang-tidy.outputs.skip != 'true'
+        if: github.event_name == 'pull_request' && steps.nhci.outputs.clang_tidy_mode != 'skip' && steps.clang-tidy.outputs.skip != 'true'
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_BODY: ${{ github.event.pull_request.body }}
         run: |
           BASE_REF=$(cat /tmp/clang_tidy_base_ref.txt 2>/dev/null || echo "origin/${{ github.base_ref }}")
-          # Check for escape hatch in PR body to skip failing on clang-tidy errors
-          # This is useful for sync PRs where we modify upstream files but don't want to fix all their includes
-          FAIL_LEVEL="error"
-          if echo "$PR_BODY" | grep -qF "NHCI: no-clang-tidy-errors"; then
-            echo "Found 'NHCI: no-clang-tidy-errors' in PR body, clang-tidy errors will not fail the build"
-            FAIL_LEVEL="none"
-          fi
+          FAIL_LEVEL="${{ steps.nhci.outputs.clang_tidy_mode == 'warn-only' && 'none' || 'error' }}"
           cat /tmp/clang-tidy-output.txt | \
             reviewdog \
               -efm="%f:%l:%c: %tarning: %m" \

@@ -148,7 +148,9 @@ jobs:
           The following files have conflicts that need to be resolved:
           $(echo "${{ needs.sync-upstream.outputs.conflicting_files }}" | sed 's/^/- [ ] /')
 
-          Please resolve these conflicts and merge when ready."
+          Please resolve these conflicts and merge when ready.
+
+          NHCI: clang-tidy=warn-only"
 
           PR_URL=$(gh pr create \
             --title "[sync] Sync with upstream stable commit" \
