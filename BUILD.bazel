@@ -163,3 +163,42 @@ genrule(
         "not-for-ci",
     ]
 )
+
+genrule(
+    name = "nh-fboss-broadcom-xgs",
+    srcs = [
+        "//nhtools:ln_or_cp",
+        "//fboss_bsps/nexthop_bsp:distro_build_files",
+        "//fboss_bsps/fboss_bsp:distro_build_files",
+        "//fboss_extras/asic_init:distro_build_files",
+        ".buckconfig",
+        "CMakeLists.txt",
+        "buck2",
+        "functions.cmake",
+        "getdeps.sh",
+        "sdk_dependencies.txt",
+    ] + glob(["build/**", # Avoid dot files, especially .sccache to which bazel doesn't have permission
+              "cmake/**",
+              "common/**",
+              "docs/**",
+              "fboss/**",
+              "fboss-image/**",
+    ], exclude = [
+        "fboss/fboss-image/kernel/dist",
+    ]),
+    outs = [
+        "nh-fboss-broadcom-xgs.bin",
+        "nh-fboss-broadcom-xgs.tar",
+    ],
+    cmd = """
+        pushd fboss/fboss-image
+        ./distro_cli/fboss-image build nh-fboss-broadcom-xgs.json
+        popd
+
+        $(execpath //nhtools:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.tar $(location nh-fboss-broadcom-xgs.tar)
+        $(execpath //nhtools:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.bin $(location nh-fboss-broadcom-xgs.bin)
+    """,
+    tags = [
+        "no-sandbox",
+    ]
+)

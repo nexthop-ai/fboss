@@ -322,6 +322,8 @@ if [ ${ONIE_RC} -ne 0 ]; then
   dprint "ERROR: ONIE installer build failed"
 fi
 
+rm -rf ${TARGET_DIR}/btrfs ${TARGET_DIR}/onie
+
 RC=$((PXE_RC + ONIE_RC))
 dprint "Image generation completed with exit code ${RC}"
 exit "${RC}"

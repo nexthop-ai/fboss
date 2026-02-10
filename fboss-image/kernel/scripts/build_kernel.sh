@@ -91,6 +91,8 @@ tar -cf $OUT_DIR/kernel-$KERNEL_VERSION.rpms.tar \
   --transform 's|^\(kernel-[^-]\+\)-.*\.\(x86_64\)\.rpm$|\1-\2.rpm|' \
   $(find RPMS -name "*.rpm")
 
+rm -rf "${CONTAINER_DIST_DIR}/build-"*
+
 echo 'Kernel RPM build complete!'
 echo 'Output files:'
 find "$OUT_DIR" \( -name '*.rpm' -o -name "*.tar" \) -type f

@@ -1,7 +1,7 @@
 {
   "distribution_formats": {
-    "pxe": "fboss-distro-image_pxe.tar",
-    "onie": "fboss-distro-image_onie.bin"
+    "pxe": "nh-fboss-broadcom-xgs.tar",
+    "onie": "nh-fboss-broadcom-xgs.bin"
   },
   "kernel": {
     "execute": ["kernel/scripts/build_kernel.sh", "6.11.1", "/output"],

@@ -130,6 +130,12 @@ cd /var/FBOSS/fboss
 
 echo "Building FBOSS ${stack_label} stack"
 
+# Save the manifests because we must modify them
+tar -cf manifests_snapshot.tar build
+# Temporarily disabled due to build errors with latest stable hashes
+# tar -xf fboss/oss/stable_commits/latest_stable_hashes.tar.gz
+chmod -R a+r build/fbcode_builder/manifests
+
 # Setup SAI environment
 if [ "$stack_type" = "forwarding" ]; then
   # Setup SAI implementation
@@ -169,11 +175,6 @@ elif [ "$stack_type" = "platform" ]; then
     echo "Temporarily removed sai_impl from fboss manifest for platform-only build"
   fi
 fi
-
-# Save the manifests because we must modify them
-tar -cf manifests_snapshot.tar build
-# Temporarily disabled due to build errors with latest stable hashes
-# tar -xf fboss/oss/stable_commits/latest_stable_hashes.tar.gz
 
 # Install system dependencies
 echo "Installing system dependencies..."
