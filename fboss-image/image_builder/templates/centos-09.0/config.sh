@@ -357,6 +357,7 @@ echo "Copied all GRUB modules to /boot/grub2/x86_64-efi/ (root partition)"
 
 # 7. Enable systemd services
 echo "Enabling FBOSS systemd services..."
+systemctl enable fboss_init.service
 systemctl enable local_rpm_repo.service
 systemctl enable platform_manager.service
 systemctl enable data_corral_service.service
@@ -364,7 +365,8 @@ systemctl enable fan_service.service
 systemctl enable sensor_service.service
 systemctl enable fsdb.service
 systemctl enable qsfp_service.service
-systemctl enable wedge_agent.service
+systemctl enable fboss_sw_agent.service
+systemctl enable fboss_hw_agents.target
 
 # 8. Done! Cleanup and install additional packages
 echo "Cleaning up /repos directory..."
