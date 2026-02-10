@@ -9,16 +9,33 @@
  */
 
 /* You can override the default Infima variables here. */
+/* ============================================================================
+ * NEXTHOP INTERNAL THEME - DO NOT UPSTREAM TO FACEBOOK/FBOSS
+ * ============================================================================
+ * This theme customization is specific to NextHop's internal documentation
+ * preview and should NOT be merged upstream to the public FBOSS repository.
+ *
+ * Original FBOSS theme uses teal (#25c2a0). This has been changed to NextHop
+ * teal (#00859B) to visually distinguish internal previews from public docs.
+ * ============================================================================
+ */
 :root {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: rgb(33, 175, 144);
-  --ifm-color-primary-darker: rgb(31, 165, 136);
-  --ifm-color-primary-darkest: rgb(26, 136, 112);
-  --ifm-color-primary-light: rgb(70, 203, 174);
-  --ifm-color-primary-lighter: rgb(102, 212, 189);
-  --ifm-color-primary-lightest: rgb(146, 224, 208);
+  --ifm-color-primary: #00859B;           /* NextHop teal - was #25c2a0 */
+  --ifm-color-primary-dark: #007689;      /* NextHop teal dark */
+  --ifm-color-primary-darker: #007082;    /* NextHop teal darker */
+  --ifm-color-primary-darkest: #005c6b;   /* NextHop teal darkest */
+  --ifm-color-primary-light: #0094ad;     /* NextHop teal light */
+  --ifm-color-primary-lighter: #009ab4;   /* NextHop teal lighter */
+  --ifm-color-primary-lightest: #00aec9;  /* NextHop teal lightest */
   --ifm-code-font-size: 95%;
+  --ifm-navbar-background-color: #007082; /* NextHop teal darker */
+  --ifm-navbar-link-color: #ffffff;       /* White links */
+  --ifm-navbar-link-hover-color: #00aec9; /* NextHop teal lightest on hover */
 }
+/* ============================================================================
+ * END NEXTHOP INTERNAL THEME
+ * ============================================================================
+ */
 
 .docusaurus-highlight-code-line {
   background-color: rgba(0, 0, 0, 0.1);
