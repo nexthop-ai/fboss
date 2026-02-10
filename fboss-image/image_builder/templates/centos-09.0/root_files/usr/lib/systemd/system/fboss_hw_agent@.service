@@ -5,6 +5,8 @@ PartOf=fboss_hw_agents.target
 After=platform_manager.service
 After=qsfp_service.service
 After=rc-local.service
+Wants=fboss_init.service
+After=fboss_init.service
 
 [Service]
 Type=simple
