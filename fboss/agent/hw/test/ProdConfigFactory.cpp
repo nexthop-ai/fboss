@@ -110,6 +110,8 @@ uint16_t uplinksCountFromSwitch(PlatformType mode) {
     case PM::PLATFORM_DARWIN:
     case PM::PLATFORM_DARWIN48V:
     case PM::PLATFORM_TAHAN800BC:
+    case PM::PLATFORM_ICECUBE800BC:
+    case PM::PLATFORM_ICETEA800BC:
     case PM::PLATFORM_MONTBLANC:
     case PM::PLATFORM_NH4010:
       return 4;

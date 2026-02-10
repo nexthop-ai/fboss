@@ -40,9 +40,12 @@ std::string sanitizePlatformName(const std::string& platformNameFromBios) {
     return "MERU800BIA";
   }
 
-  if (platformNameUpper == "NH-4010" ||
-      platformNameUpper == "NH-4010-F") {
+  if (platformNameUpper == "NH-4010" || platformNameUpper == "NH-4010-F") {
     return "NH4010";
+  }
+
+  if (platformNameUpper == "MINIPACK3BTA") {
+    return "MINIPACK3BA";
   }
 
   return platformNameUpper;

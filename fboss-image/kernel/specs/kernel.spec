@@ -85,7 +85,6 @@ Requires: kernel-headers = %{epoch}:%{version}-%{release}
 # Build phase - creates binary artifacts for RPM
 %build
 # Build with FBOSS toolchain (using gcc-toolset-12 from container)
-# Use CC from environment if set (e.g., "sccache gcc"), otherwise default to gcc
 # Must pass CC= on make command line because Makefile variables override env vars
 KERNEL_CC="${CC:-gcc}"
 
