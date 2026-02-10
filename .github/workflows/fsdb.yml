@@ -18,6 +18,7 @@ on:
     - cron: '36 1,13,19 * * *'
 jobs:
   FSDB-Build:
+    if: github.repository_owner == 'facebook'
     runs-on: 32-core-ubuntu
     steps:
       - run: echo "Confirming hardware specifications:"; sudo lscpu
