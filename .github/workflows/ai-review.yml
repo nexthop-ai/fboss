@@ -1,0 +1,42 @@
+name: AI Review
+
+on:
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull request number to review'
+        required: true
+        type: number
+      repository:
+        description: 'Repository (owner/repo format, defaults to current repo)'
+        required: false
+        type: string
+      use_strict_model:
+        description: 'Use strict model (Opus 4.5) instead of general model (Sonnet 4.5)'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+jobs:
+  review:
+    # Only run if:
+    # 1. Comment contains /ai_review (or /ai_review_strict) AND it's on a PR, OR
+    # 2. Triggered manually via workflow_dispatch
+    if: |
+      (github.event_name == 'issue_comment' &&
+       github.event.issue.pull_request != null &&
+       contains(github.event.comment.body, '/ai_review')) ||
+      github.event_name == 'workflow_dispatch'
+    uses: nexthop-ai/nh/.github/workflows/ai-review-pr.reusable.yml@main
+    with:
+      pr_number: ${{ fromJSON(github.event.inputs.pr_number || '0') }}
+      repository: ${{ github.event.inputs.repository || '' }}
+      use_strict_model: ${{ github.event.inputs.use_strict_model == 'true' }}
+    secrets: inherit
