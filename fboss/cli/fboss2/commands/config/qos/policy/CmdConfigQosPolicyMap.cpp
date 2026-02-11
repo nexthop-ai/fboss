@@ -10,6 +10,8 @@
 
 #include "fboss/cli/fboss2/commands/config/qos/policy/CmdConfigQosPolicyMap.h"
 
+#include "fboss/cli/fboss2/CmdHandler.cpp"
+
 #include <fmt/format.h>
 #include <folly/Conv.h>
 #include <folly/lang/Assume.h>
@@ -177,5 +179,9 @@ CmdConfigQosPolicyMapTraits::RetType CmdConfigQosPolicyMap::queryClient(
 void CmdConfigQosPolicyMap::printOutput(const RetType& logMsg) {
   std::cout << logMsg << std::endl;
 }
+
+// Explicit template instantiation
+template void
+CmdHandler<CmdConfigQosPolicyMap, CmdConfigQosPolicyMapTraits>::run();
 
 } // namespace facebook::fboss
