@@ -17,7 +17,9 @@ logger.setLevel(logging.INFO)
 
 if not logger.handlers:
     console_handler = logging.StreamHandler()
-    console_handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s: %(message)s"))
+    console_handler.setFormatter(
+        logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
+    )
     logger.addHandler(console_handler)
 DEFAULT_USERNAME = "admin"
 DEFAULT_PASSWORD = "admin"
@@ -26,9 +28,21 @@ DEFAULT_ESCAPE_CHAR = "\x1d"
 
 
 class DeviceSSHClient(DeviceCliClient):
-    def __init__(self, device_ip, device_password=DEFAULT_PASSWORD, debug=False, reuse_connection=True):
+    def __init__(
+        self,
+        device_ip,
+        device_username=DEFAULT_USERNAME,
+        device_password=DEFAULT_PASSWORD,
+        debug=False,
+        reuse_connection=True,
+    ):
         self.device_ip = device_ip
-        self.device_password = DEFAULT_PASSWORD if device_password is None else device_password
+        self.device_username = (
+            DEFAULT_USERNAME if device_username is None else device_username
+        )
+        self.device_password = (
+            DEFAULT_PASSWORD if device_password is None else device_password
+        )
         self.debug = debug
         self.client = None
         self.sftp = None
@@ -58,7 +72,7 @@ class DeviceSSHClient(DeviceCliClient):
 
                 client.connect(
                     hostname=self.device_ip,
-                    username=DEFAULT_USERNAME,
+                    username=self.device_username,
                     password=self.device_password,
                     look_for_keys=False,
                     allow_agent=False,
@@ -75,7 +89,9 @@ class DeviceSSHClient(DeviceCliClient):
                     self.client = client
                     return True
 
-                logger.info("Unable to connect to device: transport is not UP or authenticated.")
+                logger.info(
+                    "Unable to connect to device: transport is not UP or authenticated."
+                )
 
             except paramiko.AuthenticationException as exception:
                 logger.info("Unable to connect to device: Authentication failed")
@@ -100,7 +116,10 @@ class DeviceSSHClient(DeviceCliClient):
             return 0, "Connected"
 
         except waiting.exceptions.TimeoutExpired:
-            return DeviceSSHClient.CONNECT_GENERIC_FAILURE, "Timed out waiting for SSH connection"
+            return (
+                DeviceSSHClient.CONNECT_GENERIC_FAILURE,
+                "Timed out waiting for SSH connection",
+            )
 
         except paramiko.AuthenticationException:
             return DeviceSSHClient.CONNECT_AUTH_FAILURE, "Authentication failed"
@@ -319,7 +338,9 @@ class DeviceSSHClient(DeviceCliClient):
             ("Retype new password:", new_password),
             ("passwd: password updated successfully", None),
         ]
-        exit_status, output = self.run_cmd_using_shell("sudo passwd admin", prompt_and_input)
+        exit_status, output = self.run_cmd_using_shell(
+            "sudo passwd admin", prompt_and_input
+        )
 
         if exit_status == 0:
             self.device_password = new_password
@@ -353,12 +374,16 @@ class DeviceSSHClient(DeviceCliClient):
 
             # -F ignores the ssh config file.
             # StrictHostKeyChecking silences the prompt to add the key.
-            ssh_args = "-F none -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+            ssh_args = (
+                "-F none -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+            )
 
             env = {"TERM": os.environ.get("TERM")}
-            client = pexpect.spawn(f"ssh {ssh_args} {DEFAULT_USERNAME}@{self.device_ip}", env=env)
+            client = pexpect.spawn(
+                f"ssh {ssh_args} {self.device_username}@{self.device_ip}", env=env
+            )
             client.expect("password:", timeout=60)
-            client.sendline(DEFAULT_PASSWORD)
+            client.sendline(self.device_password)
 
             if rows and cols:
                 client.setwinsize(rows, cols)
@@ -380,7 +405,9 @@ class DeviceSSHClient(DeviceCliClient):
 
         except (pexpect.EOF, pexpect.TIMEOUT) as exception:
             exit_status = 1
-            output = f"Failed to interact using ssh: {client.before.decode('utf-8').strip()}"
+            output = (
+                f"Failed to interact using ssh: {client.before.decode('utf-8').strip()}"
+            )
         except Exception as exception:
             exit_status = 1
             output = f"Failed to interact using ssh: {exception}"
@@ -432,7 +459,9 @@ class DeviceSSHClient(DeviceCliClient):
             file.close()
         except FileNotFoundError as e:
             # Paramiko's FileNotFoundError doesn't have any context, so add some
-            raise FileNotFoundError(f"File not found on {self.device_ip}: {fname} ({e})")
+            raise FileNotFoundError(
+                f"File not found on {self.device_ip}: {fname} ({e})"
+            )
         return content
 
     def is_connected(self) -> bool:
@@ -448,11 +477,19 @@ class DeviceSSHClient(DeviceCliClient):
 class DeviceSCPClient(DeviceSSHClient):
     """SCP client for transferring files from dev servers to DUT, built on top of DeviceSSHClient"""
 
-    def __init__(self, device_ip, device_password=DEFAULT_PASSWORD, debug=False, reuse_connection=True):
+    def __init__(
+        self,
+        device_ip,
+        device_username=DEFAULT_USERNAME,
+        device_password=DEFAULT_PASSWORD,
+        debug=False,
+        reuse_connection=True,
+    ):
         # Always reuse connection for SCP operations
         # Ensure device_password is a string, not None
+        username = device_username if device_username is not None else DEFAULT_USERNAME
         password = device_password if device_password is not None else DEFAULT_PASSWORD
-        super().__init__(device_ip, password, debug, reuse_connection=True)
+        super().__init__(device_ip, username, password, debug, reuse_connection=True)
         self.scp_client = None
 
     def _get_scp_client(self):

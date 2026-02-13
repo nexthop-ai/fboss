@@ -12,7 +12,10 @@ logger = logging.getLogger("hw_agent_runner")
 
 class HwAgentTestRunner:
     """Test runner for hardware agent operations."""
-    def __init__(self,):
+
+    def __init__(
+        self,
+    ):
         self.connected = False
         self.ssh_client = None
         self.scp_client = None
@@ -22,10 +25,10 @@ class HwAgentTestRunner:
         self.tc = None
 
     def getenvvars(self):
-        self.tc["password"] = "Nexthop@24"
-        self.tc["dut"] = os.getenv('DUT')
-        self.tc["password"] = os.getenv('DUTPASSWORD')
-        self.tc["hwsku"] = os.getenv('HWSKU')
+        self.tc["dut"] = os.getenv("DUT")
+        self.tc["username"] = os.getenv("DUTUSERNAME", "root")
+        self.tc["password"] = os.getenv("DUTPASSWORD", "root")
+        self.tc["hwsku"] = os.getenv("HWSKU")
         self.tc["filepath"] = os.getenv("TESTFILE")
         logger.info(f"dut {self.tc['dut']}")
         logger.info(f"filepath {self.tc['filepath']}")
@@ -35,8 +38,18 @@ class HwAgentTestRunner:
         self.tc = test_context.copy()
         self.getenvvars()
 
-        self.ssh_client = DeviceSSHClient(self.tc["dut"], device_password=self.tc["password"], debug=False)
-        self.scp_client = DeviceSCPClient(self.tc["dut"], device_password=self.tc["password"], debug=False)
+        self.ssh_client = DeviceSSHClient(
+            self.tc["dut"],
+            device_username=self.tc["username"],
+            device_password=self.tc["password"],
+            debug=True,
+        )
+        self.scp_client = DeviceSCPClient(
+            self.tc["dut"],
+            device_username=self.tc["username"],
+            device_password=self.tc["password"],
+            debug=True,
+        )
         self.connected = True
 
     def set_filters(self, src_filepath, dst_filepath):
@@ -60,12 +73,14 @@ class HwAgentTestRunner:
         with open("/tmp/tr.xml", "w") as f:
             for line in lines:
                 if line.strip().startswith("<testsuite"):
-                    line = line.replace("name=\"AllTests\"", f"name=\"{self.tc['filepath']}\"")
+                    line = line.replace(
+                        'name="AllTests"', f"name=\"{self.tc['filepath']}\""
+                    )
                 elif line.strip().startswith("<testcase"):
-                    classname = line.split("classname=\"")[1].split("\"")[0]
+                    classname = line.split('classname="')[1].split('"')[0]
                     classname = classname.split("/")[0]
-                    name = line.split("name=\"")[1].split("\"")[0]
-                    line = line.replace(f"name=\"{name}\"", f"name=\"{classname}.{name}\"")
+                    name = line.split('name="')[1].split('"')[0]
+                    line = line.replace(f'name="{name}"', f'name="{classname}.{name}"')
                 f.write(line)
 
     def run_test(self, test_context):
@@ -80,7 +95,9 @@ class HwAgentTestRunner:
         # shorten hwsku from NH-4010 to nh4010
         hwsku = hwsku.lower().replace("-", "")
 
-        logger.info("Clearing remote files: /home/admin/test.log and /home/admin/tr.xml")
+        logger.info(
+            "Clearing remote files: /home/admin/test.log and /home/admin/tr.xml"
+        )
         cmd = f"rm -f {self.testlog_filepath} {self.testresult_filepath}"
         exit_status, output = self.ssh_client.run_cmd(cmd)
         if exit_status != 0:
@@ -98,12 +115,16 @@ class HwAgentTestRunner:
             return False
         else:
             logger.info("Fetching test logs and results files")
-            exit_status, output = self.scp_client.get_file(self.testlog_filepath, "/tmp/test.log")
+            exit_status, output = self.scp_client.get_file(
+                self.testlog_filepath, "/tmp/test.log"
+            )
             if exit_status != 0:
                 logger.error(f"Failed to fetch test logs: {output}")
                 return False
 
-            exit_status, output = self.scp_client.get_file(self.testresult_filepath, "/tmp/tr.xml")
+            exit_status, output = self.scp_client.get_file(
+                self.testresult_filepath, "/tmp/tr.xml"
+            )
             if exit_status != 0:
                 logger.error(f"Failed to fetch test results: {output}")
                 return False
