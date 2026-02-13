@@ -42,6 +42,7 @@ add_executable(fboss2_cmd_test
   fboss/cli/fboss2/test/CmdConfigInterfaceTest.cpp
   fboss/cli/fboss2/test/CmdConfigQosBufferPoolTest.cpp
   fboss/cli/fboss2/test/CmdConfigReloadTest.cpp
+  fboss/cli/fboss2/test/CmdConfigSessionClearTest.cpp
   fboss/cli/fboss2/test/CmdConfigSessionDiffTest.cpp
   fboss/cli/fboss2/test/CmdConfigSessionTest.cpp
   fboss/cli/fboss2/test/CmdConfigVlanPortTaggingModeTest.cpp
@@ -124,6 +125,7 @@ add_executable(cli_test
   fboss/cli/test/CliTest.cpp
   fboss/cli/test/ConfigInterfaceDescriptionTest.cpp
   fboss/cli/test/ConfigInterfaceMtuTest.cpp
+  fboss/cli/test/ConfigSessionClearTest.cpp
 )
 
 target_link_libraries(cli_test
