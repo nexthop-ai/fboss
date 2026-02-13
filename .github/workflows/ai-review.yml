@@ -6,15 +6,15 @@ on:
   workflow_dispatch:
     inputs:
       pr_number:
-        description: 'Pull request number to review'
+        description: "Pull request number to review"
         required: true
         type: number
       repository:
-        description: 'Repository (owner/repo format, defaults to current repo)'
+        description: "Repository (owner/repo format, defaults to current repo)"
         required: false
         type: string
       use_strict_model:
-        description: 'Use strict model (Opus 4.5) instead of general model (Sonnet 4.5)'
+        description: "Use strict model (Opus 4.5) instead of general model (Sonnet 4.5)"
         required: false
         type: boolean
         default: false
@@ -39,4 +39,5 @@ jobs:
       pr_number: ${{ fromJSON(github.event.inputs.pr_number || '0') }}
       repository: ${{ github.event.inputs.repository || '' }}
       use_strict_model: ${{ github.event.inputs.use_strict_model == 'true' }}
+      prompt_repo: ${{ github.event.repository.name }}
     secrets: inherit
