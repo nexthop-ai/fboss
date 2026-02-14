@@ -28,8 +28,9 @@ class TestDockerInfrastructure(unittest.TestCase):
         """Test executing a command in a running container."""
         exit_code = container.run_container(
             image=FBOSS_BUILDER_IMAGE,
-            command=["sleep", "1"],
+            command=["sleep", "inf"],
             ephemeral=False,
+            detach=True,
             name="test_exec_container",
         )
         self.assertEqual(exit_code, 0)
@@ -48,12 +49,12 @@ class TestDockerInfrastructure(unittest.TestCase):
         is_running = container.container_is_running("test_exec_container")
         self.assertFalse(is_running)
 
-        # Try to exec in the removed container - should fail
-        with self.assertRaises(RuntimeError):
-            container.exec_in_container(
-                name="test_exec_container",
-                command=["echo", "should not work"],
-            )
+        # Try to exec in the removed container - should fail with non-zero exit code
+        exec_exit_code, stdout, stderr = container.exec_in_container(
+            name="test_exec_container",
+            command=["echo", "should not work"],
+        )
+        self.assertNotEqual(exec_exit_code, 0)
 
     def test_container_is_running(self):
         """Test checking if a container is running."""

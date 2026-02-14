@@ -22,6 +22,7 @@ def run_container(  # noqa: PLR0913
     privileged: bool = False,
     interactive: bool = False,
     ephemeral: bool = True,
+    detach: bool = False,
     working_dir: str | None = None,
     name: str | None = None,
 ) -> int:
@@ -59,6 +60,9 @@ def run_container(  # noqa: PLR0913
 
     if interactive:
         cmd.extend(["-i", "-t"])
+
+    if detach:
+        cmd.append("-d")
 
     if privileged:
         cmd.append("--privileged")
@@ -152,7 +156,7 @@ def container_is_running(name: str) -> bool:
     """
     logger.info(f"Checking if container is running: {name}")
 
-    cmd = ["docker", "ps", "-q", "--filter", f"name={name}"]
+    cmd = ["docker", "ps", "-aq", "--filter", f"name={name}"]
 
     logger.debug(f"Running: {' '.join(str(c) for c in cmd)}")
 

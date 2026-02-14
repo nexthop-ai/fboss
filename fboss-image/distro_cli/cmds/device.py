@@ -9,13 +9,16 @@
 
 import json
 import logging
+import sys
 
 from distro_cli.lib.cli import validate_path
+from distro_cli.lib.distro_infra import (
+    DISTRO_INFRA_CONTAINER,
+    GETIP_SCRIPT_CONTAINER_PATH,
+    deploy_image_to_device,
+)
 from distro_cli.lib.docker import container
-
-# This should match DISTRO_CONTAINER_NAME in distro_infra/distro_infra.sh
-DISTRO_CONTAINER_NAME = "fboss-distro-infra"
-GETIP_SCRIPT_CONTAINER_PATH = "/distro_infra/getip.sh"
+from distro_cli.lib.exceptions import DistroInfraError
 
 logger = logging.getLogger("fboss-image")
 
@@ -32,9 +35,22 @@ def image_upstream_command(args):
 
 
 def image_command(args):
-    """Set device image from file"""
+    """Set device image from file and configure PXE boot"""
     logger.info(f"Setting image for device {args.mac}: {args.image_path}")
-    logger.info("Device image command (stub)")
+
+    try:
+        deploy_image_to_device(args.mac, args.image_path)
+        logger.info(
+            f"Successfully configured device {args.mac} with image {args.image_path}"
+        )
+        logger.info("Device is ready for PXE boot")
+
+    except DistroInfraError as e:
+        logger.error(f"Failed to configure device: {e}")
+        sys.exit(1)
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        sys.exit(1)
 
 
 def reprovision_command(args):
@@ -56,8 +72,8 @@ def getip_command(args):
     logger.info(f"Getting IP for device {args.mac}")
 
     # Check if container is running
-    if not container.container_is_running(DISTRO_CONTAINER_NAME):
-        logger.error(f"Container '{DISTRO_CONTAINER_NAME}' is not running")
+    if not container.container_is_running(DISTRO_INFRA_CONTAINER):
+        logger.error(f"Container '{DISTRO_INFRA_CONTAINER}' is not running")
         logger.error("Please start the distro-infra container first")
         return
 
@@ -67,7 +83,7 @@ def getip_command(args):
         cmd.append(args.interface)
 
     # Execute in container
-    exit_code, stdout, stderr = container.exec_in_container(DISTRO_CONTAINER_NAME, cmd)
+    exit_code, stdout, stderr = container.exec_in_container(DISTRO_INFRA_CONTAINER, cmd)
 
     if exit_code != 0:
         logger.error(f"getip.sh failed with exit code {exit_code}")

@@ -21,13 +21,14 @@ These tests verify that:
 """
 
 import argparse
+import shutil
 import subprocess
+import tarfile
 import tempfile
 import unittest
 from pathlib import Path
 
 from distro_cli.cmds.device import (
-    DISTRO_CONTAINER_NAME,
     getip_command,
     image_command,
     image_upstream_command,
@@ -36,16 +37,20 @@ from distro_cli.cmds.device import (
     ssh_command,
     update_command,
 )
+from distro_cli.lib.cli import CLI
+from distro_cli.lib.distro_infra import DISTRO_INFRA_CONTAINER
 from distro_cli.lib.docker import container
+from distro_cli.tests.test_helpers import waitfor
 
 
 class TestDeviceCommands(unittest.TestCase):
-    """Test device command group and subcommands (stubs)"""
+    """Test device command group and subcommands"""
+
+    IPXE_FILES = ("ipxev4.efi", "ipxev6.efi", "autoexec.ipxe")
 
     @classmethod
     def setUpClass(cls):
         """Set up test container before all tests"""
-        # Check if fboss_distro_infra image exists
         try:
             result = subprocess.run(
                 ["docker", "images", "-q", "fboss_distro_infra"],
@@ -61,47 +66,128 @@ class TestDeviceCommands(unittest.TestCase):
         except (subprocess.CalledProcessError, FileNotFoundError):
             raise unittest.SkipTest("Docker not available or image not built")
 
+        cwd = Path.cwd()
+        cls.container_temp_dir = Path(
+            tempfile.mkdtemp(prefix="distro_infra_test_", dir=cwd)
+        )
+        cls.container_persistent_dir = cls.container_temp_dir / "persistent"
+        cls.container_persistent_dir.mkdir(parents=True, exist_ok=True)
+
+        # Write interface name file (normally done by distro_infra.sh)
+        interface_file = cls.container_persistent_dir / "interface_name.txt"
+        interface_file.write_text("lo")
+
         # Clean up any existing container with the same name
-        if container.container_is_running(DISTRO_CONTAINER_NAME):
-            container.stop_and_remove_container(DISTRO_CONTAINER_NAME)
+        if container.container_is_running(DISTRO_INFRA_CONTAINER):
+            container.stop_and_remove_container(DISTRO_INFRA_CONTAINER)
 
         # Start the fboss-distro-infra container in background
-        # Use a minimal command that keeps the container running
+        volumes = {cls.container_persistent_dir: Path("/distro_infra/persistent")}
+
         exit_code = container.run_container(
             image="fboss_distro_infra",
-            command=["sleep", "1"],
+            command=["/distro_infra/run_distro_infra.sh", "--intf", "lo", "--nodhcpv6"],
+            volumes=volumes,
             ephemeral=False,
-            name=DISTRO_CONTAINER_NAME,
+            detach=True,
+            name=DISTRO_INFRA_CONTAINER,
             privileged=True,  # Required for network operations
         )
 
         if exit_code != 0:
-            raise RuntimeError(f"Failed to start {DISTRO_CONTAINER_NAME} container")
+            raise RuntimeError(f"Failed to start {DISTRO_INFRA_CONTAINER} container")
 
     @classmethod
     def tearDownClass(cls):
         """Clean up test container after all tests"""
-        if container.container_is_running(DISTRO_CONTAINER_NAME):
-            container.stop_and_remove_container(DISTRO_CONTAINER_NAME)
+        if container.container_is_running(DISTRO_INFRA_CONTAINER):
+            container.stop_and_remove_container(DISTRO_INFRA_CONTAINER)
+
+        shutil.rmtree(cls.container_temp_dir, ignore_errors=True)
+
+    def setup_image_command_test(self):
+        """Set up PXE boot infrastructure for image command tests.
+
+        Waits for the container's run_distro_infra.sh script to create the cache
+        directory and copy iPXE boot files.
+        """
+        cache_dir = self.container_persistent_dir / "cache"
+
+        # Wait for cache directory to be created by container
+        waitfor(
+            cache_dir.exists,
+            lambda: self.fail("Timed out waiting for cache directory to be created"),
+        )
+
+        # Wait for all iPXE files to be created by container
+        for filename in self.IPXE_FILES:
+            cache_file = cache_dir / filename
+            waitfor(
+                cache_file.exists,
+                lambda f=filename: self.fail(
+                    f"Timed out waiting for {f} to be created"
+                ),
+            )
+
+    def verify_image_command_common(self, mac):
+        """Verify common PXE boot infrastructure created by image command"""
+        dash_mac = mac.replace(":", "-")
+        mac_dir = self.container_persistent_dir / dash_mac
+
+        self.assertTrue(mac_dir.exists())
+        self.assertTrue(mac_dir.is_dir())
+
+        for ipxe_file in self.IPXE_FILES:
+            ipxe_path = mac_dir / ipxe_file
+            self.assertTrue(ipxe_path.exists())
+
+        pxeboot_marker = mac_dir / "pxeboot_complete"
+        self.assertTrue(pxeboot_marker.exists())
+
+        ipxev6_serverip = mac_dir / "ipxev6.efi-serverip"
+        if ipxev6_serverip.exists():
+            content = ipxev6_serverip.read_text()
+            self.assertIn("#!ipxe", content)
+            self.assertIn("set server_ip", content)
+
+        result = subprocess.run(
+            [
+                "docker",
+                "exec",
+                DISTRO_INFRA_CONTAINER,
+                "cat",
+                f"/distro_infra/dnsmasq_conf.d/{dash_mac}",
+            ],
+            capture_output=True,
+            check=False,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 0)
+        self.assertIn(mac, result.stdout)
+
+        return mac_dir
 
     def setUp(self):
         """Set up test fixtures"""
         self.test_mac = "aa:bb:cc:dd:ee:ff"
 
-        # Create a temporary manifest file for tests that need it
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             f.write('{"test": "manifest"}')
             self.manifest_path = Path(f.name)
 
-        # Create a temporary image file for tests that need it
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".bin", delete=False) as f:
-            f.write("fake image data")
-            self.image_path = Path(f.name)
+        self.temp_dir = tempfile.mkdtemp()
+        self.image_path = Path(self.temp_dir) / "test_image.tar"
+
+        test_file = Path(self.temp_dir) / "test_file.txt"
+        test_file.write_text("test content")
+
+        with tarfile.open(self.image_path, "w") as tar:
+            tar.add(test_file, arcname="test_file.txt")
 
     def tearDown(self):
         """Clean up test fixtures"""
         self.manifest_path.unlink()
-        self.image_path.unlink()
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_device_commands_exist(self):
         """Test that device commands exist"""
@@ -121,11 +207,61 @@ class TestDeviceCommands(unittest.TestCase):
         # Call command - just verify it doesn't crash
         image_upstream_command(args)
 
-    def test_image_stub(self):
-        """Test image command (stub)"""
-        args = argparse.Namespace(mac=self.test_mac, image_path=str(self.image_path))
-        # Call command - just verify it doesn't crash
+    def test_image_command_with_tarball(self):
+        """Test image command with tarball extraction"""
+        self.setup_image_command_test()
+
+        temp_dir = tempfile.mkdtemp()
+        test_file = Path(temp_dir) / "test_file.txt"
+        test_file.write_text("test content")
+        tarball_path = Path(temp_dir) / "test_image.tar"
+        with tarfile.open(tarball_path, "w") as tar:
+            tar.add(test_file, arcname="test_file.txt")
+
+        args = argparse.Namespace(mac=self.test_mac, image_path=str(tarball_path))
         image_command(args)
+
+        mac_dir = self.verify_image_command_common(self.test_mac)
+
+        extracted_file = mac_dir / "test_file.txt"
+        self.assertTrue(extracted_file.exists())
+        self.assertEqual(extracted_file.read_text(), "test content")
+
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+    def test_image_command_with_directory(self):
+        """Test image command failure with directory (only tarballs supported)"""
+        self.setup_image_command_test()
+
+        temp_dir = tempfile.mkdtemp()
+        dir_path = Path(temp_dir) / "test_image_dir"
+        dir_path.mkdir()
+        file1 = dir_path / "file1.txt"
+        file2 = dir_path / "file2.txt"
+        file1.write_text("content1")
+        file2.write_text("content2")
+
+        args = argparse.Namespace(mac=self.test_mac, image_path=str(dir_path))
+        with self.assertRaises(SystemExit) as excinfo:
+            image_command(args)
+        self.assertEqual(excinfo.exception.code, 1)
+
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+    def test_image_command_with_single_file(self):
+        """Test image command failure with non-tarball file"""
+        self.setup_image_command_test()
+
+        temp_dir = tempfile.mkdtemp()
+        single_file_path = Path(temp_dir) / "single_file.bin"
+        single_file_path.write_text("single file content")
+
+        args = argparse.Namespace(mac=self.test_mac, image_path=str(single_file_path))
+        with self.assertRaises(SystemExit) as excinfo:
+            image_command(args)
+        self.assertEqual(excinfo.exception.code, 1)
+
+        shutil.rmtree(temp_dir, ignore_errors=True)
 
     def test_reprovision_stub(self):
         """Test reprovision command (stub)"""
@@ -154,6 +290,31 @@ class TestDeviceCommands(unittest.TestCase):
         args = argparse.Namespace(mac=self.test_mac)
         # Call command - just verify it doesn't crash
         ssh_command(args)
+
+
+class TestDeviceCLIIntegration(unittest.TestCase):
+    """Test device command CLI integration for image command"""
+
+    def setUp(self):
+        """Set up CLI for testing"""
+        self.cli = CLI(description="Test CLI")
+        setup_device_commands(self.cli)
+
+    def test_image_command_argument_parsing(self):
+        """Test that image command arguments are parsed correctly"""
+        with tempfile.NamedTemporaryFile(suffix=".tar", delete=False) as f:
+            temp_image = f.name
+
+        try:
+            args = self.cli.parser.parse_args(
+                ["device", "aa:bb:cc:dd:ee:ff", "image", temp_image]
+            )
+            self.assertEqual(args.mac, "aa:bb:cc:dd:ee:ff")
+            self.assertEqual(str(args.image_path), temp_image)
+            self.assertTrue(callable(args.func))
+            self.assertEqual(args.func, image_command)
+        finally:
+            Path(temp_image).unlink()
 
 
 if __name__ == "__main__":

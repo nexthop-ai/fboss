@@ -63,6 +63,9 @@ fi
 
 mkdir -p "${PERSIST_DIR}"
 
+# Write interface name to persistent directory so it can be read by distro_cli
+echo -n "${INTERFACE}" >"${PERSIST_DIR}/interface_name.txt"
+
 # Run the Docker container with the parsed arguments
 docker run --rm -it --network host --cap-add=NET_ADMIN \
   --volume "$(realpath "${PERSIST_DIR}")":/distro_infra/persistent:rw \

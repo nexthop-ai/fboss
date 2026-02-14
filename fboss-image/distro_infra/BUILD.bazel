@@ -1,0 +1,36 @@
+exports_files([
+    "build.sh",
+    "Dockerfile",
+    "distro_infra.sh",
+])
+
+filegroup(
+    name = "distro_infra_files",
+    srcs = glob(["**/*"]),
+    visibility = ["//visibility:public"],
+)
+
+genrule(
+    name = "distro_infra_docker_image",
+    srcs = [":distro_infra_files"],
+    outs = ["distro_infra_image.tar"],
+    local = True,
+    cmd = """
+        set -euo pipefail
+
+        IMAGE_NAME="fboss_distro_infra"
+        OUTPUT_TAR="$@"
+
+        # Check if image already exists to avoid unnecessary rebuilds
+        if ! docker images -q "$$IMAGE_NAME" | grep -q .; then
+            pushd fboss/fboss-image/distro_infra > /dev/null
+            ./build.sh
+            popd > /dev/null
+        fi
+
+        mkdir -p $$(dirname "$$OUTPUT_TAR")
+        docker save -o "$$OUTPUT_TAR" "$$IMAGE_NAME"
+        ls -lh "$$OUTPUT_TAR"
+    """,
+    visibility = ["//visibility:public"],
+)
