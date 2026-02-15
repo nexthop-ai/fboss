@@ -27,8 +27,10 @@ import tarfile
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from distro_cli.cmds.device import (
+    get_device_ip,
     getip_command,
     image_command,
     image_upstream_command,
@@ -279,17 +281,62 @@ class TestDeviceCommands(unittest.TestCase):
         # Call command - just verify it doesn't crash
         update_command(args)
 
-    def test_getip_stub(self):
-        """Test getip command (stub)"""
-        args = argparse.Namespace(mac=self.test_mac, interface=None)
-        # Call command - just verify it doesn't crash
-        getip_command(args)
+    @patch("distro_cli.cmds.device.container.exec_in_container")
+    @patch("distro_cli.cmds.device.container.container_is_running")
+    def test_get_device_ip_ipv4(self, mock_is_running, mock_exec):
+        """Test get_device_ip returns IPv4 when available"""
+        mock_is_running.return_value = True
+        mock_exec.return_value = (
+            0,
+            '{"mac": "aa:bb:cc:dd:ee:ff", "ipv4": "192.168.1.100", "ipv6": "fe80::1"}',
+            "",
+        )
 
-    def test_ssh_stub(self):
-        """Test ssh command (stub)"""
-        args = argparse.Namespace(mac=self.test_mac)
-        # Call command - just verify it doesn't crash
+        ip = get_device_ip(self.test_mac)
+        self.assertEqual(ip, "192.168.1.100")
+
+    @patch("distro_cli.cmds.device.container.exec_in_container")
+    @patch("distro_cli.cmds.device.container.container_is_running")
+    def test_get_device_ip_ipv6_fallback(self, mock_is_running, mock_exec):
+        """Test get_device_ip returns IPv6 when IPv4 not available"""
+        mock_is_running.return_value = True
+        mock_exec.return_value = (
+            0,
+            '{"mac": "aa:bb:cc:dd:ee:ff", "ipv6": "fe80::1"}',
+            "",
+        )
+
+        ip = get_device_ip(self.test_mac)
+        self.assertEqual(ip, "fe80::1")
+
+    @patch("distro_cli.cmds.device.container.exec_in_container")
+    @patch("distro_cli.cmds.device.container.container_is_running")
+    @patch("distro_cli.cmds.device.os.execvp")
+    def test_ssh_command_calls_execvp_correctly(
+        self, mock_execvp, mock_is_running, mock_exec
+    ):
+        """Test ssh command calls os.execvp with correct arguments"""
+        mock_is_running.return_value = True
+        mock_exec.return_value = (
+            0,
+            '{"mac": "aa:bb:cc:dd:ee:ff", "ipv4": "192.168.1.100"}',
+            "",
+        )
+
+        args = argparse.Namespace(mac=self.test_mac, interface=None)
         ssh_command(args)
+
+        mock_execvp.assert_called_once_with(
+            "ssh",
+            [
+                "ssh",
+                "-o",
+                "StrictHostKeyChecking=no",
+                "-o",
+                "UserKnownHostsFile=/dev/null",
+                "root@192.168.1.100",
+            ],
+        )
 
 
 class TestDeviceCLIIntegration(unittest.TestCase):

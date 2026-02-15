@@ -9,6 +9,7 @@
 
 import json
 import logging
+import os
 import sys
 
 from distro_cli.lib.cli import validate_path
@@ -16,6 +17,7 @@ from distro_cli.lib.distro_infra import (
     DISTRO_INFRA_CONTAINER,
     GETIP_SCRIPT_CONTAINER_PATH,
     deploy_image_to_device,
+    get_interface_name,
 )
 from distro_cli.lib.docker import container
 from distro_cli.lib.exceptions import DistroInfraError
@@ -67,20 +69,27 @@ def update_command(args):
     logger.info("Device update command (stub)")
 
 
-def getip_command(args):
-    """Get device IP address"""
-    logger.info(f"Getting IP for device {args.mac}")
+def get_device_ip(mac: str) -> str | None:
+    """Get device IP address by querying the distro-infra container.
 
-    # Check if container is running
+    Args:
+        mac: Device MAC address
+
+    Returns:
+        IP address string (IPv4 preferred, IPv6 fallback), or None if not found
+    """
     if not container.container_is_running(DISTRO_INFRA_CONTAINER):
         logger.error(f"Container '{DISTRO_INFRA_CONTAINER}' is not running")
         logger.error("Please start the distro-infra container first")
-        return
+        return None
 
-    # Build command
-    cmd = [GETIP_SCRIPT_CONTAINER_PATH, args.mac]
-    if args.interface:
-        cmd.append(args.interface)
+    try:
+        interface = get_interface_name()
+    except DistroInfraError as e:
+        logger.error(f"Failed to get interface name: {e}")
+        return None
+
+    cmd = [GETIP_SCRIPT_CONTAINER_PATH, mac, interface]
 
     # Execute in container
     exit_code, stdout, stderr = container.exec_in_container(DISTRO_INFRA_CONTAINER, cmd)
@@ -91,38 +100,61 @@ def getip_command(args):
             logger.error(f"stderr: {stderr}")
         if stdout:
             logger.error(f"stdout: {stdout}")
-        return
+        return None
 
-    # Parse JSON output
     try:
         result = json.loads(stdout)
 
-        # Check for error in JSON
         if "error_code" in result:
             logger.error(f"Error: {result.get('error', 'Unknown error')}")
             logger.error(f"Error code: {result['error_code']}")
-            return
+            return None
 
-        # Extract IP addresses
         ipv4 = result.get("ipv4")
         ipv6 = result.get("ipv6")
 
-        if ipv4:
-            print_to_console(ipv4)
-        elif ipv6:
-            print_to_console(ipv6)
-        else:
-            logger.error("No IP address found in response")
+        return ipv4 if ipv4 else ipv6
 
     except json.JSONDecodeError as e:
         logger.error(f"Failed to parse JSON output: {e}")
         logger.error(f"Output was: {stdout}")
+        return None
+
+
+def getip_command(args):
+    """Get device IP address"""
+    logger.info(f"Getting IP for device {args.mac}")
+
+    ip_address = get_device_ip(args.mac)
+
+    if ip_address:
+        print_to_console(ip_address)
+    else:
+        logger.error("No IP address found in response")
 
 
 def ssh_command(args):
     """SSH to device"""
     logger.info(f"SSH to device {args.mac}")
-    logger.info("Device ssh command (stub)")
+
+    ip_address = get_device_ip(args.mac)
+
+    if not ip_address:
+        logger.error("No IP address found for device")
+        return
+
+    logger.info(f"Connecting to {ip_address}")
+    os.execvp(
+        "ssh",
+        [
+            "ssh",
+            "-o",
+            "StrictHostKeyChecking=no",
+            "-o",
+            "UserKnownHostsFile=/dev/null",
+            f"root@{ip_address}",
+        ],
+    )
 
 
 def setup_device_commands(cli):
@@ -179,9 +211,10 @@ def setup_device_commands(cli):
         "getip",
         getip_command,
         help_text="Get device IP address",
-        arguments=[
-            ("interface", {"help": "Network interface to use", "nargs": "?"}),
-        ],
     )
 
-    device.add_command("ssh", ssh_command, help_text="SSH to device", arguments=[])
+    device.add_command(
+        "ssh",
+        ssh_command,
+        help_text="SSH to device",
+    )

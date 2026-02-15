@@ -54,6 +54,31 @@ def normalize_mac_address(mac: str) -> tuple[str, str]:
     return dash_mac, colon_mac
 
 
+def get_interface_name() -> str:
+    """Get the network interface name of the distro-infra container from the persistent directory.
+
+    Returns:
+        Network interface name
+
+    Raises:
+        DistroInfraError: If interface_name.txt not found or empty
+    """
+    persistent_dir = find_persistent_dir()
+    interface_file = persistent_dir / "interface_name.txt"
+
+    if not interface_file.exists():
+        raise DistroInfraError(
+            f"Interface name file not found: {interface_file}. "
+            "The distro-infra container may not have started properly."
+        )
+
+    interface = interface_file.read_text().strip()
+    if not interface:
+        raise DistroInfraError(f"Interface name file is empty: {interface_file}")
+
+    return interface
+
+
 def find_persistent_dir() -> Path:
     """Find the persistent directory mounted in the distro_infra container.
 
