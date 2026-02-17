@@ -92,7 +92,9 @@ enable_hw_agents() {
     num_hw_agents=$(cat "${platform_dir}/num_hw_agents")
   fi
   for i in $(seq ${num_hw_agents}); do
-    systemctl enable --now "fboss_hw_agent@$((i - 1)).service"
+    systemctl enable "fboss_hw_agent@$((i - 1)).service"
+    # Calling systemctl start inside a starting systemd service deadlocks
+    systemctl start "fboss_hw_agent@$((i - 1)).service" &
   done
 }
 
