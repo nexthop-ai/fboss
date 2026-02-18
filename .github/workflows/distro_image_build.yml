@@ -45,9 +45,3 @@ jobs:
       - name: Run fboss-image build
         run: |
           ./fboss-image/distro_cli/fboss-image build fboss-image/from_source.json
-          BRANCH="${{ github.head_ref || github.ref_name }}"
-          build_id=$(nexis-buildrunner init --repo private-fboss --branch "$BRANCH" --platform xgs)
-          nexis-buildrunner upload --build-id $build_id --image fboss-distro-image_usb.iso
-          nexis-buildrunner upload --build-id $build_id --image fboss-distro-image_pxe.tar
-          nexis-buildrunner upload --build-id $build_id --image fboss-distro-image_onie.bin
-          nexis-buildrunner commit --build-id $build_id

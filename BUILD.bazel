@@ -1,4 +1,5 @@
 load("//fboss:fboss_build_types.bzl", "fboss_unit_test")
+load("//bazel_lib:upload_artifact.bzl", "upload_build_artifact")
 
 # We explicitly place the intermediate build products into the
 # source tree to help incremental rebuild speed. This is both to make
@@ -195,7 +196,7 @@ genrule(
     ],
     cmd = """
         pushd fboss/fboss-image
-        ./distro_cli/fboss-image build nh-fboss-broadcom-xgs.json
+        ./distro_cli/fboss-image build nh-fboss-broadcom-xgs.json 2>&1
         popd
 
         $(execpath //nhtools:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.tar $(location nh-fboss-broadcom-xgs.tar)
@@ -206,3 +207,5 @@ genrule(
         "exclusive",
     ]
 )
+upload_build_artifact("nh-fboss-broadcom-xgs.bin")
+upload_build_artifact("nh-fboss-broadcom-xgs.tar")
