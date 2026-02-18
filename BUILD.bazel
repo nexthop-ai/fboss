@@ -75,7 +75,7 @@ genrule(
 
         pushd fboss
         mkdir -p .build_dir/sai .sccache
-        tar -C .build_dir/sai -xf ./fboss/oss/scripts/fake-sai-devel.tar.zstd
+        tar -C .build_dir/sai -xf ./fboss/oss/scripts/fake-sai-devel.tar
 
         ./fboss/oss/scripts/run_in_builder.sh ./fboss/oss/scripts/build.sh
         popd
@@ -92,6 +92,7 @@ genrule(
     tags = [
         "no-sandbox",
         "not-for-ci",
+        "exclusive",
     ]
 )
 
@@ -121,7 +122,7 @@ genrule(
     name = "fboss-xgs",
     srcs = [
         "//fboss:fboss_builder.tar",
-        "//nhbroadcomsai/fboss-xgs:sai-devel.tar.zstd",
+        "//nhbroadcomsai/fboss-xgs:sai-devel.tar",
         ".buckconfig",
         "CMakeLists.txt",
         "buck2",
@@ -143,7 +144,7 @@ genrule(
         fi
 
         mkdir -p fboss/.build_dir/sai .sccache
-        tar -C fboss/.build_dir/sai -xf $(location //nhbroadcomsai/fboss-xgs:sai-devel.tar.zstd)
+        tar -C fboss/.build_dir/sai -xf $(location //nhbroadcomsai/fboss-xgs:sai-devel.tar)
 
         pushd fboss
         ./fboss/oss/scripts/run_in_builder.sh ./fboss/oss/scripts/build.sh
@@ -161,6 +162,7 @@ genrule(
     tags = [
         "no-sandbox",
         "not-for-ci",
+        "exclusive",
     ]
 )
 
@@ -171,6 +173,7 @@ genrule(
         "//fboss_bsps/nexthop_bsp:distro_build_files",
         "//fboss_bsps/fboss_bsp:distro_build_files",
         "//fboss_extras/asic_init:distro_build_files",
+        ":fboss_builder_docker",
         ".buckconfig",
         "CMakeLists.txt",
         "buck2",
@@ -200,5 +203,6 @@ genrule(
     """,
     tags = [
         "no-sandbox",
+        "exclusive",
     ]
 )
