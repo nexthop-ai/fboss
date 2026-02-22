@@ -231,6 +231,7 @@ bool Tomahawk5Asic::isSupported(Feature feature) const {
     case HwAsic::Feature::PORT_LEVEL_BUFFER_CONFIGURATION_SUPPORT:
     case HwAsic::Feature::SAI_SERDES_RX_REACH:
     case HwAsic::Feature::SAI_SERDES_PRECODING:
+    case HwAsic::Feature::VIRTUAL_ARS_GROUP:
       return false;
   }
   return false;
@@ -288,5 +289,9 @@ std::optional<uint32_t> Tomahawk5Asic::getArsBaseIndex() const {
   // >(4096-256)
   // So setting default start index as 3840
   return getMaxEcmpGroups().value() - 256;
+}
+
+std::optional<uint32_t> Tomahawk5Asic::getMaxArsWidth() const {
+  return 64;
 }
 } // namespace facebook::fboss

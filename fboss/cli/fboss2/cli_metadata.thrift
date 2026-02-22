@@ -17,6 +17,7 @@ namespace cpp2 facebook.fboss.cli
 // changes.
 enum ConfigActionLevel {
   HITLESS = 0, // Can be applied with reloadConfig() - default
+<<<<<<< HEAD
   AGENT_RESTART = 1, // Requires agent restart
 }
 
@@ -38,4 +39,23 @@ struct ConfigSessionMetadata {
   // Git commit SHA that this session is based on. Used to detect if someone
   // else committed changes while this session was in progress.
   3: string base;
+||||||| 7e29d6aa34
+=======
+  AGENT_WARMBOOT = 1, // Requires agent warmboot restart
+  AGENT_COLDBOOT = 2, // Requires agent coldboot restart (clears ASIC state)
+}
+
+// Identifier for different services that can be configured
+enum ServiceType {
+  AGENT = 1,
+}
+
+// Metadata stored alongside the session configuration file.
+// This metadata tracks state that needs to persist across CLI invocations
+// within a single config session.
+struct ConfigSessionMetadata {
+  // Maps each service to the required action level for pending config changes.
+  // Services not in this map default to HITLESS.
+  1: map<ServiceType, ConfigActionLevel> action;
+>>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
 }

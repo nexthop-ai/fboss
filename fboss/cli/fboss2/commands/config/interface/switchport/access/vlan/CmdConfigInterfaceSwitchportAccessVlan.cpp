@@ -10,6 +10,7 @@
 
 #include "fboss/cli/fboss2/commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.h"
 
+<<<<<<< HEAD
 #include "fboss/cli/fboss2/CmdHandler.cpp"
 
 #include "fboss/cli/fboss2/session/ConfigSession.h"
@@ -57,5 +58,65 @@ void CmdConfigInterfaceSwitchportAccessVlan::printOutput(
 template void CmdHandler<
     CmdConfigInterfaceSwitchportAccessVlan,
     CmdConfigInterfaceSwitchportAccessVlanTraits>::run();
+||||||| 7e29d6aa34
+=======
+#include <unordered_set>
+
+#include <folly/Conv.h>
+#include "fboss/cli/fboss2/session/ConfigSession.h"
+
+namespace facebook::fboss {
+
+CmdConfigInterfaceSwitchportAccessVlanTraits::RetType
+CmdConfigInterfaceSwitchportAccessVlan::queryClient(
+    const HostInfo& hostInfo,
+    const utils::InterfaceList& interfaces,
+    const CmdConfigInterfaceSwitchportAccessVlanTraits::ObjectArgType&
+        vlanIdValue) {
+  if (interfaces.empty()) {
+    throw std::invalid_argument("No interface name provided");
+  }
+
+  // Extract the VLAN ID (validation already done in VlanIdValue constructor)
+  int32_t vlanId = vlanIdValue.getVlanId();
+
+  // Collect the logical port IDs we need to update
+  std::unordered_set<int32_t> portIds;
+
+  // Update ingressVlan for all resolved ports
+  for (const utils::Intf& intf : interfaces) {
+    cfg::Port* port = intf.getPort();
+    if (port) {
+      port->ingressVlan() = vlanId;
+      portIds.insert(*port->logicalID());
+    }
+  }
+
+  // Also update the vlanPorts entries for these ports
+  auto& config = ConfigSession::getInstance().getAgentConfig();
+  auto& vlanPorts = *config.sw()->vlanPorts();
+  for (auto& vlanPort : vlanPorts) {
+    if (portIds.count(*vlanPort.logicalPort())) {
+      vlanPort.vlanID() = vlanId;
+    }
+  }
+
+  // Save the updated config
+  // VLAN changes require agent warmboot as reloadConfig() doesn't apply them
+  ConfigSession::getInstance().saveConfig(
+      cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
+
+  std::string interfaceList = folly::join(", ", interfaces.getNames());
+  std::string message = "Successfully set access VLAN for interface(s) " +
+      interfaceList + " to " + std::to_string(vlanId);
+
+  return message;
+}
+
+void CmdConfigInterfaceSwitchportAccessVlan::printOutput(
+    const CmdConfigInterfaceSwitchportAccessVlanTraits::RetType& logMsg) {
+  std::cout << logMsg << std::endl;
+}
+>>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
 
 } // namespace facebook::fboss

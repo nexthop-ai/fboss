@@ -18,6 +18,7 @@ thrift_library(
     thrift_srcs = {"bsp_platform_mapping.thrift": []},
     deps = [
         "//fboss/lib/led:led_mapping",
+        "//thrift/annotation:thrift",
     ],
 )
 
@@ -89,6 +90,7 @@ cpp_library(
         "//fboss/agent:fboss-error",
         "//fboss/lib:common_file_utils",
         "//fboss/lib:gpiod_line",
+        "//fboss/lib/bsp/icecube800banw:icecube800banw_bsp",
         "//fboss/lib/bsp/icecube800bc:icecube800bc_bsp",
         "//fboss/lib/bsp/icetea800bc:icetea800bc_bsp",
         "//fboss/lib/bsp/janga800bic:janga800bic_bsp",

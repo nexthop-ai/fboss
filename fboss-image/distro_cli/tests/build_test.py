@@ -42,9 +42,25 @@ class TestBuildCommand(unittest.TestCase):
 
     def test_build_components(self):
         """Test build command with specific components using stub manifest."""
+<<<<<<< HEAD
         with enter_tempdir(
             "build_test_artifacts_"
         ) as temp_artifacts, override_artifact_store_dir(temp_artifacts):
+||||||| 7e29d6aa34
+    @patch("lib.builder.subprocess.run")
+    @patch("lib.builder.Path.exists")
+    @patch("lib.builder.shutil.move")
+    def test_build_all_stub(self, _mock_move, mock_exists, mock_run):
+        """Test build command with no components (build all)"""
+        # Mock the build script and output ISO existence
+        mock_exists.return_value = True
+        mock_run.return_value = MagicMock(returncode=0)
+=======
+        with (
+            enter_tempdir("build_test_artifacts_") as temp_artifacts,
+            override_artifact_store_dir(temp_artifacts),
+        ):
+>>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
             manifest_path = self.test_dir / "test-stub-component.json"
 
             args = argparse.Namespace(

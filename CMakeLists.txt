@@ -1092,7 +1092,11 @@ if (SAI_IMPL OR BUILD_SAI_FAKE)
   add_dependencies(fboss_forwarding_stack
     diag_shell_client
     fboss2
+<<<<<<< HEAD
     fboss2-dev
+||||||| 7e29d6aa34
+=======
+>>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
     fsdb
     qsfp_service
     wedge_qsfp_util

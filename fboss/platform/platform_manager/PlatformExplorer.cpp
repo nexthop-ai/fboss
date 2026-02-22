@@ -135,11 +135,10 @@ PlatformManagerStatus createPmStatus(
 PlatformExplorer::PlatformExplorer(
     const PlatformConfig& config,
     DataStore& dataStore,
-    ScubaLogger& scubaLogger,
     std::shared_ptr<PlatformFsUtils> platformFsUtils)
     : platformConfig_(config),
       dataStore_(dataStore),
-      explorationSummary_(platformConfig_, scubaLogger),
+      explorationSummary_(platformConfig_),
       pciExplorer_(platformFsUtils),
       devicePathResolver_(dataStore_),
       presenceChecker_(devicePathResolver_),
@@ -170,7 +169,9 @@ void PlatformExplorer::explore() {
   genHumanReadableEeproms();
   XLOG(INFO) << "Publishing hardware version of the unit ...";
   publishHardwareVersions();
-  auto explorationStatus = explorationSummary_.summarize();
+
+  auto explorationStatus = explorationSummary_.summarize(
+      dataStore_.getFirmwareVersions(), dataStore_.getHardwareVersions());
   updatePmStatus(createPmStatus(
       explorationStatus,
       std::chrono::duration_cast<std::chrono::seconds>(
@@ -496,10 +497,11 @@ void PlatformExplorer::exploreI2cDevices(
         auto i2cDevicePath = i2cExplorer_.getDeviceI2cPath(busNum, devAddr);
         try {
           auto eepromPath = i2cDevicePath + "/eeprom";
+          auto eepromOffset = i2cDeviceConfig.eepromOffset().value_or(0);
           dataStore_.updateEepromContents(
               Utils().createDevicePath(
                   slotPath, *i2cDeviceConfig.pmUnitScopedName()),
-              FbossEepromInterface(eepromPath, 0));
+              FbossEepromInterface(eepromPath, eepromOffset));
           if (devicePath == *platformConfig_.chassisEepromDevicePath()) {
             const auto& eepromContents =
                 dataStore_.getEepromContents(devicePath);

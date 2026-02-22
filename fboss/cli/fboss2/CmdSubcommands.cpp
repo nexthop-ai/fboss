@@ -257,6 +257,7 @@ CLI::App* CmdSubcommands::addCommand(
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_VLAN_ID:
           subCmd->add_option("vlan_id", args, "VLAN ID (1-4094)");
           break;
+<<<<<<< HEAD
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_MAC_AND_PORT:
           subCmd->add_option(
               "mac_and_port",
@@ -335,6 +336,9 @@ CLI::App* CmdSubcommands::addCommand(
               "<port-list> [<attr> <value> ...] where <attr> is one "
               "of: description, mtu");
           break;
+||||||| 7e29d6aa34
+=======
+>>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_UNINITIALIZE:
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_NONE:
           break;

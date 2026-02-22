@@ -10,9 +10,16 @@
 
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionCommit.h"
 
+<<<<<<< HEAD
 #include "fboss/cli/fboss2/CmdHandler.cpp"
 
 #include <fmt/format.h>
+||||||| 7e29d6aa34
+=======
+#include <fmt/format.h>
+#include <folly/String.h>
+#include <vector>
+>>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 
 namespace facebook::fboss {
@@ -27,6 +34,7 @@ CmdConfigSessionCommitTraits::RetType CmdConfigSessionCommit::queryClient(
 
   auto result = session.commit(hostInfo);
 
+<<<<<<< HEAD
   std::string message;
   std::string shortSha = result.commitSha.substr(0, 7);
   if (result.actionLevel == cli::ConfigActionLevel::AGENT_RESTART) {
@@ -37,6 +45,52 @@ CmdConfigSessionCommitTraits::RetType CmdConfigSessionCommit::queryClient(
     message = fmt::format(
         "Config session committed successfully as {} and config reloaded.",
         shortSha);
+||||||| 7e29d6aa34
+  int revision = session.commit(hostInfo);
+  return "Config session committed successfully as r" +
+      std::to_string(revision) + " and config reloaded.";
+=======
+  // Categorize services by action type
+  std::vector<std::string> restartedServices;
+  std::vector<std::string> reloadedServices;
+
+  for (const auto& [service, level] : result.actions) {
+    std::string serviceName = ConfigSession::getServiceName(service);
+    switch (level) {
+      case cli::ConfigActionLevel::AGENT_COLDBOOT:
+        restartedServices.push_back(fmt::format("{} (coldboot)", serviceName));
+        break;
+      case cli::ConfigActionLevel::AGENT_WARMBOOT:
+        restartedServices.push_back(fmt::format("{} (warmboot)", serviceName));
+        break;
+      case cli::ConfigActionLevel::HITLESS:
+        reloadedServices.push_back(serviceName);
+        break;
+    }
+  }
+
+  // Build message based on what actions were taken
+  std::string message;
+  if (restartedServices.empty() && reloadedServices.empty()) {
+    message = fmt::format(
+        "Config session committed successfully as r{}.", result.revision);
+  } else if (restartedServices.empty()) {
+    message = fmt::format(
+        "Config session committed successfully as r{} and config reloaded for {}.",
+        result.revision,
+        folly::join(", ", reloadedServices));
+  } else if (reloadedServices.empty()) {
+    message = fmt::format(
+        "Config session committed successfully as r{} and {} restarted.",
+        result.revision,
+        folly::join(", ", restartedServices));
+  } else {
+    message = fmt::format(
+        "Config session committed successfully as r{}, {} restarted, and config reloaded for {}.",
+        result.revision,
+        folly::join(", ", restartedServices),
+        folly::join(", ", reloadedServices));
+>>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
   }
 
   return message;

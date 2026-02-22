@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
 # try both uncompressed (.tar) and zstd-compressed (.tar.zst) variants
 COMPONENT_ARTIFACT_PATTERNS = {
     "kernel": "kernel-*.rpms.tar",
+<<<<<<< HEAD
     "hw_agent_sai": "sai-*.tar",
     "fboss-platform-stack": "fboss-platform-stack-*.tar",
     "fboss-forwarding-stack": "fboss-forwarding-stack-*.tar",
@@ -52,6 +53,29 @@ class ImageBuilder:
         "fboss-forwarding-stack": [
             "hw_agent_sai",
         ],  # Forwarding stack needs both
+||||||| 7e29d6aa34
+=======
+    "sai": "sai-*.tar",
+    "fboss-platform-stack": "fboss-platform-stack-*.tar",
+    "fboss-forwarding-stack": "fboss-forwarding-stack-*.tar",
+    "bsps": "bsp-*.tar",
+}
+
+
+class ImageBuilder:
+    """Handles building FBOSS images from manifests."""
+
+    # Component dependencies - defines build order and dependencies
+    # Format: {component: [list of dependencies]}
+    # The order of keys defines the build order (dependencies first)
+    COMPONENTS: ClassVar[dict[str, list[str]]] = {
+        "kernel": [],
+        "other_dependencies": [],
+        "fboss-platform-stack": [],
+        "bsps": ["kernel"],  # Each BSP needs kernel headers/modules
+        "sai": ["kernel"],  # SAI needs kernel headers/RPMs
+        "fboss-forwarding-stack": ["sai"],  # Forwarding stack needs SAI library
+>>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
         "image_build_hooks": [],
     }
 

@@ -170,7 +170,7 @@ TEST_F(ConfigSessionTestFixture, sessionConfigModified) {
   auto& ports = *config.sw()->ports();
   ASSERT_FALSE(ports.empty());
   ports[0].description() = "Modified port";
-  session.saveConfig();
+  session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   // Verify session config is modified
   std::string sessionContent = readFile(sessionConfig);
@@ -204,7 +204,8 @@ TEST_F(ConfigSessionTestFixture, sessionCommit) {
     auto& ports = *config.sw()->ports();
     ASSERT_FALSE(ports.empty());
     ports[0].description() = "First commit";
-    session.saveConfig();
+    session.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
     // Commit the session
     auto result = session.commit(localhost());
@@ -212,10 +213,24 @@ TEST_F(ConfigSessionTestFixture, sessionCommit) {
     // Verify session config no longer exists (removed after commit)
     EXPECT_FALSE(fs::exists(sessionConfig));
 
+<<<<<<< HEAD
     // Verify commit SHA was returned
     EXPECT_FALSE(result.commitSha.empty());
     EXPECT_EQ(result.commitSha.length(), 40); // Full SHA1 is 40 chars
     firstCommitSha = result.commitSha;
+||||||| 7e29d6aa34
+    // Verify new revision was created in cli directory
+    EXPECT_EQ(revision, 2);
+    fs::path targetConfig = cliConfigDir / "agent-r2.conf";
+    EXPECT_TRUE(fs::exists(targetConfig));
+    EXPECT_THAT(readFile(targetConfig), ::testing::HasSubstr("First commit"));
+=======
+    // Verify new revision was created in cli directory
+    EXPECT_EQ(result.revision, 2);
+    fs::path targetConfig = cliConfigDir / "agent-r2.conf";
+    EXPECT_TRUE(fs::exists(targetConfig));
+    EXPECT_THAT(readFile(targetConfig), ::testing::HasSubstr("First commit"));
+>>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
 
     // Verify metadata file was created alongside the config revision
     fs::path targetMetadata = systemConfigDir_ / "cli" / "cli_metadata.json";
@@ -241,15 +256,30 @@ TEST_F(ConfigSessionTestFixture, sessionCommit) {
 
     // Make another change to the same port
     ports[0].description() = "Second commit";
-    session.saveConfig();
+    session.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
     // Commit the second change
     auto result = session.commit(localhost());
 
+<<<<<<< HEAD
     // Verify new commit SHA was returned
     EXPECT_FALSE(result.commitSha.empty());
     EXPECT_NE(result.commitSha, firstCommitSha);
     secondCommitSha = result.commitSha;
+||||||| 7e29d6aa34
+    // Verify new revision was created
+    EXPECT_EQ(revision, 3);
+    fs::path targetConfig = cliConfigDir / "agent-r3.conf";
+    EXPECT_TRUE(fs::exists(targetConfig));
+    EXPECT_THAT(readFile(targetConfig), ::testing::HasSubstr("Second commit"));
+=======
+    // Verify new revision was created
+    EXPECT_EQ(result.revision, 3);
+    fs::path targetConfig = cliConfigDir / "agent-r3.conf";
+    EXPECT_TRUE(fs::exists(targetConfig));
+    EXPECT_THAT(readFile(targetConfig), ::testing::HasSubstr("Second commit"));
+>>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
 
     // Verify metadata file was created alongside the config revision
     fs::path targetMetadata = systemConfigDir_ / "cli" / "cli_metadata.json";
@@ -315,17 +345,17 @@ TEST_F(ConfigSessionTestFixture, multipleChangesInOneSession) {
   auto& ports = *config.sw()->ports();
   ASSERT_FALSE(ports.empty());
   ports[0].description() = "Change 1";
-  session.saveConfig();
+  session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
   EXPECT_THAT(readFile(sessionConfig), ::testing::HasSubstr("Change 1"));
 
   // Make second change
   ports[0].description() = "Change 2";
-  session.saveConfig();
+  session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
   EXPECT_THAT(readFile(sessionConfig), ::testing::HasSubstr("Change 2"));
 
   // Make third change
   ports[0].description() = "Change 3";
-  session.saveConfig();
+  session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
   EXPECT_THAT(readFile(sessionConfig), ::testing::HasSubstr("Change 3"));
 }
 
@@ -342,7 +372,8 @@ TEST_F(ConfigSessionTestFixture, sessionPersistsAcrossCommands) {
     auto& ports = *config.sw()->ports();
     ASSERT_FALSE(ports.empty());
     ports[0].description() = "Persistent change";
-    session1.saveConfig();
+    session1.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
   }
 
   // Verify session persists (file still exists with same content)
@@ -372,10 +403,12 @@ TEST_F(ConfigSessionTestFixture, configRollbackOnFailure) {
   // Save the original config content
   std::string originalContent = readFile(cliConfigPath);
 
-  // Setup mock agent server to fail reloadConfig
+  // Setup mock agent server to fail reloadConfig on first call (the commit),
+  // but succeed on second call (the rollback reload)
   setupMockedAgentServer();
   EXPECT_CALL(getMockAgent(), reloadConfig())
-      .WillOnce(::testing::Throw(std::runtime_error("Reload failed")));
+      .WillOnce(::testing::Throw(std::runtime_error("Reload failed")))
+      .WillOnce(::testing::Return());
 
   // Create a ConfigSession and try to commit
   TestableConfigSession session(sessionDir.string(), systemConfigDir_.string());
@@ -384,7 +417,7 @@ TEST_F(ConfigSessionTestFixture, configRollbackOnFailure) {
   auto& ports = *config.sw()->ports();
   ASSERT_FALSE(ports.empty());
   ports[0].description() = "Failed change";
-  session.saveConfig();
+  session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   // Commit should fail and rollback the config
   EXPECT_THROW(session.commit(localhost()), std::runtime_error);
@@ -420,12 +453,29 @@ TEST_F(ConfigSessionTestFixture, concurrentCommits) {
     auto& config = session.getAgentConfig();
     auto& ports = *config.sw()->ports();
     ASSERT_FALSE(ports.empty());
+<<<<<<< HEAD
     ports[0].description() = "First commit";
     session.saveConfig();
+||||||| 7e29d6aa34
+    ports[0].description() = description;
+    session.saveConfig();
+=======
+    ports[0].description() = description;
+    session.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
+>>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
 
+<<<<<<< HEAD
     auto result = session.commit(localhost());
     commitSha1 = result.commitSha;
   }
+||||||| 7e29d6aa34
+    rev = session.commit(localhost());
+  };
+=======
+    rev = session.commit(localhost()).revision;
+  };
+>>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
 
   // Second commit
   {
@@ -968,14 +1018,37 @@ TEST_F(ConfigSessionTestFixture, rebaseSuccessNoConflict) {
   auto result1 = session1.commit(localhost());
   EXPECT_FALSE(result1.commitSha.empty());
 
+<<<<<<< HEAD
   // User2 changes port[1] description (non-conflicting - different port)
   auto& config2 = session2.getAgentConfig();
   ASSERT_GE(config2.sw()->ports()->size(), 2) << "Need at least 2 ports";
   (*config2.sw()->ports())[1].description() = "User2 change";
   session2.saveConfig();
+||||||| 7e29d6aa34
+    auto& config = session.getAgentConfig();
+    auto& ports = *config.sw()->ports();
+    ASSERT_FALSE(ports.empty());
+    ports[0].description() = description;
+    session.saveConfig();
+=======
+    auto& config = session.getAgentConfig();
+    auto& ports = *config.sw()->ports();
+    ASSERT_FALSE(ports.empty());
+    ports[0].description() = description;
+    session.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
+>>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
 
+<<<<<<< HEAD
   // User2 tries to commit but fails due to stale base
   EXPECT_THROW(session2.commit(localhost()), std::runtime_error);
+||||||| 7e29d6aa34
+    rev = session.commit(localhost());
+  };
+=======
+    rev = session.commit(localhost()).revision;
+  };
+>>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
 
   // User2 rebases - should succeed since changes don't conflict
   EXPECT_NO_THROW(session2.rebase());
@@ -1142,6 +1215,175 @@ TEST_F(ConfigSessionTestFixture, threeWayMergeScenarios) {
           }
         },
         std::runtime_error);
+  }
+}
+
+TEST_F(ConfigSessionTestFixture, actionLevelDefaultIsHitless) {
+  fs::path sessionDir = testHomeDir_ / ".fboss2";
+  fs::path sessionConfig = sessionDir / "agent.conf";
+
+  // Create a ConfigSession
+  TestableConfigSession session(
+      sessionConfig.string(),
+      systemConfigPath_.string(),
+      (testEtcDir_ / "coop" / "cli").string());
+
+  // Default action level should be HITLESS
+  EXPECT_EQ(
+      session.getRequiredAction(cli::ServiceType::AGENT),
+      cli::ConfigActionLevel::HITLESS);
+}
+
+TEST_F(ConfigSessionTestFixture, actionLevelUpdateAndGet) {
+  fs::path sessionDir = testHomeDir_ / ".fboss2";
+  fs::path sessionConfig = sessionDir / "agent.conf";
+
+  // Create a ConfigSession
+  TestableConfigSession session(
+      sessionConfig.string(),
+      systemConfigPath_.string(),
+      (testEtcDir_ / "coop" / "cli").string());
+
+  // Update to AGENT_WARMBOOT
+  session.updateRequiredAction(
+      cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
+
+  // Verify the action level was updated
+  EXPECT_EQ(
+      session.getRequiredAction(cli::ServiceType::AGENT),
+      cli::ConfigActionLevel::AGENT_WARMBOOT);
+}
+
+TEST_F(ConfigSessionTestFixture, actionLevelHigherTakesPrecedence) {
+  fs::path sessionDir = testHomeDir_ / ".fboss2";
+  fs::path sessionConfig = sessionDir / "agent.conf";
+
+  // Create a ConfigSession
+  TestableConfigSession session(
+      sessionConfig.string(),
+      systemConfigPath_.string(),
+      (testEtcDir_ / "coop" / "cli").string());
+
+  // Update to AGENT_WARMBOOT first
+  session.updateRequiredAction(
+      cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
+
+  // Try to "downgrade" to HITLESS - should be ignored
+  session.updateRequiredAction(
+      cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
+
+  // Verify action level remains at AGENT_WARMBOOT
+  EXPECT_EQ(
+      session.getRequiredAction(cli::ServiceType::AGENT),
+      cli::ConfigActionLevel::AGENT_WARMBOOT);
+}
+
+TEST_F(ConfigSessionTestFixture, actionLevelReset) {
+  fs::path sessionDir = testHomeDir_ / ".fboss2";
+  fs::path sessionConfig = sessionDir / "agent.conf";
+
+  // Create a ConfigSession
+  TestableConfigSession session(
+      sessionConfig.string(),
+      systemConfigPath_.string(),
+      (testEtcDir_ / "coop" / "cli").string());
+
+  // Set to AGENT_WARMBOOT
+  session.updateRequiredAction(
+      cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
+
+  // Reset the action level
+  session.resetRequiredAction(cli::ServiceType::AGENT);
+
+  // Verify action level was reset to HITLESS
+  EXPECT_EQ(
+      session.getRequiredAction(cli::ServiceType::AGENT),
+      cli::ConfigActionLevel::HITLESS);
+}
+
+TEST_F(ConfigSessionTestFixture, actionLevelPersistsToMetadataFile) {
+  fs::path sessionDir = testHomeDir_ / ".fboss2";
+  fs::path sessionConfig = sessionDir / "agent.conf";
+  fs::path metadataFile = sessionDir / "conf_metadata.json";
+
+  // Create a ConfigSession and set action level
+  {
+    TestableConfigSession session(
+        sessionConfig.string(),
+        systemConfigPath_.string(),
+        (testEtcDir_ / "coop" / "cli").string());
+
+    // Set to AGENT_WARMBOOT
+    session.updateRequiredAction(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
+  }
+
+  // Verify metadata file exists and has correct JSON format
+  EXPECT_TRUE(fs::exists(metadataFile));
+  std::string content = readFile(metadataFile);
+
+  // Parse the JSON and verify structure - uses symbolic enum names
+  folly::dynamic json = folly::parseJson(content);
+  EXPECT_TRUE(json.isObject());
+  EXPECT_TRUE(json.count("action"));
+  EXPECT_TRUE(json["action"].isObject());
+  EXPECT_TRUE(json["action"].count("AGENT"));
+  EXPECT_EQ(json["action"]["AGENT"].asString(), "AGENT_WARMBOOT");
+}
+
+TEST_F(ConfigSessionTestFixture, actionLevelLoadsFromMetadataFile) {
+  fs::path sessionDir = testHomeDir_ / ".fboss2";
+  fs::path sessionConfig = sessionDir / "agent.conf";
+  fs::path metadataFile = sessionDir / "conf_metadata.json";
+
+  // Create session directory and metadata file manually
+  fs::create_directories(sessionDir);
+  std::ofstream metaFile(metadataFile);
+  // Use symbolic enum names for human readability
+  metaFile << R"({"action":{"AGENT":"AGENT_WARMBOOT"}})";
+  metaFile.close();
+
+  // Also create the session config file (otherwise session will overwrite from
+  // system)
+  fs::copy_file(systemConfigPath_, sessionConfig);
+
+  // Create a ConfigSession - should load action level from metadata file
+  TestableConfigSession session(
+      sessionConfig.string(),
+      systemConfigPath_.string(),
+      (testEtcDir_ / "coop" / "cli").string());
+
+  // Verify action level was loaded
+  EXPECT_EQ(
+      session.getRequiredAction(cli::ServiceType::AGENT),
+      cli::ConfigActionLevel::AGENT_WARMBOOT);
+}
+
+TEST_F(ConfigSessionTestFixture, actionLevelPersistsAcrossSessions) {
+  fs::path sessionDir = testHomeDir_ / ".fboss2";
+  fs::path sessionConfig = sessionDir / "agent.conf";
+
+  // First session: set action level
+  {
+    TestableConfigSession session1(
+        sessionConfig.string(),
+        systemConfigPath_.string(),
+        (testEtcDir_ / "coop" / "cli").string());
+
+    session1.updateRequiredAction(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
+  }
+
+  // Second session: verify action level was persisted
+  {
+    TestableConfigSession session2(
+        sessionConfig.string(),
+        systemConfigPath_.string(),
+        (testEtcDir_ / "coop" / "cli").string());
+
+    EXPECT_EQ(
+        session2.getRequiredAction(cli::ServiceType::AGENT),
+        cli::ConfigActionLevel::AGENT_WARMBOOT);
   }
 }
 

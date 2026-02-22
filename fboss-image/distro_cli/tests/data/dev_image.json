@@ -1,6 +1,7 @@
 {
   "distribution_formats": {
     "onie": "FBOSS-k6.11.1.bin",
+<<<<<<< HEAD
     "usb": "FBOSS-k6.11.1iso"
   },
   "kernel": {
@@ -18,6 +19,26 @@
     {"execute": ["../../../../fboss/oss/reference_bsp/build.py"]}
   ],
   "hw_agent_sai": {
+||||||| 7e29d6aa34
+=======
+    "usb": "FBOSS-k6.11.1.iso"
+  },
+  "kernel": {
+    "download": "https://artifact.github.com/nexthop-ai/fboss/fboss-oss_kernel_v6.11.1.tar"
+  },
+  "other_dependencies": [
+    {"download": "https://artifact.github.com/nexthop-ai/fsdb/fsdb.rpm"},
+    {"download": "file:vendor_debug_tools/tools.rpm"}
+  ],
+  "fboss-platform-stack": {
+    "execute": ["../../../../fboss/fboss/oss/scripts/build.py", "platformstack"]
+  },
+  "bsps": [
+    {"execute": ["../../../../vendor_bsp/build.make"]},
+    {"execute": ["../../../../fboss/oss/reference_bsp/build.py"]}
+  ],
+  "sai": {
+>>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
     "execute": ["../../../../fboss_brcm_sai/build.sh"]
   },
   "fboss-forwarding-stack": {
