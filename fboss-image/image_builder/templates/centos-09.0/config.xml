@@ -112,6 +112,7 @@
         <package name="dnf-plugins-core"/>
         <package name="efibootmgr"/>
         <package name="i2c-tools"/>
+        <package name="ipmitool"/>
         <package name="sudo"/>
         <package name="wget"/>
         <package name="vim"/>
