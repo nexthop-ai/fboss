@@ -105,7 +105,7 @@ class HwAgentTestRunner:
             return False
 
         cmd = "sudo su -c 'cd /opt/fboss && ./bin/run_test.py sai --filter_file=/home/admin/tests.conf "
-        cmd += f"--config ./share/hw_test_configs/{hwsku}.agent.materialized_JSON --sai-bin bin/sai_test-sai_impl' > {self.testlog_filepath} 2>&1"
+        cmd += f"--config ./share/hw_test_configs/{hwsku}.agent.materialized_JSON' > {self.testlog_filepath} 2>&1"
         logger.info(f"Running remote command: {cmd}")
         exit_status, output = self.ssh_client.run_cmd(cmd)
         logger.debug(f"exit_status {exit_status} output {output}")
