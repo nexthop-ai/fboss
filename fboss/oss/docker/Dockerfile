@@ -5,7 +5,7 @@ ARG USERNAME=root
 ARG USER_UID=0
 ARG USER_GID=0
 ARG USER_SHELL=/bin/bash
-ARG USE_CLANG=false
+ARG USE_CLANG=true
 
 # Mount point for extra files.
 RUN mkdir -p /var/extras

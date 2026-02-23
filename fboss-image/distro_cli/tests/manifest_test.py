@@ -12,11 +12,15 @@ Unit tests for ImageManifest class
 """
 
 import json
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 
-from distro_cli.lib.manifest import ImageManifest
+# Add parent directory to path to import the modules
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from lib.manifest import ImageManifest
 
 
 class TestImageManifest(unittest.TestCase):
@@ -24,8 +28,8 @@ class TestImageManifest(unittest.TestCase):
 
     def setUp(self):
         """Use the test manifest from the tests directory"""
-        self.test_dir = Path(__file__).parent / "data"
-        self.manifest_path = self.test_dir / "dev_image.json"
+        self.test_dir = Path(__file__).parent
+        self.manifest_path = self.test_dir / "data" / "dev_image.json"
 
         # Load the manifest data for validation
         with self.manifest_path.open() as f:

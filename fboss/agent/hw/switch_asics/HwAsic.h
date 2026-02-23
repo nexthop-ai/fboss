@@ -467,6 +467,9 @@ class HwAsic {
     SAI_SERDES_RX_REACH,
     ECN_PROBABILISTIC_MARKING,
     SAI_SERDES_PRECODING,
+    // Feature for platforms that can create wide DLB groups and
+    // also increase DLB table scale by combining multiple DLBs
+    VIRTUAL_ARS_GROUP,
   };
 
   enum class AsicMode {
@@ -616,6 +619,9 @@ class HwAsic {
 
   virtual std::optional<uint32_t> getMaxArsGroups() const = 0;
   virtual std::optional<uint32_t> getArsBaseIndex() const = 0;
+  virtual std::optional<uint32_t> getMaxArsWidth() const {
+    return std::nullopt;
+  }
   // TODO(zecheng): Define more specific limits for v4/v6 routes with different
   // mask lengths
   virtual std::optional<uint32_t> getMaxRoutes() const {

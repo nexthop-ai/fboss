@@ -148584,6 +148584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -148621,6 +148624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -148658,6 +148664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -148695,6 +148704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -148732,6 +148744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -148769,6 +148784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -148806,6 +148824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -148843,6 +148864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -148880,6 +148904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -148917,6 +148944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -148954,6 +148984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -148991,6 +149024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -149028,6 +149064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -149065,6 +149104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -149102,6 +149144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -149139,6 +149184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -149176,6 +149224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -149213,6 +149264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -149250,6 +149304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -149287,6 +149344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -149324,6 +149384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -149361,6 +149424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -149398,6 +149464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -149435,6 +149504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -149472,6 +149544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -149509,6 +149584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -149546,6 +149624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -149583,6 +149664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -149620,6 +149704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -149657,6 +149744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -149694,6 +149784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -149731,6 +149824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -149768,6 +149864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -149805,6 +149904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -149842,6 +149944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -149879,6 +149984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -149916,6 +150024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -149953,6 +150064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -149990,6 +150104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -150027,6 +150144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -150064,6 +150184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -150101,6 +150224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -150138,6 +150264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -150175,6 +150304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -150212,6 +150344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -150249,6 +150384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -150286,6 +150424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -150323,6 +150464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -150360,6 +150504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -150397,6 +150544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -150434,6 +150584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -150471,6 +150624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -150508,6 +150664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -150545,6 +150704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -150582,6 +150744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -150619,6 +150784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -150656,6 +150824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -150693,6 +150864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -150730,6 +150904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -150767,6 +150944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -150804,6 +150984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -150841,6 +151024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -150878,6 +151064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -150915,6 +151104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -150952,6 +151144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -150989,6 +151184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -151026,6 +151224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -151063,6 +151264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -151100,6 +151304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -151137,6 +151344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -151174,6 +151384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -151211,6 +151424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -151248,6 +151464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -151285,6 +151504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -151322,6 +151544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -151359,6 +151584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -151396,6 +151624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -151433,6 +151664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -151470,6 +151704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -151507,6 +151744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -151544,6 +151784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -151581,6 +151824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -151618,6 +151864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -151655,6 +151904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -151692,6 +151944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -151729,6 +151984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -151766,6 +152024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -151803,6 +152064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -151840,6 +152104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -151877,6 +152144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -151914,6 +152184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -151951,6 +152224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -151988,6 +152264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -152025,6 +152304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -152062,6 +152344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -152099,6 +152384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -152136,6 +152424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -152173,6 +152464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -152210,6 +152504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -152247,6 +152544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -152284,6 +152584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -152321,6 +152624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -152358,6 +152664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -152395,6 +152704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -152432,6 +152744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -152469,6 +152784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -152506,6 +152824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -152543,6 +152864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -152580,6 +152904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -152617,6 +152944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -152654,6 +152984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -152691,6 +153024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -152728,6 +153064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -152765,6 +153104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -152802,6 +153144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 2
       }
     },
     {
@@ -152839,6 +153184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -152876,6 +153224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -152913,6 +153264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -152950,6 +153304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 2
       }
     },
     {
@@ -152987,6 +153344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -153024,6 +153384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -153061,6 +153424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -153098,6 +153464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 2
       }
     },
     {
@@ -153135,6 +153504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -153172,6 +153544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -153209,6 +153584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -153246,6 +153624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 2
       }
     },
     {
@@ -153283,6 +153664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -153320,6 +153704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -153357,6 +153744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -153394,6 +153784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -153431,6 +153824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -153468,6 +153864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -153505,6 +153904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -153542,6 +153944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -153579,6 +153984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -153616,6 +154024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -153653,6 +154064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -153690,6 +154104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -153727,6 +154144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -153764,6 +154184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -153801,6 +154224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -153838,6 +154264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -153875,6 +154304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -153912,6 +154344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -153949,6 +154384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -153986,6 +154424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -154023,6 +154464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -154060,6 +154504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -154097,6 +154544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -154134,6 +154584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -154171,6 +154624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -154208,6 +154664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -154245,6 +154704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -154282,6 +154744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -154319,6 +154784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -154356,6 +154824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -154393,6 +154864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -154430,6 +154904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -154467,6 +154944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -154504,6 +154984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -154541,6 +155024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -154578,6 +155064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -154615,6 +155104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -154652,6 +155144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -154689,6 +155184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -154726,6 +155224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -154763,6 +155264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -154800,6 +155304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -154837,6 +155344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -154874,6 +155384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -154911,6 +155424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -154948,6 +155464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -154985,6 +155504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -155022,6 +155544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -155059,6 +155584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -155096,6 +155624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -155133,6 +155664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -155170,6 +155704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -155207,6 +155744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -155244,6 +155784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -155281,6 +155824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -155318,6 +155864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -155355,6 +155904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -155392,6 +155944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -155429,6 +155984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -155466,6 +156024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -155503,6 +156064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -155540,6 +156104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -155577,6 +156144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -155614,6 +156184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -155651,6 +156224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -155688,6 +156264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -155725,6 +156304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -155762,6 +156344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -155799,6 +156384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -155836,6 +156424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -155873,6 +156464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -155910,6 +156504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -155947,6 +156544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -155984,6 +156584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -156021,6 +156624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -156058,6 +156664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -156095,6 +156704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -156132,6 +156744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -156169,6 +156784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -156206,6 +156824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -156243,6 +156864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -156280,6 +156904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -156317,6 +156944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -156354,6 +156984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -156391,6 +157024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -156428,6 +157064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -156465,6 +157104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -156502,6 +157144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -156539,6 +157184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -156576,6 +157224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -156613,6 +157264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -156650,6 +157304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -156687,6 +157344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -156724,6 +157384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -156761,6 +157424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -156798,6 +157464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -156835,6 +157504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -156872,6 +157544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -156909,6 +157584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -156946,6 +157624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -156983,6 +157664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -157020,6 +157704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -157057,6 +157744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -157094,6 +157784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -157131,6 +157824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -157168,6 +157864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -157205,6 +157904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -157242,6 +157944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -157279,6 +157984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -157316,6 +158024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -157353,6 +158064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -157390,6 +158104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -157427,6 +158144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -157464,6 +158184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -157501,6 +158224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -157538,6 +158264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 2
       }
     },
     {
@@ -157575,6 +158304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -157612,6 +158344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -157649,6 +158384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -157686,6 +158424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 2
       }
     },
     {
@@ -157723,6 +158464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -157760,6 +158504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -157797,6 +158544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -157834,6 +158584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 2
       }
     },
     {
@@ -157871,6 +158624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -157908,6 +158664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -157945,6 +158704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -157982,6 +158744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 2
       }
     },
     {
@@ -158019,6 +158784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -158056,6 +158824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -158093,6 +158864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 2
       }
     },
     {
@@ -158130,6 +158904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -158167,6 +158944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -158204,6 +158984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -158241,6 +159024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 2
       }
     },
     {
@@ -158278,6 +159064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -158315,6 +159104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -158352,6 +159144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -158389,6 +159184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 2
       }
     },
     {
@@ -158426,6 +159224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -158463,6 +159264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -158500,6 +159304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -158537,6 +159344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 2
       }
     },
     {
@@ -158574,6 +159384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -158611,6 +159424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -158648,6 +159464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -158685,6 +159504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -158722,6 +159544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -158759,6 +159584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -158796,6 +159624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -158833,6 +159664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -158870,6 +159704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -158907,6 +159744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -158944,6 +159784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -158981,6 +159824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -159018,6 +159864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -159055,6 +159904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -159092,6 +159944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -159129,6 +159984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -159166,6 +160024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -159203,6 +160064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -159240,6 +160104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -159277,6 +160144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -159314,6 +160184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -159351,6 +160224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -159388,6 +160264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -159425,6 +160304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -159462,6 +160344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -159499,6 +160384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -159536,6 +160424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -159573,6 +160464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -159610,6 +160504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -159647,6 +160544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -159684,6 +160584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -159721,6 +160624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -159758,6 +160664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -159795,6 +160704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -159832,6 +160744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -159869,6 +160784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -159906,6 +160824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -159943,6 +160864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -159980,6 +160904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -160017,6 +160944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -160054,6 +160984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -160091,6 +161024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -160128,6 +161064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -160165,6 +161104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -160202,6 +161144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -160239,6 +161184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -160276,6 +161224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -160313,6 +161264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -160350,6 +161304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -160387,6 +161344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -160424,6 +161384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -160461,6 +161424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -160498,6 +161464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -160535,6 +161504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -160572,6 +161544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -160609,6 +161584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -160646,6 +161624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -160683,6 +161664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -160720,6 +161704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -160757,6 +161744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -160794,6 +161784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -160831,6 +161824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -160868,6 +161864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -160905,6 +161904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -160942,6 +161944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -160979,6 +161984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -161016,6 +162024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -161053,6 +162064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -161090,6 +162104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -161127,6 +162144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -161164,6 +162184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -161201,6 +162224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -161238,6 +162264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -161275,6 +162304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -161312,6 +162344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -161349,6 +162384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -161386,6 +162424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -161423,6 +162464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -161460,6 +162504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -161497,6 +162544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -161534,6 +162584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -161571,6 +162624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -161608,6 +162664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -161645,6 +162704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -161682,6 +162744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -161719,6 +162784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -161756,6 +162824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -161793,6 +162864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -161830,6 +162904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -161867,6 +162944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -161904,6 +162984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -161941,6 +163024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -161978,6 +163064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -162015,6 +163104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -162052,6 +163144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -162089,6 +163184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -162126,6 +163224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -162163,6 +163264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -162200,6 +163304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -162237,6 +163344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -162274,6 +163384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -162311,6 +163424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -162348,6 +163464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -162385,6 +163504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -162422,6 +163544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -162459,6 +163584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -162496,6 +163624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -162533,6 +163664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -162570,6 +163704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -162607,6 +163744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -162644,6 +163784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -162681,6 +163824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -162718,6 +163864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -162755,6 +163904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -162792,6 +163944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -162829,6 +163984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 2
       }
     },
     {
@@ -162866,6 +164024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -162903,6 +164064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -162940,6 +164104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -162977,6 +164144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 2
       }
     },
     {
@@ -163014,6 +164184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -163051,6 +164224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -163088,6 +164264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -163125,6 +164304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 2
       }
     },
     {
@@ -163162,6 +164344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -163199,6 +164384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -163236,6 +164424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -163273,6 +164464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 2
       }
     },
     {
@@ -163310,6 +164504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -163347,6 +164544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -163384,6 +164584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -163421,6 +164624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -163458,6 +164664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -163495,6 +164704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -163532,6 +164744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -163569,6 +164784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -163606,6 +164824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -163643,6 +164864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -163680,6 +164904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -163717,6 +164944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -163754,6 +164984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -163791,6 +165024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -163828,6 +165064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -163865,6 +165104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -163902,6 +165144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -163939,6 +165184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -163976,6 +165224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -164013,6 +165264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -164050,6 +165304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -164087,6 +165344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -164124,6 +165384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -164161,6 +165424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -164198,6 +165464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -164235,6 +165504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -164272,6 +165544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -164309,6 +165584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -164346,6 +165624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -164383,6 +165664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -164420,6 +165704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -164457,6 +165744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -164494,6 +165784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -164531,6 +165824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -164568,6 +165864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -164605,6 +165904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -164642,6 +165944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -164679,6 +165984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -164716,6 +166024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -164753,6 +166064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -164790,6 +166104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -164827,6 +166144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -164864,6 +166184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -164901,6 +166224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -164938,6 +166264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -164975,6 +166304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -165012,6 +166344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -165049,6 +166384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -165086,6 +166424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -165123,6 +166464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -165160,6 +166504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -165197,6 +166544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -165234,6 +166584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -165271,6 +166624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -165308,6 +166664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -165345,6 +166704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -165382,6 +166744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -165419,6 +166784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -165456,6 +166824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -165493,6 +166864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -165530,6 +166904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -165567,6 +166944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -165604,6 +166984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -165641,6 +167024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -165678,6 +167064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -165715,6 +167104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -165752,6 +167144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -165789,6 +167184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -165826,6 +167224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -165863,6 +167264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -165900,6 +167304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -165937,6 +167344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -165974,6 +167384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -166011,6 +167424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -166048,6 +167464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -166085,6 +167504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -166122,6 +167544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -166159,6 +167584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -166196,6 +167624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -166233,6 +167664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -166270,6 +167704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -166307,6 +167744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -166344,6 +167784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -166381,6 +167824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -166418,6 +167864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -166455,6 +167904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -166492,6 +167944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -166529,6 +167984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -166566,6 +168024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -166603,6 +168064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -166640,6 +168104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -166677,6 +168144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -166714,6 +168184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -166751,6 +168224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -166788,6 +168264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -166825,6 +168304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -166862,6 +168344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -166899,6 +168384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -166936,6 +168424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -166973,6 +168464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -167010,6 +168504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -167047,6 +168544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -167084,6 +168584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -167121,6 +168624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -167158,6 +168664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -167195,6 +168704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -167232,6 +168744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -167269,6 +168784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -167306,6 +168824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -167343,6 +168864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -167380,6 +168904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -167417,6 +168944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -167454,6 +168984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -167491,6 +169024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -167528,6 +169064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -167565,6 +169104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -167602,6 +169144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 2
       }
     },
     {
@@ -167639,6 +169184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -167676,6 +169224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -167713,6 +169264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -167750,6 +169304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 2
       }
     },
     {
@@ -167787,6 +169344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -167824,6 +169384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -167861,6 +169424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -167898,6 +169464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 2
       }
     },
     {
@@ -167935,6 +169504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -167972,6 +169544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -168009,6 +169584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -168046,6 +169624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 2
       }
     },
     {
@@ -168083,6 +169664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -168120,6 +169704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -168157,6 +169744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -168194,6 +169784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -168231,6 +169824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -168268,6 +169864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -168305,6 +169904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -168342,6 +169944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -168379,6 +169984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -168416,6 +170024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -168453,6 +170064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -168490,6 +170104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -168527,6 +170144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -168564,6 +170184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -168601,6 +170224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -168638,6 +170264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -168675,6 +170304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -168712,6 +170344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -168749,6 +170384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -168786,6 +170424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -168823,6 +170464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -168860,6 +170504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -168897,6 +170544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -168934,6 +170584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -168971,6 +170624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -169008,6 +170664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -169045,6 +170704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -169082,6 +170744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -169119,6 +170784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -169156,6 +170824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -169193,6 +170864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -169230,6 +170904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -169267,6 +170944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -169304,6 +170984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -169341,6 +171024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -169378,6 +171064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -169415,6 +171104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -169452,6 +171144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -169489,6 +171184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -169526,6 +171224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -169563,6 +171264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -169600,6 +171304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -169637,6 +171344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -169674,6 +171384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -169711,6 +171424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -169748,6 +171464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -169785,6 +171504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -169822,6 +171544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -169859,6 +171584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -169896,6 +171624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -169933,6 +171664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -169970,6 +171704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -170007,6 +171744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -170044,6 +171784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -170081,6 +171824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -170118,6 +171864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -170155,6 +171904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -170192,6 +171944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -170229,6 +171984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -170266,6 +172024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -170303,6 +172064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -170340,6 +172104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -170377,6 +172144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -170414,6 +172184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -170451,6 +172224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -170488,6 +172264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -170525,6 +172304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -170562,6 +172344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -170599,6 +172384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -170636,6 +172424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -170673,6 +172464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -170710,6 +172504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -170747,6 +172544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -170784,6 +172584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -170821,6 +172624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -170858,6 +172664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -170895,6 +172704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -170932,6 +172744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -170969,6 +172784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -171006,6 +172824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -171043,6 +172864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -171080,6 +172904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -171117,6 +172944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -171154,6 +172984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -171191,6 +173024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -171228,6 +173064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -171265,6 +173104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -171302,6 +173144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -171339,6 +173184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -171376,6 +173224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -171413,6 +173264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -171450,6 +173304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -171487,6 +173344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -171524,6 +173384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -171561,6 +173424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -171598,6 +173464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -171635,6 +173504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -171672,6 +173544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -171709,6 +173584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -171746,6 +173624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -171783,6 +173664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -171820,6 +173704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -171857,6 +173744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -171894,6 +173784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -171931,6 +173824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -171968,6 +173864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -172005,6 +173904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -172042,6 +173944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -172079,6 +173984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -172116,6 +174024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -172153,6 +174064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -172190,6 +174104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -172227,6 +174144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -172264,6 +174184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -172301,6 +174224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -172338,6 +174264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 2
       }
     },
     {
@@ -172375,6 +174304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -172412,6 +174344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -172449,6 +174384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -172486,6 +174424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 2
       }
     },
     {
@@ -172523,6 +174464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -172560,6 +174504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -172597,6 +174544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -172634,6 +174584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 2
       }
     },
     {
@@ -172671,6 +174624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -172708,6 +174664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -172745,6 +174704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -172782,6 +174744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 2
       }
     },
     {
@@ -172819,6 +174784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -172856,6 +174824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -172893,6 +174864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -172930,6 +174904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -172967,6 +174944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -173004,6 +174984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -173041,6 +175024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -173078,6 +175064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -173115,6 +175104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -173152,6 +175144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -173189,6 +175184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -173226,6 +175224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -173263,6 +175264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -173300,6 +175304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -173337,6 +175344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -173374,6 +175384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -173411,6 +175424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -173448,6 +175464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -173485,6 +175504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -173522,6 +175544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -173559,6 +175584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -173596,6 +175624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -173633,6 +175664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -173670,6 +175704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -173707,6 +175744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -173744,6 +175784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -173781,6 +175824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -173818,6 +175864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -173855,6 +175904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -173892,6 +175944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -173929,6 +175984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -173966,6 +176024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -174003,6 +176064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -174040,6 +176104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -174077,6 +176144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -174114,6 +176184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -174151,6 +176224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -174188,6 +176264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -174225,6 +176304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -174262,6 +176344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -174299,6 +176384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -174336,6 +176424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -174373,6 +176464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -174410,6 +176504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -174447,6 +176544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -174484,6 +176584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -174521,6 +176624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -174558,6 +176664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -174595,6 +176704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -174632,6 +176744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -174669,6 +176784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -174706,6 +176824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -174743,6 +176864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -174780,6 +176904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -174817,6 +176944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -174854,6 +176984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -174891,6 +177024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -174928,6 +177064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -174965,6 +177104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -175002,6 +177144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -175039,6 +177184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -175076,6 +177224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -175113,6 +177264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -175150,6 +177304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -175187,6 +177344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -175224,6 +177384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -175261,6 +177424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -175298,6 +177464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -175335,6 +177504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -175372,6 +177544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -175409,6 +177584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -175446,6 +177624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -175483,6 +177664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -175520,6 +177704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -175557,6 +177744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -175594,6 +177784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -175631,6 +177824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -175668,6 +177864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -175705,6 +177904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -175742,6 +177944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -175779,6 +177984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -175816,6 +178024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -175853,6 +178064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -175890,6 +178104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -175927,6 +178144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -175964,6 +178184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -176001,6 +178224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -176038,6 +178264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -176075,6 +178304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -176112,6 +178344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -176149,6 +178384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -176186,6 +178424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -176223,6 +178464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -176260,6 +178504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -176297,6 +178544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -176334,6 +178584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -176371,6 +178624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -176408,6 +178664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -176445,6 +178704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -176482,6 +178744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -176519,6 +178784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -176556,6 +178824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -176593,6 +178864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -176630,6 +178904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -176667,6 +178944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -176704,6 +178984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -176741,6 +179024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -176778,6 +179064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -176815,6 +179104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -176852,6 +179144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -176889,6 +179184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -176926,6 +179224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -176963,6 +179264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -177000,6 +179304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -177037,6 +179344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -177074,6 +179384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -177111,6 +179424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -177148,6 +179464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -177185,6 +179504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -177222,6 +179544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -177259,6 +179584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -177296,6 +179624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -177333,6 +179664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -177370,6 +179704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -177407,6 +179744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -177444,6 +179784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -177481,6 +179824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -177518,6 +179864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -177555,6 +179904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -177592,6 +179944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -177629,6 +179984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -177666,6 +180024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -177703,6 +180064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -177740,6 +180104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -177777,6 +180144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -177814,6 +180184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -177851,6 +180224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -177888,6 +180264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -177925,6 +180304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -177962,6 +180344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -177999,6 +180384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -178036,6 +180424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -178073,6 +180464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -178110,6 +180504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -178147,6 +180544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -178184,6 +180584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -178221,6 +180624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -178258,6 +180664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -178295,6 +180704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -178332,6 +180744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -178369,6 +180784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -178406,6 +180824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -178443,6 +180864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -178480,6 +180904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -178517,6 +180944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -178554,6 +180984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -178591,6 +181024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -178628,6 +181064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -178665,6 +181104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -178702,6 +181144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -178739,6 +181184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -178776,6 +181224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -178813,6 +181264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -178850,6 +181304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -178887,6 +181344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -178924,6 +181384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -178961,6 +181424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -178998,6 +181464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -179035,6 +181504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -179072,6 +181544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -179109,6 +181584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -179146,6 +181624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -179183,6 +181664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -179220,6 +181704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -179257,6 +181744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -179294,6 +181784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -179331,6 +181824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -179368,6 +181864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -179405,6 +181904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -179442,6 +181944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -179479,6 +181984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -179516,6 +182024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -179553,6 +182064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -179590,6 +182104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -179627,6 +182144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -179664,6 +182184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -179701,6 +182224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -179738,6 +182264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -179775,6 +182304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -179812,6 +182344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -179849,6 +182384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -179886,6 +182424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -179923,6 +182464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -179960,6 +182504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -179997,6 +182544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -180034,6 +182584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -180071,6 +182624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -180108,6 +182664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -180145,6 +182704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -180182,6 +182744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -180219,6 +182784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -180256,6 +182824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -180293,6 +182864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -180330,6 +182904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -180367,6 +182944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -180404,6 +182984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -180441,6 +183024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -180478,6 +183064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -180515,6 +183104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -180552,6 +183144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -180589,6 +183184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -180626,6 +183224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -180663,6 +183264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -180700,6 +183304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -180737,6 +183344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -180774,6 +183384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -180811,6 +183424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -180848,6 +183464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -180885,6 +183504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -180922,6 +183544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -180959,6 +183584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -180996,6 +183624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -181033,6 +183664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -181070,6 +183704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -181107,6 +183744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -181144,6 +183784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -181181,6 +183824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 2
       }
     },
     {
@@ -181218,6 +183864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -181255,6 +183904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -181292,6 +183944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -181329,6 +183984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 2
       }
     },
     {
@@ -181366,6 +184024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -181403,6 +184064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -181440,6 +184104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -181477,6 +184144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 2
       }
     },
     {
@@ -181514,6 +184184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -181551,6 +184224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -181588,6 +184264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -181625,6 +184304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 2
       }
     },
     {
@@ -181662,6 +184344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -181699,6 +184384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -181736,6 +184424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -181773,6 +184464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -181810,6 +184504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -181847,6 +184544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -181884,6 +184584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -181921,6 +184624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -181958,6 +184664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -181995,6 +184704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -182032,6 +184744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -182069,6 +184784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -182106,6 +184824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -182143,6 +184864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -182180,6 +184904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -182217,6 +184944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -182254,6 +184984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -182291,6 +185024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -182328,6 +185064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -182365,6 +185104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -182402,6 +185144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -182439,6 +185184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -182476,6 +185224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -182513,6 +185264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -182550,6 +185304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -182587,6 +185344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -182624,6 +185384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -182661,6 +185424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -182698,6 +185464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -182735,6 +185504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -182772,6 +185544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -182809,6 +185584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -182846,6 +185624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -182883,6 +185664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -182920,6 +185704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -182957,6 +185744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -182994,6 +185784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -183031,6 +185824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -183068,6 +185864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -183105,6 +185904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -183142,6 +185944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -183179,6 +185984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -183216,6 +186024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -183253,6 +186064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -183290,6 +186104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -183327,6 +186144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -183364,6 +186184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -183401,6 +186224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -183438,6 +186264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -183475,6 +186304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -183512,6 +186344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -183549,6 +186384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -183586,6 +186424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -183623,6 +186464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -183660,6 +186504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -183697,6 +186544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -183734,6 +186584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -183771,6 +186624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -183808,6 +186664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -183845,6 +186704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -183882,6 +186744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -183919,6 +186784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -183956,6 +186824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -183993,6 +186864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -184030,6 +186904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -184067,6 +186944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -184104,6 +186984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -184141,6 +187024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -184178,6 +187064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -184215,6 +187104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -184252,6 +187144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -184289,6 +187184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -184326,6 +187224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -184363,6 +187264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -184400,6 +187304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -184437,6 +187344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 4
       }
     },
     {
@@ -184474,6 +187384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -184511,6 +187424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -184548,6 +187464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -184585,6 +187504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 4
       }
     },
     {
@@ -184622,6 +187544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -184659,6 +187584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -184696,6 +187624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -184733,6 +187664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -184770,6 +187704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -184807,6 +187744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -184844,6 +187784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -184881,6 +187824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -184918,6 +187864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -184955,6 +187904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -184992,6 +187944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 1
       }
     },
     {
@@ -185029,6 +187984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -185066,6 +188024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -185103,6 +188064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 2
       }
     },
     {
@@ -185140,6 +188104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 1
       }
     },
     {
@@ -185177,6 +188144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -185214,6 +188184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -185251,6 +188224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 2
       }
     },
     {
@@ -185288,6 +188264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -185325,6 +188304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -185362,6 +188344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -185399,6 +188384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -185436,6 +188424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -185473,6 +188464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -185510,6 +188504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -185547,6 +188544,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -185584,6 +188584,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 2
       }
     },
     {
@@ -185621,6 +188624,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 1
       }
     },
     {
@@ -185658,6 +188664,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 1
       }
     },
     {
@@ -185695,6 +188704,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 1
       }
     },
     {
@@ -185732,6 +188744,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 2
       }
     },
     {
@@ -185769,6 +188784,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 1
       }
     },
     {
@@ -185806,6 +188824,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 1
       }
     },
     {
@@ -185843,6 +188864,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 1
       }
     },
     {
@@ -185880,6 +188904,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -185917,6 +188944,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 2
       }
     },
     {
@@ -185954,6 +188984,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -185991,6 +189024,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -186028,6 +189064,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -186065,6 +189104,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 2
       }
     },
     {
@@ -186102,6 +189144,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -186139,6 +189184,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     },
     {
@@ -186176,6 +189224,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "0": 4
       }
     },
     {
@@ -186213,6 +189264,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "1": 2
       }
     },
     {
@@ -186250,6 +189304,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "2": 4
       }
     },
     {
@@ -186287,6 +189344,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "3": 4
       }
     },
     {
@@ -186324,6 +189384,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "4": 4
       }
     },
     {
@@ -186361,6 +189424,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "5": 2
       }
     },
     {
@@ -186398,6 +189464,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "6": 4
       }
     },
     {
@@ -186435,6 +189504,9 @@ constexpr auto kJsonMultiNpuProdPlatformMappingStr = R"(
             }
           }
         ]
+      },
+      "driverPeaking": {
+        "7": 4
       }
     }
   ],

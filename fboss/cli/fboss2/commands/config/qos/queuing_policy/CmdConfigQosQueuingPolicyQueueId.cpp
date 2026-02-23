@@ -394,7 +394,8 @@ CmdConfigQosQueuingPolicyQueueId::queryClient(
   }
 
   // Save the updated config
-  session.saveConfig(cli::ConfigActionLevel::AGENT_RESTART);
+  session.saveConfig(
+      cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
 
   return fmt::format(
       "Successfully configured queuing-policy '{}' queue-id {}",

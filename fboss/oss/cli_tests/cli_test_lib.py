@@ -132,19 +132,26 @@ def run_cmd(cmd: list[str], check: bool = True) -> subprocess.CompletedProcess:
     return result
 
 
-def run_cli(args: list[str], check: bool = True) -> dict[str, Any]:
+def run_cli(args: list[str], check: bool = True, quiet: bool = False) -> dict[str, Any]:
     """Run the fboss2-dev CLI with the given arguments.
 
     The --fmt json flag is automatically prepended to all commands.
     Returns the parsed JSON output as a dict.
+
+    Args:
+        args: CLI arguments to pass after 'fboss2-dev --fmt json'
+        check: If True, raise RuntimeError on non-zero return code
+        quiet: If True, suppress logging of command execution
     """
     cli = get_fboss_cli()
     cmd = [cli, "--fmt", "json"] + args
-    print(f"[CLI] Running: {' '.join(args)}")
+    if not quiet:
+        print(f"[CLI] Running: {' '.join(args)}")
     start_time = time.time()
     result = subprocess.run(cmd, capture_output=True, text=True)
     elapsed = time.time() - start_time
-    print(f"[CLI] Completed in {elapsed:.2f}s: {' '.join(args)}")
+    if not quiet:
+        print(f"[CLI] Completed in {elapsed:.2f}s: {' '.join(args)}")
     if check and result.returncode != 0:
         print(f"Command failed with return code {result.returncode}")
         print(f"stdout: {result.stdout}")
@@ -236,9 +243,45 @@ def find_first_eth_interface() -> Interface:
     return matches[0]
 
 
+def wait_for_agent_ready(initial_wait: int = 0, max_wait_seconds: int = 60) -> bool:
+    """
+    Wait for the wedge_agent to be ready after a restart.
+
+    The agent restart typically takes 40-50 seconds. We wait for an initial
+    period and then poll until the agent responds with valid data.
+
+    Args:
+        max_wait_seconds: Maximum time to wait for the agent to be ready.
+
+    Returns:
+        True if the agent is ready, False if timeout.
+    """
+    if initial_wait > 0:
+        print(f"  Sleeping {initial_wait}s for agent restart...")
+        time.sleep(initial_wait)
+
+    # Now poll until agent is ready or timeout
+    start_time = time.time()
+    remaining = max_wait_seconds - initial_wait
+    while time.time() - start_time < remaining:
+        try:
+            # Try to get the running config - if it works, agent is ready
+            data = run_cli(["show", "running-config"], check=False)
+            # Make sure we got valid data (not empty due to connection issues)
+            if data and any(data.values()):
+                return True
+        except (RuntimeError, json.JSONDecodeError):
+            pass
+        time.sleep(2)
+    return False
+
+
 def commit_config() -> None:
-    """Commit the current configuration session."""
+    """Commit the current configuration session and wait for agent to be ready."""
     run_cli(["config", "session", "commit"])
+    # After commit, the agent may restart (warmboot/coldboot).
+    # Wait for it to be ready before returning.
+    wait_for_agent_ready()
 
 
 # Paths for config files
@@ -320,38 +363,3 @@ def running_config() -> dict[str, Any]:
         return host_data_str
 
     return {}
-
-
-def wait_for_agent_ready(max_wait_seconds: int = 60) -> bool:
-    """
-    Wait for the wedge_agent to be ready after a restart.
-
-    The agent restart typically takes 40-50 seconds. We wait for an initial
-    period and then poll until the agent responds with valid data.
-
-    Args:
-        max_wait_seconds: Maximum time to wait for the agent to be ready.
-
-    Returns:
-        True if the agent is ready, False if timeout.
-    """
-    # Initial delay - agent restart takes significant time
-    # This avoids noisy polling during the restart
-    initial_wait = 30
-    print(f"  Sleeping {initial_wait}s for agent restart...")
-    time.sleep(initial_wait)
-
-    # Now poll until agent is ready or timeout
-    start_time = time.time()
-    remaining = max_wait_seconds - initial_wait
-    while time.time() - start_time < remaining:
-        try:
-            # Try to get the running config - if it works, agent is ready
-            data = run_cli(["show", "running-config"], check=False)
-            # Make sure we got valid data (not empty due to connection issues)
-            if data and any(data.values()):
-                return True
-        except (RuntimeError, json.JSONDecodeError):
-            pass
-        time.sleep(2)
-    return False

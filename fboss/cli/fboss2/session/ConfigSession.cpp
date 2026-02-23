@@ -29,8 +29,8 @@
 #include <exception>
 #include <filesystem>
 #include <fstream>
+#include <map>
 #include <memory>
-#include <optional>
 #include <set>
 #include <stdexcept>
 #include <string>
@@ -388,8 +388,8 @@ const utils::PortMap& ConfigSession::getPortMap() const {
 }
 
 void ConfigSession::saveConfig(
-    std::optional<cli::ConfigActionLevel> actionLevel,
-    cli::AgentType agent) {
+    cli::ServiceType service,
+    cli::ConfigActionLevel actionLevel) {
   if (!configLoaded_) {
     throw std::runtime_error("No config loaded to save");
   }
@@ -429,13 +429,15 @@ void ConfigSession::saveConfig(
     }
   }
 
-  // If an action level was provided, update the required action level
-  if (actionLevel.has_value()) {
-    updateRequiredAction(*actionLevel, agent);
-  }
+  // Update the required action metadata for this service
+  updateRequiredAction(service, actionLevel);
 
   // Save command history and action levels to metadata
   saveMetadata();
+}
+
+void ConfigSession::saveConfig() {
+  saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 }
 
 Git& ConfigSession::getGit() {
@@ -454,14 +456,6 @@ std::string ConfigSession::getMetadataPath() const {
 std::string ConfigSession::getSystemMetadataPath() const {
   // Store system metadata in the CLI config directory (Git-versioned)
   return getCliConfigDir() + "/cli_metadata.json";
-}
-
-std::string ConfigSession::getServiceName(cli::AgentType agent) {
-  switch (agent) {
-    case cli::AgentType::WEDGE_AGENT:
-      return "wedge_agent";
-  }
-  throw std::runtime_error("Unknown agent type");
 }
 
 void ConfigSession::loadMetadata() {
@@ -516,37 +510,52 @@ void ConfigSession::saveMetadata() {
       metadataPath, prettyJson, 0644, folly::SyncType::WITH_SYNC);
 }
 
+void ConfigSession::addCommand(const std::string& command) {
+  if (!command.empty() && (commands_.empty() || commands_.back() != command)) {
+    commands_.push_back(command);
+  }
+}
+
+std::string ConfigSession::getServiceName(cli::ServiceType service) {
+  // TODO: Add support for multi_switch mode with sw_agent and hw_agent
+  switch (service) {
+    case cli::ServiceType::AGENT:
+      return "wedge_agent";
+  }
+  throw std::runtime_error("Unknown service type");
+}
+
 void ConfigSession::updateRequiredAction(
-    cli::ConfigActionLevel actionLevel,
-    cli::AgentType agent) {
+    cli::ServiceType service,
+    cli::ConfigActionLevel actionLevel) {
   // Initialize to HITLESS if not present
-  if (requiredActions_.find(agent) == requiredActions_.end()) {
-    requiredActions_[agent] = cli::ConfigActionLevel::HITLESS;
+  if (requiredActions_.find(service) == requiredActions_.end()) {
+    requiredActions_[service] = cli::ConfigActionLevel::HITLESS;
   }
 
   // Only update if the new action level is higher (more impactful)
   if (static_cast<int>(actionLevel) >
-      static_cast<int>(requiredActions_[agent])) {
-    requiredActions_[agent] = actionLevel;
+      static_cast<int>(requiredActions_[service])) {
+    requiredActions_[service] = actionLevel;
   }
 }
 
 cli::ConfigActionLevel ConfigSession::getRequiredAction(
-    cli::AgentType agent) const {
-  auto it = requiredActions_.find(agent);
+    cli::ServiceType service) const {
+  auto it = requiredActions_.find(service);
   if (it != requiredActions_.end()) {
     return it->second;
   }
   return cli::ConfigActionLevel::HITLESS;
 }
 
-void ConfigSession::resetRequiredAction(cli::AgentType agent) {
-  requiredActions_[agent] = cli::ConfigActionLevel::HITLESS;
+void ConfigSession::resetRequiredAction(cli::ServiceType service) {
+  requiredActions_[service] = cli::ConfigActionLevel::HITLESS;
   commands_.clear();
 
-  // If all agents are HITLESS, remove the file entirely
+  // If all services are HITLESS, remove the file entirely
   bool allHitless = true;
-  for (const auto& [a, level] : requiredActions_) {
+  for (const auto& [svc, level] : requiredActions_) {
     if (level != cli::ConfigActionLevel::HITLESS) {
       allHitless = false;
       break;
@@ -558,7 +567,7 @@ void ConfigSession::resetRequiredAction(cli::AgentType agent) {
     fs::remove(metadataPath, ec);
     // Ignore errors - file might not exist
   } else {
-    // Only save if there are remaining agents with non-HITLESS levels
+    // Only save if there are remaining services with non-HITLESS levels
     saveMetadata();
   }
 }
@@ -567,27 +576,101 @@ const std::vector<std::string>& ConfigSession::getCommands() const {
   return commands_;
 }
 
-void ConfigSession::addCommand(const std::string& command) {
-  if (!command.empty() && (commands_.empty() || commands_.back() != command)) {
-    commands_.push_back(command);
-  }
-}
+void ConfigSession::restartService(
+    cli::ServiceType service,
+    cli::ConfigActionLevel level) {
+  std::string serviceName = getServiceName(service);
+  std::string restartType = (level == cli::ConfigActionLevel::AGENT_COLDBOOT)
+      ? "coldboot"
+      : "warmboot";
 
-void ConfigSession::restartAgent(cli::AgentType agent) {
-  std::string serviceName = getServiceName(agent);
+  LOG(INFO) << "Restarting " << serviceName << " via systemd (" << restartType
+            << ")...";
 
-  LOG(INFO) << "Restarting " << serviceName << " via systemd...";
+  // For coldboot, we need to stop the service, create cold_boot_once files,
+  // then start the service
+  if (level == cli::ConfigActionLevel::AGENT_COLDBOOT) {
+    // Step 1: Stop the service
+    try {
+      folly::Subprocess stopProc(
+          {"/usr/bin/sudo", "/usr/bin/systemctl", "stop", serviceName});
+      stopProc.waitChecked();
+    } catch (const std::exception& ex) {
+      throw std::runtime_error(
+          fmt::format("Failed to stop {}: {}", serviceName, ex.what()));
+    }
 
-  // Use sudo systemctl to restart the service
-  // The CLI may be run by non-root users who have sudo access
-  // Using folly::Subprocess with explicit args avoids shell injection
-  try {
-    folly::Subprocess restartProc(
-        {"/usr/bin/sudo", "/usr/bin/systemctl", "restart", serviceName});
-    restartProc.waitChecked();
-  } catch (const std::exception& ex) {
-    throw std::runtime_error(
-        fmt::format("Failed to restart {}: {}", serviceName, ex.what()));
+    // Step 2: Create coldboot files
+    // TODO: Add support for multi_switch mode with hw_agent@0, hw_agent@1, etc.
+    const std::vector<std::string> coldbootFiles = {
+        "/dev/shm/fboss/warm_boot/cold_boot_once", // for sw_agent
+    };
+    for (const auto& file : coldbootFiles) {
+      // Ensure parent directory exists
+      fs::path filePath(file);
+      std::error_code ec;
+      fs::create_directories(filePath.parent_path(), ec);
+      if (ec) {
+        throw std::runtime_error(
+            fmt::format(
+                "Failed to create directory for coldboot file {}: {}",
+                file,
+                ec.message()));
+      }
+      // Create the file (touch equivalent)
+      std::ofstream touchFile(file);
+      if (!touchFile.good()) {
+        // If we failed due to permissions, try using sudo touch
+        int savedErrno = errno;
+        if (savedErrno == EACCES || savedErrno == EPERM) {
+          try {
+            folly::Subprocess touchProc(
+                {"/usr/bin/sudo", "/usr/bin/touch", file});
+            touchProc.waitChecked();
+          } catch (const std::exception& ex) {
+            throw std::runtime_error(
+                fmt::format(
+                    "Failed to create coldboot file {} (permission denied, sudo touch also failed): {}",
+                    file,
+                    ex.what()));
+          }
+        } else {
+          throw std::runtime_error(
+              fmt::format(
+                  "Failed to create coldboot file {}: {}",
+                  file,
+                  folly::errnoStr(savedErrno)));
+        }
+      } else {
+        touchFile.close();
+      }
+      if (!fs::exists(file)) {
+        throw std::runtime_error(
+            fmt::format(
+                "Failed to create coldboot file {}: file does not exist after creation",
+                file));
+      }
+    }
+
+    // Step 3: Start the service
+    try {
+      folly::Subprocess startProc(
+          {"/usr/bin/sudo", "/usr/bin/systemctl", "start", serviceName});
+      startProc.waitChecked();
+    } catch (const std::exception& ex) {
+      throw std::runtime_error(
+          fmt::format("Failed to start {}: {}", serviceName, ex.what()));
+    }
+  } else {
+    // For warmboot, just do a simple restart
+    try {
+      folly::Subprocess restartProc(
+          {"/usr/bin/sudo", "/usr/bin/systemctl", "restart", serviceName});
+      restartProc.waitChecked();
+    } catch (const std::exception& ex) {
+      throw std::runtime_error(
+          fmt::format("Failed to restart {}: {}", serviceName, ex.what()));
+    }
   }
 
   // Wait for the service to be active (up to 60 seconds)
@@ -615,6 +698,37 @@ void ConfigSession::restartAgent(cli::AgentType agent) {
           "{} did not become active within {} seconds",
           serviceName,
           maxWaitSeconds));
+}
+
+void ConfigSession::reloadServiceConfig(
+    cli::ServiceType service,
+    const HostInfo& hostInfo) {
+  switch (service) {
+    case cli::ServiceType::AGENT: {
+      auto client = utils::createClient<
+          apache::thrift::Client<facebook::fboss::FbossCtrl>>(hostInfo);
+      client->sync_reloadConfig();
+      LOG(INFO) << "Config reloaded for " << getServiceName(service);
+      break;
+    }
+      // TODO: Add cases for future services (e.g., BGP)
+  }
+}
+
+void ConfigSession::applyServiceActions(
+    const std::map<cli::ServiceType, cli::ConfigActionLevel>& actions,
+    const HostInfo& hostInfo) {
+  for (const auto& [service, level] : actions) {
+    switch (level) {
+      case cli::ConfigActionLevel::AGENT_COLDBOOT:
+      case cli::ConfigActionLevel::AGENT_WARMBOOT:
+        restartService(service, level);
+        break;
+      case cli::ConfigActionLevel::HITLESS:
+        reloadServiceConfig(service, hostInfo);
+        break;
+    }
+  }
 }
 
 void ConfigSession::loadConfig() {
@@ -775,22 +889,15 @@ ConfigSession::CommitResult ConfigSession::commit(const HostInfo& hostInfo) {
   // Ensure the system config symlink points to the CLI config
   atomicSymlinkUpdate(systemConfigPath, "cli/agent.conf");
 
-  // Check the required action level for this commit
-  auto actionLevel = getRequiredAction(cli::AgentType::WEDGE_AGENT);
+  // Apply the config based on the required action levels for each service
+  // Copy requiredActions_ before we reset it - this will be returned in
+  // CommitResult
+  auto actions = requiredActions_;
 
   // Apply the config based on the required action level
   std::string commitSha;
   try {
-    if (actionLevel == cli::ConfigActionLevel::AGENT_RESTART) {
-      // For AGENT_RESTART changes, restart the agent via systemd
-      // This will cause the agent to pick up the new config on startup
-      restartAgent(cli::AgentType::WEDGE_AGENT);
-    } else {
-      // For HITLESS changes, use reloadConfig() which applies without restart
-      auto client = utils::createClient<
-          apache::thrift::Client<facebook::fboss::FbossCtrl>>(hostInfo);
-      client->sync_reloadConfig();
-    }
+    applyServiceActions(actions, hostInfo);
 
     // Create a Git commit with all changed files:
     // - cli/agent.conf (the config file)
@@ -802,23 +909,16 @@ ConfigSession::CommitResult ConfigSession::commit(const HostInfo& hostInfo) {
         commitMessage,
         username_,
         "");
-    LOG(INFO) << "Config committed as " << commitSha.substr(0, 8)
-              << (actionLevel == cli::ConfigActionLevel::AGENT_RESTART
-                      ? " (agent restarted)"
-                      : " (config reloaded)");
+    LOG(INFO) << "Config committed as " << commitSha.substr(0, 8);
   } catch (const std::exception& ex) {
-    // Rollback: restore the old config
+    // Rollback: restore the old config, then re-apply actions
+    // on the old config so services pick up the previous configuration
     try {
       if (!oldConfigData.empty()) {
         folly::writeFileAtomic(
             cliConfigPath, oldConfigData, 0644, folly::SyncType::WITH_SYNC);
       }
-      // If this was an AGENT_RESTART change, we need to restart the agent again
-      // so it picks up the old config (in case the restart was partially
-      // successful before failing)
-      if (actionLevel == cli::ConfigActionLevel::AGENT_RESTART) {
-        restartAgent(cli::AgentType::WEDGE_AGENT);
-      }
+      applyServiceActions(actions, hostInfo);
     } catch (const std::exception& rollbackEx) {
       // If rollback also fails, include both errors in the message
       throw std::runtime_error(
@@ -844,14 +944,15 @@ ConfigSession::CommitResult ConfigSession::commit(const HostInfo& hostInfo) {
         ec.message());
   }
 
-  // Reset internal state after successful commit so subsequent commands
-  // start with a fresh session based on the new commit.
-  resetRequiredAction(cli::AgentType::WEDGE_AGENT);
+  // Reset action level for all services after successful commit
+  for (const auto& [service, level] : actions) {
+    resetRequiredAction(service);
+  }
   base_ = commitSha;
   // Force config reload from system config on next access
   configLoaded_ = false;
 
-  return CommitResult{commitSha, actionLevel};
+  return CommitResult{commitSha, actions};
 }
 
 void ConfigSession::rebase() {

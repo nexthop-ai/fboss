@@ -13,6 +13,8 @@
 #include "fboss/cli/fboss2/CmdHandler.cpp"
 
 #include <fmt/format.h>
+#include <folly/String.h>
+#include <vector>
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 
 namespace facebook::fboss {
@@ -27,16 +29,46 @@ CmdConfigSessionCommitTraits::RetType CmdConfigSessionCommit::queryClient(
 
   auto result = session.commit(hostInfo);
 
+  // Categorize services by action type
+  std::vector<std::string> restartedServices;
+  std::vector<std::string> reloadedServices;
+
+  for (const auto& [service, level] : result.actions) {
+    std::string serviceName = ConfigSession::getServiceName(service);
+    switch (level) {
+      case cli::ConfigActionLevel::AGENT_COLDBOOT:
+        restartedServices.push_back(fmt::format("{} (coldboot)", serviceName));
+        break;
+      case cli::ConfigActionLevel::AGENT_WARMBOOT:
+        restartedServices.push_back(fmt::format("{} (warmboot)", serviceName));
+        break;
+      case cli::ConfigActionLevel::HITLESS:
+        reloadedServices.push_back(serviceName);
+        break;
+    }
+  }
+
+  // Build message based on what actions were taken
   std::string message;
-  std::string shortSha = result.commitSha.substr(0, 7);
-  if (result.actionLevel == cli::ConfigActionLevel::AGENT_RESTART) {
+  if (restartedServices.empty() && reloadedServices.empty()) {
     message = fmt::format(
-        "Config session committed successfully as {} and wedge_agent restarted.",
-        shortSha);
+        "Config session committed successfully as {}.", result.commitSha);
+  } else if (restartedServices.empty()) {
+    message = fmt::format(
+        "Config session committed successfully as {} and config reloaded for {}.",
+        result.commitSha,
+        folly::join(", ", reloadedServices));
+  } else if (reloadedServices.empty()) {
+    message = fmt::format(
+        "Config session committed successfully as {} and {} restarted.",
+        result.commitSha,
+        folly::join(", ", restartedServices));
   } else {
     message = fmt::format(
-        "Config session committed successfully as {} and config reloaded.",
-        shortSha);
+        "Config session committed successfully as {}, {} restarted, and config reloaded for {}.",
+        result.commitSha,
+        folly::join(", ", restartedServices),
+        folly::join(", ", reloadedServices));
   }
 
   return message;

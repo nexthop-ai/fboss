@@ -1,7 +1,7 @@
 {
   "distribution_formats": {
     "onie": "FBOSS-k6.11.1.bin",
-    "usb": "FBOSS-k6.11.1iso"
+    "usb": "FBOSS-k6.11.1.iso"
   },
   "kernel": {
     "download": "https://artifact.github.com/nexthop-ai/fboss/fboss-oss_kernel_v6.11.1.tar"

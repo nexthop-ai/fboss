@@ -170,7 +170,7 @@ TEST_F(ConfigSessionTestFixture, sessionConfigModified) {
   auto& ports = *config.sw()->ports();
   ASSERT_FALSE(ports.empty());
   ports[0].description() = "Modified port";
-  session.saveConfig();
+  session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   // Verify session config is modified
   std::string sessionContent = readFile(sessionConfig);
@@ -204,7 +204,8 @@ TEST_F(ConfigSessionTestFixture, sessionCommit) {
     auto& ports = *config.sw()->ports();
     ASSERT_FALSE(ports.empty());
     ports[0].description() = "First commit";
-    session.saveConfig();
+    session.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
     // Commit the session
     auto result = session.commit(localhost());
@@ -241,7 +242,8 @@ TEST_F(ConfigSessionTestFixture, sessionCommit) {
 
     // Make another change to the same port
     ports[0].description() = "Second commit";
-    session.saveConfig();
+    session.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
     // Commit the second change
     auto result = session.commit(localhost());
@@ -292,7 +294,7 @@ TEST_F(ConfigSessionTestFixture, commitOnNewlyInitializedSession) {
   auto& ports = *config.sw()->ports();
   ASSERT_FALSE(ports.empty());
   ports[0].description() = "Test change for commit";
-  session.saveConfig();
+  session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   // Commit should succeed
   auto result = session.commit(localhost());
@@ -315,17 +317,17 @@ TEST_F(ConfigSessionTestFixture, multipleChangesInOneSession) {
   auto& ports = *config.sw()->ports();
   ASSERT_FALSE(ports.empty());
   ports[0].description() = "Change 1";
-  session.saveConfig();
+  session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
   EXPECT_THAT(readFile(sessionConfig), ::testing::HasSubstr("Change 1"));
 
   // Make second change
   ports[0].description() = "Change 2";
-  session.saveConfig();
+  session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
   EXPECT_THAT(readFile(sessionConfig), ::testing::HasSubstr("Change 2"));
 
   // Make third change
   ports[0].description() = "Change 3";
-  session.saveConfig();
+  session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
   EXPECT_THAT(readFile(sessionConfig), ::testing::HasSubstr("Change 3"));
 }
 
@@ -342,7 +344,8 @@ TEST_F(ConfigSessionTestFixture, sessionPersistsAcrossCommands) {
     auto& ports = *config.sw()->ports();
     ASSERT_FALSE(ports.empty());
     ports[0].description() = "Persistent change";
-    session1.saveConfig();
+    session1.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
   }
 
   // Verify session persists (file still exists with same content)
@@ -372,10 +375,12 @@ TEST_F(ConfigSessionTestFixture, configRollbackOnFailure) {
   // Save the original config content
   std::string originalContent = readFile(cliConfigPath);
 
-  // Setup mock agent server to fail reloadConfig
+  // Setup mock agent server to fail reloadConfig on first call (the commit),
+  // but succeed on second call (the rollback reload)
   setupMockedAgentServer();
   EXPECT_CALL(getMockAgent(), reloadConfig())
-      .WillOnce(::testing::Throw(std::runtime_error("Reload failed")));
+      .WillOnce(::testing::Throw(std::runtime_error("Reload failed")))
+      .WillOnce(::testing::Return());
 
   // Create a ConfigSession and try to commit
   TestableConfigSession session(sessionDir.string(), systemConfigDir_.string());
@@ -384,7 +389,7 @@ TEST_F(ConfigSessionTestFixture, configRollbackOnFailure) {
   auto& ports = *config.sw()->ports();
   ASSERT_FALSE(ports.empty());
   ports[0].description() = "Failed change";
-  session.saveConfig();
+  session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   // Commit should fail and rollback the config
   EXPECT_THROW(session.commit(localhost()), std::runtime_error);
@@ -421,7 +426,8 @@ TEST_F(ConfigSessionTestFixture, concurrentCommits) {
     auto& ports = *config.sw()->ports();
     ASSERT_FALSE(ports.empty());
     ports[0].description() = "First commit";
-    session.saveConfig();
+    session.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
     auto result = session.commit(localhost());
     commitSha1 = result.commitSha;
@@ -438,7 +444,8 @@ TEST_F(ConfigSessionTestFixture, concurrentCommits) {
     auto& ports = *config.sw()->ports();
     ASSERT_FALSE(ports.empty());
     ports[0].description() = "Second commit";
-    session.saveConfig();
+    session.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
     auto result = session.commit(localhost());
     commitSha2 = result.commitSha;
@@ -479,7 +486,8 @@ TEST_F(ConfigSessionTestFixture, rollbackToSpecificCommit) {
     // First commit
     auto& config1 = session.getAgentConfig();
     (*config1.sw()->ports())[0].description() = "First version";
-    session.saveConfig();
+    session.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
     auto result1 = session.commit(localhost());
     firstCommitSha = result1.commitSha;
 
@@ -494,7 +502,8 @@ TEST_F(ConfigSessionTestFixture, rollbackToSpecificCommit) {
 
     auto& config2 = session.getAgentConfig();
     (*config2.sw()->ports())[0].description() = "Second version";
-    session.saveConfig();
+    session.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
     auto result2 = session.commit(localhost());
     secondCommitSha = result2.commitSha;
   }
@@ -556,7 +565,8 @@ TEST_F(ConfigSessionTestFixture, rollbackToPreviousCommit) {
 
     auto& config1 = session.getAgentConfig();
     (*config1.sw()->ports())[0].description() = "First version";
-    session.saveConfig();
+    session.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
     session.commit(localhost());
   }
   {
@@ -565,7 +575,8 @@ TEST_F(ConfigSessionTestFixture, rollbackToPreviousCommit) {
 
     auto& config2 = session.getAgentConfig();
     (*config2.sw()->ports())[0].description() = "Second version";
-    session.saveConfig();
+    session.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
     session.commit(localhost());
   }
 
@@ -595,7 +606,7 @@ TEST_F(ConfigSessionTestFixture, actionLevelDefaultIsHitless) {
 
   // Default action level should be HITLESS
   EXPECT_EQ(
-      session.getRequiredAction(cli::AgentType::WEDGE_AGENT),
+      session.getRequiredAction(cli::ServiceType::AGENT),
       cli::ConfigActionLevel::HITLESS);
 }
 
@@ -605,14 +616,14 @@ TEST_F(ConfigSessionTestFixture, actionLevelUpdateAndGet) {
   // Create a ConfigSession
   TestableConfigSession session(sessionDir.string(), systemConfigDir_.string());
 
-  // Update to AGENT_RESTART
+  // Update to AGENT_WARMBOOT
   session.updateRequiredAction(
-      cli::ConfigActionLevel::AGENT_RESTART, cli::AgentType::WEDGE_AGENT);
+      cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
 
   // Verify the action level was updated
   EXPECT_EQ(
-      session.getRequiredAction(cli::AgentType::WEDGE_AGENT),
-      cli::ConfigActionLevel::AGENT_RESTART);
+      session.getRequiredAction(cli::ServiceType::AGENT),
+      cli::ConfigActionLevel::AGENT_WARMBOOT);
 }
 
 TEST_F(ConfigSessionTestFixture, actionLevelHigherTakesPrecedence) {
@@ -621,18 +632,18 @@ TEST_F(ConfigSessionTestFixture, actionLevelHigherTakesPrecedence) {
   // Create a ConfigSession
   TestableConfigSession session(sessionDir.string(), systemConfigDir_.string());
 
-  // Update to AGENT_RESTART first
+  // Update to AGENT_WARMBOOT first
   session.updateRequiredAction(
-      cli::ConfigActionLevel::AGENT_RESTART, cli::AgentType::WEDGE_AGENT);
+      cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
 
   // Try to "downgrade" to HITLESS - should be ignored
   session.updateRequiredAction(
-      cli::ConfigActionLevel::HITLESS, cli::AgentType::WEDGE_AGENT);
+      cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
-  // Verify action level remains at AGENT_RESTART
+  // Verify action level remains at AGENT_WARMBOOT
   EXPECT_EQ(
-      session.getRequiredAction(cli::AgentType::WEDGE_AGENT),
-      cli::ConfigActionLevel::AGENT_RESTART);
+      session.getRequiredAction(cli::ServiceType::AGENT),
+      cli::ConfigActionLevel::AGENT_WARMBOOT);
 }
 
 TEST_F(ConfigSessionTestFixture, actionLevelReset) {
@@ -641,16 +652,16 @@ TEST_F(ConfigSessionTestFixture, actionLevelReset) {
   // Create a ConfigSession
   TestableConfigSession session(sessionDir.string(), systemConfigDir_.string());
 
-  // Set to AGENT_RESTART
+  // Set to AGENT_WARMBOOT
   session.updateRequiredAction(
-      cli::ConfigActionLevel::AGENT_RESTART, cli::AgentType::WEDGE_AGENT);
+      cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
 
   // Reset the action level
-  session.resetRequiredAction(cli::AgentType::WEDGE_AGENT);
+  session.resetRequiredAction(cli::ServiceType::AGENT);
 
   // Verify action level was reset to HITLESS
   EXPECT_EQ(
-      session.getRequiredAction(cli::AgentType::WEDGE_AGENT),
+      session.getRequiredAction(cli::ServiceType::AGENT),
       cli::ConfigActionLevel::HITLESS);
 }
 
@@ -665,7 +676,8 @@ TEST_F(ConfigSessionTestFixture, actionLevelPersistsToMetadataFile) {
 
     // Load the config (required before saveConfig)
     session.getAgentConfig();
-    session.saveConfig(cli::ConfigActionLevel::AGENT_RESTART);
+    session.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
   }
 
   // Verify metadata file exists and has correct JSON format
@@ -677,8 +689,8 @@ TEST_F(ConfigSessionTestFixture, actionLevelPersistsToMetadataFile) {
   EXPECT_TRUE(json.isObject());
   EXPECT_TRUE(json.count("action"));
   EXPECT_TRUE(json["action"].isObject());
-  EXPECT_TRUE(json["action"].count("WEDGE_AGENT"));
-  EXPECT_EQ(json["action"]["WEDGE_AGENT"].asString(), "AGENT_RESTART");
+  EXPECT_TRUE(json["action"].count("AGENT"));
+  EXPECT_EQ(json["action"]["AGENT"].asString(), "AGENT_WARMBOOT");
 }
 
 TEST_F(ConfigSessionTestFixture, actionLevelLoadsFromMetadataFile) {
@@ -691,7 +703,7 @@ TEST_F(ConfigSessionTestFixture, actionLevelLoadsFromMetadataFile) {
   fs::create_directories(sessionDir);
   std::ofstream metaFile(metadataFile);
   // Use symbolic enum names for human readability
-  metaFile << R"({"action":{"WEDGE_AGENT":"AGENT_RESTART"}})";
+  metaFile << R"({"action":{"AGENT":"AGENT_WARMBOOT"}})";
   metaFile.close();
 
   // Also create the session config file (otherwise session will overwrite from
@@ -703,8 +715,8 @@ TEST_F(ConfigSessionTestFixture, actionLevelLoadsFromMetadataFile) {
 
   // Verify action level was loaded
   EXPECT_EQ(
-      session.getRequiredAction(cli::AgentType::WEDGE_AGENT),
-      cli::ConfigActionLevel::AGENT_RESTART);
+      session.getRequiredAction(cli::ServiceType::AGENT),
+      cli::ConfigActionLevel::AGENT_WARMBOOT);
 }
 
 TEST_F(ConfigSessionTestFixture, actionLevelPersistsAcrossSessions) {
@@ -717,7 +729,8 @@ TEST_F(ConfigSessionTestFixture, actionLevelPersistsAcrossSessions) {
 
     // Load the config (required before saveConfig)
     session1.getAgentConfig();
-    session1.saveConfig(cli::ConfigActionLevel::AGENT_RESTART);
+    session1.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
   }
 
   // Second session: verify action level was persisted
@@ -726,8 +739,8 @@ TEST_F(ConfigSessionTestFixture, actionLevelPersistsAcrossSessions) {
         sessionDir.string(), systemConfigDir_.string());
 
     EXPECT_EQ(
-        session2.getRequiredAction(cli::AgentType::WEDGE_AGENT),
-        cli::ConfigActionLevel::AGENT_RESTART);
+        session2.getRequiredAction(cli::ServiceType::AGENT),
+        cli::ConfigActionLevel::AGENT_WARMBOOT);
   }
 }
 
@@ -749,7 +762,8 @@ TEST_F(ConfigSessionTestFixture, commandTrackingBasic) {
     auto& ports = *config.sw()->ports();
     ASSERT_FALSE(ports.empty());
     ports[0].description() = "Test change";
-    session.saveConfig();
+    session.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
     // Verify command was recorded in memory
     EXPECT_EQ(1, session.getCommands().size());
@@ -786,15 +800,15 @@ TEST_F(ConfigSessionTestFixture, commandTrackingMultipleCommands) {
 
   session.addCommand("config interface eth1/1/1 mtu 9000");
   ports[0].description() = "First change";
-  session.saveConfig();
+  session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   session.addCommand("config interface eth1/1/1 description Test");
   ports[0].description() = "Second change";
-  session.saveConfig();
+  session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   session.addCommand("config interface eth1/1/1 speed 100G");
   ports[0].description() = "Third change";
-  session.saveConfig();
+  session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   // Verify all commands were recorded in order
   EXPECT_EQ(3, session.getCommands().size());
@@ -818,11 +832,13 @@ TEST_F(ConfigSessionTestFixture, commandTrackingPersistsAcrossSessions) {
 
     session1.addCommand("config interface eth1/1/1 mtu 9000");
     ports[0].description() = "First change";
-    session1.saveConfig();
+    session1.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
     session1.addCommand("config interface eth1/1/1 description Test");
     ports[0].description() = "Second change";
-    session1.saveConfig();
+    session1.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
   }
 
   // Second session: verify commands were persisted
@@ -850,12 +866,12 @@ TEST_F(ConfigSessionTestFixture, commandTrackingClearedOnReset) {
 
   session.addCommand("config interface eth1/1/1 mtu 9000");
   ports[0].description() = "Test change";
-  session.saveConfig();
+  session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   EXPECT_EQ(1, session.getCommands().size());
 
   // Reset the action level (which also clears commands)
-  session.resetRequiredAction(cli::AgentType::WEDGE_AGENT);
+  session.resetRequiredAction(cli::ServiceType::AGENT);
 
   // Verify commands were cleared
   EXPECT_TRUE(session.getCommands().empty());
@@ -871,7 +887,7 @@ TEST_F(ConfigSessionTestFixture, commandTrackingLoadsFromMetadataFile) {
   fs::create_directories(sessionDir);
   std::ofstream metaFile(metadataFile);
   metaFile << R"({
-    "action": {"WEDGE_AGENT": "HITLESS"},
+    "action": {"AGENT": "HITLESS"},
     "commands": ["cmd1", "cmd2", "cmd3"]
   })";
   metaFile.close();
@@ -912,14 +928,14 @@ TEST_F(ConfigSessionTestFixture, concurrentSessionConflict) {
   // User1 makes a change and commits
   auto& config1 = session1.getAgentConfig();
   (*config1.sw()->ports())[0].description() = "User1 change";
-  session1.saveConfig();
+  session1.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
   auto result1 = session1.commit(localhost());
   EXPECT_FALSE(result1.commitSha.empty());
 
   // User2 makes a different change
   auto& config2 = session2.getAgentConfig();
   (*config2.sw()->ports())[0].description() = "User2 change";
-  session2.saveConfig();
+  session2.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   // User2 tries to commit but should fail because user1 already committed
   EXPECT_THROW(
@@ -964,7 +980,7 @@ TEST_F(ConfigSessionTestFixture, rebaseSuccessNoConflict) {
   // User1 changes port[0] description and commits
   auto& config1 = session1.getAgentConfig();
   (*config1.sw()->ports())[0].description() = "User1 change";
-  session1.saveConfig();
+  session1.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
   auto result1 = session1.commit(localhost());
   EXPECT_FALSE(result1.commitSha.empty());
 
@@ -972,7 +988,7 @@ TEST_F(ConfigSessionTestFixture, rebaseSuccessNoConflict) {
   auto& config2 = session2.getAgentConfig();
   ASSERT_GE(config2.sw()->ports()->size(), 2) << "Need at least 2 ports";
   (*config2.sw()->ports())[1].description() = "User2 change";
-  session2.saveConfig();
+  session2.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   // User2 tries to commit but fails due to stale base
   EXPECT_THROW(session2.commit(localhost()), std::runtime_error);
@@ -1012,14 +1028,14 @@ TEST_F(ConfigSessionTestFixture, rebaseFailsOnConflict) {
   // User1 changes port[0] description to "User1 change"
   auto& config1 = session1.getAgentConfig();
   (*config1.sw()->ports())[0].description() = "User1 change";
-  session1.saveConfig();
+  session1.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
   auto result1 = session1.commit(localhost());
   EXPECT_FALSE(result1.commitSha.empty());
 
   // User2 changes the SAME port[0] description to "User2 change" (conflict!)
   auto& config2 = session2.getAgentConfig();
   (*config2.sw()->ports())[0].description() = "User2 change";
-  session2.saveConfig();
+  session2.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   // User2 tries to rebase but should fail due to conflict
   EXPECT_THROW(
@@ -1046,7 +1062,7 @@ TEST_F(ConfigSessionTestFixture, rebaseNotNeeded) {
   // Make a change but don't commit yet
   auto& config = session.getAgentConfig();
   (*config.sw()->ports())[0].description() = "My change";
-  session.saveConfig();
+  session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   // Try to rebase - should fail because we're already on HEAD
   EXPECT_THROW(
@@ -1084,11 +1100,13 @@ TEST_F(ConfigSessionTestFixture, threeWayMergeScenarios) {
         sessionDir2.string(), systemConfigDir_.string());
 
     (*session1.getAgentConfig().sw()->ports())[0].name() = "port0_renamed";
-    session1.saveConfig();
+    session1.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
     session1.commit(localhost());
 
     (*session2.getAgentConfig().sw()->ports())[1].description() = "port1_desc";
-    session2.saveConfig();
+    session2.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
     EXPECT_NO_THROW(session2.rebase());
     session2.commit(localhost());
 
@@ -1106,11 +1124,13 @@ TEST_F(ConfigSessionTestFixture, threeWayMergeScenarios) {
         sessionDir2.string(), systemConfigDir_.string());
 
     (*session1.getAgentConfig().sw()->ports())[0].description() = "same_value";
-    session1.saveConfig();
+    session1.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
     session1.commit(localhost());
 
     (*session2.getAgentConfig().sw()->ports())[0].description() = "same_value";
-    session2.saveConfig();
+    session2.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
     EXPECT_NO_THROW(session2.rebase());
     session2.commit(localhost());
 
@@ -1127,11 +1147,13 @@ TEST_F(ConfigSessionTestFixture, threeWayMergeScenarios) {
         sessionDir2.string(), systemConfigDir_.string());
 
     (*session1.getAgentConfig().sw()->ports())[0].description() = "user1_value";
-    session1.saveConfig();
+    session1.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
     session1.commit(localhost());
 
     (*session2.getAgentConfig().sw()->ports())[0].description() = "user2_value";
-    session2.saveConfig();
+    session2.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
     EXPECT_THROW(
         {
           try {

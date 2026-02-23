@@ -69,7 +69,7 @@ def set_l2_learning_mode(mode: str) -> None:
     commit_config()
     # Wait for agent to be ready after restart
     print("  Waiting for agent to be ready after restart...")
-    if not wait_for_agent_ready(max_wait_seconds=60):
+    if not wait_for_agent_ready(initial_wait=30, max_wait_seconds=60):
         raise RuntimeError("Agent did not become ready after restart")
 
 

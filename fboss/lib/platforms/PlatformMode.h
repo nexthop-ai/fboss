@@ -116,6 +116,8 @@ inline std::string toString(PlatformType mode) {
       return "LADAKH800BCLS";
     case PlatformType::PLATFORM_WEDGE800BNHP:
       return "WEDGE800BNHP";
+    case PlatformType::PLATFORM_ICECUBE800BANW:
+      return "ICECUBE800BANW";
     case PlatformType::PLATFORM_UNKNOWN:
       return "UNKNOWN";
   }
