@@ -4,8 +4,7 @@
     "onie": "nh-fboss-broadcom-xgs.bin"
   },
   "kernel": {
-    "execute": ["kernel/scripts/build_kernel.sh", "6.11.1", "/output"],
-    "artifact": "kernel-6.11.1.rpms.tar"
+    "download": "file:distro_kernel_6.11.tar"
   },
   "other_dependencies": [
       {"execute": ["../../fboss_extras/asic_init/distro_build.sh"]}

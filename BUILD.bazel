@@ -168,6 +168,33 @@ genrule(
 )
 
 genrule(
+    name = "distro_kernel_6.11",
+    visibility = ["//visibility:public"],
+    srcs = [
+        "//nhtools:ln_or_cp",
+        "//fboss/fboss-image/distro_cli:builder",
+        ":fboss_builder_docker",
+    ] + glob([
+        "fboss-image/kernel/**",
+    ], exclude = [
+        "fboss/fboss-image/kernel/dist",
+    ]),
+    outs = ["distro_kernel_6.11.tar"],
+    cmd = """
+        pushd fboss/fboss-image
+        jq '.["kernel"] = {"execute": ["kernel/scripts/build_kernel.sh", "6.11.1", "/output"]}' nh-fboss-broadcom-xgs.json > kernel.json
+        ./distro_cli/fboss-image build kernel.json kernel
+        popd
+
+        $(execpath //nhtools:ln_or_cp) fboss/fboss-image/kernel/dist/kernel-6.11.1.rpms.tar $(location distro_kernel_6.11.tar)
+    """,
+    tags = [
+        "no-sandbox",
+        "exclusive",
+    ]
+)
+
+genrule(
     name = "nh-fboss-broadcom-xgs",
     srcs = [
         "//nhtools:ln_or_cp",
@@ -175,6 +202,7 @@ genrule(
         "//fboss_bsps/fboss_bsp:distro_build_files",
         "//fboss_extras/asic_init:distro_build_files",
         ":fboss_builder_docker",
+        "distro_kernel_6.11.tar",
         ".buckconfig",
         "CMakeLists.txt",
         "buck2",
@@ -188,13 +216,14 @@ genrule(
               "fboss/**",
               "fboss-image/**",
     ], exclude = [
-        "fboss/fboss-image/kernel/dist",
+        "fboss-image/kernel",
     ]),
     outs = [
         "nh-fboss-broadcom-xgs.bin",
         "nh-fboss-broadcom-xgs.tar",
     ],
     cmd = """
+        ln $(location distro_kernel_6.11.tar) fboss/fboss-image/distro_kernel_6.11.tar
         pushd fboss/fboss-image
         ./distro_cli/fboss-image build nh-fboss-broadcom-xgs.json 2>&1
         popd

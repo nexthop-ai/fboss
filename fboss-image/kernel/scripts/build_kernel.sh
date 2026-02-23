@@ -61,6 +61,7 @@ rpmbuild -ba "$CONTAINER_SPECS_DIR/kernel.spec" \
   echo "$(date) Kernel build failed with rv=$rv" >&2
   exit 1
 }
+chmod -R a+r "${CONTAINER_DIST_DIR}"
 echo "$(date) Kernel build completed successfully"
 
 # Copy RPMs to output directory

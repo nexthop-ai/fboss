@@ -1,5 +1,11 @@
 exports_files(["ruff.toml"])
 
+filegroup(
+    name = "builder",
+    visibility = ["//visibility:public"],
+    srcs = glob(["**"]),
+)
+
 # Shared library containing all the distro_cli code
 py_library(
     name = "distro_cli_lib",
