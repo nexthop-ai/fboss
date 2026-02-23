@@ -122,7 +122,6 @@ SUB_ARG_AGENT_RUN_MODE_MONO = "mono"
 SUB_ARG_AGENT_RUN_MODE_MULTI = "multi_switch"
 SUB_ARG_AGENT_RUN_MODE_LEGACY = "legacy"
 SUB_ARG_NUM_NPUS = "--num-npus"
-SUB_ARG_HW_AGENT_BIN_PATH = "--hw-agent-bin-path"
 SUB_ARG_TEST_TYPE = "--type"
 SUB_ARG_PLATFORM_HW_TEST = "platform_hw_test"
 SUB_ARG_DATA_CORRAL_HW_TEST = "data_corral_service_hw_test"
@@ -1187,13 +1186,6 @@ class LinkTestRunner(TestRunner):
             type=int,
             help="Specify number of npus to run in multi switch mode. Default is 1.",
         )
-        sub_parser.add_argument(
-            SUB_ARG_HW_AGENT_BIN_PATH,
-            nargs="?",
-            type=str,
-            help="FBOSS HW Agent binary path(absolute path).",
-            default=None,
-        )
 
     def _get_config_path(self):
         return ""
@@ -1253,7 +1245,6 @@ class LinkTestRunner(TestRunner):
             setup_and_start_hw_agent_service(
                 switch_indexes=list(range(args.num_npus)),
                 fboss_agent_config_path=args.config,
-                hw_agent_service_bin_path=args.hw_agent_bin_path,
                 platform_mapping_override_path=args.platform_mapping_override_path,
                 sai_replayer_log_path=sai_replayer_log_path,
                 is_warm_boot=False,
@@ -1270,7 +1261,6 @@ class LinkTestRunner(TestRunner):
             setup_and_start_hw_agent_service(
                 switch_indexes=list(range(args.num_npus)),
                 fboss_agent_config_path=args.config,
-                hw_agent_service_bin_path=args.hw_agent_bin_path,
                 platform_mapping_override_path=args.platform_mapping_override_path,
                 sai_replayer_log_path=sai_replayer_log_path,
                 is_warm_boot=True,
