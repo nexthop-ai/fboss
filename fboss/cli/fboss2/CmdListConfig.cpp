@@ -15,7 +15,6 @@
 #include "fboss/cli/fboss2/commands/config/CmdConfigReload.h"
 #include "fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
-<<<<<<< HEAD
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceQueuingPolicy.h"
 #include "fboss/cli/fboss2/commands/config/interface/pfc_config/CmdConfigInterfacePfcConfig.h"
 #include "fboss/cli/fboss2/commands/config/interface/switchport/CmdConfigInterfaceSwitchport.h"
@@ -31,18 +30,6 @@
 #include "fboss/cli/fboss2/commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicyGroupId.h"
 #include "fboss/cli/fboss2/commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicy.h"
 #include "fboss/cli/fboss2/commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicyQueueId.h"
-||||||| 7e29d6aa34
-#include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceDescription.h"
-#include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceMtu.h"
-=======
-#include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceDescription.h"
-#include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceMtu.h"
-#include "fboss/cli/fboss2/commands/config/interface/switchport/CmdConfigInterfaceSwitchport.h"
-#include "fboss/cli/fboss2/commands/config/interface/switchport/access/CmdConfigInterfaceSwitchportAccess.h"
-#include "fboss/cli/fboss2/commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.h"
-#include "fboss/cli/fboss2/commands/config/qos/CmdConfigQos.h"
-#include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPool.h"
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
 #include "fboss/cli/fboss2/commands/config/rollback/CmdConfigRollback.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionClear.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionCommit.h"
@@ -84,7 +71,6 @@ const CommandTree& kConfigCommandTree() {
                argTypeHandler<CmdConfigInterfacePfcConfigTraits>,
            },
            {
-<<<<<<< HEAD
                "queuing-policy",
                "Set queuing policy for interface",
                commandHandler<CmdConfigInterfaceQueuingPolicy>,
@@ -169,51 +155,8 @@ const CommandTree& kConfigCommandTree() {
                    "Specify queue ID and attributes",
                    commandHandler<CmdConfigQosQueuingPolicyQueueId>,
                    argTypeHandler<CmdConfigQosQueuingPolicyQueueIdTraits>,
-||||||| 7e29d6aa34
-               "mtu",
-               "Set interface MTU",
-               commandHandler<CmdConfigInterfaceMtu>,
-               argTypeHandler<CmdConfigInterfaceMtuTraits>,
-=======
-               "mtu",
-               "Set interface MTU",
-               commandHandler<CmdConfigInterfaceMtu>,
-               argTypeHandler<CmdConfigInterfaceMtuTraits>,
-           },
-           {
-               "switchport",
-               "Configure switchport settings",
-               commandHandler<CmdConfigInterfaceSwitchport>,
-               argTypeHandler<CmdConfigInterfaceSwitchportTraits>,
-               {{
-                   "access",
-                   "Configure access mode settings",
-                   commandHandler<CmdConfigInterfaceSwitchportAccess>,
-                   argTypeHandler<CmdConfigInterfaceSwitchportAccessTraits>,
-                   {{
-                       "vlan",
-                       "Set access VLAN (ingressVlan) for the interface",
-                       commandHandler<CmdConfigInterfaceSwitchportAccessVlan>,
-                       argTypeHandler<
-                           CmdConfigInterfaceSwitchportAccessVlanTraits>,
-                   }},
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
                }},
            }},
-      },
-
-      {
-          "config",
-          "qos",
-          "Configure QoS settings",
-          commandHandler<CmdConfigQos>,
-          argTypeHandler<CmdConfigQosTraits>,
-          {{
-              "buffer-pool",
-              "Configure buffer pool settings",
-              commandHandler<CmdConfigQosBufferPool>,
-              argTypeHandler<CmdConfigQosBufferPoolTraits>,
-          }},
       },
 
       {

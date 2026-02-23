@@ -11,19 +11,11 @@
 
 #include <map>
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 #include "fboss/agent/gen-cpp2/agent_config_types.h"
-<<<<<<< HEAD
 #include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
 #include "fboss/cli/fboss2/session/Git.h"
-||||||| 7e29d6aa34
-#include "fboss/agent/if/gen-cpp2/ctrl_types.h"
-=======
-#include "fboss/agent/if/gen-cpp2/ctrl_types.h"
-#include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
 #include "fboss/cli/fboss2/utils/HostInfo.h"
 
 namespace facebook::fboss::utils {
@@ -62,8 +54,8 @@ namespace facebook::fboss {
  *      a. Atomically writes the session config to /etc/coop/cli/agent.conf
  *      b. Ensure /etc/coop/agent.conf is a symlink to /etc/coop/cli/agent.conf
  *      c. Creates a Git commit with the updated agent.conf and metadata
- *      d. Calls reloadConfig() on wedge_agent (or restarts it for
- *         AGENT_RESTART changes)
+ *      d. Calls reloadConfig() on wedge_agent for hitless (or restarts it for
+ *         any other changes)
  *   3. The session file is cleared (ready for next edit session)
  *
  * ROLLBACK FLOW:
@@ -117,44 +109,20 @@ class ConfigSession {
   // Get the path to the CLI config directory (/etc/coop/cli)
   std::string getCliConfigDir() const;
 
-<<<<<<< HEAD
   // Get the path to the actual CLI config file (/etc/coop/cli/agent.conf)
   std::string getCliConfigPath() const;
-||||||| 7e29d6aa34
-  // Atomically commit the session to /etc/coop/cli/agent-rN.conf,
-  // update the symlink /etc/coop/agent.conf to point to it, and reload config.
-  // Returns the revision number that was committed if the commit was
-  // successful.
-  int commit(const HostInfo& hostInfo);
-=======
+
   // Result of a commit operation
   struct CommitResult {
-    int revision; // The revision number that was committed
+    std::string commitSha; // The git commit SHA of the committed config
     // Maps each service to the action level that was applied during commit.
     // Services not in this map had no action taken.
     std::map<cli::ServiceType, cli::ConfigActionLevel> actions;
   };
 
-  // Atomically commit the session to /etc/coop/cli/agent-rN.conf,
-  // update the symlink /etc/coop/agent.conf to point to it.
-  // For HITLESS changes, also calls reloadConfig() on the agent.
-  // For AGENT_RESTART changes, does NOT call reloadConfig() - user must restart
-  // agent. Returns CommitResult with revision number and action level.
-  CommitResult commit(const HostInfo& hostInfo);
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
-
-  // Result of a commit operation
-  struct CommitResult {
-    std::string commitSha; // The git commit SHA of the committed config
-    cli::ConfigActionLevel actionLevel; // The action level that was required
-    // Note: configReloaded can be inferred from actionLevel:
-    // - HITLESS: config was reloaded via reloadConfig()
-    // - AGENT_RESTART: agent was restarted via systemd
-  };
-
   // Atomically commit the session to /etc/coop/cli/agent.conf and create a git
   // commit. For HITLESS changes, also calls reloadConfig() on the agent.
-  // For AGENT_RESTART changes, restarts the agent via systemd.
+  // For non-HITLESS changes, restarts the agent via systemd.
   // Returns CommitResult with git commit SHA and action level.
   CommitResult commit(const HostInfo& hostInfo);
 
@@ -183,45 +151,17 @@ class ConfigSession {
   const utils::PortMap& getPortMap() const;
 
   // Save the configuration back to the session file.
-<<<<<<< HEAD
-  // If actionLevel is provided, also updates the required action level
-  // for the specified agent (if the new level is higher than the current one).
-  // This combines saving the config and updating its associated metadata.
-  void saveConfig(
-      std::optional<cli::ConfigActionLevel> actionLevel = std::nullopt,
-      cli::AgentType agent = cli::AgentType::WEDGE_AGENT);
-||||||| 7e29d6aa34
-  // Save the configuration back to the session file
-  void saveConfig();
-=======
   // Also updates the required action level for the specified service
   // (if the new level is higher than the current one).
   // This combines saving the config and updating its associated metadata.
   void saveConfig(cli::ServiceType service, cli::ConfigActionLevel actionLevel);
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
+  // Save the configuration for AGENT service with HITLESS action level.
+  void saveConfig();
 
   // Get the Git instance for this config session
   // Used to access the Git repository for history, rollback, etc.
   Git& getGit();
   const Git& getGit() const;
-
-  // Update the required action level for the current session.
-  // Tracks the highest action level across all config commands.
-  // Higher action levels take precedence (AGENT_RESTART > HITLESS).
-  // The agent parameter specifies which agent this action level applies to.
-  // Currently only WEDGE_AGENT is supported; future agents will be added.
-  void updateRequiredAction(
-      cli::ConfigActionLevel actionLevel,
-      cli::AgentType agent = cli::AgentType::WEDGE_AGENT);
-
-  // Get the current required action level for the session
-  // The agent parameter specifies which agent to get the action level for.
-  cli::ConfigActionLevel getRequiredAction(
-      cli::AgentType agent = cli::AgentType::WEDGE_AGENT) const;
-
-  // Reset the required action level to HITLESS (called after successful commit)
-  // The agent parameter specifies which agent to reset the action level for.
-  void resetRequiredAction(cli::AgentType agent = cli::AgentType::WEDGE_AGENT);
 
   // Get the list of commands executed in this session
   const std::vector<std::string>& getCommands() const;
@@ -268,10 +208,9 @@ class ConfigSession {
   bool configLoaded_ = false;
 
   // Track the highest action level required for pending config changes per
-<<<<<<< HEAD
-  // agent. Persisted to disk so it survives across CLI invocations within a
+  // service. Persisted to disk so it survives across CLI invocations within a
   // session.
-  std::map<cli::AgentType, cli::ConfigActionLevel> requiredActions_;
+  std::map<cli::ServiceType, cli::ConfigActionLevel> requiredActions_;
 
   // List of commands executed in this session, persisted to disk
   std::vector<std::string> commands_;
@@ -291,24 +230,6 @@ class ConfigSession {
   void loadMetadata();
   void saveMetadata();
 
-  // Restart an agent via systemd and wait for it to be active
-  void restartAgent(cli::AgentType agent);
-
-  // Get the systemd service name for an agent
-  static std::string getServiceName(cli::AgentType agent);
-||||||| 7e29d6aa34
-=======
-  // service. Persisted to disk so it survives across CLI invocations within a
-  // session.
-  std::map<cli::ServiceType, cli::ConfigActionLevel> requiredActions_;
-
-  // Path to the metadata file (e.g., ~/.fboss2/metadata)
-  std::string getMetadataPath() const;
-
-  // Load/save action levels from/to disk
-  void loadActionLevel();
-  void saveActionLevel();
-
   // Restart a service via systemd and wait for it to be active
   // For AGENT_WARMBOOT, does a simple restart.
   // For AGENT_COLDBOOT, creates cold_boot_once files before restarting.
@@ -324,7 +245,6 @@ class ConfigSession {
   void applyServiceActions(
       const std::map<cli::ServiceType, cli::ConfigActionLevel>& actions,
       const HostInfo& hostInfo);
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
 
   // Initialize the session (creates session config file if it doesn't exist)
   void initializeSession();

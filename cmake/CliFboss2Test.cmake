@@ -37,29 +37,16 @@ add_executable(fboss2_cmd_test
   fboss/cli/fboss2/test/TestMain.cpp
   fboss/cli/fboss2/test/CmdConfigAppliedInfoTest.cpp
   fboss/cli/fboss2/test/CmdConfigHistoryTest.cpp
-<<<<<<< HEAD
   fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
   fboss/cli/fboss2/test/CmdConfigL2LearningModeTest.cpp
   fboss/cli/fboss2/test/CmdConfigInterfaceTest.cpp
-||||||| 7e29d6aa34
-  fboss/cli/fboss2/test/CmdConfigInterfaceDescriptionTest.cpp
-  fboss/cli/fboss2/test/CmdConfigInterfaceMtuTest.cpp
-=======
-  fboss/cli/fboss2/test/CmdConfigInterfaceDescriptionTest.cpp
-  fboss/cli/fboss2/test/CmdConfigInterfaceMtuTest.cpp
-  fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
   fboss/cli/fboss2/test/CmdConfigQosBufferPoolTest.cpp
   fboss/cli/fboss2/test/CmdConfigReloadTest.cpp
   fboss/cli/fboss2/test/CmdConfigSessionClearTest.cpp
   fboss/cli/fboss2/test/CmdConfigSessionDiffTest.cpp
   fboss/cli/fboss2/test/CmdConfigSessionTest.cpp
-<<<<<<< HEAD
   fboss/cli/fboss2/test/CmdConfigVlanPortTaggingModeTest.cpp
   fboss/cli/fboss2/test/CmdConfigVlanStaticMacTest.cpp
-||||||| 7e29d6aa34
-=======
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
   fboss/cli/fboss2/test/CmdGetPcapTest.cpp
   fboss/cli/fboss2/test/CmdListConfigTest.cpp
   fboss/cli/fboss2/test/CmdSetPortStateTest.cpp

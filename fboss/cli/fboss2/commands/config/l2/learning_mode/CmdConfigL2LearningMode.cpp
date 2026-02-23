@@ -81,9 +81,10 @@ CmdConfigL2LearningModeTraits::RetType CmdConfigL2LearningMode::queryClient(
   // Update the l2LearningMode in switchSettings
   swConfig.switchSettings()->l2LearningMode() = newMode;
 
-  // Save the updated config - L2 learning mode changes require agent restart
+  // Save the updated config - L2 learning mode changes require agent cold boot
+  // to clear ASIC state
   ConfigSession::getInstance().saveConfig(
-      cli::ConfigActionLevel::AGENT_RESTART);
+      cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_COLDBOOT);
 
   return fmt::format(
       "Successfully set L2 learning mode to '{}'",

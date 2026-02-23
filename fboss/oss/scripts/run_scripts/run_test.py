@@ -122,10 +122,6 @@ SUB_ARG_AGENT_RUN_MODE_MONO = "mono"
 SUB_ARG_AGENT_RUN_MODE_MULTI = "multi_switch"
 SUB_ARG_AGENT_RUN_MODE_LEGACY = "legacy"
 SUB_ARG_NUM_NPUS = "--num-npus"
-<<<<<<< HEAD
-||||||| 7e29d6aa34
-SUB_ARG_HW_AGENT_BIN_PATH = "--hw-agent-bin-path"
-=======
 SUB_ARG_HW_AGENT_BIN_PATH = "--hw-agent-bin-path"
 SUB_ARG_TEST_TYPE = "--type"
 SUB_ARG_PLATFORM_HW_TEST = "platform_hw_test"
@@ -136,7 +132,6 @@ SUB_ARG_SENSOR_HW_TEST = "sensor_service_hw_test"
 SUB_ARG_WEUTIL_HW_TEST = "weutil_hw_test"
 SUB_ARG_PLATFORM_MANAGER_HW_TEST = "platform_manager_hw_test"
 
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
 
 SAI_HW_KNOWN_BAD_TESTS = (
     "./share/hw_known_bad_tests/sai_known_bad_tests.materialized_JSON"
@@ -327,13 +322,7 @@ class TestRunner(abc.ABC):
         run_cmd = [
             test_binary_name,
             "--gtest_filter=" + test_to_run,
-<<<<<<< HEAD
             f"--gtest_output=xml:{self.TESTRESULT_CURRENT_RUN_FILE}",
-            "--fruid_filepath=" + args.fruid_path,
-||||||| 7e29d6aa34
-            "--fruid_filepath=" + args.fruid_path,
-=======
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
         ]
         if args.fruid_path is not None:
             run_cmd.append("--fruid_filepath=" + args.fruid_path)
@@ -1476,11 +1465,6 @@ class SaiAgentTestRunner(TestRunner):
         return tests_to_run
 
 
-<<<<<<< HEAD
-class CliTestRunner(TestRunner):
-||||||| 7e29d6aa34
-class CliTestRunner:
-=======
 class PlatformServicesTestRunner(TestRunner):
     TEST_TYPE_CHOICES = [
         SUB_ARG_PLATFORM_HW_TEST,
@@ -1610,8 +1594,7 @@ class PlatformServicesTestRunner(TestRunner):
         self._print_output_summary(output)
 
 
-class CliTestRunner:
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
+class CliTestRunner(TestRunner):
     """
     Runner for CLI end-to-end tests.
 
@@ -1675,6 +1658,9 @@ class CliTestRunner:
         manipulation, warmboot/coldboot setup, or SAI-specific logging. They just
         run against the already-running agent via Thrift.
         """
+        # Initialize test lists (known bad tests, unsupported tests)
+        self._initialize_test_lists(args)
+
         tests_to_run = self._get_tests_to_run()
         tests_to_run = self._filter_tests(tests_to_run)
 

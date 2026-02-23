@@ -29,18 +29,7 @@ class CmdHandlerTestBase : public ::testing::Test {
   // Helper to configure server with epoll backend to avoid libevent2
   // performance issues in OSS builds that cause multi-second RPC latencies.
   static auto createFastMockServerConfig() {
-<<<<<<< HEAD
-    return [](apache::thrift::ThriftServer& server) {
-      ThriftServiceUtils::setPreferredEventBaseBackend(server);
-    };
-||||||| 7e29d6aa34
-    return [](apache::thrift::ThriftServer& server) {
-      server.setIdleTimeout(std::chrono::milliseconds(50));
-      ThriftServiceUtils::setPreferredEventBaseBackend(server);
-    };
-=======
     return ThriftServiceUtils::createThriftServerConfig();
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
   }
 
   void setupMockedAgentServer() {

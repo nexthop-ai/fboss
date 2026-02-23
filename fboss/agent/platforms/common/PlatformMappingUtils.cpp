@@ -197,18 +197,14 @@ std::unique_ptr<PlatformMapping> initPlatformMapping(PlatformType type) {
       return platformMappingStr.empty()
           ? std::make_unique<Icecube800bcPlatformMapping>()
           : std::make_unique<Icecube800bcPlatformMapping>(platformMappingStr);
-<<<<<<< HEAD
     case PlatformType::PLATFORM_NH4010:
       return platformMappingStr.empty()
           ? std::make_unique<Nh4010PlatformMapping>()
           : std::make_unique<Nh4010PlatformMapping>(platformMappingStr);
-||||||| 7e29d6aa34
-=======
     case PlatformType::PLATFORM_ICECUBE800BANW:
       return platformMappingStr.empty()
           ? std::make_unique<Icecube800banwPlatformMapping>()
           : std::make_unique<Icecube800banwPlatformMapping>(platformMappingStr);
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
     case PlatformType::PLATFORM_WEDGE800BACT:
       return platformMappingStr.empty()
           ? std::make_unique<Wedge800BACTPlatformMapping>()

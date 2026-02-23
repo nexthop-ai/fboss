@@ -392,12 +392,8 @@ cpp_library(
         "commands/show/route/CmdShowRouteDetails.cpp",
         "commands/show/route/CmdShowRouteSummary.cpp",
         "commands/show/route/utils.cpp",
-<<<<<<< HEAD
         "commands/show/running_config/CmdShowRunningConfig.cpp",
-||||||| 7e29d6aa34
-=======
         "commands/show/sdk/dump/CmdShowSdkDump.cpp",
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
         "commands/show/systemport/CmdShowSystemPort.cpp",
         "commands/show/teflow/CmdShowTeFlow.cpp",
         "commands/show/transceiver/CmdShowTransceiver.cpp",
@@ -871,7 +867,6 @@ cpp_library(
         "commands/config/CmdConfigAppliedInfo.cpp",
         "commands/config/CmdConfigReload.cpp",
         "commands/config/history/CmdConfigHistory.cpp",
-<<<<<<< HEAD
         "commands/config/interface/CmdConfigInterface.cpp",
         "commands/config/interface/CmdConfigInterfaceQueuingPolicy.cpp",
         "commands/config/interface/pfc_config/CmdConfigInterfacePfcConfig.cpp",
@@ -888,15 +883,6 @@ cpp_library(
         "commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicyGroupId.cpp",
         "commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicy.cpp",
         "commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicyQueueId.cpp",
-||||||| 7e29d6aa34
-        "commands/config/interface/CmdConfigInterfaceDescription.cpp",
-        "commands/config/interface/CmdConfigInterfaceMtu.cpp",
-=======
-        "commands/config/interface/CmdConfigInterfaceDescription.cpp",
-        "commands/config/interface/CmdConfigInterfaceMtu.cpp",
-        "commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.cpp",
-        "commands/config/qos/buffer_pool/CmdConfigQosBufferPool.cpp",
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
         "commands/config/rollback/CmdConfigRollback.cpp",
         "commands/config/session/CmdConfigSessionClear.cpp",
         "commands/config/session/CmdConfigSessionCommit.cpp",
@@ -918,7 +904,6 @@ cpp_library(
         "commands/config/CmdConfigReload.h",
         "commands/config/history/CmdConfigHistory.h",
         "commands/config/interface/CmdConfigInterface.h",
-<<<<<<< HEAD
         "commands/config/interface/CmdConfigInterfaceQueuingPolicy.h",
         "commands/config/interface/pfc_config/CmdConfigInterfacePfcConfig.h",
         "commands/config/interface/pfc_config/PfcConfigUtils.h",
@@ -935,18 +920,6 @@ cpp_library(
         "commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicyGroupId.h",
         "commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicy.h",
         "commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicyQueueId.h",
-||||||| 7e29d6aa34
-        "commands/config/interface/CmdConfigInterfaceDescription.h",
-        "commands/config/interface/CmdConfigInterfaceMtu.h",
-=======
-        "commands/config/interface/CmdConfigInterfaceDescription.h",
-        "commands/config/interface/CmdConfigInterfaceMtu.h",
-        "commands/config/interface/switchport/CmdConfigInterfaceSwitchport.h",
-        "commands/config/interface/switchport/access/CmdConfigInterfaceSwitchportAccess.h",
-        "commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.h",
-        "commands/config/qos/CmdConfigQos.h",
-        "commands/config/qos/buffer_pool/CmdConfigQosBufferPool.h",
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
         "commands/config/rollback/CmdConfigRollback.h",
         "commands/config/session/CmdConfigSessionClear.h",
         "commands/config/session/CmdConfigSessionCommit.h",

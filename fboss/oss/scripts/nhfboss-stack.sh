@@ -18,6 +18,13 @@
 #
 set -euxo pipefail
 
+# Helper function to log with timestamps
+log() {
+  echo "$(date -Iseconds) $*"
+}
+
+log "nhfboss-stack.sh START"
+
 if [ "$#" -lt 1 ]; then
   echo "Usage: $0 forwarding|platform" >&2
   exit 1
@@ -52,7 +59,7 @@ esac
 # Setup FBOSS build environment compatibility:
 #    build_entrypoint provides: /src (repo), /deps/*-extracted (dependencies)
 #    FBOSS build expects: /var/FBOSS/fboss (repo), /opt/sdk (SAI)
-echo "Setting up symlinks for FBOSS build environment"
+log "Setting up symlinks"
 
 # Link /var/FBOSS/fboss -> /src (the worktree root)
 mkdir -p /var/FBOSS
@@ -122,13 +129,14 @@ fi
 # Navigate to FBOSS source root
 cd /var/FBOSS/fboss
 
+log "Sourcing nhfboss-common.sh"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/nhfboss-common.sh"
 
 # Return to FBOSS source root as nhfboss-common.sh may have changed it
 cd /var/FBOSS/fboss
 
-echo "Building FBOSS ${stack_label} stack"
+log "Building FBOSS ${stack_label} stack"
 
 # Save the manifests because we must modify them
 tar -cf manifests_snapshot.tar build
@@ -137,6 +145,7 @@ tar -cf manifests_snapshot.tar build
 chmod -R a+r build/fbcode_builder/manifests
 
 # Setup SAI environment
+log "Setting up SAI environment"
 if [ "$stack_type" = "forwarding" ]; then
   # Setup SAI implementation
   SAI_INCLUDE_PATH="$SAI_DIR/include"
@@ -177,21 +186,21 @@ elif [ "$stack_type" = "platform" ]; then
 fi
 
 # Install system dependencies
-echo "Installing system dependencies..."
+log "Installing system dependencies"
 time nice -n 10 ./fboss/oss/scripts/run-getdeps.py install-system-deps \
   --num-jobs $num_jobs --recursive $common_options
 
 # Build dependencies
-echo "Building FBOSS dependencies..."
+log "Building FBOSS dependencies"
 time nice -n 10 ./fboss/oss/scripts/run-getdeps.py build \
   --num-jobs $num_jobs \
   --build-type $BUILD_TYPE \
   --only-deps $common_options
 
-echo "Get deps SUCCESS"
+log "Get deps SUCCESS"
 
 # Build FBOSS stack
-echo "Building FBOSS ${stack_label} stack..."
+log "Building FBOSS ${stack_label} stack"
 
 time nice -n 10 ./fboss/oss/scripts/run-getdeps.py build \
   --num-jobs ${num_jobs:?} \
@@ -200,18 +209,19 @@ time nice -n 10 ./fboss/oss/scripts/run-getdeps.py build \
   --cmake-target "$cmake_target" \
   ${common_options}
 
-echo "${cmake_target} Build SUCCESS"
+log "${cmake_target} Build SUCCESS"
 
 # Package the stack
 # Note: package.py creates both <target>.tar (production binaries)
 # and <target>-tests.tar (test binaries). We only ship the production tar.
-echo "Packaging ${stack_label} stack..."
+log "Packaging ${stack_label} stack"
 python3 /var/FBOSS/fboss/fboss/oss/scripts/package.py \
   --build-dir "$build_dir" \
   "$package_target"
 
 # Copy production artifact to output directory
 # Tests are NOT included in production image
+log "Copying artifacts to output"
 OUT_DIR=/output
 echo "Output directory: $OUT_DIR"
 mkdir -p "$OUT_DIR"
@@ -226,3 +236,16 @@ if [ -f manifests_snapshot.tar ]; then
   tar -xf manifests_snapshot.tar
   rm manifests_snapshot.tar
 fi
+
+# Print sccache statistics to debug cache performance
+log "sccache statistics for ${stack_label} stack"
+if command -v sccache &>/dev/null; then
+  sccache -s || echo "Failed to get sccache statistics"
+  if [ -f /tmp/sccache.log ]; then
+    echo "sccache error log:"
+    cat /tmp/sccache.log
+  fi
+else
+  echo "sccache command not found"
+fi
+log "nhfboss-stack.sh END"

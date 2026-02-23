@@ -294,14 +294,10 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_WEDGE800CACT;
     } else if (FLAGS_mode == "ladakh800bcls") {
       type_ = PlatformType::PLATFORM_LADAKH800BCLS;
-<<<<<<< HEAD
     } else if (FLAGS_mode == "wedge800bnhp") {
       type_ = PlatformType::PLATFORM_WEDGE800BNHP;
-||||||| 7e29d6aa34
-=======
     } else if (FLAGS_mode == "icecube800banw") {
       type_ = PlatformType::PLATFORM_ICECUBE800BANW;
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
     } else {
       throw std::runtime_error("invalid mode " + FLAGS_mode);
     }

@@ -9,23 +9,11 @@
  */
 #include "fboss/cli/fboss2/utils/CmdUtils.h"
 #include <fboss/agent/if/gen-cpp2/ctrl_types.h>
-<<<<<<< HEAD
 #include <fboss/fsdb/oper/instantiations/FsdbPathConverter.h> // NOLINT(misc-include-cleaner)
-#include "folly/Conv.h"
-||||||| 7e29d6aa34
-#include <fboss/fsdb/oper/instantiations/FsdbPathConverter.h>
-#include "folly/Conv.h"
-
-#include <folly/logging/LogConfig.h>
-
-=======
-#include <fboss/fsdb/oper/instantiations/FsdbPathConverter.h>
-#include <folly/logging/LogConfig.h>
 #include "folly/Conv.h"
 #ifndef IS_OSS
 #include "neteng/netwhoami/lib/cpp/Recover.h"
 #endif
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
 
 #include <re2/re2.h>
 #include <string>

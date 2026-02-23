@@ -75,7 +75,7 @@ TEST_F(ConfigSessionClearTestFixture, clearExistingSession) {
   // Create session files manually
   fs::create_directories(sessionDir);
   createTestFile(sessionConfig, R"({"sw": {"ports": []}})");
-  createTestFile(metadataFile, R"({"action":{"WEDGE_AGENT":"HITLESS"}})");
+  createTestFile(metadataFile, R"({"action":{"AGENT":"HITLESS"}})");
 
   // Verify session files exist
   EXPECT_TRUE(fs::exists(sessionConfig));
@@ -144,7 +144,7 @@ TEST_F(ConfigSessionClearTestFixture, clearOnlyMetadataFile) {
 
   // Create only the metadata file (not config)
   fs::create_directories(sessionDir);
-  createTestFile(metadataFile, R"({"action":{"WEDGE_AGENT":"HITLESS"}})");
+  createTestFile(metadataFile, R"({"action":{"AGENT":"HITLESS"}})");
 
   // Verify only metadata file exists
   EXPECT_FALSE(fs::exists(sessionConfig));

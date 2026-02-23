@@ -12,7 +12,6 @@
 
 #include "fboss/cli/fboss2/CmdHandler.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
-<<<<<<< HEAD
 #include "fboss/cli/fboss2/utils/InterfacesConfig.h"
 
 namespace facebook::fboss {
@@ -37,29 +36,6 @@ class CmdConfigInterfaceSwitchport : public CmdHandler<
     if (interfaces.empty()) {
       throw std::invalid_argument("No interface name provided");
     }
-||||||| 7e29d6aa34
-=======
-#include "fboss/cli/fboss2/utils/CmdUtils.h"
-#include "fboss/cli/fboss2/utils/InterfaceList.h"
-
-namespace facebook::fboss {
-
-struct CmdConfigInterfaceSwitchportTraits : public WriteCommandTraits {
-  using ParentCmd = CmdConfigInterface;
-  static constexpr utils::ObjectArgTypeId ObjectArgTypeId =
-      utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_NONE;
-  using ObjectArgType = std::monostate;
-  using RetType = std::string;
-};
-
-class CmdConfigInterfaceSwitchport : public CmdHandler<
-                                         CmdConfigInterfaceSwitchport,
-                                         CmdConfigInterfaceSwitchportTraits> {
- public:
-  RetType queryClient(
-      const HostInfo& /* hostInfo */,
-      const utils::InterfaceList& /* interfaces */) {
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
     throw std::runtime_error(
         "Incomplete command, please use one of the subcommands");
   }

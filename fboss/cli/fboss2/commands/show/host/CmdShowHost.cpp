@@ -12,13 +12,12 @@
 
 #include "fboss/cli/fboss2/utils/Table.h"
 
-#include <boost/algorithm/string.hpp>
-
 namespace facebook::fboss {
 
 CmdShowHost::RetType CmdShowHost::queryClient(
     const HostInfo& hostInfo,
-    const ObjectArgType& queriedPorts) {
+    const ObjectArgType& queriedPorts,
+    const DnsResolver& resolver) {
   std::vector<int32_t> ports;
   std::vector<NdpEntryThrift> ndpEntries;
   std::map<int32_t, PortInfoThrift> portInfoEntries;
@@ -29,14 +28,15 @@ CmdShowHost::RetType CmdShowHost::queryClient(
   agentClient->sync_getAllPortInfo(portInfoEntries);
   agentClient->sync_getPortStatus(portStatusEntries, ports);
   return createModel(
-      ndpEntries, portInfoEntries, portStatusEntries, queriedPorts);
+      ndpEntries, portInfoEntries, portStatusEntries, queriedPorts, resolver);
 }
 
 CmdShowHost::RetType CmdShowHost::createModel(
     const std::vector<NdpEntryThrift>& ndpEntries,
     const std::map<int32_t, PortInfoThrift>& portInfoEntries,
     const std::map<int32_t, PortStatus>& portStatusEntries,
-    const ObjectArgType& queriedPorts) {
+    const ObjectArgType& queriedPorts,
+    const DnsResolver& resolver) {
   RetType model;
   for (const auto& ndpEntry : ndpEntries) {
     cli::ShowHostModelEntry hostDetails;
@@ -56,7 +56,7 @@ CmdShowHost::RetType CmdShowHost::createModel(
       hostDetails.queueID() = "Olympic";
     }
     std::string ndpEntryHostName =
-        utils::removeFbDomains(NetworkUtil::getHostByAddr(ndpEntryAddr));
+        utils::removeFbDomains(resolver(ndpEntryAddr));
     if (ndpEntryHostName.empty()) {
       hostDetails.hostName() = ndpEntryAddr;
     } else {
@@ -66,7 +66,7 @@ CmdShowHost::RetType CmdShowHost::createModel(
     if (ndpEntryPortInfoEntry != portInfoEntries.end()) {
       const auto& ndpEntryPortInfo = ndpEntryPortInfoEntry->second;
       auto ndpEntryPortName = ndpEntryPortInfo.name().value();
-      if (queriedSet.size() > 0 && queriedSet.count(ndpEntryPortName) == 0) {
+      if (!queriedSet.empty() && queriedSet.count(ndpEntryPortName) == 0) {
         continue;
       }
       hostDetails.portName() = ndpEntryPortName;

@@ -633,7 +633,6 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/CmdConfigReload.cpp
   fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.cpp
   fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h
-<<<<<<< HEAD
   fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceQueuingPolicy.cpp
   fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceQueuingPolicy.h
   fboss/cli/fboss2/commands/config/interface/pfc_config/CmdConfigInterfacePfcConfig.cpp
@@ -665,24 +664,6 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicy.h
   fboss/cli/fboss2/commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicyQueueId.cpp
   fboss/cli/fboss2/commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicyQueueId.h
-||||||| 7e29d6aa34
-  fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceDescription.h
-  fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceDescription.cpp
-  fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceMtu.h
-  fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceMtu.cpp
-=======
-  fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceDescription.h
-  fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceDescription.cpp
-  fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceMtu.h
-  fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceMtu.cpp
-  fboss/cli/fboss2/commands/config/interface/switchport/CmdConfigInterfaceSwitchport.h
-  fboss/cli/fboss2/commands/config/interface/switchport/access/CmdConfigInterfaceSwitchportAccess.h
-  fboss/cli/fboss2/commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.h
-  fboss/cli/fboss2/commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.cpp
-  fboss/cli/fboss2/commands/config/qos/CmdConfigQos.h
-  fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPool.cpp
-  fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPool.h
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
   fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h
   fboss/cli/fboss2/commands/config/history/CmdConfigHistory.cpp
   fboss/cli/fboss2/commands/config/rollback/CmdConfigRollback.h

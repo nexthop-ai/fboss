@@ -10,16 +10,11 @@
 
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionCommit.h"
 
-<<<<<<< HEAD
 #include "fboss/cli/fboss2/CmdHandler.cpp"
 
 #include <fmt/format.h>
-||||||| 7e29d6aa34
-=======
-#include <fmt/format.h>
 #include <folly/String.h>
 #include <vector>
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 
 namespace facebook::fboss {
@@ -34,22 +29,6 @@ CmdConfigSessionCommitTraits::RetType CmdConfigSessionCommit::queryClient(
 
   auto result = session.commit(hostInfo);
 
-<<<<<<< HEAD
-  std::string message;
-  std::string shortSha = result.commitSha.substr(0, 7);
-  if (result.actionLevel == cli::ConfigActionLevel::AGENT_RESTART) {
-    message = fmt::format(
-        "Config session committed successfully as {} and wedge_agent restarted.",
-        shortSha);
-  } else {
-    message = fmt::format(
-        "Config session committed successfully as {} and config reloaded.",
-        shortSha);
-||||||| 7e29d6aa34
-  int revision = session.commit(hostInfo);
-  return "Config session committed successfully as r" +
-      std::to_string(revision) + " and config reloaded.";
-=======
   // Categorize services by action type
   std::vector<std::string> restartedServices;
   std::vector<std::string> reloadedServices;
@@ -73,24 +52,23 @@ CmdConfigSessionCommitTraits::RetType CmdConfigSessionCommit::queryClient(
   std::string message;
   if (restartedServices.empty() && reloadedServices.empty()) {
     message = fmt::format(
-        "Config session committed successfully as r{}.", result.revision);
+        "Config session committed successfully as {}.", result.commitSha);
   } else if (restartedServices.empty()) {
     message = fmt::format(
-        "Config session committed successfully as r{} and config reloaded for {}.",
-        result.revision,
+        "Config session committed successfully as {} and config reloaded for {}.",
+        result.commitSha,
         folly::join(", ", reloadedServices));
   } else if (reloadedServices.empty()) {
     message = fmt::format(
-        "Config session committed successfully as r{} and {} restarted.",
-        result.revision,
+        "Config session committed successfully as {} and {} restarted.",
+        result.commitSha,
         folly::join(", ", restartedServices));
   } else {
     message = fmt::format(
-        "Config session committed successfully as r{}, {} restarted, and config reloaded for {}.",
-        result.revision,
+        "Config session committed successfully as {}, {} restarted, and config reloaded for {}.",
+        result.commitSha,
         folly::join(", ", restartedServices),
         folly::join(", ", reloadedServices));
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
   }
 
   return message;

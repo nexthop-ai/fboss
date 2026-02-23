@@ -243,11 +243,6 @@ class BuilderBase(object):
         )
 
     def run_tests(
-<<<<<<< HEAD
-        self, schedule_type, owner, test_filter, test_exclude, retry, no_testpilot, timeout=None
-||||||| 7e29d6aa34
-        self, schedule_type, owner, test_filter, retry, no_testpilot, timeout=None
-=======
         self,
         schedule_type,
         owner,
@@ -256,7 +251,6 @@ class BuilderBase(object):
         retry,
         no_testpilot,
         timeout=None,
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
     ) -> None:
         """Execute any tests that we know how to run.  If they fail,
         raise an exception."""
@@ -363,11 +357,6 @@ class MakeBuilder(BuilderBase):
                 shutil.copy(file, libdir)
 
     def run_tests(
-<<<<<<< HEAD
-        self, schedule_type, owner, test_filter, test_exclude, retry, no_testpilot, timeout=None
-||||||| 7e29d6aa34
-        self, schedule_type, owner, test_filter, retry, no_testpilot, timeout=None
-=======
         self,
         schedule_type,
         owner,
@@ -376,7 +365,6 @@ class MakeBuilder(BuilderBase):
         retry,
         no_testpilot,
         timeout=None,
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
     ) -> None:
         if not self.test_args:
             return
@@ -1011,11 +999,6 @@ if __name__ == "__main__":
         return missing_executables
 
     def run_tests(
-<<<<<<< HEAD
-        self, schedule_type, owner, test_filter, test_exclude, retry: int, no_testpilot, timeout=None
-||||||| 7e29d6aa34
-        self, schedule_type, owner, test_filter, retry: int, no_testpilot, timeout=None
-=======
         self,
         schedule_type,
         owner,
@@ -1024,7 +1007,6 @@ if __name__ == "__main__":
         retry: int,
         no_testpilot,
         timeout=None,
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
     ) -> None:
         env = self._compute_env()
         ctest = path_search(env, "ctest")
@@ -1548,11 +1530,6 @@ class SetupPyBuilder(BuilderBase):
             f.write("built")
 
     def run_tests(
-<<<<<<< HEAD
-        self, schedule_type, owner, test_filter, test_exclude, retry, no_testpilot, timeout=None
-||||||| 7e29d6aa34
-        self, schedule_type, owner, test_filter, retry, no_testpilot, timeout=None
-=======
         self,
         schedule_type,
         owner,
@@ -1561,7 +1538,6 @@ class SetupPyBuilder(BuilderBase):
         retry,
         no_testpilot,
         timeout=None,
->>>>>>> 716bedba537020d694677496e22daa66dbcb4d42
     ) -> None:
         # setup.py actually no longer has a standard command for running tests.
         # Instead we let manifest files specify an arbitrary Python file to run
