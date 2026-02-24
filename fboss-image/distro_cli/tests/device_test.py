@@ -7,20 +7,10 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-"""
-Unit tests for device commands
-
-NOTE: These are skeleton tests for stub implementations.
-When device commands are fully implemented, these tests will be expanded
-to verify actual functionality.
-
-These tests verify that:
-1. Device command group exists and has expected subcommands
-2. Commands can be called without crashing (stub behavior)
-3. Context passing works correctly
-"""
+"""Unit tests for device commands."""
 
 import argparse
+import json
 import shutil
 import subprocess
 import tarfile
@@ -40,8 +30,10 @@ from distro_cli.cmds.device import (
     update_command,
 )
 from distro_cli.lib.cli import CLI
+from distro_cli.lib.device_update import DeviceUpdateError, DeviceUpdater
 from distro_cli.lib.distro_infra import DISTRO_INFRA_CONTAINER
 from distro_cli.lib.docker import container
+from distro_cli.lib.manifest import ImageManifest
 from distro_cli.tests.test_helpers import waitfor
 
 
@@ -362,6 +354,141 @@ class TestDeviceCLIIntegration(unittest.TestCase):
             self.assertEqual(args.func, image_command)
         finally:
             Path(temp_image).unlink()
+
+
+class TestDeviceUpdater(unittest.TestCase):
+    """Unit tests for DeviceUpdater class"""
+
+    def setUp(self):
+        """Set up test fixtures"""
+        self.test_data_dir = Path(__file__).parent / "data"
+        self.update_manifest_path = self.test_data_dir / "update_manifest.json"
+
+    def test_validate_non_updatable_component(self):
+        """Test that non-updatable components raise error"""
+        manifest = ImageManifest(self.update_manifest_path)
+        updater = DeviceUpdater(
+            mac="aa:bb:cc:dd:ee:ff",
+            manifest=manifest,
+            component="kernel",
+        )
+        with self.assertRaises(DeviceUpdateError) as ctx:
+            updater.validate()
+        self.assertIn("is not updatable", str(ctx.exception))
+        self.assertIn("Updatable components:", str(ctx.exception))
+
+    def test_validate_component_not_in_manifest(self):
+        """Test that component in COMPONENT_SERVICES but missing from manifest raises error"""
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            json.dump(
+                {
+                    "distribution_formats": {"onie": "test.bin"},
+                    "kernel": {"download": "https://example.com/kernel.tar"},
+                },
+                f,
+            )
+            temp_manifest_path = Path(f.name)
+        self.addCleanup(temp_manifest_path.unlink)
+
+        manifest = ImageManifest(temp_manifest_path)
+        updater = DeviceUpdater(
+            mac="aa:bb:cc:dd:ee:ff",
+            manifest=manifest,
+            component="fboss-forwarding-stack",
+        )
+        with self.assertRaises(DeviceUpdateError) as ctx:
+            updater.validate()
+        self.assertIn("not found in manifest", str(ctx.exception))
+
+    def test_validate_component_with_no_services(self):
+        """Test that component with empty services list raises error"""
+        manifest = ImageManifest(self.update_manifest_path)
+        updater = DeviceUpdater(
+            mac="aa:bb:cc:dd:ee:ff",
+            manifest=manifest,
+            component="fboss-platform-stack",
+        )
+        # Patch COMPONENT_SERVICES to have empty list for platform-stack
+        with patch(
+            "distro_cli.lib.device_update.COMPONENT_SERVICES",
+            {"fboss-platform-stack": [], "fboss-forwarding-stack": ["wedge_agent"]},
+        ):
+            with self.assertRaises(DeviceUpdateError) as ctx:
+                updater.validate()
+            self.assertIn("has no services defined", str(ctx.exception))
+
+    def test_validate_component_without_download_or_execute(self):
+        """Test that component without download or execute raises error"""
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            json.dump(
+                {
+                    "distribution_formats": {"onie": "test.bin"},
+                    "kernel": {"download": "https://example.com/kernel.tar"},
+                    "fboss-forwarding-stack": {},
+                },
+                f,
+            )
+            temp_manifest_path = Path(f.name)
+        self.addCleanup(temp_manifest_path.unlink)
+
+        manifest = ImageManifest(temp_manifest_path)
+        updater = DeviceUpdater(
+            mac="aa:bb:cc:dd:ee:ff",
+            manifest=manifest,
+            component="fboss-forwarding-stack",
+        )
+        with self.assertRaises(DeviceUpdateError) as ctx:
+            updater.validate()
+        self.assertIn("neither 'download' nor 'execute'", str(ctx.exception))
+
+    def test_validate_success(self):
+        """Test successful validation for valid components"""
+        manifest = ImageManifest(self.update_manifest_path)
+
+        # Test forwarding-stack
+        updater1 = DeviceUpdater(
+            mac="aa:bb:cc:dd:ee:ff",
+            manifest=manifest,
+            component="fboss-forwarding-stack",
+        )
+        updater1.validate()  # Should not raise
+
+        # Test platform-stack
+        updater2 = DeviceUpdater(
+            mac="aa:bb:cc:dd:ee:ff",
+            manifest=manifest,
+            component="fboss-platform-stack",
+        )
+        updater2.validate()  # Should not raise
+
+    def test_get_services_from_component_services(self):
+        """Test that services are correctly read from COMPONENT_SERVICES dict"""
+        manifest = ImageManifest(self.update_manifest_path)
+
+        updater1 = DeviceUpdater(
+            mac="aa:bb:cc:dd:ee:ff",
+            manifest=manifest,
+            component="fboss-forwarding-stack",
+        )
+        self.assertEqual(
+            updater1._get_services(),
+            ["wedge_agent", "fsdb", "qsfp_service"],
+        )
+
+        updater2 = DeviceUpdater(
+            mac="aa:bb:cc:dd:ee:ff",
+            manifest=manifest,
+            component="fboss-platform-stack",
+        )
+        self.assertEqual(
+            updater2._get_services(),
+            [
+                "platform_manager",
+                "sensor_service",
+                "fan_service",
+                "data_corral_service",
+            ],
+        )
 
 
 if __name__ == "__main__":
