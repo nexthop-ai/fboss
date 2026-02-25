@@ -14,6 +14,7 @@
 #include "fboss/agent/FbossError.h"
 #include "fboss/agent/platforms/common/PlatformMapping.h"
 #include "fboss/agent/platforms/common/PlatformMappingUtils.h"
+#include "fboss/agent/platforms/common/blackwolf800banw/Blackwolf800banwPlatformMapping.h"
 #include "fboss/agent/platforms/common/darwin/DarwinPlatformMapping.h"
 #include "fboss/agent/platforms/common/elbert/ElbertPlatformMapping.h"
 #include "fboss/agent/platforms/common/fake_test/FakeTestPlatformMapping.h"
@@ -225,10 +226,19 @@ std::unique_ptr<PlatformMapping> initPlatformMapping(PlatformType type) {
       return platformMappingStr.empty()
           ? std::make_unique<Ladakh800bclsPlatformMapping>()
           : std::make_unique<Ladakh800bclsPlatformMapping>(platformMappingStr);
+<<<<<<< HEAD
     case PlatformType::PLATFORM_WEDGE800BNHP:
       return platformMappingStr.empty()
           ? std::make_unique<Wedge800BNHPPlatformMapping>()
           : std::make_unique<Wedge800BNHPPlatformMapping>(platformMappingStr);
+||||||| 716bedba53
+=======
+    case PlatformType::PLATFORM_BLACKWOLF800BANW:
+      return platformMappingStr.empty()
+          ? std::make_unique<Blackwolf800banwPlatformMapping>()
+          : std::make_unique<Blackwolf800banwPlatformMapping>(
+                platformMappingStr);
+>>>>>>> 2d8d425e2cb666e8325cbc136b8199006fbd3d48
     case PlatformType::PLATFORM_FAKE_SAI: {
       std::vector<int> controllingPorts = getFakeSaiControllingPortIDs();
       return std::make_unique<FakeTestPlatformMapping>(controllingPorts);

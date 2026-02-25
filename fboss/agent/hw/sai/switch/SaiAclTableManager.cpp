@@ -17,6 +17,7 @@
 #include "fboss/agent/hw/sai/store/SaiStore.h"
 #include "fboss/agent/hw/sai/switch/SaiAclTableGroupManager.h"
 #include "fboss/agent/hw/sai/switch/SaiArsManager.h"
+#include "fboss/agent/hw/sai/switch/SaiArsProfileManager.h"
 #include "fboss/agent/hw/sai/switch/SaiHostifManager.h"
 #include "fboss/agent/hw/sai/switch/SaiManagerTable.h"
 #include "fboss/agent/hw/sai/switch/SaiMirrorManager.h"
@@ -1292,7 +1293,9 @@ AclEntrySaiId SaiAclTableManager::addAclEntry(
                 SaiAclEntryTraits::Attributes::ActionDisableArsForwarding{
                     false};
 #if SAI_API_VERSION >= SAI_VERSION(1, 16, 0)
-            if (FLAGS_enable_th6_ars_scale_mode) {
+            auto arsProfileHandle =
+                managerTable_->arsProfileManager().getArsProfileHandle();
+            if (arsProfileHandle && arsProfileHandle->arsVirtualGroupsEnabled) {
               aclActionL3SwitchCancel =
                   SaiAclEntryTraits::Attributes::ActionL3SwitchCancel{true};
             }
@@ -1684,6 +1687,8 @@ std::set<cfg::AclTableQualifier> SaiAclTableManager::getSupportedQualifierSet(
       platform_->getAsic()->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO2;
   bool isJericho3 =
       platform_->getAsic()->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO3;
+  bool isQumran4d =
+      platform_->getAsic()->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D;
   bool isTomahawk5 =
       platform_->getAsic()->getAsicType() == cfg::AsicType::ASIC_TYPE_TOMAHAWK5;
   bool isChenab =
@@ -1736,7 +1741,7 @@ std::set<cfg::AclTableQualifier> SaiAclTableManager::getSupportedQualifierSet(
         cfg::AclTableQualifier::TTL,
     };
     return jericho2Qualifiers;
-  } else if (isJericho3) {
+  } else if (isJericho3 || isQumran4d) {
     std::set<cfg::AclTableQualifier> jericho3Qualifiers = {
         cfg::AclTableQualifier::ETHER_TYPE,
         cfg::AclTableQualifier::SRC_IPV6,

@@ -1543,6 +1543,7 @@ enum AsicType {
   ASIC_TYPE_G202X = 20,
   ASIC_TYPE_FAKE_NO_WARMBOOT = 21,
   ASIC_TYPE_TOMAHAWKULTRA1 = 22,
+  ASIC_TYPE_QUMRAN4D = 23,
 }
 /**
  * The configuration for an interface
@@ -2264,6 +2265,10 @@ struct FlowletSwitchingConfig {
   16: optional i32 alternatePathBias;
   // minimum width for ARS virtual group
   17: optional i32 minWidthForArsVirtualGroup;
+  // ARS virtual group max width
+  18: optional i32 maxArsVirtualGroupWidth;
+  // maximum number of ARS virtual groups
+  19: optional i32 maxArsVirtualGroups;
 }
 
 /*

@@ -1175,6 +1175,7 @@ void ThriftConfigApplier::processUpdatedDsfNodes() {
             asicCore = 1;
             break;
           case cfg::AsicType::ASIC_TYPE_JERICHO3:
+          case cfg::AsicType::ASIC_TYPE_QUMRAN4D:
             if (isDualStage3Q2QMode()) {
               asicCore = 447;
             } else {
@@ -4798,6 +4799,14 @@ ThriftConfigApplier::createFlowletSwitchingConfig(
   if (config.minWidthForArsVirtualGroup()) {
     newFlowletSwitchingConfig->setMinWidthForArsVirtualGroup(
         *config.minWidthForArsVirtualGroup());
+  }
+  if (config.maxArsVirtualGroupWidth()) {
+    newFlowletSwitchingConfig->setMaxArsVirtualGroupWidth(
+        *config.maxArsVirtualGroupWidth());
+  }
+  if (config.maxArsVirtualGroups()) {
+    newFlowletSwitchingConfig->setMaxArsVirtualGroups(
+        *config.maxArsVirtualGroups());
   }
   return newFlowletSwitchingConfig;
 }

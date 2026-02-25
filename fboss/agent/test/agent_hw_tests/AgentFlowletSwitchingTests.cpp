@@ -18,6 +18,7 @@
 #include "fboss/agent/packet/PktFactory.h"
 #include "fboss/agent/test/AgentHwTest.h"
 #include "fboss/agent/test/EcmpSetupHelper.h"
+#include "fboss/agent/test/agent_hw_tests/AgentTestEcmpConstants.h"
 #include "fboss/agent/test/utils/AclTestUtils.h"
 #include "fboss/agent/test/utils/ConfigUtils.h"
 #include "fboss/agent/test/utils/LoadBalancerTestUtils.h"
@@ -776,7 +777,6 @@ class AgentFlowletWideArsSwitchingTest : public AgentFlowletSwitchingTest {
   }
   void setCmdLineFlagOverrides() const override {
     AgentFlowletSwitchingTest::setCmdLineFlagOverrides();
-    FLAGS_enable_th6_ars_scale_mode = true;
     FLAGS_dlbResourceCheckEnable = false;
     FLAGS_enable_route_resource_protection = false;
     FLAGS_ecmp_width = kWideEcmpWidth;
@@ -786,6 +786,7 @@ class AgentFlowletWideArsSwitchingTest : public AgentFlowletSwitchingTest {
   static constexpr int kWideEcmpWidth = 256;
   static constexpr int kStatsCheckInterval = 25;
   static constexpr int kMinWidthForArsVirtualGroup = 65;
+  static constexpr int kMaxVirtualArsGroups = 256;
 
   std::vector<PortID> getSubsidiaryPorts(const AgentEnsemble& ensemble) const {
     auto portsByControllingPort = utility::getSubsidiaryPortIDs(
@@ -852,6 +853,8 @@ class AgentFlowletWideArsSwitchingTest : public AgentFlowletSwitchingTest {
         backupSwitchingMode);
     cfg.flowletSwitchingConfig()->minWidthForArsVirtualGroup() =
         kMinWidthForArsVirtualGroup;
+    cfg.flowletSwitchingConfig()->maxArsVirtualGroups() = kMaxVirtualArsGroups;
+    cfg.flowletSwitchingConfig()->maxArsVirtualGroupWidth() = kWideEcmpWidth;
     return cfg;
   }
 

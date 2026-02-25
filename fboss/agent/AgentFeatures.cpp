@@ -454,9 +454,12 @@ DEFINE_string(
     "thrift_switch_state",
     "File for dumping switch state in serialized thrift format on exit");
 
-DEFINE_bool(enable_th6_ars_scale_mode, false, "Enable ARS scale mode");
-
 DEFINE_bool(
     qsfp_port_manager_mode,
     false,
     "Set to true to enable Port Manager mode. This means PortManager object will manage all port-level logic and TransceiverManager object will only manage transceiver-level logic.");
+
+DEFINE_bool(
+    verify_fib_nexthop_id_consistency,
+    false,
+    "Verify FIB route NextHop IDs are consistent with inline nexthops.");
