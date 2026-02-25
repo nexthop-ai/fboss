@@ -962,49 +962,6 @@ if __name__ == "__main__":
         for target in targets:
             cmd.extend(["--target", target])
 
-<<<<<<< HEAD
-        cmd.extend([
-            "--config",
-            self.build_opts.build_type,
-            "-j",
-            str(self.num_jobs),
-        ])
-
-        self._check_cmd(cmd, env=env)
-
-    def _get_missing_test_executables(
-        self, test_filter: Optional[str], env: Env, ctest: Optional[str]
-    ) -> typing.Set[str]:
-        """Discover which test executables are missing for the given filter.
-        Returns a set of missing executable basenames (without path)."""
-        if ctest is None:
-            return set()
-
-        # Run ctest -N (show tests without running) with the filter to see which tests match
-        cmd = [ctest, "-N"]
-        if test_filter:
-            cmd += ["-R", test_filter]
-
-        try:
-            output = subprocess.check_output(
-                cmd,
-                env=env,
-                cwd=self.build_dir,
-                stderr=subprocess.STDOUT,
-                text=True
-            )
-        except subprocess.CalledProcessError as e:
-            # If ctest fails, it might be because executables don't exist yet
-            # Parse the error output to find the missing executables
-            output = e.output
-
-        # Parse output to find missing executable paths
-        # Look for lines like "Could not find executable /path/to/test_binary"
-        missing_executables = set()
-        for line in output.split('\n'):
-            match = re.search(r'Could not find executable (.+)', line)
-||||||| 716bedba53
-=======
         cmd.extend(
             [
                 "--config",
@@ -1047,7 +1004,6 @@ if __name__ == "__main__":
         missing_executables = set()
         for line in output.split("\n"):
             match = re.search(r"Could not find executable (.+)", line)
->>>>>>> 2d8d425e2cb666e8325cbc136b8199006fbd3d48
             if match:
                 exe_path = match.group(1)
                 exe_name = os.path.basename(exe_path)
@@ -1072,14 +1028,9 @@ if __name__ == "__main__":
         # Build only the missing test executables needed for the given filter.
         # This is especially important for LocalDirFetcher projects (like fboss)
         # where the build marker gets removed when building specific cmake targets.
-<<<<<<< HEAD
-        missing_test_executables = self._get_missing_test_executables(test_filter, env, ctest)
-||||||| 716bedba53
-=======
         missing_test_executables = self._get_missing_test_executables(
             test_filter, env, ctest
         )
->>>>>>> 2d8d425e2cb666e8325cbc136b8199006fbd3d48
         if missing_test_executables:
             sorted_executables = sorted(missing_test_executables)
             print(f"Building missing test executables: {', '.join(sorted_executables)}")

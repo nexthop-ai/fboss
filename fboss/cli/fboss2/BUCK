@@ -873,12 +873,8 @@ cpp_library(
         "commands/config/interface/switchport/CmdConfigInterfaceSwitchport.cpp",
         "commands/config/interface/switchport/access/CmdConfigInterfaceSwitchportAccess.cpp",
         "commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.cpp",
-<<<<<<< HEAD
         "commands/config/l2/CmdConfigL2.cpp",
         "commands/config/l2/learning_mode/CmdConfigL2LearningMode.cpp",
-        "commands/config/qos/CmdConfigQos.cpp",
-||||||| 716bedba53
-=======
         "commands/config/protocol/CmdConfigProtocol.cpp",
         "commands/config/protocol/bgp/BgpConfigSession.cpp",
         "commands/config/protocol/bgp/CmdConfigProtocolBgp.cpp",
@@ -938,7 +934,7 @@ cpp_library(
         "commands/config/protocol/bgp/peer/CmdConfigProtocolBgpPeerV4OverV6Nh.cpp",
         "commands/config/protocol/bgp/peer/CmdConfigProtocolBgpPeerWarningLimit.cpp",
         "commands/config/protocol/bgp/peer/CmdConfigProtocolBgpPeerWarningOnly.cpp",
->>>>>>> 2d8d425e2cb666e8325cbc136b8199006fbd3d48
+        "commands/config/qos/CmdConfigQos.cpp",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPool.cpp",
         "commands/config/qos/policy/CmdConfigQosPolicy.cpp",
         "commands/config/qos/policy/CmdConfigQosPolicyMap.cpp",
@@ -973,11 +969,8 @@ cpp_library(
         "commands/config/interface/switchport/CmdConfigInterfaceSwitchport.h",
         "commands/config/interface/switchport/access/CmdConfigInterfaceSwitchportAccess.h",
         "commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.h",
-<<<<<<< HEAD
         "commands/config/l2/CmdConfigL2.h",
         "commands/config/l2/learning_mode/CmdConfigL2LearningMode.h",
-||||||| 716bedba53
-=======
         "commands/config/protocol/CmdConfigProtocol.h",
         "commands/config/protocol/bgp/BgpConfigSession.h",
         "commands/config/protocol/bgp/CmdConfigProtocolBgp.h",
@@ -1020,7 +1013,6 @@ cpp_library(
         "commands/config/protocol/bgp/peer/CmdConfigProtocolBgpPeerRemoteAsn.h",
         "commands/config/protocol/bgp/peer/CmdConfigProtocolBgpPeerRrClient.h",
         "commands/config/protocol/bgp/peer/CmdConfigProtocolBgpPeerV4OverV6Nh.h",
->>>>>>> 2d8d425e2cb666e8325cbc136b8199006fbd3d48
         "commands/config/qos/CmdConfigQos.h",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPool.h",
         "commands/config/qos/policy/CmdConfigQosPolicy.h",

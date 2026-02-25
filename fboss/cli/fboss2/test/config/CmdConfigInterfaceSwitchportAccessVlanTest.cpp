@@ -2,42 +2,14 @@
 
 #include "fboss/cli/fboss2/test/config/CmdConfigTestBase.h"
 
-<<<<<<< HEAD:fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
 #include <boost/filesystem/operations.hpp>
-||||||| 716bedba53:fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
-#include <boost/filesystem.hpp>
-=======
->>>>>>> 2d8d425e2cb666e8325cbc136b8199006fbd3d48:fboss/cli/fboss2/test/config/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-<<<<<<< HEAD:fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
 #include <filesystem>
 #include <fstream>
-||||||| 716bedba53:fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
-#include <filesystem>
-#include <fstream>
-#include <sstream>
-=======
->>>>>>> 2d8d425e2cb666e8325cbc136b8199006fbd3d48:fboss/cli/fboss2/test/config/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
 
 #include "fboss/cli/fboss2/commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
-<<<<<<< HEAD:fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
-#include "fboss/cli/fboss2/session/Git.h"
-#include "fboss/cli/fboss2/test/CmdHandlerTestBase.h"
-#include "fboss/cli/fboss2/test/TestableConfigSession.h"
-#include "fboss/cli/fboss2/utils/InterfacesConfig.h"
-#include "fboss/cli/fboss2/utils/PortMap.h" // NOLINT(misc-include-cleaner)
-
-namespace fs = std::filesystem;
-||||||| 716bedba53:fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
-#include "fboss/cli/fboss2/test/CmdHandlerTestBase.h"
-#include "fboss/cli/fboss2/test/TestableConfigSession.h"
-#include "fboss/cli/fboss2/utils/PortMap.h"
-
-namespace fs = std::filesystem;
-=======
->>>>>>> 2d8d425e2cb666e8325cbc136b8199006fbd3d48:fboss/cli/fboss2/test/config/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
 
 using namespace ::testing;
 
@@ -46,81 +18,10 @@ namespace facebook::fboss {
 class CmdConfigInterfaceSwitchportAccessVlanTestFixture
     : public CmdConfigTestBase {
  public:
-<<<<<<< HEAD:fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
-  void SetUp() override {
-    CmdHandlerTestBase::SetUp();
-
-    // Create unique test directories
-    auto tempBase = fs::temp_directory_path();
-    auto uniquePath = boost::filesystem::unique_path(
-        "fboss_switchport_test_%%%%-%%%%-%%%%-%%%%");
-    testHomeDir_ = tempBase / (uniquePath.string() + "_home");
-    testEtcDir_ = tempBase / (uniquePath.string() + "_etc");
-
-    std::error_code ec;
-    if (fs::exists(testHomeDir_)) {
-      fs::remove_all(testHomeDir_, ec);
-    }
-    if (fs::exists(testEtcDir_)) {
-      fs::remove_all(testEtcDir_, ec);
-    }
-
-    // Create test directories
-    fs::create_directories(testHomeDir_);
-    // System config dir is the Git repository root
-    systemConfigDir_ = testEtcDir_ / "coop";
-    sessionConfigDir_ = testHomeDir_ / ".fboss2";
-    fs::create_directories(systemConfigDir_ / "cli");
-
-    // NOLINTNEXTLINE(concurrency-mt-unsafe) - acceptable in unit tests
-    setenv("HOME", testHomeDir_.c_str(), 1);
-    // NOLINTNEXTLINE(concurrency-mt-unsafe) - acceptable in unit tests
-    setenv("USER", "testuser", 1);
-
-    // Initialize Git repository
-    Git git(systemConfigDir_.string());
-    git.init();
-
-    // Create a test system config file at cli/agent.conf
-    fs::path cliConfigPath = systemConfigDir_ / "cli" / "agent.conf";
-    createTestConfig(cliConfigPath, R"({
-||||||| 716bedba53:fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
-  void SetUp() override {
-    CmdHandlerTestBase::SetUp();
-
-    // Create unique test directories
-    auto tempBase = fs::temp_directory_path();
-    auto uniquePath = boost::filesystem::unique_path(
-        "fboss_switchport_test_%%%%-%%%%-%%%%-%%%%");
-    testHomeDir_ = tempBase / (uniquePath.string() + "_home");
-    testEtcDir_ = tempBase / (uniquePath.string() + "_etc");
-
-    std::error_code ec;
-    if (fs::exists(testHomeDir_)) {
-      fs::remove_all(testHomeDir_, ec);
-    }
-    if (fs::exists(testEtcDir_)) {
-      fs::remove_all(testEtcDir_, ec);
-    }
-
-    // Create test directories
-    fs::create_directories(testHomeDir_);
-    fs::create_directories(testEtcDir_ / "coop");
-    fs::create_directories(testEtcDir_ / "coop" / "cli");
-
-    // Set environment variables
-    setenv("HOME", testHomeDir_.c_str(), 1);
-    setenv("USER", "testuser", 1);
-
-    // Create a test system config file with ports and vlanPorts
-    fs::path initialRevision = testEtcDir_ / "coop" / "cli" / "agent-r1.conf";
-    createTestConfig(initialRevision, R"({
-=======
   CmdConfigInterfaceSwitchportAccessVlanTestFixture()
       : CmdConfigTestBase(
             "fboss_switchport_test_%%%%-%%%%-%%%%-%%%%",
             R"({
->>>>>>> 2d8d425e2cb666e8325cbc136b8199006fbd3d48:fboss/cli/fboss2/test/config/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
   "sw": {
     "ports": [
       {
@@ -155,83 +56,12 @@ class CmdConfigInterfaceSwitchportAccessVlanTestFixture
   }
 })") {}
 
-<<<<<<< HEAD:fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
-    // Create symlink at agent.conf -> cli/agent.conf
-    fs::create_symlink("cli/agent.conf", systemConfigDir_ / "agent.conf");
-||||||| 716bedba53:fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
-    // Create symlink
-    systemConfigPath_ = testEtcDir_ / "coop" / "agent.conf";
-    fs::create_symlink(initialRevision, systemConfigPath_);
-=======
   void SetUp() override {
     CmdConfigTestBase::SetUp();
->>>>>>> 2d8d425e2cb666e8325cbc136b8199006fbd3d48:fboss/cli/fboss2/test/config/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
 
-<<<<<<< HEAD:fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
-    // Create initial commit
-    git.commit({"cli/agent.conf"}, "Initial commit");
-||||||| 716bedba53:fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
-    // Create session config path
-    sessionConfigPath_ = testHomeDir_ / ".fboss2" / "agent.conf";
-    cliConfigDir_ = testEtcDir_ / "coop" / "cli";
-=======
     setupTestableConfigSession(
         "config interface switchport access vlan eth1/1/1", "100");
->>>>>>> 2d8d425e2cb666e8325cbc136b8199006fbd3d48:fboss/cli/fboss2/test/config/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
   }
-<<<<<<< HEAD:fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
-
-  void TearDown() override {
-    // Reset the singleton to ensure tests don't interfere with each other
-    TestableConfigSession::setInstance(nullptr);
-    std::error_code ec;
-    if (fs::exists(testHomeDir_)) {
-      fs::remove_all(testHomeDir_, ec);
-    }
-    if (fs::exists(testEtcDir_)) {
-      fs::remove_all(testEtcDir_, ec);
-    }
-    CmdHandlerTestBase::TearDown();
-  }
-
- protected:
-  void createTestConfig(const fs::path& path, const std::string& content) {
-    std::ofstream file(path);
-    file << content;
-    file.close();
-  }
-
-  fs::path testHomeDir_;
-  fs::path testEtcDir_;
-  fs::path systemConfigDir_;
-  fs::path sessionConfigDir_;
-||||||| 716bedba53:fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
-
-  void TearDown() override {
-    std::error_code ec;
-    if (fs::exists(testHomeDir_)) {
-      fs::remove_all(testHomeDir_, ec);
-    }
-    if (fs::exists(testEtcDir_)) {
-      fs::remove_all(testEtcDir_, ec);
-    }
-    CmdHandlerTestBase::TearDown();
-  }
-
- protected:
-  void createTestConfig(const fs::path& path, const std::string& content) {
-    std::ofstream file(path);
-    file << content;
-    file.close();
-  }
-
-  fs::path testHomeDir_;
-  fs::path testEtcDir_;
-  fs::path systemConfigPath_;
-  fs::path sessionConfigPath_;
-  fs::path cliConfigDir_;
-=======
->>>>>>> 2d8d425e2cb666e8325cbc136b8199006fbd3d48:fboss/cli/fboss2/test/config/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
 };
 
 // Tests for VlanIdValue validation
@@ -317,21 +147,6 @@ TEST_F(
 TEST_F(
     CmdConfigInterfaceSwitchportAccessVlanTestFixture,
     queryClientSetsIngressVlanMultiplePorts) {
-<<<<<<< HEAD:fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
-  fs::create_directories(sessionConfigDir_);
-
-  TestableConfigSession::setInstance(
-      std::make_unique<TestableConfigSession>(
-          sessionConfigDir_.string(), systemConfigDir_.string()));
-
-||||||| 716bedba53:fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
-  TestableConfigSession session(
-      sessionConfigPath_.string(),
-      systemConfigPath_.string(),
-      cliConfigDir_.string());
-
-=======
->>>>>>> 2d8d425e2cb666e8325cbc136b8199006fbd3d48:fboss/cli/fboss2/test/config/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
   auto cmd = CmdConfigInterfaceSwitchportAccessVlan();
   VlanIdValue vlanId({"2001"});
 
@@ -367,26 +182,7 @@ TEST_F(
 TEST_F(
     CmdConfigInterfaceSwitchportAccessVlanTestFixture,
     queryClientThrowsOnEmptyInterfaceList) {
-<<<<<<< HEAD:fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
-  fs::create_directories(sessionConfigDir_);
-
-  TestableConfigSession::setInstance(
-      std::make_unique<TestableConfigSession>(
-          sessionConfigDir_.string(), systemConfigDir_.string()));
-||||||| 716bedba53:fboss/cli/fboss2/test/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
-  TestableConfigSession session(
-      sessionConfigPath_.string(),
-      systemConfigPath_.string(),
-      cliConfigDir_.string());
-
-  auto cmd = CmdConfigInterfaceSwitchportAccessVlan();
-  VlanIdValue vlanId({"100"});
-=======
-  auto cmd = CmdConfigInterfaceSwitchportAccessVlan();
-  VlanIdValue vlanId({"100"});
->>>>>>> 2d8d425e2cb666e8325cbc136b8199006fbd3d48:fboss/cli/fboss2/test/config/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
-
-  // InterfacesConfig with empty input throws during construction
+  // InterfacesConfig constructor throws when given an empty list
   EXPECT_THROW(utils::InterfacesConfig({}), std::invalid_argument);
 }
 

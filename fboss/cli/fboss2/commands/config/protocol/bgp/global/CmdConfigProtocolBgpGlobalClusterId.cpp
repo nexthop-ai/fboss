@@ -13,6 +13,8 @@
 #include <fmt/core.h>
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/BgpConfigSession.h"
 
+#include "fboss/cli/fboss2/CmdHandler.cpp"
+
 namespace facebook::fboss {
 
 CmdConfigProtocolBgpGlobalClusterIdTraits::RetType
@@ -38,5 +40,10 @@ CmdConfigProtocolBgpGlobalClusterId::queryClient(
 void CmdConfigProtocolBgpGlobalClusterId::printOutput(const RetType& output) {
   std::cout << output << std::endl;
 }
+
+// Explicit template instantiation
+template void CmdHandler<
+    CmdConfigProtocolBgpGlobalClusterId,
+    CmdConfigProtocolBgpGlobalClusterIdTraits>::run();
 
 } // namespace facebook::fboss

@@ -63,7 +63,6 @@ cpp_unittest(
 cpp_unittest(
     name = "cmd_test",
     srcs = [
-<<<<<<< HEAD
         "CmdConfigAppliedInfoTest.cpp",
         "CmdConfigHistoryTest.cpp",
         "CmdConfigInterfaceSwitchportAccessVlanTest.cpp",
@@ -76,18 +75,6 @@ cpp_unittest(
         "CmdConfigSessionTest.cpp",
         "CmdConfigVlanPortTaggingModeTest.cpp",
         "CmdConfigVlanStaticMacTest.cpp",
-||||||| 716bedba53
-        "CmdConfigAppliedInfoTest.cpp",
-        "CmdConfigHistoryTest.cpp",
-        "CmdConfigInterfaceDescriptionTest.cpp",
-        "CmdConfigInterfaceMtuTest.cpp",
-        "CmdConfigInterfaceSwitchportAccessVlanTest.cpp",
-        "CmdConfigQosBufferPoolTest.cpp",
-        "CmdConfigReloadTest.cpp",
-        "CmdConfigSessionDiffTest.cpp",
-        "CmdConfigSessionTest.cpp",
-=======
->>>>>>> 2d8d425e2cb666e8325cbc136b8199006fbd3d48
         "CmdGetPcapTest.cpp",
         "CmdListConfigTest.cpp",
         "CmdSetPortStateTest.cpp",

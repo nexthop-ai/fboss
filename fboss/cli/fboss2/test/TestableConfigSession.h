@@ -30,11 +30,9 @@ class TestableConfigSession : public ConfigSession {
   // Expose protected setInstance() for testing
   using ConfigSession::setInstance;
 
-<<<<<<< HEAD
   // Expose protected addCommand() for testing
   using ConfigSession::addCommand;
-||||||| 716bedba53
-=======
+
   // Set the command line to return from readCommandLineFromProc().
   // This allows tests to simulate CLI commands without /proc/self/cmdline.
   void setCommandLine(const std::string& commandLine) {
@@ -48,7 +46,6 @@ class TestableConfigSession : public ConfigSession {
 
  private:
   std::string commandLine_;
->>>>>>> 2d8d425e2cb666e8325cbc136b8199006fbd3d48
 };
 
 } // namespace facebook::fboss

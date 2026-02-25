@@ -14,6 +14,8 @@
 #include <folly/Conv.h>
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/BgpConfigSession.h"
 
+#include "fboss/cli/fboss2/CmdHandler.cpp"
+
 namespace facebook::fboss {
 
 CmdConfigProtocolBgpGlobalConfedAsnTraits::RetType
@@ -46,5 +48,10 @@ CmdConfigProtocolBgpGlobalConfedAsn::queryClient(
 void CmdConfigProtocolBgpGlobalConfedAsn::printOutput(const RetType& output) {
   std::cout << output << std::endl;
 }
+
+// Explicit template instantiation
+template void CmdHandler<
+    CmdConfigProtocolBgpGlobalConfedAsn,
+    CmdConfigProtocolBgpGlobalConfedAsnTraits>::run();
 
 } // namespace facebook::fboss

@@ -20,11 +20,8 @@
 #include "fboss/cli/fboss2/commands/config/interface/switchport/CmdConfigInterfaceSwitchport.h"
 #include "fboss/cli/fboss2/commands/config/interface/switchport/access/CmdConfigInterfaceSwitchportAccess.h"
 #include "fboss/cli/fboss2/commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.h"
-<<<<<<< HEAD
 #include "fboss/cli/fboss2/commands/config/l2/CmdConfigL2.h"
 #include "fboss/cli/fboss2/commands/config/l2/learning_mode/CmdConfigL2LearningMode.h"
-||||||| 716bedba53
-=======
 #include "fboss/cli/fboss2/commands/config/protocol/CmdConfigProtocol.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/CmdConfigProtocolBgp.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobal.h"
@@ -83,7 +80,6 @@
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/peer/CmdConfigProtocolBgpPeerV4OverV6Nh.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/peer/CmdConfigProtocolBgpPeerWarningLimit.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/peer/CmdConfigProtocolBgpPeerWarningOnly.h"
->>>>>>> 2d8d425e2cb666e8325cbc136b8199006fbd3d48
 #include "fboss/cli/fboss2/commands/config/qos/CmdConfigQos.h"
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPool.h"
 #include "fboss/cli/fboss2/commands/config/qos/policy/CmdConfigQosPolicy.h"
@@ -161,7 +157,6 @@ const CommandTree& kConfigCommandTree() {
 
       {
           "config",
-<<<<<<< HEAD
           "l2",
           "Configure L2 settings",
           commandHandler<CmdConfigL2>,
@@ -172,8 +167,10 @@ const CommandTree& kConfigCommandTree() {
               commandHandler<CmdConfigL2LearningMode>,
               argTypeHandler<CmdConfigL2LearningModeTraits>,
           }},
-||||||| 716bedba53
-=======
+      },
+
+      {
+          "config",
           "protocol",
           "Configure protocol settings",
           commandHandler<CmdConfigProtocol>,
@@ -639,7 +636,6 @@ const CommandTree& kConfigCommandTree() {
                   },
               },
           },
->>>>>>> 2d8d425e2cb666e8325cbc136b8199006fbd3d48
       },
 
       {

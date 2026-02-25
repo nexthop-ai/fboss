@@ -410,20 +410,12 @@ void SaiPlatform::initPorts() {
       saiPort = std::make_unique<SaiYangraPlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_MINIPACK3N) {
       saiPort = std::make_unique<SaiMinipack3NPlatformPort>(portId, this);
-<<<<<<< HEAD
-    } else if (platformMode == PlatformType::PLATFORM_ICECUBE800BC) {
-      saiPort = std::make_unique<SaiBcmIcecube800bcPlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_NH4010) {
       saiPort = std::make_unique<SaiNh4010PlatformPort>(portId, this);
-||||||| 716bedba53
-    } else if (platformMode == PlatformType::PLATFORM_ICECUBE800BC) {
-      saiPort = std::make_unique<SaiBcmIcecube800bcPlatformPort>(portId, this);
-=======
     } else if (
         platformMode == PlatformType::PLATFORM_ICECUBE800BC ||
         platformMode == PlatformType::PLATFORM_ICECUBE800BANW) {
       saiPort = std::make_unique<SaiBcmIcecube800PlatformPort>(portId, this);
->>>>>>> 2d8d425e2cb666e8325cbc136b8199006fbd3d48
     } else if (platformMode == PlatformType::PLATFORM_ICETEA800BC) {
       saiPort = std::make_unique<SaiBcmIcetea800bcPlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_LADAKH800BCLS) {
