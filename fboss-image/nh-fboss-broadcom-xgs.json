@@ -18,8 +18,7 @@
       {"execute": "../../fboss_bsps/fboss_bsp/distro_build.sh"}
   ],
   "hw_agent_sai": {
-    "execute": "../../nhbroadcomsai/fboss-xgs/build_fboss_sai.sh",
-    "artifact": "sai-devel.tar"
+    "download": "file:distro_sai.tar"
   },
   "fboss-forwarding-stack": {
     "execute": ["../fboss/oss/scripts/nhfboss-stack.sh", "forwarding"],
