@@ -19,7 +19,7 @@ genrule(
         docker save -o fboss_builder.tar fboss_builder
         mv fboss_builder.tar $(RULEDIR)
     """,
-    local=True,
+    tags = ["no-sandbox"]
 )
 
 sh_library(
