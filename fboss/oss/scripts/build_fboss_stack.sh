@@ -102,12 +102,22 @@ if [ "$need_sai" -eq 1 ]; then
 
   if [ -n "${BUILD_SAI_FAKE:-}" ]; then
     sai_name="sai-fake"
+    export BUILD_SAI_FAKE
+    export BUILD_SAI_FAKE_LINK_TEST
   elif [ -n "${SAI_BRCM_IMPL:-}" ]; then
     sai_name="sai-bcm-${SAI_SDK_VERSION}"
+    export SAI_BRCM_IMPL
   else
     sai_name="sai-unknown-${SAI_SDK_VERSION}"
   fi
   echo "Using SAI implementation: $sai_name"
+
+  if [ -n "${SAI_VERSION:-}" ]; then
+    export SAI_VERSION
+  fi
+  if [ -n "${SAI_SDK_VERSION:-}" ]; then
+    export SAI_SDK_VERSION
+  fi
 fi
 
 # Use a scratch path for the CMake build tree.

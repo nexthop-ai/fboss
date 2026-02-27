@@ -19,7 +19,7 @@ genrule(
         docker save -o fboss_builder.tar fboss_builder
         mv fboss_builder.tar $(RULEDIR)
     """,
-    local=True,
+    tags = ["no-sandbox"]
 )
 
 sh_library(
@@ -120,54 +120,6 @@ fboss_unit_test(name = "weutil_crc16_ccitt_test", tags = ["not-for-ci"])
 fboss_unit_test(name = "weutil_fboss_eeprom_interface_test", tags = ["not-for-ci"])
 
 genrule(
-    name = "fboss-xgs",
-    srcs = [
-        "//fboss:fboss_builder.tar",
-        "//nhbroadcomsai/fboss-xgs:sai-devel.tar",
-        ".buckconfig",
-        "CMakeLists.txt",
-        "buck2",
-        "functions.cmake",
-        "getdeps.sh",
-        "sdk_dependencies.txt",
-    ] + glob(["build/**", # Avoid dot files, especially .sccache to which bazel doesn't have permission
-              "cmake/**",
-              "common/**",
-              "docs/**",
-              "fboss/**",
-    ]),
-    outs = [
-        "fboss-xgs-sai.tar.zst",
-    ],
-    cmd = """
-        if ! $$(docker images | grep -q fboss_builder); then
-            cat $(location //fboss:fboss_builder.tar) | docker image load
-        fi
-
-        mkdir -p fboss/.build_dir/sai .sccache
-        tar -C fboss/.build_dir/sai -xf $(location //nhbroadcomsai/fboss-xgs:sai-devel.tar)
-
-        pushd fboss
-        ./fboss/oss/scripts/run_in_builder.sh ./fboss/oss/scripts/build.sh
-        popd
-
-        for out in $(OUTS); do
-            filename=$$(basename $$out)
-            if [ $$filename = "fboss-xgs-sai.tar.zst" ]; then
-                cp fboss/fboss_bins.tar.zst $(location fboss-xgs-sai.tar.zst)
-            else
-                cp fboss/.build_dir/sai-bcm-SAI_VERSION_13_3_0_0_ODP/build/fboss/$$filename $(RULEDIR)/$$filename
-            fi
-        done
-    """,
-    tags = [
-        "no-sandbox",
-        "not-for-ci",
-        "exclusive",
-    ]
-)
-
-genrule(
     name = "distro_kernel_6.11",
     visibility = ["//visibility:public"],
     srcs = [
@@ -201,7 +153,8 @@ genrule(
         "//fboss_bsps/nexthop_bsp:distro_build_files",
         "//fboss_bsps/fboss_bsp:distro_build_files",
         "//fboss_extras/asic_init:distro_build_files",
-        ":fboss_builder_docker",
+        "//nhbroadcomsai/fboss-xgs:distro_sai.tar",
+        ":fboss_builder_docker", # Prevent concurrent building
         "distro_kernel_6.11.tar",
         ".buckconfig",
         "CMakeLists.txt",
@@ -217,13 +170,33 @@ genrule(
               "fboss-image/**",
     ], exclude = [
         "fboss-image/kernel",
+        "fboss-image/kernel.json",
+        "fboss-image/hw_agent_sai.json",
+        "fboss-image/distro_kernel_6.11.tar",
+        "fboss-image/distro_sai.tar",
+        "fboss-image/nh-fboss-broadcom-xgs.tar",
+        "fboss-image/nh-fboss-broadcom-xgs.bin",
+        "fboss-image/distro_cli/.artifacts/**",
+        "fboss-image/.docker/**",
+        "fboss-image/image_builder/output/**",
+        "fboss-image/image_builder/logs/**",
+        "fboss-image/image_builder/deps_staging/**",
+        "fboss-image/image_builder/templates/centos-09.0/root/**",
+        "fboss-image/image_builder/templates/centos-09.0/after_pkgs_install_file.json",
+        "fboss/oss/scripts/dist/**",
+        "**/*.swp",
+        "**/*.swo",
+        "**/*~",
+        "**/__pycache__/**",
+        "**/*.pyc",
     ]),
     outs = [
         "nh-fboss-broadcom-xgs.bin",
         "nh-fboss-broadcom-xgs.tar",
     ],
     cmd = """
-        ln $(location distro_kernel_6.11.tar) fboss/fboss-image/distro_kernel_6.11.tar
+        ln -f $(location distro_kernel_6.11.tar) fboss/fboss-image/distro_kernel_6.11.tar
+        ln -f $(location //nhbroadcomsai/fboss-xgs:distro_sai.tar) fboss/fboss-image/distro_sai.tar
         pushd fboss/fboss-image
         ./distro_cli/fboss-image build nh-fboss-broadcom-xgs.json 2>&1
         popd
