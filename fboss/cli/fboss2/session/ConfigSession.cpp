@@ -138,35 +138,6 @@ void ensureDirectoryExists(const std::string& dirPath) {
   }
 }
 
-/*
- * Read the command line from /proc/self/cmdline, skipping argv[0].
- * Returns the command arguments as a space-separated string,
- * e.g., "config interface eth1/1/1 mtu 9000"
- */
-std::string readCommandLineFromProc() {
-  std::ifstream file("/proc/self/cmdline");
-  if (!file) {
-    throw std::runtime_error(
-        fmt::format(
-            "Failed to open /proc/self/cmdline: {}", folly::errnoStr(errno)));
-  }
-
-  std::vector<std::string> args;
-  std::string arg;
-  bool first = true;
-  while (std::getline(file, arg, '\0')) {
-    if (first) {
-      // Skip argv[0] (program name)
-      first = false;
-      continue;
-    }
-    if (!arg.empty()) {
-      args.push_back(arg);
-    }
-  }
-  return folly::join(" ", args);
-}
-
 // Maximum number of conflicts to report before truncating with "and more"
 constexpr size_t kMaxConflicts = 10;
 
@@ -280,9 +251,39 @@ folly::dynamic threeWayMerge(
 
 } // anonymous namespace
 
-ConfigSession::ConfigSession()
-    : sessionConfigDir_(getHomeDirectory() + "/.fboss2"),
-      username_(getUsername()) {
+/*
+ * Read the command line from /proc/self/cmdline, skipping argv[0].
+ * Returns the command arguments as a space-separated string,
+ * e.g., "config interface eth1/1/1 mtu 9000"
+ */
+std::string ConfigSession::readCommandLineFromProc() const {
+  std::ifstream file("/proc/self/cmdline");
+  if (!file) {
+    throw std::runtime_error(
+        fmt::format(
+            "Failed to open /proc/self/cmdline: {}", folly::errnoStr(errno)));
+  }
+
+  std::vector<std::string> args;
+  std::string arg;
+  bool first = true;
+  while (std::getline(file, arg, '\0')) {
+    if (first) {
+      // Skip argv[0] (program name)
+      first = false;
+      continue;
+    }
+    if (!arg.empty()) {
+      args.push_back(arg);
+    }
+  }
+  return folly::join(" ", args);
+}
+
+ConfigSession::ConfigSession() {
+  username_ = getUsername();
+  std::string homeDir = getHomeDirectory();
+
   // Use AgentDirectoryUtil to get the config directory path
   // getConfigDirectory() returns /etc/coop/agent, so we get the parent to get
   // /etc/coop
@@ -532,7 +533,6 @@ void ConfigSession::updateRequiredAction(
   if (requiredActions_.find(service) == requiredActions_.end()) {
     requiredActions_[service] = cli::ConfigActionLevel::HITLESS;
   }
-
   // Only update if the new action level is higher (more impactful)
   if (static_cast<int>(actionLevel) >
       static_cast<int>(requiredActions_[service])) {

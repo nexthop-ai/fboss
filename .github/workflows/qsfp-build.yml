@@ -30,7 +30,6 @@ jobs:
           --target
           qsfp_targets
           --no-docker-output
-          --no-system-deps
           --local
           --num-jobs
           20

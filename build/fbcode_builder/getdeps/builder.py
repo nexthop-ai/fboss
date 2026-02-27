@@ -137,7 +137,16 @@ class BuilderBase(object):
             return
         old_wd = os.getcwd()
         os.chdir(self.src_dir)
-        print(f"Patching {self.manifest.name} with {self.patchfile} in {self.src_dir}")
+        # Apply patches from the git repo root so paths resolve correctly
+        # even when src_dir is a subdirectory of the repo.
+        try:
+            git_root = subprocess.check_output(
+                ["git", "rev-parse", "--show-toplevel"], text=True
+            ).strip()
+            os.chdir(git_root)
+        except subprocess.CalledProcessError:
+            pass  # not a git repo, stay in src_dir
+        print(f"Patching {self.manifest.name} with {self.patchfile} in {os.getcwd()}")
         patchfile = os.path.join(
             self.build_opts.fbcode_builder_dir, "patches", self.patchfile
         )
@@ -428,6 +437,8 @@ class AutoconfBuilder(BuilderBase):
             inst_dir,
         )
         self.args = args or []
+        if not build_opts.shared_libs and "--disable-shared" not in self.args:
+            self.args.append("--disable-shared")
         self.conf_env_args = conf_env_args or {}
 
     @property
@@ -951,12 +962,14 @@ if __name__ == "__main__":
         for target in targets:
             cmd.extend(["--target", target])
 
-        cmd.extend([
-            "--config",
-            self.build_opts.build_type,
-            "-j",
-            str(self.num_jobs),
-        ])
+        cmd.extend(
+            [
+                "--config",
+                self.build_opts.build_type,
+                "-j",
+                str(self.num_jobs),
+            ]
+        )
 
         self._check_cmd(cmd, env=env)
 
@@ -976,10 +989,10 @@ if __name__ == "__main__":
         try:
             output = subprocess.check_output(
                 cmd,
-                env=env,
+                env=dict(env.items()),
                 cwd=self.build_dir,
                 stderr=subprocess.STDOUT,
-                text=True
+                text=True,
             )
         except subprocess.CalledProcessError as e:
             # If ctest fails, it might be because executables don't exist yet
@@ -989,8 +1002,8 @@ if __name__ == "__main__":
         # Parse output to find missing executable paths
         # Look for lines like "Could not find executable /path/to/test_binary"
         missing_executables = set()
-        for line in output.split('\n'):
-            match = re.search(r'Could not find executable (.+)', line)
+        for line in output.split("\n"):
+            match = re.search(r"Could not find executable (.+)", line)
             if match:
                 exe_path = match.group(1)
                 exe_name = os.path.basename(exe_path)
@@ -1015,7 +1028,9 @@ if __name__ == "__main__":
         # Build only the missing test executables needed for the given filter.
         # This is especially important for LocalDirFetcher projects (like fboss)
         # where the build marker gets removed when building specific cmake targets.
-        missing_test_executables = self._get_missing_test_executables(test_filter, env, ctest)
+        missing_test_executables = self._get_missing_test_executables(
+            test_filter, env, ctest
+        )
         if missing_test_executables:
             sorted_executables = sorted(missing_test_executables)
             print(f"Building missing test executables: {', '.join(sorted_executables)}")

@@ -80,7 +80,7 @@ ls -lh /var/facebook/logs/fboss/qsfp_service_snapshots.log
 ```
 
 Boot history log format:
-```
+```plaintext
 [ 2025 November 04 03:51:17 ]: Start of a WARM_BOOT, SDK version: sdk, Agent version: buildPackageVersion
 [ 2025 November 04 03:52:55 ]: Start of a COLD_BOOT, SDK version: sdk, Agent version: buildPackageVersion
 ```
@@ -348,7 +348,7 @@ Debug builds include full debug symbols and disable optimizations for easier deb
 
 ```bash
 # Build FBOSS with Debug build type
-./build/fbcode_builder/getdeps.py build fboss --build-type Debug
+./fboss/oss/scripts/run-getdeps.py build fboss --build-type Debug
 ```
 
 For more information about the `--build-type` option and other build configurations, see [Build Type Options](../build/Building_FBOSS_on_containers.md#build-type-options).

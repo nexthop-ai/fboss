@@ -17,10 +17,7 @@
 #include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
 #include "fboss/cli/fboss2/session/Git.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
-
-namespace facebook::fboss::utils {
-class PortMap;
-}
+#include "fboss/cli/fboss2/utils/PortMap.h"
 
 namespace facebook::fboss {
 
@@ -87,7 +84,7 @@ namespace facebook::fboss {
 class ConfigSession {
  public:
   ConfigSession();
-  ~ConfigSession() = default;
+  virtual ~ConfigSession() = default;
 
   // Get or create the current config session
   // If no session exists, copies /etc/coop/agent.conf to ~/.fboss2/agent.conf
@@ -163,9 +160,6 @@ class ConfigSession {
   Git& getGit();
   const Git& getGit() const;
 
-  // Get the list of commands executed in this session
-  const std::vector<std::string>& getCommands() const;
-
   // Update the required action level for the current session.
   // Tracks the highest action level across all config commands.
   // Higher action levels take precedence (AGENT_COLDBOOT > AGENT_WARMBOOT >
@@ -183,6 +177,9 @@ class ConfigSession {
   // Get the systemd service name for a service type
   static std::string getServiceName(cli::ServiceType service);
 
+  // Get the list of commands executed in this session
+  const std::vector<std::string>& getCommands() const;
+
  protected:
   // Constructor for testing with custom paths
   ConfigSession(std::string sessionConfigDir, std::string systemConfigDir);
@@ -193,6 +190,13 @@ class ConfigSession {
   // Add a command to the history (for testing only)
   // This allows tests to simulate command tracking without /proc/self/cmdline
   void addCommand(const std::string& command);
+
+  // Read the command line for the current process from /proc/self/cmdline.
+  // Returns the command arguments as a space-separated string,
+  // e.g., "config interface eth1/1/1 mtu 9000"
+  // Throws runtime_error if the command line cannot be read.
+  // Virtual to allow tests to override with mock command lines.
+  virtual std::string readCommandLineFromProc() const;
 
  private:
   std::string sessionConfigDir_; // Typically ~/.fboss2
