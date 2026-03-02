@@ -193,6 +193,8 @@ genrule(
     outs = [
         "nh-fboss-broadcom-xgs.bin",
         "nh-fboss-broadcom-xgs.tar",
+        "fboss_forwarding_stack_tests.tar",
+        "fboss_platform_stack_tests.tar",
     ],
     cmd = """
         ln -f $(location distro_kernel_6.11.tar) fboss/fboss-image/distro_kernel_6.11.tar
@@ -203,6 +205,8 @@ genrule(
 
         $(execpath //nhtools:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.tar $(location nh-fboss-broadcom-xgs.tar)
         $(execpath //nhtools:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.bin $(location nh-fboss-broadcom-xgs.bin)
+        $(execpath //nhtools:ln_or_cp) fboss/forwarding-stack-tests.tar $(location fboss_forwarding_stack_tests.tar)
+        $(execpath //nhtools:ln_or_cp) fboss/platform-stack-tests.tar $(location fboss_platform_stack_tests.tar)
     """,
     tags = [
         "no-sandbox",
@@ -211,3 +215,5 @@ genrule(
 )
 upload_build_artifact("nh-fboss-broadcom-xgs.bin")
 upload_build_artifact("nh-fboss-broadcom-xgs.tar")
+upload_build_artifact("fboss_forwarding_stack_tests.tar")
+upload_build_artifact("fboss_platform_stack_tests.tar")
