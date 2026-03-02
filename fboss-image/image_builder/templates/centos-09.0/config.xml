@@ -138,6 +138,8 @@
         <package name="dmidecode"/>
         <package name="createrepo"/>
         <package name="libaio"/>
+        <!-- FBOSS CLI needs git to commit config changes under /etc/coop -->
+        <package name="git"/>
     </packages>
 
     <packages type="bootstrap">
