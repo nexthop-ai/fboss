@@ -22,8 +22,9 @@ SERVICES="$*"
 
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 TIMESTAMP=$(date +%s)
-BASE_SNAPSHOT="/distro-base"
-UPDATES_DIR="/updates"
+# Resolve symlinks to real paths (needed for systemd RootDirectory which doesn't follow symlinks)
+BASE_SNAPSHOT="$(readlink -f /distro-base)"
+UPDATES_DIR="$(readlink -f /updates)"
 
 echo "Updating component: ${COMPONENT}"
 echo "Services to restart: ${SERVICES}"

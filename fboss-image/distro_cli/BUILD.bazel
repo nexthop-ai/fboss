@@ -105,6 +105,28 @@ py_test(
 )
 
 py_test(
+    name = "device_integration_test",
+    srcs = ["tests/device_integration_test.py"],
+    imports = [".."],
+    deps = [
+        ":distro_cli_lib",
+        ":test_helpers",
+    ],
+    data = glob([
+        "tests/data/*.json",
+        "tests/test_topology/integration_data/*.json",
+        "tests/test_topology/integration_data/*.sh",
+    ]) + [
+        "scripts/update_service.sh",
+        "//fboss/fboss-image/distro_cli/tests/proxy_device:proxy_device_docker_image",
+    ],
+    main = "tests/device_integration_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "large",
+)
+
+py_test(
     name = "cli_test",
     srcs = ["tests/cli_test.py"],
     imports = [".."],
