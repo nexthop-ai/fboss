@@ -1,0 +1,35 @@
+exports_files([
+    "build.sh",
+    "Dockerfile",
+])
+
+filegroup(
+    name = "proxy_device_files",
+    srcs = glob(["**/*"]),
+    visibility = ["//visibility:public"],
+)
+
+genrule(
+    name = "proxy_device_docker_image",
+    srcs = [":proxy_device_files"],
+    outs = ["proxy_device_image.tar"],
+    local = True,
+    cmd = """
+        set -euo pipefail
+
+        IMAGE_NAME="fboss_proxy_device"
+        OUTPUT_TAR="$@"
+
+        # Check if image already exists to avoid unnecessary rebuilds
+        if ! docker images -q "$$IMAGE_NAME" | grep -q .; then
+            pushd fboss/fboss-image/distro_cli/tests/proxy_device > /dev/null
+            ./build.sh
+            popd > /dev/null
+        fi
+
+        mkdir -p $$(dirname "$$OUTPUT_TAR")
+        docker save -o "$$OUTPUT_TAR" "$$IMAGE_NAME"
+        ls -lh "$$OUTPUT_TAR"
+    """,
+    visibility = ["//visibility:public"],
+)
