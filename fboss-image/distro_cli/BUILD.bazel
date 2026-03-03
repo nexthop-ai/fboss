@@ -91,7 +91,13 @@ py_test(
         ":distro_cli_lib",
         ":test_helpers",
     ],
-    data = glob(["tests/data/*.json"]) + ["//fboss/fboss-image/distro_infra:distro_infra_docker_image"],
+    data = glob([
+        "tests/data/*.json",
+        "tests/data/artifacts/*.tar.zst",
+    ]) + [
+        "scripts/update_service.sh",
+        "//fboss/fboss-image/distro_infra:distro_infra_docker_image",
+    ],
     main = "tests/device_test.py",
     python_version = "PY3",
     srcs_version = "PY3",
