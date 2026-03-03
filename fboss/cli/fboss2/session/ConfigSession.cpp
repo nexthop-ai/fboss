@@ -291,6 +291,7 @@ ConfigSession::ConfigSession() {
   std::string coopDir =
       fs::path(dirUtil.getConfigDirectory()).parent_path().string();
 
+  sessionConfigDir_ = homeDir + "/.fboss2";
   systemConfigDir_ = coopDir;
   git_ = std::make_unique<Git>(coopDir);
   initializeSession();
