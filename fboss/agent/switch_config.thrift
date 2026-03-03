@@ -121,6 +121,7 @@ enum PortSpeed {
   TWOHUNDREDG = 200000, // 200G
   FOURHUNDREDG = 400000, // 400G
   EIGHTHUNDREDG = 800000, // 800G
+  ONEPOINTSIXT = 1600000, // 1.6T
   THREEPOINTTWOT = 3200000, // 3.2T
 }
 
@@ -1456,6 +1457,8 @@ struct VlanPort {
    * (Primarily useful when there are multiple VLANs on the same port.)
    */
   4: bool emitTags;
+  // whether to emit priority tags with vlan id 0 outgoing ethernet frames
+  5: bool emitPriorityTags;
 }
 
 /**
@@ -1544,6 +1547,7 @@ enum AsicType {
   ASIC_TYPE_FAKE_NO_WARMBOOT = 21,
   ASIC_TYPE_TOMAHAWKULTRA1 = 22,
   ASIC_TYPE_QUMRAN4D = 23,
+  ASIC_TYPE_JERICHO4 = 24,
 }
 /**
  * The configuration for an interface
@@ -2053,7 +2057,7 @@ struct SdkVersion {
   3: optional string firmware;
 }
 
-enum IpTunnelMode {
+enum TunnelMode {
   UNIFORM = 0,
   PIPE = 1,
   USER = 2,
@@ -2061,6 +2065,7 @@ enum IpTunnelMode {
 
 enum TunnelType {
   IP_IN_IP = 0,
+  SRV6_ENCAP = 1,
 }
 
 enum TunnelTerminationType {
@@ -2077,11 +2082,23 @@ struct IpInIpTunnel {
   4: optional string srcIp;
   5: optional string dstIpMask;
   6: optional string srcIpMask;
-  7: optional IpTunnelMode ttlMode;
-  8: optional IpTunnelMode dscpMode;
-  9: optional IpTunnelMode ecnMode;
+  7: optional TunnelMode ttlMode;
+  8: optional TunnelMode dscpMode;
+  9: optional TunnelMode ecnMode;
   10: optional TunnelTerminationType tunnelTermType;
   11: optional TunnelType tunnelType;
+}
+
+struct Srv6Tunnel {
+  1: string srv6TunnelId;
+  2: i32 underlayIntfID;
+  3: optional string srcIp;
+  4: optional string dstIp;
+  5: optional TunnelMode ttlMode;
+  6: optional TunnelMode dscpMode;
+  7: optional TunnelMode ecnMode;
+  8: optional TunnelTerminationType tunnelTermType;
+  9: TunnelType tunnelType;
 }
 
 enum DsfNodeType {
@@ -2415,4 +2432,5 @@ struct SwitchConfig {
   56: optional list<AclTableGroup> aclTableGroups;
   57: list<MirrorOnDropReport> mirrorOnDropReports = [];
   58: optional list<StaticMacEntry> staticMacAddrs;
+  59: optional list<Srv6Tunnel> srv6Tunnels;
 }
