@@ -227,18 +227,14 @@ std::unique_ptr<PlatformMapping> initPlatformMapping(PlatformType type) {
       return platformMappingStr.empty()
           ? std::make_unique<Ladakh800bclsPlatformMapping>()
           : std::make_unique<Ladakh800bclsPlatformMapping>(platformMappingStr);
-<<<<<<< HEAD
     case PlatformType::PLATFORM_WEDGE800BNHP:
       return platformMappingStr.empty()
           ? std::make_unique<Wedge800BNHPPlatformMapping>()
           : std::make_unique<Wedge800BNHPPlatformMapping>(platformMappingStr);
-||||||| 2d8d425e2c
-=======
     case PlatformType::PLATFORM_J4SIM:
       return platformMappingStr.empty()
           ? std::make_unique<J4SimPlatformMapping>()
           : std::make_unique<J4SimPlatformMapping>(platformMappingStr);
->>>>>>> 8908ebf1392908a7f3fa1c065e323ddc95630378
     case PlatformType::PLATFORM_BLACKWOLF800BANW:
       return platformMappingStr.empty()
           ? std::make_unique<Blackwolf800banwPlatformMapping>()

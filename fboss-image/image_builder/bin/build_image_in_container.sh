@@ -235,7 +235,6 @@ echo "Built on: $(date -u)" >"$DESCRIPTION_DIR/root/etc/build-info"
 dprint "Copying rootfs files to overlay..."
 cp -R ${DESCRIPTION_DIR}/root_files/* ${DESCRIPTION_DIR}/root/
 
-<<<<<<< HEAD
 # Remove any existing after_pkgs files from previous runs
 rm -f ${DESCRIPTION_DIR}/root/var/tmp/after_pkgs_install_file.json
 rm -f ${DESCRIPTION_DIR}/root/var/tmp/after_pkgs_execute_file.json
@@ -256,9 +255,6 @@ if [[ -n ${AFTER_PKGS_EXECUTE_FILE} && -f "${DESCRIPTION_DIR}/${AFTER_PKGS_EXECU
   cp ${DESCRIPTION_DIR}/${AFTER_PKGS_EXECUTE_FILE} ${DESCRIPTION_DIR}/root/var/tmp/after_pkgs_execute_file.json
 fi
 
-||||||| 2d8d425e2c
-=======
->>>>>>> 8908ebf1392908a7f3fa1c065e323ddc95630378
 # Generate the images
 PXE_RC=0
 ONIE_RC=0
