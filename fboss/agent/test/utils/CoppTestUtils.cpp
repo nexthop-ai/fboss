@@ -119,6 +119,7 @@ uint16_t getCoppHighPriQueueId(const HwAsic* hwAsic) {
     case cfg::AsicType::ASIC_TYPE_YUBA:
     case cfg::AsicType::ASIC_TYPE_JERICHO2:
     case cfg::AsicType::ASIC_TYPE_JERICHO3:
+    case cfg::AsicType::ASIC_TYPE_JERICHO4:
     case cfg::AsicType::ASIC_TYPE_QUMRAN4D:
     case cfg::AsicType::ASIC_TYPE_G202X:
       return 7;
@@ -137,10 +138,37 @@ uint16_t getCoppHighPriQueueId(const HwAsic* hwAsic) {
 
 uint16_t getCoppMidPriQueueId(const std::vector<const HwAsic*>& hwAsics) {
   auto hwAsic = checkSameAndGetAsic(hwAsics);
-  if (hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO3) {
-    return kJ3CoppMidPriQueueId;
+  switch (hwAsic->getAsicType()) {
+    case cfg::AsicType::ASIC_TYPE_JERICHO3:
+    case cfg::AsicType::ASIC_TYPE_JERICHO4:
+    case cfg::AsicType::ASIC_TYPE_QUMRAN4D:
+      return kJ3CoppMidPriQueueId;
+    case cfg::AsicType::ASIC_TYPE_FAKE:
+    case cfg::AsicType::ASIC_TYPE_FAKE_NO_WARMBOOT:
+    case cfg::AsicType::ASIC_TYPE_MOCK:
+    case cfg::AsicType::ASIC_TYPE_TRIDENT2:
+    case cfg::AsicType::ASIC_TYPE_TOMAHAWK:
+    case cfg::AsicType::ASIC_TYPE_TOMAHAWK3:
+    case cfg::AsicType::ASIC_TYPE_TOMAHAWK4:
+    case cfg::AsicType::ASIC_TYPE_TOMAHAWK5:
+    case cfg::AsicType::ASIC_TYPE_TOMAHAWK6:
+    case cfg::AsicType::ASIC_TYPE_TOMAHAWKULTRA1:
+    case cfg::AsicType::ASIC_TYPE_EBRO:
+    case cfg::AsicType::ASIC_TYPE_GARONNE:
+    case cfg::AsicType::ASIC_TYPE_YUBA:
+    case cfg::AsicType::ASIC_TYPE_G202X:
+    case cfg::AsicType::ASIC_TYPE_JERICHO2:
+    case cfg::AsicType::ASIC_TYPE_CHENAB:
+      return kCoppMidPriQueueId;
+    case cfg::AsicType::ASIC_TYPE_ELBERT_8DD:
+    case cfg::AsicType::ASIC_TYPE_SANDIA_PHY:
+    case cfg::AsicType::ASIC_TYPE_AGERA3:
+    case cfg::AsicType::ASIC_TYPE_RAMON:
+    case cfg::AsicType::ASIC_TYPE_RAMON3:
+      throw FbossError(
+          "AsicType ", hwAsic->getAsicType(), " doesn't support queue feature");
   }
-  return kCoppMidPriQueueId;
+  throw FbossError("Unexpected AsicType ", hwAsic->getAsicType());
 }
 
 uint16_t getCoppHighPriQueueId(const std::vector<const HwAsic*>& hwAsics) {
@@ -167,6 +195,7 @@ cfg::ToCpuAction getCpuActionType(const HwAsic* hwAsic) {
       return cfg::ToCpuAction::COPY;
     case cfg::AsicType::ASIC_TYPE_JERICHO2:
     case cfg::AsicType::ASIC_TYPE_JERICHO3:
+    case cfg::AsicType::ASIC_TYPE_JERICHO4:
     case cfg::AsicType::ASIC_TYPE_QUMRAN4D:
     case cfg::AsicType::ASIC_TYPE_CHENAB:
       return cfg::ToCpuAction::TRAP;
@@ -249,6 +278,7 @@ cfg::PortQueueRate getPortQueueRate(const HwAsic* hwAsic, uint16_t queueId) {
   } else {
     uint32_t kbps;
     if (hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO3 ||
+        hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO4 ||
         hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D) {
       kbps = kCoppDnxLowPriKbitsPerSec;
     } else {

@@ -227,6 +227,7 @@ env -i \
   kernel-install add "${KERNEL_VERSION}" "${VMLINUZ_PATH}" --initrd-file "${INITRD_PATH}"
 echo "Custom kernel ${KERNEL_VERSION} install complete."
 
+<<<<<<< HEAD
 # 5. Configure SSH to allow password authentication and root login
 echo "Configuring SSH..."
 sed -i 's/^[# \t]*PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
@@ -317,6 +318,19 @@ EOF
 chmod +x "$MODULE_DIR/module-setup.sh"
 
 #-------------------------------------------------------
+||||||| 2d8d425e2c
+=======
+# 5. Enable systemd services
+echo "Enabling FBOSS systemd services..."
+systemctl enable platform_manager.service
+systemctl enable data_corral_service.service
+systemctl enable fan_service.service
+systemctl enable sensor_service.service
+systemctl enable fsdb.service
+systemctl enable qsfp_service.service
+systemctl enable wedge_agent.service
+
+>>>>>>> 8908ebf1392908a7f3fa1c065e323ddc95630378
 # 6. Use system GRUB 2.06 from packages
 # The grub2-efi-x64 package already provides grubx64.efi with all necessary modules
 # We just need to make sure the btrfs module is accessible on the EFI partition

@@ -3,10 +3,13 @@
 #include "fboss/agent/ValidateStateUpdate.h"
 
 #include "fboss/agent/FbossError.h"
+#include "fboss/agent/HwAsicTable.h"
+#include "fboss/agent/HwSwitchHandler.h"
 #include "fboss/agent/SwitchIdScopeResolver.h"
 #include "fboss/agent/hw/switch_asics/HwAsic.h"
 #include "fboss/agent/state/DeltaFunctions.h"
 #include "fboss/agent/state/StateDelta.h"
+
 #include "fboss/agent/state/SwitchState.h"
 
 using facebook::fboss::DeltaFunctions::forEachChanged;
@@ -200,6 +203,31 @@ bool isStateUpdateValidMultiSwitch(
     SwitchID switchID,
     const HwAsic* asic) {
   return isStateUpdateValidMultiSwitch(delta, resolver, {{switchID, asic}});
+}
+
+StateUpdateValidator::StateUpdateValidator(
+    const cfg::AgentRunMode& runMode,
+    const HwSwitchHandler* hwSwitchHandler,
+    const HwAsicTable* asicTable,
+    const SwitchIdScopeResolver* scopeResolver)
+    : runMode_(runMode),
+      hwSwitchHandler_(hwSwitchHandler),
+      asicTable_(asicTable),
+      scopeResolver_(scopeResolver) {}
+
+bool StateUpdateValidator::isValidUpdate(
+    const StateDelta& delta,
+    SwitchStats* /* stats */) const {
+  switch (runMode_) {
+    case cfg::AgentRunMode::MONO: {
+      return isStateUpdateValidCommon(delta) &&
+          hwSwitchHandler_->isValidStateUpdate(delta);
+    }
+    case cfg::AgentRunMode::MULTI_SWITCH:
+      return isStateUpdateValidMultiSwitch(
+          delta, scopeResolver_, asicTable_->getHwAsics());
+  }
+  throw FbossError("Invalid run mode: ", runMode_);
 }
 
 } // namespace facebook::fboss
