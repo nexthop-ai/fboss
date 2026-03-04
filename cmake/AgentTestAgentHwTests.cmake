@@ -342,6 +342,7 @@ find_library(SAI_IMPL sai_impl)
 message(STATUS "SAI_IMPL: ${SAI_IMPL}")
 
 if(SAI_IMPL)
+  add_sai_sdk_dependencies(multi_switch_agent_hw_test)
   BUILD_SAI_AGENT_HW_TEST("sai_impl" ${SAI_IMPL})
   install(
     TARGETS
