@@ -1116,6 +1116,17 @@ if (SAI_IMPL OR BUILD_SAI_FAKE)
       fboss_hw_agent-sai_impl
       fboss_sw_agent
       wedge_agent-sai_impl
+      sai_test-sai_impl
+      sai_agent_hw_test-sai_impl
+      sai_agent_scale_test-sai_impl
+      sai_invariant_agent_test-sai_impl
+      sai_link_test-sai_impl
+      sai_mono_link_test-sai_impl
+      sai_multi_link_test-sai_impl
+      sai_replayer-sai_impl
+      multi_switch_agent_hw_test
+      qsfp_hw_test
+      led_service_hw_test
     )
   endif()
 endif()
