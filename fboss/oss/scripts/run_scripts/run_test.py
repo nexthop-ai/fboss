@@ -1523,12 +1523,17 @@ class PlatformServicesTestRunner(TestRunner):
     def _filter_tests(self, tests: List[str]) -> List[str]:
         return tests
 
-    def _run_tests(self, tests_to_run, conf_file, args):
+    def _run_tests(self, tests_to_run, conf_file, args) -> tuple[list, list]:
         test_binary_name = self._get_test_binary_name()
         test_outputs = []
+        test_results = []
         num_tests = len(tests_to_run)
         for idx, test_to_run in enumerate(tests_to_run):
             test_prefix = test_binary_name + "."
+            try:
+                os.unlink(self.TESTRESULT_CURRENT_RUN_FILE)
+            except FileNotFoundError:
+                pass
             print("########## Running test: " + test_to_run, flush=True)
             test_output = self._run_test(
                 conf_file,
@@ -1546,9 +1551,14 @@ class PlatformServicesTestRunner(TestRunner):
                 flush=True,
             )
             test_outputs.append(test_output)
+            # Reads each test result file (updated by _run_test above) and appends it with
+            # args.type as a subscript (e.g., TestName[fan_service_hw_test])
+            test_results.append(
+                self.get_updated_test_result_with_classname_subscript(args.type)
+            )
 
         self._end_run()
-        return test_outputs
+        return test_outputs, test_results
 
     def run_test(self, args):
         args.fruid_path = None
@@ -1561,6 +1571,7 @@ class PlatformServicesTestRunner(TestRunner):
         self._initialize_test_lists(args)
 
         output = []
+        results = []
         start_time = datetime.now()
 
         for test_type in self.TEST_TYPE_CHOICES:
@@ -1576,7 +1587,11 @@ class PlatformServicesTestRunner(TestRunner):
                     else self._get_config_path()
                 )
                 conf_file = self._backup_and_modify_config(original_conf_file)
-                output.extend(self._run_tests(tests_to_run, conf_file, args))
+                test_outputs, test_results = self._run_tests(
+                    tests_to_run, conf_file, args
+                )
+                output.extend(test_outputs)
+                results.extend(test_results)
 
         end_time = datetime.now()
         delta_time = end_time - start_time
@@ -1585,6 +1600,7 @@ class PlatformServicesTestRunner(TestRunner):
             flush=True,
         )
         self._print_output_summary(output)
+        self._write_results_to_xml(results)
 
 
 class CliTestRunner(TestRunner):
