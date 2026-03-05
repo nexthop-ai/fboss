@@ -1557,6 +1557,9 @@ class PlatformServicesTestRunner(TestRunner):
             super().run_test(args)
             return
 
+        # Initialize test lists once at the start
+        self._initialize_test_lists(args)
+
         output = []
         start_time = datetime.now()
 
