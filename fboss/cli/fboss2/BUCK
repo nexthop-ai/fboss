@@ -955,7 +955,11 @@ cpp_library(
         "commands/config/vlan/static_mac/delete/CmdConfigVlanStaticMacDelete.cpp",
         "session/ConfigSession.cpp",
         "session/Git.cpp",
+<<<<<<< HEAD
         "utils/InterfacesConfig.cpp",
+||||||| 8908ebf139
+=======
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
         "utils/InterfaceList.cpp",
     ],
     headers = [
@@ -1034,7 +1038,11 @@ cpp_library(
         "commands/config/vlan/static_mac/delete/CmdConfigVlanStaticMacDelete.h",
         "session/ConfigSession.h",
         "session/Git.h",
+<<<<<<< HEAD
         "utils/InterfacesConfig.h",
+||||||| 8908ebf139
+=======
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
         "utils/InterfaceList.h",
     ],
     exported_deps = [
@@ -1052,16 +1060,13 @@ cpp_library(
         "//fboss/agent/if:ctrl-cpp2-types",
         "//folly:conv",
         "//folly:file_util",
-        "//folly:likely",
+        "//folly:range",
         "//folly:string",
         "//folly:subprocess",
         "//folly/json:dynamic",
         "//folly/logging:logging",
         "//thrift/lib/cpp2/folly_dynamic:folly_dynamic",
         "//thrift/lib/cpp2/protocol:protocol",
-    ],
-    exported_external_deps = [
-        ("boost", None, "boost_filesystem"),
     ],
 )
 

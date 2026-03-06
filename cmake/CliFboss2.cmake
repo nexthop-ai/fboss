@@ -810,8 +810,14 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/session/ConfigSession.cpp
   fboss/cli/fboss2/session/Git.h
   fboss/cli/fboss2/session/Git.cpp
+<<<<<<< HEAD
   fboss/cli/fboss2/utils/InterfacesConfig.cpp
   fboss/cli/fboss2/utils/InterfacesConfig.h
+||||||| 8908ebf139
+  fboss/cli/fboss2/utils/InterfaceList.h
+=======
+  fboss/cli/fboss2/utils/InterfaceList.h
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
   fboss/cli/fboss2/utils/InterfaceList.cpp
   fboss/cli/fboss2/utils/InterfaceList.h
   fboss/cli/fboss2/CmdListConfig.cpp

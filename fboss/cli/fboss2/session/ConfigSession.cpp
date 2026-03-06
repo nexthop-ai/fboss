@@ -12,7 +12,13 @@
 
 #include <fmt/format.h>
 #include <folly/FileUtil.h>
+<<<<<<< HEAD
 #include <folly/String.h>
+||||||| 8908ebf139
+#include <folly/Likely.h>
+#include <folly/String.h>
+=======
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
 #include <folly/Subprocess.h>
 #include <folly/json/dynamic.h>
 #include <folly/json/json.h>
@@ -22,7 +28,6 @@
 #include <thrift/lib/cpp2/folly_dynamic/folly_dynamic.h>
 #include <thrift/lib/cpp2/protocol/Serializer.h>
 #include <unistd.h>
-#include <cerrno>
 #include <chrono>
 #include <cstddef>
 #include <cstdlib>
@@ -36,17 +41,28 @@
 #include <string>
 #include <system_error>
 #include <thread>
+<<<<<<< HEAD
 #include <utility>
 #include <vector>
+||||||| 8908ebf139
+#include <utility>
+=======
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
 #include "fboss/agent/AgentDirectoryUtil.h"
 #include "fboss/agent/gen-cpp2/agent_config_types.h"
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/agent/if/gen-cpp2/FbossCtrl.h"
 #include "fboss/agent/if/gen-cpp2/FbossCtrlAsyncClient.h"
 #include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
+<<<<<<< HEAD
 #include "fboss/cli/fboss2/session/Git.h"
 #include "fboss/cli/fboss2/utils/CmdClientUtilsCommon.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
+||||||| 8908ebf139
+#include "fboss/cli/fboss2/utils/CmdClientUtils.h"
+=======
+#include "fboss/cli/fboss2/utils/CmdClientUtils.h" // NOLINT(misc-include-cleaner)
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
 #include "fboss/cli/fboss2/utils/PortMap.h"
 
 namespace fs = std::filesystem;
@@ -138,6 +154,7 @@ void ensureDirectoryExists(const std::string& dirPath) {
   }
 }
 
+<<<<<<< HEAD
 // Maximum number of conflicts to report before truncating with "and more"
 constexpr size_t kMaxConflicts = 10;
 
@@ -249,6 +266,28 @@ folly::dynamic threeWayMerge(
   return session; // Return session's version, but report conflict
 }
 
+||||||| 8908ebf139
+/*
+ * Get the current revision number by reading the symlink target.
+ * Returns -1 if unable to determine the current revision.
+ */
+int getCurrentRevisionNumber(const std::string& systemConfigPath) {
+  std::error_code ec;
+
+  if (!fs::is_symlink(systemConfigPath, ec)) {
+    return -1;
+  }
+
+  std::string target = fs::read_symlink(systemConfigPath, ec);
+  if (ec) {
+    return -1;
+  }
+
+  return ConfigSession::extractRevisionNumber(target);
+}
+
+=======
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
 } // anonymous namespace
 
 /*
@@ -280,10 +319,9 @@ std::string ConfigSession::readCommandLineFromProc() const {
   return folly::join(" ", args);
 }
 
-ConfigSession::ConfigSession() {
-  username_ = getUsername();
-  std::string homeDir = getHomeDirectory();
-
+ConfigSession::ConfigSession()
+    : sessionConfigDir_(getHomeDirectory() + "/.fboss2"),
+      username_(getUsername()) {
   // Use AgentDirectoryUtil to get the config directory path
   // getConfigDirectory() returns /etc/coop/agent, so we get the parent to get
   // /etc/coop
@@ -291,7 +329,11 @@ ConfigSession::ConfigSession() {
   std::string coopDir =
       fs::path(dirUtil.getConfigDirectory()).parent_path().string();
 
+<<<<<<< HEAD
   sessionConfigDir_ = homeDir + "/.fboss2";
+||||||| 8908ebf139
+=======
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
   systemConfigDir_ = coopDir;
   git_ = std::make_unique<Git>(coopDir);
   initializeSession();
@@ -438,14 +480,40 @@ void ConfigSession::saveConfig(
   saveMetadata();
 }
 
+<<<<<<< HEAD
 void ConfigSession::saveConfig() {
   saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
+||||||| 8908ebf139
+int ConfigSession::extractRevisionNumber(const std::string& filenameOrPath) {
+  // Extract just the filename if a full path was provided
+  std::string filename = filenameOrPath;
+  size_t lastSlash = filenameOrPath.rfind('/');
+  if (lastSlash != std::string::npos) {
+    filename = filenameOrPath.substr(lastSlash + 1);
+  }
+=======
+Git& ConfigSession::getGit() {
+  return *git_;
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
 }
 
+<<<<<<< HEAD
 Git& ConfigSession::getGit() {
   return *git_;
 }
 
+||||||| 8908ebf139
+  // Pattern: agent-rN.conf where N is a positive integer
+  // Using RE2 instead of std::regex to avoid stack overflow issues (GCC bug)
+  static const re2::RE2 pattern(R"(^agent-r(\d+)\.conf$)");
+  int revision = -1;
+
+  if (re2::RE2::FullMatch(filename, pattern, &revision)) {
+    return revision;
+  }
+  return -1;
+=======
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
 const Git& ConfigSession::getGit() const {
   return *git_;
 }
@@ -453,6 +521,17 @@ const Git& ConfigSession::getGit() const {
 std::string ConfigSession::getMetadataPath() const {
   // Store metadata in the same directory as session config
   return sessionConfigDir_ + "/cli_metadata.json";
+<<<<<<< HEAD
+||||||| 8908ebf139
+  fs::path sessionPath(sessionConfigPath_);
+  return (sessionPath.parent_path() / "conf_metadata.json").string();
+=======
+}
+
+std::string ConfigSession::getSystemMetadataPath() const {
+  // Store system metadata in the CLI config directory (Git-versioned)
+  return getCliConfigDir() + "/cli_metadata.json";
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
 }
 
 std::string ConfigSession::getSystemMetadataPath() const {
@@ -761,6 +840,7 @@ void ConfigSession::loadConfig() {
 void ConfigSession::initializeSession() {
   initializeGit();
   if (!sessionExists()) {
+<<<<<<< HEAD
     // Starting a new session - reset all state to ensure we don't carry over
     // stale data from a previous session (e.g., if the singleton persisted
     // in memory but the session files were deleted).
@@ -768,6 +848,12 @@ void ConfigSession::initializeSession() {
     requiredActions_.clear();
     configLoaded_ = false;
 
+||||||| 8908ebf139
+    // Ensure the parent directory of the session config exists
+    fs::path sessionPath(sessionConfigPath_);
+    ensureDirectoryExists(sessionPath.parent_path().string());
+=======
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
     // Ensure the session config directory exists
     ensureDirectoryExists(sessionConfigDir_);
     copySystemConfigToSession();
@@ -800,7 +886,13 @@ void ConfigSession::initializeGit() {
   }
 }
 
+<<<<<<< HEAD
 void ConfigSession::copySystemConfigToSession() const {
+||||||| 8908ebf139
+  // Read source config and write atomically to session config
+=======
+void ConfigSession::copySystemConfigToSession() {
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
   // Read system config and write atomically to session config
   // This ensures that readers never see a partially written file - they either
   // see the old file or the new file, never a mix.
@@ -822,11 +914,37 @@ ConfigSession::CommitResult ConfigSession::commit(const HostInfo& hostInfo) {
         "No config session exists. Make a config change first.");
   }
 
+<<<<<<< HEAD
   // Check if someone else committed changes while this session was in progress
   std::string currentHead = git_->getHead();
   if (!base_.empty() && currentHead != base_) {
+||||||| 8908ebf139
+  ensureDirectoryExists(cliConfigDir_);
+
+  // Atomically create the next revision file
+  // This ensures concurrent commits get different revision numbers
+  auto [targetConfigPath, revision] =
+      createNextRevisionFile(fmt::format("{}/agent", cliConfigDir_));
+  std::error_code ec;
+
+  // Read the old symlink target for rollback if needed
+  std::string oldSymlinkTarget;
+  if (!fs::is_symlink(systemConfigPath_)) {
+=======
+  std::string cliConfigDir = getCliConfigDir();
+  std::string cliConfigPath = getCliConfigPath();
+  std::string sessionConfigPath = getSessionConfigPath();
+  std::string systemConfigPath = getSystemConfigPath();
+
+  ensureDirectoryExists(cliConfigDir);
+
+  // Read the session config content
+  std::string sessionConfigData;
+  if (!folly::readFile(sessionConfigPath.c_str(), sessionConfigData)) {
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
     throw std::runtime_error(
         fmt::format(
+<<<<<<< HEAD
             "Cannot commit: the system configuration has changed since this "
             "session was started. Your session was based on commit {}, but the "
             "current HEAD is {}. Run 'config session rebase' to rebase your "
@@ -834,8 +952,21 @@ ConfigSession::CommitResult ConfigSession::commit(const HostInfo& hostInfo) {
             "and start over.",
             base_.substr(0, 7),
             currentHead.substr(0, 7)));
+||||||| 8908ebf139
+            "{} is not a symlink. Expected it to be a symlink.",
+            systemConfigPath_));
+  }
+  oldSymlinkTarget = fs::read_symlink(systemConfigPath_, ec);
+  if (ec) {
+    throw std::runtime_error(
+        fmt::format(
+            "Failed to read symlink {}: {}", systemConfigPath_, ec.message()));
+=======
+            "Failed to read session config from {}", sessionConfigPath));
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
   }
 
+<<<<<<< HEAD
   std::string cliConfigDir = getCliConfigDir();
   std::string cliConfigPath = getCliConfigPath();
   std::string sessionConfigPath = getSessionConfigPath();
@@ -851,6 +982,24 @@ ConfigSession::CommitResult ConfigSession::commit(const HostInfo& hostInfo) {
             "Failed to read session config from {}", sessionConfigPath));
   }
 
+||||||| 8908ebf139
+  // Copy session config to the atomically-created revision file
+  // Overwrite the empty file that was created by createNextRevisionFile
+  fs::copy_file(
+      sessionConfigPath_,
+      targetConfigPath,
+      fs::copy_options::overwrite_existing,
+      ec);
+  if (ec) {
+    // Clean up the revision file we created
+    fs::remove(targetConfigPath);
+    throw std::runtime_error(
+        fmt::format(
+            "Failed to copy session config to {}: {}",
+            targetConfigPath,
+            ec.message()));
+=======
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
   // Read the old config for rollback if needed
   std::string oldConfigData;
   if (fs::exists(cliConfigPath)) {
@@ -956,12 +1105,35 @@ ConfigSession::CommitResult ConfigSession::commit(const HostInfo& hostInfo) {
   return CommitResult{commitSha, actions};
 }
 
+<<<<<<< HEAD
 void ConfigSession::rebase() {
   if (!sessionExists()) {
+||||||| 8908ebf139
+int ConfigSession::rollback(const HostInfo& hostInfo) {
+  // Get the current revision number
+  int currentRevision = getCurrentRevisionNumber(systemConfigPath_);
+  if (currentRevision <= 0) {
+=======
+std::string ConfigSession::rollback(const HostInfo& hostInfo) {
+  // Get the commit history to find the previous commit
+  auto commits = git_->log(getCliConfigPath(), 2);
+  if (commits.size() < 2) {
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
     throw std::runtime_error(
+<<<<<<< HEAD
         "No config session exists. Make a config change first.");
+||||||| 8908ebf139
+        "Cannot rollback: cannot determine the current revision from " +
+        systemConfigPath_);
+  } else if (currentRevision == 1) {
+    throw std::runtime_error(
+        "Cannot rollback: already at the first revision (r1)");
+=======
+        "Cannot rollback: no previous revision available in Git history");
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
   }
 
+<<<<<<< HEAD
   std::string currentHead = git_->getHead();
 
   // If base is empty or already matches HEAD, nothing to rebase
@@ -1020,8 +1192,17 @@ void ConfigSession::rebase() {
 
   // Reload the config into memory
   loadConfig();
+||||||| 8908ebf139
+  // Rollback to the previous revision
+  std::string targetRevision = "r" + std::to_string(currentRevision - 1);
+  return rollback(hostInfo, targetRevision);
+=======
+  // Rollback to the previous commit (second in the list)
+  return rollback(hostInfo, commits[1].sha1);
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
 }
 
+<<<<<<< HEAD
 std::string ConfigSession::rollback(const HostInfo& hostInfo) {
   // Get the commit history to find the previous commit
   auto commits = git_->log(getCliConfigPath(), 2);
@@ -1034,6 +1215,10 @@ std::string ConfigSession::rollback(const HostInfo& hostInfo) {
   return rollback(hostInfo, commits[1].sha1);
 }
 
+||||||| 8908ebf139
+int ConfigSession::rollback(
+=======
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
 std::string ConfigSession::rollback(
     const HostInfo& hostInfo,
     const std::string& commitSha) {

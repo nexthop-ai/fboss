@@ -51,8 +51,19 @@ namespace facebook::fboss {
  *      a. Atomically writes the session config to /etc/coop/cli/agent.conf
  *      b. Ensure /etc/coop/agent.conf is a symlink to /etc/coop/cli/agent.conf
  *      c. Creates a Git commit with the updated agent.conf and metadata
+<<<<<<< HEAD
  *      d. Calls reloadConfig() on wedge_agent for hitless (or restarts it for
  *         any other changes)
+||||||| 8908ebf139
+ *      a. Determines the next revision number (e.g., r5)
+ *      b. Atomically writes session config to /etc/coop/cli/agent-r5.conf
+ *      c. Atomically updates the /etc/coop/agent.conf symlink to point to
+ *         agent-r5.conf and calls reloadConfig() on the wedge_agent to
+ *         reload its configuration
+=======
+ *      d. Calls reloadConfig() on wedge_agent (or restarts it for
+ *         AGENT_RESTART changes)
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
  *   3. The session file is cleared (ready for next edit session)
  *
  * ROLLBACK FLOW:
@@ -119,10 +130,21 @@ class ConfigSession {
 
   // Atomically commit the session to /etc/coop/cli/agent.conf and create a git
   // commit. For HITLESS changes, also calls reloadConfig() on the agent.
+<<<<<<< HEAD
   // For non-HITLESS changes, restarts the agent via systemd.
+||||||| 8908ebf139
+  // Atomically commit the session to /etc/coop/cli/agent-rN.conf,
+  // update the symlink /etc/coop/agent.conf to point to it.
+  // For HITLESS changes, also calls reloadConfig() on the agent.
+  // For AGENT_RESTART changes, does NOT call reloadConfig() - user must restart
+  // agent. Returns CommitResult with revision number and action level.
+=======
+  // For AGENT_RESTART changes, restarts the agent via systemd.
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
   // Returns CommitResult with git commit SHA and action level.
   CommitResult commit(const HostInfo& hostInfo);
 
+<<<<<<< HEAD
   // Rebase the session onto the current HEAD.
   // This is needed when someone else has committed changes while this session
   // was in progress. It computes the diff between the base config and the
@@ -130,6 +152,13 @@ class ConfigSession {
   // Throws std::runtime_error if there are conflicts that cannot be resolved.
   void rebase();
 
+||||||| 8908ebf139
+  // Rollback to a specific revision or to the previous revision
+  // Returns the revision that was rolled back to
+  int rollback(const HostInfo& hostInfo);
+  int rollback(const HostInfo& hostInfo, const std::string& revision);
+=======
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
   // Rollback to a specific revision (git commit SHA) or to the previous
   // revision Returns the git commit SHA of the new commit created for the
   // rollback
@@ -219,11 +248,16 @@ class ConfigSession {
   // List of commands executed in this session, persisted to disk
   std::vector<std::string> commands_;
 
+<<<<<<< HEAD
   // Git commit SHA that this session is based on (captured when session is
   // created). Used to detect if someone else committed changes while this
   // session was in progress.
   std::string base_;
 
+||||||| 8908ebf139
+  // Path to the metadata file (e.g., ~/.fboss2/metadata)
+=======
+>>>>>>> c17655f13960093f57bb9baa2709891f330dd442
   // Path to the system metadata file (in the Git repo)
   std::string getSystemMetadataPath() const;
 
