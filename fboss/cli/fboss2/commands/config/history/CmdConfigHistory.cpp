@@ -9,17 +9,7 @@
  */
 
 #include "fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h"
-<<<<<<< HEAD
-
 #include "fboss/cli/fboss2/CmdHandler.cpp"
-
-||||||| 8908ebf139
-#include <fcntl.h>
-#include <pwd.h>
-#include <sys/stat.h>
-#include <cstdint>
-=======
->>>>>>> c17655f13960093f57bb9baa2709891f330dd442
 #include <ctime>
 #include <sstream>
 #include "fboss/cli/fboss2/session/ConfigSession.h"
