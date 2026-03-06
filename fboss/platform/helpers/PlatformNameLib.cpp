@@ -44,6 +44,10 @@ std::string sanitizePlatformName(const std::string& platformNameFromBios) {
     return "NH4010";
   }
 
+  if (platformNameUpper == "NH-4220-F") {
+    return "NH4220F";
+  }
+
   if (platformNameUpper == "MINIPACK3BTA") {
     return "MINIPACK3BA";
   }
