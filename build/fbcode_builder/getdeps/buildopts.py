@@ -65,14 +65,8 @@ class BuildOptions:
         shared_libs: bool = False,
         facebook_internal: bool | None = None,
         free_up_disk: bool = False,
-<<<<<<< HEAD
-        build_type: Optional[str] = None,
-        cache_config: Optional[str] = None,
-||||||| 8908ebf139
-        build_type: Optional[str] = None,
-=======
         build_type: str | None = None,
->>>>>>> c17655f13960093f57bb9baa2709891f330dd442
+        cache_config: str | None = None,
     ) -> None:
         """fbcode_builder_dir - the path to either the in-fbsource fbcode_builder dir,
                              or for shipit-transformed repos, the build dir that
@@ -119,34 +113,6 @@ class BuildOptions:
             else:
                 facebook_internal = False
 
-<<<<<<< HEAD
-        self.facebook_internal = facebook_internal
-        self.specified_num_jobs = num_jobs
-        self.scratch_dir = scratch_dir
-        self.install_dir = install_dir
-        self.fbcode_builder_dir = fbcode_builder_dir
-        self.host_type = host_type
-        self.use_shipit = use_shipit
-        self.allow_system_packages = allow_system_packages
-        self.lfs_path = lfs_path
-        self.shared_libs = shared_libs
-        self.free_up_disk = free_up_disk
-        self.cache_config = cache_config
-        self.build_type = build_type
-||||||| 8908ebf139
-        self.facebook_internal = facebook_internal
-        self.specified_num_jobs = num_jobs
-        self.scratch_dir = scratch_dir
-        self.install_dir = install_dir
-        self.fbcode_builder_dir = fbcode_builder_dir
-        self.host_type = host_type
-        self.use_shipit = use_shipit
-        self.allow_system_packages = allow_system_packages
-        self.lfs_path = lfs_path
-        self.shared_libs = shared_libs
-        self.free_up_disk = free_up_disk
-        self.build_type = build_type
-=======
         self.facebook_internal: bool = facebook_internal
         self.specified_num_jobs: int = num_jobs
         self.scratch_dir: str = scratch_dir
@@ -158,8 +124,8 @@ class BuildOptions:
         self.lfs_path: str | None = lfs_path
         self.shared_libs: bool = shared_libs
         self.free_up_disk: bool = free_up_disk
+        self.cache_config: str | None = cache_config
         self.build_type: str | None = build_type
->>>>>>> c17655f13960093f57bb9baa2709891f330dd442
 
         lib_path: str | None = None
         if self.is_darwin():

@@ -47,7 +47,6 @@ class ArtifactCache:
         pass
 
 
-<<<<<<< HEAD
 class S3ArtifactCache(ArtifactCache):
     def __init__(
         self,
@@ -126,7 +125,7 @@ class S3ArtifactCache(ArtifactCache):
 
 def create_cache(
     cache_config: Optional[str] = None,
-) -> ArtifactCache:
+) -> ArtifactCache | None:
     """Create an ArtifactCache instance based on the provided configuration
     file."""
     if not cache_config:
@@ -147,14 +146,3 @@ def create_cache(
     else:
         print(f"CACHE: No supported cache configuration found in {cache_config}")
         return ArtifactCache()
-||||||| 8908ebf139
-def create_cache() -> None:
-    """This function is monkey patchable to provide an actual
-    implementation"""
-    return None
-=======
-def create_cache() -> ArtifactCache | None:
-    """This function is monkey patchable to provide an actual
-    implementation"""
-    return None
->>>>>>> c17655f13960093f57bb9baa2709891f330dd442
