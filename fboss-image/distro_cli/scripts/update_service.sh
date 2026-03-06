@@ -11,16 +11,31 @@
 
 set -eou pipefail
 
-if [ $# -lt 2 ]; then
-  echo "Usage: $0 <component> <service1> [service2] ..." >&2
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 <component> [service1] [service2] ..." >&2
   exit 1
 fi
 
 COMPONENT="$1"
 shift
-SERVICES="$*"
 
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+
+if [ "${COMPONENT}" = "other_dependencies" ]; then
+  for rpm in "${SCRIPT_DIR}"/*.rpm; do
+    echo "Updating ${rpm}..."
+    rpm -Uvh --replacepkgs "$rpm"
+  done
+  exit 0
+fi
+
+SERVICES="$*"
+if [ -z "${SERVICES}" ]; then
+  echo "Error: Component '${COMPONENT}' requires at least one service" >&2
+  echo "Usage: $0 <component> <service1> [service2] ..." >&2
+  exit 1
+fi
+
 TIMESTAMP=$(date +%s)
 # Resolve symlinks to real paths (needed for systemd RootDirectory which doesn't follow symlinks)
 BASE_SNAPSHOT="$(readlink -f /distro-base)"

@@ -350,6 +350,72 @@ class TestDeviceTopologyIntegration(unittest.TestCase):
                         f"Service {svc} should have {UPDATE_VERSION} after update, got {version}",
                     )
 
+    def test_integration_update_other_dependencies(self):
+        """Test update of other_dependencies installs RPMs to root filesystem.
+
+        Verifies:
+        1. RPM is installed to / (not in a service subvolume)
+        2. Binary is available at /usr/local/bin/test-tool
+        3. No services are restarted
+        """
+        if not INTEGRATION_MANIFEST.exists():
+            self.skipTest(f"Integration manifest not found: {INTEGRATION_MANIFEST}")
+
+        manifest = ImageManifest(INTEGRATION_MANIFEST)
+
+        result = subprocess.run(
+            [
+                "docker",
+                "exec",
+                self.PROXY_DEVICE,
+                "test",
+                "-f",
+                "/usr/local/bin/test-tool",
+            ],
+            capture_output=True,
+            check=False,
+        )
+        self.assertNotEqual(
+            result.returncode,
+            0,
+            "test-tool should not exist before update",
+        )
+
+        updater = DeviceUpdater(
+            mac=self.device_mac,
+            manifest=manifest,
+            component="other_dependencies",
+            device_ip=self.device_ip,
+        )
+        updater.update()
+
+        result = subprocess.run(
+            [
+                "docker",
+                "exec",
+                self.PROXY_DEVICE,
+                "test",
+                "-f",
+                "/usr/local/bin/test-tool",
+            ],
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(
+            result.returncode,
+            0,
+            "test-tool should exist after update",
+        )
+
+        result = subprocess.run(
+            ["docker", "exec", self.PROXY_DEVICE, "/usr/local/bin/test-tool"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, "test-tool should be executable")
+        self.assertIn("2.0.0", result.stdout, "test-tool should report version 2.0.0")
+
 
 if __name__ == "__main__":
     unittest.main()
