@@ -9,9 +9,9 @@
  */
 
 #include "fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h"
-#include "fboss/cli/fboss2/CmdHandler.cpp"
 #include <ctime>
 #include <sstream>
+#include "fboss/cli/fboss2/CmdHandler.cpp"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/utils/Table.h"
 
