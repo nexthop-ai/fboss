@@ -1935,7 +1935,7 @@ class BenchmarkTestRunner:
                 print(benchmark)
             return
 
-        print(f"Running {len(benchmarks_to_run)} benchmarks from {benchmark_file}")
+        print(f"Total benchmarks to run: {len(benchmarks_to_run)}")
 
         # Filter out binaries that don't exist
         existing_benchmarks = []
