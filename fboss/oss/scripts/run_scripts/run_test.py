@@ -1397,7 +1397,7 @@ class SaiAgentTestRunner(TestRunner):
             )
 
     def _setup_warmboot_test(self, sai_replayer_log_path: Optional[str] = None):
-        if args.setup_for_coldboot:
+        if args.setup_for_warmboot:
             run_script(args.setup_for_warmboot)
         if args.agent_run_mode == SUB_ARG_AGENT_RUN_MODE_MULTI:
             setup_and_start_hw_agent_service(
