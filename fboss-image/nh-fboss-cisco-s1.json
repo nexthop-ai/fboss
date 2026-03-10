@@ -1,0 +1,27 @@
+{
+  "distribution_formats": {
+    "pxe": "nh-fboss-cisco-s1.tar",
+    "onie": "nh-fboss-cisco-s1.bin"
+  },
+  "kernel": {
+    "download": "file:distro_kernel_6.11.tar"
+  },
+  "fboss-platform-stack": {
+    "execute": ["../fboss/oss/scripts/nhfboss-stack.sh", "platform"],
+    "artifact": "platform-stack.tar"
+  },
+  "bsps": [
+      {"execute": "../../fboss_bsps/nexthop_bsp/distro_build.sh"},
+      {"execute": "../../fboss_bsps/fboss_bsp/distro_build.sh"}
+  ],
+  "hw_agent_sai": {
+    "download": "file:distro_sai.tar"
+  },
+  "fboss-forwarding-stack": {
+    "execute": ["../fboss/oss/scripts/nhfboss-stack.sh", "forwarding"],
+    "artifact": "forwarding-stack.tar"
+  },
+  "image_build_hooks": {
+     "after_pkgs_install": "nexthop-extra-pkgs.json"
+  }
+}
