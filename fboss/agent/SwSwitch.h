@@ -226,9 +226,9 @@ class SwSwitch : public HwSwitchCallback {
     return hwSwitchThriftClientTable_.get();
   }
 
-  const ResourceAccountant* getResourceAccountant() const {
-    return resourceAccountant_.get();
-  }
+  const ResourceAccountant* getResourceAccountant() const;
+  ResourceAccountant* getResourceAccountant();
+
   /*
    * Initialize the switch.
    *
@@ -478,7 +478,8 @@ class SwSwitch : public HwSwitchCallback {
    * For now we just check for the new port speeds being valid.
    * This could be extended as needed
    */
-  bool isValidStateUpdate(const StateDelta& delta) const;
+  bool isValidStateUpdate(const StateDelta& delta, SwitchStats* stats = nullptr)
+      const;
 
   /*
    * Get the PortStats for the specified port.
@@ -674,7 +675,9 @@ class SwSwitch : public HwSwitchCallback {
    * Send a packet, using switching logic to send it out the correct port(s)
    * for the specified VLAN and destination MAC.
    */
-  bool sendPacketSwitchedAsync(std::unique_ptr<TxPacket> pkt) noexcept;
+  bool sendPacketSwitchedAsync(
+      std::unique_ptr<TxPacket> pkt,
+      std::optional<SwitchID> switchId = std::nullopt) noexcept;
 
   /**
    * Send out L3 packet through HW
@@ -1395,7 +1398,6 @@ class SwSwitch : public HwSwitchCallback {
   std::unique_ptr<HwAsicTable> hwAsicTable_;
   std::unique_ptr<SwitchIdScopeResolver> scopeResolver_;
   std::unique_ptr<SwitchStatsObserver> switchStatsObserver_;
-  std::unique_ptr<ResourceAccountant> resourceAccountant_;
   std::unique_ptr<EcmpResourceManager> ecmpResourceManager_;
   std::unique_ptr<ShelManager> shelManager_;
   std::unique_ptr<FabricLinkMonitoringManager> fabricLinkMonitoringManager_;

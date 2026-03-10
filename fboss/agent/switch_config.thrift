@@ -6,7 +6,6 @@ namespace py neteng.fboss.switch_config
 namespace py3 neteng.fboss
 namespace py.asyncio neteng.fboss.asyncio.switch_config
 namespace cpp2 facebook.fboss.cfg
-namespace go neteng.fboss.switch_config
 namespace php fboss_switch_config
 
 include "fboss/agent/if/common.thrift"
@@ -2063,11 +2062,6 @@ enum TunnelMode {
   USER = 2,
 }
 
-enum TunnelType {
-  IP_IN_IP = 0,
-  SRV6_ENCAP = 1,
-}
-
 enum TunnelTerminationType {
   P2P = 1,
   P2MP = 2,
@@ -2086,7 +2080,7 @@ struct IpInIpTunnel {
   8: optional TunnelMode dscpMode;
   9: optional TunnelMode ecnMode;
   10: optional TunnelTerminationType tunnelTermType;
-  11: optional TunnelType tunnelType;
+  11: optional common.TunnelType tunnelType;
 }
 
 struct Srv6Tunnel {
@@ -2098,7 +2092,7 @@ struct Srv6Tunnel {
   6: optional TunnelMode dscpMode;
   7: optional TunnelMode ecnMode;
   8: optional TunnelTerminationType tunnelTermType;
-  9: TunnelType tunnelType;
+  9: common.TunnelType tunnelType;
 }
 
 enum DsfNodeType {

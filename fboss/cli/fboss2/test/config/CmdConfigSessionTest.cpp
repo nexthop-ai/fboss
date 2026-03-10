@@ -1,12 +1,26 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/*
+ *  Copyright (c) 2004-present, Facebook, Inc.
+ *  All rights reserved.
+ *
+ *  This source code is licensed under the BSD-style license found in the
+ *  LICENSE file in the root directory of this source tree. An additional grant
+ *  of patent rights can be found in the PATENTS file in the same directory.
+ *
+ */
 
+#include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
+#include "fboss/cli/fboss2/session/Git.h"
 #include "fboss/cli/fboss2/test/config/CmdConfigTestBase.h"
 
+#include <folly/FileUtil.h>
+#include <folly/json/dynamic.h>
+#include <folly/json/json.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <filesystem>
-
-#include <folly/json.h>
+#include <fstream>
+#include <stdexcept>
+#include <string>
 
 #include "fboss/cli/fboss2/test/TestableConfigSession.h"
 
@@ -103,7 +117,8 @@ TEST_F(ConfigSessionTestFixture, sessionCommit) {
         sessionDir.string(), (getTestEtcDir() / "coop").string());
 
     // Simulate a CLI command being tracked
-    session.addCommand("config interface eth1/1/1 description First commit");
+    session.setCommandLine(
+        "config interface eth1/1/1 description First commit");
 
     // Modify the session config
     auto& config = session.getAgentConfig();
@@ -141,7 +156,8 @@ TEST_F(ConfigSessionTestFixture, sessionCommit) {
         sessionDir.string(), (getTestEtcDir() / "coop").string());
 
     // Simulate a CLI command being tracked
-    session.addCommand("config interface eth1/1/1 description Second commit");
+    session.setCommandLine(
+        "config interface eth1/1/1 description Second commit");
 
     // Verify the new session is based on the latest committed revision
     auto& config = session.getAgentConfig();
@@ -403,7 +419,8 @@ TEST_F(ConfigSessionTestFixture, rollbackToSpecificCommit) {
         sessionDir.string(), (getTestEtcDir() / "coop").string());
 
     // Simulate CLI command for first commit
-    session.addCommand("config interface eth1/1/1 description First version");
+    session.setCommandLine(
+        "config interface eth1/1/1 description First version");
 
     // First commit
     auto& config1 = session.getAgentConfig();
@@ -420,7 +437,8 @@ TEST_F(ConfigSessionTestFixture, rollbackToSpecificCommit) {
         sessionDir.string(), (getTestEtcDir() / "coop").string());
 
     // Simulate CLI command for second commit
-    session.addCommand("config interface eth1/1/1 description Second version");
+    session.setCommandLine(
+        "config interface eth1/1/1 description Second version");
 
     auto& config2 = session.getAgentConfig();
     (*config2.sw()->ports())[0].description() = "Second version";
@@ -684,7 +702,7 @@ TEST_F(ConfigSessionTestFixture, commandTrackingBasic) {
     EXPECT_TRUE(session.getCommands().empty());
 
     // Simulate a command and save config
-    session.addCommand("config interface eth1/1/1 description Test change");
+    session.setCommandLine("config interface eth1/1/1 description Test change");
     auto& config = session.getAgentConfig();
     auto& ports = *config.sw()->ports();
     ASSERT_FALSE(ports.empty());
@@ -726,15 +744,15 @@ TEST_F(ConfigSessionTestFixture, commandTrackingMultipleCommands) {
   auto& ports = *config.sw()->ports();
   ASSERT_FALSE(ports.empty());
 
-  session.addCommand("config interface eth1/1/1 mtu 9000");
+  session.setCommandLine("config interface eth1/1/1 mtu 9000");
   ports[0].description() = "First change";
   session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
-  session.addCommand("config interface eth1/1/1 description Test");
+  session.setCommandLine("config interface eth1/1/1 description Test");
   ports[0].description() = "Second change";
   session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
-  session.addCommand("config interface eth1/1/1 speed 100G");
+  session.setCommandLine("config interface eth1/1/1 speed 100G");
   ports[0].description() = "Third change";
   session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
@@ -758,12 +776,12 @@ TEST_F(ConfigSessionTestFixture, commandTrackingPersistsAcrossSessions) {
     auto& ports = *config.sw()->ports();
     ASSERT_FALSE(ports.empty());
 
-    session1.addCommand("config interface eth1/1/1 mtu 9000");
+    session1.setCommandLine("config interface eth1/1/1 mtu 9000");
     ports[0].description() = "First change";
     session1.saveConfig(
         cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
-    session1.addCommand("config interface eth1/1/1 description Test");
+    session1.setCommandLine("config interface eth1/1/1 description Test");
     ports[0].description() = "Second change";
     session1.saveConfig(
         cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
@@ -793,7 +811,7 @@ TEST_F(ConfigSessionTestFixture, commandTrackingClearedOnReset) {
   auto& ports = *config.sw()->ports();
   ASSERT_FALSE(ports.empty());
 
-  session.addCommand("config interface eth1/1/1 mtu 9000");
+  session.setCommandLine("config interface eth1/1/1 mtu 9000");
   ports[0].description() = "Test change";
   session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 

@@ -103,6 +103,24 @@ TEST_F(CmdConfigHistoryTestFixture, historyShowsOnlyConfigFileCommits) {
   EXPECT_EQ(result.find("Other file commit"), std::string::npos);
 }
 
+TEST_F(CmdConfigHistoryTestFixture, historyEmptyDirectory) {
+  // Directory exists but has no revision files
+  EXPECT_TRUE(cliConfigDirExists());
+
+  // Remove the initial revision file created by SetUp() to simulate empty dir
+  removeInitialRevisionFile();
+
+  // Initialize ConfigSession singleton with test paths
+  setupTestableConfigSession();
+
+  // Create and execute the command
+  auto cmd = CmdConfigHistory();
+  auto result = cmd.queryClient(localhost());
+
+  // Verify the output indicates only an initial commit
+  EXPECT_NE(result.find("Initial commit"), std::string::npos);
+}
+
 TEST_F(CmdConfigHistoryTestFixture, historyShowsCommitShas) {
   // Initialize ConfigSession singleton with test paths
   setupTestableConfigSession();

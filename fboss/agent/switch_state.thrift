@@ -21,6 +21,7 @@ package;
 
 struct VlanInfo {
   1: bool tagged;
+  2: bool priorityTagged;
 }
 
 struct PortPgFields {
@@ -313,12 +314,13 @@ struct VlanFields {
   5: string dhcpV6Relay = "::";
   6: map<string, string> dhcpRelayOverridesV4;
   7: map<string, string> dhcpRelayOverridesV6;
-  8: map<i16, bool> ports;
+  8: map<i16, bool> ports_DEPRECATED;
   9: NeighborEntries arpTable;
   10: map<string, NeighborResponseEntryFields> arpResponseTable;
   11: NeighborEntries ndpTable;
   12: map<string, NeighborResponseEntryFields> ndpResponseTable;
   13: map<string, MacEntryFields> macTable;
+  14: map<i16, VlanInfo> portsInfo;
 }
 
 struct LoadBalancerFields {
@@ -596,7 +598,7 @@ struct Srv6TunnelFields {
   6: optional switch_config.TunnelMode dscpMode;
   7: optional switch_config.TunnelMode ecnMode;
   8: optional switch_config.TunnelTerminationType tunnelTermType;
-  9: switch_config.TunnelType tunnelType;
+  9: common.TunnelType tunnelType;
 }
 
 struct QosPolicyFields {

@@ -486,8 +486,6 @@ SwSwitch::SwSwitch(
       scopeResolver_(
           new SwitchIdScopeResolver(getSwitchInfoFromConfig(config))),
       switchStatsObserver_(new SwitchStatsObserver(this)),
-      resourceAccountant_(
-          new ResourceAccountant(hwAsicTable_.get(), scopeResolver_.get())),
       stateUpdateValidator_(new StateUpdateValidator(
           config->getRunMode(),
           getMonolithicHwSwitchHandlerIf(
@@ -1453,8 +1451,7 @@ void SwSwitch::init(
 
   // Notify resource accountant of the initial state.
   for (const auto& delta : deltas) {
-    if (!resourceAccountant_->isValidUpdate(delta)) {
-      stats()->resourceAccountantRejectedUpdates();
+    if (!isValidStateUpdate(delta, stats())) {
       throw FbossError(
           "Not enough resource to apply initialState. ",
           "This should not happen given the state was previously applied, ",
@@ -1538,8 +1535,7 @@ void SwSwitch::init(const HwWriteBehavior& hwWriteBehavior, SwitchFlags flags) {
   auto deltas = reconstructStateFromErmAndShelManager(emptyState, initialState);
   // Notify resource accountant of the initial state.
   for (const auto& delta : deltas) {
-    if (!resourceAccountant_->isValidUpdate(delta)) {
-      stats()->resourceAccountantRejectedUpdates();
+    if (!isValidStateUpdate(delta, stats())) {
       throw FbossError(
           "Not enough resource to apply initialState. ",
           "This should not happen given the state was previously applied, ",
@@ -2042,25 +2038,16 @@ SwSwitch::applyUpdate(
 
   bool updateRejected{false};
   for (const auto& delta : deltas) {
-    if (!resourceAccountant_->isValidUpdate(delta)) {
+    if (!isValidStateUpdate(delta, stats())) {
       updateRejected = true;
-      stats()->resourceAccountantRejectedUpdates();
-      XLOG(ERR) << "State updated rejected by resource accountant";
-      break;
-    }
-    if (!isValidStateUpdate(delta)) {
-      updateRejected = true;
-      XLOG(ERR) << "Attempted to apply invalid state update, rejected it";
+      XLOG(ERR) << "State update rejected.";
       break;
     }
   }
   if (updateRejected) {
     /* reconstruct the resource account to reset resources accounted in earlier
      * deltas */
-    resourceAccountant_ = std::make_unique<ResourceAccountant>(
-        getHwAsicTable(), getScopeResolver());
-    resourceAccountant_->stateChanged(
-        StateDelta(std::make_shared<SwitchState>(), oldState));
+    stateUpdateValidator_->resetResourceAccountant(oldState);
     return std::make_pair(oldState, newDesiredState);
   }
 
@@ -2110,7 +2097,7 @@ SwSwitch::applyUpdate(
   notifyStateObservers(StateDelta(oldState, newAppliedState));
 
   // Notifies resource accountant of new applied state.
-  resourceAccountant_->stateChanged(
+  getResourceAccountant()->stateChanged(
       StateDelta(newDesiredState, newAppliedState));
 
   auto end = std::chrono::steady_clock::now();
@@ -3390,9 +3377,12 @@ bool SwSwitch::sendPacketOutViaThriftStream(
   return true;
 }
 
-bool SwSwitch::sendPacketSwitchedAsync(std::unique_ptr<TxPacket> pkt) noexcept {
+bool SwSwitch::sendPacketSwitchedAsync(
+    std::unique_ptr<TxPacket> pkt,
+    std::optional<SwitchID> switchId) noexcept {
   pcapMgr_->packetSent(pkt.get());
-  if (!multiHwSwitchHandler_->sendPacketSwitchedAsync(std::move(pkt))) {
+  if (!multiHwSwitchHandler_->sendPacketSwitchedAsync(
+          std::move(pkt), switchId)) {
     // Just log an error for now.  There's not much the caller can do about
     // send failures--even on successful return from sendPacketSwitchedAsync()
     // the send may ultimately fail since it occurs asynchronously in the
@@ -3656,7 +3646,8 @@ void SwSwitch::applyConfigImpl(
             &routeUpdater,
             aclNexthopHandler_.get());
 
-        if (newState && !isValidStateUpdate(StateDelta(state, newState))) {
+        if (newState &&
+            !isValidStateUpdate(StateDelta(state, newState), stats())) {
           throw FbossError("Invalid config passed in, skipping");
         }
 
@@ -3726,8 +3717,9 @@ void SwSwitch::updateConfigAppliedInfo() {
                      : 0);
 }
 
-bool SwSwitch::isValidStateUpdate(const StateDelta& delta) const {
-  return stateUpdateValidator_->isValidUpdate(delta);
+bool SwSwitch::isValidStateUpdate(const StateDelta& delta, SwitchStats* stats)
+    const {
+  return stateUpdateValidator_->isValidUpdate(delta, stats);
 }
 
 AdminDistance SwSwitch::clientIdToAdminDistance(int clientId) const {
@@ -4351,7 +4343,7 @@ void SwSwitch::sendNeighborSolicitationForConfiguredInterfaces(
               if (vlanMap) {
                 auto vlan = vlanMap->getNodeIf(vlanID);
                 if (vlan) {
-                  for (auto memberPort : vlan->getPorts()) {
+                  for (auto memberPort : vlan->getPortsInfo()) {
                     auto port =
                         currentState->getPorts()->getNodeIf(memberPort.first);
                     if (port && port->isPortUp()) {
@@ -4432,5 +4424,13 @@ bool SwSwitch::hasQualifiedConfiguredDesiredPeer(const InterfaceID& intfId) {
     return true;
   }
   return false;
+}
+
+const ResourceAccountant* SwSwitch::getResourceAccountant() const {
+  return stateUpdateValidator_->getResourceAccountant();
+}
+
+ResourceAccountant* SwSwitch::getResourceAccountant() {
+  return stateUpdateValidator_->getResourceAccountant();
 }
 } // namespace facebook::fboss

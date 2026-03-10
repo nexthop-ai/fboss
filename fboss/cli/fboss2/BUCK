@@ -1052,16 +1052,13 @@ cpp_library(
         "//fboss/agent/if:ctrl-cpp2-types",
         "//folly:conv",
         "//folly:file_util",
-        "//folly:likely",
+        "//folly:range",
         "//folly:string",
         "//folly:subprocess",
         "//folly/json:dynamic",
         "//folly/logging:logging",
         "//thrift/lib/cpp2/folly_dynamic:folly_dynamic",
         "//thrift/lib/cpp2/protocol:protocol",
-    ],
-    exported_external_deps = [
-        ("boost", None, "boost_filesystem"),
     ],
 )
 

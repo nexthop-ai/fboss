@@ -51,8 +51,8 @@ namespace facebook::fboss {
  *      a. Atomically writes the session config to /etc/coop/cli/agent.conf
  *      b. Ensure /etc/coop/agent.conf is a symlink to /etc/coop/cli/agent.conf
  *      c. Creates a Git commit with the updated agent.conf and metadata
- *      d. Calls reloadConfig() on wedge_agent for hitless (or restarts it for
- *         any other changes)
+ *      d. Calls reloadConfig() on wedge_agent (or restarts it for
+ *         AGENT_RESTART changes)
  *   3. The session file is cleared (ready for next edit session)
  *
  * ROLLBACK FLOW:
@@ -119,7 +119,7 @@ class ConfigSession {
 
   // Atomically commit the session to /etc/coop/cli/agent.conf and create a git
   // commit. For HITLESS changes, also calls reloadConfig() on the agent.
-  // For non-HITLESS changes, restarts the agent via systemd.
+  // For AGENT_RESTART changes, restarts the agent via systemd.
   // Returns CommitResult with git commit SHA and action level.
   CommitResult commit(const HostInfo& hostInfo);
 

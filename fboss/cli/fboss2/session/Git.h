@@ -22,7 +22,7 @@ struct GitCommit {
   std::string sha1; // Full 40-character SHA1 hash
   std::string authorName;
   std::string authorEmail;
-  int64_t timestamp; // Unix timestamp in seconds
+  int64_t timestamp{}; // Unix timestamp in seconds
   std::string subject; // First line of commit message
 };
 

@@ -22,7 +22,6 @@
 #include <thrift/lib/cpp2/folly_dynamic/folly_dynamic.h>
 #include <thrift/lib/cpp2/protocol/Serializer.h>
 #include <unistd.h>
-#include <cerrno>
 #include <chrono>
 #include <cstddef>
 #include <cstdlib>
@@ -280,10 +279,9 @@ std::string ConfigSession::readCommandLineFromProc() const {
   return folly::join(" ", args);
 }
 
-ConfigSession::ConfigSession() {
-  username_ = getUsername();
-  std::string homeDir = getHomeDirectory();
-
+ConfigSession::ConfigSession()
+    : sessionConfigDir_(getHomeDirectory() + "/.fboss2"),
+      username_(getUsername()) {
   // Use AgentDirectoryUtil to get the config directory path
   // getConfigDirectory() returns /etc/coop/agent, so we get the parent to get
   // /etc/coop
@@ -291,7 +289,6 @@ ConfigSession::ConfigSession() {
   std::string coopDir =
       fs::path(dirUtil.getConfigDirectory()).parent_path().string();
 
-  sessionConfigDir_ = homeDir + "/.fboss2";
   systemConfigDir_ = coopDir;
   git_ = std::make_unique<Git>(coopDir);
   initializeSession();

@@ -64,6 +64,8 @@ struct NextHopThrift {
   3: optional mpls.MplsAction mplsAction;
   4: optional bool disableTTLDecrement;
   5: list<Address.BinaryAddress> srv6SegmentList;
+  6: optional TunnelType tunnelType;
+  7: optional string tunnelId;
 
   /**
   * For capturing topology information to assist Agent path pruning decisions
@@ -206,4 +208,9 @@ enum DeltaApplicationMode {
 struct StateDeltaApplication {
   1: DeltaApplicationMode mode = DeltaApplicationMode.APPLY_ALL;
   2: optional i32 rollbackIndex;
+}
+
+enum TunnelType {
+  IP_IN_IP = 0,
+  SRV6_ENCAP = 1,
 }
