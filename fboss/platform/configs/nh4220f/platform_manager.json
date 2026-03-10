@@ -107,7 +107,14 @@
               "deviceName": "xcvr_ctrl",
               "csrOffsetCalc": "0x0034",
               "startPort": 1,
-              "numPorts": 64
+              "numPorts": 32
+            },
+            {
+              "pmUnitScopedNamePrefix": "OSFP",
+              "deviceName": "xcvr_ctrl",
+              "csrOffsetCalc": "0x0048",
+              "startPort": 33,
+              "numPorts": 32
             }
           ],
           "ledCtrlConfigs": [
