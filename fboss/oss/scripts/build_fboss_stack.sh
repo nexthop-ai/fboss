@@ -18,12 +18,21 @@
 #
 set -euxo pipefail
 
+# Helper function to log with timestamps
+log() {
+  echo "$(date -Iseconds) $*"
+}
+
+log "build_fboss_stack.sh START"
+
 if [ "$#" -lt 1 ]; then
   echo "Usage: $0 forwarding|platform" >&2
   exit 1
 fi
 
 stack_type="$1"
+
+scratch_root="/build"
 
 need_sai=0
 stack_label=""
@@ -65,22 +74,20 @@ BUILD_TYPE="${BUILD_TYPE:-MinSizeRel}"
 # Setup FBOSS build environment compatibility:
 #    build_entrypoint provides: /src (repo), /deps/*-extracted (dependencies)
 #    FBOSS build expects: /var/FBOSS/fboss (repo), /opt/sdk (SAI)
-if [ -d "/src" ]; then
-  echo "Setting up symlinks for FBOSS build environment"
+log "Setting up symlinks"
 
-  # Link /var/FBOSS/fboss -> /src (the worktree root)
-  mkdir -p /var/FBOSS
-  rm -rf /var/FBOSS/fboss # Remove any stale symlink or directory
-  ln -sf /src /var/FBOSS/fboss
-  echo "  Created: /var/FBOSS/fboss -> /src"
+# Link /var/FBOSS/fboss -> /src (the worktree root)
+mkdir -p /var/FBOSS
+rm -rf /var/FBOSS/fboss # Remove any stale symlink or directory
+ln -sf /src /var/FBOSS/fboss
+echo "  Created: /var/FBOSS/fboss -> /src"
 
-  if [ "$need_sai" -eq 1 ]; then
-    # Link /opt/sdk -> extracted SAI dependency
-    # build_entrypoint extracts /deps/hw_agent_sai to /deps/hw_agent_sai-extracted
-    if [ ! -e "/opt/sdk" ]; then
-      ln -sf /deps/hw_agent_sai-extracted /opt/sdk
-      echo "  Created: /opt/sdk -> /deps/hw_agent_sai-extracted"
-    fi
+if [ "$need_sai" -eq 1 ]; then
+  # Link /opt/sdk -> extracted SAI dependency
+  # build_entrypoint extracts /deps/hw_agent_sai to /deps/hw_agent_sai-extracted
+  if [ ! -e "/opt/sdk" ]; then
+    ln -sf /deps/hw_agent_sai-extracted /opt/sdk
+    echo "  Created: /opt/sdk -> /deps/hw_agent_sai-extracted"
   fi
 fi
 
@@ -120,10 +127,7 @@ if [ "$need_sai" -eq 1 ]; then
   fi
 fi
 
-# Use a scratch path for the CMake build tree.
-# For forwarding we use /build (host-backed via distro_cli) so caches persist
-# across container runs
-scratch_root="/build"
+# Setup build directories based on scratch_root
 if [ "$need_sai" -eq 1 ]; then
   build_dir="${scratch_root}/forwarding-stack/${sai_name}"
 else
@@ -132,11 +136,6 @@ fi
 mkdir -p "$build_dir"
 
 common_root="${scratch_root}/common"
-
-common_options='--allow-system-packages'
-common_options+=' --scratch-path '$build_dir
-common_options+=' --src-dir .'
-common_options+=' fboss'
 
 # Share download / repo / extracted caches across different types of builds
 mkdir -p "${common_root}/downloads"
@@ -152,16 +151,30 @@ if [ ! -L "${build_dir}/extracted" ]; then
   ln -s "${common_root}/extracted" "${build_dir}/extracted"
 fi
 
-echo "Building FBOSS ${stack_label} stack"
 echo "Output directory: $OUT_DIR"
 
 # Navigate to FBOSS source root
 cd /var/FBOSS/fboss
 
+common_options='--allow-system-packages'
+common_options+=' --scratch-path '$build_dir
+common_options+=' --src-dir .'
+common_options+=' --extra-cmake-defines {'
+common_options+='"CMAKE_BUILD_TYPE":"MinSizeRel"'
+common_options+=',"CMAKE_CXX_STANDARD":"20"'
+common_options+=',"RANGE_V3_TESTS":"OFF"'
+common_options+=',"RANGE_V3_PERF":"OFF"}'
+common_options+=' fboss'
+
+log "Building FBOSS ${stack_label} stack"
+
 # Save the manifests because we must modify them, at a minimum to use the stable dependency hashes.
 tar -cf manifests_snapshot.tar build
 tar -xf fboss/oss/stable_commits/latest_stable_hashes.tar.gz
+chmod -R a+r build/fbcode_builder/manifests
 
+# Setup SAI environment
+log "Setting up SAI environment"
 if [ "$stack_type" = "forwarding" ]; then
   # Setup SAI implementation
   SAI_INCLUDE_PATH="$SAI_DIR/include"
@@ -202,41 +215,43 @@ elif [ "$stack_type" = "platform" ]; then
 fi
 
 # Install system dependencies
-echo "Installing system dependencies..."
+log "Installing system dependencies..."
 time nice -n 10 ./fboss/oss/scripts/run-getdeps.py install-system-deps \
-  --recursive \
-  ${common_options}
+  --recursive ${common_options}
 
 # Build dependencies
-echo "Building FBOSS dependencies..."
+log "Building FBOSS dependencies..."
 time nice -n 10 ./fboss/oss/scripts/run-getdeps.py build \
+  --build-type $BUILD_TYPE \
   --only-deps \
   ${common_options}
 
-echo "Get deps SUCCESS"
+log "Get deps SUCCESS"
 
 # Build FBOSS stack
-echo "Building FBOSS ${stack_label} stack..."
+log "Building FBOSS ${stack_label} stack..."
 
 time nice -n 10 ./fboss/oss/scripts/run-getdeps.py build \
-  --no-deps \
-  --build-type "${BUILD_TYPE:-MinSizeRel}" \
-  --cmake-target "$cmake_target" \
   --num-jobs "${num_jobs}" \
-  ${common_options}
+  --build-type "${BUILD_TYPE}" \
+  --no-deps \
+  ${common_options} \
+  --cmake-target "${cmake_target}"
 
-echo "${cmake_target} Build SUCCESS"
+log "${cmake_target} Build SUCCESS"
 
 # Package the stack
 # Note: package.py creates both <target>.tar (production binaries)
 # and <target>-tests.tar (test binaries). We only ship the production tar.
-echo "Packaging ${stack_label} stack..."
+log "Packaging ${stack_label} stack..."
 python3 /var/FBOSS/fboss/fboss/oss/scripts/package.py \
   --build-dir "$build_dir" \
   "$package_target"
 
 # Copy production artifact to output directory
 # Tests are NOT included in production image
+log "Copying artifacts to output"
+OUT_DIR=/output
 mkdir -p "$OUT_DIR"
 mv "${package_target}.tar" "$OUT_DIR/"
 
@@ -249,3 +264,5 @@ if [ -f manifests_snapshot.tar ]; then
   tar -xf manifests_snapshot.tar
   rm manifests_snapshot.tar
 fi
+
+log "build_fboss_stack.sh END"
