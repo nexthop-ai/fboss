@@ -1,8 +1,14 @@
-# hw_agent_runner.py
+"""
+Hardware Test Runner for FBOSS
 
-import os
-import pytest
+This module provides a base class and specialized test runners for different FBOSS test types.
+Each test runner subclass specifies its default configuration directories.
+"""
+
 import logging
+import os
+from abc import ABC, abstractmethod
+
 from tests.libs.device.device_ssh_helper import DeviceSCPClient, DeviceSSHClient
 
 # Configure logging to ensure it works with pytest
@@ -10,12 +16,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("hw_agent_runner")
 
 
-class HwAgentTestRunner:
-    """Test runner for hardware agent operations."""
+class BaseHwTestRunner(ABC):
+    """Base class for hardware test runners."""
 
-    def __init__(
-        self,
-    ):
+    def __init__(self):
         self.connected = False
         self.ssh_client = None
         self.scp_client = None
@@ -24,16 +28,30 @@ class HwAgentTestRunner:
         self.testresult_filepath = "/home/admin/tr.xml"
         self.tc = None
 
+    @abstractmethod
+    def test_args(self, hwsku: str) -> str:
+        """Returns run_test.py command arguments for this test type.
+
+        Args:
+            hwsku: Hardware SKU (already normalized to lowercase without dashes)
+
+        Returns:
+            Command arguments as string.
+            Example: "sai --config ./share/hw_test_configs/nh4010.agent.materialized_JSON"
+        """
+
     def getenvvars(self):
+        """Load environment variables into test context."""
         self.tc["dut"] = os.getenv("DUT")
         self.tc["username"] = os.getenv("DUTUSERNAME", "root")
         self.tc["password"] = os.getenv("DUTPASSWORD", "root")
         self.tc["hwsku"] = os.getenv("HWSKU")
         self.tc["filepath"] = os.getenv("TESTFILE")
-        logger.info(f"dut {self.tc['dut']}")
-        logger.info(f"filepath {self.tc['filepath']}")
+        logger.info("dut %s", self.tc['dut'])
+        logger.info("filepath %s", self.tc['filepath'])
 
     def setup(self, test_context):
+        """Set up SSH/SCP connections to the DUT."""
         logger.debug("Setting up test")
         self.tc = test_context.copy()
         self.getenvvars()
@@ -53,24 +71,26 @@ class HwAgentTestRunner:
         self.connected = True
 
     def set_filters(self, src_filepath, dst_filepath):
+        """Create and upload test filter file to DUT."""
         logger.debug("Setting filters")
         filters = self.tc["filters"]
         # create filters file
-        with open(src_filepath, "w") as f:
-            for filter in filters:
-                f.write(f"{filter}\n")
+        with open(src_filepath, "w", encoding="utf-8") as f:
+            for test_filter in filters:
+                f.write(f"{test_filter}\n")
         exit_status, output = self.scp_client.put_file(src_filepath, dst_filepath)
         if exit_status != 0:
-            logger.error(f"Failed to copy filter file: {output}")
+            logger.error("Failed to copy filter file: %s", output)
             return False
         return True
 
     def normalize_test_results_file(self):
+        """Normalize test results XML file."""
         logger.info("Normalizing test results file")
-        with open("/tmp/tr.xml", "r") as f:
+        with open("/tmp/tr.xml", "r", encoding="utf-8") as f:
             lines = f.readlines()
 
-        with open("/tmp/tr.xml", "w") as f:
+        with open("/tmp/tr.xml", "w", encoding="utf-8") as f:
             for line in lines:
                 if line.strip().startswith("<testsuite"):
                     line = line.replace(
@@ -84,6 +104,7 @@ class HwAgentTestRunner:
                 f.write(line)
 
     def run_test(self, test_context):
+        """Run the hardware test on the DUT."""
         logger.info("Running tests")
         self.setup(test_context)
 
@@ -101,44 +122,78 @@ class HwAgentTestRunner:
         cmd = f"rm -f {self.testlog_filepath} {self.testresult_filepath}"
         exit_status, output = self.ssh_client.run_cmd(cmd)
         if exit_status != 0:
-            logger.error(f"Failed to run command: {cmd} {output}")
+            logger.error("Failed to run command: %s %s", cmd, output)
             return False
 
-        cmd = "sudo su -c 'cd /opt/fboss && ./bin/run_test.py sai --filter_file=/home/admin/tests.conf "
-        cmd += f"--config ./share/hw_test_configs/{hwsku}.agent.materialized_JSON' > {self.testlog_filepath} 2>&1"
+        # Build the complete test command
+        test_args = self.test_args(hwsku)
+        cmd = (
+            f"sudo su -c 'cd /opt/fboss && ./bin/run_test.py {test_args} "
+            f"--filter_file=/home/admin/tests.conf "
+            f"' > {self.testlog_filepath} 2>&1"
+        )
+
         logger.info(f"Running remote command: {cmd}")
         exit_status, output = self.ssh_client.run_cmd(cmd)
-        logger.debug(f"exit_status {exit_status} output {output}")
+        logger.debug("exit_status %s output %s", exit_status, output)
 
         if exit_status != 0:
-            logger.error(f"Failed to run tests: {output}")
+            logger.error("Failed to run tests: %s", output)
             return False
-        else:
-            logger.info("Fetching test logs and results files")
-            exit_status, output = self.scp_client.get_file(
-                self.testlog_filepath, "/tmp/test.log"
-            )
-            if exit_status != 0:
-                logger.error(f"Failed to fetch test logs: {output}")
-                return False
 
-            exit_status, output = self.scp_client.get_file(
-                self.testresult_filepath, "/tmp/tr.xml"
-            )
-            if exit_status != 0:
-                logger.error(f"Failed to fetch test results: {output}")
-                return False
+        logger.info("Fetching test logs and results files")
+        exit_status, output = self.scp_client.get_file(
+            self.testlog_filepath, "/tmp/test.log"
+        )
+        if exit_status != 0:
+            logger.error("Failed to fetch test logs: %s", output)
+            return False
 
-            self.normalize_test_results_file()
+        exit_status, output = self.scp_client.get_file(
+            self.testresult_filepath, "/tmp/tr.xml"
+        )
+        if exit_status != 0:
+            logger.error("Failed to fetch test results: %s", output)
+            return False
+
+        self.normalize_test_results_file()
         return True
 
     def close(self):
+        """Close connections."""
         self.connected = False
 
 
-@pytest.fixture
-def hw_agent_test_runner():
-    """Fixture that provides a HwAgentTestRunner instance with automatic cleanup."""
-    runner = HwAgentTestRunner()
-    yield runner
-    runner.close()
+# Concrete test runner implementations
+
+class SaiTestRunner(BaseHwTestRunner):
+    """Runner for SAI hardware tests."""
+
+    def test_args(self, hwsku: str) -> str:
+        return f"sai --config ./share/hw_test_configs/{hwsku}.agent.materialized_JSON"
+
+
+class SaiAgentTestRunner(BaseHwTestRunner):
+    """Runner for SAI agent tests."""
+
+    def test_args(self, hwsku: str) -> str:
+        return f"sai_agent --config ./share/hw_test_configs/{hwsku}.agent.materialized_JSON"
+
+
+class QsfpTestRunner(BaseHwTestRunner):
+    """Runner for QSFP hardware tests."""
+
+    def test_args(self, hwsku: str) -> str:
+        return f"qsfp --qsfp-config ./share/qsfp_test_configs/{hwsku}.materialized_JSON"
+
+
+class LinkTestRunner(BaseHwTestRunner):
+    """Runner for link tests."""
+
+    def test_args(self, hwsku: str) -> str:
+        # Link test configs use non-standard naming (no .agent. infix)
+        return (
+            f"link --agent-run-mode mono "
+            f"--config ./share/link_test_configs/{hwsku}.materialized_JSON "
+            f"--qsfp-config ./share/qsfp_test_configs/{hwsku}.materialized_JSON"
+        )
