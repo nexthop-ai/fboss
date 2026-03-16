@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 COMPONENT_ARTIFACT_PATTERNS = {
     "kernel": "kernel-*.rpms.tar",
     "hw_agent_sai": "sai-*.tar",
+    "qsfp_service_sai": "qsfp_service-*.tar",
     "fboss-platform-stack": "fboss-platform-stack-*.tar",
     "fboss-forwarding-stack": "fboss-forwarding-stack-*.tar",
     "bsps": "bsp-*.tar",
@@ -49,8 +50,10 @@ class ImageBuilder:
         "fboss-platform-stack": [],
         "bsps": ["kernel"],  # Each BSP needs kernel headers/modules
         "hw_agent_sai": ["kernel"],  # HW SAI needs kernel headers/RPMs
+        "qsfp_service_sai": ["kernel"],  # QSFP SAI needs kernel headers/RPMs
         "fboss-forwarding-stack": [
             "hw_agent_sai",
+            "qsfp_service_sai",
         ],  # Forwarding stack needs both
         "image_build_hooks": [],
     }
