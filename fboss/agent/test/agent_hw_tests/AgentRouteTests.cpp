@@ -33,7 +33,6 @@
 
 using facebook::network::toBinaryAddress;
 
-DECLARE_bool(intf_nbr_tables);
 DECLARE_bool(classid_for_unresolved_routes);
 
 namespace {
@@ -492,7 +491,7 @@ TYPED_TEST(AgentRouteTest, ResolvedMultiNexthopToUnresolvedSingleNexthop) {
     ecmpHelper.programRoutes(
         &wrapper, {this->portDescs()[0]}, {this->kGetRoutePrefix0()});
   };
-  this->verifyAcrossWarmBoots([] {}, verify);
+  this->verifyAcrossWarmBoots(verify);
 }
 
 TYPED_TEST(AgentRouteTest, VerifyRouting) {
@@ -747,7 +746,7 @@ TYPED_TEST(AgentRouteTest, VerifyDefaultRoute) {
         folly::IPAddress("0.0.0.0"), 0, *this->getAgentEnsemble());
     EXPECT_TRUE(*routeInfo1.exists());
   };
-  this->verifyAcrossWarmBoots([] {}, verify);
+  this->verifyAcrossWarmBoots(verify);
 }
 
 TYPED_TEST(AgentClassIDRouteTest, VerifyClassIDForConnectedRoute) {
@@ -766,7 +765,7 @@ TYPED_TEST(AgentClassIDRouteTest, VerifyClassIDForConnectedRoute) {
     }
   };
 
-  this->verifyAcrossWarmBoots([] {}, verify);
+  this->verifyAcrossWarmBoots(verify);
 }
 
 TYPED_TEST(AgentMplsRouteTest, StaticIp2MplsRoutes) {

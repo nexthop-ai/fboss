@@ -1590,13 +1590,6 @@ std::shared_ptr<SwitchState> BcmSwitch::stateChangedImplLocked(
 
   // Any neighbor removals, and modify appliedState if some changes fail to
   // apply
-  //
-  // If FLAGS_intf_nbr_table is false, intf nbr table processing is no-op
-  // If FLAGS_intf_nbr_table is true, vlan nbr table processing is no-op
-  //
-  // TODO(skhare) Once FLAGS_intf_nbr_table = true is rolled out, remove the
-  // vlan neighbor processing.
-  processNeighborDelta(delta.getVlansDelta(), &appliedState, REMOVED);
   processNeighborDelta(delta.getIntfsDelta(), &appliedState, REMOVED);
 
   // delete all interface not existing anymore. that should stop
@@ -4219,6 +4212,7 @@ void BcmSwitch::disableHotSwap() const {
       case cfg::AsicType::ASIC_TYPE_GARONNE:
       case cfg::AsicType::ASIC_TYPE_YUBA:
       case cfg::AsicType::ASIC_TYPE_CHENAB:
+      case cfg::AsicType::ASIC_TYPE_CHENAB2:
       case cfg::AsicType::ASIC_TYPE_MOCK:
       case cfg::AsicType::ASIC_TYPE_ELBERT_8DD:
       case cfg::AsicType::ASIC_TYPE_AGERA3:

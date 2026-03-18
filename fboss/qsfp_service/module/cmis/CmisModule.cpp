@@ -99,6 +99,20 @@ enum DiagnosticFeatureEncoding {
   LATCHED_BER = 0x11,
 };
 
+// VDM Config pages: 20h (Group 1), 21h (Group 2), 22h (Group 3), 23h (Group 4)
+constexpr std::array<CmisField, 4> kVdmConfPages = {
+    CmisField::PAGE_UPPER20H,
+    CmisField::PAGE_UPPER21H,
+    CmisField::PAGE_UPPER22H,
+    CmisField::PAGE_UPPER23H};
+
+// VDM Data pages: 24h (Group 1), 25h (Group 2), 26h (Group 3), 27h (Group 4)
+constexpr std::array<CmisField, 4> kVdmDataPages = {
+    CmisField::PAGE_UPPER24H,
+    CmisField::PAGE_UPPER25H,
+    CmisField::PAGE_UPPER26H,
+    CmisField::PAGE_UPPER27H};
+
 // Datapath init/deinit variables
 static const std::unordered_map<uint8_t, uint64_t> DpInitValToTimeMap = {
     {0, 1000}, // Tstate < 1 ms
@@ -372,12 +386,16 @@ static const QsfpFieldInfo<CmisField, CmisPages>::QsfpFieldMap cmisFields = {
     {CmisField::PAGE_UPPER21H, {CmisPages::PAGE21, 128, 128}},
     // Page 22h
     {CmisField::PAGE_UPPER22H, {CmisPages::PAGE22, 128, 128}},
+    // Page 23h
+    {CmisField::PAGE_UPPER23H, {CmisPages::PAGE23, 128, 128}},
     // Page 24h
     {CmisField::PAGE_UPPER24H, {CmisPages::PAGE24, 128, 128}},
     // Page 25h
     {CmisField::PAGE_UPPER25H, {CmisPages::PAGE25, 128, 128}},
     // Page 26h
     {CmisField::PAGE_UPPER26H, {CmisPages::PAGE26, 128, 128}},
+    // Page 27h
+    {CmisField::PAGE_UPPER27H, {CmisPages::PAGE27, 128, 128}},
     // Page 2Ch
     {CmisField::PAGE_UPPER2CH, {CmisPages::PAGE2C, 128, 128}},
     {CmisField::PAM4_MPI_ALARMS, {CmisPages::PAGE2C, 208, 4}},
@@ -386,6 +404,10 @@ static const QsfpFieldInfo<CmisField, CmisPages>::QsfpFieldMap cmisFields = {
     {CmisField::VDM_GROUPS_SUPPORT, {CmisPages::PAGE2F, 128, 1}},
     {CmisField::VDM_LATCH_REQUEST, {CmisPages::PAGE2F, 144, 1}},
     {CmisField::VDM_LATCH_DONE, {CmisPages::PAGE2F, 145, 1}},
+    // Page 34h - Lane FEC Performance Monitoring (C-CMIS)
+    {CmisField::PAGE_UPPER34H, {CmisPages::PAGE34, 128, 128}},
+    // Page 35h - Lane Link Performance Monitoring (C-CMIS)
+    {CmisField::PAGE_UPPER35H, {CmisPages::PAGE35, 128, 128}},
 };
 
 CmisField laneToAppSelField(const std::set<uint8_t>& lanes) {
@@ -580,7 +602,30 @@ bool isValidVdmConfigType(int vdmConf) {
       vdmConf == static_cast<int>(FEC_TAIL_MEDIA_IN_MAX) ||
       vdmConf == static_cast<int>(FEC_TAIL_MEDIA_IN_CURR) ||
       vdmConf == static_cast<int>(FEC_TAIL_HOST_IN_MAX) ||
-      vdmConf == static_cast<int>(FEC_TAIL_HOST_IN_CURR)) {
+      vdmConf == static_cast<int>(FEC_TAIL_HOST_IN_CURR) ||
+      vdmConf == static_cast<int>(MODULATOR_BIAS_XI) ||
+      vdmConf == static_cast<int>(MODULATOR_BIAS_XQ) ||
+      vdmConf == static_cast<int>(MODULATOR_BIAS_YI) ||
+      vdmConf == static_cast<int>(MODULATOR_BIAS_YQ) ||
+      vdmConf == static_cast<int>(MODULATOR_BIAS_X_PHASE) ||
+      vdmConf == static_cast<int>(MODULATOR_BIAS_Y_PHASE) ||
+      vdmConf == static_cast<int>(CD_LOW_GRANULARITY) ||
+      vdmConf == static_cast<int>(SOPMD_LOW_GRANULARITY) ||
+      vdmConf == static_cast<int>(CD_HIGH_GRANULARITY) ||
+      vdmConf == static_cast<int>(DGD) ||
+      vdmConf == static_cast<int>(SOPMD_HIGH_GRANULARITY) ||
+      vdmConf == static_cast<int>(PDL) || vdmConf == static_cast<int>(OSNR) ||
+      vdmConf == static_cast<int>(ESNR) || vdmConf == static_cast<int>(CFO) ||
+      vdmConf == static_cast<int>(EVM) ||
+      vdmConf == static_cast<int>(TX_POWER) ||
+      vdmConf == static_cast<int>(RX_TOTAL_POWER) ||
+      vdmConf == static_cast<int>(RX_SIGNAL_POWER) ||
+      vdmConf == static_cast<int>(SOP_ROC) ||
+      vdmConf == static_cast<int>(MER) ||
+      vdmConf == static_cast<int>(CLOCK_RECOVERY_LOOP) ||
+      vdmConf == static_cast<int>(SNR_MARGIN) ||
+      vdmConf == static_cast<int>(Q_FACTOR) ||
+      vdmConf == static_cast<int>(Q_MARGIN)) {
     return true;
   }
   return false;
@@ -1365,6 +1410,27 @@ bool CmisModule::moduleReadyStatePoll() {
   return false;
 }
 
+void CmisModule::setModuleLowPowerModeLocked() {
+  // Set to 0x60 = (SquelchControl=Reduce Pave | LowPwr)
+  uint8_t newModuleControl = SQUELCH_CONTROL | LOW_PWR_BIT;
+  QSFP_LOG(INFO, this) << folly::sformat(
+      "setModuleLowPowerModeLocked: Setting module control to {:#x}",
+      newModuleControl);
+  writeCmisField(CmisField::MODULE_CONTROL, &newModuleControl);
+  // Wait for 100ms before resetting the LP mode
+  /* sleep override */
+  usleep(kUsecBetweenPowerModeFlap);
+}
+
+void CmisModule::releaseModuleLowPowerModeLocked() {
+  // Clear low power bit (set to 0x20)
+  uint8_t newModuleControl = SQUELCH_CONTROL;
+  QSFP_LOG(INFO, this) << folly::sformat(
+      "releaseModuleLowPowerModeLocked: Clearing low power bit, module control to {:#x}",
+      newModuleControl);
+  writeCmisField(CmisField::MODULE_CONTROL, &newModuleControl);
+}
+
 /*
  * For the specified field, collect alarm and warning flags for the channel.
  */
@@ -1637,15 +1703,8 @@ void CmisModule::updateVdmDiagsValLocation() {
     return;
   }
 
-  // The VdmConf can be present at any offset from page 0x20 to 0x22. Check all
-  // the descriptors (2 bytes) on these pages
-  std::vector<CmisField> cmisVdmConfPages = {
-      CmisField::PAGE_UPPER20H, CmisField::PAGE_UPPER21H};
-  if (isVdmSupported(3)) {
-    cmisVdmConfPages.push_back(CmisField::PAGE_UPPER22H);
-  }
-
-  for (auto field : cmisVdmConfPages) {
+  for (uint8_t group = 1; group <= vdmSupportedGroupsMax_; group++) {
+    auto field = kVdmConfPages[group - 1];
     int page;
     int startOffset;
     int endOffset;
@@ -1997,6 +2056,15 @@ std::optional<VdmPerfMonitorStats> CmisModule::getVdmPerfMonitorStats() {
   if (!fillVdmPerfMonitorPam4AlarmData(vdmStats)) {
     QSFP_LOG(ERR, this) << "Failed to get VDM Perf Monitor PAM4 alarm data";
   }
+  if (!fillVdmPerfMonitorCoherentVdm(vdmStats)) {
+    QSFP_LOG(DBG2, this) << "Coherent VDM stats not available";
+  }
+  if (!fillVdmPerfMonitorFecPm(vdmStats)) {
+    QSFP_LOG(DBG2, this) << "FEC PM stats not available";
+  }
+  if (!fillVdmPerfMonitorLinkPm(vdmStats)) {
+    QSFP_LOG(DBG2, this) << "Link PM stats not available";
+  }
 
   QSFP_LOG(DBG5, this) << "Read VDM Performance Monitoring stats";
   QSFP_LOG(DBG5, this) << "Stats Collection Time: "
@@ -2246,6 +2314,9 @@ CmisModule::getQsfpValuePtr(int dataAddress, int offset, int length) const {
       case CmisPages::PAGE22:
         CHECK_LE(offset + length, sizeof(page22_));
         return (page22_ + offset);
+      case CmisPages::PAGE23:
+        CHECK_LE(offset + length, sizeof(page23_));
+        return (page23_ + offset);
       case CmisPages::PAGE24:
         CHECK_LE(offset + length, sizeof(page24_));
         return (page24_ + offset);
@@ -2255,6 +2326,15 @@ CmisModule::getQsfpValuePtr(int dataAddress, int offset, int length) const {
       case CmisPages::PAGE26:
         CHECK_LE(offset + length, sizeof(page26_));
         return (page26_ + offset);
+      case CmisPages::PAGE27:
+        CHECK_LE(offset + length, sizeof(page27_));
+        return (page27_ + offset);
+      case CmisPages::PAGE34:
+        CHECK_LE(offset + length, sizeof(page34_));
+        return (page34_ + offset);
+      case CmisPages::PAGE35:
+        CHECK_LE(offset + length, sizeof(page35_));
+        return (page35_ + offset);
       default:
         throw FbossError("Invalid Data Address 0x%d", dataAddress);
     }
@@ -2316,9 +2396,11 @@ DOMDataUnion CmisModule::getDOMDataUnion() {
       cmisData.page20() = IOBuf::wrapBufferAsValue(page20_, MAX_QSFP_PAGE_SIZE);
       cmisData.page21() = IOBuf::wrapBufferAsValue(page21_, MAX_QSFP_PAGE_SIZE);
       cmisData.page22() = IOBuf::wrapBufferAsValue(page22_, MAX_QSFP_PAGE_SIZE);
+      cmisData.page23() = IOBuf::wrapBufferAsValue(page23_, MAX_QSFP_PAGE_SIZE);
       cmisData.page24() = IOBuf::wrapBufferAsValue(page24_, MAX_QSFP_PAGE_SIZE);
       cmisData.page25() = IOBuf::wrapBufferAsValue(page25_, MAX_QSFP_PAGE_SIZE);
       cmisData.page26() = IOBuf::wrapBufferAsValue(page26_, MAX_QSFP_PAGE_SIZE);
+      cmisData.page27() = IOBuf::wrapBufferAsValue(page27_, MAX_QSFP_PAGE_SIZE);
     }
   }
   cmisData.timeCollected() = lastRefreshTime_;
@@ -3571,19 +3653,7 @@ bool CmisModule::ensureTransceiverReadyLocked(bool hasTunableOpticsConfig) {
   // mode, wait, reset the LP mode and then return false since the module
   // needs some time to converge its state machine
 
-  // Set to 0x60 = (SquelchControl=Reduce Pave | LowPwr)
-  uint8_t newModuleControl = SQUELCH_CONTROL | LOW_PWR_BIT;
-
-  QSFP_LOG(INFO, this) << folly::sformat(
-      "ensureTransceiverReadyLocked: Setting module to low power mode with squelch control: {:#x}",
-      newModuleControl);
-
-  // first set to low power
-  writeCmisField(CmisField::MODULE_CONTROL, &newModuleControl);
-
-  // Wait for 100ms before resetting the LP mode
-  /* sleep override */
-  usleep(kUsecBetweenPowerModeFlap);
+  setModuleLowPowerModeLocked();
 
   if (isTunableOptics()) {
     QSFP_LOG(INFO, this) << folly::sformat(
@@ -3598,12 +3668,7 @@ bool CmisModule::ensureTransceiverReadyLocked(bool hasTunableOpticsConfig) {
 
   // Clear low power bit (set to 0x20)
   if (!programAppSelInLowPowerMode()) {
-    newModuleControl = SQUELCH_CONTROL;
-    QSFP_LOG(INFO, this) << folly::sformat(
-        "ensureTransceiverReadyLocked: Clearing low power bit to enable high power mode: {:#x}",
-        newModuleControl);
-
-    writeCmisField(CmisField::MODULE_CONTROL, &newModuleControl);
+    releaseModuleLowPowerModeLocked();
     // Enforces next refresh is a full refresh.
     dirty_ = true;
     return false;
@@ -4125,11 +4190,11 @@ void CmisModule::latchAndReadVdmDataLocked() {
   usleep(kUsecVdmLatchHold);
 
   // Read data for publishing to ODS
-  readCmisField(CmisField::PAGE_UPPER24H, page24_);
-  readCmisField(CmisField::PAGE_UPPER25H, page25_);
-  if (isVdmSupported(3)) {
-    // Cache VDM group 3 page only if it is supported
-    readCmisField(CmisField::PAGE_UPPER26H, page26_);
+  std::array<uint8_t*, 4> dataPageBuffers = {
+      page24_, page25_, page26_, page27_};
+
+  for (uint8_t group = 1; group <= vdmSupportedGroupsMax_; group++) {
+    readCmisField(kVdmDataPages[group - 1], dataPageBuffers[group - 1]);
   }
 
   // Write Byte 2F.144, bit 7 to 0 (clear latch)
@@ -4882,17 +4947,29 @@ void CmisModule::updateVdmCacheLocked() {
     QSFP_LOG(DBG5, this) << "Doesn't support VDM, skip updating VDM cache";
     return;
   }
-  readCmisField(CmisField::PAGE_UPPER20H, page20_);
-  readCmisField(CmisField::PAGE_UPPER21H, page21_);
-  readCmisField(CmisField::PAGE_UPPER24H, page24_);
-  readCmisField(CmisField::PAGE_UPPER25H, page25_);
-  if (isVdmSupported(3)) {
-    // Cache VDM group 3 page only if it is supported
+
+  std::array<uint8_t*, 4> confPageBuffers = {
+      page20_, page21_, page22_, page23_};
+  std::array<uint8_t*, 4> dataPageBuffers = {
+      page24_, page25_, page26_, page27_};
+
+  for (uint8_t group = 1; group <= vdmSupportedGroupsMax_; group++) {
+    uint8_t idx = group - 1;
+    // Cache config pages only once (static)
     if (!staticPagesCached_) {
-      readCmisField(CmisField::PAGE_UPPER22H, page22_);
-      staticPagesCached_ = true;
+      readCmisField(kVdmConfPages[idx], confPageBuffers[idx]);
     }
-    readCmisField(CmisField::PAGE_UPPER26H, page26_);
+    // Always read data pages (dynamic)
+    readCmisField(kVdmDataPages[idx], dataPageBuffers[idx]);
+  }
+
+  if (vdmSupportedGroupsMax_ >= 1) {
+    staticPagesCached_ = true;
+  }
+  // Read C-CMIS PM pages for coherent optics
+  if (isTunableOptics()) {
+    readCmisField(CmisField::PAGE_UPPER34H, page34_);
+    readCmisField(CmisField::PAGE_UPPER35H, page35_);
   }
 }
 
@@ -5070,6 +5147,38 @@ std::pair<std::optional<const uint8_t*>, int> CmisModule::getVdmDataValPtr(
     return std::make_pair(data, length);
   }
   return std::make_pair(std::nullopt, 0);
+}
+
+/*
+ * readU16VdmValue
+ *
+ * Read a single U16 (unsigned 16-bit) VDM value and convert to double.
+ * Returns std::nullopt if the VDM data is not available.
+ */
+std::optional<double> CmisModule::readU16VdmValue(
+    VdmConfigType vdmConf,
+    double lsb) {
+  auto [data, length] = getVdmDataValPtr(vdmConf);
+  if (data && length >= 2) {
+    return readU16(data.value(), 0) * lsb;
+  }
+  return std::nullopt;
+}
+
+/*
+ * readS16VdmValue
+ *
+ * Read a single S16 (signed 16-bit) VDM value and convert to double.
+ * Returns std::nullopt if the VDM data is not available.
+ */
+std::optional<double> CmisModule::readS16VdmValue(
+    VdmConfigType vdmConf,
+    double lsb) {
+  auto [data, length] = getVdmDataValPtr(vdmConf);
+  if (data && length >= 2) {
+    return readS16(data.value(), 0) * lsb;
+  }
+  return std::nullopt;
 }
 
 /*
@@ -5526,6 +5635,295 @@ bool CmisModule::fillVdmPerfMonitorPam4AlarmData(
       vdmStats.mediaPortVdmStats()[portName].lanePam4MPIFlags()[mediaLane] =
           flags;
     }
+  }
+  return true;
+}
+
+/*
+ * fillVdmPerfMonitorCoherentVdm
+ *
+ * Private function to fill in VDM performance monitor stats for coherent
+ * 800G ZR modules. These are VDM-unique parameters from pages 20h-23h
+ * per OIF C-CMIS-01.3, Section 7.3.1, Table 8:
+ *   - Modulator Bias XI/XQ/YI/YQ/XPhase/YPhase (identifiers 128-133)
+ *   - CD low granularity (identifier 135)
+ *   - SOPMD low granularity (identifier 149)
+ *
+ * These parameters are only available on coherent (DCO) modules.
+ * The function returns false if no coherent VDM parameters are found,
+ * which is expected for non-coherent modules.
+ */
+bool CmisModule::fillVdmPerfMonitorCoherentVdm(VdmPerfMonitorStats& vdmStats) {
+  if (!isVdmSupported() || !cacheIsValid()) {
+    return false;
+  }
+
+  // Modulator bias parameters use U16 format with LSB = 100/65535
+  constexpr double kModulatorBiasLsb = 100.0 / 65535.0;
+  // CD low granularity uses S16 format with LSB = 20 (can be negative)
+  constexpr double kCdLowGranLsb = 20.0;
+  // SOPMD low granularity uses U16 format with LSB = 1
+  constexpr double kSopmdLowGranLsb = 1.0;
+
+  bool foundAny = false;
+  auto& portNameToMediaLanes = getPortNameToMediaLanes();
+
+  // Read modulator bias parameters (module-level, not per-lane)
+  auto biasXI = readU16VdmValue(MODULATOR_BIAS_XI, kModulatorBiasLsb);
+  auto biasXQ = readU16VdmValue(MODULATOR_BIAS_XQ, kModulatorBiasLsb);
+  auto biasYI = readU16VdmValue(MODULATOR_BIAS_YI, kModulatorBiasLsb);
+  auto biasYQ = readU16VdmValue(MODULATOR_BIAS_YQ, kModulatorBiasLsb);
+  auto biasXPhase = readU16VdmValue(MODULATOR_BIAS_X_PHASE, kModulatorBiasLsb);
+  auto biasYPhase = readU16VdmValue(MODULATOR_BIAS_Y_PHASE, kModulatorBiasLsb);
+  auto cdLowGran = readS16VdmValue(CD_LOW_GRANULARITY, kCdLowGranLsb);
+  auto sopmdLowGran = readU16VdmValue(SOPMD_LOW_GRANULARITY, kSopmdLowGranLsb);
+
+  // Populate stats for each media port
+  for (auto& [portName, mediaLanes] : portNameToMediaLanes) {
+    auto& coherentVdm =
+        vdmStats.mediaPortVdmStats()[portName].coherentVdmStats().ensure();
+    if (biasXI.has_value()) {
+      coherentVdm.modulatorBiasXI() = biasXI.value();
+      foundAny = true;
+    }
+    if (biasXQ.has_value()) {
+      coherentVdm.modulatorBiasXQ() = biasXQ.value();
+      foundAny = true;
+    }
+    if (biasYI.has_value()) {
+      coherentVdm.modulatorBiasYI() = biasYI.value();
+      foundAny = true;
+    }
+    if (biasYQ.has_value()) {
+      coherentVdm.modulatorBiasYQ() = biasYQ.value();
+      foundAny = true;
+    }
+    if (biasXPhase.has_value()) {
+      coherentVdm.modulatorBiasXPhase() = biasXPhase.value();
+      foundAny = true;
+    }
+    if (biasYPhase.has_value()) {
+      coherentVdm.modulatorBiasYPhase() = biasYPhase.value();
+      foundAny = true;
+    }
+    if (cdLowGran.has_value()) {
+      coherentVdm.cdLowGranularity() = cdLowGran.value();
+      foundAny = true;
+    }
+    if (sopmdLowGran.has_value()) {
+      coherentVdm.sopmdLowGranularity() = sopmdLowGran.value();
+      foundAny = true;
+    }
+  }
+
+  return foundAny;
+}
+
+/*
+ * fillVdmPerfMonitorFecPm
+ *
+ * Private function to fill in FEC Performance Monitoring stats from
+ * C-CMIS Page 34h (Section 7.4.7, Table 14). This page is a banked page
+ * with each bank referring to a single media lane.
+ *
+ * Page 34h byte layout (per OIF C-CMIS-01.3):
+ *   Bytes 128-135: rxBitsPm (U64) - Rx bits during prior PM interval
+ *   Bytes 136-143: rxBitsSubIntPm (U64) - Rx bits during any sub-interval
+ *   Bytes 144-151: rxCorrBitsPm (U64) - Corrected bits during prior PM
+ *   Bytes 152-159: rxMinCorrBitsSubIntPm (U64) - Min corrected bits sub-int
+ *   Bytes 160-167: rxMaxCorrBitsSubIntPm (U64) - Max corrected bits sub-int
+ *   Bytes 168-171: rxFramesPm (U32) - Rx frames during prior PM
+ *   Bytes 172-175: rxFramesSubIntPm (U32) - Rx frames during any sub-interval
+ *   Bytes 176-179: rxFramesUncorrErrPm (U32) - Uncorrectable error frames
+ *   Bytes 180-183: rxMinFramesUncorrErrSubIntPm (U32) - Min uncorr sub-int
+ *   Bytes 184-187: rxMaxFramesUncorrErrSubIntPm (U32) - Max uncorr sub-int
+ *
+ * Only available on coherent (tunable) optics modules.
+ */
+bool CmisModule::fillVdmPerfMonitorFecPm(VdmPerfMonitorStats& vdmStats) {
+  if (!isTunableOptics() || !cacheIsValid()) {
+    return false;
+  }
+
+  // Page 34h data is cached in page34_ buffer (128 bytes, offset 128-255)
+  const uint8_t* buf = page34_;
+
+  // Lambda to read a U64 value from the buffer (big-endian)
+  auto readU64 = [&](int offset) -> int64_t {
+    int idx = offset - 128; // Buffer starts at byte 128
+    uint64_t val = 0;
+    for (int i = 0; i < 8; i++) {
+      val = (val << 8) | buf[idx + i];
+    }
+    return static_cast<int64_t>(val);
+  };
+
+  // Lambda to read a U32 value from the buffer (big-endian)
+  auto readU32 = [&](int offset) -> int32_t {
+    int idx = offset - 128;
+    uint32_t val = 0;
+    for (int i = 0; i < 4; i++) {
+      val = (val << 8) | buf[idx + i];
+    }
+    return static_cast<int32_t>(val);
+  };
+
+  auto& portNameToMediaLanes = getPortNameToMediaLanes();
+
+  // ZR modules have a single media lane, so page 34h has only one bank.
+  // The same buffer data applies to all ports — no bank selection needed.
+  for (auto& [portName, mediaLanes] : portNameToMediaLanes) {
+    FecPm fecPm;
+    fecPm.rxBitsPm() = readU64(128);
+    fecPm.rxBitsSubIntPm() = readU64(136);
+    fecPm.rxCorrBitsPm() = readU64(144);
+    fecPm.rxMinCorrBitsSubIntPm() = readU64(152);
+    fecPm.rxMaxCorrBitsSubIntPm() = readU64(160);
+    fecPm.rxFramesPm() = readU32(168);
+    fecPm.rxFramesSubIntPm() = readU32(172);
+    fecPm.rxFramesUncorrErrPm() = readU32(176);
+    fecPm.rxMinFramesUncorrErrSubIntPm() = readU32(180);
+    fecPm.rxMaxFramesUncorrErrSubIntPm() = readU32(184);
+
+    vdmStats.mediaPortVdmStats()[portName].coherentVdmStats().ensure().fecPm() =
+        fecPm;
+  }
+  return true;
+}
+
+/*
+ * readLinkPmMetricS32
+ *
+ * Read a Link PM metric with S32 avg/min/max from page 35h (4 bytes each)
+ * and S16 current value from VDM pages.
+ */
+link::LinkPerfMonitorParamEachSideVal CmisModule::readLinkPmMetricS32(
+    int startByte,
+    double lsb,
+    VdmConfigType vdmConf) {
+  const uint8_t* buf = page35_;
+  int idx = startByte - 128;
+
+  auto readS32 = [buf](int off) -> double {
+    int32_t raw = static_cast<int32_t>(
+        (static_cast<uint32_t>(buf[off]) << 24) |
+        (static_cast<uint32_t>(buf[off + 1]) << 16) |
+        (static_cast<uint32_t>(buf[off + 2]) << 8) | buf[off + 3]);
+    return static_cast<double>(raw);
+  };
+
+  link::LinkPerfMonitorParamEachSideVal val;
+  val.avg() = readS32(idx) * lsb;
+  val.min() = readS32(idx + 4) * lsb;
+  val.max() = readS32(idx + 8) * lsb;
+  val.cur() = readS16VdmValue(vdmConf, lsb).value_or(0);
+  return val;
+}
+
+/*
+ * readU16
+ *
+ * Read an unsigned 16-bit value from a byte buffer at the given offset.
+ */
+double CmisModule::readU16(const uint8_t* p, int off) {
+  return static_cast<double>((static_cast<uint16_t>(p[off]) << 8) | p[off + 1]);
+}
+
+/*
+ * readS16
+ *
+ * Read a signed 16-bit value from a byte buffer at the given offset.
+ */
+double CmisModule::readS16(const uint8_t* p, int off) {
+  return static_cast<double>(
+      static_cast<int16_t>((static_cast<uint16_t>(p[off]) << 8) | p[off + 1]));
+}
+
+/*
+ * readLinkPmMetricU16
+ *
+ * Read a Link PM metric with U16 avg/min/max from page 35h (2 bytes each)
+ * and U16 current value from VDM pages.
+ */
+link::LinkPerfMonitorParamEachSideVal CmisModule::readLinkPmMetricU16(
+    int startByte,
+    double lsb,
+    VdmConfigType vdmConf) {
+  const uint8_t* buf = page35_;
+  int idx = startByte - 128;
+
+  link::LinkPerfMonitorParamEachSideVal val;
+  val.avg() = readU16(buf, idx) * lsb;
+  val.min() = readU16(buf, idx + 2) * lsb;
+  val.max() = readU16(buf, idx + 4) * lsb;
+  val.cur() = readU16VdmValue(vdmConf, lsb).value_or(0);
+  return val;
+}
+
+/*
+ * readLinkPmMetricS16
+ *
+ * Read a Link PM metric with S16 avg/min/max from page 35h (2 bytes each)
+ * and S16 current value from VDM pages.
+ */
+link::LinkPerfMonitorParamEachSideVal CmisModule::readLinkPmMetricS16(
+    int startByte,
+    double lsb,
+    VdmConfigType vdmConf) {
+  const uint8_t* buf = page35_;
+  int idx = startByte - 128;
+
+  link::LinkPerfMonitorParamEachSideVal val;
+  val.avg() = readS16(buf, idx) * lsb;
+  val.min() = readS16(buf, idx + 2) * lsb;
+  val.max() = readS16(buf, idx + 4) * lsb;
+  val.cur() = readS16VdmValue(vdmConf, lsb).value_or(0);
+  return val;
+}
+
+/*
+ * fillVdmPerfMonitorLinkPm
+ *
+ * Fill in Link Performance Monitoring stats from C-CMIS Page 35h
+ * (Section 7.4.8, Table 15) and VDM pages (20h-23h).
+ *
+ * Page 35h provides avg/min/max values over the prior PM interval.
+ * Current (real-time) values come from VDM pages using identifiers 134-152.
+ * Only available on coherent (tunable) optics modules.
+ */
+bool CmisModule::fillVdmPerfMonitorLinkPm(VdmPerfMonitorStats& vdmStats) {
+  if (!isTunableOptics() || !cacheIsValid()) {
+    return false;
+  }
+
+  auto& portNameToMediaLanes = getPortNameToMediaLanes();
+
+  for (auto& [portName, mediaLanes] : portNameToMediaLanes) {
+    LinkPm linkPm;
+
+    linkPm.cd() = readLinkPmMetricS32(128, 1.0, CD_HIGH_GRANULARITY);
+    linkPm.dgd() = readLinkPmMetricU16(140, 0.01, DGD);
+    linkPm.sopmd() = readLinkPmMetricU16(146, 0.01, SOPMD_HIGH_GRANULARITY);
+    linkPm.pdl() = readLinkPmMetricU16(152, 0.1, PDL);
+    linkPm.osnr() = readLinkPmMetricU16(158, 0.1, OSNR);
+    linkPm.esnr() = readLinkPmMetricU16(164, 0.1, ESNR);
+    linkPm.cfo() = readLinkPmMetricS16(170, 1.0, CFO);
+    linkPm.evmModem() = readLinkPmMetricU16(176, 100.0 / 65535.0, EVM);
+    linkPm.txPower() = readLinkPmMetricS16(182, 0.01, TX_POWER);
+    linkPm.rxPower() = readLinkPmMetricS16(188, 0.01, RX_TOTAL_POWER);
+    linkPm.rxSigPower() = readLinkPmMetricS16(194, 0.01, RX_SIGNAL_POWER);
+    linkPm.sopcr() = readLinkPmMetricS16(200, 1.0, SOP_ROC);
+    linkPm.mer() = readLinkPmMetricU16(206, 0.1, MER);
+    linkPm.clockRecoveryLoop() =
+        readLinkPmMetricS16(212, 100.0 / 32767.0, CLOCK_RECOVERY_LOOP);
+    linkPm.snrMargin() = readLinkPmMetricS16(224, 0.1, SNR_MARGIN);
+    linkPm.qFactor() = readLinkPmMetricU16(230, 0.1, Q_FACTOR);
+    linkPm.qMargin() = readLinkPmMetricS16(236, 0.1, Q_MARGIN);
+
+    vdmStats.mediaPortVdmStats()[portName]
+        .coherentVdmStats()
+        .ensure()
+        .linkPm() = linkPm;
   }
   return true;
 }

@@ -326,6 +326,7 @@ add_library(core
   fboss/agent/ResolvedNexthopProbeScheduler.cpp
   fboss/agent/RouteUpdateLogger.cpp
   fboss/agent/RouteUpdateLoggingPrefixTracker.cpp
+  fboss/agent/PacketStreamHandler.cpp
   fboss/agent/StaticL2ForNeighborObserver.cpp
   fboss/agent/StaticL2ForNeighborUpdater.cpp
   fboss/agent/StaticL2ForNeighborSwSwitchUpdater.cpp
@@ -883,6 +884,7 @@ target_link_libraries(test_utils
 
 
 add_library(validate_state_update
+  fboss/agent/ValidateInterfaceDelta.cpp
   fboss/agent/ValidateStateUpdate.cpp
   fboss/agent/ResourceAccountant.cpp
 )

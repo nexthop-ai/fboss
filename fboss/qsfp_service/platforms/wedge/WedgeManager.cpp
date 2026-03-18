@@ -4,6 +4,7 @@
 
 #include "fboss/agent/FbossError.h"
 #include "fboss/fsdb/common/Flags.h"
+#include "fboss/lib/CommonFileUtils.h"
 #include "fboss/qsfp_service/QsfpConfig.h"
 #include "fboss/qsfp_service/QsfpServiceThreads.h"
 #include "fboss/qsfp_service/if/gen-cpp2/qsfp_service_config_types.h"
@@ -28,6 +29,10 @@ DEFINE_bool(
     optics_data_post_to_rest,
     false,
     "Enable qsfp_service to post optics thermal data to BMC");
+
+// @nolint(facebook-hte-PreventUseOfDeclareGflag) - Flag defined in
+// QsfpConfig.cpp
+DECLARE_string(qsfp_service_volatile_dir);
 
 namespace facebook {
 namespace fboss {
@@ -85,6 +90,8 @@ void WedgeManager::loadConfig() {
   const auto& qsfpCfg = qsfpConfig_->thrift;
   tcvrConfig_ = std::make_shared<TransceiverConfig>(
       *qsfpCfg.transceiverConfigOverrides());
+
+  qsfpConfig_->writePhyConfigToFile();
 
   if (FLAGS_publish_state_to_fsdb) {
     fsdbSyncManager_->updateConfig(qsfpCfg);
@@ -743,19 +750,19 @@ std::vector<TransceiverID> WedgeManager::updateTransceiverMap() {
                 getPortNames(tcvrID), qsfpImpls_[idx].get(), tcvrName));
         retVal.emplace_back(idx);
       } else {
-        XLOG(ERR) << "Unknown Transceiver interface: "
-                  << static_cast<int>(futInterfaces[idx].value())
-                  << " for TransceiverID=" << idx;
-
         try {
           if (!qsfpImpls_[idx]->detectTransceiver()) {
-            XLOG(DBG3) << "Transceiver is not present. TransceiverID=" << idx;
+            XLOG(INFO) << "Transceiver is not present. TransceiverID=" << idx;
             continue;
           } else {
             // If we fail to read the management interface, but the module is
             // detected, mark it as errored
             auto erroredTransceivers = erroredTransceivers_.wlock();
             erroredTransceivers->insert(TransceiverID(idx));
+            XLOG(ERR)
+                << "Transceiver " << idx
+                << " is detected but has an unknown Transceiver interface: "
+                << static_cast<int>(futInterfaces[idx].value());
           }
         } catch (const std::exception& ex) {
           XLOG(ERR) << "Failed to detect transceiver. TransceiverID=" << idx
@@ -1008,6 +1015,18 @@ bool WedgeManager::initExternalPhyMap(
     return true;
   }
 
+  // For platforms that require PHY config, fail hard if the phy config file doesn't exist.
+  if (requiresPhyConfig()) {
+    auto phyConfigPath = folly::to<std::string>(
+        FLAGS_qsfp_service_volatile_dir, "/", kPhyHwConfigFileName);
+    if (!checkFileExists(phyConfigPath)) {
+      throw FbossError(
+          "Platform requires PHY config but phy config file does not exist: ",
+          phyConfigPath,
+          ". Ensure 'phyConfig' is present in qsfp_service_config.");
+    }
+  }
+
   // forceWarmboot is only used to skip checking the warmboot file
   // when we're running outside of qsfp_service (e.g. in the fboss-xphy CLI)
   bool warmboot = forceWarmboot || canWarmBoot();
@@ -1213,7 +1232,7 @@ void WedgeManager::publishPortStatToFsdb(
 void WedgeManager::publishPortStateToFsdb(
     std::string&& portName,
     portstate::PortState&& state) const {
-  if (FLAGS_publish_stats_to_fsdb) {
+  if (FLAGS_publish_state_to_fsdb) {
     fsdbSyncManager_->updatePortState(std::move(portName), std::move(state));
   }
 }

@@ -94,6 +94,7 @@ bool ChenabAsic::isSupportedNonFabric(Feature feature) const {
     case HwAsic::Feature::INGRESS_BUFFER_POOL_SIZE_EXCLUDES_HEADROOM:
     case HwAsic::Feature::PORT_LEVEL_BUFFER_CONFIGURATION_SUPPORT:
     case HwAsic::Feature::BULK_CREATE_ECMP_MEMBER:
+    case HwAsic::Feature::CABLE_PROPOGATION_DELAY:
       return true;
     case HwAsic::Feature::PORT_SERDES_ZERO_PREEMPHASIS:
     case HwAsic::Feature::DEDICATED_CPU_BUFFER_POOL:
@@ -102,7 +103,6 @@ bool ChenabAsic::isSupportedNonFabric(Feature feature) const {
     case HwAsic::Feature::PORT_MTU_ERROR_TRAP:
     case HwAsic::Feature::EVENTOR_PORT_FOR_SFLOW:
     case HwAsic::Feature::SWITCH_REACHABILITY_CHANGE_NOTIFY:
-    case HwAsic::Feature::CABLE_PROPOGATION_DELAY:
     case HwAsic::Feature::DRAM_BLOCK_TIME:
     case HwAsic::Feature::VOQ_LATENCY_WATERMARK_BIN:
     case HwAsic::Feature::ACL_BYTE_COUNTER:
@@ -424,7 +424,7 @@ uint32_t ChenabAsic::getSflowShimHeaderSize() const {
   return 9;
 }
 std::optional<uint32_t> ChenabAsic::getPortSerdesPreemphasis() const {
-  return -15; // must be same as pre1
+  return std::nullopt;
 }
 uint32_t ChenabAsic::getPacketBufferUnitSize() const {
   return 192;
@@ -477,7 +477,7 @@ uint32_t ChenabAsic::getThresholdGranularity() const {
 
 std::vector<prbs::PrbsPolynomial> ChenabAsic::getSupportedPrbsPolynomials()
     const {
-  return {prbs::PrbsPolynomial::PRBS13};
+  return {prbs::PrbsPolynomial::PRBS13, prbs::PrbsPolynomial::PRBS31};
 }
 
 std::optional<uint32_t> ChenabAsic::getMaxArsGroups() const {

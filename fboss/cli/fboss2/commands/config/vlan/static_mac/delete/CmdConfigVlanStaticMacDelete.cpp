@@ -20,7 +20,7 @@ namespace facebook::fboss {
 
 CmdConfigVlanStaticMacDeleteTraits::RetType
 CmdConfigVlanStaticMacDelete::queryClient(
-    const HostInfo& hostInfo,
+    const HostInfo& /* hostInfo */,
     const VlanId& vlanIdArg,
     const ObjectArgType& macAddressArg) {
   auto& config = ConfigSession::getInstance().getAgentConfig();

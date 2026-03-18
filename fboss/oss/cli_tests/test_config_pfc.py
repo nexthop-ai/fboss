@@ -136,8 +136,8 @@ TEST_PORT_PFC_CONFIG = {
 def configure_buffer_pool(pool_name: str, config: dict) -> None:
     """Configure a buffer pool with shared and headroom bytes."""
     base_cmd = ["config", "qos", "buffer-pool", pool_name]
-    run_cli(base_cmd + ["shared-bytes", str(config["sharedBytes"])])
-    run_cli(base_cmd + ["headroom-bytes", str(config["headroomBytes"])])
+    run_cli([*base_cmd, "shared-bytes", str(config["sharedBytes"])])
+    run_cli([*base_cmd, "headroom-bytes", str(config["headroomBytes"])])
 
 
 def configure_priority_group(
@@ -154,11 +154,11 @@ def configure_priority_group(
     ]
 
     # Set each attribute
-    run_cli(base_cmd + ["min-limit-bytes", str(config["minLimitBytes"])])
-    run_cli(base_cmd + ["headroom-limit-bytes", str(config["headroomLimitBytes"])])
-    run_cli(base_cmd + ["resume-offset-bytes", str(config["resumeOffsetBytes"])])
-    run_cli(base_cmd + ["scaling-factor", config["scalingFactor"]])
-    run_cli(base_cmd + ["buffer-pool-name", buffer_pool_name])
+    run_cli([*base_cmd, "min-limit-bytes", str(config["minLimitBytes"])])
+    run_cli([*base_cmd, "headroom-limit-bytes", str(config["headroomLimitBytes"])])
+    run_cli([*base_cmd, "resume-offset-bytes", str(config["resumeOffsetBytes"])])
+    run_cli([*base_cmd, "scaling-factor", config["scalingFactor"]])
+    run_cli([*base_cmd, "buffer-pool-name", buffer_pool_name])
 
 
 def configure_priority_group_multi_attr(
@@ -197,15 +197,15 @@ def configure_port_pfc(port_name: str, config: dict) -> None:
 
     # First, use single-attribute commands for tx, rx, and priority-group-policy
     print("  Using single-attribute commands for tx, rx, priority-group-policy...")
-    run_cli(base_cmd + ["tx", "enabled" if config["tx"] else "disabled"])
-    run_cli(base_cmd + ["rx", "enabled" if config["rx"] else "disabled"])
-    run_cli(base_cmd + ["priority-group-policy", config["portPgConfigName"]])
+    run_cli([*base_cmd, "tx", "enabled" if config["tx"] else "disabled"])
+    run_cli([*base_cmd, "rx", "enabled" if config["rx"] else "disabled"])
+    run_cli([*base_cmd, "priority-group-policy", config["portPgConfigName"]])
 
     # Then, use a multi-attribute command for all watchdog settings at once
     print("  Using multi-attribute command for all watchdog settings...")
     run_cli(
-        base_cmd
-        + [
+        [
+            *base_cmd,
             "watchdog-detection-time",
             str(watchdog["detectionTimeMsecs"]),
             "watchdog-recovery-time",
@@ -234,7 +234,7 @@ def cleanup_test_config() -> None:
     cleanup_config(modify_config, "PFC-related configs")
 
 
-def main() -> int:
+def main() -> int:  # noqa: PLR0911, PLR0915
     print("=" * 70)
     print("CLI E2E Test: PFC Configuration")
     print("=" * 70)
@@ -279,7 +279,7 @@ def main() -> int:
 
     # Step 5: Verify configuration by reading /etc/coop/agent.conf
     print("\n[Step 5] Verifying configuration...")
-    with open(SYSTEM_CONFIG_PATH, "r") as f:
+    with open(SYSTEM_CONFIG_PATH) as f:
         config = json.load(f)
 
     sw_config = config.get("sw", {})

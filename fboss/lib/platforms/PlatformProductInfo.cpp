@@ -132,6 +132,10 @@ void PlatformProductInfo::initMode() {
     } else if (modelName.find("fake_wedge") == 0) {
       type_ = PlatformType::PLATFORM_FAKE_WEDGE;
     } else if (
+        modelName.find("Yangra2") == 0 || modelName.find("yangra2") == 0 ||
+        modelName.find("YANGRA2") == 0) {
+      type_ = PlatformType::PLATFORM_YANGRA2;
+    } else if (
         modelName.find("Yangra") == 0 || modelName.find("yangra") == 0 ||
         modelName.find("YANGRA") == 0) {
       type_ = PlatformType::PLATFORM_YANGRA;
@@ -190,6 +194,8 @@ void PlatformProductInfo::initMode() {
         modelName.find("8501-SYS-MT-PVT") == 0 ||
         modelName.find("8501-SYS-MT-DC") == 0) {
       type_ = PlatformType::PLATFORM_MORGAN800CC;
+    } else if (modelName.find("YANGRA2") == 0) {
+      type_ = PlatformType::PLATFORM_YANGRA2;
     } else if (modelName.find("YANGRA") == 0) {
       type_ = PlatformType::PLATFORM_YANGRA;
     } else if (modelName.find("FAKE_SAI") == 0) {
@@ -309,6 +315,8 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_ICECUBE800BANW;
     } else if (FLAGS_mode == "blackwolf800banw") {
       type_ = PlatformType::PLATFORM_BLACKWOLF800BANW;
+    } else if (FLAGS_mode == "yangra2") {
+      type_ = PlatformType::PLATFORM_YANGRA2;
     } else {
       throw std::runtime_error("invalid mode " + FLAGS_mode);
     }

@@ -29,14 +29,21 @@ cpp_unittest(
 
 cpp_library(
     name = "data_factory",
-    srcs = ["TestDataFactory.cpp"],
+    srcs = [
+        "AgentStatsBuilders.cpp",
+        "SwitchStateBuilders.cpp",
+        "TestDataFactory.cpp",
+    ],
     headers = [
+        "AgentStatsBuilders.h",
+        "SwitchStateBuilders.h",
         "TestDataFactory.h",
     ],
     exported_deps = [
         "fbsource//third-party/fmt:fmt",
         "//configerator/structs/neteng/fboss/bgp/if:bgp_attr-cpp2-types",
         "//fboss/agent:agent_stats-cpp2-types",
+        "//fboss/agent:switch_config-cpp2-types",
         "//fboss/agent:switch_state-cpp2-types",
         "//fboss/agent/hw:hardware_stats-cpp2-types",
         "//fboss/agent/if:common-cpp2-types",
@@ -66,6 +73,7 @@ cpp_library(
         "//common/base:proc",
         "//fboss/thrift_cow/storage:cow_storage",
         "//folly:benchmark",
+        "//folly:string",
         "//folly/init:init",
         "//folly/json:dynamic",
     ],

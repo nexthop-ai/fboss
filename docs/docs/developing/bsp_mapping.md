@@ -44,21 +44,21 @@ The transceiver mapping CSV must have a header row and the following columns, in
 
 | Column Name          | Definition |
 |----------------------|------------|
-| **TcvrId**           | Integer ID of the transceiver within the PIM. |
-| **TcvrLaneIdList**   | Space-separated list of logical lane IDs (1–8) within the transceiver, used to map lanes to LED IDs. |
-| **PimId**            | Integer ID of the PIM/FRU this transceiver belongs to (1 for a fixed system). |
+| **TcvrId**           | ID of the transceiver within the PIM. |
+| **TcvrLaneIdList**   | Space-separated list of logical lane IDs within the transceiver. |
+| **PimId**            | ID of the PIM/FRU this transceiver belongs to (1 for a fixed system). |
 | **AccessControllerId** | Identifier for the reset/presence controller (e.g. a CPLD instance). Rows sharing this ID use the same controller. |
 | **AccessControlType** | Type of reset/presence controller. Supported values: `CPLD`, `GPIO`. |
 | **ResetPath**        | Device path used to control the transceiver reset line, for the given access controller. |
-| **ResetMask**        | Integer bit mask within the reset register that controls this transceiver. |
+| **ResetMask**        | Bit mask within the reset register that controls this transceiver. |
 | **ResetHoldHi**      | Reset polarity: 1 = active‑high, 0 = active‑low. |
 | **PresentPath**      | Device path used to read the transceiver presence signal. |
-| **PresentMask**      | Integer bit mask within the presence register that corresponds to this transceiver. |
+| **PresentMask**      | Bit mask within the presence register that corresponds to this transceiver. |
 | **PresentHoldHi**    | Presence polarity: 1 = active‑high, 0 = active‑low. |
 | **IoControllerId**   | Identifier of the I2C controller used to talk to this transceiver. |
 | **IoControlType**    | Type of IO controller. Supported value today: `I2C`. |
 | **IoPath**           | Device path for the IO controller (e.g. `/run/devmap/xcvrs/xcvr_io_1`). |
-| **LedId**            | (Optional) Integer ID of the LED associated with the lanes in `TcvrLaneIdList`. |
+| **LedId**            | (Optional) ID of the LED associated with the lanes in `TcvrLaneIdList`. |
 | **LedBluePath**      | (Optional) Device path for the blue or green portion of the LED. |
 | **LedYellowPath**    | (Optional) Device path for the yellow or amber portion of the LED. |
 
@@ -76,15 +76,15 @@ The optional PHY mapping CSV must have a header row and the following columns, i
 
 | Column Name             | Definition |
 |-------------------------|------------|
-| **PhyId**               | Integer ID of the external PHY. |
-| **PhyCoreId**           | Integer ID of the core within the PHY. |
-| **PimId**               | Integer ID of the PIM/FRU this PHY belongs to. |
+| **PhyId**               | ID of the external PHY. |
+| **PhyCoreId**           | ID of the core within the PHY. |
+| **PimId**               | ID of the PIM/FRU this PHY belongs to. |
 | **PhyResetPath**        | Device path used to control the reset line for this PHY. |
 | **IoControlType**       | Type of IO controller used to talk to this PHY. Supported value today: `MDIO`. |
-| **IoControllerId**      | Integer ID of the MDIO controller instance. |
+| **IoControllerId**      | ID of the MDIO controller instance. |
 | **IoControllerResetPath** | Device path used to control reset for the MDIO controller. |
 | **IoPath**              | Device path for the MDIO bus. |
-| **PhyAddr**             | Integer MDIO address of the PHY on the bus. |
+| **PhyAddr**             | MDIO address of the PHY on the bus. |
 
 Notes:
 

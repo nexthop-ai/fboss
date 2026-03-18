@@ -32,11 +32,15 @@ enum class CmisPages : int {
   PAGE20 = 0x20,
   PAGE21 = 0x21,
   PAGE22 = 0x22,
+  PAGE23 = 0x23,
   PAGE24 = 0x24,
   PAGE25 = 0x25,
   PAGE26 = 0x26,
+  PAGE27 = 0x27,
   PAGE2C = 0x2C,
-  PAGE2F = 0x2F
+  PAGE2F = 0x2F,
+  PAGE34 = 0x34,
+  PAGE35 = 0x35
 };
 
 enum VdmConfigType {
@@ -69,6 +73,32 @@ enum VdmConfigType {
   FEC_TAIL_MEDIA_IN_CURR = 107,
   FEC_TAIL_HOST_IN_MAX = 108,
   FEC_TAIL_HOST_IN_CURR = 109,
+  // Coherent 800G ZR VDM parameters (C-CMIS-01.3, Table 8)
+  MODULATOR_BIAS_XI = 128,
+  MODULATOR_BIAS_XQ = 129,
+  MODULATOR_BIAS_YI = 130,
+  MODULATOR_BIAS_YQ = 131,
+  MODULATOR_BIAS_X_PHASE = 132,
+  MODULATOR_BIAS_Y_PHASE = 133,
+  CD_LOW_GRANULARITY = 135,
+  CD_HIGH_GRANULARITY = 134,
+  DGD = 136,
+  SOPMD_HIGH_GRANULARITY = 137,
+  PDL = 138,
+  OSNR = 139,
+  ESNR = 140,
+  CFO = 141,
+  EVM = 142,
+  TX_POWER = 143,
+  RX_TOTAL_POWER = 144,
+  RX_SIGNAL_POWER = 145,
+  SOP_ROC = 146,
+  MER = 147,
+  CLOCK_RECOVERY_LOOP = 148,
+  SOPMD_LOW_GRANULARITY = 149,
+  SNR_MARGIN = 150,
+  Q_FACTOR = 151,
+  Q_MARGIN = 152,
 };
 
 class CmisModule : public QsfpModule {
@@ -177,6 +207,21 @@ class CmisModule : public QsfpModule {
     return ((1 << numLanes) - 1) << startLane;
   }
 
+  // Set the module to low power mode (writes SQUELCH_CONTROL | LOW_PWR_BIT)
+  void setModuleLowPowerModeLocked();
+
+  // Release low power mode (clears LOW_PWR_BIT, writes SQUELCH_CONTROL only)
+  void releaseModuleLowPowerModeLocked();
+
+  // Check if the module is in READY state
+  bool isModuleInReadyState();
+
+  // Poll until the module reaches READY state (up to 5s)
+  bool moduleReadyStatePoll();
+
+  // Read the datapath init max delay time from the module spec (in usec)
+  std::optional<uint64_t> getDatapathMaxDelayFromModuleSpec(bool init);
+
  protected:
   // QSFP+ requires a bottom 128 byte page describing important monitoring
   // information, and then an upper 128 byte page with less frequently
@@ -196,9 +241,14 @@ class CmisModule : public QsfpModule {
   uint8_t page20_[MAX_QSFP_PAGE_SIZE]{};
   uint8_t page21_[MAX_QSFP_PAGE_SIZE]{};
   uint8_t page22_[MAX_QSFP_PAGE_SIZE]{};
+  uint8_t page23_[MAX_QSFP_PAGE_SIZE]{};
   uint8_t page24_[MAX_QSFP_PAGE_SIZE]{};
   uint8_t page25_[MAX_QSFP_PAGE_SIZE]{};
   uint8_t page26_[MAX_QSFP_PAGE_SIZE]{};
+  uint8_t page27_[MAX_QSFP_PAGE_SIZE]{};
+  // C-CMIS Performance Monitoring pages (coherent optics)
+  uint8_t page34_[MAX_QSFP_PAGE_SIZE]{};
+  uint8_t page35_[MAX_QSFP_PAGE_SIZE]{};
 
   // Some of the pages are static and they need not be read every refresh cycle
   bool staticPagesCached_{false};
@@ -719,13 +769,6 @@ class CmisModule : public QsfpModule {
    */
   MediaInterfaceCode getModuleMediaInterface() const override;
 
-  /*
-   * Helper function to read the datapath max delay time from module spec.
-   * Returns the max delay time in microseconds if found, or std::nullopt if
-   * unable to retrieve from the module.
-   */
-  std::optional<uint64_t> getDatapathMaxDelayFromModuleSpec(bool init);
-
   uint64_t getExpectedDatapathDelayUsec(bool /*init*/);
   uint64_t maxRetriesWith500msDelay(bool /*init*/);
 
@@ -815,14 +858,20 @@ class CmisModule : public QsfpModule {
   std::pair<std::optional<const uint8_t*>, int> getVdmDataValPtr(
       VdmConfigType vdmConf);
 
+  // VDM value reading helper methods - read 2 bytes from VDM data
+  std::optional<double> readU16VdmValue(VdmConfigType vdmConf, double lsb);
+  std::optional<double> readS16VdmValue(VdmConfigType vdmConf, double lsb);
+
+  // Read U16/S16 from raw byte data at given offset
+  static double readU16(const uint8_t* p, int off);
+  static double readS16(const uint8_t* p, int off);
+
   bool isMultiPortOptics() {
     return getIdentifier() == TransceiverModuleIdentifier::OSFP;
   }
 
   // Utility functions for power state management
   PowerControlState getCurrentPowerControlState();
-  bool isModuleInReadyState();
-  bool moduleReadyStatePoll();
 
   // Check if module should be kept in low power mode for AppSel programming.
   bool programAppSelInLowPowerMode() const;
@@ -838,6 +887,17 @@ class CmisModule : public QsfpModule {
   bool fillVdmPerfMonitorLtp(VdmPerfMonitorStats& vdmStats);
   bool fillVdmPerfMonitorPam4Data(VdmPerfMonitorStats& vdmStats);
   bool fillVdmPerfMonitorPam4AlarmData(VdmPerfMonitorStats& vdmStats);
+  bool fillVdmPerfMonitorCoherentVdm(VdmPerfMonitorStats& vdmStats);
+  bool fillVdmPerfMonitorFecPm(VdmPerfMonitorStats& vdmStats);
+  bool fillVdmPerfMonitorLinkPm(VdmPerfMonitorStats& vdmStats);
+
+  // Link PM helper methods: read avg/min/max from page 35h + current from VDM
+  link::LinkPerfMonitorParamEachSideVal
+  readLinkPmMetricS32(int startByte, double lsb, VdmConfigType vdmConf);
+  link::LinkPerfMonitorParamEachSideVal
+  readLinkPmMetricU16(int startByte, double lsb, VdmConfigType vdmConf);
+  link::LinkPerfMonitorParamEachSideVal
+  readLinkPmMetricS16(int startByte, double lsb, VdmConfigType vdmConf);
 
   void applyHostControlledInputEquilizerTx(uint8_t lane, uint8_t value);
 

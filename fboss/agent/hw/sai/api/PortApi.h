@@ -558,6 +558,13 @@ struct SaiPortTraits {
         sai_int32_t,
         AttributeCablePropagationDelayMediaType,
         SaiIntDefault<sai_int32_t>>;
+    struct AttributePfcPauseDurationOverride {
+      std::optional<sai_attr_id_t> operator()();
+    };
+    using PfcPauseDurationOverride = SaiExtensionAttribute<
+        sai_uint16_t,
+        AttributePfcPauseDurationOverride,
+        SaiIntDefault<sai_uint16_t>>;
   };
   using AdapterKey = PortSaiId;
 
@@ -685,7 +692,8 @@ struct SaiPortTraits {
       std::optional<Attributes::QosTcAndColorToDot1pMap>,
       std::optional<Attributes::QosIngressBufferProfileList>,
       std::optional<Attributes::QosEgressBufferProfileList>,
-      std::optional<Attributes::CablePropagationDelayMediaType>>;
+      std::optional<Attributes::CablePropagationDelayMediaType>,
+      std::optional<Attributes::PfcPauseDurationOverride>>;
   static constexpr std::array<sai_stat_id_t, 16> CounterIdsToRead = {
       SAI_PORT_STAT_IF_IN_OCTETS,
       SAI_PORT_STAT_IF_IN_UCAST_PKTS,
@@ -863,6 +871,7 @@ SAI_ATTRIBUTE_NAME(Port, IsHyperPortMember)
 SAI_ATTRIBUTE_NAME(Port, HyperPortMemberList)
 SAI_ATTRIBUTE_NAME(Port, PfcMonitorDirection)
 SAI_ATTRIBUTE_NAME(Port, CablePropagationDelayMediaType)
+SAI_ATTRIBUTE_NAME(Port, PfcPauseDurationOverride)
 
 #if defined(CHENAB_SAI_SDK)
 SAI_ATTRIBUTE_NAME(Port, AutoNegotiationMode)
@@ -959,6 +968,12 @@ struct SaiPortSerdesTraits {
     struct AttributeRxPfWrapper {
       std::optional<sai_attr_id_t> operator()();
     };
+    struct AttributeRxPfLfqWrapper {
+      std::optional<sai_attr_id_t> operator()();
+    };
+    struct AttributeRxPfHfqWrapper {
+      std::optional<sai_attr_id_t> operator()();
+    };
     struct AttributeRxEqP2Wrapper {
       std::optional<sai_attr_id_t> operator()();
     };
@@ -1027,6 +1042,12 @@ struct SaiPortSerdesTraits {
         SaiExtensionAttribute<std::vector<sai_uint32_t>, AttributeFltSWrapper>;
     using RxPf =
         SaiExtensionAttribute<std::vector<sai_uint32_t>, AttributeRxPfWrapper>;
+    using RxPfLfq = SaiExtensionAttribute<
+        std::vector<sai_uint32_t>,
+        AttributeRxPfLfqWrapper>;
+    using RxPfHfq = SaiExtensionAttribute<
+        std::vector<sai_uint32_t>,
+        AttributeRxPfHfqWrapper>;
     using RxEqP2 = SaiExtensionAttribute<
         std::vector<sai_uint32_t>,
         AttributeRxEqP2Wrapper>;
@@ -1389,6 +1410,8 @@ SAI_ATTRIBUTE_NAME(PortSerdes, Dco);
 SAI_ATTRIBUTE_NAME(PortSerdes, FltM);
 SAI_ATTRIBUTE_NAME(PortSerdes, FltS);
 SAI_ATTRIBUTE_NAME(PortSerdes, RxPf);
+SAI_ATTRIBUTE_NAME(PortSerdes, RxPfLfq);
+SAI_ATTRIBUTE_NAME(PortSerdes, RxPfHfq);
 SAI_ATTRIBUTE_NAME(PortSerdes, RxEqP2);
 SAI_ATTRIBUTE_NAME(PortSerdes, RxEqP1);
 SAI_ATTRIBUTE_NAME(PortSerdes, RxEqM);

@@ -90,6 +90,10 @@ SaiTamEventTraits::Attributes::AttributeAgingGroup::operator()() {
   return SAI_TAM_EVENT_ATTR_FAKE_AGING_GROUP;
 }
 
+std::optional<sai_attr_id_t> SaiTamEventTraits::Attributes::
+    AttributeIngressSamplepacketEnable::operator()() {
+  return SAI_TAM_EVENT_ATTR_FAKE_INGRESS_SAMPLEPACKET_ENABLE;
+}
 std::optional<sai_attr_id_t>
 SaiTamTransportTraits::Attributes::AttributeSrcMacAddress::operator()() {
   return SAI_TAM_TRANSPORT_ATTR_FAKE_SRC_MAC_ADDRESS;
@@ -214,6 +218,16 @@ SaiPortSerdesTraits::Attributes::AttributeRxPfWrapper::operator()() {
 }
 
 std::optional<sai_attr_id_t>
+SaiPortSerdesTraits::Attributes::AttributeRxPfLfqWrapper::operator()() {
+  return std::nullopt;
+}
+
+std::optional<sai_attr_id_t>
+SaiPortSerdesTraits::Attributes::AttributeRxPfHfqWrapper::operator()() {
+  return std::nullopt;
+}
+
+std::optional<sai_attr_id_t>
 SaiPortSerdesTraits::Attributes::AttributeRxEqP2Wrapper::operator()() {
   return std::nullopt;
 }
@@ -296,6 +310,11 @@ SaiPortTraits::Attributes::AttributePfcMonitorDirection::operator()() {
 std::optional<sai_attr_id_t> SaiPortTraits::Attributes::
     AttributeCablePropagationDelayMediaType::operator()() {
   return SAI_PORT_ATTR_EXT_CABLE_PROPAGATION_DELAY_MEDIA_TYPE;
+}
+
+std::optional<sai_attr_id_t>
+SaiPortTraits::Attributes::AttributePfcPauseDurationOverride::operator()() {
+  return SAI_PORT_ATTR_EXT_PFC_PAUSE_DURATION_OVERRIDE;
 }
 
 std::optional<sai_attr_id_t>

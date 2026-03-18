@@ -10,7 +10,6 @@
 #include <type_traits>
 
 #include <fboss/agent/AddressUtil.h>
-#include "fboss/agent/AddressUtil.h"
 #include "fboss/agent/Constants.h"
 #include "fboss/agent/FbossError.h"
 #include "fboss/agent/HwSwitchMatcher.h"
@@ -19,8 +18,7 @@
 
 #include "common/network/if/gen-cpp2/Address_types.h"
 
-#include "fboss/agent/gen-cpp2/switch_state_fatal.h"
-#include "fboss/agent/gen-cpp2/switch_state_fatal_types.h"
+#include "fboss/agent/gen-cpp2/switch_state_types.h"
 
 #include "fboss/thrift_cow/nodes/Types.h"
 
@@ -528,20 +526,5 @@ struct ThriftMultiSwitchMapNode : public ThriftMapNode<MAP, Traits, Resolver> {
     return nodes;
   }
 };
-
-namespace utility {
-template <typename T, T...>
-struct TagName;
-
-template <typename T, T... Values>
-struct TagName<fatal::sequence<T, Values...>> {
-  static constexpr std::size_t size = sizeof...(Values);
-  static constexpr std::array<T, size> array = {Values...};
-  static std::string value() {
-    return std::string(std::begin(array), std::end(array));
-  }
-};
-
-} // namespace utility
 
 } // namespace facebook::fboss

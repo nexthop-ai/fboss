@@ -25,11 +25,7 @@ import subprocess
 import sys
 import tempfile
 
-from cli_test_lib import (
-    find_first_eth_interface,
-    get_fboss_cli,
-    get_interface_info,
-)
+from cli_test_lib import find_first_eth_interface, get_fboss_cli, get_interface_info
 
 
 def run_cli_as_user(
@@ -37,11 +33,11 @@ def run_cli_as_user(
 ) -> subprocess.CompletedProcess:
     """Run CLI with a specific HOME directory to simulate a different user."""
     cli = get_fboss_cli()
-    cmd = [cli] + args
+    cmd = [cli, *args]
     env = os.environ.copy()
     env["HOME"] = home_dir
     print(f"[User HOME={home_dir}] Running: {' '.join(args)}")
-    result = subprocess.run(cmd, capture_output=True, text=True, env=env)
+    result = subprocess.run(cmd, check=False, capture_output=True, text=True, env=env)
     if check and result.returncode != 0:
         print(f"  Failed with code {result.returncode}")
         print(f"  stdout: {result.stdout}")
@@ -50,7 +46,7 @@ def run_cli_as_user(
     return result
 
 
-def main() -> int:
+def main() -> int:  # noqa: PLR0915
     print("=" * 60)
     print("CLI E2E Test: Concurrent Session Conflict Detection")
     print("=" * 60)
@@ -64,10 +60,10 @@ def main() -> int:
     print(f"  Original description: '{original_description}'")
 
     # Create temporary home directories for two simulated users
-    with tempfile.TemporaryDirectory(
-        prefix="user1_"
-    ) as user1_home, tempfile.TemporaryDirectory(prefix="user2_") as user2_home:
-
+    with (
+        tempfile.TemporaryDirectory(prefix="user1_") as user1_home,
+        tempfile.TemporaryDirectory(prefix="user2_") as user2_home,
+    ):
         try:
             # Step 2: User1 starts a session
             print("\n[Step 2] User1 starts a session...")
@@ -106,7 +102,7 @@ def main() -> int:
             print(f"  stderr: {result.stderr[:300] if result.stderr else '(empty)'}")
             # Check for conflict message in stderr (exit code may incorrectly be 0)
             if "system configuration has changed" not in result.stderr:
-                print(f"  ERROR: Expected conflict message in stderr")
+                print("  ERROR: Expected conflict message in stderr")
                 return 1
             print("  User2's commit correctly rejected with conflict message")
 
@@ -132,7 +128,7 @@ def main() -> int:
 
         finally:
             # Cleanup: Restore original description
-            print(f"\n[Cleanup] Restoring original description...")
+            print("\n[Cleanup] Restoring original description...")
             real_home = os.environ.get("HOME", "/root")
             try:
                 run_cli_as_user(

@@ -176,6 +176,7 @@ thrift_library(
     deps = [
         ":switch_config",
         "//common/network/if:if",
+        "//configerator/structs/neteng/fboss/thrift:common",
         "//fboss/agent/if:common",
         "//fboss/agent/if:ctrl",
         "//fboss/lib/phy:phy",
@@ -669,6 +670,27 @@ cpp_library(
 )
 
 cpp_library(
+    name = "packet_stream_handler",
+    srcs = [
+        "PacketStreamHandler.cpp",
+    ],
+    headers = [
+        "PacketStreamHandler.h",
+    ],
+    exported_deps = [
+        ":core",
+        ":fboss-types",
+        ":packet",
+        "//fb303:thread_cached_service_data",
+        "//fboss/agent/state:state",
+        "//fboss/agent/thrift_packet_stream:packet_stream_server",
+        "//folly:synchronized",
+        "//folly/io:iobuf",
+        "//folly/logging:logging",
+    ],
+)
+
+cpp_library(
     name = "stats",
     srcs = [
         "AggregatePortStats.cpp",
@@ -779,6 +801,7 @@ cpp_library(
         "FibHelpers.cpp",
     ],
     exported_deps = [
+        ":agent_features",
         ":fboss-types",
         "//fboss/agent/rib:standalone_rib",
         "//fboss/agent/state:state",
@@ -903,6 +926,7 @@ cpp_library(
         "NeighborUpdaterImpl.cpp",
         "NeighborUpdaterNoopImpl.cpp",
         "NextHopResolver.cpp",
+        "PacketStreamHandler.cpp",
         "PortUpdateHandler.cpp",
         "RemoteNeighborUpdater.cpp",
         "ResolvedNexthopMonitor.cpp",
@@ -1034,6 +1058,7 @@ cpp_library(
         "//fboss/agent/state:state_update",
         "//fboss/agent/state:state_utils",
         "//fboss/agent/thrift_packet_stream:bidirectional_packet_stream",
+        "//fboss/agent/thrift_packet_stream:packet_stream_server",
         "//fboss/facebook/bitsflow:bitsflow_helper",
         "//fboss/fsdb/client:fsdb_pub_sub",
         "//fboss/fsdb/client:fsdb_stream_client",
@@ -1766,6 +1791,7 @@ cpp_library(
         ":hwagent",
         ":load_agent_config",
         ":monolithic_hw_switch_handler",
+        ":packet_stream_handler",
         ":platform_base",
         ":setup_thrift",
         ":sw_agent_initializer",
@@ -1798,6 +1824,7 @@ cpp_library(
         ":core",
         ":multi_switch_hw_switch_handler",
         ":multiswitch_service",
+        ":packet_stream_handler",
         ":sw_agent_initializer",
         "//fboss/lib:common_file_utils",
         "//folly/io/async:async_base",
@@ -2151,6 +2178,7 @@ cpp_library(
     name = "validate_state_update",
     srcs = [
         "ResourceAccountant.cpp",
+        "ValidateInterfaceDelta.cpp",
         "ValidateStateUpdate.cpp",
     ],
     exported_deps = [
@@ -2167,6 +2195,8 @@ cpp_library(
         "//fboss/agent/hw/switch_asics:switch_asics",
         "//fboss/agent/state:nodebase",
         "//fboss/agent/state:state",
+        "//fboss/lib:unique_ref_map",
+        "//folly:network_address",
     ],
 )
 

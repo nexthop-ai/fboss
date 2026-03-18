@@ -63,6 +63,7 @@ int getRdswSysPortBlockSize(
       case PlatformType::PLATFORM_JANGA800BIC:
         return 22;
       case PlatformType::PLATFORM_BLACKWOLF800BANW:
+      case PlatformType::PLATFORM_J4SIM:
         return 1024;
       default:
         break;
@@ -109,7 +110,7 @@ int getSysPortIdsAllocated(
 }
 
 cfg::InterfaceType getInterfaceType(const HwAsic& asic) {
-  if (asic.getAsicType() == cfg::AsicType::ASIC_TYPE_CHENAB) {
+  if (asic.getAsicVendor() == HwAsic::AsicVendor::ASIC_VENDOR_CHENAB) {
     return cfg::InterfaceType::PORT;
   }
   return cfg::InterfaceType::VLAN;
@@ -966,7 +967,11 @@ cfg::SwitchConfig genPortVlanCfg(
         (FLAGS_hide_interface_ports &&
          *platformPorts.find(static_cast<int32_t>(portID))
                  ->second.mapping()
-                 ->portType() == cfg::PortType::INTERFACE_PORT)) {
+                 ->portType() == cfg::PortType::INTERFACE_PORT) ||
+        (FLAGS_hide_management_ports &&
+         *platformPorts.find(static_cast<int32_t>(portID))
+                 ->second.mapping()
+                 ->portType() == cfg::PortType::MANAGEMENT_PORT)) {
       continue;
     }
     config.ports()->push_back(
@@ -1028,7 +1033,7 @@ cfg::SwitchConfig genPortVlanCfg(
     }
 
     auto defaultVlanId =
-        (asic->getAsicType() != cfg::AsicType::ASIC_TYPE_CHENAB)
+        (asic->getAsicVendor() != HwAsic::AsicVendor::ASIC_VENDOR_CHENAB)
         ? kDefaultVlanId4094
         : kDefaultVlanId1;
     cfg::Vlan defaultVlan;
@@ -1048,7 +1053,7 @@ cfg::SwitchConfig genPortVlanCfg(
       vlanPort.emitTags() = false;
       config.vlanPorts()->push_back(vlanPort);
     }
-    if (asic->getAsicType() == cfg::AsicType::ASIC_TYPE_CHENAB) {
+    if (asic->getAsicVendor() == HwAsic::AsicVendor::ASIC_VENDOR_CHENAB) {
       /*
        * TODO(pshaikh): Chenab-Hack pipeline lookup for traffic injected by cpu
        * requires vlan rif in default vlan.

@@ -22,11 +22,7 @@ Requirements:
 import sys
 from typing import Optional
 
-from cli_test_lib import (
-    commit_config,
-    find_first_eth_interface,
-    run_cli,
-)
+from cli_test_lib import commit_config, find_first_eth_interface, run_cli
 
 # Test MAC address - using a locally administered unicast MAC
 # (second hex digit is 2, 6, A, or E for locally administered)
@@ -93,7 +89,7 @@ def main() -> int:
     # Check if the test MAC already exists (cleanup from a previous failed run)
     existing_entry = find_mac_entry(TEST_MAC_ADDRESS, vlan_id)
     if existing_entry is not None:
-        print(f"\n[Cleanup] Removing existing test MAC entry...")
+        print("\n[Cleanup] Removing existing test MAC entry...")
         try:
             delete_static_mac(vlan_id, TEST_MAC_ADDRESS)
             print(f"  Removed existing entry for {TEST_MAC_ADDRESS}")
@@ -101,10 +97,10 @@ def main() -> int:
             print(f"  WARNING: Could not remove existing entry: {e}")
 
     # Step 2: Add a static MAC entry
-    print(f"\n[Step 2] Adding static MAC entry...")
+    print("\n[Step 2] Adding static MAC entry...")
     print(f"  VLAN: {vlan_id}, MAC: {TEST_MAC_ADDRESS}, Port: {port_name}")
     add_static_mac(vlan_id, TEST_MAC_ADDRESS, port_name)
-    print(f"  Static MAC entry added")
+    print("  Static MAC entry added")
 
     # Step 3: Verify the MAC entry via 'show mac details'
     print("\n[Step 3] Verifying MAC entry via 'show mac details'...")
@@ -118,9 +114,9 @@ def main() -> int:
     )
 
     # Step 4: Delete the static MAC entry
-    print(f"\n[Step 4] Deleting static MAC entry...")
+    print("\n[Step 4] Deleting static MAC entry...")
     delete_static_mac(vlan_id, TEST_MAC_ADDRESS)
-    print(f"  Static MAC entry deleted")
+    print("  Static MAC entry deleted")
 
     # Step 5: Verify the MAC entry was deleted
     print("\n[Step 5] Verifying MAC entry was deleted...")
@@ -130,7 +126,7 @@ def main() -> int:
             f"  ERROR: MAC entry still exists for {TEST_MAC_ADDRESS} on VLAN {vlan_id}"
         )
         return 1
-    print(f"  Verified: MAC entry no longer exists")
+    print("  Verified: MAC entry no longer exists")
 
     print("\n" + "=" * 60)
     print("TEST PASSED")

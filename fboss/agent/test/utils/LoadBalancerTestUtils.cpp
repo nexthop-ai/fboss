@@ -51,6 +51,12 @@ cfg::Fields getFullHashFields() {
   return hashFields;
 }
 
+cfg::Fields getFullHashFieldsWithFlowLabel() {
+  auto hashFields = getFullHashFields();
+  hashFields.ipv6Fields()->insert(cfg::IPv6Field::FLOW_LABEL);
+  return hashFields;
+}
+
 cfg::Fields getFullHashUdf() {
   auto hashFields = getHalfHashFields();
   hashFields.transportFields() = std::set<cfg::TransportField>(
@@ -94,7 +100,28 @@ cfg::LoadBalancer getFullHashUdfConfig(
   *loadBalancer.algorithm() = cfg::HashingAlgorithm::CRC16_CCITT;
   return loadBalancer;
 }
+cfg::LoadBalancer getFullHashWithFlowLabelConfig(
+    const HwAsic& asic,
+    cfg::LoadBalancerID id) {
+  cfg::LoadBalancer loadBalancer;
+  *loadBalancer.id() = id;
+  if (asic.isSupported(HwAsic::Feature::HASH_FIELDS_CUSTOMIZATION)) {
+    *loadBalancer.fieldSelection() = getFullHashFieldsWithFlowLabel();
+  }
+  *loadBalancer.algorithm() = cfg::HashingAlgorithm::CRC16_CCITT;
+  return loadBalancer;
+}
 } // namespace
+cfg::LoadBalancer getEcmpFullWithFlowLabelHashConfig(
+    const std::vector<const HwAsic*>& asics) {
+  return getFullHashWithFlowLabelConfig(
+      *checkSameAndGetAsic(asics), cfg::LoadBalancerID::ECMP);
+}
+cfg::LoadBalancer getTrunkFullWithFlowLabelHashConfig(
+    const std::vector<const HwAsic*>& asics) {
+  return getFullHashWithFlowLabelConfig(
+      *checkSameAndGetAsic(asics), cfg::LoadBalancerID::AGGREGATE_PORT);
+}
 cfg::LoadBalancer getTrunkHalfHashConfig(
     const std::vector<const HwAsic*>& asics) {
   return getHalfHashConfig(
@@ -131,6 +158,13 @@ std::vector<cfg::LoadBalancer> getEcmpHalfTrunkFullHashConfig(
 std::vector<cfg::LoadBalancer> getEcmpFullTrunkFullHashConfig(
     const std::vector<const HwAsic*>& asics) {
   return {getEcmpFullHashConfig(asics), getTrunkFullHashConfig(asics)};
+}
+std::vector<cfg::LoadBalancer>
+getEcmpFullWithFlowLabelTrunkFullWithFlowLabelHashConfig(
+    const std::vector<const HwAsic*>& asics) {
+  return {
+      getEcmpFullWithFlowLabelHashConfig(asics),
+      getTrunkFullWithFlowLabelHashConfig(asics)};
 }
 
 cfg::FlowletSwitchingConfig getDefaultFlowletSwitchingConfig(
@@ -188,7 +222,8 @@ void addFlowletAcl(
   acl.proto() = 17;
   acl.l4DstPort() = 4791;
   acl.dstIp() = "2001::/16";
-  if (checkSameAndGetAsicType(cfg) == cfg::AsicType::ASIC_TYPE_CHENAB) {
+  if (checkSameAndGetAsicType(cfg) == cfg::AsicType::ASIC_TYPE_CHENAB ||
+      checkSameAndGetAsicType(cfg) == cfg::AsicType::ASIC_TYPE_CHENAB2) {
     acl.etherType() = cfg::EtherType::IPv6;
   }
   if (FLAGS_enable_th5_ars_scale_mode) {

@@ -95,6 +95,7 @@ class ResolvedNexthopMonitor;
 class ResolvedNexthopProbeScheduler;
 class StaticL2ForNeighborObserver;
 class MKAServiceManager;
+class PacketStreamHandler;
 template <typename AddressT>
 class Route;
 class Interface;
@@ -225,9 +226,6 @@ class SwSwitch : public HwSwitchCallback {
   HwSwitchThriftClientTable* getHwSwitchThriftClientTable() const {
     return hwSwitchThriftClientTable_.get();
   }
-
-  const ResourceAccountant* getResourceAccountant() const;
-  ResourceAccountant* getResourceAccountant();
 
   /*
    * Initialize the switch.
@@ -767,7 +765,12 @@ class SwSwitch : public HwSwitchCallback {
   MKAServiceManager* getMKAServiceMgr() {
     return mkaServiceManager_.get();
   }
+
+  PacketStreamHandler* getPacketStreamHandler() const {
+    return packetStreamHandler_;
+  }
 #endif
+  void setPacketStreamHandler(PacketStreamHandler* handler);
   /*
    * Get the PacketLogger object
    */
@@ -1036,6 +1039,7 @@ class SwSwitch : public HwSwitchCallback {
   std::optional<VlanID> getVlanIDForTx(
       const std::shared_ptr<VlanOrIntfT>& vlanOrIntf) const;
   bool hasQualifiedConfiguredDesiredPeer(const InterfaceID& intfId);
+  const ResourceAccountant* getResourceAccountant() const;
 
  private:
   void initAgentInfo();
@@ -1382,6 +1386,7 @@ class SwSwitch : public HwSwitchCallback {
   std::unique_ptr<MacTableManager> macTableManager_;
 #if FOLLY_HAS_COROUTINES
   std::unique_ptr<MKAServiceManager> mkaServiceManager_;
+  PacketStreamHandler* packetStreamHandler_{nullptr};
 #endif
 
   static constexpr auto kIphySnapshotIntervalSeconds = 1;

@@ -45,7 +45,7 @@ namespace facebook::fboss {
 namespace {
 const std::string kReportName = "mod_report";
 constexpr AdminDistance kDistance = AdminDistance::STATIC_ROUTE;
-const PortID kMirrorPortId{5};
+const PortID kMirrorPortId{0};
 
 template <typename AddrT>
 struct TamManagerTestParams {
@@ -110,52 +110,27 @@ TamManagerTestParams<AddrT> getParams() {
 }
 } // namespace
 
-enum class NeighborTableType {
-  INTF,
-  VLAN,
-};
-
-template <typename AddrType, NeighborTableType neighborTableType>
-struct IpAddrAndEnableIntfNbrTableT {
-  using AddrT = AddrType;
-  static constexpr NeighborTableType nbrTableType = neighborTableType;
-};
-
-using TestTypes = ::testing::Types<
-    IpAddrAndEnableIntfNbrTableT<folly::IPAddressV4, NeighborTableType::VLAN>,
-    IpAddrAndEnableIntfNbrTableT<folly::IPAddressV4, NeighborTableType::INTF>,
-    IpAddrAndEnableIntfNbrTableT<folly::IPAddressV6, NeighborTableType::VLAN>,
-    IpAddrAndEnableIntfNbrTableT<folly::IPAddressV6, NeighborTableType::INTF>>;
+using TestTypes = ::testing::Types<folly::IPAddressV4, folly::IPAddressV6>;
 
 struct TestTypeNames {
   template <typename T>
   static std::string GetName(int) {
-    std::string name;
-    if constexpr (std::is_same_v<typename T::AddrT, folly::IPAddressV4>) {
-      name = "V4";
+    if constexpr (std::is_same_v<T, folly::IPAddressV4>) {
+      return "V4";
     } else {
-      name = "V6";
+      return "V6";
     }
-    if constexpr (T::nbrTableType == NeighborTableType::INTF) {
-      name += "Intf";
-    } else {
-      name += "Vlan";
-    }
-    return name;
   }
 };
 
-template <typename IpAddrAndEnableIntfNbrTableT>
+template <typename AddrType>
 class TamManagerTest : public ::testing::Test {
  public:
   using Func = folly::Function<void()>;
   using StateUpdateFn = SwSwitch::StateUpdateFn;
-  using AddrT = typename IpAddrAndEnableIntfNbrTableT::AddrT;
-  static constexpr NeighborTableType nbrTableType =
-      IpAddrAndEnableIntfNbrTableT::nbrTableType;
+  using AddrT = AddrType;
 
   void SetUp() override {
-    FLAGS_intf_nbr_tables = (nbrTableType == NeighborTableType::INTF);
     cfg::SwitchConfig config = testConfigA();
     handle_ = createTestHandle(&config);
     sw_ = handle_->getSw();
@@ -181,13 +156,14 @@ class TamManagerTest : public ::testing::Test {
       const std::shared_ptr<SwitchState>& state,
       const std::string& name,
       const folly::IPAddress& localSrcIp,
-      const AddrT& collectorIp) {
+      const AddrT& collectorIp,
+      PortID mirrorPortId = PortID(0)) {
     std::shared_ptr<SwitchState> newState = state->clone();
 
     std::shared_ptr<MirrorOnDropReport> report = std::make_shared<
         MirrorOnDropReport>(
         name,
-        kMirrorPortId,
+        mirrorPortId,
         localSrcIp,
         static_cast<int16_t>(12345), // localSrcPort
         folly::IPAddress(collectorIp), // collectorIp
@@ -231,52 +207,22 @@ class TamManagerTest : public ::testing::Test {
       InterfaceID interfaceID,
       const PortID& portID,
       bool wait = true) {
+    // Neighbor tables are always on interfaces
     if constexpr (std::is_same<AddrT, folly::IPAddressV4>::value) {
-      switch (nbrTableType) {
-        case NeighborTableType::INTF:
-          sw_->getNeighborUpdater()->receivedArpMineForIntf(
-              interfaceID,
-              ipAddress.asV4(),
-              macAddress,
-              PortDescriptor(portID),
-              ArpOpCode::ARP_OP_REPLY);
-          break;
-        case NeighborTableType::VLAN:
-          sw_->getNeighborUpdater()->receivedArpMine(
-              sw_->getState()
-                  ->getInterfaces()
-                  ->getNode(interfaceID)
-                  ->getVlanID(),
-              ipAddress.asV4(),
-              macAddress,
-              PortDescriptor(portID),
-              ArpOpCode::ARP_OP_REPLY);
-          break;
-      }
+      sw_->getNeighborUpdater()->receivedArpMineForIntf(
+          interfaceID,
+          ipAddress.asV4(),
+          macAddress,
+          PortDescriptor(portID),
+          ArpOpCode::ARP_OP_REPLY);
     } else {
-      switch (nbrTableType) {
-        case NeighborTableType::INTF:
-          sw_->getNeighborUpdater()->receivedNdpMineForIntf(
-              interfaceID,
-              ipAddress.asV6(),
-              macAddress,
-              PortDescriptor(portID),
-              ICMPv6Type::ICMPV6_TYPE_NDP_NEIGHBOR_SOLICITATION,
-              0);
-          break;
-        case NeighborTableType::VLAN:
-          sw_->getNeighborUpdater()->receivedNdpMine(
-              sw_->getState()
-                  ->getInterfaces()
-                  ->getNode(interfaceID)
-                  ->getVlanID(),
-              ipAddress.asV6(),
-              macAddress,
-              PortDescriptor(portID),
-              ICMPv6Type::ICMPV6_TYPE_NDP_NEIGHBOR_SOLICITATION,
-              0);
-          break;
-      }
+      sw_->getNeighborUpdater()->receivedNdpMineForIntf(
+          interfaceID,
+          ipAddress.asV6(),
+          macAddress,
+          PortDescriptor(portID),
+          ICMPv6Type::ICMPV6_TYPE_NDP_NEIGHBOR_SOLICITATION,
+          0);
     }
     if (wait) {
       sw_->getNeighborUpdater()->waitForPendingUpdates();
@@ -533,6 +479,37 @@ TYPED_TEST(TamManagerTest, ResolveReportOnAdd) {
         report->getResolvedEgressPort();
     EXPECT_TRUE(resolvedPort.has_value());
     EXPECT_EQ(PortID(*resolvedPort->portId()), params.neighborPorts[0]);
+  });
+}
+
+TYPED_TEST(TamManagerTest, SkipResolutionWithStaticMirrorPort) {
+  TamManagerTestParams<typename TestFixture::AddrT> params =
+      this->getParamsHelper();
+
+  this->updateState(
+      "SkipResolutionWithStaticMirrorPort: addReport",
+      [=, this](const std::shared_ptr<SwitchState>& state) {
+        return this->addMirrorOnDropReport(
+            state,
+            kReportName,
+            params.localSrcIp,
+            params.collectorIp,
+            PortID(5));
+      });
+
+  this->addRoute(params.longerPrefix, {params.nextHop(0)});
+
+  this->resolveNeighbor(
+      folly::IPAddress(params.neighborIPs[0]),
+      params.neighborMACs[0],
+      params.interfaces[0],
+      params.neighborPorts[0]);
+
+  this->verifyStateUpdate([=, this]() {
+    std::shared_ptr<MirrorOnDropReport> report =
+        this->sw_->getState()->getMirrorOnDropReports()->getNodeIf(kReportName);
+    EXPECT_NE(report, nullptr);
+    EXPECT_FALSE(report->isResolved());
   });
 }
 

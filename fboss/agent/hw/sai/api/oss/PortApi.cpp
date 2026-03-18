@@ -73,6 +73,16 @@ SaiPortSerdesTraits::Attributes::AttributeRxPfWrapper::operator()() {
 }
 
 std::optional<sai_attr_id_t>
+SaiPortSerdesTraits::Attributes::AttributeRxPfLfqWrapper::operator()() {
+  return std::nullopt;
+}
+
+std::optional<sai_attr_id_t>
+SaiPortSerdesTraits::Attributes::AttributeRxPfHfqWrapper::operator()() {
+  return std::nullopt;
+}
+
+std::optional<sai_attr_id_t>
 SaiPortSerdesTraits::Attributes::AttributeRxEqP2Wrapper::operator()() {
   return std::nullopt;
 }
@@ -405,6 +415,11 @@ SaiPortTraits::Attributes::AttributeHyperPortMemberList::operator()() {
 
 std::optional<sai_attr_id_t> SaiPortTraits::Attributes::
     AttributeCablePropagationDelayMediaType::operator()() {
+  return std::nullopt;
+}
+
+std::optional<sai_attr_id_t>
+SaiPortTraits::Attributes::AttributePfcPauseDurationOverride::operator()() {
   return std::nullopt;
 }
 

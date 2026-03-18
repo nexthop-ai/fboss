@@ -20,7 +20,7 @@
 namespace facebook::fboss {
 
 CmdConfigVlanStaticMacAddTraits::RetType CmdConfigVlanStaticMacAdd::queryClient(
-    const HostInfo& hostInfo,
+    const HostInfo& /* hostInfo */,
     const VlanId& vlanIdArg,
     const ObjectArgType& macAndPort) {
   auto& config = ConfigSession::getInstance().getAgentConfig();

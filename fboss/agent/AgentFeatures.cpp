@@ -320,6 +320,11 @@ DEFINE_bool(
     false,
     "Enable NextHop ID allocation and management for routes");
 
+DEFINE_bool(
+    resolve_nexthops_from_id,
+    false,
+    "Resolve nexthops from NextHopSetID in FibInfo maps instead of inline nexthops");
+
 DEFINE_int32(
     ecmp_resource_manager_make_before_break_buffer,
     2,
@@ -463,3 +468,8 @@ DEFINE_bool(
     verify_fib_nexthop_id_consistency,
     false,
     "Verify FIB route NextHop IDs are consistent with inline nexthops.");
+
+DEFINE_bool(
+    enforce_single_nbr_mac_per_intf,
+    false,
+    "Enforce that each RIF has at most one neighbor MAC address");

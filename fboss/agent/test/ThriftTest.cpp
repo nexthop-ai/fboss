@@ -133,16 +133,11 @@ TEST_F(ThriftTest, getInterfaceDetail) {
   EXPECT_THROW(handler.getInterfaceDetail(info, 123), FbossError);
 }
 
-template <typename SwitchTypeAndEnableIntfNbrTableT>
+template <typename SwitchTypeT>
 class ThriftTestAllSwitchTypes : public ::testing::Test {
  public:
-  static auto constexpr switchType =
-      SwitchTypeAndEnableIntfNbrTableT::switchType;
-  static auto constexpr intfNbrTable =
-      SwitchTypeAndEnableIntfNbrTableT::intfNbrTable;
-  ;
+  static auto constexpr switchType = SwitchTypeT::switchType;
   void SetUp() override {
-    FLAGS_intf_nbr_tables = intfNbrTable;
     FLAGS_dsf_num_parallel_sessions_per_remote_interface_node =
         std::numeric_limits<uint32_t>::max();
     auto config = testConfigA(switchType);
@@ -183,7 +178,7 @@ class ThriftTestAllSwitchTypes : public ::testing::Test {
   std::unique_ptr<HwTestHandle> handle_;
 };
 
-TYPED_TEST_SUITE(ThriftTestAllSwitchTypes, SwitchTypeAndEnableIntfNbrTable);
+TYPED_TEST_SUITE(ThriftTestAllSwitchTypes, SwitchTypeTestTypes);
 
 TYPED_TEST(ThriftTestAllSwitchTypes, checkSwitchId) {
   auto switchInfoTable = this->sw_->getSwitchInfoTable();
@@ -1604,6 +1599,131 @@ TEST_F(ThriftTest, addUnicastRoutesWithOverrides) {
       FbossError);
 }
 
+TEST_F(ThriftTest, addUnicastRoutesRejectsMplsAndSrv6) {
+  ThriftHandler handler(sw_);
+
+  auto bgpClient = static_cast<int16_t>(ClientID::BGPD);
+  auto bgpAdmin = sw_->clientIdToAdminDistance(bgpClient);
+  auto prefix = "7.1.0.0/16";
+  auto nhopAddr = "10.0.0.11";
+
+  // Helper: create a route with a NextHopThrift that has both mplsAction and
+  // srv6SegmentList set
+  auto makeBothRoute = [&]() {
+    auto route = makeEcmpUnicastRoute(prefix, {nhopAddr}, bgpAdmin);
+    NextHopThrift nh;
+    nh.address() = toBinaryAddress(IPAddress(nhopAddr));
+    MplsAction mplsAction;
+    mplsAction.action() = MplsActionCode::PUSH;
+    mplsAction.pushLabels() = {101};
+    nh.mplsAction() = mplsAction;
+    nh.srv6SegmentList() = {toBinaryAddress(IPAddress("2001:db8::1"))};
+    nh.tunnelType() = TunnelType::SRV6_ENCAP;
+    nh.tunnelId() = "tunnel1";
+    route->nextHops() = {nh};
+    return route;
+  };
+
+  // Single route with both should be rejected
+  EXPECT_THROW(handler.addUnicastRoute(bgpClient, makeBothRoute()), FbossError);
+
+  // Batch route with both should be rejected
+  auto routes = std::make_unique<std::vector<UnicastRoute>>();
+  routes->emplace_back(*makeBothRoute());
+  EXPECT_THROW(
+      handler.addUnicastRoutes(bgpClient, std::move(routes)), FbossError);
+
+  // Route with only mplsAction should be accepted
+  auto mplsOnlyRoute = makeEcmpUnicastRoute(prefix, {nhopAddr}, bgpAdmin);
+  NextHopThrift mplsNh;
+  mplsNh.address() = toBinaryAddress(IPAddress(nhopAddr));
+  MplsAction mplsAction;
+  mplsAction.action() = MplsActionCode::PUSH;
+  mplsAction.pushLabels() = {101};
+  mplsNh.mplsAction() = mplsAction;
+  mplsOnlyRoute->nextHops() = {mplsNh};
+  EXPECT_NO_THROW(handler.addUnicastRoute(bgpClient, std::move(mplsOnlyRoute)));
+
+  // Route with only srv6SegmentList should be accepted
+  auto srv6OnlyRoute = makeEcmpUnicastRoute("8.1.0.0/16", {nhopAddr}, bgpAdmin);
+  NextHopThrift srv6Nh;
+  srv6Nh.address() = toBinaryAddress(IPAddress(nhopAddr));
+  srv6Nh.srv6SegmentList() = {toBinaryAddress(IPAddress("2001:db8::1"))};
+  srv6Nh.tunnelType() = TunnelType::SRV6_ENCAP;
+  srv6Nh.tunnelId() = "tunnel1";
+  srv6OnlyRoute->nextHops() = {srv6Nh};
+  EXPECT_NO_THROW(handler.addUnicastRoute(bgpClient, std::move(srv6OnlyRoute)));
+}
+
+TEST_F(ThriftTest, addUnicastRoutesRejectsSrv6WithInvalidTunnelType) {
+  ThriftHandler handler(sw_);
+
+  auto bgpClient = static_cast<int16_t>(ClientID::BGPD);
+  auto bgpAdmin = sw_->clientIdToAdminDistance(bgpClient);
+  auto nhopAddr = "10.0.0.11";
+
+  // Next hop with srv6SegmentList and wrong tunnelType should be rejected
+  {
+    auto route = makeEcmpUnicastRoute("9.1.0.0/16", {nhopAddr}, bgpAdmin);
+    NextHopThrift nh;
+    nh.address() = toBinaryAddress(IPAddress(nhopAddr));
+    nh.srv6SegmentList() = {toBinaryAddress(IPAddress("2001:db8::1"))};
+    nh.tunnelId() = "tunnel1";
+    nh.tunnelType() = TunnelType::IP_IN_IP;
+    route->nextHops() = {nh};
+    EXPECT_THROW(
+        handler.addUnicastRoute(bgpClient, std::move(route)), FbossError);
+  }
+
+  // Next hop with srv6SegmentList, tunnelId, and SRV6_ENCAP tunnelType should
+  // be accepted
+  {
+    auto route = makeEcmpUnicastRoute("9.2.0.0/16", {nhopAddr}, bgpAdmin);
+    NextHopThrift nh;
+    nh.address() = toBinaryAddress(IPAddress(nhopAddr));
+    nh.srv6SegmentList() = {toBinaryAddress(IPAddress("2001:db8::1"))};
+    nh.tunnelId() = "tunnel1";
+    nh.tunnelType() = TunnelType::SRV6_ENCAP;
+    route->nextHops() = {nh};
+    EXPECT_NO_THROW(handler.addUnicastRoute(bgpClient, std::move(route)));
+  }
+
+  // Next hop with srv6SegmentList, no tunnelId, and no SRV6_ENCAP tunnel in
+  // config should be rejected
+  {
+    auto route = makeEcmpUnicastRoute("9.3.0.0/16", {nhopAddr}, bgpAdmin);
+    NextHopThrift nh;
+    nh.address() = toBinaryAddress(IPAddress(nhopAddr));
+    nh.srv6SegmentList() = {toBinaryAddress(IPAddress("2001:db8::1"))};
+    // tunnelId not set and no SRV6_ENCAP tunnel in config
+    route->nextHops() = {nh};
+    EXPECT_THROW(
+        handler.addUnicastRoute(bgpClient, std::move(route)), FbossError);
+  }
+
+  // Next hop with srv6SegmentList and no tunnelId should default to first
+  // SRV6_ENCAP tunnel from config
+  {
+    // Add an SRv6 tunnel to the config so the defaulting logic can find it
+    auto config = sw_->getConfig();
+    cfg::Srv6Tunnel srv6Tunnel;
+    srv6Tunnel.srv6TunnelId() = "srv6Tunnel0";
+    srv6Tunnel.underlayIntfID() = 1;
+    srv6Tunnel.tunnelType() = TunnelType::SRV6_ENCAP;
+    srv6Tunnel.srcIp() = "2001:db8::100";
+    config.srv6Tunnels() = {srv6Tunnel};
+    sw_->applyConfig("Add SRv6 tunnel", config);
+
+    auto route = makeEcmpUnicastRoute("9.4.0.0/16", {nhopAddr}, bgpAdmin);
+    NextHopThrift nh;
+    nh.address() = toBinaryAddress(IPAddress(nhopAddr));
+    nh.srv6SegmentList() = {toBinaryAddress(IPAddress("2001:db8::1"))};
+    // tunnelId not set — should default to "srv6Tunnel0" from config
+    route->nextHops() = {nh};
+    EXPECT_NO_THROW(handler.addUnicastRoute(bgpClient, std::move(route)));
+  }
+}
+
 TEST_F(ThriftTest, delUnicastRoutes) {
   RouterID rid = RouterID(0);
 
@@ -1823,6 +1943,31 @@ std::unique_ptr<MplsRoute> makeMplsRoute(
   nr->nextHops()->push_back(nh);
   nr->adminDistance() = distance;
   return nr;
+}
+
+TEST_F(ThriftTest, addMplsRoutesRejectsSrv6SegmentList) {
+  ThriftHandler handler(sw_);
+
+  auto mplsRoute = makeMplsRoute(101, "10.0.0.2");
+  // Add a srv6SegmentList to the next hop — should be rejected
+  mplsRoute->nextHops()[0].srv6SegmentList() = {
+      toBinaryAddress(IPAddress("2001:db8::1"))};
+  mplsRoute->nextHops()[0].tunnelType() = TunnelType::SRV6_ENCAP;
+  mplsRoute->nextHops()[0].tunnelId() = "tunnel1";
+
+  auto routes = std::make_unique<std::vector<MplsRoute>>();
+  routes->emplace_back(*mplsRoute);
+  EXPECT_THROW(
+      handler.addMplsRoutes(
+          static_cast<int16_t>(ClientID::BGPD), std::move(routes)),
+      FbossError);
+
+  // Route without srv6SegmentList should be accepted
+  auto validRoute = makeMplsRoute(102, "10.0.0.3");
+  auto validRoutes = std::make_unique<std::vector<MplsRoute>>();
+  validRoutes->emplace_back(*validRoute);
+  EXPECT_NO_THROW(handler.addMplsRoutes(
+      static_cast<int16_t>(ClientID::BGPD), std::move(validRoutes)));
 }
 
 TEST_F(ThriftTest, syncMplsFibIsHwProtected) {
@@ -2691,25 +2836,9 @@ TEST_F(ThriftTest, getCurrentStateJSONForPaths) {
       FbossError);
 }
 
-template <bool enableIntfNbrTable>
-struct EnableIntfNbrTable {
-  static constexpr auto intfNbrTable = enableIntfNbrTable;
-};
-
-using NbrTableTypes =
-    ::testing::Types<EnableIntfNbrTable<false>, EnableIntfNbrTable<true>>;
-
-template <typename EnableIntfNbrTableT>
 class ThriftTeFlowTest : public ::testing::Test {
-  static auto constexpr intfNbrTable = EnableIntfNbrTableT::intfNbrTable;
-
  public:
-  bool isIntfNbrTable() const {
-    return intfNbrTable == true;
-  }
-
   void SetUp() override {
-    FLAGS_intf_nbr_tables = isIntfNbrTable();
     auto config = testConfigA();
     cfg::ExactMatchTableConfig tableConfig;
     tableConfig.name() = "TeFlowTable";
@@ -2719,42 +2848,21 @@ class ThriftTeFlowTest : public ::testing::Test {
     sw_ = handle_->getSw();
     sw_->initialConfigApplied(std::chrono::steady_clock::now());
 
-    if (isIntfNbrTable()) {
-      sw_->getNeighborUpdater()->receivedNdpMineForIntf(
-          kInterfaceA,
-          folly::IPAddressV6(kNhopAddrA),
-          kMacAddress,
-          PortDescriptor(kPortIDA),
-          ICMPv6Type::ICMPV6_TYPE_NDP_NEIGHBOR_ADVERTISEMENT,
-          0);
-    } else {
-      sw_->getNeighborUpdater()->receivedNdpMine(
-          kVlanA,
-          folly::IPAddressV6(kNhopAddrA),
-          kMacAddress,
-          PortDescriptor(kPortIDA),
-          ICMPv6Type::ICMPV6_TYPE_NDP_NEIGHBOR_ADVERTISEMENT,
-          0);
-    }
+    sw_->getNeighborUpdater()->receivedNdpMineForIntf(
+        kInterfaceA,
+        folly::IPAddressV6(kNhopAddrA),
+        kMacAddress,
+        PortDescriptor(kPortIDA),
+        ICMPv6Type::ICMPV6_TYPE_NDP_NEIGHBOR_ADVERTISEMENT,
+        0);
 
-    if (isIntfNbrTable()) {
-      sw_->getNeighborUpdater()->receivedNdpMineForIntf(
-          kInterfaceB,
-          folly::IPAddressV6(kNhopAddrB),
-          kMacAddress,
-          PortDescriptor(kPortIDB),
-          ICMPv6Type::ICMPV6_TYPE_NDP_NEIGHBOR_ADVERTISEMENT,
-          0);
-    } else {
-      sw_->getNeighborUpdater()->receivedNdpMine(
-          kVlanB,
-          folly::IPAddressV6(kNhopAddrB),
-          kMacAddress,
-          PortDescriptor(kPortIDB),
-          ICMPv6Type::ICMPV6_TYPE_NDP_NEIGHBOR_ADVERTISEMENT,
-          0);
-    }
-
+    sw_->getNeighborUpdater()->receivedNdpMineForIntf(
+        kInterfaceB,
+        folly::IPAddressV6(kNhopAddrB),
+        kMacAddress,
+        PortDescriptor(kPortIDB),
+        ICMPv6Type::ICMPV6_TYPE_NDP_NEIGHBOR_ADVERTISEMENT,
+        0);
     sw_->getNeighborUpdater()->waitForPendingUpdates();
     waitForBackgroundThread(sw_);
     waitForStateUpdates(sw_);

@@ -18,2676 +18,30 @@ constexpr auto kJsonPlatformMappingStr = R"(
     "1": {
         "mapping": {
           "id": 1,
-          "name": "eth1/1/1",
+          "name": "rcy1/1/529",
           "controllingPort": 1,
           "pins": [
             {
               "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                "chip": "NPU-J3_RCY-slot1/chip1/core529",
                 "lane": 0
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                  "lane": 0
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                "lane": 1
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                  "lane": 1
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                "lane": 2
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                  "lane": 2
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                "lane": 3
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                  "lane": 3
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                "lane": 4
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                  "lane": 4
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                "lane": 5
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                  "lane": 5
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                "lane": 6
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                  "lane": 6
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                "lane": 7
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                  "lane": 7
-                }
               }
             }
           ],
-          "portType": 0,
-          "scope": 0
+          "portType": 3,
+          "attachedCoreId": 0,
+          "attachedCorePortIndex": 3,
+          "virtualDeviceId": 0,
+          "scope": 1
         },
         "supportedProfiles": {
-          "50": {
-              "subsumedPorts": [
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8
-              ],
+          "49": {
               "pins": {
                 "iphy": [
                   {
                     "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                      "chip": "NPU-J3_RCY-slot1/chip1/core529",
                       "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 7
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 7
-                    }
-                  }
-                ]
-              }
-          },
-          "39": {
-              "subsumedPorts": [
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8
-              ],
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 7
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 7
-                    }
-                  }
-                ]
-              }
-          },
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 0
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 0
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "2": {
-        "mapping": {
-          "id": 2,
-          "name": "eth1/1/2",
-          "controllingPort": 1,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                "lane": 1
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                  "lane": 1
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 1
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 1
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "3": {
-        "mapping": {
-          "id": 3,
-          "name": "eth1/1/3",
-          "controllingPort": 1,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                "lane": 2
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                  "lane": 2
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 2
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 2
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "4": {
-        "mapping": {
-          "id": 4,
-          "name": "eth1/1/4",
-          "controllingPort": 1,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                "lane": 3
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                  "lane": 3
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 3
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 3
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "5": {
-        "mapping": {
-          "id": 5,
-          "name": "eth1/1/5",
-          "controllingPort": 1,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                "lane": 4
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                  "lane": 4
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 4
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 4
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "6": {
-        "mapping": {
-          "id": 6,
-          "name": "eth1/1/6",
-          "controllingPort": 1,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                "lane": 5
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                  "lane": 5
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 5
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 5
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "7": {
-        "mapping": {
-          "id": 7,
-          "name": "eth1/1/7",
-          "controllingPort": 1,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                "lane": 6
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                  "lane": 6
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 6
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 6
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "8": {
-        "mapping": {
-          "id": 8,
-          "name": "eth1/1/8",
-          "controllingPort": 1,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                "lane": 7
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                  "lane": 7
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
-                      "lane": 7
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
-                      "lane": 7
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "9": {
-        "mapping": {
-          "id": 9,
-          "name": "eth1/2/1",
-          "controllingPort": 9,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                "lane": 0
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                  "lane": 0
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                "lane": 1
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                  "lane": 1
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                "lane": 2
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                  "lane": 2
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                "lane": 3
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                  "lane": 3
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                "lane": 4
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                  "lane": 4
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                "lane": 5
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                  "lane": 5
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                "lane": 6
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                  "lane": 6
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                "lane": 7
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                  "lane": 7
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "50": {
-              "subsumedPorts": [
-                10,
-                11,
-                12,
-                13,
-                14,
-                15,
-                16
-              ],
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 7
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 7
-                    }
-                  }
-                ]
-              }
-          },
-          "39": {
-              "subsumedPorts": [
-                10,
-                11,
-                12,
-                13,
-                14,
-                15,
-                16
-              ],
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 7
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 7
-                    }
-                  }
-                ]
-              }
-          },
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 0
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 0
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "10": {
-        "mapping": {
-          "id": 10,
-          "name": "eth1/2/2",
-          "controllingPort": 9,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                "lane": 1
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                  "lane": 1
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 1
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 1
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "11": {
-        "mapping": {
-          "id": 11,
-          "name": "eth1/2/3",
-          "controllingPort": 9,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                "lane": 2
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                  "lane": 2
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 2
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 2
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "12": {
-        "mapping": {
-          "id": 12,
-          "name": "eth1/2/4",
-          "controllingPort": 9,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                "lane": 3
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                  "lane": 3
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 3
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 3
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "13": {
-        "mapping": {
-          "id": 13,
-          "name": "eth1/2/5",
-          "controllingPort": 9,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                "lane": 4
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                  "lane": 4
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 4
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 4
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "14": {
-        "mapping": {
-          "id": 14,
-          "name": "eth1/2/6",
-          "controllingPort": 9,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                "lane": 5
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                  "lane": 5
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 5
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 5
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "15": {
-        "mapping": {
-          "id": 15,
-          "name": "eth1/2/7",
-          "controllingPort": 9,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                "lane": 6
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                  "lane": 6
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 6
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 6
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "16": {
-        "mapping": {
-          "id": 16,
-          "name": "eth1/2/8",
-          "controllingPort": 9,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                "lane": 7
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                  "lane": 7
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
-                      "lane": 7
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
-                      "lane": 7
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "17": {
-        "mapping": {
-          "id": 17,
-          "name": "eth1/3/1",
-          "controllingPort": 17,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                "lane": 0
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                  "lane": 0
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                "lane": 1
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                  "lane": 1
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                "lane": 2
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                  "lane": 2
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                "lane": 3
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                  "lane": 3
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                "lane": 4
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                  "lane": 4
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                "lane": 5
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                  "lane": 5
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                "lane": 6
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                  "lane": 6
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                "lane": 7
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                  "lane": 7
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "50": {
-              "subsumedPorts": [
-                18,
-                19,
-                20,
-                21,
-                22,
-                23,
-                24
-              ],
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 7
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 7
-                    }
-                  }
-                ]
-              }
-          },
-          "39": {
-              "subsumedPorts": [
-                18,
-                19,
-                20,
-                21,
-                22,
-                23,
-                24
-              ],
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 7
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 7
-                    }
-                  }
-                ]
-              }
-          },
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 0
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 0
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "18": {
-        "mapping": {
-          "id": 18,
-          "name": "eth1/3/2",
-          "controllingPort": 17,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                "lane": 1
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                  "lane": 1
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 1
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 1
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "19": {
-        "mapping": {
-          "id": 19,
-          "name": "eth1/3/3",
-          "controllingPort": 17,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                "lane": 2
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                  "lane": 2
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 2
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 2
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "20": {
-        "mapping": {
-          "id": 20,
-          "name": "eth1/3/4",
-          "controllingPort": 17,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                "lane": 3
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                  "lane": 3
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 3
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 3
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "21": {
-        "mapping": {
-          "id": 21,
-          "name": "eth1/3/5",
-          "controllingPort": 17,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                "lane": 4
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                  "lane": 4
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 4
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 4
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "22": {
-        "mapping": {
-          "id": 22,
-          "name": "eth1/3/6",
-          "controllingPort": 17,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                "lane": 5
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                  "lane": 5
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 5
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 5
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "23": {
-        "mapping": {
-          "id": 23,
-          "name": "eth1/3/7",
-          "controllingPort": 17,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                "lane": 6
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                  "lane": 6
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 6
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 6
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "24": {
-        "mapping": {
-          "id": 24,
-          "name": "eth1/3/8",
-          "controllingPort": 17,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                "lane": 7
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                  "lane": 7
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
-                      "lane": 7
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
-                      "lane": 7
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "25": {
-        "mapping": {
-          "id": 25,
-          "name": "eth1/4/1",
-          "controllingPort": 25,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                "lane": 0
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                  "lane": 0
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                "lane": 1
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                  "lane": 1
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                "lane": 2
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                  "lane": 2
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                "lane": 3
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                  "lane": 3
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                "lane": 4
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                  "lane": 4
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                "lane": 5
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                  "lane": 5
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                "lane": 6
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                  "lane": 6
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                "lane": 7
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                  "lane": 7
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "50": {
-              "subsumedPorts": [
-                26,
-                27,
-                28,
-                29,
-                30,
-                31,
-                32
-              ],
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 7
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 7
-                    }
-                  }
-                ]
-              }
-          },
-          "39": {
-              "subsumedPorts": [
-                26,
-                27,
-                28,
-                29,
-                30,
-                31,
-                32
-              ],
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 7
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 7
-                    }
-                  }
-                ]
-              }
-          },
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 0
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 0
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "26": {
-        "mapping": {
-          "id": 26,
-          "name": "eth1/4/2",
-          "controllingPort": 25,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                "lane": 1
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                  "lane": 1
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 1
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 1
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "27": {
-        "mapping": {
-          "id": 27,
-          "name": "eth1/4/3",
-          "controllingPort": 25,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                "lane": 2
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                  "lane": 2
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 2
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 2
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "28": {
-        "mapping": {
-          "id": 28,
-          "name": "eth1/4/4",
-          "controllingPort": 25,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                "lane": 3
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                  "lane": 3
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 3
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 3
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "29": {
-        "mapping": {
-          "id": 29,
-          "name": "eth1/4/5",
-          "controllingPort": 25,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                "lane": 4
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                  "lane": 4
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 4
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 4
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "30": {
-        "mapping": {
-          "id": 30,
-          "name": "eth1/4/6",
-          "controllingPort": 25,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                "lane": 5
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                  "lane": 5
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 5
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 5
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "31": {
-        "mapping": {
-          "id": 31,
-          "name": "eth1/4/7",
-          "controllingPort": 25,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                "lane": 6
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                  "lane": 6
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 6
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 6
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "32": {
-        "mapping": {
-          "id": 32,
-          "name": "eth1/4/8",
-          "controllingPort": 25,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                "lane": 7
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                  "lane": 7
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
-                      "lane": 7
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
-                      "lane": 7
                     }
                   }
                 ]
@@ -2698,8 +52,1450 @@ constexpr auto kJsonPlatformMappingStr = R"(
     "33": {
         "mapping": {
           "id": 33,
+          "name": "evt1/1/1033",
+          "controllingPort": 33,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J3_EVT-slot1/chip1/core1033",
+                "lane": 0
+              }
+            }
+          ],
+          "portType": 5,
+          "attachedCoreId": 0,
+          "attachedCorePortIndex": 5,
+          "virtualDeviceId": 0,
+          "scope": 0
+        },
+        "supportedProfiles": {
+          "49": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J3_EVT-slot1/chip1/core1033",
+                      "lane": 0
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "65": {
+        "mapping": {
+          "id": 65,
+          "name": "eth1/1/1",
+          "controllingPort": 65,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                "lane": 0
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                  "lane": 0
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                "lane": 1
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                  "lane": 1
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                "lane": 2
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                  "lane": 2
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                "lane": 3
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                  "lane": 3
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 0,
+          "attachedCorePortIndex": 7,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "66": {
+        "mapping": {
+          "id": 66,
+          "name": "eth1/1/5",
+          "controllingPort": 66,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                "lane": 4
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                  "lane": 4
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                "lane": 5
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                  "lane": 5
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                "lane": 6
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                  "lane": 6
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                "lane": 7
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                  "lane": 7
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 0,
+          "attachedCorePortIndex": 8,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core0",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip1",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "67": {
+        "mapping": {
+          "id": 67,
+          "name": "eth1/2/1",
+          "controllingPort": 67,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                "lane": 0
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                  "lane": 0
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                "lane": 1
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                  "lane": 1
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                "lane": 2
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                  "lane": 2
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                "lane": 3
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                  "lane": 3
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 0,
+          "attachedCorePortIndex": 9,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "68": {
+        "mapping": {
+          "id": 68,
+          "name": "eth1/2/5",
+          "controllingPort": 68,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                "lane": 4
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                  "lane": 4
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                "lane": 5
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                  "lane": 5
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                "lane": 6
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                  "lane": 6
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                "lane": 7
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                  "lane": 7
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 0,
+          "attachedCorePortIndex": 10,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core1",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip2",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "69": {
+        "mapping": {
+          "id": 69,
+          "name": "eth1/3/1",
+          "controllingPort": 69,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                "lane": 0
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                  "lane": 0
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                "lane": 1
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                  "lane": 1
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                "lane": 2
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                  "lane": 2
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                "lane": 3
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                  "lane": 3
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 0,
+          "attachedCorePortIndex": 11,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "70": {
+        "mapping": {
+          "id": 70,
+          "name": "eth1/3/5",
+          "controllingPort": 70,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                "lane": 4
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                  "lane": 4
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                "lane": 5
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                  "lane": 5
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                "lane": 6
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                  "lane": 6
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                "lane": 7
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                  "lane": 7
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 0,
+          "attachedCorePortIndex": 12,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core2",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip3",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "71": {
+        "mapping": {
+          "id": 71,
+          "name": "eth1/4/1",
+          "controllingPort": 71,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                "lane": 0
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                  "lane": 0
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                "lane": 1
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                  "lane": 1
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                "lane": 2
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                  "lane": 2
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                "lane": 3
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                  "lane": 3
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 0,
+          "attachedCorePortIndex": 13,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "72": {
+        "mapping": {
+          "id": 72,
+          "name": "eth1/4/5",
+          "controllingPort": 72,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                "lane": 4
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                  "lane": 4
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                "lane": 5
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                  "lane": 5
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                "lane": 6
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                  "lane": 6
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                "lane": 7
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                  "lane": 7
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 0,
+          "attachedCorePortIndex": 14,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core3",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip4",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "73": {
+        "mapping": {
+          "id": 73,
           "name": "eth1/5/1",
-          "controllingPort": 33,
+          "controllingPort": 73,
           "pins": [
             {
               "a": {
@@ -2748,70 +1544,16 @@ constexpr auto kJsonPlatformMappingStr = R"(
                   "lane": 3
                 }
               }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                "lane": 4
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                  "lane": 4
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                "lane": 5
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                  "lane": 5
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                "lane": 6
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                  "lane": 6
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                "lane": 7
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                  "lane": 7
-                }
-              }
             }
           ],
           "portType": 0,
-          "scope": 0
+          "attachedCoreId": 1,
+          "attachedCorePortIndex": 4,
+          "virtualDeviceId": 0,
+          "scope": 1
         },
         "supportedProfiles": {
-          "50": {
-              "subsumedPorts": [
-                34,
-                35,
-                36,
-                37,
-                38,
-                39,
-                40
-              ],
+          "52": {
               "pins": {
                 "iphy": [
                   {
@@ -2836,30 +1578,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
                     "id": {
                       "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
                       "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                      "lane": 7
                     }
                   }
                 ],
@@ -2886,45 +1604,12 @@ constexpr auto kJsonPlatformMappingStr = R"(
                     "id": {
                       "chip": "TRANSCEIVER-OSFP-slot1/chip5",
                       "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                      "lane": 7
                     }
                   }
                 ]
               }
           },
-          "39": {
-              "subsumedPorts": [
-                34,
-                35,
-                36,
-                37,
-                38,
-                39,
-                40
-              ],
+          "57": {
               "pins": {
                 "iphy": [
                   {
@@ -2949,30 +1634,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
                     "id": {
                       "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
                       "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                      "lane": 7
                     }
                   }
                 ],
@@ -3000,196 +1661,17 @@ constexpr auto kJsonPlatformMappingStr = R"(
                       "chip": "TRANSCEIVER-OSFP-slot1/chip5",
                       "lane": 3
                     }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                      "lane": 7
-                    }
-                  }
-                ]
-              }
-          },
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                      "lane": 0
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                      "lane": 0
-                    }
                   }
                 ]
               }
           }
         }
     },
-    "34": {
+    "74": {
         "mapping": {
-          "id": 34,
-          "name": "eth1/5/2",
-          "controllingPort": 33,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                "lane": 1
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                  "lane": 1
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                      "lane": 1
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                      "lane": 1
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "35": {
-        "mapping": {
-          "id": 35,
-          "name": "eth1/5/3",
-          "controllingPort": 33,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                "lane": 2
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                  "lane": 2
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                      "lane": 2
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                      "lane": 2
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "36": {
-        "mapping": {
-          "id": 36,
-          "name": "eth1/5/4",
-          "controllingPort": 33,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                "lane": 3
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                  "lane": 3
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                      "lane": 3
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                      "lane": 3
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "37": {
-        "mapping": {
-          "id": 37,
+          "id": 74,
           "name": "eth1/5/5",
-          "controllingPort": 33,
+          "controllingPort": 74,
           "pins": [
             {
               "a": {
@@ -3202,40 +1684,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                   "lane": 4
                 }
               }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                      "lane": 4
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                      "lane": 4
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "38": {
-        "mapping": {
-          "id": 38,
-          "name": "eth1/5/6",
-          "controllingPort": 33,
-          "pins": [
+            },
             {
               "a": {
                 "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
@@ -3247,40 +1696,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                   "lane": 5
                 }
               }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                      "lane": 5
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                      "lane": 5
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "39": {
-        "mapping": {
-          "id": 39,
-          "name": "eth1/5/7",
-          "controllingPort": 33,
-          "pins": [
+            },
             {
               "a": {
                 "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
@@ -3292,40 +1708,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                   "lane": 6
                 }
               }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
-                      "lane": 6
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
-                      "lane": 6
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "40": {
-        "mapping": {
-          "id": 40,
-          "name": "eth1/5/8",
-          "controllingPort": 33,
-          "pins": [
+            },
             {
               "a": {
                 "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
@@ -3340,12 +1723,33 @@ constexpr auto kJsonPlatformMappingStr = R"(
             }
           ],
           "portType": 0,
-          "scope": 0
+          "attachedCoreId": 1,
+          "attachedCorePortIndex": 5,
+          "virtualDeviceId": 0,
+          "scope": 1
         },
         "supportedProfiles": {
-          "49": {
+          "52": {
               "pins": {
                 "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
+                      "lane": 6
+                    }
+                  },
                   {
                     "id": {
                       "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
@@ -3357,6 +1761,80 @@ constexpr auto kJsonPlatformMappingStr = R"(
                   {
                     "id": {
                       "chip": "TRANSCEIVER-OSFP-slot1/chip5",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core4",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip5",
                       "lane": 7
                     }
                   }
@@ -3365,11 +1843,11 @@ constexpr auto kJsonPlatformMappingStr = R"(
           }
         }
     },
-    "41": {
+    "75": {
         "mapping": {
-          "id": 41,
+          "id": 75,
           "name": "eth1/6/1",
-          "controllingPort": 41,
+          "controllingPort": 75,
           "pins": [
             {
               "a": {
@@ -3418,70 +1896,16 @@ constexpr auto kJsonPlatformMappingStr = R"(
                   "lane": 3
                 }
               }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                "lane": 4
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                  "lane": 4
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                "lane": 5
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                  "lane": 5
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                "lane": 6
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                  "lane": 6
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                "lane": 7
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                  "lane": 7
-                }
-              }
             }
           ],
           "portType": 0,
-          "scope": 0
+          "attachedCoreId": 1,
+          "attachedCorePortIndex": 6,
+          "virtualDeviceId": 0,
+          "scope": 1
         },
         "supportedProfiles": {
-          "50": {
-              "subsumedPorts": [
-                42,
-                43,
-                44,
-                45,
-                46,
-                47,
-                48
-              ],
+          "52": {
               "pins": {
                 "iphy": [
                   {
@@ -3506,30 +1930,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
                     "id": {
                       "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
                       "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                      "lane": 7
                     }
                   }
                 ],
@@ -3556,45 +1956,12 @@ constexpr auto kJsonPlatformMappingStr = R"(
                     "id": {
                       "chip": "TRANSCEIVER-OSFP-slot1/chip6",
                       "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                      "lane": 7
                     }
                   }
                 ]
               }
           },
-          "39": {
-              "subsumedPorts": [
-                42,
-                43,
-                44,
-                45,
-                46,
-                47,
-                48
-              ],
+          "57": {
               "pins": {
                 "iphy": [
                   {
@@ -3619,30 +1986,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
                     "id": {
                       "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
                       "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                      "lane": 7
                     }
                   }
                 ],
@@ -3670,196 +2013,17 @@ constexpr auto kJsonPlatformMappingStr = R"(
                       "chip": "TRANSCEIVER-OSFP-slot1/chip6",
                       "lane": 3
                     }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                      "lane": 7
-                    }
-                  }
-                ]
-              }
-          },
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                      "lane": 0
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                      "lane": 0
-                    }
                   }
                 ]
               }
           }
         }
     },
-    "42": {
+    "76": {
         "mapping": {
-          "id": 42,
-          "name": "eth1/6/2",
-          "controllingPort": 41,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                "lane": 1
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                  "lane": 1
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                      "lane": 1
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                      "lane": 1
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "43": {
-        "mapping": {
-          "id": 43,
-          "name": "eth1/6/3",
-          "controllingPort": 41,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                "lane": 2
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                  "lane": 2
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                      "lane": 2
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                      "lane": 2
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "44": {
-        "mapping": {
-          "id": 44,
-          "name": "eth1/6/4",
-          "controllingPort": 41,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                "lane": 3
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                  "lane": 3
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                      "lane": 3
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                      "lane": 3
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "45": {
-        "mapping": {
-          "id": 45,
+          "id": 76,
           "name": "eth1/6/5",
-          "controllingPort": 41,
+          "controllingPort": 76,
           "pins": [
             {
               "a": {
@@ -3872,40 +2036,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                   "lane": 4
                 }
               }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                      "lane": 4
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                      "lane": 4
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "46": {
-        "mapping": {
-          "id": 46,
-          "name": "eth1/6/6",
-          "controllingPort": 41,
-          "pins": [
+            },
             {
               "a": {
                 "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
@@ -3917,40 +2048,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                   "lane": 5
                 }
               }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                      "lane": 5
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                      "lane": 5
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "47": {
-        "mapping": {
-          "id": 47,
-          "name": "eth1/6/7",
-          "controllingPort": 41,
-          "pins": [
+            },
             {
               "a": {
                 "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
@@ -3962,40 +2060,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                   "lane": 6
                 }
               }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
-                      "lane": 6
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
-                      "lane": 6
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "48": {
-        "mapping": {
-          "id": 48,
-          "name": "eth1/6/8",
-          "controllingPort": 41,
-          "pins": [
+            },
             {
               "a": {
                 "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
@@ -4010,12 +2075,33 @@ constexpr auto kJsonPlatformMappingStr = R"(
             }
           ],
           "portType": 0,
-          "scope": 0
+          "attachedCoreId": 1,
+          "attachedCorePortIndex": 7,
+          "virtualDeviceId": 0,
+          "scope": 1
         },
         "supportedProfiles": {
-          "49": {
+          "52": {
               "pins": {
                 "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
+                      "lane": 6
+                    }
+                  },
                   {
                     "id": {
                       "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
@@ -4027,6 +2113,80 @@ constexpr auto kJsonPlatformMappingStr = R"(
                   {
                     "id": {
                       "chip": "TRANSCEIVER-OSFP-slot1/chip6",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core5",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip6",
                       "lane": 7
                     }
                   }
@@ -4035,11 +2195,11 @@ constexpr auto kJsonPlatformMappingStr = R"(
           }
         }
     },
-    "49": {
+    "77": {
         "mapping": {
-          "id": 49,
+          "id": 77,
           "name": "eth1/7/1",
-          "controllingPort": 49,
+          "controllingPort": 77,
           "pins": [
             {
               "a": {
@@ -4088,70 +2248,16 @@ constexpr auto kJsonPlatformMappingStr = R"(
                   "lane": 3
                 }
               }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                "lane": 4
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                  "lane": 4
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                "lane": 5
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                  "lane": 5
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                "lane": 6
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                  "lane": 6
-                }
-              }
-            },
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                "lane": 7
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                  "lane": 7
-                }
-              }
             }
           ],
           "portType": 0,
-          "scope": 0
+          "attachedCoreId": 1,
+          "attachedCorePortIndex": 8,
+          "virtualDeviceId": 0,
+          "scope": 1
         },
         "supportedProfiles": {
-          "50": {
-              "subsumedPorts": [
-                50,
-                51,
-                52,
-                53,
-                54,
-                55,
-                56
-              ],
+          "52": {
               "pins": {
                 "iphy": [
                   {
@@ -4176,30 +2282,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
                     "id": {
                       "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
                       "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                      "lane": 7
                     }
                   }
                 ],
@@ -4226,45 +2308,12 @@ constexpr auto kJsonPlatformMappingStr = R"(
                     "id": {
                       "chip": "TRANSCEIVER-OSFP-slot1/chip7",
                       "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                      "lane": 7
                     }
                   }
                 ]
               }
           },
-          "39": {
-              "subsumedPorts": [
-                50,
-                51,
-                52,
-                53,
-                54,
-                55,
-                56
-              ],
+          "57": {
               "pins": {
                 "iphy": [
                   {
@@ -4289,30 +2338,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
                     "id": {
                       "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
                       "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                      "lane": 7
                     }
                   }
                 ],
@@ -4340,196 +2365,17 @@ constexpr auto kJsonPlatformMappingStr = R"(
                       "chip": "TRANSCEIVER-OSFP-slot1/chip7",
                       "lane": 3
                     }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                      "lane": 4
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                      "lane": 5
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                      "lane": 6
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                      "lane": 7
-                    }
-                  }
-                ]
-              }
-          },
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                      "lane": 0
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                      "lane": 0
-                    }
                   }
                 ]
               }
           }
         }
     },
-    "50": {
+    "78": {
         "mapping": {
-          "id": 50,
-          "name": "eth1/7/2",
-          "controllingPort": 49,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                "lane": 1
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                  "lane": 1
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                      "lane": 1
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                      "lane": 1
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "51": {
-        "mapping": {
-          "id": 51,
-          "name": "eth1/7/3",
-          "controllingPort": 49,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                "lane": 2
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                  "lane": 2
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                      "lane": 2
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                      "lane": 2
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "52": {
-        "mapping": {
-          "id": 52,
-          "name": "eth1/7/4",
-          "controllingPort": 49,
-          "pins": [
-            {
-              "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                "lane": 3
-              },
-              "z": {
-                "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                  "lane": 3
-                }
-              }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                      "lane": 3
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                      "lane": 3
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "53": {
-        "mapping": {
-          "id": 53,
+          "id": 78,
           "name": "eth1/7/5",
-          "controllingPort": 49,
+          "controllingPort": 78,
           "pins": [
             {
               "a": {
@@ -4542,40 +2388,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                   "lane": 4
                 }
               }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                      "lane": 4
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                      "lane": 4
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "54": {
-        "mapping": {
-          "id": 54,
-          "name": "eth1/7/6",
-          "controllingPort": 49,
-          "pins": [
+            },
             {
               "a": {
                 "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
@@ -4587,40 +2400,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                   "lane": 5
                 }
               }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                      "lane": 5
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                      "lane": 5
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "55": {
-        "mapping": {
-          "id": 55,
-          "name": "eth1/7/7",
-          "controllingPort": 49,
-          "pins": [
+            },
             {
               "a": {
                 "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
@@ -4632,40 +2412,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                   "lane": 6
                 }
               }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
-                      "lane": 6
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
-                      "lane": 6
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "56": {
-        "mapping": {
-          "id": 56,
-          "name": "eth1/7/8",
-          "controllingPort": 49,
-          "pins": [
+            },
             {
               "a": {
                 "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
@@ -4680,12 +2427,33 @@ constexpr auto kJsonPlatformMappingStr = R"(
             }
           ],
           "portType": 0,
-          "scope": 0
+          "attachedCoreId": 1,
+          "attachedCorePortIndex": 9,
+          "virtualDeviceId": 0,
+          "scope": 1
         },
         "supportedProfiles": {
-          "49": {
+          "52": {
               "pins": {
                 "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
+                      "lane": 6
+                    }
+                  },
                   {
                     "id": {
                       "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
@@ -4697,6 +2465,80 @@ constexpr auto kJsonPlatformMappingStr = R"(
                   {
                     "id": {
                       "chip": "TRANSCEIVER-OSFP-slot1/chip7",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core6",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip7",
                       "lane": 7
                     }
                   }
@@ -4705,11 +2547,11 @@ constexpr auto kJsonPlatformMappingStr = R"(
           }
         }
     },
-    "57": {
+    "79": {
         "mapping": {
-          "id": 57,
+          "id": 79,
           "name": "eth1/8/1",
-          "controllingPort": 57,
+          "controllingPort": 79,
           "pins": [
             {
               "a": {
@@ -4758,7 +2600,135 @@ constexpr auto kJsonPlatformMappingStr = R"(
                   "lane": 3
                 }
               }
-            },
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 1,
+          "attachedCorePortIndex": 10,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "80": {
+        "mapping": {
+          "id": 80,
+          "name": "eth1/8/5",
+          "controllingPort": 80,
+          "pins": [
             {
               "a": {
                 "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
@@ -4809,45 +2779,15 @@ constexpr auto kJsonPlatformMappingStr = R"(
             }
           ],
           "portType": 0,
-          "scope": 0
+          "attachedCoreId": 1,
+          "attachedCorePortIndex": 11,
+          "virtualDeviceId": 0,
+          "scope": 1
         },
         "supportedProfiles": {
-          "50": {
-              "subsumedPorts": [
-                58,
-                59,
-                60,
-                61,
-                62,
-                63,
-                64
-              ],
+          "52": {
               "pins": {
                 "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
-                      "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
-                      "lane": 3
-                    }
-                  },
                   {
                     "id": {
                       "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
@@ -4874,30 +2814,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
                   }
                 ],
                 "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
-                      "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
-                      "lane": 3
-                    }
-                  },
                   {
                     "id": {
                       "chip": "TRANSCEIVER-OSFP-slot1/chip8",
@@ -4925,42 +2841,9 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "39": {
-              "subsumedPorts": [
-                58,
-                59,
-                60,
-                61,
-                62,
-                63,
-                64
-              ],
+          "57": {
               "pins": {
                 "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
-                      "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
-                      "lane": 3
-                    }
-                  },
                   {
                     "id": {
                       "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
@@ -4990,30 +2873,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
                   {
                     "id": {
                       "chip": "TRANSCEIVER-OSFP-slot1/chip8",
-                      "lane": 0
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
-                      "lane": 1
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
-                      "lane": 2
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
-                      "lane": 3
-                    }
-                  },
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
                       "lane": 4
                     }
                   },
@@ -5033,26 +2892,6 @@ constexpr auto kJsonPlatformMappingStr = R"(
                     "id": {
                       "chip": "TRANSCEIVER-OSFP-slot1/chip8",
                       "lane": 7
-                    }
-                  }
-                ]
-              }
-          },
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
-                      "lane": 0
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
-                      "lane": 0
                     }
                   }
                 ]
@@ -5060,125 +2899,92 @@ constexpr auto kJsonPlatformMappingStr = R"(
           }
         }
     },
-    "58": {
+    "81": {
         "mapping": {
-          "id": 58,
-          "name": "eth1/8/2",
-          "controllingPort": 57,
+          "id": 81,
+          "name": "eth1/9/1",
+          "controllingPort": 81,
           "pins": [
             {
               "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
+                "lane": 0
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip9",
+                  "lane": 0
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
                 "lane": 1
               },
               "z": {
                 "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip8",
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip9",
                   "lane": 1
                 }
               }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
-                      "lane": 1
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
-                      "lane": 1
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "59": {
-        "mapping": {
-          "id": 59,
-          "name": "eth1/8/3",
-          "controllingPort": 57,
-          "pins": [
+            },
             {
               "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
                 "lane": 2
               },
               "z": {
                 "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip8",
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip9",
                   "lane": 2
                 }
               }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
-                      "lane": 2
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
-                      "lane": 2
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "60": {
-        "mapping": {
-          "id": 60,
-          "name": "eth1/8/4",
-          "controllingPort": 57,
-          "pins": [
+            },
             {
               "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
                 "lane": 3
               },
               "z": {
                 "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip8",
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip9",
                   "lane": 3
                 }
               }
             }
           ],
           "portType": 0,
-          "scope": 0
+          "attachedCoreId": 2,
+          "attachedCorePortIndex": 4,
+          "virtualDeviceId": 0,
+          "scope": 1
         },
         "supportedProfiles": {
-          "49": {
+          "52": {
               "pins": {
                 "iphy": [
                   {
                     "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
                       "lane": 3
                     }
                   }
@@ -5186,7 +2992,81 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 "transceiver": [
                   {
                     "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip9",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip9",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip9",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip9",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip9",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip9",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip9",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip9",
                       "lane": 3
                     }
                   }
@@ -5195,170 +3075,92 @@ constexpr auto kJsonPlatformMappingStr = R"(
           }
         }
     },
-    "61": {
+    "82": {
         "mapping": {
-          "id": 61,
-          "name": "eth1/8/5",
-          "controllingPort": 57,
+          "id": 82,
+          "name": "eth1/9/5",
+          "controllingPort": 82,
           "pins": [
             {
               "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
                 "lane": 4
               },
               "z": {
                 "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip8",
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip9",
                   "lane": 4
                 }
               }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
-                      "lane": 4
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
-                      "lane": 4
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "62": {
-        "mapping": {
-          "id": 62,
-          "name": "eth1/8/6",
-          "controllingPort": 57,
-          "pins": [
+            },
             {
               "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
                 "lane": 5
               },
               "z": {
                 "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip8",
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip9",
                   "lane": 5
                 }
               }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
-                      "lane": 5
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
-                      "lane": 5
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "63": {
-        "mapping": {
-          "id": 63,
-          "name": "eth1/8/7",
-          "controllingPort": 57,
-          "pins": [
+            },
             {
               "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
                 "lane": 6
               },
               "z": {
                 "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip8",
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip9",
                   "lane": 6
                 }
               }
-            }
-          ],
-          "portType": 0,
-          "scope": 0
-        },
-        "supportedProfiles": {
-          "49": {
-              "pins": {
-                "iphy": [
-                  {
-                    "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
-                      "lane": 6
-                    }
-                  }
-                ],
-                "transceiver": [
-                  {
-                    "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
-                      "lane": 6
-                    }
-                  }
-                ]
-              }
-          }
-        }
-    },
-    "64": {
-        "mapping": {
-          "id": 64,
-          "name": "eth1/8/8",
-          "controllingPort": 57,
-          "pins": [
+            },
             {
               "a": {
-                "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
                 "lane": 7
               },
               "z": {
                 "end": {
-                  "chip": "TRANSCEIVER-OSFP-slot1/chip8",
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip9",
                   "lane": 7
                 }
               }
             }
           ],
           "portType": 0,
-          "scope": 0
+          "attachedCoreId": 2,
+          "attachedCorePortIndex": 5,
+          "virtualDeviceId": 0,
+          "scope": 1
         },
         "supportedProfiles": {
-          "49": {
+          "52": {
               "pins": {
                 "iphy": [
                   {
                     "id": {
-                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core7",
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
                       "lane": 7
                     }
                   }
@@ -5366,7 +3168,2545 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 "transceiver": [
                   {
                     "id": {
-                      "chip": "TRANSCEIVER-OSFP-slot1/chip8",
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip9",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip9",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip9",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip9",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core8",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip9",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip9",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip9",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip9",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "83": {
+        "mapping": {
+          "id": 83,
+          "name": "eth1/10/1",
+          "controllingPort": 83,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                "lane": 0
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                  "lane": 0
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                "lane": 1
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                  "lane": 1
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                "lane": 2
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                  "lane": 2
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                "lane": 3
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                  "lane": 3
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 2,
+          "attachedCorePortIndex": 6,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "84": {
+        "mapping": {
+          "id": 84,
+          "name": "eth1/10/5",
+          "controllingPort": 84,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                "lane": 4
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                  "lane": 4
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                "lane": 5
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                  "lane": 5
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                "lane": 6
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                  "lane": 6
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                "lane": 7
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                  "lane": 7
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 2,
+          "attachedCorePortIndex": 7,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core9",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip10",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "85": {
+        "mapping": {
+          "id": 85,
+          "name": "eth1/11/1",
+          "controllingPort": 85,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                "lane": 0
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                  "lane": 0
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                "lane": 1
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                  "lane": 1
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                "lane": 2
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                  "lane": 2
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                "lane": 3
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                  "lane": 3
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 2,
+          "attachedCorePortIndex": 8,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "86": {
+        "mapping": {
+          "id": 86,
+          "name": "eth1/11/5",
+          "controllingPort": 86,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                "lane": 4
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                  "lane": 4
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                "lane": 5
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                  "lane": 5
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                "lane": 6
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                  "lane": 6
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                "lane": 7
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                  "lane": 7
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 2,
+          "attachedCorePortIndex": 9,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core10",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip11",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "87": {
+        "mapping": {
+          "id": 87,
+          "name": "eth1/12/1",
+          "controllingPort": 87,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                "lane": 0
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                  "lane": 0
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                "lane": 1
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                  "lane": 1
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                "lane": 2
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                  "lane": 2
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                "lane": 3
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                  "lane": 3
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 2,
+          "attachedCorePortIndex": 10,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "88": {
+        "mapping": {
+          "id": 88,
+          "name": "eth1/12/5",
+          "controllingPort": 88,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                "lane": 4
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                  "lane": 4
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                "lane": 5
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                  "lane": 5
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                "lane": 6
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                  "lane": 6
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                "lane": 7
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                  "lane": 7
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 2,
+          "attachedCorePortIndex": 11,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core11",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip12",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "89": {
+        "mapping": {
+          "id": 89,
+          "name": "eth1/13/1",
+          "controllingPort": 89,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                "lane": 0
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                  "lane": 0
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                "lane": 1
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                  "lane": 1
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                "lane": 2
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                  "lane": 2
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                "lane": 3
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                  "lane": 3
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 3,
+          "attachedCorePortIndex": 4,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "90": {
+        "mapping": {
+          "id": 90,
+          "name": "eth1/13/5",
+          "controllingPort": 90,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                "lane": 4
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                  "lane": 4
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                "lane": 5
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                  "lane": 5
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                "lane": 6
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                  "lane": 6
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                "lane": 7
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                  "lane": 7
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 3,
+          "attachedCorePortIndex": 5,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core12",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip13",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "91": {
+        "mapping": {
+          "id": 91,
+          "name": "eth1/14/1",
+          "controllingPort": 91,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                "lane": 0
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                  "lane": 0
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                "lane": 1
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                  "lane": 1
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                "lane": 2
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                  "lane": 2
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                "lane": 3
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                  "lane": 3
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 3,
+          "attachedCorePortIndex": 6,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "92": {
+        "mapping": {
+          "id": 92,
+          "name": "eth1/14/5",
+          "controllingPort": 92,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                "lane": 4
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                  "lane": 4
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                "lane": 5
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                  "lane": 5
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                "lane": 6
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                  "lane": 6
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                "lane": 7
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                  "lane": 7
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 3,
+          "attachedCorePortIndex": 7,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core13",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip14",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "93": {
+        "mapping": {
+          "id": 93,
+          "name": "eth1/15/1",
+          "controllingPort": 93,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                "lane": 0
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                  "lane": 0
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                "lane": 1
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                  "lane": 1
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                "lane": 2
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                  "lane": 2
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                "lane": 3
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                  "lane": 3
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 3,
+          "attachedCorePortIndex": 8,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "94": {
+        "mapping": {
+          "id": 94,
+          "name": "eth1/15/5",
+          "controllingPort": 94,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                "lane": 4
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                  "lane": 4
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                "lane": 5
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                  "lane": 5
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                "lane": 6
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                  "lane": 6
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                "lane": 7
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                  "lane": 7
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 3,
+          "attachedCorePortIndex": 9,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core14",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip15",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "95": {
+        "mapping": {
+          "id": 95,
+          "name": "eth1/16/1",
+          "controllingPort": 95,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                "lane": 0
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                  "lane": 0
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                "lane": 1
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                  "lane": 1
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                "lane": 2
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                  "lane": 2
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                "lane": 3
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                  "lane": 3
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 3,
+          "attachedCorePortIndex": 10,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                      "lane": 0
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                      "lane": 1
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                      "lane": 2
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                      "lane": 3
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "96": {
+        "mapping": {
+          "id": 96,
+          "name": "eth1/16/5",
+          "controllingPort": 96,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                "lane": 4
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                  "lane": 4
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                "lane": 5
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                  "lane": 5
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                "lane": 6
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                  "lane": 6
+                }
+              }
+            },
+            {
+              "a": {
+                "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                "lane": 7
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                  "lane": 7
+                }
+              }
+            }
+          ],
+          "portType": 0,
+          "attachedCoreId": 3,
+          "attachedCorePortIndex": 11,
+          "virtualDeviceId": 0,
+          "scope": 1
+        },
+        "supportedProfiles": {
+          "52": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                      "lane": 7
+                    }
+                  }
+                ]
+              }
+          },
+          "57": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "NPU-J4SIM_NIF-slot1/chip1/core15",
+                      "lane": 7
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                      "lane": 4
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                      "lane": 5
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip16",
+                      "lane": 6
+                    }
+                  },
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-OSFP-slot1/chip16",
                       "lane": 7
                     }
                   }
@@ -5418,6 +5758,56 @@ constexpr auto kJsonPlatformMappingStr = R"(
       "physicalID": 7
     },
     {
+      "name": "NPU-J4SIM_NIF-slot1/chip1/core8",
+      "type": 1,
+      "physicalID": 8
+    },
+    {
+      "name": "NPU-J4SIM_NIF-slot1/chip1/core9",
+      "type": 1,
+      "physicalID": 9
+    },
+    {
+      "name": "NPU-J4SIM_NIF-slot1/chip1/core10",
+      "type": 1,
+      "physicalID": 10
+    },
+    {
+      "name": "NPU-J4SIM_NIF-slot1/chip1/core11",
+      "type": 1,
+      "physicalID": 11
+    },
+    {
+      "name": "NPU-J4SIM_NIF-slot1/chip1/core12",
+      "type": 1,
+      "physicalID": 12
+    },
+    {
+      "name": "NPU-J4SIM_NIF-slot1/chip1/core13",
+      "type": 1,
+      "physicalID": 13
+    },
+    {
+      "name": "NPU-J4SIM_NIF-slot1/chip1/core14",
+      "type": 1,
+      "physicalID": 14
+    },
+    {
+      "name": "NPU-J4SIM_NIF-slot1/chip1/core15",
+      "type": 1,
+      "physicalID": 15
+    },
+    {
+      "name": "NPU-J3_RCY-slot1/chip1/core529",
+      "type": 1,
+      "physicalID": 529
+    },
+    {
+      "name": "NPU-J3_EVT-slot1/chip1/core1033",
+      "type": 1,
+      "physicalID": 1033
+    },
+    {
       "name": "TRANSCEIVER-OSFP-slot1/chip1",
       "type": 3,
       "physicalID": 0
@@ -5456,6 +5846,46 @@ constexpr auto kJsonPlatformMappingStr = R"(
       "name": "TRANSCEIVER-OSFP-slot1/chip8",
       "type": 3,
       "physicalID": 7
+    },
+    {
+      "name": "TRANSCEIVER-OSFP-slot1/chip9",
+      "type": 3,
+      "physicalID": 8
+    },
+    {
+      "name": "TRANSCEIVER-OSFP-slot1/chip10",
+      "type": 3,
+      "physicalID": 9
+    },
+    {
+      "name": "TRANSCEIVER-OSFP-slot1/chip11",
+      "type": 3,
+      "physicalID": 10
+    },
+    {
+      "name": "TRANSCEIVER-OSFP-slot1/chip12",
+      "type": 3,
+      "physicalID": 11
+    },
+    {
+      "name": "TRANSCEIVER-OSFP-slot1/chip13",
+      "type": 3,
+      "physicalID": 12
+    },
+    {
+      "name": "TRANSCEIVER-OSFP-slot1/chip14",
+      "type": 3,
+      "physicalID": 13
+    },
+    {
+      "name": "TRANSCEIVER-OSFP-slot1/chip15",
+      "type": 3,
+      "physicalID": 14
+    },
+    {
+      "name": "TRANSCEIVER-OSFP-slot1/chip16",
+      "type": 3,
+      "physicalID": 15
     }
   ],
   "platformSupportedProfiles": [
@@ -5476,31 +5906,31 @@ constexpr auto kJsonPlatformMappingStr = R"(
     },
     {
       "factor": {
-        "profileID": 50
+        "profileID": 52
       },
       "profile": {
         "speed": 800000,
         "iphy": {
-          "numLanes": 8,
+          "numLanes": 4,
           "modulation": 2,
           "fec": 11,
-          "medium": 1,
-          "interfaceType": 13
+          "medium": 2,
+          "interfaceType": 21
         }
       }
     },
     {
       "factor": {
-        "profileID": 39
+        "profileID": 57
       },
       "profile": {
         "speed": 800000,
         "iphy": {
-          "numLanes": 8,
+          "numLanes": 4,
           "modulation": 2,
           "fec": 11,
-          "medium": 2,
-          "interfaceType": 23
+          "medium": 1,
+          "interfaceType": 12
         }
       }
     }

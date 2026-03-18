@@ -1262,6 +1262,334 @@ TEST_F(CmisTest, cmis800GZrTransceiverInfoTest) {
   EXPECT_TRUE(info.tcvrState()->errorStates()->empty());
 }
 
+// Test coherent FEC Performance Monitoring stats from C-CMIS page 34h
+// on 800G ZR modules. Validates that fillVdmPerfMonitorFecPm correctly
+// decodes all FEC PM counters from the cached page34 data.
+TEST_F(CmisTest, cmis800GZrFecPmTest) {
+  auto xcvrID = TransceiverID(1);
+  auto xcvr = overrideCmisModule<Cmis800GZrTransceiver>(
+      xcvrID, TransceiverModuleIdentifier::OSFP);
+  const auto& info = xcvr->getTransceiverInfo();
+
+  ASSERT_TRUE(xcvr->isVdmSupported());
+  ASSERT_TRUE(xcvr->isTunableOptics());
+
+  // Program transceiver with OpticalChannelConfig for tunable optics
+  // to populate port-to-media-lane mappings needed for FEC PM stats
+  ProgramTransceiverState programTcvrState;
+  TransceiverPortState portState;
+  portState.portName = "eth1/1/1";
+  portState.startHostLane = 0;
+  portState.speed = cfg::PortSpeed::EIGHTHUNDREDG;
+  portState.numHostLanes = 8;
+
+  cfg::OpticalChannelConfig optChanConfig;
+  cfg::FrequencyConfig freqConfig;
+  freqConfig.frequencyGrid() = FrequencyGrid::LASER_6P25GHZ;
+  cfg::CenterFrequencyConfig centerFreq;
+  centerFreq.set_frequencyMhz(CmisModule::kDefaultFrequencyMhz);
+  freqConfig.centerFrequencyConfig() = centerFreq;
+  optChanConfig.frequencyConfig() = freqConfig;
+  optChanConfig.txPower0P01Dbm() = 0;
+  optChanConfig.appSelCode() = 1;
+  portState.opticalChannelConfig = optChanConfig;
+
+  programTcvrState.ports.emplace(portState.portName, portState);
+  xcvr->programTransceiver(programTcvrState, false);
+
+  std::vector<int32_t> xcvrIds = {xcvrID};
+  transceiverManager_->triggerVdmStatsCapture(xcvrIds);
+  transceiverManager_->refreshStateMachines();
+
+  const auto& newInfo = xcvr->getTransceiverInfo();
+  ASSERT_TRUE(newInfo.tcvrStats()->vdmPerfMonitorStats().has_value());
+  auto& vdmPerfMonStats = newInfo.tcvrStats()->vdmPerfMonitorStats().value();
+  ASSERT_FALSE(vdmPerfMonStats.mediaPortVdmStats()->empty());
+
+  // Validate coherent FEC PM values from C-CMIS page 34h
+  // Expected values are decoded from kCmis800GZrPage34 fake data
+  auto portIt = vdmPerfMonStats.mediaPortVdmStats()->find("eth1/1/1");
+  ASSERT_NE(portIt, vdmPerfMonStats.mediaPortVdmStats()->end());
+  ASSERT_TRUE(portIt->second.coherentVdmStats().has_value());
+  ASSERT_TRUE(portIt->second.coherentVdmStats()->fecPm().has_value());
+  auto& fecPm = portIt->second.coherentVdmStats()->fecPm().value();
+
+  // U64 FEC PM counters
+  EXPECT_EQ(*fecPm.rxBitsPm(), 61440720961536);
+  EXPECT_EQ(*fecPm.rxBitsSubIntPm(), 1809317888);
+  EXPECT_EQ(*fecPm.rxCorrBitsPm(), 20766418419);
+  EXPECT_EQ(*fecPm.rxMinCorrBitsSubIntPm(), 323226814);
+  EXPECT_EQ(*fecPm.rxMaxCorrBitsSubIntPm(), 395888028);
+
+  // U32 FEC PM counters
+  EXPECT_EQ(*fecPm.rxFramesPm(), 44643381);
+  EXPECT_EQ(*fecPm.rxFramesSubIntPm(), 744056);
+  EXPECT_EQ(*fecPm.rxFramesUncorrErrPm(), 0);
+  EXPECT_EQ(*fecPm.rxMinFramesUncorrErrSubIntPm(), 0);
+  EXPECT_EQ(*fecPm.rxMaxFramesUncorrErrSubIntPm(), 0);
+}
+
+TEST_F(CmisTest, cmis800GZrLinePmTest) {
+  auto xcvrID = TransceiverID(1);
+  auto xcvr = overrideCmisModule<Cmis800GZrTransceiver>(
+      xcvrID, TransceiverModuleIdentifier::OSFP);
+  const auto& info = xcvr->getTransceiverInfo();
+
+  ASSERT_TRUE(xcvr->isVdmSupported());
+  ASSERT_TRUE(xcvr->isTunableOptics());
+
+  // Program transceiver with OpticalChannelConfig for tunable optics
+  // to populate port-to-media-lane mappings needed for Link PM stats
+  ProgramTransceiverState programTcvrState;
+  TransceiverPortState portState;
+  portState.portName = "eth1/1/1";
+  portState.startHostLane = 0;
+  portState.speed = cfg::PortSpeed::EIGHTHUNDREDG;
+  portState.numHostLanes = 8;
+
+  cfg::OpticalChannelConfig optChanConfig;
+  cfg::FrequencyConfig freqConfig;
+  freqConfig.frequencyGrid() = FrequencyGrid::LASER_6P25GHZ;
+  cfg::CenterFrequencyConfig centerFreq;
+  centerFreq.set_frequencyMhz(CmisModule::kDefaultFrequencyMhz);
+  freqConfig.centerFrequencyConfig() = centerFreq;
+  optChanConfig.frequencyConfig() = freqConfig;
+  optChanConfig.txPower0P01Dbm() = 0;
+  optChanConfig.appSelCode() = 1;
+  portState.opticalChannelConfig = optChanConfig;
+
+  programTcvrState.ports.emplace(portState.portName, portState);
+  xcvr->programTransceiver(programTcvrState, false);
+
+  std::vector<int32_t> xcvrIds = {xcvrID};
+  transceiverManager_->triggerVdmStatsCapture(xcvrIds);
+  transceiverManager_->refreshStateMachines();
+
+  const auto& newInfo = xcvr->getTransceiverInfo();
+  ASSERT_TRUE(newInfo.tcvrStats()->vdmPerfMonitorStats().has_value());
+  auto& vdmPerfMonStats = newInfo.tcvrStats()->vdmPerfMonitorStats().value();
+  ASSERT_FALSE(vdmPerfMonStats.mediaPortVdmStats()->empty());
+
+  // Validate coherent Link PM values from C-CMIS page 35h
+  // Expected values are decoded from kCmis800GZrPage35 fake data
+  auto portIt = vdmPerfMonStats.mediaPortVdmStats()->find("eth1/1/1");
+  ASSERT_NE(portIt, vdmPerfMonStats.mediaPortVdmStats()->end());
+  ASSERT_TRUE(portIt->second.coherentVdmStats().has_value());
+  ASSERT_TRUE(portIt->second.coherentVdmStats()->linkPm().has_value());
+  auto& linkPm = portIt->second.coherentVdmStats()->linkPm().value();
+
+  // CD: S32 at bytes 128-139, LSB=1.0 ps/nm (exact integer values)
+  ASSERT_TRUE(linkPm.cd().has_value());
+  EXPECT_EQ(*linkPm.cd()->avg(), -1.0);
+  EXPECT_EQ(*linkPm.cd()->min(), -3.0);
+  EXPECT_EQ(*linkPm.cd()->max(), 1.0);
+
+  // DGD: U16 at bytes 140-145, LSB=0.01 ps
+  ASSERT_TRUE(linkPm.dgd().has_value());
+  EXPECT_DOUBLE_EQ(*linkPm.dgd()->avg(), 1.09);
+  EXPECT_DOUBLE_EQ(*linkPm.dgd()->min(), 0.95);
+  EXPECT_DOUBLE_EQ(*linkPm.dgd()->max(), 1.31);
+
+  // SOPMD: U16 at bytes 146-151, LSB=0.01 ps^2
+  ASSERT_TRUE(linkPm.sopmd().has_value());
+  EXPECT_DOUBLE_EQ(*linkPm.sopmd()->avg(), 65.0);
+  EXPECT_DOUBLE_EQ(*linkPm.sopmd()->min(), 8.0);
+  EXPECT_DOUBLE_EQ(*linkPm.sopmd()->max(), 211.0);
+
+  // PDL: U16 at bytes 152-157, LSB=0.1 dB
+  ASSERT_TRUE(linkPm.pdl().has_value());
+  EXPECT_DOUBLE_EQ(*linkPm.pdl()->avg(), 0.8);
+  EXPECT_DOUBLE_EQ(*linkPm.pdl()->min(), 0.7);
+  EXPECT_DOUBLE_EQ(*linkPm.pdl()->max(), 0.9);
+
+  // OSNR: U16 at bytes 158-163, LSB=0.1 dB
+  ASSERT_TRUE(linkPm.osnr().has_value());
+  EXPECT_DOUBLE_EQ(*linkPm.osnr()->avg(), 33.8);
+  EXPECT_DOUBLE_EQ(*linkPm.osnr()->min(), 32.8);
+  EXPECT_DOUBLE_EQ(*linkPm.osnr()->max(), 34.8);
+
+  // eSNR: U16 at bytes 164-169, LSB=0.1 dB
+  ASSERT_TRUE(linkPm.esnr().has_value());
+  EXPECT_DOUBLE_EQ(*linkPm.esnr()->avg(), 15.6);
+  EXPECT_DOUBLE_EQ(*linkPm.esnr()->min(), 15.5);
+  EXPECT_DOUBLE_EQ(*linkPm.esnr()->max(), 15.6);
+
+  // CFO: S16 at bytes 170-175, LSB=1.0 MHz (exact integer values)
+  ASSERT_TRUE(linkPm.cfo().has_value());
+  EXPECT_EQ(*linkPm.cfo()->avg(), 119.0);
+  EXPECT_EQ(*linkPm.cfo()->min(), 58.0);
+  EXPECT_EQ(*linkPm.cfo()->max(), 205.0);
+
+  // EVM: U16 at bytes 176-181, LSB=100.0/65535.0 % (irrational LSB, use NEAR)
+  ASSERT_TRUE(linkPm.evmModem().has_value());
+  EXPECT_NEAR(*linkPm.evmModem()->avg(), 10268.0 * 100.0 / 65535.0, 0.01);
+  EXPECT_NEAR(*linkPm.evmModem()->min(), 10258.0 * 100.0 / 65535.0, 0.01);
+  EXPECT_NEAR(*linkPm.evmModem()->max(), 10453.0 * 100.0 / 65535.0, 0.01);
+
+  // TxPower: S16 at bytes 182-187, LSB=0.01 dBm
+  ASSERT_TRUE(linkPm.txPower().has_value());
+  EXPECT_DOUBLE_EQ(*linkPm.txPower()->avg(), -1.99);
+  EXPECT_DOUBLE_EQ(*linkPm.txPower()->min(), -2.05);
+  EXPECT_DOUBLE_EQ(*linkPm.txPower()->max(), -1.92);
+
+  // RxTotalPower: S16 at bytes 188-193, LSB=0.01 dBm
+  ASSERT_TRUE(linkPm.rxPower().has_value());
+  EXPECT_DOUBLE_EQ(*linkPm.rxPower()->avg(), -2.04);
+  EXPECT_DOUBLE_EQ(*linkPm.rxPower()->min(), -2.14);
+  EXPECT_DOUBLE_EQ(*linkPm.rxPower()->max(), -1.93);
+
+  // RxSigPower: S16 at bytes 194-199, LSB=0.01 dBm
+  ASSERT_TRUE(linkPm.rxSigPower().has_value());
+  EXPECT_DOUBLE_EQ(*linkPm.rxSigPower()->avg(), -2.94);
+  EXPECT_DOUBLE_EQ(*linkPm.rxSigPower()->min(), -3.12);
+  EXPECT_DOUBLE_EQ(*linkPm.rxSigPower()->max(), -2.69);
+
+  // SOP ROC: S16 at bytes 200-205, LSB=1.0 krad/s (exact integer values)
+  ASSERT_TRUE(linkPm.sopcr().has_value());
+  EXPECT_EQ(*linkPm.sopcr()->avg(), 4.0);
+  EXPECT_EQ(*linkPm.sopcr()->min(), 0.0);
+  EXPECT_EQ(*linkPm.sopcr()->max(), 14.0);
+
+  // MER: U16 at bytes 206-211, LSB=0.1 dB
+  ASSERT_TRUE(linkPm.mer().has_value());
+  EXPECT_DOUBLE_EQ(*linkPm.mer()->avg(), 16.0);
+  EXPECT_DOUBLE_EQ(*linkPm.mer()->min(), 15.8);
+  EXPECT_DOUBLE_EQ(*linkPm.mer()->max(), 16.0);
+
+  // ClockRecoveryLoop: S16 at bytes 212-217, LSB=100.0/32767.0 % (irrational)
+  ASSERT_TRUE(linkPm.clockRecoveryLoop().has_value());
+  EXPECT_NEAR(*linkPm.clockRecoveryLoop()->avg(), 83.0 * 100.0 / 32767.0, 0.01);
+  EXPECT_EQ(*linkPm.clockRecoveryLoop()->min(), 0.0);
+  EXPECT_NEAR(
+      *linkPm.clockRecoveryLoop()->max(), 183.0 * 100.0 / 32767.0, 0.01);
+
+  // SNR Margin: S16 at bytes 224-229, LSB=0.1 dB
+  ASSERT_TRUE(linkPm.snrMargin().has_value());
+  EXPECT_DOUBLE_EQ(*linkPm.snrMargin()->avg(), 4.1);
+  EXPECT_DOUBLE_EQ(*linkPm.snrMargin()->min(), 4.1);
+  EXPECT_DOUBLE_EQ(*linkPm.snrMargin()->max(), 4.1);
+
+  // Q-factor: U16 at bytes 230-235, LSB=0.1 dB
+  ASSERT_TRUE(linkPm.qFactor().has_value());
+  EXPECT_DOUBLE_EQ(*linkPm.qFactor()->avg(), 10.6);
+  EXPECT_DOUBLE_EQ(*linkPm.qFactor()->min(), 10.6);
+  EXPECT_DOUBLE_EQ(*linkPm.qFactor()->max(), 10.7);
+
+  // Q-margin: S16 at bytes 236-241, LSB=0.1 dB
+  ASSERT_TRUE(linkPm.qMargin().has_value());
+  EXPECT_DOUBLE_EQ(*linkPm.qMargin()->avg(), 4.1);
+  EXPECT_DOUBLE_EQ(*linkPm.qMargin()->min(), 4.0);
+  EXPECT_DOUBLE_EQ(*linkPm.qMargin()->max(), 4.2);
+}
+
+// Test for VDM support on 800G ZR modules
+TEST_F(CmisTest, cmis800GZrVdmTest) {
+  auto xcvrID = TransceiverID(1);
+  auto xcvr = overrideCmisModule<Cmis800GZrTransceiver>(
+      xcvrID, TransceiverModuleIdentifier::OSFP);
+
+  EXPECT_TRUE(xcvr->isVdmSupported());
+  // Verify all 4 VDM groups are supported (VDMSupport bits 1-0 = 0x03)
+  EXPECT_TRUE(xcvr->isVdmSupported(4));
+
+  // Verify coherent VDM parameters are found in VDM config (page 23h)
+  // with data values on page 27h
+  auto modulatorBiasXI =
+      xcvr->getVdmDiagsValLocation(VdmConfigType::MODULATOR_BIAS_XI);
+  EXPECT_TRUE(modulatorBiasXI.vdmConfImplementedByModule);
+  EXPECT_EQ(modulatorBiasXI.vdmValPage, CmisPages::PAGE27);
+
+  auto modulatorBiasXQ =
+      xcvr->getVdmDiagsValLocation(VdmConfigType::MODULATOR_BIAS_XQ);
+  EXPECT_TRUE(modulatorBiasXQ.vdmConfImplementedByModule);
+  EXPECT_EQ(modulatorBiasXQ.vdmValPage, CmisPages::PAGE27);
+
+  auto modulatorBiasYI =
+      xcvr->getVdmDiagsValLocation(VdmConfigType::MODULATOR_BIAS_YI);
+  EXPECT_TRUE(modulatorBiasYI.vdmConfImplementedByModule);
+  EXPECT_EQ(modulatorBiasYI.vdmValPage, CmisPages::PAGE27);
+
+  auto modulatorBiasYQ =
+      xcvr->getVdmDiagsValLocation(VdmConfigType::MODULATOR_BIAS_YQ);
+  EXPECT_TRUE(modulatorBiasYQ.vdmConfImplementedByModule);
+  EXPECT_EQ(modulatorBiasYQ.vdmValPage, CmisPages::PAGE27);
+
+  auto modulatorBiasXPhase =
+      xcvr->getVdmDiagsValLocation(VdmConfigType::MODULATOR_BIAS_X_PHASE);
+  EXPECT_TRUE(modulatorBiasXPhase.vdmConfImplementedByModule);
+  EXPECT_EQ(modulatorBiasXPhase.vdmValPage, CmisPages::PAGE27);
+
+  auto modulatorBiasYPhase =
+      xcvr->getVdmDiagsValLocation(VdmConfigType::MODULATOR_BIAS_Y_PHASE);
+  EXPECT_TRUE(modulatorBiasYPhase.vdmConfImplementedByModule);
+  EXPECT_EQ(modulatorBiasYPhase.vdmValPage, CmisPages::PAGE27);
+
+  auto cdLowGran =
+      xcvr->getVdmDiagsValLocation(VdmConfigType::CD_LOW_GRANULARITY);
+  EXPECT_TRUE(cdLowGran.vdmConfImplementedByModule);
+  EXPECT_EQ(cdLowGran.vdmValPage, CmisPages::PAGE27);
+
+  auto sopmdLowGran =
+      xcvr->getVdmDiagsValLocation(VdmConfigType::SOPMD_LOW_GRANULARITY);
+  EXPECT_TRUE(sopmdLowGran.vdmConfImplementedByModule);
+  EXPECT_EQ(sopmdLowGran.vdmValPage, CmisPages::PAGE27);
+
+  // Program transceiver to populate port-to-media-lane mappings
+  ProgramTransceiverState programTcvrState;
+  TransceiverPortState portState;
+  portState.portName = "eth1/1/1";
+  portState.startHostLane = 0;
+  portState.speed = cfg::PortSpeed::EIGHTHUNDREDG;
+  portState.numHostLanes = 8;
+
+  cfg::OpticalChannelConfig optChanConfig;
+  cfg::FrequencyConfig freqConfig;
+  freqConfig.frequencyGrid() = FrequencyGrid::LASER_6P25GHZ;
+  cfg::CenterFrequencyConfig centerFreq;
+  centerFreq.set_frequencyMhz(CmisModule::kDefaultFrequencyMhz);
+  freqConfig.centerFrequencyConfig() = centerFreq;
+  optChanConfig.frequencyConfig() = freqConfig;
+  optChanConfig.txPower0P01Dbm() = 0;
+  optChanConfig.appSelCode() = 1;
+  portState.opticalChannelConfig = optChanConfig;
+
+  programTcvrState.ports.emplace(portState.portName, portState);
+  xcvr->programTransceiver(programTcvrState, false);
+
+  std::vector<int32_t> xcvrIds = {xcvrID};
+  transceiverManager_->triggerVdmStatsCapture(xcvrIds);
+  transceiverManager_->refreshStateMachines();
+
+  const auto& newInfo = xcvr->getTransceiverInfo();
+  ASSERT_TRUE(newInfo.tcvrStats()->vdmPerfMonitorStats().has_value());
+  auto& vdmPerfMonStats = newInfo.tcvrStats()->vdmPerfMonitorStats().value();
+  ASSERT_FALSE(vdmPerfMonStats.mediaPortVdmStats()->empty());
+
+  // Validate coherent VDM values from page 0x27 (kCmis800GZrPage27)
+  // Values are computed as: rawU16 * LSB (or rawS16 * LSB for signed)
+  auto portIt = vdmPerfMonStats.mediaPortVdmStats()->find("eth1/1/1");
+  ASSERT_NE(portIt, vdmPerfMonStats.mediaPortVdmStats()->end());
+  ASSERT_TRUE(portIt->second.coherentVdmStats().has_value());
+  auto& coherentVdm = portIt->second.coherentVdmStats().value();
+
+  // Modulator Bias XI: raw U16 = 0x758b, LSB = 100/65535
+  EXPECT_EQ(int(*coherentVdm.modulatorBiasXI() * 100), 4591);
+  // Modulator Bias XQ: raw U16 = 0x6118, LSB = 100/65535
+  EXPECT_EQ(int(*coherentVdm.modulatorBiasXQ() * 100), 3792);
+  // Modulator Bias YI: raw U16 = 0x7764, LSB = 100/65535
+  EXPECT_EQ(int(*coherentVdm.modulatorBiasYI() * 100), 4663);
+  // Modulator Bias YQ: raw U16 = 0x63d1, LSB = 100/65535
+  EXPECT_EQ(int(*coherentVdm.modulatorBiasYQ() * 100), 3899);
+  // Modulator Bias X Phase: raw U16 = 0x6a5f, LSB = 100/65535
+  EXPECT_EQ(int(*coherentVdm.modulatorBiasXPhase() * 100), 4155);
+  // Modulator Bias Y Phase: raw U16 = 0x661b, LSB = 100/65535
+  EXPECT_EQ(int(*coherentVdm.modulatorBiasYPhase() * 100), 3988);
+  // CD low granularity: raw S16 = 0x0000, LSB = 20 ps/nm
+  EXPECT_EQ(*coherentVdm.cdLowGranularity(), 0.0);
+  // SOPMD low granularity: raw U16 = 0x0045 = 69, LSB = 1 ps^2
+  EXPECT_EQ(*coherentVdm.sopmdLowGranularity(), 69.0);
+}
+
 TEST_F(CmisTest, cmisCredo800AecInfoTest) {
   auto xcvrID = TransceiverID(1);
   auto xcvr = overrideCmisModule<CmisCredo800AEC>(
