@@ -13,7 +13,7 @@ from tests.libs.device.device_ssh_helper import DeviceSCPClient, DeviceSSHClient
 
 # Configure logging to ensure it works with pytest
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("hw_agent_runner")
+logger = logging.getLogger("test_runner")
 
 
 class BaseHwTestRunner(ABC):

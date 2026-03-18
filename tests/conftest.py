@@ -1,7 +1,7 @@
 import logging
 import pytest
 
-from tests.libs.hw_agent.lib_hw_agent_runner import (
+from tests.libs.test_runner.runner import (
     LinkTestRunner,
     QsfpTestRunner,
     SaiAgentTestRunner,
