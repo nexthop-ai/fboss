@@ -32,7 +32,7 @@ sh_library(
 genrule(
     name = "fboss-fake-sai",
     srcs = [
-        "//nhtools:ln_or_cp",
+        "//bazel_lib:ln_or_cp",
         "//fboss:fboss_builder.tar",
         ".buckconfig",
         "CMakeLists.txt",
@@ -85,9 +85,9 @@ genrule(
         for out in $(OUTS); do
             filename=$$(basename $$out)
             if [ $$filename = "fboss-fake-sai.tar.zst" ]; then
-                $(execpath //nhtools:ln_or_cp) fboss/fboss_bins.tar.zst $(location fboss-fake-sai.tar.zst)
+                $(execpath //bazel_lib:ln_or_cp) fboss/fboss_bins.tar.zst $(location fboss-fake-sai.tar.zst)
             else
-                $(execpath //nhtools:ln_or_cp) fboss/.build_dir/sai-fake/build/fboss/$$filename $(RULEDIR)/$$filename
+                $(execpath //bazel_lib:ln_or_cp) fboss/.build_dir/sai-fake/build/fboss/$$filename $(RULEDIR)/$$filename
             fi
         done
     """,
@@ -124,7 +124,7 @@ genrule(
     name = "distro_kernel_6.11",
     visibility = ["//visibility:public"],
     srcs = [
-        "//nhtools:ln_or_cp",
+        "//bazel_lib:ln_or_cp",
         "//fboss/fboss-image/distro_cli:builder",
         ":fboss_builder_docker",
     ] + glob([
@@ -139,7 +139,7 @@ genrule(
         ./distro_cli/fboss-image build kernel.json kernel
         popd
 
-        $(execpath //nhtools:ln_or_cp) fboss/fboss-image/kernel/dist/kernel-6.11.1.rpms.tar $(location distro_kernel_6.11.tar)
+        $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/kernel/dist/kernel-6.11.1.rpms.tar $(location distro_kernel_6.11.tar)
     """,
     tags = [
         "no-sandbox",
@@ -150,7 +150,7 @@ genrule(
 genrule(
     name = "nh-fboss-broadcom-xgs",
     srcs = [
-        "//nhtools:ln_or_cp",
+        "//bazel_lib:ln_or_cp",
         "//fboss_bsps/nexthop_bsp:distro_build_files",
         "//fboss_bsps/fboss_bsp_kmods:distro_build_files",
         "//fboss_extras/asic_init:distro_build_files",
@@ -204,10 +204,10 @@ genrule(
         ./distro_cli/fboss-image build nh-fboss-broadcom-xgs.json 2>&1
         popd
 
-        $(execpath //nhtools:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.tar $(location nh-fboss-broadcom-xgs.tar)
-        $(execpath //nhtools:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.bin $(location nh-fboss-broadcom-xgs.bin)
-        $(execpath //nhtools:ln_or_cp) fboss/forwarding-stack-tests.tar $(location fboss_forwarding_stack_tests.tar)
-        $(execpath //nhtools:ln_or_cp) fboss/platform-stack-tests.tar $(location fboss_platform_stack_tests.tar)
+        $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.tar $(location nh-fboss-broadcom-xgs.tar)
+        $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.bin $(location nh-fboss-broadcom-xgs.bin)
+        $(execpath //bazel_lib:ln_or_cp) fboss/forwarding-stack-tests.tar $(location fboss_forwarding_stack_tests.tar)
+        $(execpath //bazel_lib:ln_or_cp) fboss/platform-stack-tests.tar $(location fboss_platform_stack_tests.tar)
     """,
     tags = [
         "no-sandbox",
