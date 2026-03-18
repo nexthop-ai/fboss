@@ -80,7 +80,7 @@ class ImageBuilder:
         if not self.compress_artifacts:
             return artifact_path
 
-        if artifact_path.name.endswith(".tar.zst"):
+        if artifact_path.name.endswith((".tar.zst", ".rpm")):
             return artifact_path
 
         compressed_path = artifact_path.with_suffix(".tar.zst")

@@ -9,13 +9,14 @@ genrule(
     name = "fboss_builder_docker",
     visibility = ["//visibility:public"],
     srcs = [
+        "//fboss/fboss-image/distro_cli:scripts/build_and_tag_docker.sh",
         "fboss/oss/scripts/build_docker.sh",
         "fboss/oss/docker/Dockerfile",
         ".dockerignore",
     ] + glob(["build/**"]),
     outs = ["fboss_builder.tar"],
     cmd = """
-        $(SRCS)/fboss/oss/scripts/build_docker.sh
+        $(location //fboss/fboss-image/distro_cli:scripts/build_and_tag_docker.sh)
         docker save -o fboss_builder.tar fboss_builder
         mv fboss_builder.tar $(RULEDIR)
     """,

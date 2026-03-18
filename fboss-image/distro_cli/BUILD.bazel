@@ -1,4 +1,7 @@
-exports_files(["ruff.toml"])
+exports_files([
+    "ruff.toml",
+    "scripts/build_and_tag_docker.sh",
+])
 
 filegroup(
     name = "builder",
@@ -104,26 +107,26 @@ py_test(
     size = "medium",
 )
 
-py_test(
+sh_test(
     name = "device_integration_test",
-    srcs = ["tests/device_integration_test.py"],
-    imports = [".."],
-    deps = [
-        ":distro_cli_lib",
-        ":test_helpers",
-    ],
+    srcs = ["tests/run_device_integration_test.sh"],
     data = glob([
         "tests/data/*.json",
         "tests/test_topology/integration_data/*.json",
         "tests/test_topology/integration_data/*.sh",
+        "tests/test_topology/integration_data/*.tar",
     ]) + [
         "scripts/update_service.sh",
+        "tests/test_topology/start.sh",
+        "tests/device_integration_test.py",
+        "//fboss/fboss-image/distro_cli/tests/proxy_device:proxy_device_files",
+        "//fboss:fboss_builder_docker",
         "//fboss/fboss-image/distro_cli/tests/proxy_device:proxy_device_docker_image",
+        ":distro_cli_lib",
+        ":test_helpers",
     ],
-    main = "tests/device_integration_test.py",
-    python_version = "PY3",
-    srcs_version = "PY3",
     size = "large",
+    tags = ["requires-network"]
 )
 
 py_test(
