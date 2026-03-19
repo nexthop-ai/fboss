@@ -1,0 +1,18 @@
+name: GRECS PR Opened
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  grecs-pr-opened:
+    uses: nexthop-ai/nh/.github/workflows/grecs-pr-opened.reusable.yml@main
+    secrets:
+      GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+      GH_TOKEN_PR_APPROVER: ${{ secrets.NEXTHOP_ORG_GHA_PAT }}

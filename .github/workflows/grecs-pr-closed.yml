@@ -1,0 +1,17 @@
+name: GRECS PR Closed
+
+on:
+  pull_request_target:
+    types:
+      - closed
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  grecs-pr-closed:
+    uses: nexthop-ai/nh/.github/workflows/grecs-pr-closed.reusable.yml@main
+    secrets:
+      GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+      GH_TOKEN_PR_APPROVER: ${{ secrets.NEXTHOP_ORG_GHA_PAT }}
