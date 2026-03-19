@@ -9,6 +9,7 @@
  */
 
 #include "fboss/cli/fboss2/CmdHandler.h"
+#include <thrift/lib/cpp2/visitation/for_each.h>
 #include "fboss/cli/fboss2/CmdArgsLists.h"
 #include "fboss/cli/fboss2/CmdGlobalOptions.h"
 #include "fboss/cli/fboss2/CmdList.h"
@@ -42,6 +43,9 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+
+using ThriftField = apache::thrift::metadata::ThriftField;
+using ThriftType = apache::thrift::metadata::ThriftType;
 
 template <typename CmdTypeT>
 void printTabular(

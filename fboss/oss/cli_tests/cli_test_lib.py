@@ -15,6 +15,7 @@ This module provides shared utilities for CLI tests including:
 
 import json
 import os
+import shutil
 import subprocess
 import time
 from dataclasses import dataclass
@@ -88,11 +89,10 @@ def get_fboss_cli() -> str:
             _FBOSS_CLI = expanded
             print(f"  Using CLI from FBOSS_CLI_PATH: {_FBOSS_CLI}")
             return _FBOSS_CLI
-        else:
-            raise RuntimeError(
-                f"FBOSS_CLI_PATH is set to '{env_path}' but the file does not exist "
-                "or is not executable"
-            )
+        raise RuntimeError(
+            f"FBOSS_CLI_PATH is set to '{env_path}' but the file does not exist "
+            "or is not executable"
+        )
 
     # Default locations (only fboss2-dev has config commands)
     candidates = (
@@ -108,7 +108,7 @@ def get_fboss_cli() -> str:
         else:
             # Check if it's in PATH
             result = subprocess.run(
-                ["which", candidate], capture_output=True, text=True
+                ["which", candidate], check=False, capture_output=True, text=True
             )
             if result.returncode == 0:
                 _FBOSS_CLI = result.stdout.strip()
@@ -123,7 +123,7 @@ def get_fboss_cli() -> str:
 def run_cmd(cmd: list[str], check: bool = True) -> subprocess.CompletedProcess:
     """Run a command and return the result."""
     print(f"Running: {' '.join(cmd)}")
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = subprocess.run(cmd, check=False, capture_output=True, text=True)
     if check and result.returncode != 0:
         print(f"Command failed with return code {result.returncode}")
         print(f"stdout: {result.stdout}")
@@ -144,11 +144,11 @@ def run_cli(args: list[str], check: bool = True, quiet: bool = False) -> dict[st
         quiet: If True, suppress logging of command execution
     """
     cli = get_fboss_cli()
-    cmd = [cli, "--fmt", "json"] + args
+    cmd = [cli, "--fmt", "json", *args]
     if not quiet:
         print(f"[CLI] Running: {' '.join(args)}")
     start_time = time.time()
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = subprocess.run(cmd, check=False, capture_output=True, text=True)
     elapsed = time.time() - start_time
     if not quiet:
         print(f"[CLI] Completed in {elapsed:.2f}s: {' '.join(args)}")
@@ -309,8 +309,6 @@ def cleanup_config(
                        in place to remove test-specific configurations.
         description: A description of what is being cleaned up (for logging).
     """
-    import shutil
-
     session_dir = os.path.dirname(SESSION_CONFIG_PATH)
     metadata_path = os.path.join(session_dir, "cli_metadata.json")
 
@@ -319,7 +317,7 @@ def cleanup_config(
     shutil.copy(SYSTEM_CONFIG_PATH, SESSION_CONFIG_PATH)
 
     print(f"  Removing {description}...")
-    with open(SESSION_CONFIG_PATH, "r") as f:
+    with open(SESSION_CONFIG_PATH) as f:
         config = json.load(f)
 
     sw_config = config.get("sw", {})

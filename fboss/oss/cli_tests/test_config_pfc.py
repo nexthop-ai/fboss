@@ -24,12 +24,7 @@ import json
 import sys
 from typing import Any
 
-from cli_test_lib import (
-    SYSTEM_CONFIG_PATH,
-    cleanup_config,
-    commit_config,
-    run_cli,
-)
+from cli_test_lib import SYSTEM_CONFIG_PATH, cleanup_config, commit_config, run_cli
 
 # Test names
 TEST_BUFFER_POOL_NAME = "cli_e2e_test_buffer_pool"

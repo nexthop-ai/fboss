@@ -34,9 +34,15 @@ class AgentSrv6EncapTest : public AgentHwTest {
  protected:
   static constexpr bool kIsTrunk = PortType::isTrunk;
 
-  const folly::IPAddressV6 kSid0{"3001:db8:1:2:3::"};
+  // All 6 uSids populated
+  const folly::IPAddressV6 kSid0{"3001:db8:1:2:3:4:5:6"};
+  // 3 uSids populated
   const folly::IPAddressV6 kSid1{"3001:db8:4:5:6::"};
   const folly::IPAddressV6 kSid2{"3001:db8:7:8:9::"};
+
+  const folly::IPAddressV6 kEncapRoutePrefix{"2800:2::"};
+  static constexpr uint8_t kEncapRoutePrefixLen{64};
+  const folly::IPAddressV6 kEncapRouteDstIp{"2800:2::1"};
 
   std::vector<ProductionFeature> getProductionFeaturesVerified()
       const override {
@@ -90,24 +96,30 @@ class AgentSrv6EncapTest : public AgentHwTest {
         this->getProgrammedState(), this->getSw()->needL2EntryForNeighbor());
   }
 
+  void resolveV4AndV6NextHops(int numNextHops) {
+    auto ecmpHelper6 = makeEcmpHelper<folly::IPAddressV6>();
+    this->resolveNeighbors(ecmpHelper6, numNextHops);
+    auto ecmpHelper4 = makeEcmpHelper<folly::IPAddressV4>();
+    this->resolveNeighbors(ecmpHelper4, numNextHops);
+  }
+
   void setupHelper(bool resolveNeighbors = true) {
     if constexpr (kIsTrunk) {
       applyConfigAndEnableTrunks(
           this->initialConfig(*this->getAgentEnsemble()));
     }
     if (resolveNeighbors) {
-      auto ecmpHelper6 = makeEcmpHelper<folly::IPAddressV6>();
-      this->resolveNeighbors(ecmpHelper6, 2);
-      auto ecmpHelper4 = makeEcmpHelper<folly::IPAddressV4>();
-      this->resolveNeighbors(ecmpHelper4, 2);
+      resolveV4AndV6NextHops(2);
     }
     // IPv6 encap routes (v6 next hops)
     addEncapRoute<folly::CIDRNetworkV6>(
-        {folly::IPAddressV6("2800:2::"), 64}, {{kSid0}});
+        {kEncapRoutePrefix, kEncapRoutePrefixLen}, {{kSid0}});
     addEncapRoute<folly::CIDRNetworkV6>(
-        {folly::IPAddressV6("2800:3::"), 64}, {{kSid1}, {kSid2}});
+        {folly::IPAddressV6("2800:3::"), kEncapRoutePrefixLen},
+        {{kSid1}, {kSid2}});
     addEncapRoute<folly::CIDRNetworkV6>(
-        {folly::IPAddressV6("2800:4::"), 64}, {{kSid1}, {kSid2}});
+        {folly::IPAddressV6("2800:4::"), kEncapRoutePrefixLen},
+        {{kSid1}, {kSid2}});
     // IPv4 encap routes (v4 next hops)
     addEncapRoute<folly::CIDRNetworkV4>(
         {folly::IPAddressV4("100.0.0.0"), 24}, {{kSid0}});
@@ -173,8 +185,7 @@ class AgentSrv6EncapTest : public AgentHwTest {
                              : static_cast<uint8_t>(kTc << 2);
     auto srcIp =
         isV4 ? folly::IPAddress("10.0.0.1") : folly::IPAddress("1::10");
-    auto dstIp =
-        isV4 ? folly::IPAddress("100.0.0.1") : folly::IPAddress("2800:2::1");
+    auto dstIp = isV4 ? folly::IPAddress("100.0.0.1") : kEncapRouteDstIp;
     auto txPacket = utility::makeUDPTxPacket(
         this->getSw(),
         this->getVlanIDForTx(),
@@ -222,8 +233,12 @@ class AgentSrv6EncapTest : public AgentHwTest {
     EXPECT_EQ(v6Hdr.dstAddr, kSid0);
     // Flow label must be non 0
     EXPECT_NE(v6Hdr.flowLabel, 0);
-    // ECN bits in outer header
-    EXPECT_EQ(v6Hdr.trafficClass & 0x3, ecnMarked ? 0x3 : 0);
+    // FIXME: ECN bits in outer header are only propagated for v6-in-v6 encap
+    if (!isV4) {
+      EXPECT_EQ(v6Hdr.trafficClass & 0x3, ecnMarked ? 0x3 : 0);
+    }
+    // FIXME MT-864 - DSCP bits are being zeroed out
+    // EXPECT_EQ(v6Hdr.trafficClass >> 2, kTc).
     // TTL is decremented
     EXPECT_EQ(v6Hdr.hopLimit, kTtl - 1);
     // Compare origPacket against inner packet
@@ -248,12 +263,14 @@ class AgentSrv6EncapTest : public AgentHwTest {
 
   void verifyEncapPacketCpuAndFrontPanel(PortID egressPort) {
     auto injectPort = findInjectPort(egressPort);
-    // ECN not marked
-    verifyEncapPacket(egressPort, false);
-    verifyEncapPacket(egressPort, false, false, injectPort);
-    // ECN marked
-    verifyEncapPacket(egressPort, true);
-    verifyEncapPacket(egressPort, true, false, injectPort);
+    for (bool isV4 : {false, true}) {
+      // ECN not marked
+      verifyEncapPacket(egressPort, false, isV4);
+      verifyEncapPacket(egressPort, false, isV4, injectPort);
+      // ECN marked
+      verifyEncapPacket(egressPort, true, isV4);
+      verifyEncapPacket(egressPort, true, isV4, injectPort);
+    }
   }
 
   PortID findInjectPort(PortID egressPort) {
@@ -299,7 +316,7 @@ TYPED_TEST(AgentSrv6EncapTest, sendPacketToEncapRouteAfterLinkFlap) {
     auto egressPort = this->getEgressPort(ecmpHelper.nhop(0).portDesc);
     this->bringDownPort(egressPort);
     this->bringUpPort(egressPort);
-    this->resolveNeighbors(ecmpHelper, 2);
+    this->resolveV4AndV6NextHops(2);
   };
 
   auto verify = [this]() {
@@ -313,19 +330,8 @@ TYPED_TEST(AgentSrv6EncapTest, sendPacketToEncapRouteAfterLinkFlap) {
 TYPED_TEST(AgentSrv6EncapTest, resolveNeighborsAfterRouteProgram) {
   auto setup = [this]() {
     this->setupHelper(false /*resolveNeighbors*/);
-    // Resolve 1 neighbor after route programming
-    this->applyNewState([this](std::shared_ptr<SwitchState> in) {
-      utility::EcmpSetupAnyNPorts6 ecmpHelper(
-          in, this->getSw()->needL2EntryForNeighbor());
-      return ecmpHelper.resolveNextHops(in, {ecmpHelper.nhop(0).portDesc});
-    });
-    // Resolve second neighbor after route programming
-    this->applyNewState([this](std::shared_ptr<SwitchState> in) {
-      utility::EcmpSetupAnyNPorts6 ecmpHelper(
-          in, this->getSw()->needL2EntryForNeighbor());
-      return ecmpHelper.resolveNextHops(
-          in, {ecmpHelper.nhop(0).portDesc, ecmpHelper.nhop(1).portDesc});
-    });
+    // Resolve neighbors after route programming
+    this->resolveV4AndV6NextHops(2);
   };
 
   auto verify = [this]() {

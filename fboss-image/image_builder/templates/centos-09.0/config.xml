@@ -143,6 +143,7 @@
         <!-- FBOSS CLI needs git to commit config changes under /etc/coop -->
         <package name="git"/>
         <package name="libaio"/>
+        <package name="git"/>
         <package name="tcpdump"/>
         <package name="usbutils"/>
         <package name="ndisc6"/>

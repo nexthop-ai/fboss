@@ -156,11 +156,11 @@ EXPECTED_PORT_QUEUE_CONFIGS = {
 def configure_buffer_pool(pool_name: str, config: dict) -> None:
     """Configure a buffer pool with shared and headroom bytes."""
     base_cmd = ["config", "qos", "buffer-pool", pool_name]
-    run_cli(base_cmd + ["shared-bytes", str(config["sharedBytes"])])
-    run_cli(base_cmd + ["headroom-bytes", str(config["headroomBytes"])])
+    run_cli([*base_cmd, "shared-bytes", str(config["sharedBytes"])])
+    run_cli([*base_cmd, "headroom-bytes", str(config["headroomBytes"])])
 
 
-def configure_queue(policy_name: str, queue_id: int, config: dict) -> None:
+def configure_queue(policy_name: str, queue_id: int, config: dict) -> None:  # noqa: PLR0912
     """Configure a single queue with its attributes.
 
     Uses the new key-value pair syntax:
@@ -236,7 +236,7 @@ def cleanup_test_config(interface_name: str) -> None:
     cleanup_config(modify_config, "port queue configs")
 
 
-def main() -> int:
+def main() -> int:  # noqa: PLR0915
     print("=" * 70)
     print("CLI E2E Test: Port Queue Configuration")
     print("=" * 70)
@@ -274,7 +274,7 @@ def main() -> int:
 
     # Step 4: Verify configuration by reading /etc/coop/agent.conf
     print("\n[Step 4] Verifying configuration...")
-    with open(SYSTEM_CONFIG_PATH, "r") as f:
+    with open(SYSTEM_CONFIG_PATH) as f:
         config = json.load(f)
 
     sw_config = config.get("sw", {})
