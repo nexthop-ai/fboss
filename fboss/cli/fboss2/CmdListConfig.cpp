@@ -135,12 +135,6 @@ const CommandTree& kConfigCommandTree() {
                argTypeHandler<CmdConfigInterfaceQueuingPolicyTraits>,
            },
            {
-               "pfc-config",
-               "Configure PFC settings for interface",
-               commandHandler<CmdConfigInterfacePfcConfig>,
-               argTypeHandler<CmdConfigInterfacePfcConfigTraits>,
-           },
-           {
                "switchport",
                "Configure switchport settings",
                commandHandler<CmdConfigInterfaceSwitchport>,
