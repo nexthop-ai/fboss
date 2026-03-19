@@ -98,7 +98,6 @@ enable_hw_agents() {
   done
 }
 
-<<<<<<< HEAD
 create_distro_base_snapshot() {
   local base_snapshot="/distro-base"
 
@@ -123,9 +122,6 @@ create_distro_base_snapshot() {
   fi
 }
 
-||||||| 84406ca706
-=======
->>>>>>> fdd35b55b47b318a8bc4724f788ee2e23f37cdb9
 main() {
   log "Starting FBOSS initialization"
 

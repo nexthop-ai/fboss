@@ -24,22 +24,7 @@ import json
 import sys
 from typing import Any
 
-<<<<<<< HEAD
-from cli_test_lib import (
-    SYSTEM_CONFIG_PATH,
-    cleanup_config,
-    commit_config,
-    run_cli,
-)
-||||||| 84406ca706
-from cli_test_lib import commit_config, run_cli
-
-# Paths
-SYSTEM_CONFIG_PATH = "/etc/coop/agent.conf"
-SESSION_CONFIG_PATH = os.path.expanduser("~/.fboss2/agent.conf")
-=======
-from cli_test_lib import cleanup_config, commit_config, run_cli, SYSTEM_CONFIG_PATH
->>>>>>> fdd35b55b47b318a8bc4724f788ee2e23f37cdb9
+from cli_test_lib import SYSTEM_CONFIG_PATH, cleanup_config, commit_config, run_cli
 
 # Test names
 TEST_BUFFER_POOL_NAME = "cli_e2e_test_buffer_pool"

@@ -16,7 +16,6 @@
 #include "fboss/cli/fboss2/commands/config/interface/pfc_config/PfcConfigUtils.h"
 #include "fboss/cli/fboss2/utils/CmdUtilsCommon.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
-<<<<<<< HEAD
 #include "fboss/cli/fboss2/utils/InterfacesConfig.h"
 
 namespace facebook::fboss {
@@ -39,33 +38,6 @@ class CmdConfigInterfacePfcConfig : public CmdHandler<
   RetType queryClient(
       const HostInfo& hostInfo,
       const utils::InterfacesConfig& interfaceConfig,
-||||||| 84406ca706
-=======
-#include "fboss/cli/fboss2/utils/InterfaceList.h"
-
-namespace facebook::fboss {
-
-using InterfaceList = utils::InterfaceList;
-
-struct CmdConfigInterfacePfcConfigTraits : public WriteCommandTraits {
-  using ParentCmd = CmdConfigInterface;
-  static constexpr utils::ObjectArgTypeId ObjectArgTypeId =
-      utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_PFC_CONFIG_ATTRS;
-  using ObjectArgType = utils::PfcConfigAttrs;
-  using RetType = std::string;
-};
-
-class CmdConfigInterfacePfcConfig : public CmdHandler<
-                                        CmdConfigInterfacePfcConfig,
-                                        CmdConfigInterfacePfcConfigTraits> {
- public:
-  using ObjectArgType = CmdConfigInterfacePfcConfigTraits::ObjectArgType;
-  using RetType = CmdConfigInterfacePfcConfigTraits::RetType;
-
-  RetType queryClient(
-      const HostInfo& hostInfo,
-      const InterfaceList& interfaces,
->>>>>>> fdd35b55b47b318a8bc4724f788ee2e23f37cdb9
       const ObjectArgType& config);
 
   void printOutput(const RetType& logMsg);

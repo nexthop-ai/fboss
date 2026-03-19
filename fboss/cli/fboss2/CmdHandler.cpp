@@ -9,12 +9,8 @@
  */
 
 #include "fboss/cli/fboss2/CmdHandler.h"
-<<<<<<< HEAD
-#include "fboss/cli/fboss2/CmdArgsLists.h"
-||||||| 84406ca706
-=======
 #include <thrift/lib/cpp2/visitation/for_each.h>
->>>>>>> fdd35b55b47b318a8bc4724f788ee2e23f37cdb9
+#include "fboss/cli/fboss2/CmdArgsLists.h"
 #include "fboss/cli/fboss2/CmdGlobalOptions.h"
 #include "fboss/cli/fboss2/CmdList.h"
 #include "fboss/cli/fboss2/gen-cpp2/cli_types.h"

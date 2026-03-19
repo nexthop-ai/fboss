@@ -309,9 +309,6 @@ def cleanup_config(
                        in place to remove test-specific configurations.
         description: A description of what is being cleaned up (for logging).
     """
-<<<<<<< HEAD
-    import shutil
-
     session_dir = os.path.dirname(SESSION_CONFIG_PATH)
     metadata_path = os.path.join(session_dir, "cli_metadata.json")
 
@@ -320,7 +317,7 @@ def cleanup_config(
     shutil.copy(SYSTEM_CONFIG_PATH, SESSION_CONFIG_PATH)
 
     print(f"  Removing {description}...")
-    with open(SESSION_CONFIG_PATH, "r") as f:
+    with open(SESSION_CONFIG_PATH) as f:
         config = json.load(f)
 
     sw_config = config.get("sw", {})
@@ -364,35 +361,3 @@ def running_config() -> dict[str, Any]:
         return host_data_str
 
     return {}
-||||||| 84406ca706
-=======
-    session_dir = os.path.dirname(SESSION_CONFIG_PATH)
-    metadata_path = os.path.join(session_dir, "cli_metadata.json")
-
-    print("  Copying system config to session config...")
-    os.makedirs(session_dir, exist_ok=True)
-    shutil.copy(SYSTEM_CONFIG_PATH, SESSION_CONFIG_PATH)
-
-    print(f"  Removing {description}...")
-    with open(SESSION_CONFIG_PATH) as f:
-        config = json.load(f)
-
-    sw_config = config.get("sw", {})
-    modify_config(sw_config)
-
-    with open(SESSION_CONFIG_PATH, "w") as f:
-        json.dump(config, f, indent=2)
-
-    # Update metadata to require AGENT_RESTART
-    print("  Updating metadata for AGENT_RESTART...")
-    metadata = {
-        "action": {"WEDGE_AGENT": "AGENT_RESTART"},
-        "commands": [],
-        "base": "",
-    }
-    with open(metadata_path, "w") as f:
-        json.dump(metadata, f, indent=2)
-
-    print("  Committing cleanup...")
-    commit_config()
->>>>>>> fdd35b55b47b318a8bc4724f788ee2e23f37cdb9
