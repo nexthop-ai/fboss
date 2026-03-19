@@ -12,7 +12,12 @@ import subprocess
 import sys
 import time
 from argparse import ArgumentParser
+<<<<<<< HEAD
 from datetime import datetime
+=======
+from contextlib import suppress
+from datetime import datetime, timezone
+>>>>>>> 16068086ed (NOS-5417: Platform manager HW test crashing (#547))
 from typing import ClassVar
 
 from fboss_agent_utils import (
@@ -172,6 +177,16 @@ FEATURE_LIST_PREFIX = "Feature List: "
 
 DEFAULT_TEST_RUN_TIMEOUT_IN_SECOND = 1200
 
+TEST_DISABLE_SERVICES = {
+    SUB_ARG_PLATFORM_MANAGER_HW_TEST: [
+        "platform_manager",
+        "sensor_service",
+        "fan_service",
+        "data_corral_service",
+        "qsfp_service",
+    ]
+}
+
 
 def _load_from_file(file_path, profile=None):
     """Load list from a configuration file, skipping comment lines.
@@ -239,6 +254,34 @@ def setup_fboss_env() -> None:
 
     # Update TestRunner.ENV_VAR to pick up the modified environment
     TestRunner.ENV_VAR = dict(os.environ)
+
+
+def disable_services(test_name: str):
+    if test_name in TEST_DISABLE_SERVICES:
+        services = TEST_DISABLE_SERVICES[test_name]
+        print(f"Stopping services: {', '.join(services)}", flush=True)
+        subprocess.run(["systemctl", "mask", *services], check=False)
+        subprocess.run(["systemctl", "stop", *services], check=False)
+        time.sleep(2)
+        print("Services stopped", flush=True)
+
+
+def enable_services(test_name: str):
+    if test_name in TEST_DISABLE_SERVICES:
+        services = TEST_DISABLE_SERVICES[test_name]
+        print(f"Restarting services: {', '.join(services)}", flush=True)
+        subprocess.run(
+            ["systemctl", "unmask", *services], check=False, stderr=subprocess.DEVNULL
+        )
+
+        for service in services:
+            subprocess.Popen(
+                ["systemctl", "restart", service],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+
+        print("Services restart initiated", flush=True)
 
 
 class TestRunner(abc.ABC):
@@ -717,12 +760,21 @@ class TestRunner(abc.ABC):
         if args.coldboot_only is False:
             warmboot = True
 
+<<<<<<< HEAD
         if conf_file and not os.path.exists(conf_file):
             print(f"########## Required configuration file not found: {conf_file}")
             return []
+=======
+        test_binary_name = self._get_test_binary_name()
+        file_name = os.path.basename(test_binary_name)
+        if file_name != "qsfp_hw_test" and not os.path.exists(conf_file):
+            print("########## Conf file not found: " + conf_file)
+            return [], []
+>>>>>>> 16068086ed (NOS-5417: Platform manager HW test crashing (#547))
 
         test_outputs = []
         num_tests = len(tests_to_run)
+<<<<<<< HEAD
         for idx, test_to_run in enumerate(tests_to_run):
             test_prefix = self.COLDBOOT_PREFIX
             sai_replayer_log_path = self._get_sai_replayer_log_path(
@@ -753,19 +805,29 @@ class TestRunner(abc.ABC):
             # Run the test again for warmboot verification if the test supports it
             if warmboot and os.path.isfile(self._get_warmboot_check_file()):
                 test_prefix = self.WARMBOOT_PREFIX
+=======
+
+        disable_services(file_name)
+        try:
+            for idx, test_to_run in enumerate(tests_to_run):
+                test_prefix = self.COLDBOOT_PREFIX
+>>>>>>> 16068086ed (NOS-5417: Platform manager HW test crashing (#547))
                 sai_replayer_log_path = self._get_sai_replayer_log_path(
                     test_prefix, test_to_run, args.sai_replayer_logging
                 )
-                self._setup_warmboot_test(sai_replayer_log_path)
-                print(
-                    "########## Verifying test with warmboot: " + test_to_run,
-                    flush=True,
-                )
+                # Run the test for coldboot verification
+
+                self._setup_coldboot_test(sai_replayer_log_path)
+                with suppress(FileNotFoundError):
+                    os.unlink(self.TESTRESULT_CURRENT_RUN_FILE)
+                print("########## Running test: " + test_to_run, flush=True)
+                if args.simulator:
+                    self._restart_bcmsim(args.simulator)
                 test_output = self._run_test(
                     conf_file,
                     test_prefix,
                     test_to_run,
-                    False,  # setup_warmboot
+                    warmboot,  # setup_warmboot
                     args.sai_logging,
                     args.fboss_logging,
                     sai_replayer_log_path,
@@ -773,10 +835,52 @@ class TestRunner(abc.ABC):
                 )
                 output = test_output.decode("utf-8")
                 print(
-                    f"########## Warmboot test results ({idx + 1}/{num_tests}): {output}",
+                    f"########## Coldboot test results ({idx + 1}/{num_tests}): {output}",
                     flush=True,
                 )
                 test_outputs.append(test_output)
+<<<<<<< HEAD
+=======
+                test_results.append(
+                    self.get_updated_test_result_with_classname_subscript("cold_boot")
+                )
+
+                # Run the test again for warmboot verification if the test supports it
+                if warmboot and os.path.isfile(self._get_warmboot_check_file()):
+                    test_prefix = self.WARMBOOT_PREFIX
+                    sai_replayer_log_path = self._get_sai_replayer_log_path(
+                        test_prefix, test_to_run, args.sai_replayer_logging
+                    )
+                    self._setup_warmboot_test(sai_replayer_log_path)
+                    print(
+                        "########## Verifying test with warmboot: " + test_to_run,
+                        flush=True,
+                    )
+                    test_output = self._run_test(
+                        conf_file,
+                        test_prefix,
+                        test_to_run,
+                        False,  # setup_warmboot
+                        args.sai_logging,
+                        args.fboss_logging,
+                        sai_replayer_log_path,
+                        args.test_run_timeout,
+                    )
+                    output = test_output.decode("utf-8")
+                    print(
+                        f"########## Warmboot test results ({idx + 1}/{num_tests}): {output}",
+                        flush=True,
+                    )
+                    test_outputs.append(test_output)
+                    test_results.append(
+                        self.get_updated_test_result_with_classname_subscript(
+                            "warm_boot"
+                        )
+                    )
+        finally:
+            enable_services(file_name)
+
+>>>>>>> 16068086ed (NOS-5417: Platform manager HW test crashing (#547))
         self._end_run()
         return test_outputs
 
@@ -1493,6 +1597,7 @@ class PlatformServicesTestRunner(TestRunner):
         test_binary_name = self._get_test_binary_name()
         test_outputs = []
         num_tests = len(tests_to_run)
+<<<<<<< HEAD
         for idx, test_to_run in enumerate(tests_to_run):
             test_prefix = test_binary_name + "."
             print("########## Running test: " + test_to_run, flush=True)
@@ -1512,6 +1617,40 @@ class PlatformServicesTestRunner(TestRunner):
                 flush=True,
             )
             test_outputs.append(test_output)
+=======
+
+        disable_services(args.type)
+
+        try:
+            for idx, test_to_run in enumerate(tests_to_run):
+                test_prefix = test_binary_name + "."
+                with suppress(FileNotFoundError):
+                    os.unlink(self.TESTRESULT_CURRENT_RUN_FILE)
+                print("########## Running test: " + test_to_run, flush=True)
+                test_output = self._run_test(
+                    conf_file,
+                    test_prefix,
+                    test_to_run,
+                    False,  # setup_warmboot
+                    args.sai_logging,
+                    args.fboss_logging,
+                    None,
+                    args.test_run_timeout,
+                )
+                output = test_output.decode("utf-8")
+                print(
+                    f"test results ({idx + 1}/{num_tests}): {output}",
+                    flush=True,
+                )
+                test_outputs.append(test_output)
+                # Reads each test result file (updated by _run_test above) and appends it with
+                # args.type as a subscript (e.g., TestName[fan_service_hw_test])
+                test_results.append(
+                    self.get_updated_test_result_with_classname_subscript(args.type)
+                )
+        finally:
+            enable_services(args.type)
+>>>>>>> 16068086ed (NOS-5417: Platform manager HW test crashing (#547))
 
         self._end_run()
         return test_outputs
