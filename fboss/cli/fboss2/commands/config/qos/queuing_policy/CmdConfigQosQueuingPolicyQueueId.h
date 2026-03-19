@@ -44,6 +44,7 @@ class QueueConfig : public utils::BaseObjectArgType<std::string> {
     return attributes_;
   }
 
+<<<<<<< HEAD
   const std::vector<std::string>& getAqmAttributes() const {
     return aqmAttributes_;
   }
@@ -55,6 +56,15 @@ class QueueConfig : public utils::BaseObjectArgType<std::string> {
   int16_t queueId_{0};
   std::vector<std::pair<std::string, std::string>> attributes_;
   std::vector<std::string> aqmAttributes_;
+||||||| 84406ca706
+=======
+  const static utils::ObjectArgTypeId id =
+      utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_QUEUE_ID;
+
+ private:
+  int16_t queueId_{0};
+  std::vector<std::pair<std::string, std::string>> attributes_;
+>>>>>>> fdd35b55b47b318a8bc4724f788ee2e23f37cdb9
 };
 
 struct CmdConfigQosQueuingPolicyQueueIdTraits : public WriteCommandTraits {

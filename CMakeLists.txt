@@ -991,6 +991,7 @@ add_fbthrift_cpp_library(
   OPTIONS
     json
   DEPENDS
+    qsfp_config_cpp2
     transceiver_cpp2
     qsfp_cpp2
 )

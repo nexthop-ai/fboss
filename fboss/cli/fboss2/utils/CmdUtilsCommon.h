@@ -85,12 +85,16 @@ enum class ObjectArgTypeId : uint8_t {
   // Queuing policy argument types
   OBJECT_ARG_TYPE_ID_QUEUING_POLICY_NAME,
   OBJECT_ARG_TYPE_ID_QUEUE_ID,
+<<<<<<< HEAD
   // QoS policy argument types
   OBJECT_ARG_TYPE_ID_QOS_POLICY_NAME,
   OBJECT_ARG_TYPE_ID_QOS_MAP_ENTRY,
   OBJECT_ARG_TYPE_PORT_AND_TAGGING_MODE,
   OBJECT_ARG_TYPE_L2_LEARNING_MODE,
   OBJECT_ARG_TYPE_ID_INTERFACES_CONFIG,
+||||||| 84406ca706
+=======
+>>>>>>> fdd35b55b47b318a8bc4724f788ee2e23f37cdb9
 };
 
 template <typename T>

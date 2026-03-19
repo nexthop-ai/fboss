@@ -304,6 +304,7 @@ CLI::App* CmdSubcommands::addCommand(
               "Queue ID followed by key-value pairs: <queue-id> <attr> <value> "
               "[<attr> <value> ...] where <attr> is one of: reserved-bytes, "
               "shared-bytes, weight, scaling-factor, scheduling, stream-type, "
+<<<<<<< HEAD
               "buffer-pool-name, active-queue-management");
           break;
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_QOS_POLICY_NAME:
@@ -334,6 +335,10 @@ CLI::App* CmdSubcommands::addCommand(
               args,
               "<port-list> [<attr> <value> ...] where <attr> is one "
               "of: description, mtu");
+||||||| 84406ca706
+=======
+              "buffer-pool-name");
+>>>>>>> fdd35b55b47b318a8bc4724f788ee2e23f37cdb9
           break;
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_UNINITIALIZE:
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_NONE:

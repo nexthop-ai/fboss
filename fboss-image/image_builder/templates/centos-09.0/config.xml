@@ -29,11 +29,23 @@
             primary="true"
             installiso="true"
             bootpartition="false"
+<<<<<<< HEAD
             editbootinstall="editbootinstall.sh"
+||||||| 84406ca706
+            kernelcmdline="nomodeset console=ttyS4,57600n8 biosdevname=0 net.ifnames=0 quiet rootfstype=btrfs">
+=======
+>>>>>>> fdd35b55b47b318a8bc4724f788ee2e23f37cdb9
             kernelcmdline="nomodeset console=ttyS0,57600n8 8250.nr_uarts=1 biosdevname=0 net.ifnames=0 quiet rootfstype=btrfs">
 
             <bootloader name="grub2" console="serial" serial_line="ttyS0,57600n8"/>
+<<<<<<< HEAD
             <size unit="G">64</size>
+||||||| 84406ca706
+            <bootloader name="grub2" console="serial" serial_line="ttyS4,57600n8"/>
+            <size unit="G">16</size>
+=======
+            <size unit="G">16</size>
+>>>>>>> fdd35b55b47b318a8bc4724f788ee2e23f37cdb9
             <oemconfig>
                 <!-- The oem-resize element should be false for a fixed-size disk -->
                 <oem-resize>true</oem-resize>
@@ -143,6 +155,7 @@
         <!-- FBOSS CLI needs git to commit config changes under /etc/coop -->
         <package name="git"/>
         <package name="libaio"/>
+        <package name="git"/>
         <package name="tcpdump"/>
         <package name="usbutils"/>
         <package name="ndisc6"/>

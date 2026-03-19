@@ -4,6 +4,7 @@ Description=FBOSS SW Agent
 After=platform_manager.service
 After=qsfp_service.service
 After=rc-local.service
+<<<<<<< HEAD
 
 [Service]
 Type=simple
@@ -16,6 +17,23 @@ Environment="PATH=/opt/fboss/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/b
 Environment="LD_LIBRARY_PATH=/opt/fboss/lib"
 WorkingDirectory=/opt/fboss
 ExecStart=/bin/bash -c 'source /opt/fboss/bin/setup_fboss_env && exec /opt/fboss/bin/fboss_sw_agent --fsdb_client_ssl_preferred false --thrift_ssl_policy disabled'
+||||||| 84406ca706
+=======
+StartLimitIntervalSec=600
+StartLimitBurst=5
+
+[Service]
+Type=notify
+LimitNOFILE=10000000
+LimitCORE=32G
+MemoryMax=3.75G
+MemorySwapMax=0
+
+Environment="PATH=/opt/fboss/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
+Environment="LD_LIBRARY_PATH=/opt/fboss/lib"
+WorkingDirectory=/opt/fboss
+ExecStart=/bin/bash -c 'source /opt/fboss/bin/setup_fboss_env && exec /opt/fboss/bin/fboss_sw_agent'
+>>>>>>> fdd35b55b47b318a8bc4724f788ee2e23f37cdb9
 
 Restart=always
 RestartSec=30

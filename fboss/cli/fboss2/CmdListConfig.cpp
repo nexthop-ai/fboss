@@ -15,7 +15,15 @@
 #include "fboss/cli/fboss2/commands/config/CmdConfigReload.h"
 #include "fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
+<<<<<<< HEAD
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceQueuingPolicy.h"
+||||||| 84406ca706
+#include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceDescription.h"
+#include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceMtu.h"
+=======
+#include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceDescription.h"
+#include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceMtu.h"
+>>>>>>> fdd35b55b47b318a8bc4724f788ee2e23f37cdb9
 #include "fboss/cli/fboss2/commands/config/interface/pfc_config/CmdConfigInterfacePfcConfig.h"
 #include "fboss/cli/fboss2/commands/config/interface/switchport/CmdConfigInterfaceSwitchport.h"
 #include "fboss/cli/fboss2/commands/config/interface/switchport/access/CmdConfigInterfaceSwitchportAccess.h"
@@ -133,6 +141,12 @@ const CommandTree& kConfigCommandTree() {
                "Set queuing policy for interface",
                commandHandler<CmdConfigInterfaceQueuingPolicy>,
                argTypeHandler<CmdConfigInterfaceQueuingPolicyTraits>,
+           },
+           {
+               "pfc-config",
+               "Configure PFC settings for interface",
+               commandHandler<CmdConfigInterfacePfcConfig>,
+               argTypeHandler<CmdConfigInterfacePfcConfigTraits>,
            },
            {
                "switchport",
@@ -651,6 +665,7 @@ const CommandTree& kConfigCommandTree() {
                argTypeHandler<CmdConfigQosBufferPoolTraits>,
            },
            {
+<<<<<<< HEAD
                "policy",
                "Configure QoS policy settings",
                commandHandler<CmdConfigQosPolicy>,
@@ -663,6 +678,17 @@ const CommandTree& kConfigCommandTree() {
                }},
            },
            {
+||||||| 84406ca706
+           {"priority-group-policy",
+            "Configure priority group policy settings",
+            commandHandler<CmdConfigQosPriorityGroupPolicy>,
+            argTypeHandler<CmdConfigQosPriorityGroupPolicyTraits>,
+            {{"group-id",
+              "Specify priority group ID (0-7)",
+              commandHandler<CmdConfigQosPriorityGroupPolicyGroupId>,
+              argTypeHandler<CmdConfigQosPriorityGroupPolicyGroupIdTraits>}}}},
+=======
+>>>>>>> fdd35b55b47b318a8bc4724f788ee2e23f37cdb9
                "priority-group-policy",
                "Configure priority group policy settings",
                commandHandler<CmdConfigQosPriorityGroupPolicy>,
