@@ -992,11 +992,7 @@ add_fbthrift_cpp_library(
     json
   DEPENDS
     transceiver_cpp2
-<<<<<<< HEAD
     qsfp_cpp2
-||||||| c17655f139
-=======
->>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
 )
 
 find_library(USB usb-1.0)

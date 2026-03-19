@@ -937,30 +937,21 @@ cpp_library(
         "commands/config/protocol/bgp/peer/CmdConfigProtocolBgpPeerWarningOnly.cpp",
         "commands/config/qos/CmdConfigQos.cpp",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPool.cpp",
-<<<<<<< HEAD
         "commands/config/qos/policy/CmdConfigQosPolicy.cpp",
         "commands/config/qos/policy/CmdConfigQosPolicyMap.cpp",
         "commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicy.cpp",
         "commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicyGroupId.cpp",
         "commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicy.cpp",
         "commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicyQueueId.cpp",
-||||||| c17655f139
-=======
-        "commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicyGroupId.cpp",
->>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
         "commands/config/rollback/CmdConfigRollback.cpp",
         "commands/config/session/CmdConfigSessionClear.cpp",
         "commands/config/session/CmdConfigSessionCommit.cpp",
         "commands/config/session/CmdConfigSessionDiff.cpp",
         "commands/config/session/CmdConfigSessionRebase.cpp",
-<<<<<<< HEAD
         "commands/config/vlan/CmdConfigVlan.cpp",
         "commands/config/vlan/port/CmdConfigVlanPort.cpp",
         "commands/config/vlan/port/tagging_mode/CmdConfigVlanPortTaggingMode.cpp",
         "commands/config/vlan/static_mac/CmdConfigVlanStaticMac.cpp",
-||||||| c17655f139
-=======
->>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
         "commands/config/vlan/static_mac/add/CmdConfigVlanStaticMacAdd.cpp",
         "commands/config/vlan/static_mac/delete/CmdConfigVlanStaticMacDelete.cpp",
         "session/ConfigSession.cpp",
@@ -1026,30 +1017,20 @@ cpp_library(
         "commands/config/protocol/bgp/peer/CmdConfigProtocolBgpPeerV4OverV6Nh.h",
         "commands/config/qos/CmdConfigQos.h",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPool.h",
-<<<<<<< HEAD
         "commands/config/qos/policy/CmdConfigQosPolicy.h",
         "commands/config/qos/policy/CmdConfigQosPolicyMap.h",
         "commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicy.h",
         "commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicyGroupId.h",
         "commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicy.h",
         "commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicyQueueId.h",
-||||||| c17655f139
-=======
-        "commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicy.h",
-        "commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicyGroupId.h",
->>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
         "commands/config/rollback/CmdConfigRollback.h",
         "commands/config/session/CmdConfigSessionClear.h",
         "commands/config/session/CmdConfigSessionCommit.h",
         "commands/config/session/CmdConfigSessionDiff.h",
         "commands/config/session/CmdConfigSessionRebase.h",
         "commands/config/vlan/CmdConfigVlan.h",
-<<<<<<< HEAD
         "commands/config/vlan/port/CmdConfigVlanPort.h",
         "commands/config/vlan/port/tagging_mode/CmdConfigVlanPortTaggingMode.h",
-||||||| c17655f139
-=======
->>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
         "commands/config/vlan/static_mac/CmdConfigVlanStaticMac.h",
         "commands/config/vlan/static_mac/add/CmdConfigVlanStaticMacAdd.h",
         "commands/config/vlan/static_mac/delete/CmdConfigVlanStaticMacDelete.h",

@@ -4,12 +4,7 @@
 add_executable(fboss2_cmd_config_test
   fboss/util/oss/TestMain.cpp
   fboss/cli/fboss2/oss/CmdListConfig.cpp
-<<<<<<< HEAD
   fboss/cli/fboss2/test/config/CmdConfigTestBase.cpp
-||||||| c17655f139
-  fboss/cli/fboss2/test/TestMain.cpp
-=======
->>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
   fboss/cli/fboss2/test/config/CmdConfigAppliedInfoTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigHistoryTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
