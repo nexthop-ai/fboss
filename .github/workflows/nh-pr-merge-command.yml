@@ -128,13 +128,27 @@ jobs:
           # Get check runs
           check_runs=$(gh api repos/${{ github.repository }}/commits/${HEAD_SHA}/check-runs)
 
-          # Find failed required checks
+          # Find failed or incomplete required checks
           failed_required=()
+          pending_required=()
           while IFS= read -r check_name; do
             [[ -z "$check_name" ]] && continue
-            conclusion=$(jq <<<"$check_runs" -r --arg name "$check_name" '.check_runs[] | select(.name == $name) | .conclusion')
-            if [[ "$conclusion" == "failure" ]]; then
-              failed_required+=("$check_name")
+            check_info=$(jq <<<"$check_runs" -r --arg name "$check_name" '.check_runs[] | select(.name == $name) | "\(.status)|\(.conclusion)"')
+
+            if [[ -z "$check_info" ]]; then
+              # Check not found - treat as pending
+              pending_required+=("$check_name")
+            else
+              status=$(echo "$check_info" | cut -d'|' -f1)
+              conclusion=$(echo "$check_info" | cut -d'|' -f2)
+
+              if [[ "$conclusion" == "failure" ]]; then
+                failed_required+=("$check_name")
+              elif [[ "$status" == "completed" ]]; then
+                echo "✅ Required check '$check_name' passed"
+              else
+                pending_required+=("$check_name")
+              fi
             fi
           done <<< "$required_checks"
 
@@ -147,6 +161,20 @@ jobs:
               plural=""
             fi
             REASON="PR has ${#failed_required[@]} failed required check${plural}: ${failed_list}"
+            echo "❌ $REASON"
+            echo "FAILURE_REASON=$REASON" >> "$GITHUB_ENV"
+            exit 1
+          fi
+
+          # Check if there are any pending required checks
+          if [[ ${#pending_required[@]} -gt 0 ]]; then
+            pending_list=$(IFS=', '; echo "${pending_required[*]}")
+            if [[ ${#pending_required[@]} -gt 1 ]]; then
+              plural="s"
+            else
+              plural=""
+            fi
+            REASON="PR has ${#pending_required[@]} required check${plural} that have not completed: ${pending_list}"
             echo "❌ $REASON"
             echo "FAILURE_REASON=$REASON" >> "$GITHUB_ENV"
             exit 1
@@ -234,28 +262,5 @@ jobs:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           payload: |
             {
-              "text": ":white_check_mark: Sync PR Merged",
-              "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": ":white_check_mark: Sync PR Merged"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "Sync PR #${{ github.event.issue.number }} has been successfully merged to main.${{ needs.merge-pr.outputs.stable_commit != '' && format(' Upstream stable commit: `{0}`', needs.merge-pr.outputs.stable_commit) || '' }}"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow Run>"
-                  }
-                }
-              ]
+              "text": ":merged: Sync [PR #${{ github.event.issue.number }}](https://github.com/nexthop-ai/private-fboss/pull/${{ github.event.issue.number }}) has been successfully merged to main. Upstream stable commit: `${{ needs.merge-pr.outputs.stable_commit }}`"
             }
