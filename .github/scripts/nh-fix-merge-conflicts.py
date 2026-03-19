@@ -196,18 +196,25 @@ def resolve_conflict(ours_lines: List[str], theirs_lines: List[str], repo_root: 
     return resolved_lines
 
 
-def show_git_diff(file_path: Path) -> None:
-    """Show the git diff for a file that was modified."""
+def show_git_diff(file_path: Path, original_content: str) -> None:
+    """Show the diff between original conflicted content and resolved content."""
     try:
+        # Create a simple diff output
+        print(f"\n  Changes made to {file_path}:")
+
+        # Use git diff with stdin to show clearly what we changed
         result = subprocess.run(
-            ['git', 'diff', str(file_path)],
+            ['git', 'diff', '--no-index', '--color=never', '/dev/stdin', str(file_path)],
+            input=original_content,
             capture_output=True,
             text=True,
             check=False
         )
+
         if result.stdout:
-            print(f"\n  Changes made to {file_path}:")
-            print("  " + "\n  ".join(result.stdout.splitlines()))
+            # Skip the first 4 lines (diff header, index, ---, +++)
+            lines = result.stdout.splitlines()[4:]
+            print("  " + "\n  ".join(lines))
             print()
     except Exception as e:
         print(f"  Warning: Could not show diff for {file_path}: {e}")
@@ -226,7 +233,11 @@ def process_file(filepath: Path, repo_root: Path, file_format: FileFormat) -> bo
     with open(filepath, 'r') as f:
         lines = f.readlines()
 
+    # Save original content for diff display
+    original_content = ''.join(lines)
+
     modified = False
+    has_unresolved_conflicts = False
     i = 0
     new_lines = []
 
@@ -247,6 +258,7 @@ def process_file(filepath: Path, repo_root: Path, file_format: FileFormat) -> bo
                     # Can't auto-resolve, keep the conflict as-is
                     new_lines.extend(lines[start_idx:end_idx + 1])
                     i = end_idx + 1
+                    has_unresolved_conflicts = True
                     print(f"  ✗ Skipped conflict at line {start_idx + 1} (not all file paths)")
             else:
                 new_lines.append(lines[i])
@@ -259,9 +271,13 @@ def process_file(filepath: Path, repo_root: Path, file_format: FileFormat) -> bo
         with open(filepath, 'w') as f:
             f.writelines(new_lines)
         # Show the diff of what was changed
-        show_git_diff(filepath)
+        show_git_diff(filepath, original_content)
 
-    return modified
+        # File is fully resolved only if we modified it and have no unresolved conflicts
+        fully_resolved = not has_unresolved_conflicts
+        return fully_resolved
+
+    return False
 
 
 def find_files_with_conflicts(repo_root: Path) -> List[Tuple[Path, FileFormat]]:
@@ -321,13 +337,20 @@ def main():
     print()
 
     # Process each file
-    total_resolved = 0
+    fully_resolved_files = []
     for filepath, file_format in files_with_conflicts:
         print(f"Processing {filepath.relative_to(repo_root)}...")
         if process_file(filepath, repo_root, file_format):
-            total_resolved += 1
+            fully_resolved_files.append(filepath)
 
-    print(f"\nDone! Resolved conflicts in {total_resolved} file(s).")
+    # Stage fully resolved files
+    if fully_resolved_files:
+        print(f"\nStaging {len(fully_resolved_files)} fully resolved file(s)...")
+        subprocess.run(['git', 'add'] + [str(f) for f in fully_resolved_files], check=True)
+        for filepath in fully_resolved_files:
+            print(f"  ✓ Staged {filepath.relative_to(repo_root)}")
+
+    print(f"\nDone! Resolved conflicts in {len(fully_resolved_files)} file(s).")
 
 
 if __name__ == '__main__':
