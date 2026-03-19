@@ -1052,11 +1052,7 @@ cpp_library(
         "//fboss/agent:agent_config-cpp2-types",
         "//fboss/agent:agent_dir_util",
         "//fboss/agent:switch_config-cpp2-types",
-<<<<<<< HEAD
         "//fboss/agent:switchinfo_utils",
-||||||| c17655f139
-=======
->>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
         "//fboss/agent/if:ctrl-cpp2-clients",
         "//fboss/agent/if:ctrl-cpp2-services",
         "//fboss/agent/if:ctrl-cpp2-types",

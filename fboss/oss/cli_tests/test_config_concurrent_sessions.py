@@ -33,7 +33,6 @@ def run_cli_as_user(
 ) -> subprocess.CompletedProcess:
     """Run CLI with a specific HOME directory to simulate a different user."""
     cli = get_fboss_cli()
-<<<<<<< HEAD
     cmd = [cli, *args]
     env = os.environ.copy()
     env["HOME"] = home_dir
@@ -48,23 +47,6 @@ def run_cli_as_user(
 
 
 def main() -> int:  # noqa: PLR0915
-||||||| c17655f139
-=======
-    cmd = [cli] + args
-    env = os.environ.copy()
-    env["HOME"] = home_dir
-    print(f"[User HOME={home_dir}] Running: {' '.join(args)}")
-    result = subprocess.run(cmd, capture_output=True, text=True, env=env)
-    if check and result.returncode != 0:
-        print(f"  Failed with code {result.returncode}")
-        print(f"  stdout: {result.stdout}")
-        print(f"  stderr: {result.stderr}")
-        raise RuntimeError(f"Command failed: {' '.join(cmd)}")
-    return result
-
-
-def main() -> int:
->>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
     print("=" * 60)
     print("CLI E2E Test: Concurrent Session Conflict Detection")
     print("=" * 60)

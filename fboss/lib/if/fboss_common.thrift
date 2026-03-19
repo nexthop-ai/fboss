@@ -11,6 +11,11 @@ namespace py3 neteng.fboss
 namespace py.asyncio neteng.fboss.asyncio.fboss_common
 
 enum PlatformType {
+  # Not intended to go upstream, keep here to avoid merge conflicts
+  PLATFORM_NH4010 = 999,
+  PLATFORM_WEDGE800BNHP = 998,
+  # end of NH specific section, keep here to avoid merge conflicts
+
   PLATFORM_WEDGE = 1,
   PLATFORM_WEDGE100 = 2,
   PLATFORM_GALAXY_LC = 3,
@@ -61,17 +66,7 @@ enum PlatformType {
   PLATFORM_BLACKWOLF800BANW = 48,
   PLATFORM_J4SIM = 49,
   PLATFORM_YANGRA2 = 50,
-<<<<<<< HEAD
-  # Placeholder for unknown platform type
-  PLATFORM_UNKNOWN = 1000,
-  PLATFORM_NH4010 = 999, # Not intended to go upstream, keep here to avoid merge conflicts
-  PLATFORM_WEDGE800BNHP = 998,
-||||||| c17655f139
-  # Placeholder for unknown platform type
-  PLATFORM_UNKNOWN = 1000,
-=======
   PLATFORM_UNKNOWN = 1000, # Placeholder for unknown platform type
->>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
 }
 
 enum SdkVersionRolloutType {

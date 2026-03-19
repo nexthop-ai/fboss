@@ -27,26 +27,12 @@ class ElapsedTimeFormatter(logging.Formatter):
 def setup_logging(verbose=False):
     """Setup logging with elapsed time formatter.
 
-<<<<<<< HEAD
     Configures the root logger so all child loggers inherit the configuration.
     """
     # Configure the root logger so all loggers inherit this configuration
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG if verbose else logging.INFO)
     root_logger.handlers = []
-||||||| c17655f139
-    """Setup logging with elapsed time formatter."""
-    logger = logging.getLogger("fboss-image")
-    logger.setLevel(logging.DEBUG if verbose else logging.INFO)
-    logger.handlers = []
-=======
-    Configures the 'distro_cli' logger, which is the parent of all module
-    loggers created via logging.getLogger(__name__) throughout the package.
-    """
-    logger = logging.getLogger("distro_cli")
-    logger.setLevel(logging.DEBUG if verbose else logging.INFO)
-    logger.handlers = []
->>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
 
     handler = logging.StreamHandler()
     formatter = ElapsedTimeFormatter()

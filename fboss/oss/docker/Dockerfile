@@ -101,13 +101,9 @@ RUN if [ "$USERNAME" != "root" ] && [ "$USER_UID" != "0" ]; then \
 # Support sudo in a privileged container
 RUN chmod 600 /etc/shadow
 
-<<<<<<< HEAD
 # Download and install our own patched sccache
 RUN curl -L https://github.com/nexthop-ai/sccache/releases/download/v7-outer-retry/sccache-0.12.0-x86_64-unknown-linux-musl.zst | \
     zstdmt -d > /usr/local/bin/sccache && \
     chmod +x /usr/local/bin/sccache
 
-||||||| c17655f139
-=======
->>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
 USER ${USERNAME}

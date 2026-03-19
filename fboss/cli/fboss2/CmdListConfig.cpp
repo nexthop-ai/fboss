@@ -82,30 +82,20 @@
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/peer/CmdConfigProtocolBgpPeerWarningOnly.h"
 #include "fboss/cli/fboss2/commands/config/qos/CmdConfigQos.h"
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPool.h"
-<<<<<<< HEAD
 #include "fboss/cli/fboss2/commands/config/qos/policy/CmdConfigQosPolicy.h"
 #include "fboss/cli/fboss2/commands/config/qos/policy/CmdConfigQosPolicyMap.h"
 #include "fboss/cli/fboss2/commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicy.h"
 #include "fboss/cli/fboss2/commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicyGroupId.h"
 #include "fboss/cli/fboss2/commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicy.h"
 #include "fboss/cli/fboss2/commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicyQueueId.h"
-||||||| c17655f139
-=======
-#include "fboss/cli/fboss2/commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicy.h"
-#include "fboss/cli/fboss2/commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicyGroupId.h"
->>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
 #include "fboss/cli/fboss2/commands/config/rollback/CmdConfigRollback.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionClear.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionCommit.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionDiff.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionRebase.h"
 #include "fboss/cli/fboss2/commands/config/vlan/CmdConfigVlan.h"
-<<<<<<< HEAD
 #include "fboss/cli/fboss2/commands/config/vlan/port/CmdConfigVlanPort.h"
 #include "fboss/cli/fboss2/commands/config/vlan/port/tagging_mode/CmdConfigVlanPortTaggingMode.h"
-||||||| c17655f139
-=======
->>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
 #include "fboss/cli/fboss2/commands/config/vlan/static_mac/CmdConfigVlanStaticMac.h"
 #include "fboss/cli/fboss2/commands/config/vlan/static_mac/add/CmdConfigVlanStaticMacAdd.h"
 #include "fboss/cli/fboss2/commands/config/vlan/static_mac/delete/CmdConfigVlanStaticMacDelete.h"
@@ -660,7 +650,6 @@ const CommandTree& kConfigCommandTree() {
                commandHandler<CmdConfigQosBufferPool>,
                argTypeHandler<CmdConfigQosBufferPoolTraits>,
            },
-<<<<<<< HEAD
            {
                "policy",
                "Configure QoS policy settings",
@@ -695,22 +684,6 @@ const CommandTree& kConfigCommandTree() {
                    argTypeHandler<CmdConfigQosQueuingPolicyQueueIdTraits>,
                }},
            }},
-||||||| c17655f139
-              "buffer-pool",
-              "Configure buffer pool settings",
-              commandHandler<CmdConfigQosBufferPool>,
-              argTypeHandler<CmdConfigQosBufferPoolTraits>,
-          }},
-=======
-           {"priority-group-policy",
-            "Configure priority group policy settings",
-            commandHandler<CmdConfigQosPriorityGroupPolicy>,
-            argTypeHandler<CmdConfigQosPriorityGroupPolicyTraits>,
-            {{"group-id",
-              "Specify priority group ID (0-7)",
-              commandHandler<CmdConfigQosPriorityGroupPolicyGroupId>,
-              argTypeHandler<CmdConfigQosPriorityGroupPolicyGroupIdTraits>}}}},
->>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
       },
 
       {
@@ -762,7 +735,6 @@ const CommandTree& kConfigCommandTree() {
           commandHandler<CmdConfigVlan>,
           argTypeHandler<CmdConfigVlanTraits>,
           {{
-<<<<<<< HEAD
                "port",
                "Configure port settings for a VLAN",
                commandHandler<CmdConfigVlanPort>,
@@ -792,26 +764,6 @@ const CommandTree& kConfigCommandTree() {
                     argTypeHandler<CmdConfigVlanStaticMacDeleteTraits>,
                 }},
            }},
-||||||| c17655f139
-=======
-              "static-mac",
-              "Manage static MAC entries for VLANs",
-              commandHandler<CmdConfigVlanStaticMac>,
-              argTypeHandler<CmdConfigVlanStaticMacTraits>,
-              {{
-                   "add",
-                   "Add a static MAC entry to a VLAN",
-                   commandHandler<CmdConfigVlanStaticMacAdd>,
-                   argTypeHandler<CmdConfigVlanStaticMacAddTraits>,
-               },
-               {
-                   "delete",
-                   "Delete a static MAC entry from a VLAN",
-                   commandHandler<CmdConfigVlanStaticMacDelete>,
-                   argTypeHandler<CmdConfigVlanStaticMacDeleteTraits>,
-               }},
-          }},
->>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
       },
   };
   sort(root.begin(), root.end());

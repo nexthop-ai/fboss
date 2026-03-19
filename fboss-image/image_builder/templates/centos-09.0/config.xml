@@ -139,13 +139,9 @@
         <package name="zstd"/>
         <package name="libusbx"/>
         <package name="dmidecode"/>
-<<<<<<< HEAD
         <package name="createrepo"/>
         <!-- FBOSS CLI needs git to commit config changes under /etc/coop -->
         <package name="git"/>
-||||||| c17655f139
-=======
->>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
         <package name="libaio"/>
         <package name="tcpdump"/>
         <package name="usbutils"/>

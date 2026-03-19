@@ -284,7 +284,6 @@ CLI::App* CmdSubcommands::addCommand(
               "ONE_16TH, ONE_8TH, ONE_QUARTER, ONE_HALF, TWO, FOUR, ONE_32768TH, "
               "ONE_HUNDRED_TWENTY_EIGHT)");
           break;
-<<<<<<< HEAD
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_PFC_CONFIG_ATTRS:
           subCmd->add_option(
               "pfc_config_attrs",
@@ -336,9 +335,6 @@ CLI::App* CmdSubcommands::addCommand(
               "<port-list> [<attr> <value> ...] where <attr> is one "
               "of: description, mtu");
           break;
-||||||| c17655f139
-=======
->>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_UNINITIALIZE:
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_NONE:
           break;

@@ -9,7 +9,6 @@
  */
 
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionRebase.h"
-<<<<<<< HEAD
 
 #include "fboss/cli/fboss2/CmdHandler.cpp"
 
@@ -34,25 +33,5 @@ void CmdConfigSessionRebase::printOutput(const RetType& logMsg) {
 // Explicit template instantiation
 template void
 CmdHandler<CmdConfigSessionRebase, CmdConfigSessionRebaseTraits>::run();
-||||||| c17655f139
-=======
-#include <iostream>
-
-#include "fboss/cli/fboss2/session/ConfigSession.h"
-#include "fboss/cli/fboss2/utils/HostInfo.h"
-
-namespace facebook::fboss {
-
-CmdConfigSessionRebaseTraits::RetType CmdConfigSessionRebase::queryClient(
-    const HostInfo& /* hostInfo */) {
-  auto& session = ConfigSession::getInstance();
-  session.rebase(); // raises a runtime_error if we fail
-  return "Session successfully rebased onto current HEAD. You can now commit.";
-}
-
-void CmdConfigSessionRebase::printOutput(const RetType& logMsg) {
-  std::cout << logMsg << std::endl;
-}
->>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
 
 } // namespace facebook::fboss

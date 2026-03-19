@@ -30,7 +30,6 @@ from distro_cli.lib.exceptions import DistroInfraError
 from distro_cli.lib.manifest import ImageManifest
 
 logger = logging.getLogger(__name__)
-<<<<<<< HEAD
 
 
 def print_to_console(message: str) -> None:
@@ -108,10 +107,6 @@ def _download_with_cache(cache_dir: Path, url_prefix: str, filename: str) -> Pat
 
     except Exception as e:
         raise DistroInfraError(f"Failed to download {url}: {e}") from e
-||||||| c17655f139
-logger = logging.getLogger("fboss-image")
-=======
->>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
 
 
 def image_upstream_command(args):
