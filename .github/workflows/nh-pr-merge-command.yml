@@ -1,0 +1,261 @@
+name: NH PR Merge Command
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  merge-pr:
+    name: Merge sync PR with merge commit
+    # Only run on PR comments containing /merge
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/merge')
+    runs-on: cloudstack-ubuntu24-small
+    outputs:
+      pr_title: ${{ steps.pr-details.outputs.pr_title }}
+      stable_commit: ${{ steps.pr-details.outputs.stable_commit }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+
+      - name: Get PR details
+        id: pr-details
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          PR_NUMBER=${{ github.event.issue.number }}
+
+          # Get PR details
+          pr_data=$(gh api repos/${{ github.repository }}/pulls/${PR_NUMBER})
+
+          # Extract relevant fields
+          echo "pr_number=${PR_NUMBER}" >> "$GITHUB_OUTPUT"
+          echo "pr_title=$(echo "$pr_data" | jq -r '.title')" >> "$GITHUB_OUTPUT"
+          echo "pr_state=$(echo "$pr_data" | jq -r '.state')" >> "$GITHUB_OUTPUT"
+          echo "pr_mergeable=$(echo "$pr_data" | jq -r '.mergeable')" >> "$GITHUB_OUTPUT"
+          echo "pr_merged=$(echo "$pr_data" | jq -r '.merged')" >> "$GITHUB_OUTPUT"
+          echo "base_ref=$(echo "$pr_data" | jq -r '.base.ref')" >> "$GITHUB_OUTPUT"
+          echo "head_ref=$(echo "$pr_data" | jq -r '.head.ref')" >> "$GITHUB_OUTPUT"
+
+          # Extract stable commit from PR title if it's a sync PR
+          stable_commit=$(echo "$pr_data" | jq -r '.body' | grep -oP '(?<=\*\*Stable Commit:\*\* `)[a-f0-9]+(?=`)' || echo "")
+          echo "stable_commit=${stable_commit}" >> "$GITHUB_OUTPUT"
+
+      - name: Validate this is a sync PR
+        run: |
+          PR_TITLE="${{ steps.pr-details.outputs.pr_title }}"
+          HEAD_REF="${{ steps.pr-details.outputs.head_ref }}"
+
+          if [[ ! "$PR_TITLE" =~ ^\[sync\]\ Sync\ with\ upstream ]]; then
+            REASON="This workflow only works for sync PRs. PR title must start with '[sync] Sync with upstream'"
+            echo "❌ $REASON"
+            echo "FAILURE_REASON=$REASON" >> "$GITHUB_ENV"
+            exit 1
+          fi
+
+          if [[ ! "$HEAD_REF" =~ ^sync-fboss-upstream- ]]; then
+            REASON="This workflow only works for sync PRs. Branch must start with 'sync-fboss-upstream-'"
+            echo "❌ $REASON"
+            echo "FAILURE_REASON=$REASON" >> "$GITHUB_ENV"
+            exit 1
+          fi
+
+          echo "✅ Validated this is a sync PR"
+
+      - name: Check for conflict markers
+        run: |
+          # Check for git conflict markers in the codebase
+          # Don't check for the "=" sign because of false positives
+          echo "Checking for conflict markers..."
+          if git grep -nE '^([<|>]{7})( |$)'; then
+            REASON="Conflict markers detected in the codebase. Please resolve all conflicts before merging."
+            echo "❌ $REASON"
+            echo "FAILURE_REASON=$REASON" >> "$GITHUB_ENV"
+            exit 1
+          fi
+          echo "✅ No conflict markers found"
+
+      - name: Check PR is open
+        if: steps.pr-details.outputs.pr_state != 'open'
+        run: |
+          REASON="PR is not open (state: ${{ steps.pr-details.outputs.pr_state }})"
+          echo "❌ $REASON"
+          echo "FAILURE_REASON=$REASON" >> "$GITHUB_ENV"
+          exit 1
+
+      - name: Check PR is not already merged
+        if: steps.pr-details.outputs.pr_merged == 'true'
+        run: |
+          REASON="PR is already merged"
+          echo "❌ $REASON"
+          echo "FAILURE_REASON=$REASON" >> "$GITHUB_ENV"
+          exit 1
+
+      - name: Check PR reviews
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          PR_NUMBER=${{ steps.pr-details.outputs.pr_number }}
+
+          # Get reviews
+          reviews=$(gh api repos/${{ github.repository }}/pulls/${PR_NUMBER}/reviews)
+
+          # Check if there's at least one approval
+          approved=$(echo "$reviews" | jq '[.[] | select(.state == "APPROVED")] | length > 0')
+
+          if [[ "$approved" != "true" ]]; then
+            REASON="PR has not been approved by at least one reviewer"
+            echo "❌ $REASON"
+            echo "FAILURE_REASON=$REASON" >> "$GITHUB_ENV"
+            exit 1
+          fi
+
+          echo "✅ PR #${PR_NUMBER} has been approved"
+
+      - name: Check PR status checks
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          PR_NUMBER=${{ steps.pr-details.outputs.pr_number }}
+          HEAD_SHA=$(gh api repos/${{ github.repository }}/pulls/${PR_NUMBER} | jq -r '.head.sha')
+
+          # Get branch protection rules to find required checks
+          BASE_REF=${{ steps.pr-details.outputs.base_ref }}
+          protection=$(gh api repos/${{ github.repository }}/branches/${BASE_REF}/protection 2>/dev/null || echo '{}')
+          required_checks=$(jq <<<"$protection" -r '.required_status_checks.contexts // [] | .[]' 2>/dev/null || true)
+
+          # Get check runs
+          check_runs=$(gh api repos/${{ github.repository }}/commits/${HEAD_SHA}/check-runs)
+
+          # Find failed required checks
+          failed_required=()
+          while IFS= read -r check_name; do
+            [[ -z "$check_name" ]] && continue
+            conclusion=$(jq <<<"$check_runs" -r --arg name "$check_name" '.check_runs[] | select(.name == $name) | .conclusion')
+            if [[ "$conclusion" == "failure" ]]; then
+              failed_required+=("$check_name")
+            fi
+          done <<< "$required_checks"
+
+          # Check if there are any failed required checks
+          if [[ ${#failed_required[@]} -gt 0 ]]; then
+            failed_list=$(IFS=', '; echo "${failed_required[*]}")
+            if [[ ${#failed_required[@]} -gt 1 ]]; then
+              plural="s"
+            else
+              plural=""
+            fi
+            REASON="PR has ${#failed_required[@]} failed required check${plural}: ${failed_list}"
+            echo "❌ $REASON"
+            echo "FAILURE_REASON=$REASON" >> "$GITHUB_ENV"
+            exit 1
+          fi
+
+          echo "✅ All required checks passed or skipped for PR #${PR_NUMBER}"
+
+      - name: Merge PR
+        id: merge
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          PR_NUMBER=${{ steps.pr-details.outputs.pr_number }}
+          PR_TITLE="${{ steps.pr-details.outputs.pr_title }}"
+          STABLE_COMMIT="${{ steps.pr-details.outputs.stable_commit }}"
+
+          # Determine commit title
+          if [[ -n "$STABLE_COMMIT" ]]; then
+            COMMIT_TITLE="[sync] Merge upstream stable commit ${STABLE_COMMIT}"
+          else
+            COMMIT_TITLE="${PR_TITLE}"
+          fi
+
+          echo "Merging PR #${PR_NUMBER} with commit title: ${COMMIT_TITLE}"
+
+          # Merge the PR using GitHub API
+          gh api repos/${{ github.repository }}/pulls/${PR_NUMBER}/merge \
+            --method PUT \
+            --field merge_method=merge \
+            --field commit_title="${COMMIT_TITLE}" \
+            > /tmp/merge_result.json
+
+          merge_sha=$(jq -r '.sha' /tmp/merge_result.json)
+          echo "merge_sha=${merge_sha}" >> "$GITHUB_OUTPUT"
+          echo "✅ Successfully merged PR #${PR_NUMBER} (merge commit: ${merge_sha})"
+
+      - name: Delete sync branch
+        if: success() && startsWith(steps.pr-details.outputs.head_ref, 'sync-fboss-upstream-')
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          HEAD_REF="${{ steps.pr-details.outputs.head_ref }}"
+          echo "Deleting sync branch: ${HEAD_REF}"
+          git push origin --delete "${HEAD_REF}" || echo "⚠️ Failed to delete branch ${HEAD_REF}"
+
+      - name: Comment on PR (success)
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          PR_NUMBER=${{ steps.pr-details.outputs.pr_number }}
+          MERGE_SHA=${{ steps.merge.outputs.merge_sha }}
+
+          gh pr comment ${PR_NUMBER} --body "✅ Successfully merged with merge commit \`${MERGE_SHA}\`"
+
+      - name: Comment on PR (failure)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          PR_NUMBER=${{ steps.pr-details.outputs.pr_number }}
+          WORKFLOW_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          # Get failure reason from GITHUB_ENV (set by whichever step failed)
+          REASON="${{ env.FAILURE_REASON }}"
+          if [[ -z "$REASON" ]]; then
+            REASON="Merge failed. Please check the workflow run for details."
+          fi
+
+          gh pr comment ${PR_NUMBER} --body "❌ Failed to merge PR: ${REASON}
+
+          See [workflow run](${WORKFLOW_URL}) for details."
+
+  # Slack notification: sync PR merged successfully
+  notify-sync-merged:
+    name: Notify Slack (Sync PR Merged)
+    needs: merge-pr
+    if: success() && startsWith(needs.merge-pr.outputs.pr_title, '[sync]')
+    runs-on: cloudstack-ubuntu24-small
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          webhook-type: incoming-webhook
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          payload: |
+            {
+              "text": ":white_check_mark: Sync PR Merged",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": ":white_check_mark: Sync PR Merged"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Sync PR #${{ github.event.issue.number }} has been successfully merged to main.${{ needs.merge-pr.outputs.stable_commit != '' && format(' Upstream stable commit: `{0}`', needs.merge-pr.outputs.stable_commit) || '' }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow Run>"
+                  }
+                }
+              ]
+            }

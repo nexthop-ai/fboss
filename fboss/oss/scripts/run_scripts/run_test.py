@@ -1349,6 +1349,13 @@ class SaiAgentTestRunner(TestRunner):
             default=None,
         )
         sub_parser.add_argument(
+            OPT_ARG_LIST_TESTS_FOR_FEATURE,
+            type=str,
+            help="Return tests whose production feature tags are all contained "
+            "in the supplied comma-separated list e.g. DLB,ACL_COUNTER,SINGLE_ACL_TABLE",
+            default=None,
+        )
+        sub_parser.add_argument(
             OPT_ARG_PLATFORM_MAPPING_OVERRIDE_PATH,
             nargs="?",
             type=str,

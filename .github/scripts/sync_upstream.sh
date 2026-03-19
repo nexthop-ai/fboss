@@ -149,6 +149,10 @@ else
 
   autoresolve_stable_hashes "$stable_commits_ref"
 
+  # Auto-resolve file list conflicts in CMake and BUCK files
+  echo_info "Auto-resolving file list conflicts in CMake and BUCK files..."
+  .github/scripts/nh-fix-merge-conflicts.py
+
   # Check if there are still unresolved conflicts after auto-resolution
   remaining_conflicts=$(git diff --name-only --diff-filter=U)
   if [[ -n $remaining_conflicts ]]; then
