@@ -35,6 +35,7 @@ add_library(hal_test_base
 
 target_link_libraries(hal_test_base
   ${GTEST}
+<<<<<<< HEAD
   ${LIBGMOCK_LIBRARIES}
   hal_test_config_cpp2
   hal_test_utils
@@ -53,6 +54,25 @@ add_executable(qsfp_hal_test
 target_link_libraries(qsfp_hal_test
   ${GTEST}
   ${LIBGMOCK_LIBRARIES}
+||||||| c17655f139
+=======
+  hal_test_config_cpp2
+  hal_test_utils
+  fboss_error
+  qsfp_module
+  Folly::folly
+)
+
+add_executable(qsfp_hal_test
+  fboss/qsfp_service/test/hal_test/HalTestApplicationModes.cpp
+  fboss/qsfp_service/test/hal_test/HalTestModuleAdvertisement.cpp
+  fboss/qsfp_service/test/hal_test/HalTestModuleInit.cpp
+  fboss/qsfp_service/test/hal_test/Main.cpp
+)
+
+target_link_libraries(qsfp_hal_test
+  ${GTEST}
+>>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
   hal_test_base
   transceiver_cpp2
   qsfp_module

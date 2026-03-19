@@ -42,7 +42,15 @@ else
       ;;
     *)
       if [[ $1 != "" ]]; then
+<<<<<<< HEAD
         echo "Error: Unrecognized command option: '${1}'"
+||||||| c17655f139
+      echo "Error: Unrecognized command option: '${1}'"
+      help
+      exit 1
+=======
+        echo "Error: Unrecognized arst command option: '${1}'"
+>>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
         help
         exit 1
       fi

@@ -35,17 +35,32 @@
 #include <stdexcept>
 #include <string>
 #include <system_error>
+<<<<<<< HEAD
+||||||| c17655f139
+#include <thread>
+=======
+#include <thread>
+>>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
 #include <utility>
 #include <vector>
 #include "fboss/agent/AgentDirectoryUtil.h"
+<<<<<<< HEAD
 #include "fboss/agent/SwitchInfoUtils.h"
+||||||| c17655f139
+=======
+>>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
 #include "fboss/agent/gen-cpp2/agent_config_types.h"
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/agent/if/gen-cpp2/FbossCtrl.h"
 #include "fboss/agent/if/gen-cpp2/FbossCtrlAsyncClient.h"
 #include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
 #include "fboss/cli/fboss2/session/Git.h"
+<<<<<<< HEAD
 #include "fboss/cli/fboss2/session/SystemdInterface.h"
+||||||| c17655f139
+#include "fboss/cli/fboss2/utils/CmdClientUtils.h" // NOLINT(misc-include-cleaner)
+=======
+>>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
 #include "fboss/cli/fboss2/utils/CmdClientUtilsCommon.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
 #include "fboss/cli/fboss2/utils/PortMap.h"
@@ -756,7 +771,120 @@ std::vector<std::string> ConfigSession::restartService(
 
   // Perform coldboot or warmboot using common helper functions
   if (level == cli::ConfigActionLevel::AGENT_COLDBOOT) {
+<<<<<<< HEAD
     performColdboot(services, systemd_.get());
+||||||| c17655f139
+    // Step 1: Stop the service
+    try {
+      folly::Subprocess stopProc(
+          {"/usr/bin/sudo", "/usr/bin/systemctl", "stop", serviceName});
+      stopProc.waitChecked();
+    } catch (const std::exception& ex) {
+      throw std::runtime_error(
+          fmt::format("Failed to stop {}: {}", serviceName, ex.what()));
+    }
+
+    // Step 2: Create coldboot files
+    // TODO: Add support for multi_switch mode with hw_agent@0, hw_agent@1, etc.
+    const std::vector<std::string> coldbootFiles = {
+        "/dev/shm/fboss/warm_boot/cold_boot_once", // for sw_agent
+    };
+    for (const auto& file : coldbootFiles) {
+      // Ensure parent directory exists
+      fs::path filePath(file);
+      std::error_code ec;
+      fs::create_directories(filePath.parent_path(), ec);
+      // Create the file (touch equivalent)
+      std::ofstream touchFile(file);
+      touchFile.close();
+      if (!fs::exists(file)) {
+        throw std::runtime_error(
+            fmt::format("Failed to create coldboot file: {}", file));
+      }
+    }
+
+    // Step 3: Start the service
+    try {
+      folly::Subprocess startProc(
+          {"/usr/bin/sudo", "/usr/bin/systemctl", "start", serviceName});
+      startProc.waitChecked();
+    } catch (const std::exception& ex) {
+      throw std::runtime_error(
+          fmt::format("Failed to start {}: {}", serviceName, ex.what()));
+    }
+=======
+    // Step 1: Stop the service
+    try {
+      folly::Subprocess stopProc(
+          {"/usr/bin/sudo", "/usr/bin/systemctl", "stop", serviceName});
+      stopProc.waitChecked();
+    } catch (const std::exception& ex) {
+      throw std::runtime_error(
+          fmt::format("Failed to stop {}: {}", serviceName, ex.what()));
+    }
+
+    // Step 2: Create coldboot files
+    // TODO: Add support for multi_switch mode with hw_agent@0, hw_agent@1, etc.
+    const std::vector<std::string> coldbootFiles = {
+        "/dev/shm/fboss/warm_boot/cold_boot_once", // for sw_agent
+    };
+    for (const auto& file : coldbootFiles) {
+      // Ensure parent directory exists
+      fs::path filePath(file);
+      std::error_code ec;
+      fs::create_directories(filePath.parent_path(), ec);
+      if (ec) {
+        throw std::runtime_error(
+            fmt::format(
+                "Failed to create directory for coldboot file {}: {}",
+                file,
+                ec.message()));
+      }
+      // Create the file (touch equivalent)
+      std::ofstream touchFile(file);
+      if (!touchFile.good()) {
+        // If we failed due to permissions, try using sudo touch
+        int savedErrno = errno;
+        if (savedErrno == EACCES || savedErrno == EPERM) {
+          try {
+            folly::Subprocess touchProc(
+                {"/usr/bin/sudo", "/usr/bin/touch", file});
+            touchProc.waitChecked();
+          } catch (const std::exception& ex) {
+            throw std::runtime_error(
+                fmt::format(
+                    "Failed to create coldboot file {} (permission denied, sudo touch also failed): {}",
+                    file,
+                    ex.what()));
+          }
+        } else {
+          throw std::runtime_error(
+              fmt::format(
+                  "Failed to create coldboot file {}: {}",
+                  file,
+                  folly::errnoStr(savedErrno)));
+        }
+      } else {
+        touchFile.close();
+      }
+      if (!fs::exists(file)) {
+        throw std::runtime_error(
+            fmt::format(
+                "Failed to create coldboot file {}: file does not exist after creation",
+                file));
+      }
+    }
+
+    // Step 3: Start the service
+    try {
+      folly::Subprocess startProc(
+          {"/usr/bin/sudo", "/usr/bin/systemctl", "start", serviceName});
+      startProc.waitChecked();
+    } catch (const std::exception& ex) {
+      throw std::runtime_error(
+          fmt::format("Failed to start {}: {}", serviceName, ex.what()));
+    }
+>>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
   } else {
     performWarmboot(services, systemd_.get());
   }
@@ -1034,6 +1162,72 @@ ConfigSession::CommitResult ConfigSession::commit(const HostInfo& hostInfo) {
   configLoaded_ = false;
 
   return CommitResult{commitSha, actions, serviceNames};
+}
+
+void ConfigSession::rebase() {
+  if (!sessionExists()) {
+    throw std::runtime_error(
+        "No config session exists. Make a config change first.");
+  }
+
+  std::string currentHead = git_->getHead();
+
+  // If base is empty or already matches HEAD, nothing to rebase
+  if (base_.empty() || base_ == currentHead) {
+    throw std::runtime_error(
+        "No rebase needed: session is already based on the current HEAD.");
+  }
+
+  // Get the three versions of the config:
+  // 1. Base config (what the session was originally based on)
+  // 2. Current HEAD config (what someone else committed)
+  // 3. Session config (user's changes)
+  std::string cliConfigRelPath = "cli/agent.conf";
+  std::string baseConfig = git_->fileAtRevision(base_, cliConfigRelPath);
+  std::string headConfig = git_->fileAtRevision(currentHead, cliConfigRelPath);
+
+  std::string sessionConfigPath = getSessionConfigPath();
+  std::string sessionConfig;
+  if (!folly::readFile(sessionConfigPath.c_str(), sessionConfig)) {
+    throw std::runtime_error(
+        fmt::format(
+            "Failed to read session config from {}", sessionConfigPath));
+  }
+
+  // Parse all three as JSON
+  folly::dynamic baseJson = folly::parseJson(baseConfig);
+  folly::dynamic headJson = folly::parseJson(headConfig);
+  folly::dynamic sessionJson = folly::parseJson(sessionConfig);
+
+  // Perform a 3-way merge
+  // For each key in session that differs from base, apply to head
+  // If head also changed the same key differently, that's a conflict
+  std::vector<std::string> conflicts;
+  folly::dynamic mergedJson =
+      threeWayMerge(baseJson, headJson, sessionJson, "", conflicts);
+
+  if (!conflicts.empty()) {
+    std::string conflictList;
+    for (const auto& conflict : conflicts) {
+      conflictList += "\n  - " + conflict;
+    }
+    throw std::runtime_error(
+        fmt::format(
+            "Rebase failed due to conflicts at the following paths:{}",
+            conflictList));
+  }
+
+  // Write the merged config to the session file
+  std::string mergedConfigStr = folly::toPrettyJson(mergedJson);
+  folly::writeFileAtomic(
+      sessionConfigPath, mergedConfigStr, 0644, folly::SyncType::WITH_SYNC);
+
+  // Update the base to current HEAD
+  base_ = currentHead;
+  saveMetadata();
+
+  // Reload the config into memory
+  loadConfig();
 }
 
 void ConfigSession::rebase() {

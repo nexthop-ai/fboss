@@ -61,10 +61,17 @@ enum PlatformType {
   PLATFORM_BLACKWOLF800BANW = 48,
   PLATFORM_J4SIM = 49,
   PLATFORM_YANGRA2 = 50,
+<<<<<<< HEAD
   # Placeholder for unknown platform type
   PLATFORM_UNKNOWN = 1000,
   PLATFORM_NH4010 = 999, # Not intended to go upstream, keep here to avoid merge conflicts
   PLATFORM_WEDGE800BNHP = 998,
+||||||| c17655f139
+  # Placeholder for unknown platform type
+  PLATFORM_UNKNOWN = 1000,
+=======
+  PLATFORM_UNKNOWN = 1000, # Placeholder for unknown platform type
+>>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
 }
 
 enum SdkVersionRolloutType {

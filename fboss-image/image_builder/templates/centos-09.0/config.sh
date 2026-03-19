@@ -226,6 +226,7 @@ env -i \
   PATH="/usr/bin:/usr/sbin:/bin:/sbin" \
   kernel-install add "${KERNEL_VERSION}" "${VMLINUZ_PATH}" --initrd-file "${INITRD_PATH}"
 echo "Custom kernel ${KERNEL_VERSION} install complete."
+<<<<<<< HEAD
 
 # 5. Configure SSH to allow password authentication and root login
 echo "Configuring SSH..."
@@ -234,6 +235,9 @@ sed -i 's/^[# \t]*PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
 
 # 6. Generate a fix-nvme script that "may" need to be run
 # --- Install Custom NVMe Fix Module (Inline Method) ---
+||||||| c17655f139
+=======
+>>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
 
 MODULE_DIR="/usr/lib/dracut/modules.d/99nvme-fix"
 mkdir -p "$MODULE_DIR"
@@ -443,10 +447,18 @@ fi
 if [ "$JQ_INSTALLED" = true ]; then
   dnf remove -y jq
 fi
+<<<<<<< HEAD
 
 # Make all yum repos optional. The network is not available in all deployments or early in boot. The CentOS default is
 # to fail out if any RPM repo is not available, but that can cause platform_manager to fail to install the BSP RPM and
 # thus fail booting.
 sed -i 's/skip_if_unavailable=False/skip_if_unavailable=True/' /etc/dnf/dnf.conf
+||||||| c17655f139
+# 8. Done! Cleanup, remember that we are chrooted on the rootfs
+echo "Removing kernel rpms from rootfs..."
+rm -f /repos/*.rpm
+rmdir /repos
+=======
+>>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
 
 exit 0

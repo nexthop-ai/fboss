@@ -777,6 +777,7 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/qos/CmdConfigQos.h
   fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPool.cpp
   fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPool.h
+<<<<<<< HEAD
   fboss/cli/fboss2/commands/config/qos/policy/CmdConfigQosPolicy.cpp
   fboss/cli/fboss2/commands/config/qos/policy/CmdConfigQosPolicy.h
   fboss/cli/fboss2/commands/config/qos/policy/CmdConfigQosPolicyMap.cpp
@@ -789,6 +790,12 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicy.h
   fboss/cli/fboss2/commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicyQueueId.cpp
   fboss/cli/fboss2/commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicyQueueId.h
+||||||| c17655f139
+=======
+  fboss/cli/fboss2/commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicy.h
+  fboss/cli/fboss2/commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicyGroupId.cpp
+  fboss/cli/fboss2/commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicyGroupId.h
+>>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
   fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h
   fboss/cli/fboss2/commands/config/history/CmdConfigHistory.cpp
   fboss/cli/fboss2/commands/config/rollback/CmdConfigRollback.h
@@ -801,6 +808,7 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/session/CmdConfigSessionDiff.cpp
   fboss/cli/fboss2/commands/config/session/CmdConfigSessionRebase.h
   fboss/cli/fboss2/commands/config/session/CmdConfigSessionRebase.cpp
+<<<<<<< HEAD
   fboss/cli/fboss2/commands/config/vlan/CmdConfigVlan.cpp
   fboss/cli/fboss2/commands/config/vlan/CmdConfigVlan.h
   fboss/cli/fboss2/commands/config/vlan/port/CmdConfigVlanPort.cpp
@@ -808,6 +816,10 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/vlan/port/tagging_mode/CmdConfigVlanPortTaggingMode.h
   fboss/cli/fboss2/commands/config/vlan/port/tagging_mode/CmdConfigVlanPortTaggingMode.cpp
   fboss/cli/fboss2/commands/config/vlan/static_mac/CmdConfigVlanStaticMac.cpp
+||||||| c17655f139
+=======
+  fboss/cli/fboss2/commands/config/vlan/CmdConfigVlan.h
+>>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
   fboss/cli/fboss2/commands/config/vlan/static_mac/CmdConfigVlanStaticMac.h
   fboss/cli/fboss2/commands/config/vlan/static_mac/add/CmdConfigVlanStaticMacAdd.h
   fboss/cli/fboss2/commands/config/vlan/static_mac/add/CmdConfigVlanStaticMacAdd.cpp

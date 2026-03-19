@@ -80,6 +80,7 @@ enum class ObjectArgTypeId : uint8_t {
   OBJECT_ARG_TYPE_ID_PRIORITY_GROUP_POLICY_NAME,
   OBJECT_ARG_TYPE_ID_PRIORITY_GROUP_ID,
   OBJECT_ARG_TYPE_ID_SCALING_FACTOR,
+<<<<<<< HEAD
   // PFC config argument types
   OBJECT_ARG_TYPE_ID_PFC_CONFIG_ATTRS,
   // Queuing policy argument types
@@ -91,6 +92,9 @@ enum class ObjectArgTypeId : uint8_t {
   OBJECT_ARG_TYPE_PORT_AND_TAGGING_MODE,
   OBJECT_ARG_TYPE_L2_LEARNING_MODE,
   OBJECT_ARG_TYPE_ID_INTERFACES_CONFIG,
+||||||| c17655f139
+=======
+>>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
 };
 
 template <typename T>

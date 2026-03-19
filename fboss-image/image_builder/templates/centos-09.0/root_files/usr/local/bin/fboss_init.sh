@@ -61,6 +61,7 @@ generate_fruid() {
 
   mkdir -p "$(dirname "$FRUID_FILE")"
 
+<<<<<<< HEAD
   local retries=3
   local delay=1
   for ((i = 1; i <= retries; i++)); do
@@ -134,6 +135,34 @@ main() {
   setup_coop_configs "$platform_dir"
   generate_fruid
   enable_hw_agents "$platform_dir"
+||||||| c17655f139
+=======
+  if /opt/fboss/bin/weutil --json >"$FRUID_FILE" 2>/dev/null; then
+    log "Generated fruid.json: $FRUID_FILE"
+  else
+    error "Failed to generate fruid.json"
+    rm -f "$FRUID_FILE"
+  fi
+}
+
+setup_coop_configs() {
+  local platform_dir="$1"
+  mkdir -p "$COOP_DIR"
+  copy_config "${platform_dir}/agent.conf" "${COOP_DIR}/agent.conf" "agent.conf"
+  copy_config "${platform_dir}/qsfp.conf" "${COOP_DIR}/qsfp.conf" "qsfp.conf"
+}
+
+main() {
+  log "Starting FBOSS initialization"
+
+  local platform_dir
+  if ! platform_dir=$(get_platform_dir); then
+    exit 1
+  fi
+
+  setup_coop_configs "$platform_dir"
+  generate_fruid
+>>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
 
   log "FBOSS initialization complete"
 }

@@ -523,6 +523,7 @@ class TestRunner(abc.ABC):
                 with open(args.filter_file) as file:
                     gtest_regexes = []
                     for line in file:
+<<<<<<< HEAD
                         stripped_line = line.strip()
                         if not stripped_line or stripped_line.startswith("#"):
                             continue
@@ -535,13 +536,42 @@ class TestRunner(abc.ABC):
                         # no --profile: include untagged lines and t-tagged lines
                         elif tags and "t" not in tags:
                             continue
+||||||| c17655f139
+                    gtest_regexes = [
+                        line.strip()
+                        for line in file
+                        if line.strip() and not line.strip().startswith("#")
+                    ]
+=======
+                        line = line.strip()
+                        if not line or line.startswith("#"):
+                            continue
+                        parts = line.split()
+                        pattern = parts[0]
+                        tags = parts[1:] if len(parts) > 1 else []
+                        if args.profile:
+                            if args.profile not in tags:
+                                continue
+                        else:
+                            # no --profile: include untagged lines and t-tagged lines
+                            if tags and "t" not in tags:
+                                continue
+>>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
                         gtest_regexes.append(pattern)
                     test_names = self._list_tests_to_run(":".join(gtest_regexes), False)
             elif args.filter:
                 test_names = self._list_tests_to_run(args.filter)
         else:
+<<<<<<< HEAD
             test_names = self._list_tests_to_run("*")
         filter_str = ""
+||||||| c17655f139
+            test_names = self._list_tests_to_run("*", False)
+        filter = ""
+=======
+            test_names = self._list_tests_to_run("*", False)
+        filter = ""
+>>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
         known_bad_test_regexes = self._get_known_bad_test_regexes()
         unsupported_test_regexes = self._get_unsupported_test_regexes()
         for test_name in test_names:
@@ -553,7 +583,13 @@ class TestRunner(abc.ABC):
         if not filter_str:
             return []
         should_print = not getattr(args, "list_tests_for_features", None)
+<<<<<<< HEAD
         return self._list_tests_to_run(filter_str, should_print)
+||||||| c17655f139
+        return self._list_tests_to_run(filter)
+=======
+        return self._list_tests_to_run(filter, should_print)
+>>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
 
     def _restart_bcmsim(self, asic):
         try:
@@ -1264,7 +1300,13 @@ class LinkTestRunner(TestRunner):
 
         return arg_list
 
+<<<<<<< HEAD
     def _setup_coldboot_test(self, sai_replayer_log_path: str | None = None):
+||||||| c17655f139
+    def _setup_coldboot_test(self, sai_replayer_log_path: Optional[str] = None):
+=======
+    def _setup_coldboot_test(self, sai_replayer_log_path: Optional[str] = None):
+>>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
         # Start FSDB service if not disabled
         if not args.disable_fsdb:
             setup_and_start_fsdb_service(
@@ -1290,7 +1332,13 @@ class LinkTestRunner(TestRunner):
                 is_warm_boot=False,
             )
 
+<<<<<<< HEAD
     def _setup_warmboot_test(self, sai_replayer_log_path: str | None = None):
+||||||| c17655f139
+    def _setup_warmboot_test(self, sai_replayer_log_path: Optional[str] = None):
+=======
+    def _setup_warmboot_test(self, sai_replayer_log_path: Optional[str] = None):
+>>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
         # Start FSDB service if not disabled
         if not args.disable_fsdb:
             setup_and_start_fsdb_service(
@@ -1339,6 +1387,13 @@ class SaiAgentTestRunner(TestRunner):
             type=str,
             metavar="ASIC",
             help="Enable filtering by production features for the specified ASIC",
+            default=None,
+        )
+        sub_parser.add_argument(
+            OPT_ARG_LIST_TESTS_FOR_FEATURE,
+            type=str,
+            help="Return tests whose production feature tags are all contained "
+            "in the supplied comma-separated list e.g. DLB,ACL_COUNTER,SINGLE_ACL_TABLE",
             default=None,
         )
         sub_parser.add_argument(
@@ -1470,6 +1525,7 @@ class SaiAgentTestRunner(TestRunner):
         if args.agent_run_mode == SUB_ARG_AGENT_RUN_MODE_MULTI:
             cleanup_hw_agent_service(list(range(args.num_npus)))
 
+<<<<<<< HEAD
     def _filter_tests(self, tests: list[str]) -> list[str]:
         if args.list_tests_for_features:
             target_features = set(args.list_tests_for_features.split(","))
@@ -1485,6 +1541,25 @@ class SaiAgentTestRunner(TestRunner):
                     check=False,
                     capture_output=True,
                     text=True,
+||||||| c17655f139
+    def _filter_tests(self, tests: List[str]) -> List[str]:
+=======
+    def _filter_tests(self, tests: List[str]) -> List[str]:
+        if args.list_tests_for_features:
+            target_features = set(args.list_tests_for_features.split(","))
+            matching_tests = []
+            for test in tests:
+                cmd = [
+                    self._get_test_binary_name(),
+                    f"--gtest_filter={test}",
+                    "--list_production_feature",
+                ]
+                ret = subprocess.run(
+                    cmd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    universal_newlines=True,
+>>>>>>> 84406ca706433e04c579c49376acbd3a257dfc4b
                 )
                 for line in ret.stdout.split("\n"):
                     if not line.startswith(FEATURE_LIST_PREFIX):
