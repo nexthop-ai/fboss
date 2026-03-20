@@ -1,5 +1,0 @@
-py_library(
-    name = "docker",
-    srcs = glob(["**/*.py"]),
-    visibility = ["//visibility:public"],
-)

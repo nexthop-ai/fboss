@@ -1,6 +1,14 @@
 load("//fboss:fboss_build_types.bzl", "fboss_unit_test")
 load("//bazel_lib:upload_artifact.bzl", "upload_build_artifact")
 
+filegroup(
+    name = "nh-fboss-manifests",
+    visibility = ["//visibility:public"],
+    srcs = [
+    "fboss-image/nh-fboss-broadcom-xgs.json",
+    ]
+)
+
 # We explicitly place the intermediate build products into the
 # source tree to help incremental rebuild speed. This is both to make
 # incremental rebuild calculations faster, but also to avoid
@@ -126,6 +134,7 @@ genrule(
     srcs = [
         "//bazel_lib:ln_or_cp",
         "//fboss/fboss-image/distro_cli:builder",
+        "//fboss:nh-fboss-manifests",
         ":fboss_builder_docker",
     ] + glob([
         "fboss-image/kernel/**",

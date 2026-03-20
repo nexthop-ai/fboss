@@ -28,9 +28,6 @@ py_library(
     ),
     imports = [".."],
     visibility = ["//visibility:public"],
-    deps = [
-        "//fboss/fboss-image/distro_cli/lib/docker",
-    ],
 )
 
 # Shared test helpers library
