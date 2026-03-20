@@ -225,5 +225,5 @@ genrule(
 )
 upload_build_artifact("nh-fboss-broadcom-xgs.bin")
 upload_build_artifact("nh-fboss-broadcom-xgs.tar")
-upload_build_artifact("fboss_forwarding_stack_tests.tar")
-upload_build_artifact("fboss_platform_stack_tests.tar")
+#upload_build_artifact("fboss_forwarding_stack_tests.tar")
+#upload_build_artifact("fboss_platform_stack_tests.tar")
