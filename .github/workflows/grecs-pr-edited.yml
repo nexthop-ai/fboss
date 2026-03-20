@@ -12,6 +12,4 @@ permissions:
 jobs:
   grecs-pr-edited:
     uses: nexthop-ai/nh/.github/workflows/grecs-pr-edited.reusable.yml@main
-    secrets:
-      GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
-      GH_TOKEN_PR_APPROVER: ${{ secrets.NEXTHOP_ORG_GHA_PAT }}
+    secrets: inherit
