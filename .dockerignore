@@ -2,4 +2,13 @@
 .git
 .build_dir
 .tmp_bld_dir
-fboss-image
+
+# Exclude fboss-image except for the runtime files needed by cfboss
+fboss-image/*
+!fboss-image/image_builder
+fboss-image/image_builder/*
+!fboss-image/image_builder/templates
+fboss-image/image_builder/templates/*
+!fboss-image/image_builder/templates/centos-09.0
+fboss-image/image_builder/templates/centos-09.0/*
+!fboss-image/image_builder/templates/centos-09.0/root_files
