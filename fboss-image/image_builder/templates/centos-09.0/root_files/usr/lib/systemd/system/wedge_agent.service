@@ -20,6 +20,7 @@ ExecStart=/bin/bash -c 'source /opt/fboss/bin/setup_fboss_env && exec /opt/fboss
 Restart=always
 RestartSec=30
 TimeoutStartSec=180s
+TimeoutStopSec=30s
 
 StandardOutput=append:/var/facebook/logs/fboss/wedge_agent.log
 StandardError=append:/var/facebook/logs/fboss/wedge_agent.log
