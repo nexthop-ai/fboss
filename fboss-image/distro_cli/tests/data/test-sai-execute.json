@@ -1,5 +1,5 @@
 {
-  "hw_agent_sai": {
+  "npu_sai": {
     "execute": ["../../../../../../broadcom-sai-sdk/build_fboss_sai.sh"],
     "artifact": "sai-devel.tar"
   },

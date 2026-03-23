@@ -17,10 +17,10 @@
       {"execute": "../../fboss_bsps/nexthop_bsp/distro_build.sh"},
       {"execute": "../../fboss_bsps/fboss_bsp_kmods/distro_build.sh"}
   ],
-  "hw_agent_sai": {
+  "npu_sai": {
     "download": "file:distro_sai.tar"
   },
-  "qsfp_service_sai": {
+  "phy_sai": {
   },
   "fboss-forwarding-stack": {
     "execute": ["../fboss/oss/scripts/nhfboss-stack.sh", "forwarding"],

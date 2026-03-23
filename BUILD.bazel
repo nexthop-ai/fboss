@@ -181,7 +181,7 @@ genrule(
     ], exclude = [
         "fboss-image/kernel",
         "fboss-image/kernel.json",
-        "fboss-image/hw_agent_sai.json",
+        "fboss-image/npu_sai.json",
         "fboss-image/distro_kernel_6.11.tar",
         "fboss-image/distro_sai.tar",
         "fboss-image/distro_asic_init.rpm",

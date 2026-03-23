@@ -37,7 +37,7 @@ scratch_root="/var/FBOSS/fboss/.build_dir"
 need_sai=0
 num_jobs=1
 common_options=""
-build_with_qsfp_service_sai="no"
+build_with_phy_sai="no"
 
 case "$stack_type" in
 forwarding)
@@ -70,15 +70,15 @@ echo "  Created: /var/FBOSS/fboss -> /src"
 
 if [ "$need_sai" -eq 1 ]; then
   # Link /opt/sdk -> extracted SAI dependency
-  # build_entrypoint extracts /deps/hw_agent_sai to /deps/hw_agent_sai-extracted
+  # build_entrypoint extracts /deps/npu_sai to /deps/npu_sai-extracted
   if [ ! -e "/opt/sdk" ]; then
-    ln -sf /deps/hw_agent_sai-extracted /opt/sdk
-    echo "  Created: /opt/sdk -> /deps/hw_agent_sai-extracted"
+    ln -sf /deps/npu_sai-extracted /opt/sdk
+    echo "  Created: /opt/sdk -> /deps/npu_sai-extracted"
   fi
 
   if [ ! -e "/opt/qsfp-sdk" ]; then
-    ln -sf /deps/qsfp_service_sai-extracted /opt/qsfp-sdk
-    log "  Created: /opt/qsfp-sdk -> /deps/qsfp_service_sai-extracted"
+    ln -sf /deps/phy_sai-extracted /opt/qsfp-sdk
+    log "  Created: /opt/qsfp-sdk -> /deps/phy_sai-extracted"
   fi
 fi
 SAI_DIR=""
@@ -89,9 +89,9 @@ if [ "$need_sai" -eq 1 ]; then
     SAI_DIR="/opt/sdk"
   fi
 
-  # Check if qsfp_service_sai build environment exists (will be sourced in subshell later)
-  if [ -f "/deps/qsfp_service_sai-extracted/qsfp_service_sai_build.env" ]; then
-    build_with_qsfp_service_sai="yes"
+  # Check if phy_sai build environment exists (will be sourced in subshell later)
+  if [ -f "/deps/phy_sai-extracted/phy_sai_build.env" ]; then
+    build_with_phy_sai="yes"
     SAI_DIR="/opt/qsfp-sdk"
   fi
 
@@ -281,10 +281,10 @@ if [ "$need_sai" -eq 1 ]; then
     log "Building with hw_agent SAI settings"
     perform_build "" "" "$SAI_DIR/sai_build.env"
   )
-  if [ "$build_with_qsfp_service_sai" = "yes" ]; then
+  if [ "$build_with_phy_sai" = "yes" ]; then
     (
-      log "Building with qsfp_service_sai settings"
-      perform_build "-qsfp" "-qsfp" "$SAI_DIR/qsfp_service_sai_build.env"
+      log "Building with phy_sai settings"
+      perform_build "-qsfp" "-qsfp" "$SAI_DIR/phy_sai_build.env"
     )
   fi
 else

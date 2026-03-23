@@ -31,10 +31,10 @@
     "artifact": "platform-stack.tar"
   },
   "bsps": [],
-  "hw_agent_sai": {
+  "npu_sai": {
     "download": "file:../fboss/oss/scripts/fake-sai-devel.tar.zstd"
   },
-  "qsfp_service_sai": {},
+  "phy_sai": {},
   "fboss-forwarding-stack": {
     "execute": [
       "../fboss/oss/scripts/nhfboss-stack.sh",
