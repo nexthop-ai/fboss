@@ -574,14 +574,14 @@ class TestRunner(abc.ABC):
                         elif tags and "t" not in tags:
                             continue
                         gtest_regexes.append(pattern)
-                    test_names = self._list_tests_to_run(":".join(gtest_regexes), False)
+                    test_names = self._list_tests_to_run(":".join(gtest_regexes))
             elif args.filter:
                 test_names = self._list_tests_to_run(args.filter)
         else:
             test_names = self._list_tests_to_run("*")
         filter_str = ""
-        known_bad_test_regexes = self._get_known_bad_test_regexes()
-        unsupported_test_regexes = self._get_unsupported_test_regexes()
+        known_bad_test_regexes = self._known_bad_test_regexes
+        unsupported_test_regexes = self._unsupported_test_regexes
         for test_name in test_names:
             if any(re.match(r, test_name) for r in known_bad_test_regexes) or any(
                 re.match(r, test_name) for r in unsupported_test_regexes
@@ -590,8 +590,7 @@ class TestRunner(abc.ABC):
             filter_str += f"{test_name}:"
         if not filter_str:
             return []
-        should_print = not getattr(args, "list_tests_for_features", None)
-        return self._list_tests_to_run(filter_str, should_print)
+        return self._list_tests_to_run(filter_str)
 
     def _restart_bcmsim(self, asic):
         try:
@@ -1386,13 +1385,6 @@ class SaiAgentTestRunner(TestRunner):
             type=str,
             metavar="ASIC",
             help="Enable filtering by production features for the specified ASIC",
-            default=None,
-        )
-        sub_parser.add_argument(
-            OPT_ARG_LIST_TESTS_FOR_FEATURE,
-            type=str,
-            help="Return tests whose production feature tags are all contained "
-            "in the supplied comma-separated list e.g. DLB,ACL_COUNTER,SINGLE_ACL_TABLE",
             default=None,
         )
         sub_parser.add_argument(
