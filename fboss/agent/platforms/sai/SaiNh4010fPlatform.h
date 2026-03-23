@@ -15,13 +15,13 @@ namespace facebook::fboss {
 
 class Tomahawk5Asic;
 
-class SaiNh4010Platform : public SaiBcmPlatform {
+class SaiNh4010fPlatform : public SaiBcmPlatform {
  public:
-  SaiNh4010Platform(
+  SaiNh4010fPlatform(
       std::unique_ptr<PlatformProductInfo> productInfo,
       folly::MacAddress localMac,
       const std::string& platformMappingStr);
-  ~SaiNh4010Platform() override;
+  ~SaiNh4010fPlatform() override;
   HwAsic* getAsic() const override;
   uint32_t numLanesPerCore() const override {
     return 8;

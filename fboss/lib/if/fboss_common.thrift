@@ -12,7 +12,7 @@ namespace py.asyncio neteng.fboss.asyncio.fboss_common
 
 enum PlatformType {
   # Not intended to go upstream, keep here to avoid merge conflicts
-  PLATFORM_NH4010 = 999,
+  PLATFORM_NH4010F = 999,
   PLATFORM_WEDGE800BNHP = 998,
   # end of NH specific section, keep here to avoid merge conflicts
 

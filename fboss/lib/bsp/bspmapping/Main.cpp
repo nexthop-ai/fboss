@@ -53,7 +53,7 @@ const std::map<PlatformType, folly::StringPiece> kHardwareNameMap = {
      kPortMappingWedge800CACTCsv},
     {facebook::fboss::PlatformType::PLATFORM_LADAKH800BCLS,
      kPortMappingLadakh800bclsCsv},
-    {facebook::fboss::PlatformType::PLATFORM_NH4010, kPortMappingNh4010Csv},
+    {facebook::fboss::PlatformType::PLATFORM_NH4010F, kPortMappingNh4010fCsv},
     {facebook::fboss::PlatformType::PLATFORM_ICECUBE800BANW,
      kPortMappingIcecube800banwCsv},
 };

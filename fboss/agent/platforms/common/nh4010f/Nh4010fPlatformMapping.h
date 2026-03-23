@@ -13,14 +13,14 @@
 
 namespace facebook::fboss {
 
-class Nh4010PlatformMapping : public PlatformMapping {
+class Nh4010fPlatformMapping : public PlatformMapping {
  public:
-  Nh4010PlatformMapping();
-  explicit Nh4010PlatformMapping(const std::string& platformMappingStr);
+  Nh4010fPlatformMapping();
+  explicit Nh4010fPlatformMapping(const std::string& platformMappingStr);
 
  private:
   // Forbidden copy constructor and assignment operator
-  Nh4010PlatformMapping(Nh4010PlatformMapping const&) = delete;
-  Nh4010PlatformMapping& operator=(Nh4010PlatformMapping const&) = delete;
+  Nh4010fPlatformMapping(Nh4010fPlatformMapping const&) = delete;
+  Nh4010fPlatformMapping& operator=(Nh4010fPlatformMapping const&) = delete;
 };
 } // namespace facebook::fboss

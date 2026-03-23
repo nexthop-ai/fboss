@@ -3,12 +3,12 @@ load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")
 oncall("fboss_optics_phy")
 
 cpp_library(
-    name = "Nh4010_bsp",
+    name = "nh4010f_bsp",
     srcs = [
-        "Nh4010BspPlatformMapping.cpp",
+        "Nh4010fBspPlatformMapping.cpp",
     ],
     headers = [
-        "Nh4010BspPlatformMapping.h",
+        "Nh4010fBspPlatformMapping.h",
     ],
     exported_deps = [
         "//fboss/lib/bsp:bsp_platform_mapping-cpp2-types",

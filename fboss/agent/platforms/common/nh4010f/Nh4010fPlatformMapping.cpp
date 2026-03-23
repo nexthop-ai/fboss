@@ -8,7 +8,7 @@
  *
  */
 
-#include "fboss/agent/platforms/common/nh4010/Nh4010PlatformMapping.h"
+#include "fboss/agent/platforms/common/nh4010f/Nh4010fPlatformMapping.h"
 
 namespace {
 constexpr auto kJsonPlatformMappingStr = R"(
@@ -65601,10 +65601,10 @@ constexpr auto kJsonPlatformMappingStr = R"(
 } // namespace
 
 namespace facebook::fboss {
-Nh4010PlatformMapping::Nh4010PlatformMapping()
+Nh4010fPlatformMapping::Nh4010fPlatformMapping()
     : PlatformMapping(kJsonPlatformMappingStr) {}
 
-Nh4010PlatformMapping::Nh4010PlatformMapping(
+Nh4010fPlatformMapping::Nh4010fPlatformMapping(
     const std::string& platformMappingStr)
     : PlatformMapping(platformMappingStr) {}
 

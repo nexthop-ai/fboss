@@ -68,7 +68,7 @@ std::unique_ptr<WedgeManager> createBspWedgeManager(
     const std::shared_ptr<const PlatformMapping> platformMapping,
     std::shared_ptr<QsfpServiceThreads> qsfpServiceThreads);
 
-std::unique_ptr<WedgeManager> createNh4010WedgeManager(
+std::unique_ptr<WedgeManager> createNh4010fWedgeManager(
     const std::string& platformMappingStr);
 
 std::unique_ptr<PortManager> createPortManager(

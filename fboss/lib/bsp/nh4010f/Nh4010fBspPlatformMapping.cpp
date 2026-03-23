@@ -1,6 +1,6 @@
 // (c) Nexthop Systems, Inc. and affiliates. Confidential and proprietary.
 
-#include "fboss/lib/bsp/nh4010/Nh4010BspPlatformMapping.h"
+#include "fboss/lib/bsp/nh4010f/Nh4010fBspPlatformMapping.h"
 #include <thrift/lib/cpp2/protocol/Serializer.h>
 #include "fboss/lib/bsp/BspPlatformMapping.h"
 #include "fboss/lib/bsp/gen-cpp2/bsp_platform_mapping_types.h"
@@ -2073,7 +2073,7 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
 }
 )";
 
-static BspPlatformMappingThrift buildNh4010PlatformMapping(
+static BspPlatformMappingThrift buildNh4010fPlatformMapping(
     const std::string& platformMappingStr) {
   return apache::thrift::SimpleJSONSerializer::deserialize<
       BspPlatformMappingThrift>(platformMappingStr);
@@ -2084,13 +2084,13 @@ static BspPlatformMappingThrift buildNh4010PlatformMapping(
 namespace facebook {
 namespace fboss {
 
-Nh4010BspPlatformMapping::Nh4010BspPlatformMapping()
+Nh4010fBspPlatformMapping::Nh4010fBspPlatformMapping()
     : BspPlatformMapping(
-          buildNh4010PlatformMapping(kJsonBspPlatformMappingStr)) {}
+          buildNh4010fPlatformMapping(kJsonBspPlatformMappingStr)) {}
 
-Nh4010BspPlatformMapping::Nh4010BspPlatformMapping(
+Nh4010fBspPlatformMapping::Nh4010fBspPlatformMapping(
     const std::string& platformMappingStr)
-    : BspPlatformMapping(buildNh4010PlatformMapping(platformMappingStr)) {}
+    : BspPlatformMapping(buildNh4010fPlatformMapping(platformMappingStr)) {}
 
 } // namespace fboss
 } // namespace facebook

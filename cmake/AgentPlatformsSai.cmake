@@ -31,8 +31,8 @@ set(SAI_PLATFORM_SRC
   fboss/agent/platforms/sai/SaiMeru800biaPlatform.cpp
   fboss/agent/platforms/sai/SaiMeru800bfaPlatform.cpp
   fboss/agent/platforms/sai/SaiBcmMontblancPlatform.cpp
-  fboss/agent/platforms/sai/SaiNh4010Platform.cpp
-  fboss/agent/platforms/sai/SaiNh4010PlatformPort.cpp
+  fboss/agent/platforms/sai/SaiNh4010fPlatform.cpp
+  fboss/agent/platforms/sai/SaiNh4010fPlatformPort.cpp
   fboss/agent/platforms/sai/SaiBcmIcecube800banwPlatform.cpp
   fboss/agent/platforms/sai/SaiBcmIcecube800bcPlatform.cpp
   fboss/agent/platforms/sai/SaiBcmIcecube800PlatformPort.cpp
@@ -127,7 +127,7 @@ target_link_libraries(sai_platform
   ladakh800bcls_platform_mapping
   icecube800banw_platform_mapping
   icecube800bc_platform_mapping
-  nh4010_platform_mapping
+  nh4010f_platform_mapping
   icetea800bc_platform_mapping
   j4sim_platform_mapping
   led_structs_types_cpp2

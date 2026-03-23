@@ -22,7 +22,7 @@
 #include "fboss/lib/bsp/minipack3n/Minipack3NBspPlatformMapping.h"
 #include "fboss/lib/bsp/montblanc/MontblancBspPlatformMapping.h"
 #include "fboss/lib/bsp/morgan800cc/Morgan800ccBspPlatformMapping.h"
-#include "fboss/lib/bsp/nh4010/Nh4010BspPlatformMapping.h"
+#include "fboss/lib/bsp/nh4010f/Nh4010fBspPlatformMapping.h"
 #include "fboss/lib/bsp/tahan800bc/Tahan800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/tahansb800bc/Tahansb800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/wedge800bact/Wedge800BACTBspPlatformMapping.h"
@@ -160,10 +160,10 @@ std::unique_ptr<WedgeManager> createWedgeManager(
           Tahan800bcBspPlatformMapping,
           PlatformType::PLATFORM_TAHAN800BC>(
           platformMapping, qsfpServiceThreads);
-    case PlatformType::PLATFORM_NH4010:
+    case PlatformType::PLATFORM_NH4010F:
       return createBspWedgeManager<
-          Nh4010BspPlatformMapping,
-          PlatformType::PLATFORM_NH4010>(platformMapping, qsfpServiceThreads);
+          Nh4010fBspPlatformMapping,
+          PlatformType::PLATFORM_NH4010F>(platformMapping, qsfpServiceThreads);
     case PlatformType::PLATFORM_FUJI:
     case PlatformType::PLATFORM_MINIPACK:
       return createFBWedgeManager(

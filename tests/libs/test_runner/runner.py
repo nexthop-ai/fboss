@@ -113,7 +113,7 @@ class BaseHwTestRunner(ABC):
             return False
 
         hwsku = self.tc["hwsku"]
-        # shorten hwsku from NH-4010 to nh4010
+        # shorten hwsku from NH-4010-F to nh4010f
         hwsku = hwsku.lower().replace("-", "")
 
         logger.info(

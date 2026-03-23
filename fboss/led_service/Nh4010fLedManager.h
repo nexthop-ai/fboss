@@ -15,20 +15,20 @@
 namespace facebook::fboss {
 
 /*
- * Nh4010LedManager class definiton:
+ * Nh4010fLedManager class definiton:
  *
  * The BspLedManager class managing all LED in the system. The object is spawned
  * by LED Service. This will subscribe to Fsdb to get Switch state update and
  * then update the LED in hardware
  */
-class Nh4010LedManager : public BspLedManager {
+class Nh4010fLedManager : public BspLedManager {
  public:
-  Nh4010LedManager();
-  virtual ~Nh4010LedManager() override {}
+  Nh4010fLedManager();
+  virtual ~Nh4010fLedManager() override {}
 
   // Forbidden copy constructor and assignment operator
-  Nh4010LedManager(Nh4010LedManager const&) = delete;
-  Nh4010LedManager& operator=(Nh4010LedManager const&) = delete;
+  Nh4010fLedManager(Nh4010fLedManager const&) = delete;
+  Nh4010fLedManager& operator=(Nh4010fLedManager const&) = delete;
 };
 
 } // namespace facebook::fboss

@@ -7,17 +7,15 @@
  *  of patent rights can be found in the PATENTS file in the same directory.
  *
  */
-#include "fboss/agent/platforms/sai/SaiNh4010PlatformPort.h"
+#include "fboss/agent/platforms/sai/SaiNh4010fPlatformPort.h"
 
 namespace facebook::fboss {
 
-void SaiNh4010PlatformPort::linkStatusChanged(
-    bool /*up*/,
-    bool /*adminUp*/) {
+void SaiNh4010fPlatformPort::linkStatusChanged(bool /*up*/, bool /*adminUp*/) {
   // TODO: set led color
 }
 
-void SaiNh4010PlatformPort::externalState(PortLedExternalState /*lfs*/) {
+void SaiNh4010fPlatformPort::externalState(PortLedExternalState /*lfs*/) {
   // TODO: set led color
 }
 
