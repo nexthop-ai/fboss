@@ -197,10 +197,6 @@ class ConfigSession {
   // Set the singleton instance (for testing only)
   static void setInstance(std::unique_ptr<ConfigSession> instance);
 
-  // Add a command to the history (for testing only)
-  // This allows tests to simulate command tracking without /proc/self/cmdline
-  void addCommand(const std::string& command);
-
   // Read the command line for the current process from /proc/self/cmdline.
   // Returns the command arguments as a space-separated string,
   // e.g., "config interface eth1/1/1 mtu 9000"

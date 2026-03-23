@@ -213,6 +213,12 @@ TEST_F(CmdConfigVlanPortTaggingModeTestFixture, setTaggingModeTaggedSuccess) {
   utils::PortList portList({"eth1/1/1"});
   TaggingModeArg taggingMode({"tagged"});
 
+  // Set command line before calling queryClient to satisfy saveConfig()
+  // requirement
+  auto& session =
+      dynamic_cast<TestableConfigSession&>(ConfigSession::getInstance());
+  session.setCommandLine("config vlan 100 port eth1/1/1 tagging-mode tagged");
+
   auto result = cmd.queryClient(localhost(), vlanId, portList, taggingMode);
 
   EXPECT_THAT(result, HasSubstr("Successfully set port"));
@@ -240,10 +246,15 @@ TEST_F(CmdConfigVlanPortTaggingModeTestFixture, setTaggingModeUntaggedSuccess) {
   VlanId vlanId({"100"});
   utils::PortList portList({"eth1/1/1"});
   TaggingModeArg taggedMode({"tagged"});
+
+  auto& session =
+      dynamic_cast<TestableConfigSession&>(ConfigSession::getInstance());
+  session.setCommandLine("config vlan 100 port eth1/1/1 tagging-mode tagged");
   cmd.queryClient(localhost(), vlanId, portList, taggedMode);
 
   // Now set to untagged
   TaggingModeArg untaggedMode({"untagged"});
+  session.setCommandLine("config vlan 100 port eth1/1/1 tagging-mode untagged");
   auto result = cmd.queryClient(localhost(), vlanId, portList, untaggedMode);
 
   EXPECT_THAT(result, HasSubstr("Successfully set port"));
@@ -300,6 +311,11 @@ TEST_F(CmdConfigVlanPortTaggingModeTestFixture, setTaggingModeMultiplePorts) {
   VlanId vlanId({"100"});
   utils::PortList portList({"eth1/1/1", "eth1/2/1"});
   TaggingModeArg taggingMode({"tagged"});
+
+  auto& session =
+      dynamic_cast<TestableConfigSession&>(ConfigSession::getInstance());
+  session.setCommandLine(
+      "config vlan 100 port eth1/1/1 eth1/2/1 tagging-mode tagged");
 
   auto result = cmd.queryClient(localhost(), vlanId, portList, taggingMode);
 

@@ -437,6 +437,8 @@ void ConfigSession::saveConfig(
   // /proc/self/cmdline may not contain the CLI command, so we gracefully skip
   // command tracking.
   std::string rawCmd = readCommandLineFromProc();
+  CHECK(!rawCmd.empty())
+      << "saveConfig() called with no command line arguments";
   // Only record if this is a config command and not already the last one
   // recorded as that'd be idempotent anyway. Strip any leading flags.
   auto pos = rawCmd.find("config ");
@@ -526,12 +528,6 @@ void ConfigSession::saveMetadata() {
   std::string prettyJson = folly::toPrettyJson(json);
   folly::writeFileAtomic(
       metadataPath, prettyJson, 0644, folly::SyncType::WITH_SYNC);
-}
-
-void ConfigSession::addCommand(const std::string& command) {
-  if (!command.empty() && (commands_.empty() || commands_.back() != command)) {
-    commands_.push_back(command);
-  }
 }
 
 std::string ConfigSession::getServiceName(cli::ServiceType service) {

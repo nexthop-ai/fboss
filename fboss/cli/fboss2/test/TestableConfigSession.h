@@ -40,9 +40,6 @@ class TestableConfigSession : public ConfigSession {
   // Expose protected setInstance() for testing
   using ConfigSession::setInstance;
 
-  // Expose protected addCommand() for testing
-  using ConfigSession::addCommand;
-
   // Expose protected isSplitMode() for testing
   using ConfigSession::isSplitMode;
 
