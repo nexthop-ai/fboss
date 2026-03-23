@@ -34,6 +34,7 @@ FORWARDING_BINARIES = [
 FORWARDING_EXTRA = {
     OSS_DIR / "hw_sanity_tests": "share/hw_sanity_tests",
     RUN_SCRIPTS_DIR / "fboss_agent_utils.py": "bin/fboss_agent_utils.py",
+    RUN_SCRIPTS_DIR / "fsdb_service_utils.py": "bin/fsdb_service_utils.py",
     RUN_SCRIPTS_DIR / "qsfp_service_utils.py": "bin/qsfp_service_utils.py",
     RUN_SCRIPTS_DIR / "run_test.py": "bin/run_test.py",
     RUN_SCRIPTS_DIR / "setup.py": "bin/setup.py",
