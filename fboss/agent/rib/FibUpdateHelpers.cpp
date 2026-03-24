@@ -11,8 +11,8 @@
 #include "fboss/agent/rib/FibUpdateHelpers.h"
 
 #include "fboss/agent/SwitchIdScopeResolver.h"
-#include "fboss/agent/rib/ForwardingInformationBaseUpdater.h"
 #include "fboss/agent/rib/NetworkToRouteMap.h"
+#include "fboss/agent/rib/RibToSwitchStateUpdater.h"
 #include "fboss/agent/state/SwitchState.h"
 
 namespace facebook::fboss {
@@ -23,8 +23,9 @@ StateDelta ribToSwitchStateUpdate(
     const IPv6NetworkToRouteMap& v6NetworkToRoute,
     const LabelToRouteMap& labelToRoute,
     const NextHopIDManager* nextHopIDManager,
+    const MySidTable& /*mySidTable*/,
     void* cookie) {
-  ForwardingInformationBaseUpdater fibUpdater(
+  RibToSwitchStateUpdater ribToSwitchStateUpdater(
       resolver,
       vrf,
       v4NetworkToRoute,
@@ -34,9 +35,9 @@ StateDelta ribToSwitchStateUpdate(
 
   auto switchState =
       static_cast<std::shared_ptr<facebook::fboss::SwitchState>*>(cookie);
-  *switchState = fibUpdater(*switchState);
+  *switchState = ribToSwitchStateUpdater(*switchState);
   (*switchState)->publish();
-  auto lastDelta = fibUpdater.getLastDelta();
+  auto lastDelta = ribToSwitchStateUpdater.getLastDelta();
   CHECK(lastDelta.has_value());
   return StateDelta(lastDelta->oldState(), *switchState);
 }
@@ -48,6 +49,7 @@ StateDelta noopFibUpdate(
     const IPv6NetworkToRouteMap& /*v6NetworkToRoute*/,
     const LabelToRouteMap& /*labelToRoute*/,
     const NextHopIDManager* /*nextHopIDManager*/,
+    const MySidTable& /*mySidTable*/,
     void* /*cookie*/) {
   return StateDelta(nullptr, nullptr);
 }

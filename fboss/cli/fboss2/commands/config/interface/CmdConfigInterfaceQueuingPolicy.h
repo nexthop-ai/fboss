@@ -16,6 +16,7 @@
 #include "fboss/cli/fboss2/utils/CmdUtils.h"
 #include "fboss/cli/fboss2/utils/CmdUtilsCommon.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
+<<<<<<< HEAD
 #include "fboss/cli/fboss2/utils/InterfacesConfig.h"
 
 namespace facebook::fboss {
@@ -39,6 +40,32 @@ class CmdConfigInterfaceQueuingPolicy
   RetType queryClient(
       const HostInfo& hostInfo,
       const utils::InterfacesConfig& interfaceConfig,
+||||||| fdd35b55b4
+=======
+#include "fboss/cli/fboss2/utils/InterfaceList.h"
+
+namespace facebook::fboss {
+
+struct CmdConfigInterfaceQueuingPolicyTraits : public WriteCommandTraits {
+  using ParentCmd = CmdConfigInterface;
+  static constexpr utils::ObjectArgTypeId ObjectArgTypeId =
+      utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_MESSAGE;
+  using ObjectArgType = utils::Message;
+  using RetType = std::string;
+};
+
+class CmdConfigInterfaceQueuingPolicy
+    : public CmdHandler<
+          CmdConfigInterfaceQueuingPolicy,
+          CmdConfigInterfaceQueuingPolicyTraits> {
+ public:
+  using ObjectArgType = CmdConfigInterfaceQueuingPolicyTraits::ObjectArgType;
+  using RetType = CmdConfigInterfaceQueuingPolicyTraits::RetType;
+
+  RetType queryClient(
+      const HostInfo& hostInfo,
+      const utils::InterfaceList& interfaces,
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
       const ObjectArgType& policyName);
 
   void printOutput(const RetType& logMsg);

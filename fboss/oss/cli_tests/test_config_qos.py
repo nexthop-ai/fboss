@@ -23,6 +23,7 @@ This test:
 
 import json
 import sys
+<<<<<<< HEAD
 from typing import Any, Dict, Optional
 
 from cli_test_lib import (
@@ -122,6 +123,103 @@ def main() -> int:
     # Step 3: Verify configuration by reading /etc/coop/agent.conf
     print("\n[Step 3] Verifying configuration...")
     with open(SYSTEM_CONFIG_PATH, "r") as f:
+||||||| fdd35b55b4
+=======
+from typing import Any, Optional
+
+from cli_test_lib import cleanup_config, commit_config, run_cli, SYSTEM_CONFIG_PATH
+
+# Test policy name
+TEST_POLICY_NAME = "cli_e2e_test_qos_policy"
+
+# Expected QoS map configuration (based on l3_scaleup.conf sample config)
+# All maps use identity mapping: 0->0, 1->1, ..., 7->7
+EXPECTED_TC_TO_QUEUE = {str(i): i for i in range(8)}
+EXPECTED_PFC_PRI_TO_QUEUE = {str(i): i for i in range(8)}
+EXPECTED_TC_TO_PG = {str(i): i for i in range(8)}
+EXPECTED_PFC_PRI_TO_PG = {str(i): i for i in range(8)}
+
+
+def configure_qos_policy_maps(policy_name: str) -> None:
+    """Configure QoS policy with all map entries."""
+    base_cmd = ["config", "qos", "policy", policy_name, "map"]
+
+    # Configure trafficClassToQueueId (tc-to-queue)
+    print("  Configuring trafficClassToQueueId (tc-to-queue)...")
+    for tc, queue in EXPECTED_TC_TO_QUEUE.items():
+        run_cli([*base_cmd, "tc-to-queue", tc, str(queue)])
+
+    # Configure pfcPriorityToQueueId (pfc-pri-to-queue)
+    print("  Configuring pfcPriorityToQueueId (pfc-pri-to-queue)...")
+    for pfc_pri, queue in EXPECTED_PFC_PRI_TO_QUEUE.items():
+        run_cli([*base_cmd, "pfc-pri-to-queue", pfc_pri, str(queue)])
+
+    # Configure trafficClassToPgId (tc-to-pg)
+    print("  Configuring trafficClassToPgId (tc-to-pg)...")
+    for tc, pg in EXPECTED_TC_TO_PG.items():
+        run_cli([*base_cmd, "tc-to-pg", tc, str(pg)])
+
+    # Configure pfcPriorityToPgId (pfc-pri-to-pg)
+    print("  Configuring pfcPriorityToPgId (pfc-pri-to-pg)...")
+    for pfc_pri, pg in EXPECTED_PFC_PRI_TO_PG.items():
+        run_cli([*base_cmd, "pfc-pri-to-pg", pfc_pri, str(pg)])
+
+
+def cleanup_test_config() -> None:
+    """Remove test QoS policy from config."""
+
+    def modify_config(sw_config: dict[str, Any]) -> None:
+        # Remove test QoS policy from qosPolicies list
+        qos_policies = sw_config.get("qosPolicies", [])
+        sw_config["qosPolicies"] = [
+            p for p in qos_policies if p.get("name") != TEST_POLICY_NAME
+        ]
+
+    cleanup_config(modify_config, "QoS policy test configs")
+
+
+def verify_map(
+    actual: Optional[dict[str, int]], expected: dict[str, int], map_name: str
+) -> bool:
+    """Verify a QoS map matches expected values."""
+    if actual is None:
+        print(f"  ERROR: {map_name} is None")
+        return False
+
+    if actual != expected:
+        print(f"  ERROR: {map_name} mismatch")
+        print(f"  Expected: {expected}")
+        print(f"  Actual:   {actual}")
+        return False
+
+    print(f"  {map_name} verified")
+    return True
+
+
+def main() -> int:
+    print("=" * 70)
+    print("CLI E2E Test: QoS Policy Configuration")
+    print("=" * 70)
+
+    # Step 0: Cleanup any existing test config
+    print("\n[Step 0] Cleaning up any existing test config...")
+    cleanup_test_config()
+    print("  Cleanup complete")
+
+    # Step 1: Configure QoS policy with map entries
+    print(f"\n[Step 1] Configuring QoS policy '{TEST_POLICY_NAME}'...")
+    configure_qos_policy_maps(TEST_POLICY_NAME)
+    print("  QoS policy configured")
+
+    # Step 2: Commit the configuration
+    print("\n[Step 2] Committing configuration...")
+    commit_config()
+    print("  Configuration committed successfully")
+
+    # Step 3: Verify configuration by reading /etc/coop/agent.conf
+    print("\n[Step 3] Verifying configuration...")
+    with open(SYSTEM_CONFIG_PATH) as f:
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
         config = json.load(f)
 
     sw_config = config.get("sw", {})

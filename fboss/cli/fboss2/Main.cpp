@@ -9,8 +9,17 @@
  */
 
 #include <CLI/App.hpp>
+<<<<<<< HEAD
 #include "fboss/cli/fboss2/CliAppInit.h"
 #include "fboss/cli/fboss2/utils/CmdUtilsCommon.h"
+||||||| fdd35b55b4
+#include <CLI/CLI.hpp>
+#include "fboss/cli/fboss2/CmdGlobalOptions.h"
+#include "fboss/cli/fboss2/CmdSubcommands.h"
+#include "fboss/cli/fboss2/utils/CmdUtilsCommon.h"
+=======
+#include "fboss/cli/fboss2/utils/CmdInitUtils.h"
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 
 #include <folly/init/Init.h>
 #include <folly/logging/Init.h>

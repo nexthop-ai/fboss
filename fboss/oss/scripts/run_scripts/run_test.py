@@ -13,8 +13,15 @@ import sys
 import time
 import xml.etree.ElementTree as ET
 from argparse import ArgumentParser
+<<<<<<< HEAD
 from contextlib import suppress
 from datetime import datetime, timezone
+||||||| fdd35b55b4
+from datetime import datetime
+from typing import List, Optional
+=======
+from datetime import datetime
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 from typing import ClassVar
 
 from fboss_agent_utils import (
@@ -123,8 +130,14 @@ SUB_CMD_QSFP = "qsfp"
 SUB_CMD_LINK = "link"
 SUB_CMD_SAI_AGENT = "sai_agent"
 SUB_CMD_PLATFORM = "platform"
+<<<<<<< HEAD
 SUB_CMD_CLI = "cli"
 SUB_CMD_BENCHMARK = "benchmark"
+||||||| fdd35b55b4
+SUB_CMD_CLI = "cli"
+=======
+SUB_CMD_FBOSS2_INTEGRATION = "fboss2_integration"
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 SUB_ARG_AGENT_RUN_MODE = "--agent-run-mode"
 SUB_ARG_AGENT_RUN_MODE_MONO = "mono"
 SUB_ARG_AGENT_RUN_MODE_MULTI = "multi_switch"
@@ -207,6 +220,7 @@ def _load_from_file(file_path):
     return file_lines
 
 
+<<<<<<< HEAD
 def _check_working_dir():
     current_dir = os.getcwd()
     if not current_dir.endswith("/opt/fboss"):
@@ -214,12 +228,28 @@ def _check_working_dir():
         sys.exit(1)
 
 
+||||||| fdd35b55b4
+def _check_working_dir():
+    current_dir = os.getcwd()
+    if not current_dir.endswith("/opt/fboss"):
+        print("Error: Script must be run from /opt/fboss directory.")
+        exit(1)
+
+
+=======
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 def run_script(script_file: str):
     if not os.path.exists(script_file):
         raise Exception(f"Script file {script_file} does not exist")
     if not os.access(script_file, os.X_OK):
         raise Exception(f"Script file {script_file} is not executable")
+<<<<<<< HEAD
     subprocess.run(script_file, check=True, shell=True)
+||||||| fdd35b55b4
+    subprocess.run(script_file, shell=True)
+=======
+    subprocess.run(script_file, check=False, shell=True)
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 
 
 def setup_fboss_env() -> None:
@@ -246,6 +276,9 @@ def setup_fboss_env() -> None:
         os.environ["LD_LIBRARY_PATH"] = (
             f"{os.environ['FBOSS_LIB64']}:{os.environ['FBOSS_LIB']}"
         )
+
+    # Update TestRunner.ENV_VAR to pick up the modified environment
+    TestRunner.ENV_VAR = dict(os.environ)
 
 
 def disable_services(test_name: str):
@@ -487,13 +520,31 @@ class TestRunner(abc.ABC):
             #   ResolvedSpanMirror
             #
             # In this case, we just need to ignore the comment (starts with '#')
+<<<<<<< HEAD
             stripped_line = line.split("#")[0].strip()
             if stripped_line.endswith("."):
                 class_name = stripped_line[:-1]
+||||||| fdd35b55b4
+            line = line.split("#")[0].strip()
+            if line.endswith("."):
+                class_name = line[:-1]
+=======
+            sanitized_line = line.split("#")[0].strip()
+            if sanitized_line.endswith("."):
+                class_name = sanitized_line[:-1]
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
             else:
                 if not class_name:
                     raise RuntimeError("error")
+<<<<<<< HEAD
                 func_name = stripped_line.strip()
+||||||| fdd35b55b4
+                    raise "error"
+                func_name = line.strip()
+                ret.append("{}.{}".format(class_name, func_name))
+=======
+                func_name = sanitized_line.strip()
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
                 ret.append(f"{class_name}.{func_name}")
 
         return ret
@@ -507,12 +558,24 @@ class TestRunner(abc.ABC):
             test_summary.append(line)
         return test_summary
 
+<<<<<<< HEAD
     def _list_tests_to_run(self, filter_pattern):
+||||||| fdd35b55b4
+    def _list_tests_to_run(self, filter, should_print=True):
+=======
+    def _list_tests_to_run(self, test_filter, should_print=True):
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
         output = subprocess.check_output(
             [
                 self._get_test_binary_name(),
                 "--gtest_list_tests",
+<<<<<<< HEAD
                 f"--gtest_filter={filter_pattern}",
+||||||| fdd35b55b4
+                f"--gtest_filter={filter}",
+=======
+                f"--gtest_filter={test_filter}",
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
             ]
         )
         return self._parse_list_test_output(output)
@@ -578,19 +641,47 @@ class TestRunner(abc.ABC):
             elif args.filter:
                 test_names = self._list_tests_to_run(args.filter)
         else:
+<<<<<<< HEAD
             test_names = self._list_tests_to_run("*")
         filter_str = ""
         known_bad_test_regexes = self._known_bad_test_regexes
         unsupported_test_regexes = self._unsupported_test_regexes
+||||||| fdd35b55b4
+            test_names = self._list_tests_to_run("*", False)
+        filter = ""
+        known_bad_test_regexes = self._get_known_bad_test_regexes()
+        unsupported_test_regexes = self._get_unsupported_test_regexes()
+=======
+            test_names = self._list_tests_to_run("*", False)
+        test_filter = ""
+        known_bad_test_regexes = self._get_known_bad_test_regexes()
+        unsupported_test_regexes = self._get_unsupported_test_regexes()
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
         for test_name in test_names:
             if any(re.match(r, test_name) for r in known_bad_test_regexes) or any(
                 re.match(r, test_name) for r in unsupported_test_regexes
             ):
                 continue
+<<<<<<< HEAD
             filter_str += f"{test_name}:"
         if not filter_str:
+||||||| fdd35b55b4
+            filter += f"{test_name}:"
+        if not filter:
+=======
+            test_filter += f"{test_name}:"
+        if not test_filter:
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
             return []
+<<<<<<< HEAD
         return self._list_tests_to_run(filter_str)
+||||||| fdd35b55b4
+        should_print = not getattr(args, "list_tests_for_features", None)
+        return self._list_tests_to_run(filter, should_print)
+=======
+        should_print = not getattr(args, "list_tests_for_features", None)
+        return self._list_tests_to_run(test_filter, should_print)
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 
     def _restart_bcmsim(self, asic):
         try:
@@ -719,7 +810,13 @@ class TestRunner(abc.ABC):
                 return conf_file
         return conf_file
 
+<<<<<<< HEAD
     def _run_tests(self, tests_to_run, conf_file, args) -> tuple[list, list]:  # noqa: PLR0915
+||||||| fdd35b55b4
+    def _run_tests(self, tests_to_run, conf_file, args):
+=======
+    def _run_tests(self, tests_to_run, conf_file, args):  # noqa: PLR0915 - complex orchestration; splitting would harm readability
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
         if args.sai_replayer_logging:
             if os.path.isdir(args.sai_replayer_logging) or os.path.isfile(
                 args.sai_replayer_logging
@@ -855,12 +952,23 @@ class TestRunner(abc.ABC):
                 test_summary_count[m.group()] += 1
         # Print test result counts
         print("Summary:")
+<<<<<<< HEAD
         for test_result, count in test_summary_count.items():
             print("  ", test_result, ":", count)
+||||||| fdd35b55b4
+        for test_result in test_summary_count:
+            print("  ", test_result, ":", test_summary_count[test_result])
+=======
+        for test_result, value in test_summary_count.items():
+            print("  ", test_result, ":", value)
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 
         self._write_results_to_csv(test_summaries)
 
     def _write_results_to_csv(self, output):
+        if not output:
+            print("No tests we were run.")
+            return
         output_csv = (
             f"hwtest_results_{datetime.now().strftime('%Y_%b_%d-%I_%M_%S_%p')}.csv"
         )
@@ -1501,7 +1609,14 @@ class SaiAgentTestRunner(TestRunner):
             )
 
     def _setup_warmboot_test(self, sai_replayer_log_path: str | None = None):
+<<<<<<< HEAD
         if args.setup_for_warmboot:
+||||||| fdd35b55b4
+    def _setup_warmboot_test(self, sai_replayer_log_path: Optional[str] = None):
+        if args.setup_for_coldboot:
+=======
+        if args.setup_for_coldboot:
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
             run_script(args.setup_for_warmboot)
         if args.agent_run_mode == SUB_ARG_AGENT_RUN_MODE_MULTI:
             setup_and_start_hw_agent_service(
@@ -1546,6 +1661,7 @@ class SaiAgentTestRunner(TestRunner):
 
         if not args.enable_production_features:
             return tests
+<<<<<<< HEAD
 
         asic = str(args.enable_production_features)
         with open(args.production_features) as f:
@@ -1558,6 +1674,18 @@ class SaiAgentTestRunner(TestRunner):
             sys.exit(1)
 
         production_features = set(asic_to_feature_names.get(asic, []))
+||||||| fdd35b55b4
+        asic = str(args.asic)
+        asic_production_features = json.load(open(args.production_features))
+        producition_features = {
+            feature for feature in asic_production_features["asicToFeatureNames"][asic]
+        }
+=======
+        asic = str(args.asic)
+        with open(args.production_features) as f:
+            asic_production_features = json.load(f)
+        producition_features = set(asic_production_features["asicToFeatureNames"][asic])
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
         tests_to_run = []
         for test in tests:
             cmd = [
@@ -1567,7 +1695,15 @@ class SaiAgentTestRunner(TestRunner):
             ]
             ret = subprocess.run(
                 cmd,
+<<<<<<< HEAD
                 check=True,
+||||||| fdd35b55b4
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                universal_newlines=True,
+=======
+                check=False,
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
                 capture_output=True,
                 text=True,
             )
@@ -1739,20 +1875,38 @@ class PlatformServicesTestRunner(TestRunner):
         self._write_results_to_xml(results)
 
 
+<<<<<<< HEAD
 class CliTestRunner(TestRunner):
+||||||| fdd35b55b4
+class CliTestRunner:
+=======
+class Fboss2IntegrationTestRunner(TestRunner):
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
     """
-    Runner for CLI end-to-end tests.
+    Runner for fboss2 integration tests.
 
+<<<<<<< HEAD
     CLI tests are C++ gtest-based tests that run CLI commands and verify output.
     They test the CLI tool itself (fboss2-dev) on a running FBOSS instance.
 
     CLI tests are platform/SAI independent - they test the CLI binary which
+||||||| fdd35b55b4
+    Unlike the gtest-based test runners, CLI tests are simple Python tests
+    that run CLI commands and verify output. They test the CLI tool itself
+    (fboss2-dev) on a running FBOSS instance.
+=======
+    fboss2 integration tests are C++ gtest-based tests that run CLI commands and verify output.
+    They test the CLI tool itself (fboss2-dev) on a running FBOSS instance.
+
+    fboss2 integration tests are platform/SAI independent - they test the CLI binary which
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
     communicates with the agent via Thrift, regardless of the underlying
     hardware abstraction layer.
     """
 
     def add_subcommand_arguments(self, sub_parser: ArgumentParser):
         """Add CLI test-specific command line arguments"""
+<<<<<<< HEAD
         pass
 
     def _get_config_path(self):
@@ -1794,11 +1948,29 @@ class CliTestRunner(TestRunner):
 
     def _filter_tests(self, tests: list[str]) -> list[str]:
         return tests
+||||||| fdd35b55b4
+    CLI_TEST_DIR = "./share/cli_tests"
+=======
+        # Override defaults for CLI tests:
+        # - fruid_path: CLI tests don't use fruid files
+        # - coldboot_only: Some CLI tests use warmboot/coldboot but the test binary doesn't support the --setup-for-warmboot flag.
+        sub_parser.set_defaults(fruid_path=None, coldboot_only=True)
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 
+<<<<<<< HEAD
     def run_test(self, args):
         """
         Run CLI end-to-end tests.
+||||||| fdd35b55b4
+    def run_test(self, args):
+        """Run CLI end-to-end tests"""
+        print("Running CLI end-to-end tests...")
+=======
+    def _get_config_path(self):
+        return "/etc/coop/agent.conf"
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 
+<<<<<<< HEAD
         CLI tests are simpler than hardware tests - they don't need config file
         manipulation, warmboot/coldboot setup, or SAI-specific logging. They just
         run against the already-running agent via Thrift.
@@ -1812,14 +1984,63 @@ class CliTestRunner(TestRunner):
         if args.list_tests:
             # Tests were already printed by _get_tests_to_run
             return
+||||||| fdd35b55b4
+        # Find and run test scripts
+        test_dir = self.CLI_TEST_DIR
+        if not os.path.isdir(test_dir):
+            print(f"CLI test directory not found: {test_dir}")
+            print("No CLI tests to run.")
+            return
+=======
+    def _get_known_bad_tests_file(self):
+        return ""
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 
+<<<<<<< HEAD
         if not tests_to_run:
             print("No tests to run")
             return
+||||||| fdd35b55b4
+        # Get list of test scripts
+        test_scripts = []
+        for filename in sorted(os.listdir(test_dir)):
+            if filename.startswith("test_") and filename.endswith(".py"):
+                test_scripts.append(os.path.join(test_dir, filename))
 
+        if not test_scripts:
+            print(f"No CLI test scripts found in {test_dir}")
+            return
+=======
+    def _get_unsupported_tests_file(self):
+        return ""
+
+    def _get_test_binary_name(self):
+        return "fboss2_integration_test"
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
+
+<<<<<<< HEAD
         print(f"Running {len(tests_to_run)} CLI end-to-end tests...")
         start_time = datetime.now()
+||||||| fdd35b55b4
+        # Apply filter if specified
+        if args.filter:
+            filtered_scripts = []
+            for script in test_scripts:
+                script_name = os.path.basename(script)
+                if args.filter in script_name:
+                    filtered_scripts.append(script)
+            test_scripts = filtered_scripts
+            if not test_scripts:
+                print(f"No tests match filter: {args.filter}")
+                return
+=======
+    def _get_sai_replayer_logging_flags(
+        self, sai_replayer_log_path: str | None
+    ) -> list[str]:
+        return []
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 
+<<<<<<< HEAD
         # Run all tests in a single gtest invocation
         test_filter = ":".join(tests_to_run)
         # Use /tmp for test results since CLI tests may not have write access
@@ -1830,9 +2051,31 @@ class CliTestRunner(TestRunner):
             f"--gtest_filter={test_filter}",
             f"--gtest_output=xml:{result_file}",
         ]
+||||||| fdd35b55b4
+        # Run each test script
+        passed = 0
+        failed = 0
+        failed_tests = []
+        test_times = {}  # Track time for each test
+        total_start_time = time.time()
+=======
+    def _get_sai_logging_flags(self, sai_logging):
+        # CLI tests don't use SAI logging
+        return []
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 
+<<<<<<< HEAD
         print(f"Running command: {' '.join(cmd)}")
+||||||| fdd35b55b4
+        for test_script in test_scripts:
+            test_name = os.path.basename(test_script)
+            print(f"\n########## Running CLI test: {test_name}")
+=======
+    def _get_warmboot_check_file(self):
+        return ""
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 
+<<<<<<< HEAD
         try:
             result = subprocess.run(
                 cmd,
@@ -1993,7 +2236,24 @@ class BenchmarkTestRunner:
             else:
                 print(f"########## Benchmark {binary_name} completed")
             return self._parse_benchmark_output(binary_name, result.stdout)
+||||||| fdd35b55b4
+            test_start_time = time.time()
+            try:
+                result = subprocess.run(
+                    ["python3", test_script],
+                    capture_output=True,
+                    text=True,
+                    timeout=300,  # 5 minute timeout per test
+                )
+                test_elapsed = time.time() - test_start_time
+                test_times[test_name] = test_elapsed
+=======
+    def _get_test_run_args(self, conf_file):
+        # CLI tests don't need any additional args
+        return []
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 
+<<<<<<< HEAD
         except subprocess.TimeoutExpired:
             print(
                 f"########## Benchmark {binary_name} timed out after {args.test_run_timeout} seconds"
@@ -2051,11 +2311,48 @@ class BenchmarkTestRunner:
                     benchmarks_to_run.update(benchmarks_from_file)
                 else:
                     print(f"  Warning: Configuration file not found: {conf_file}")
+||||||| fdd35b55b4
+                if result.returncode == 0:
+                    print(f"[  PASSED  ] {test_name} ({test_elapsed:.1f}s)")
+                    passed += 1
+                else:
+                    print(f"[  FAILED  ] {test_name} ({test_elapsed:.1f}s)")
+                    print(f"stdout: {result.stdout}")
+                    print(f"stderr: {result.stderr}")
+                    failed += 1
+                    failed_tests.append(test_name)
+=======
+    def _setup_coldboot_test(self, sai_replayer_log_path: str | None = None):
+        pass
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 
+<<<<<<< HEAD
         if not benchmarks_to_run:
             print("Error: No benchmarks found in configuration files")
             return None
+||||||| fdd35b55b4
+            except subprocess.TimeoutExpired as e:
+                test_elapsed = time.time() - test_start_time
+                test_times[test_name] = test_elapsed
+                print(f"[  TIMEOUT ] {test_name} ({test_elapsed:.1f}s)")
+                if e.stdout:
+                    print(f"stdout: {e.stdout}")
+                if e.stderr:
+                    print(f"stderr: {e.stderr}")
+                failed += 1
+                failed_tests.append(test_name)
+            except Exception as e:
+                test_elapsed = time.time() - test_start_time
+                test_times[test_name] = test_elapsed
+                print(f"[  ERROR   ] {test_name}: {e} ({test_elapsed:.1f}s)")
+                failed += 1
+                failed_tests.append(test_name)
+=======
+    def _setup_warmboot_test(self, sai_replayer_log_path: str | None = None):
+        pass
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 
+<<<<<<< HEAD
         return list(benchmarks_to_run)
 
     def run_test(self, args):  # noqa: PLR0912
@@ -2126,7 +2423,14 @@ class BenchmarkTestRunner:
                 writer.writerow(result)
 
         print(f"\n########## Benchmark results written to: {csv_filename}")
+||||||| fdd35b55b4
+        total_elapsed = time.time() - total_start_time
+=======
+    def _end_run(self):
+        pass
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 
+<<<<<<< HEAD
         # Print summary
         print("\n" + "=" * 80)
         print("BENCHMARK RESULTS SUMMARY")
@@ -2147,10 +2451,31 @@ class BenchmarkTestRunner:
         # Exit with error if any benchmarks failed or timed out
         if failed > 0 or timed_out > 0:
             sys.exit(1)
+||||||| fdd35b55b4
+        # Print summary
+        print("\n" + "=" * 60)
+        print("CLI Test Summary")
+        print("=" * 60)
+        print(f"  Passed: {passed}")
+        print(f"  Failed: {failed}")
+        print(f"  Total:  {passed + failed}")
+        print(f"  Time:   {total_elapsed:.1f}s")
+
+        if failed_tests:
+            print("\nFailed tests:")
+            for test in failed_tests:
+                print(f"  - {test} ({test_times.get(test, 0):.1f}s)")
+
+        if failed > 0:
+            sys.exit(1)
+=======
+    def _filter_tests(self, tests: list[str]) -> list[str]:
+        return tests
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 
 
 if __name__ == "__main__":
-    _check_working_dir()
+    os.chdir("/opt/fboss")
     # Set env variables for FBOSS
     setup_fboss_env()
 
@@ -2387,10 +2712,18 @@ if __name__ == "__main__":
     platform_test_parser.set_defaults(func=platform_test_runner.run_test)
     platform_test_runner.add_subcommand_arguments(platform_test_parser)
 
-    # Add subparser for CLI end-to-end tests
-    cli_test_parser = subparsers.add_parser(
-        SUB_CMD_CLI, help="run CLI end-to-end tests"
+    # Add subparser for fboss2 integration tests
+    fboss2_integration_test_parser = subparsers.add_parser(
+        SUB_CMD_FBOSS2_INTEGRATION, help="run fboss2 integration tests"
     )
+    fboss2_integration_test_runner = Fboss2IntegrationTestRunner()
+    fboss2_integration_test_parser.set_defaults(
+        func=fboss2_integration_test_runner.run_test
+    )
+    fboss2_integration_test_runner.add_subcommand_arguments(
+        fboss2_integration_test_parser
+    )
+<<<<<<< HEAD
     cli_test_runner = CliTestRunner()
     cli_test_parser.set_defaults(func=cli_test_runner.run_test)
     cli_test_runner.add_subcommand_arguments(cli_test_parser)
@@ -2402,6 +2735,11 @@ if __name__ == "__main__":
     benchmark_test_runner = BenchmarkTestRunner()
     benchmark_test_parser.set_defaults(func=benchmark_test_runner.run_test)
     benchmark_test_runner.add_subcommand_arguments(benchmark_test_parser)
+||||||| fdd35b55b4
+    cli_test_runner = CliTestRunner()
+    cli_test_parser.set_defaults(func=cli_test_runner.run_test)
+=======
+>>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 
     # Parse the args
     args = ap.parse_known_args()
