@@ -334,13 +334,7 @@ class PackageFboss:
         tar_path = os.path.join(args.scratch_path, PackageFboss.FBOSS_BIN_TAR)
         subprocess.run(
             ["tar", "-cvf", tar_path, "--zstd", "-C", self.tmp_dir_name, "."],
-<<<<<<< HEAD
-            env=env,
-||||||| fdd35b55b4
-            ["tar", "-cvf", tar_path, "--zstd", "-C", self.tmp_dir_name, "."]
-=======
-            check=False,
->>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
+            env=env, check=False,
         )
         print(f"Compressed to {tar_path}")
 

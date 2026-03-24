@@ -183,16 +183,8 @@ def detect_toolchain():
         gxx_version = subprocess.run(
             ["g++", "--version"], capture_output=True, text=True, timeout=5
         )
-<<<<<<< HEAD
     except (subprocess.TimeoutExpired, FileNotFoundError, OSError) as e:
         print(f"Warning: Could not detect compiler: {e}", file=sys.stderr)
-||||||| fdd35b55b4
-    except (subprocess.TimeoutExpired, OSError) as e:
-        print(f"Warning: Could not detect compiler: {e}", file=sys.stderr)
-=======
-    except (subprocess.TimeoutExpired, OSError) as e:
-        print_info(f"Warning: Could not detect compiler: {e}")
->>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
         return None
 
     if gxx_version.returncode != 0:
