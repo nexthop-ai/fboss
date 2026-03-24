@@ -15,7 +15,7 @@
   },
   "bsps": [
       {"download": "file:distro_nexthop_bsp.tar"},
-      {"execute": "../../fboss_bsps/fboss_bsp_kmods/distro_build.sh"}
+      {"download": "file:distro_fboss_bsp.tar"}
   ],
   "npu_sai": {
     "download": "file:distro_sai.tar"
