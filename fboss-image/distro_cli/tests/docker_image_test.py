@@ -22,7 +22,7 @@ class TestShouldBuildImage(unittest.TestCase):
         mock_compute_checksum.return_value = "abc123"
         mock_get_timestamp.return_value = None
 
-        should_build, checksum, reason = _should_build_image(self.root_dir)
+        should_build, checksum, reason = _should_build_image(self.root_dir, production=False)
 
         self.assertTrue(should_build)
         self.assertEqual(checksum, "abc123")
@@ -40,7 +40,7 @@ class TestShouldBuildImage(unittest.TestCase):
         mock_time.return_value = 1000 + (25 * 60 * 60)
 
         # Default expiration is 24 hours
-        should_build, checksum, reason = _should_build_image(self.root_dir)
+        should_build, checksum, reason = _should_build_image(self.root_dir, production=False)
 
         self.assertTrue(should_build)
         self.assertEqual(checksum, "abc123")
@@ -60,7 +60,7 @@ class TestShouldBuildImage(unittest.TestCase):
         # Current time is 1000 + 1 hour (less than 24 hour default expiration)
         mock_time.return_value = 1000 + (1 * 60 * 60)
 
-        should_build, checksum, reason = _should_build_image(self.root_dir)
+        should_build, checksum, reason = _should_build_image(self.root_dir, production=False)
 
         self.assertFalse(should_build)
         self.assertEqual(checksum, "abc123")
@@ -81,7 +81,7 @@ class TestShouldBuildImage(unittest.TestCase):
 
         # Set custom expiration to 48 hours
         with patch.dict(os.environ, {"FBOSS_BUILDER_CACHE_EXPIRATION_HOURS": "48"}):
-            should_build, checksum, reason = _should_build_image(self.root_dir)
+            should_build, checksum, reason = _should_build_image(self.root_dir, production=False)
 
         self.assertTrue(should_build)
         self.assertEqual(checksum, "abc123")

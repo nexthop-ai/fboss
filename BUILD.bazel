@@ -21,11 +21,12 @@ genrule(
         "fboss/oss/scripts/build_docker.sh",
         "fboss/oss/docker/Dockerfile",
         ".dockerignore",
-    ] + glob(["build/**"]),
+    ] + glob(["build/**"],
+        exclude=["build/**/*.pyc"]),
     outs = ["fboss_builder.tar"],
     cmd = """
         $(location //fboss/fboss-image/distro_cli:scripts/build_and_tag_docker.sh)
-        docker save -o fboss_builder.tar fboss_builder
+        docker save -o fboss_builder.tar fboss_builder:latest
         mv fboss_builder.tar $(RULEDIR)
     """,
     tags = ["no-sandbox"]

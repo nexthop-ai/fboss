@@ -138,7 +138,7 @@ def _get_image_build_timestamp(image_tag: str) -> int | None:
         return None
 
 
-def _should_build_image(root_dir: Path) -> tuple[bool, str, str]:
+def _should_build_image(root_dir: Path, production: bool = True) -> tuple[bool, str, str]:
     """Determine if the fboss_builder image should be rebuilt.
 
     Args:
@@ -147,6 +147,24 @@ def _should_build_image(root_dir: Path) -> tuple[bool, str, str]:
     Returns:
         Tuple of (should_build, checksum, reason)
     """
+    # NH only. If we are not running in a test and the image exists, use it even if it doesn't match a hash
+    if production:
+        try:
+            result = subprocess.run(
+                [
+                    "docker",
+                    "image",
+                    "inspect",
+                    FBOSS_BUILDER_IMAGE,
+                    "--format",
+                    "{{json .Config.Labels}}",
+                ],
+            )
+            if result.returncode == 0:
+                return False, "Not computed", "Trust in bazel"
+        except subprocess.CalledProcessError:
+            pass
+
     # Get cache expiration from environment variable (in hours)
     expiration_hours = int(os.getenv("FBOSS_BUILDER_CACHE_EXPIRATION_HOURS", "24"))
     expiration_seconds = expiration_hours * 60 * 60
