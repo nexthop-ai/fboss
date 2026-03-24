@@ -212,7 +212,7 @@ def run_script(script_file: str):
         raise Exception(f"Script file {script_file} does not exist")
     if not os.access(script_file, os.X_OK):
         raise Exception(f"Script file {script_file} is not executable")
-    subprocess.run(script_file, check=False, shell=True)
+    subprocess.run(script_file, check=True, shell=True)
 
 
 def setup_fboss_env() -> None:
