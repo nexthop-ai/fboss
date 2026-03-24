@@ -14,7 +14,7 @@
     "artifact": "platform-stack.tar"
   },
   "bsps": [
-      {"execute": "../../fboss_bsps/nexthop_bsp/distro_build.sh"},
+      {"download": "file:distro_nexthop_bsp.tar"},
       {"execute": "../../fboss_bsps/fboss_bsp_kmods/distro_build.sh"}
   ],
   "npu_sai": {

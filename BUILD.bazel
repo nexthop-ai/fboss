@@ -160,7 +160,7 @@ genrule(
     name = "nh-fboss-broadcom-xgs",
     srcs = [
         "//bazel_lib:ln_or_cp",
-        "//fboss_bsps/nexthop_bsp:distro_build_files",
+        "//fboss_bsps/nexthop_bsp:distro_nexthop_bsp.tar",
         "//fboss_bsps/fboss_bsp_kmods:distro_build_files",
         "//fboss_extras/asic_init:distro_asic_init.rpm",
         "//nhbroadcomsai/fboss-xgs:distro_sai.tar",
@@ -185,6 +185,7 @@ genrule(
         "fboss-image/distro_kernel_6.11.tar",
         "fboss-image/distro_sai.tar",
         "fboss-image/distro_asic_init.rpm",
+        "fboss-image/distro_nexthop_bsp.tar",
         "fboss-image/nh-fboss-broadcom-xgs.tar",
         "fboss-image/nh-fboss-broadcom-xgs.bin",
         "fboss-image/distro_cli/.artifacts/**",
@@ -211,6 +212,7 @@ genrule(
         ln -f $(location distro_kernel_6.11.tar) fboss/fboss-image/distro_kernel_6.11.tar
         ln -f $(location //nhbroadcomsai/fboss-xgs:distro_sai.tar) fboss/fboss-image/distro_sai.tar
         ln -f $(location //fboss_extras/asic_init:distro_asic_init.rpm) fboss/fboss-image/distro_asic_init.rpm
+        ln -f $(location //fboss_bsps/nexthop_bsp:distro_nexthop_bsp.tar) fboss/fboss-image/distro_nexthop_bsp.tar
         pushd fboss/fboss-image
         ./distro_cli/fboss-image build nh-fboss-broadcom-xgs.json 2>&1
         popd
