@@ -11,8 +11,6 @@ from abc import ABC, abstractmethod
 
 from tests.libs.device.device_ssh_helper import DeviceSCPClient, DeviceSSHClient
 
-# Configure logging to ensure it works with pytest
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("test_runner")
 
 
@@ -133,7 +131,7 @@ class BaseHwTestRunner(ABC):
             f"' > {self.testlog_filepath} 2>&1"
         )
 
-        logger.info(f"Running remote command: {cmd}")
+        logger.info("Running remote command: %s", cmd)
         exit_status, output = self.ssh_client.run_cmd(cmd)
         logger.debug("exit_status %s output %s", exit_status, output)
 
