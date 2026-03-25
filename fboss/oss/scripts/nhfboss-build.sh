@@ -14,11 +14,15 @@ SAI_IMPL=${SAI_IMPL:-brcm} # Options: brcm, csco, fake
 set -e
 cd /var/FBOSS/fboss
 
+# Map SAI_IMPL to run-getdeps.py --npu-sai-impl flag
+npu_sai_impl_flag=""
+
 case "$SAI_IMPL" in
 fake)
   echo "Building with fake SAI"
   export BUILD_SAI_FAKE=1
   export BUILD_SAI_FAKE_LINK_TEST=1
+  npu_sai_impl_flag="--npu-sai-impl BUILD_SAI_FAKE"
   ;;
 
 brcm)
@@ -38,6 +42,7 @@ brcm)
     echo "Using SAI_SDK_VERSION=$SAI_SDK_VERSION for SAI_VERSION=$SAI_VERSION"
     export SAI_SDK_VERSION
   fi
+  npu_sai_impl_flag="--npu-sai-impl SAI_BRCM_IMPL --npu-sai-sdk-version $SAI_SDK_VERSION"
   ;;
 
 csco)
@@ -56,6 +61,7 @@ csco)
     echo "Using SAI_SDK_VERSION=$SAI_SDK_VERSION for SAI_VERSION=$SAI_VERSION"
     export SAI_SDK_VERSION
   fi
+  npu_sai_impl_flag="--npu-sai-impl SAI_TAJO_IMPL --npu-sai-sdk-version $SAI_SDK_VERSION"
   ;;
 
 *)
@@ -69,5 +75,5 @@ esac
 
 export BENCHMARK_INSTALL=1
 
-time nice -n 10 ./fboss/oss/scripts/run-getdeps.py build --num-jobs $num_jobs --build-type $BUILD_TYPE --no-deps $common_options "$@" &&
+time nice -n 10 ./fboss/oss/scripts/run-getdeps.py $npu_sai_impl_flag build --num-jobs $num_jobs --build-type $BUILD_TYPE --no-deps $common_options "$@" &&
   echo "Build SUCCESS"

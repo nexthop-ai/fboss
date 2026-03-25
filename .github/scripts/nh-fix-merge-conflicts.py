@@ -58,6 +58,7 @@ class FileFormat(Enum):
     """File format types for different build systems."""
     CMAKE = "cmake"
     BUCK = "buck"
+    CPP_INCLUDE = "cpp_include"
 
 
 def is_file_path_line(line: str, file_format: FileFormat) -> bool:
@@ -73,6 +74,20 @@ def is_file_path_line(line: str, file_format: FileFormat) -> bool:
             return False
         # Should look like a path (contains forward slashes or is a simple filename)
         return '/' in stripped or stripped.endswith(('.cpp', '.h', '.c'))
+
+    elif file_format == FileFormat.CPP_INCLUDE:
+        # C++ include statements
+        # Should be #include "..." or #include <...>
+        if not stripped.startswith('#include'):
+            return False
+        # Extract the included file
+        if '"' in stripped:
+            # #include "path/to/file.h"
+            return True
+        elif '<' in stripped and '>' in stripped:
+            # #include <system/header.h>
+            return True
+        return False
 
     elif file_format == FileFormat.BUCK:
         # BUCK files use quoted strings with commas
@@ -99,14 +114,29 @@ def extract_file_paths(lines: List[str], file_format: FileFormat) -> Set[str]:
     paths = set()
     for line in lines:
         stripped = line.strip()
-        if stripped and not stripped.startswith('#'):
-            if file_format == FileFormat.BUCK:
-                # Extract path from quoted string, removing quotes and trailing comma
-                if stripped.startswith('"'):
-                    path = stripped.strip('",').strip('"')
+        if not stripped:
+            continue
+
+        if file_format == FileFormat.BUCK:
+            # Extract path from quoted string, removing quotes and trailing comma
+            if stripped.startswith('"'):
+                path = stripped.strip('",').strip('"')
+                paths.add(path)
+        elif file_format == FileFormat.CPP_INCLUDE:
+            # Extract path from #include "..." or #include <...>
+            if stripped.startswith('#include'):
+                # Remove #include prefix
+                rest = stripped[8:].strip()
+                # Extract the path from quotes or angle brackets
+                if rest.startswith('"') and '"' in rest[1:]:
+                    path = rest[1:rest.index('"', 1)]
                     paths.add(path)
-            else:
-                # CMake format - just use the stripped line
+                elif rest.startswith('<') and '>' in rest[1:]:
+                    path = rest[1:rest.index('>', 1)]
+                    paths.add(path)
+        else:
+            # CMake format - just use the stripped line (skip comments)
+            if not stripped.startswith('#'):
                 paths.add(stripped)
     return paths
 
@@ -189,6 +219,9 @@ def resolve_conflict(ours_lines: List[str], theirs_lines: List[str], repo_root: 
     if file_format == FileFormat.CMAKE:
         # CMake format: 2-space indentation
         resolved_lines = [f"  {path}\n" for path in sorted_paths]
+    elif file_format == FileFormat.CPP_INCLUDE:
+        # C++ include format: #include "path"
+        resolved_lines = [f'#include "{path}"\n' for path in sorted_paths]
     else:  # BUCK format
         # BUCK format: 8-space indentation, quoted strings with trailing commas
         resolved_lines = [f'        "{path}",\n' for path in sorted_paths]
@@ -281,7 +314,7 @@ def process_file(filepath: Path, repo_root: Path, file_format: FileFormat) -> bo
 
 
 def find_files_with_conflicts(repo_root: Path) -> List[Tuple[Path, FileFormat]]:
-    """Find all CMake and BUCK files with merge conflicts."""
+    """Find all CMake, BUCK, and C++ files with merge conflicts."""
     files_with_conflicts = []
 
     # Find CMake files
@@ -307,6 +340,23 @@ def find_files_with_conflicts(repo_root: Path) -> List[Tuple[Path, FileFormat]]:
             # Skip files that can't be read
             continue
 
+    # Find specific C++ files that commonly have include conflicts
+    cpp_files_to_check = [
+        repo_root / 'fboss' / 'cli' / 'fboss2' / 'CmdList.cpp',
+        repo_root / 'fboss' / 'cli' / 'fboss2' / 'CmdListConfig.cpp',
+    ]
+
+    for cpp_file in cpp_files_to_check:
+        if cpp_file.exists():
+            try:
+                with open(cpp_file, 'r') as f:
+                    content = f.read()
+                    if '<<<<<<< HEAD' in content:
+                        files_with_conflicts.append((cpp_file, FileFormat.CPP_INCLUDE))
+            except (IOError, UnicodeDecodeError):
+                # Skip files that can't be read
+                continue
+
     return files_with_conflicts
 
 
@@ -318,12 +368,13 @@ def main():
     files_with_conflicts = find_files_with_conflicts(repo_root)
 
     if not files_with_conflicts:
-        print("No merge conflicts found in CMake or BUCK files.")
+        print("No merge conflicts found in CMake, BUCK, or C++ files.")
         return
 
     # Group by file type for reporting
     cmake_files = [(f, fmt) for f, fmt in files_with_conflicts if fmt == FileFormat.CMAKE]
     buck_files = [(f, fmt) for f, fmt in files_with_conflicts if fmt == FileFormat.BUCK]
+    cpp_files = [(f, fmt) for f, fmt in files_with_conflicts if fmt == FileFormat.CPP_INCLUDE]
 
     print(f"Found {len(files_with_conflicts)} file(s) with conflicts:")
     if cmake_files:
@@ -333,6 +384,10 @@ def main():
     if buck_files:
         print(f"\n  BUCK files ({len(buck_files)}):")
         for f, _ in buck_files:
+            print(f"    - {f.relative_to(repo_root)}")
+    if cpp_files:
+        print(f"\n  C++ files ({len(cpp_files)}):")
+        for f, _ in cpp_files:
             print(f"    - {f.relative_to(repo_root)}")
     print()
 

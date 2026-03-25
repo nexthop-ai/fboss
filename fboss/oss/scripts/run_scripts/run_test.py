@@ -123,8 +123,8 @@ SUB_CMD_QSFP = "qsfp"
 SUB_CMD_LINK = "link"
 SUB_CMD_SAI_AGENT = "sai_agent"
 SUB_CMD_PLATFORM = "platform"
-SUB_CMD_CLI = "cli"
 SUB_CMD_BENCHMARK = "benchmark"
+SUB_CMD_FBOSS2_INTEGRATION = "fboss2_integration"
 SUB_ARG_AGENT_RUN_MODE = "--agent-run-mode"
 SUB_ARG_AGENT_RUN_MODE_MONO = "mono"
 SUB_ARG_AGENT_RUN_MODE_MULTI = "multi_switch"
@@ -207,13 +207,6 @@ def _load_from_file(file_path):
     return file_lines
 
 
-def _check_working_dir():
-    current_dir = os.getcwd()
-    if not current_dir.endswith("/opt/fboss"):
-        print("Error: Script must be run from /opt/fboss directory.")
-        sys.exit(1)
-
-
 def run_script(script_file: str):
     if not os.path.exists(script_file):
         raise Exception(f"Script file {script_file} does not exist")
@@ -246,6 +239,9 @@ def setup_fboss_env() -> None:
         os.environ["LD_LIBRARY_PATH"] = (
             f"{os.environ['FBOSS_LIB64']}:{os.environ['FBOSS_LIB']}"
         )
+
+    # Update TestRunner.ENV_VAR to pick up the modified environment
+    TestRunner.ENV_VAR = dict(os.environ)
 
 
 def disable_services(test_name: str):
@@ -487,13 +483,13 @@ class TestRunner(abc.ABC):
             #   ResolvedSpanMirror
             #
             # In this case, we just need to ignore the comment (starts with '#')
-            stripped_line = line.split("#")[0].strip()
-            if stripped_line.endswith("."):
-                class_name = stripped_line[:-1]
+            sanitized_line = line.split("#")[0].strip()
+            if sanitized_line.endswith("."):
+                class_name = sanitized_line[:-1]
             else:
                 if not class_name:
                     raise RuntimeError("error")
-                func_name = stripped_line.strip()
+                func_name = sanitized_line.strip()
                 ret.append(f"{class_name}.{func_name}")
 
         return ret
@@ -507,12 +503,12 @@ class TestRunner(abc.ABC):
             test_summary.append(line)
         return test_summary
 
-    def _list_tests_to_run(self, filter_pattern):
+    def _list_tests_to_run(self, test_filter):
         output = subprocess.check_output(
             [
                 self._get_test_binary_name(),
                 "--gtest_list_tests",
-                f"--gtest_filter={filter_pattern}",
+                f"--gtest_filter={test_filter}",
             ]
         )
         return self._parse_list_test_output(output)
@@ -579,7 +575,7 @@ class TestRunner(abc.ABC):
                 test_names = self._list_tests_to_run(args.filter)
         else:
             test_names = self._list_tests_to_run("*")
-        filter_str = ""
+        test_filter = ""
         known_bad_test_regexes = self._known_bad_test_regexes
         unsupported_test_regexes = self._unsupported_test_regexes
         for test_name in test_names:
@@ -587,10 +583,10 @@ class TestRunner(abc.ABC):
                 re.match(r, test_name) for r in unsupported_test_regexes
             ):
                 continue
-            filter_str += f"{test_name}:"
-        if not filter_str:
+            test_filter += f"{test_name}:"
+        if not test_filter:
             return []
-        return self._list_tests_to_run(filter_str)
+        return self._list_tests_to_run(test_filter)
 
     def _restart_bcmsim(self, asic):
         try:
@@ -719,7 +715,7 @@ class TestRunner(abc.ABC):
                 return conf_file
         return conf_file
 
-    def _run_tests(self, tests_to_run, conf_file, args) -> tuple[list, list]:  # noqa: PLR0915
+    def _run_tests(self, tests_to_run, conf_file, args) -> tuple[list, list]:  # noqa: PLR0915 - complex orchestration; splitting would harm readability
         if args.sai_replayer_logging:
             if os.path.isdir(args.sai_replayer_logging) or os.path.isfile(
                 args.sai_replayer_logging
@@ -855,12 +851,15 @@ class TestRunner(abc.ABC):
                 test_summary_count[m.group()] += 1
         # Print test result counts
         print("Summary:")
-        for test_result, count in test_summary_count.items():
-            print("  ", test_result, ":", count)
+        for test_result, value in test_summary_count.items():
+            print("  ", test_result, ":", value)
 
         self._write_results_to_csv(test_summaries)
 
     def _write_results_to_csv(self, output):
+        if not output:
+            print("No tests we were run.")
+            return
         output_csv = (
             f"hwtest_results_{datetime.now().strftime('%Y_%b_%d-%I_%M_%S_%p')}.csv"
         )
@@ -1567,7 +1566,7 @@ class SaiAgentTestRunner(TestRunner):
             ]
             ret = subprocess.run(
                 cmd,
-                check=True,
+                check=False,
                 capture_output=True,
                 text=True,
             )
@@ -1739,25 +1738,27 @@ class PlatformServicesTestRunner(TestRunner):
         self._write_results_to_xml(results)
 
 
-class CliTestRunner(TestRunner):
+class Fboss2IntegrationTestRunner(TestRunner):
     """
-    Runner for CLI end-to-end tests.
+    Runner for fboss2 integration tests.
 
-    CLI tests are C++ gtest-based tests that run CLI commands and verify output.
+    fboss2 integration tests are C++ gtest-based tests that run CLI commands and verify output.
     They test the CLI tool itself (fboss2-dev) on a running FBOSS instance.
 
-    CLI tests are platform/SAI independent - they test the CLI binary which
+    fboss2 integration tests are platform/SAI independent - they test the CLI binary which
     communicates with the agent via Thrift, regardless of the underlying
     hardware abstraction layer.
     """
 
     def add_subcommand_arguments(self, sub_parser: ArgumentParser):
         """Add CLI test-specific command line arguments"""
-        pass
+        # Override defaults for CLI tests:
+        # - fruid_path: CLI tests don't use fruid files
+        # - coldboot_only: Some CLI tests use warmboot/coldboot but the test binary doesn't support the --setup-for-warmboot flag.
+        sub_parser.set_defaults(fruid_path=None, coldboot_only=True)
 
     def _get_config_path(self):
-        # CLI tests don't need a config file - they run against the already-running agent
-        return ""
+        return "/etc/coop/agent.conf"
 
     def _get_known_bad_tests_file(self):
         return ""
@@ -1766,14 +1767,15 @@ class CliTestRunner(TestRunner):
         return ""
 
     def _get_test_binary_name(self):
-        return "cli_test"
+        return "fboss2_integration_test"
 
     def _get_sai_replayer_logging_flags(
         self, sai_replayer_log_path: str | None
     ) -> list[str]:
         return []
 
-    def _get_sai_logging_flags(self):
+    def _get_sai_logging_flags(self, sai_logging):
+        # CLI tests don't use SAI logging
         return []
 
     def _get_warmboot_check_file(self):
@@ -1794,65 +1796,6 @@ class CliTestRunner(TestRunner):
 
     def _filter_tests(self, tests: list[str]) -> list[str]:
         return tests
-
-    def run_test(self, args):
-        """
-        Run CLI end-to-end tests.
-
-        CLI tests are simpler than hardware tests - they don't need config file
-        manipulation, warmboot/coldboot setup, or SAI-specific logging. They just
-        run against the already-running agent via Thrift.
-        """
-        # Initialize test lists (known bad tests, unsupported tests)
-        self._initialize_test_lists(args)
-
-        tests_to_run = self._get_tests_to_run()
-        tests_to_run = self._filter_tests(tests_to_run)
-
-        if args.list_tests:
-            # Tests were already printed by _get_tests_to_run
-            return
-
-        if not tests_to_run:
-            print("No tests to run")
-            return
-
-        print(f"Running {len(tests_to_run)} CLI end-to-end tests...")
-        start_time = datetime.now()
-
-        # Run all tests in a single gtest invocation
-        test_filter = ":".join(tests_to_run)
-        # Use /tmp for test results since CLI tests may not have write access
-        # to the default TESTRESULT_FILE location
-        result_file = "/tmp/cli_test_results.xml"
-        cmd = [
-            self._get_test_binary_name(),
-            f"--gtest_filter={test_filter}",
-            f"--gtest_output=xml:{result_file}",
-        ]
-
-        print(f"Running command: {' '.join(cmd)}")
-
-        try:
-            result = subprocess.run(
-                cmd,
-                check=True,
-                timeout=args.test_run_timeout,
-            )
-
-            end_time = datetime.now()
-            delta_time = end_time - start_time
-            print(f"Running all tests took {delta_time}")
-
-            if result.returncode != 0:
-                sys.exit(result.returncode)
-
-        except subprocess.TimeoutExpired:
-            print(f"[  TIMEOUT ] CLI tests timed out after {args.test_run_timeout}s")
-            sys.exit(1)
-        except Exception as e:
-            print(f"[  ERROR   ] Failed to run CLI tests: {e}")
-            sys.exit(1)
 
 
 class BenchmarkTestRunner:
@@ -2150,7 +2093,7 @@ class BenchmarkTestRunner:
 
 
 if __name__ == "__main__":
-    _check_working_dir()
+    os.chdir("/opt/fboss")
     # Set env variables for FBOSS
     setup_fboss_env()
 
@@ -2387,13 +2330,17 @@ if __name__ == "__main__":
     platform_test_parser.set_defaults(func=platform_test_runner.run_test)
     platform_test_runner.add_subcommand_arguments(platform_test_parser)
 
-    # Add subparser for CLI end-to-end tests
-    cli_test_parser = subparsers.add_parser(
-        SUB_CMD_CLI, help="run CLI end-to-end tests"
+    # Add subparser for fboss2 integration tests
+    fboss2_integration_test_parser = subparsers.add_parser(
+        SUB_CMD_FBOSS2_INTEGRATION, help="run fboss2 integration tests"
     )
-    cli_test_runner = CliTestRunner()
-    cli_test_parser.set_defaults(func=cli_test_runner.run_test)
-    cli_test_runner.add_subcommand_arguments(cli_test_parser)
+    fboss2_integration_test_runner = Fboss2IntegrationTestRunner()
+    fboss2_integration_test_parser.set_defaults(
+        func=fboss2_integration_test_runner.run_test
+    )
+    fboss2_integration_test_runner.add_subcommand_arguments(
+        fboss2_integration_test_parser
+    )
 
     # Add subparser for Benchmark tests
     benchmark_test_parser = subparsers.add_parser(

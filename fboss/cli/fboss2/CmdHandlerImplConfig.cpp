@@ -21,6 +21,7 @@
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceDescription.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceMtu.h"
+#include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceQueuingPolicy.h"
 #include "fboss/cli/fboss2/commands/config/interface/pfc_config/CmdConfigInterfacePfcConfig.h"
 #include "fboss/cli/fboss2/commands/config/interface/switchport/CmdConfigInterfaceSwitchport.h"
 #include "fboss/cli/fboss2/commands/config/interface/switchport/access/CmdConfigInterfaceSwitchportAccess.h"
@@ -85,6 +86,8 @@
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/peer/CmdConfigProtocolBgpPeerWarningOnly.h"
 #include "fboss/cli/fboss2/commands/config/qos/CmdConfigQos.h"
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPool.h"
+#include "fboss/cli/fboss2/commands/config/qos/policy/CmdConfigQosPolicy.h"
+#include "fboss/cli/fboss2/commands/config/qos/policy/CmdConfigQosPolicyMap.h"
 #include "fboss/cli/fboss2/commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicy.h"
 #include "fboss/cli/fboss2/commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicyGroupId.h"
 #include "fboss/cli/fboss2/commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicy.h"
@@ -112,6 +115,9 @@ template void CmdHandler<
 template void
 CmdHandler<CmdConfigInterfaceMtu, CmdConfigInterfaceMtuTraits>::run();
 template void CmdHandler<
+    CmdConfigInterfaceQueuingPolicy,
+    CmdConfigInterfaceQueuingPolicyTraits>::run();
+template void CmdHandler<
     CmdConfigInterfacePfcConfig,
     CmdConfigInterfacePfcConfigTraits>::run();
 template void CmdHandler<
@@ -134,6 +140,9 @@ CmdHandler<CmdConfigSessionRebase, CmdConfigSessionRebaseTraits>::run();
 template void CmdHandler<CmdConfigQos, CmdConfigQosTraits>::run();
 template void
 CmdHandler<CmdConfigQosBufferPool, CmdConfigQosBufferPoolTraits>::run();
+template void CmdHandler<CmdConfigQosPolicy, CmdConfigQosPolicyTraits>::run();
+template void
+CmdHandler<CmdConfigQosPolicyMap, CmdConfigQosPolicyMapTraits>::run();
 template void CmdHandler<CmdConfigVlan, CmdConfigVlanTraits>::run();
 template void
 CmdHandler<CmdConfigVlanStaticMac, CmdConfigVlanStaticMacTraits>::run();

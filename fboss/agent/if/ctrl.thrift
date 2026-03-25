@@ -17,6 +17,7 @@ include "fboss/qsfp_service/if/transceiver.thrift"
 include "fboss/agent/switch_config.thrift"
 include "fboss/agent/platform_config.thrift"
 include "fboss/lib/phy/phy.thrift"
+include "fboss/lib/phy/prbs.thrift"
 include "fboss/agent/hw/hardware_stats.thrift"
 include "thrift/annotation/python.thrift"
 include "thrift/annotation/cpp.thrift"
@@ -1001,6 +1002,15 @@ service FbossCtrl extends phy.FbossCommonPhyCtrl {
   i32 flushNeighborEntry(1: Address.BinaryAddress ip, 2: i32 vlanId);
 
   /*
+   * Flush a list of ARP/NDP entries in bulk.
+   *
+   * Each entry specifies an IP address and a vlanId (interfaceID).
+   *
+   * Returns the total number of entries flushed.
+   */
+  i32 flushNeighborEntries(1: list<IfAndIP> entries);
+
+  /*
    * Inband addresses
    */
   list<Address.Address> getVlanAddresses(1: i32 vlanId) throws (
@@ -1594,6 +1604,15 @@ service FbossCtrl extends phy.FbossCommonPhyCtrl {
    * Get total route count (v4 and v6) from the FIB
    */
   RouteCount getRouteTableSize() throws (1: fboss.FbossBaseError error);
+
+  /*
+   * Change the PRBS setting on a list of ports.
+   */
+  void setInterfacesPrbs(
+    1: list<string> portNames,
+    2: phy.PortComponent component,
+    3: prbs.InterfacePrbsState state,
+  ) throws (1: fboss.FbossBaseError error);
 }
 
 service NeighborListenerClient extends fb303.FacebookService {

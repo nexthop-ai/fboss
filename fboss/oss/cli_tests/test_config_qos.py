@@ -23,14 +23,9 @@ This test:
 
 import json
 import sys
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
-from cli_test_lib import (
-    SYSTEM_CONFIG_PATH,
-    cleanup_config,
-    commit_config,
-    run_cli,
-)
+from cli_test_lib import SYSTEM_CONFIG_PATH, cleanup_config, commit_config, run_cli
 
 # Test policy name
 TEST_POLICY_NAME = "cli_e2e_test_qos_policy"
@@ -50,28 +45,28 @@ def configure_qos_policy_maps(policy_name: str) -> None:
     # Configure trafficClassToQueueId (tc-to-queue)
     print("  Configuring trafficClassToQueueId (tc-to-queue)...")
     for tc, queue in EXPECTED_TC_TO_QUEUE.items():
-        run_cli(base_cmd + ["tc-to-queue", tc, str(queue)])
+        run_cli([*base_cmd, "tc-to-queue", tc, str(queue)])
 
     # Configure pfcPriorityToQueueId (pfc-pri-to-queue)
     print("  Configuring pfcPriorityToQueueId (pfc-pri-to-queue)...")
     for pfc_pri, queue in EXPECTED_PFC_PRI_TO_QUEUE.items():
-        run_cli(base_cmd + ["pfc-pri-to-queue", pfc_pri, str(queue)])
+        run_cli([*base_cmd, "pfc-pri-to-queue", pfc_pri, str(queue)])
 
     # Configure trafficClassToPgId (tc-to-pg)
     print("  Configuring trafficClassToPgId (tc-to-pg)...")
     for tc, pg in EXPECTED_TC_TO_PG.items():
-        run_cli(base_cmd + ["tc-to-pg", tc, str(pg)])
+        run_cli([*base_cmd, "tc-to-pg", tc, str(pg)])
 
     # Configure pfcPriorityToPgId (pfc-pri-to-pg)
     print("  Configuring pfcPriorityToPgId (pfc-pri-to-pg)...")
     for pfc_pri, pg in EXPECTED_PFC_PRI_TO_PG.items():
-        run_cli(base_cmd + ["pfc-pri-to-pg", pfc_pri, str(pg)])
+        run_cli([*base_cmd, "pfc-pri-to-pg", pfc_pri, str(pg)])
 
 
 def cleanup_test_config() -> None:
     """Remove test QoS policy from config."""
 
-    def modify_config(sw_config: Dict[str, Any]) -> None:
+    def modify_config(sw_config: dict[str, Any]) -> None:
         # Remove test QoS policy from qosPolicies list
         qos_policies = sw_config.get("qosPolicies", [])
         sw_config["qosPolicies"] = [
@@ -82,7 +77,7 @@ def cleanup_test_config() -> None:
 
 
 def verify_map(
-    actual: Optional[Dict[str, int]], expected: Dict[str, int], map_name: str
+    actual: Optional[dict[str, int]], expected: dict[str, int], map_name: str
 ) -> bool:
     """Verify a QoS map matches expected values."""
     if actual is None:
@@ -121,7 +116,7 @@ def main() -> int:
 
     # Step 3: Verify configuration by reading /etc/coop/agent.conf
     print("\n[Step 3] Verifying configuration...")
-    with open(SYSTEM_CONFIG_PATH, "r") as f:
+    with open(SYSTEM_CONFIG_PATH) as f:
         config = json.load(f)
 
     sw_config = config.get("sw", {})

@@ -9,8 +9,7 @@
  */
 
 #include <CLI/App.hpp>
-#include "fboss/cli/fboss2/CliAppInit.h"
-#include "fboss/cli/fboss2/utils/CmdUtilsCommon.h"
+#include "fboss/cli/fboss2/utils/CmdInitUtils.h"
 
 #include <folly/init/Init.h>
 #include <folly/logging/Init.h>
