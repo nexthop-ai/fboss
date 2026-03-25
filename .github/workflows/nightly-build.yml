@@ -15,9 +15,20 @@ jobs:
       sai_version: "1.16.1"
       use_clang: true
 
+  monobuild:
+    permissions:
+      id-token: write
+      contents: read
+    uses: nexthop-ai/nh/.github/workflows/monobuild.reusable.yml@main
+    with:
+      submodule: fboss
+      nh_branch: main
+    secrets:
+      GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+
   notify-slack-on-failure:
     runs-on: cloudstack-ubuntu24-small
-    needs: [build-and-test-clang]
+    needs: [build-and-test-clang, monobuild]
     if: failure()
     steps:
       - name: Determine which builds failed and collect test failures
@@ -26,10 +37,15 @@ jobs:
           CLANG_RESULT="${{ needs.build-and-test-clang.result }}"
           CLANG_FAILED_TESTS="${{ needs.build-and-test-clang.outputs.failed_tests }}"
           CLANG_FAILED_COUNT="${{ needs.build-and-test-clang.outputs.failed_test_count }}"
+          MONOBUILD_RESULT="${{ needs.monobuild.result }}"
 
-          # Determine if build failed
-          if [[ "$CLANG_RESULT" == "failure" ]]; then
-            echo "failed_builds=Clang build" >> "$GITHUB_OUTPUT"
+          # Determine which builds failed
+          FAILED=""
+          [[ "$CLANG_RESULT" == "failure" ]] && FAILED="Clang build"
+          [[ "$MONOBUILD_RESULT" == "failure" ]] && FAILED="${FAILED:+$FAILED, }Monobuild"
+
+          if [[ -n "$FAILED" ]]; then
+            echo "failed_builds=$FAILED" >> "$GITHUB_OUTPUT"
             echo "emoji=:x:" >> "$GITHUB_OUTPUT"
           else
             echo "failed_builds=Unknown" >> "$GITHUB_OUTPUT"
