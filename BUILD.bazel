@@ -207,8 +207,8 @@ genrule(
     outs = [
         "nh-fboss-broadcom-xgs.bin",
         "nh-fboss-broadcom-xgs.tar",
-        "fboss_forwarding_stack_tests.tar.zst",
-        "fboss_platform_stack_tests.tar.zst",
+        "fboss_forwarding_stack_tests.tar",
+        "fboss_platform_stack_tests.tar",
     ],
     cmd = """
         ln -f $(location distro_kernel_6.11.tar) fboss/fboss-image/distro_kernel_6.11.tar
@@ -220,17 +220,31 @@ genrule(
         ./distro_cli/fboss-image build nh-fboss-broadcom-xgs.json 2>&1
         popd
 
-        zstd -T0 -19 fboss/forwarding-stack-tests.tar fboss/platform-stack-tests.tar
-
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.tar $(location nh-fboss-broadcom-xgs.tar)
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.bin $(location nh-fboss-broadcom-xgs.bin)
-        $(execpath //bazel_lib:ln_or_cp) fboss/forwarding-stack-tests.tar.zst $(location fboss_forwarding_stack_tests.tar.zst)
-        $(execpath //bazel_lib:ln_or_cp) fboss/platform-stack-tests.tar.zst $(location fboss_platform_stack_tests.tar.zst)
+        $(execpath //bazel_lib:ln_or_cp) fboss/forwarding-stack-tests.tar $(location fboss_forwarding_stack_tests.tar)
+        $(execpath //bazel_lib:ln_or_cp) fboss/platform-stack-tests.tar $(location fboss_platform_stack_tests.tar)
     """,
     tags = [
         "no-sandbox",
         "exclusive",
     ]
+)
+
+genrule(
+    name = "compress_test_artifacts",
+    srcs = [
+        "fboss_forwarding_stack_tests.tar",
+        "fboss_platform_stack_tests.tar",
+    ],
+    outs = [
+        "fboss_forwarding_stack_tests.tar.zst",
+        "fboss_platform_stack_tests.tar.zst",
+    ],
+    cmd = """
+        zstd -T0 -19 -f -o $(location fboss_forwarding_stack_tests.tar.zst) $(location fboss_forwarding_stack_tests.tar)
+        zstd -T0 -19 -f -o $(location fboss_platform_stack_tests.tar.zst) $(location fboss_platform_stack_tests.tar)
+    """,
 )
 upload_build_artifact("nh-fboss-broadcom-xgs.bin")
 upload_build_artifact("nh-fboss-broadcom-xgs.tar")
