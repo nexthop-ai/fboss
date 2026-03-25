@@ -181,7 +181,7 @@ def detect_toolchain():
     """
     try:
         gxx_version = subprocess.run(
-            ["g++", "--version"], capture_output=True, text=True, timeout=5
+            ["g++", "--version"], check=False, capture_output=True, text=True, timeout=5
         )
     except (subprocess.TimeoutExpired, FileNotFoundError, OSError) as e:
         print(f"Warning: Could not detect compiler: {e}", file=sys.stderr)
@@ -263,7 +263,7 @@ def setup_clang_environment(toolchain_info):
     # Read clang-specific CXXFLAGS from CMakeLists.txt using regex
     cxxflags = []
     try:
-        with open(os.path.join(os.getcwd(), "CMakeLists.txt"), "r") as f:
+        with open(os.path.join(os.getcwd(), "CMakeLists.txt")) as f:
             content = f.read()
     except FileNotFoundError:
         # CMakeLists.txt not found - this can happen during Docker build
@@ -331,7 +331,7 @@ def setup_clang_environment(toolchain_info):
     for manifest in glob.glob(
         os.path.join(path_to("build", "fbcode_builder", "manifests"), "*")
     ):
-        with open(manifest, "r") as f:
+        with open(manifest) as f:
             content = f.read()
         if "\nbinutils" in content:
             with open(manifest, "w") as f:
@@ -529,7 +529,7 @@ def main():
 
     # Call the real getdeps.py with all arguments
     print_info(f"Executing getdeps.py with args: {args.getdeps_args}")
-    os.execv(getdeps_path, [getdeps_path] + args.getdeps_args)
+    os.execv(getdeps_path, [getdeps_path, *args.getdeps_args])
 
 
 if __name__ == "__main__":

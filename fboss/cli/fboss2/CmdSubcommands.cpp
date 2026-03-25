@@ -317,7 +317,6 @@ CLI::App* CmdSubcommands::addCommand(
               args,
               "<map-type> <key> <value> where map-type is one of: "
               "tc-to-queue, pfc-pri-to-queue, tc-to-pg, pfc-pri-to-pg");
-<<<<<<< HEAD
           break;
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_PORT_AND_TAGGING_MODE:
           subCmd->add_option(
@@ -337,10 +336,6 @@ CLI::App* CmdSubcommands::addCommand(
               args,
               "<port-list> [<attr> <value> ...] where <attr> is one "
               "of: description, mtu");
-||||||| fdd35b55b4
-              "buffer-pool-name");
-=======
->>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
           break;
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_UNINITIALIZE:
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_NONE:

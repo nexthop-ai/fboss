@@ -25,21 +25,11 @@ import sys
 from typing import Any
 
 from cli_test_lib import (
-<<<<<<< HEAD
     SYSTEM_CONFIG_PATH,
     cleanup_config,
     commit_config,
     find_first_eth_interface,
     run_cli,
-||||||| fdd35b55b4
-from cli_test_lib import cleanup_config, commit_config, run_cli, SYSTEM_CONFIG_PATH
-=======
-    cleanup_config,
-    commit_config,
-    find_first_eth_interface,
-    run_cli,
-    SYSTEM_CONFIG_PATH,
->>>>>>> 856e32af1e465a2a7c116a2f52333403d248d280
 )
 
 # Test names
