@@ -13,9 +13,10 @@
 
 #include "fboss/agent/if/gen-cpp2/FbossCtrl.h"
 #include "fboss/agent/if/gen-cpp2/FbossHwCtrl.h"
-#include "fboss/cli/fboss2/utils/CmdClientUtilsCommon.h"
+#include "fboss/bgp/if/gen-cpp2/TBgpService.h"
+#include "fboss/cli/fboss2/utils/CmdClientUtilsCommon.h" // NOLINT(misc-include-cleaner)
 #include "fboss/led_service/if/gen-cpp2/LedService.h"
-#include "fboss/qsfp_service/if/gen-cpp2/QsfpService.h"
+#include "fboss/qsfp_service/if/gen-cpp2/QsfpService.h" // NOLINT(misc-include-cleaner)
 
 namespace facebook::fboss::utils {
 
@@ -46,6 +47,10 @@ std::unique_ptr<facebook::fboss::QsfpServiceAsyncClient> createQsfpClient(
 std::unique_ptr<
     apache::thrift::Client<facebook::fboss::led_service::LedService>>
 createLedClient(const HostInfo& hostInfo);
+
+std::unique_ptr<
+    apache::thrift::Client<facebook::neteng::fboss::bgp::thrift::TBgpService>>
+createBgpClient(const HostInfo& hostInfo);
 
 int getNumHwSwitches(const HostInfo& hostInfo);
 bool isMultiSwitchEnabled(const HostInfo& hostInfo);

@@ -10,8 +10,9 @@
 
 #include "fboss/cli/fboss2/utils/CmdClientUtils.h"
 #include "fboss/agent/if/gen-cpp2/FbossCtrl.h"
+#include "fboss/bgp/if/gen-cpp2/TBgpService.h"
 #include "fboss/cli/fboss2/CmdGlobalOptions.h"
-#include "fboss/qsfp_service/if/gen-cpp2/QsfpService.h"
+#include "fboss/qsfp_service/if/gen-cpp2/QsfpService.h" // NOLINT(misc-include-cleaner)
 
 namespace facebook::fboss::utils {
 
@@ -63,6 +64,14 @@ createLedClient(const HostInfo& hostInfo) {
   return createPlaintextClient<
       apache::thrift::Client<facebook::fboss::led_service::LedService>>(
       hostInfo, port);
+}
+
+std::unique_ptr<
+    apache::thrift::Client<facebook::neteng::fboss::bgp::thrift::TBgpService>>
+createBgpClient(const HostInfo& hostInfo) {
+  auto bgpPort = CmdGlobalOptions::getInstance()->getBgpThriftPort();
+  return createPlaintextClient<apache::thrift::Client<
+      facebook::neteng::fboss::bgp::thrift::TBgpService>>(hostInfo, bgpPort);
 }
 
 } // namespace facebook::fboss::utils
