@@ -125,18 +125,45 @@ jobs:
           protection=$(gh api repos/${{ github.repository }}/branches/${BASE_REF}/protection 2>/dev/null || echo '{}')
           required_checks=$(jq <<<"$protection" -r '.required_status_checks.contexts // [] | .[]' 2>/dev/null || true)
 
-          # Get check runs
+          # Get check runs (GitHub Apps, some CI systems)
           check_runs=$(gh api repos/${{ github.repository }}/commits/${HEAD_SHA}/check-runs)
+
+          # Get commit statuses (GitHub Actions workflows)
+          commit_statuses=$(gh api repos/${{ github.repository }}/commits/${HEAD_SHA}/status)
 
           # Find failed or incomplete required checks
           failed_required=()
           pending_required=()
           while IFS= read -r check_name; do
             [[ -z "$check_name" ]] && continue
+
+            # First try to find in check runs
             check_info=$(jq <<<"$check_runs" -r --arg name "$check_name" '.check_runs[] | select(.name == $name) | "\(.status)|\(.conclusion)"')
 
+            # If not found in check runs, try commit statuses
             if [[ -z "$check_info" ]]; then
-              # Check not found - treat as pending
+              status_info=$(jq <<<"$commit_statuses" -r --arg name "$check_name" '.statuses[] | select(.context == $name) | .state')
+              if [[ -n "$status_info" ]]; then
+                # Convert status state to check run format
+                case "$status_info" in
+                  success)
+                    check_info="completed|success"
+                    ;;
+                  failure)
+                    check_info="completed|failure"
+                    ;;
+                  error)
+                    check_info="completed|failure"
+                    ;;
+                  pending)
+                    check_info="in_progress|pending"
+                    ;;
+                esac
+              fi
+            fi
+
+            if [[ -z "$check_info" ]]; then
+              # Check not found in either - treat as pending
               pending_required+=("$check_name")
             else
               status=$(echo "$check_info" | cut -d'|' -f1)
@@ -144,7 +171,7 @@ jobs:
 
               if [[ "$conclusion" == "failure" ]]; then
                 failed_required+=("$check_name")
-              elif [[ "$status" == "completed" ]]; then
+              elif [[ "$status" == "completed" && "$conclusion" == "success" ]]; then
                 echo "✅ Required check '$check_name' passed"
               else
                 pending_required+=("$check_name")
@@ -262,5 +289,5 @@ jobs:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           payload: |
             {
-              "text": ":merged: Sync [PR #${{ github.event.issue.number }}](https://github.com/nexthop-ai/private-fboss/pull/${{ github.event.issue.number }}) has been successfully merged to main. Upstream stable commit: `${{ needs.merge-pr.outputs.stable_commit }}`"
+              "text": ":merged: Sync <https://github.com/nexthop-ai/private-fboss/pull/${{ github.event.issue.number }}|PR #${{ github.event.issue.number }}> has been successfully merged to main. Upstream stable commit: `${{ needs.merge-pr.outputs.stable_commit }}`"
             }
