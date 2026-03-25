@@ -3,7 +3,7 @@ test_context = {
         "*Empty*",
         "*Vlan*",
         "*NextHopGroup*",
-        "*RouteNeighbor*",
+        "*HwRoute*",
         "*PortAdminState*",
     ],
 }

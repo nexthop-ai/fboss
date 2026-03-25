@@ -3,6 +3,7 @@ test_context = {
         "*AclStat*",
         "*RouteStat*",
         "*AclTable*",
+        "*HwInPause*",
     ],
 }
 

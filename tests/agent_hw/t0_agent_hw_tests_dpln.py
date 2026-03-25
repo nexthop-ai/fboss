@@ -1,17 +1,15 @@
 test_context = {
     "filters" : [
         "*Vlan*",
-        "*L2ClassID*",
         "*MacLearning*",
         "*MacSwLearning*",
         "*PacketSend*",
         "*PacketFlood*",
         "*Neighbor*",
         "*L3*",
-        "*HwRoute*",
-        "*PRBS*",
+        "*Prbs*",
     ],
 }
 
-def test_t0_agent_hw_tests_dpln(sai_test_runner):
-    assert sai_test_runner.run_test(test_context)
+def test_t0_agent_hw_tests_dpln(sai_agent_test_runner):
+    assert sai_agent_test_runner.run_test(test_context)

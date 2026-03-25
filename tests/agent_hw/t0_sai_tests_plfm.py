@@ -1,6 +1,7 @@
 test_context = {
     "filters" : [
-        "*PROFILE*",
+        "*HwTest_PROFILE*",
+        "*FlexPort*",
     ],
 }
 

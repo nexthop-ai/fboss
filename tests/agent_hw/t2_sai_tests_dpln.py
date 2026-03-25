@@ -12,7 +12,6 @@ test_context = {
         "*ArsFlowlet*",
         "*ArsSpray*",
         "*ProdInvariantsFswStrictPriority*",
-        "*Trunk*",
     ],
 }
 

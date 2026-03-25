@@ -8,5 +8,5 @@ test_context = {
     ],
 }
 
-def test_t0_agent_hw_tests_qos(sai_test_runner):
-    assert sai_test_runner.run_test(test_context)
+def test_t0_agent_hw_tests_qos(sai_agent_test_runner):
+    assert sai_agent_test_runner.run_test(test_context)
