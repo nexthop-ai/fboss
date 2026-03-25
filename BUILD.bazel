@@ -138,9 +138,10 @@ genrule(
         "//fboss:nh-fboss-manifests",
         ":fboss_builder_docker",
     ] + glob([
-        "fboss-image/kernel/**",
-    ], exclude = [
-        "fboss/fboss-image/kernel/dist",
+        "fboss-image/kernel/configs/**",
+        "fboss-image/kernel/env/**",
+        "fboss-image/kernel/scripts/**",
+        "fboss-image/kernel/specs/**",
     ]),
     outs = ["distro_kernel_6.11.tar"],
     cmd = """
