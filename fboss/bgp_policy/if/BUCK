@@ -1,0 +1,21 @@
+load("@fbcode_macros//build_defs:thrift_library.bzl", "thrift_library")
+
+oncall("fboss_agent_push")
+
+thrift_library(
+    name = "bgp_policy",
+    languages = [
+        "cpp2",
+    ],
+    thrift_cpp2_options = "json",
+    thrift_srcs = {"bgp_policy.thrift": []},
+)
+
+thrift_library(
+    name = "rib_policy",
+    languages = [
+        "cpp2",
+    ],
+    thrift_cpp2_options = "json",
+    thrift_srcs = {"rib_policy.thrift": []},
+)

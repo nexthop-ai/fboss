@@ -1,0 +1,43 @@
+load("@fbcode_macros//build_defs:thrift_library.bzl", "thrift_library")
+
+oncall("fboss_agent_push")
+
+thrift_library(
+    name = "bgp_attr",
+    languages = [
+        "cpp2",
+    ],
+    thrift_cpp2_options = "json",
+    thrift_srcs = {"bgp_attr.thrift": []},
+)
+
+thrift_library(
+    name = "bgp_config",
+    languages = [
+        "cpp2",
+    ],
+    thrift_cpp2_options = "json",
+    thrift_srcs = {"bgp_config.thrift": []},
+    deps = [
+        ":bgp_attr",
+        "//fboss/bgp_policy/if:bgp_policy",
+        "//fboss/routing/if:vip_service_config",
+    ],
+)
+
+thrift_library(
+    name = "bgp_thrift",
+    languages = [
+        "cpp2",
+    ],
+    thrift_cpp2_options = "json",
+    thrift_srcs = {"bgp_thrift.thrift": []},
+    deps = [
+        ":bgp_attr",
+        ":bgp_config",
+        "//common/fb303/if:fb303",
+        "//fboss/bgp_policy/if:bgp_policy",
+        "//fboss/bgp_policy/if:rib_policy",
+        "//fboss/routing/policy/if:policy",
+    ],
+)
