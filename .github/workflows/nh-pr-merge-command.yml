@@ -120,10 +120,68 @@ jobs:
           PR_NUMBER=${{ steps.pr-details.outputs.pr_number }}
           HEAD_SHA=$(gh api repos/${{ github.repository }}/pulls/${PR_NUMBER} | jq -r '.head.sha')
 
-          # Get branch protection rules to find required checks
+          # Get required checks from repository rulesets
           BASE_REF=${{ steps.pr-details.outputs.base_ref }}
-          protection=$(gh api repos/${{ github.repository }}/branches/${BASE_REF}/protection 2>/dev/null || echo '{}')
-          required_checks=$(jq <<<"$protection" -r '.required_status_checks.contexts // [] | .[]' 2>/dev/null || true)
+
+          # Get all active rulesets (list endpoint only provides summary, not conditions)
+          rulesets=$(gh api repos/${{ github.repository }}/rulesets 2>/dev/null || echo '[]')
+
+          # Get IDs of all active rulesets
+          ruleset_ids=$(jq <<<"$rulesets" -r '.[] | select(.enforcement == "active") | .id' 2>/dev/null || true)
+
+          # Find all rulesets that apply to the base branch and accumulate required status checks
+          # Note: GitHub enforces ALL matching rulesets, not just the first one
+          required_checks=""
+          ref_name="refs/heads/${BASE_REF}"
+
+          while IFS= read -r ruleset_id; do
+            [[ -z "$ruleset_id" ]] && continue
+
+            # Fetch full ruleset details (includes conditions and rules)
+            ruleset_details=$(gh api "repos/${{ github.repository }}/rulesets/${ruleset_id}" 2>/dev/null || echo '{}')
+
+            # Check if this ruleset applies to the base branch
+            # Handle both exact matches and fnmatch patterns (e.g., refs/heads/release/*)
+            # Also check exclude patterns to avoid false positives
+            applies_to_branch=$(jq <<<"$ruleset_details" -r --arg ref "$ref_name" '
+              # Check if ref matches any include pattern
+              (.conditions.ref_name.include // [] |
+                map(
+                  if . == "~DEFAULT_BRANCH" then
+                    # Special token for default branch
+                    ($ref == "refs/heads/${{ github.event.repository.default_branch }}")
+                  else
+                    # Exact match or pattern match (simplified - exact match only for now)
+                    # TODO: Full fnmatch support would require shell pattern matching
+                    ($ref == .)
+                  end
+                ) | any
+              ) and
+              # Check that ref does not match any exclude pattern
+              ((.conditions.ref_name.exclude // [] |
+                map($ref == .) | any
+              ) | not)
+            ' 2>/dev/null || echo "false")
+
+            if [[ "$applies_to_branch" == "true" ]]; then
+              # Extract required status checks from this ruleset
+              checks=$(jq <<<"$ruleset_details" -r '
+                .rules[]? |
+                select(.type == "required_status_checks") |
+                .parameters.required_status_checks[]? |
+                .context
+              ' 2>/dev/null || true)
+
+              if [[ -n "$checks" ]]; then
+                # Accumulate checks from all matching rulesets (don't break early)
+                if [[ -z "$required_checks" ]]; then
+                  required_checks="$checks"
+                else
+                  required_checks=$(printf "%s\n%s" "$required_checks" "$checks" | sort -u)
+                fi
+              fi
+            fi
+          done <<< "$ruleset_ids"
 
           # Get check runs (GitHub Apps, some CI systems)
           check_runs=$(gh api repos/${{ github.repository }}/commits/${HEAD_SHA}/check-runs)
