@@ -322,8 +322,7 @@ CLI::App* CmdSubcommands::addCommand(
           subCmd->add_option(
               "port_and_tagging_mode",
               args,
-<<<<<<< HEAD
-              "Port name and tagging mode (e.g., eth1/1/1 tagged|untagged)");
+              "Port name and tagging mode (e.g., eth1/1/1 tagged|untagged|priority-tagged)");
           break;
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_L2_LEARNING_MODE:
           subCmd->add_option(
@@ -337,16 +336,6 @@ CLI::App* CmdSubcommands::addCommand(
               args,
               "<port-list> [<attr> <value> ...] where <attr> is one "
               "of: description, mtu");
-||||||| 856e32af1e
-=======
-              "Port name and tagging mode (e.g., eth1/1/1 tagged|untagged|priority-tagged)");
-          break;
-        case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_L2_LEARNING_MODE:
-          subCmd->add_option(
-              "learning_mode",
-              args,
-              "L2 learning mode (hardware|software|disabled)");
->>>>>>> ffa2d44645f66f482fccefedb4567f67de460b28
           break;
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_UNINITIALIZE:
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_NONE:

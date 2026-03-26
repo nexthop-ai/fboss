@@ -9,14 +9,8 @@
  */
 
 #include "fboss/cli/fboss2/CmdHandler.h"
-<<<<<<< HEAD
-#include <thrift/lib/cpp2/visitation/for_each.h>
-#include "fboss/cli/fboss2/CmdArgsLists.h"
-||||||| 856e32af1e
-#include <thrift/lib/cpp2/visitation/for_each.h>
-=======
 #include <thrift/lib/cpp2/op/Get.h>
->>>>>>> ffa2d44645f66f482fccefedb4567f67de460b28
+#include "fboss/cli/fboss2/CmdArgsLists.h"
 #include "fboss/cli/fboss2/CmdGlobalOptions.h"
 #include "fboss/cli/fboss2/CmdList.h"
 #include "fboss/cli/fboss2/gen-cpp2/cli_types.h"
@@ -30,10 +24,10 @@
 #include <folly/Conv.h>
 #include <folly/Demangle.h>
 #include <folly/ScopeGuard.h>
-#include <folly/Traits.h>
 #include <folly/executors/CPUThreadPoolExecutor.h>
 #include <folly/logging/xlog.h>
 #include <folly/stop_watch.h>
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -47,6 +41,7 @@
 #include <stdexcept>
 #include <string>
 #include <tuple>
+#include <type_traits>
 #include <utility>
 #include <vector>
 

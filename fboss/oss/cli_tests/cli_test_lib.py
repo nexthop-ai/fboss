@@ -351,19 +351,6 @@ def running_config() -> dict[str, Any]:
     Returns:
         The configuration dict containing 'sw', 'platform', etc.
     """
-<<<<<<< HEAD
-    data = run_cli(["show", "running-config"])
-
-    # The JSON has a host key (e.g., "localhost") containing a JSON string
-    for host_data_str in data.values():
-        # The value is a JSON string that needs to be parsed
-        if isinstance(host_data_str, str):
-            return json.loads(host_data_str)
-        return host_data_str
-
-    return {}
-||||||| 856e32af1e
-=======
     # Note: We don't use --fmt json here because the command already returns JSON
     # and the framework would wrap it in another layer
     cmd = [get_fboss_cli(), "show", "config", "running", "agent"]
@@ -382,4 +369,3 @@ def running_config() -> dict[str, Any]:
         raise RuntimeError(f"Command failed: {' '.join(cmd)}")
 
     return json.loads(result.stdout)
->>>>>>> ffa2d44645f66f482fccefedb4567f67de460b28
