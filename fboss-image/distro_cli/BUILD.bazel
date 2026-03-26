@@ -95,7 +95,7 @@ py_test(
         "tests/data/*.json",
         "tests/data/artifacts/*.tar.zst",
     ]) + [
-        "scripts/update_service.sh",
+        "scripts/update_component.sh",
         "//fboss/fboss-image/distro_infra:distro_infra_docker_image",
     ],
     main = "tests/device_test.py",
@@ -113,7 +113,7 @@ sh_test(
         "tests/test_topology/integration_data/*.sh",
         "tests/test_topology/integration_data/*.tar",
     ]) + [
-        "scripts/update_service.sh",
+        "scripts/update_component.sh",
         "tests/test_topology/start.sh",
         "tests/device_integration_test.py",
         "//fboss/fboss-image/distro_cli/tests/proxy_device:proxy_device_files",
