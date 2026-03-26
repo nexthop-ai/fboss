@@ -93,14 +93,16 @@ jobs:
           # Other workflows don't need them and they're expensive to install.
           target=${{ github.event_name == 'schedule' && 'install' || 'all' }}
           docker exec -e SAI_VERSION=${{ inputs.sai_version }} FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh --cmake-target $target
+          docker cp FBOSS_build_${USER}:/var/FBOSS/tmp_bld_dir/build/fboss/fboss2-dev ./fboss2-dev
+
+      - name: Collect sccache statistics
+        if: always()
+        run: |
+          docker exec FBOSS_build_${USER} sccache -s
 
       - name: Build CLI test binary
         run: |
           docker exec -e SAI_VERSION=${{ inputs.sai_version }} FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh --cmake-target cli_test
-
-      - name: Copy CLI and test binary from container
-        run: |
-          docker cp FBOSS_build_${USER}:/var/FBOSS/tmp_bld_dir/build/fboss/fboss2-dev ./fboss2-dev
           docker cp FBOSS_build_${USER}:/var/FBOSS/tmp_bld_dir/build/fboss/cli_test ./cli_test
 
       - name: Upload CLI artifact
@@ -114,11 +116,6 @@ jobs:
         with:
           name: fboss2-dev
           path: ./fboss2-dev
-
-      - name: Collect sccache statistics
-        if: always()
-        run: |
-          docker exec FBOSS_build_${USER} sccache -s
 
       - name: Parse NHCI annotations
         id: nhci
