@@ -127,7 +127,7 @@ StateDelta updateFibFromConfig(
     const facebook::fboss::IPv6NetworkToRouteMap& v6NetworkToRoute,
     const facebook::fboss::LabelToRouteMap& labelToRoute,
     facebook::fboss::NextHopIDManager const* nextHopIDManager,
-    const facebook::fboss::MySidTable& /*mySidTable*/,
+    const facebook::fboss::MySidTable& mySidTable,
     void* cookie) {
   facebook::fboss::RibToSwitchStateUpdater ribToSwitchStateUpdater(
       resolver,
@@ -135,7 +135,8 @@ StateDelta updateFibFromConfig(
       v4NetworkToRoute,
       v6NetworkToRoute,
       labelToRoute,
-      nextHopIDManager);
+      nextHopIDManager,
+      mySidTable);
 
   auto nextStatePtr =
       static_cast<std::shared_ptr<facebook::fboss::SwitchState>*>(cookie);
@@ -5041,6 +5042,18 @@ shared_ptr<SwitchSettings> ThriftConfigApplier::updateSwitchSettings(
       *cfg_->switchSettings()->ptpTcEnable()) {
     newSwitchSettings->setPtpTcEnable(*cfg_->switchSettings()->ptpTcEnable());
     switchSettingsChange = true;
+  }
+
+  {
+    auto oldMode = origSwitchSettings->getPacketForwardingMode();
+    auto newModeRef = cfg_->switchSettings()->packetForwardingMode();
+    std::optional<cfg::PacketForwardingMode> newMode = newModeRef.has_value()
+        ? std::optional<cfg::PacketForwardingMode>(*newModeRef)
+        : std::nullopt;
+    if (oldMode != newMode) {
+      newSwitchSettings->setPacketForwardingMode(newMode);
+      switchSettingsChange = true;
+    }
   }
 
   if (origSwitchSettings->getL2AgeTimerSeconds() !=

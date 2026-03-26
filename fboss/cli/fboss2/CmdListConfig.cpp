@@ -736,12 +736,37 @@ const CommandTree& kConfigCommandTree() {
           argTypeHandler<CmdConfigVlanTraits>,
           {{
                "port",
+<<<<<<< HEAD
                "Configure port settings for a VLAN",
                commandHandler<CmdConfigVlanPort>,
                argTypeHandler<CmdConfigVlanPortTraits>,
                {{
                    "taggingMode",
                    "Set port tagging mode (tagged/untagged) for the VLAN",
+||||||| 856e32af1e
+              "static-mac",
+              "Manage static MAC entries for VLANs",
+              commandHandler<CmdConfigVlanStaticMac>,
+              argTypeHandler<CmdConfigVlanStaticMacTraits>,
+              {{
+                   "add",
+                   "Add a static MAC entry to a VLAN",
+                   commandHandler<CmdConfigVlanStaticMacAdd>,
+                   argTypeHandler<CmdConfigVlanStaticMacAddTraits>,
+               },
+               {
+                   "delete",
+                   "Delete a static MAC entry from a VLAN",
+                   commandHandler<CmdConfigVlanStaticMacDelete>,
+                   argTypeHandler<CmdConfigVlanStaticMacDeleteTraits>,
+=======
+               "Configure VLAN port settings",
+               commandHandler<CmdConfigVlanPort>,
+               argTypeHandler<CmdConfigVlanPortTraits>,
+               {{
+                   "taggingMode",
+                   "Set VLAN port tagging mode (tagged, untagged, priority-tagged)",
+>>>>>>> ffa2d44645f66f482fccefedb4567f67de460b28
                    commandHandler<CmdConfigVlanPortTaggingMode>,
                    argTypeHandler<CmdConfigVlanPortTaggingModeTraits>,
                }},

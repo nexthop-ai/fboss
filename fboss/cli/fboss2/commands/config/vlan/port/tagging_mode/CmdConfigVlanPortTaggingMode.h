@@ -24,6 +24,7 @@ class TaggingModeArg : public utils::BaseObjectArgType<std::string> {
       std::vector<std::string> v) {
     if (v.empty()) {
       throw std::invalid_argument(
+<<<<<<< HEAD
           "Tagging mode is required (tagged or untagged)");
     }
     if (v.size() != 1) {
@@ -54,6 +55,49 @@ class TaggingModeArg : public utils::BaseObjectArgType<std::string> {
 
  private:
   bool emitTags_ = false;
+||||||| 856e32af1e
+=======
+          "Tagging mode is required (tagged, untagged, or priority-tagged)");
+    }
+    if (v.size() != 1) {
+      throw std::invalid_argument(
+          "Expected exactly one tagging mode (tagged, untagged, or priority-tagged)");
+    }
+
+    std::string mode = v[0];
+    folly::toLowerAscii(mode);
+    if (mode == "tagged") {
+      emitTags_ = true;
+      emitPriorityTags_ = false;
+    } else if (mode == "untagged") {
+      emitTags_ = false;
+      emitPriorityTags_ = false;
+    } else if (mode == "priority-tagged") {
+      emitTags_ = false;
+      emitPriorityTags_ = true;
+    } else {
+      throw std::invalid_argument(
+          "Invalid tagging mode '" + v[0] +
+          "'. Expected 'tagged', 'untagged', or 'priority-tagged'");
+    }
+    data_.push_back(v[0]);
+  }
+
+  bool getEmitTags() const {
+    return emitTags_;
+  }
+
+  bool getEmitPriorityTags() const {
+    return emitPriorityTags_;
+  }
+
+  const static utils::ObjectArgTypeId id =
+      utils::ObjectArgTypeId::OBJECT_ARG_TYPE_PORT_AND_TAGGING_MODE;
+
+ private:
+  bool emitTags_ = false;
+  bool emitPriorityTags_ = false;
+>>>>>>> ffa2d44645f66f482fccefedb4567f67de460b28
 };
 
 struct CmdConfigVlanPortTaggingModeTraits : public WriteCommandTraits {

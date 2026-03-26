@@ -1497,6 +1497,14 @@ std::shared_ptr<SwitchState> SaiSwitch::stateChangedImplLocked(
         &SaiFdbManager::addMac);
   }
 
+  processDelta(
+      delta.getSrv6TunnelsDelta(),
+      managerTable_->srv6TunnelManager(),
+      lockPolicy,
+      &SaiSrv6TunnelManager::changeSrv6Tunnel,
+      &SaiSrv6TunnelManager::addSrv6Tunnel,
+      &SaiSrv6TunnelManager::removeSrv6Tunnel);
+
   for (const auto& fibInfoDelta : delta.getFibsInfoDelta()) {
     for (const auto& routeDelta : fibInfoDelta.getFibsMapDelta()) {
       auto routerID = routeDelta.getOld() ? routeDelta.getOld()->getID()
@@ -1620,14 +1628,6 @@ std::shared_ptr<SwitchState> SaiSwitch::stateChangedImplLocked(
       &SaiTunnelManager::changeTunnel,
       &SaiTunnelManager::addTunnel,
       &SaiTunnelManager::removeTunnel);
-
-  processDelta(
-      delta.getSrv6TunnelsDelta(),
-      managerTable_->srv6TunnelManager(),
-      lockPolicy,
-      &SaiSrv6TunnelManager::changeSrv6Tunnel,
-      &SaiSrv6TunnelManager::addSrv6Tunnel,
-      &SaiSrv6TunnelManager::removeSrv6Tunnel);
 
 #if SAI_API_VERSION >= SAI_VERSION(1, 12, 0)
   processDelta(
@@ -2553,23 +2553,30 @@ void SaiSwitch::updatePmdInfo(
 #endif
 
   std::vector<phy::SerdesParameters> pmdSerdesParameters;
+  std::vector<phy::TxSettings> pmdTxSettings;
   if (readSerdesParams && serdes) {
     pmdSerdesParameters = managerTable_->portManager().getSerdesParameters(
+        serdes->adapterKey(), portID, numPmdLanes);
+    pmdTxSettings = managerTable_->portManager().getTxSettings(
         serdes->adapterKey(), portID, numPmdLanes);
   } else {
     // Use the previous state
     for (const auto& [_, laneState] : *lastPmdState.lanes()) {
       pmdSerdesParameters.push_back(*laneState.serdesParameters());
+      pmdTxSettings.push_back(*laneState.txSettings());
     }
   }
-  for (const auto& serdesParams : pmdSerdesParameters) {
-    auto laneId = *serdesParams.lane();
+  for (int l = 0; l < pmdSerdesParameters.size(); l++) {
+    auto laneId = *pmdSerdesParameters[l].lane();
     phy::LaneState laneState;
     if (laneStates.find(laneId) != laneStates.end()) {
       laneState = laneStates[laneId];
     }
     laneState.lane() = laneId;
-    laneState.serdesParameters() = serdesParams;
+    laneState.serdesParameters() = pmdSerdesParameters[l];
+    if (l < pmdTxSettings.size()) {
+      laneState.txSettings() = pmdTxSettings[l];
+    }
     laneStates[laneId] = laneState;
   }
   for (const auto& laneStat : laneStats) {

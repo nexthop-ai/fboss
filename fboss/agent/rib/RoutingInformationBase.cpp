@@ -23,6 +23,7 @@
 #include "fboss/agent/state/ForwardingInformationBase.h"
 #include "fboss/agent/state/ForwardingInformationBaseContainer.h"
 #include "fboss/agent/state/ForwardingInformationBaseMap.h"
+#include "fboss/agent/state/MySidMap.h"
 #include "fboss/agent/state/NodeMap-defs.h"
 #include "fboss/agent/state/StateDelta.h"
 #include "fboss/agent/state/SwitchState.h"
@@ -129,6 +130,25 @@ class Timer {
   std::chrono::time_point<std::chrono::steady_clock> start_;
 };
 
+std::shared_ptr<MySid> mySidFromEntry(const MySidEntry& entry) {
+  if (*entry.type() != MySidType::DECAPSULATE_AND_LOOKUP) {
+    throw FbossError(
+        "Only DECAPSULATE_AND_LOOKUP MySid type is currently supported");
+  }
+  if (!entry.nextHops()->empty()) {
+    throw FbossError("NextHops are not supported for MySid entries");
+  }
+  state::MySidFields fields;
+  fields.type() = *entry.type();
+  fields.mySid() = *entry.mySid();
+  auto mySid = std::make_shared<MySid>(fields);
+  mySid->setUnresolvedNextHop(std::nullopt);
+  mySid->setResolvedNextHop(std::nullopt);
+  return mySid;
+}
+
+} // namespace
+
 template <typename AddressT, typename FibType>
 void reconstructRibFromFib(
     const std::shared_ptr<FibType>& fib,
@@ -166,7 +186,19 @@ void reconstructRibFromFib(
         addrToRoute->insert(route->prefix(), route);
       });
 }
-} // namespace
+
+void reconstructMySidTableFromSwitchState(
+    const std::shared_ptr<MultiSwitchMySidMap>& mySidMap,
+    MySidTable* mySidTable) {
+  mySidTable->clear();
+  for (const auto& miter : std::as_const(*mySidMap)) {
+    for (const auto& [key, mySid] : std::as_const(*miter.second)) {
+      auto cidr = mySid->getMySid();
+      folly::CIDRNetworkV6 cidrV6(cidr.first.asV6(), cidr.second);
+      mySidTable->emplace(cidrV6, mySid);
+    }
+  }
+}
 
 template <typename RibUpdateFn>
 void RibRouteTables::updateRib(RouterID vrf, const RibUpdateFn& updateRibFn) {
@@ -177,6 +209,12 @@ void RibRouteTables::updateRib(RouterID vrf, const RibUpdateFn& updateRibFn) {
   }
   auto& routeTable = it->second;
   updateRibFn(routeTable, &lockedRouteTables->mySidTable);
+}
+
+template <typename RibUpdateFn>
+void RibRouteTables::updateRib(const RibUpdateFn& updateRibFn) {
+  auto lockedRouteTables = synchronizedRouteTables_.wlock();
+  updateRibFn(&lockedRouteTables->mySidTable);
 }
 
 void RibRouteTables::reconfigure(
@@ -408,11 +446,38 @@ void RibRouteTables::updateFib(
           nextHopIDManager_->reconstructFromFib(fibsInfoMap);
         }
       }
+
+      // Reconstruct MySidTable from the applied state
+      reconstructMySidTableFromSwitchState(
+          hwUpdateError.appliedState->getMySids(),
+          &lockedRouteTables->mySidTable);
     }
     throw;
   }
   CHECK(fibDelta.has_value());
   updateEcmpOverrides(vrf, *fibDelta);
+}
+
+void RibRouteTables::updateFib(
+    const SwitchIdScopeResolver* resolver,
+    const RibMySidToSwitchStateFunction& ribMySidToSwitchStateFunc,
+    void* cookie) {
+  try {
+    auto lockedRouteTables = synchronizedRouteTables_.rlock();
+    ribMySidToSwitchStateFunc(resolver, lockedRouteTables->mySidTable, cookie);
+  } catch (const FbossHwUpdateError& hwUpdateError) {
+    {
+      SCOPE_FAIL {
+        XLOG(FATAL) << " RIB Rollback failed, aborting program";
+      };
+      auto lockedRouteTables = synchronizedRouteTables_.wlock();
+      // Reconstruct MySidTable from the applied state
+      reconstructMySidTableFromSwitchState(
+          hwUpdateError.appliedState->getMySids(),
+          &lockedRouteTables->mySidTable);
+    }
+    throw;
+  }
 }
 
 void RibRouteTables::updateEcmpOverrides(
@@ -855,6 +920,7 @@ RibRouteTables RibRouteTables::fromThrift(
     const std::map<int32_t, state::RouteTableFields>& ribThrift,
     const std::shared_ptr<MultiSwitchFibInfoMap>& fibsInfoMap,
     const std::shared_ptr<MultiLabelForwardingInformationBase>& labelFib,
+    const std::shared_ptr<MultiSwitchMySidMap>& mySidMap,
     NextHopIDManager* nextHopIDManager) {
   RibRouteTables rib(nextHopIDManager);
   auto lockedRouteTables = rib.synchronizedRouteTables_.wlock();
@@ -868,16 +934,21 @@ RibRouteTables RibRouteTables::fromThrift(
   if (fibsInfoMap) {
     rib.importFibs(lockedRouteTables, fibsInfoMap, labelFib);
   }
+  if (mySidMap) {
+    reconstructMySidTableFromSwitchState(
+        mySidMap, &lockedRouteTables->mySidTable);
+  }
   return rib;
 }
 
 std::unique_ptr<RoutingInformationBase> RoutingInformationBase::fromThrift(
     const std::map<int32_t, state::RouteTableFields>& ribThrift,
     const std::shared_ptr<MultiSwitchFibInfoMap>& fibsInfoMap,
-    const std::shared_ptr<MultiLabelForwardingInformationBase>& labelFib) {
+    const std::shared_ptr<MultiLabelForwardingInformationBase>& labelFib,
+    const std::shared_ptr<MultiSwitchMySidMap>& mySidMap) {
   auto rib = std::make_unique<RoutingInformationBase>();
   rib->ribTables_ = RibRouteTables::fromThrift(
-      ribThrift, fibsInfoMap, labelFib, rib->nextHopIDManager_.get());
+      ribThrift, fibsInfoMap, labelFib, mySidMap, rib->nextHopIDManager_.get());
 
   // Reconstruct NextHopIDManager state from FIB during warm boot
   // This consolidates ID maps from all switches and reconstructs ref counts
@@ -936,6 +1007,17 @@ std::vector<RouteDetails> RibRouteTables::getRouteTableDetails(
   return routeDetails;
 }
 
+std::unordered_map<folly::CIDRNetworkV6, state::MySidFields>
+RibRouteTables::getMySidTableCopy() const {
+  std::unordered_map<folly::CIDRNetworkV6, state::MySidFields> result;
+  synchronizedRouteTables_.withRLock([&](const auto& synchronizedRouteTables) {
+    for (const auto& [cidr, mySidPtr] : synchronizedRouteTables.mySidTable) {
+      result.emplace(cidr, mySidPtr->toThrift());
+    }
+  });
+  return result;
+}
+
 RoutingInformationBase::UpdateStatistics RoutingInformationBase::update(
     const SwitchIdScopeResolver* resolver,
     RouterID routerID,
@@ -982,6 +1064,54 @@ RoutingInformationBase::UpdateStatistics RoutingInformationBase::update(
       updateType,
       ribToSwitchStateFunc,
       cookie);
+}
+
+void RibRouteTables::update(
+    const SwitchIdScopeResolver* resolver,
+    const std::vector<MySidEntry>& toAdd,
+    const std::vector<IpPrefix>& toDelete,
+    const RibMySidToSwitchStateFunction& ribMySidToSwitchStateFunc,
+    void* cookie) {
+  updateRib([&](MySidTable* mySidTable) {
+    // Add new MySid entries
+    for (const auto& entry : toAdd) {
+      auto mySid = mySidFromEntry(entry);
+      auto cidr = mySid->getMySid();
+      folly::CIDRNetworkV6 cidrV6(cidr.first.asV6(), cidr.second);
+      (*mySidTable)[cidrV6] = std::move(mySid);
+    }
+    // Delete MySid entries
+    for (const auto& prefix : toDelete) {
+      auto ip = network::toIPAddress(*prefix.ip());
+      auto mask = static_cast<uint8_t>(*prefix.prefixLength());
+      folly::CIDRNetworkV6 cidr(ip.asV6(), mask);
+      mySidTable->erase(cidr);
+    }
+  });
+  updateFib(resolver, ribMySidToSwitchStateFunc, cookie);
+}
+
+void RoutingInformationBase::update(
+    const SwitchIdScopeResolver* resolver,
+    const std::vector<MySidEntry>& toAdd,
+    const std::vector<IpPrefix>& toDelete,
+    folly::StringPiece updateType,
+    const RibMySidToSwitchStateFunction ribMySidToSwitchStateFunc,
+    void* cookie) {
+  ensureRunning();
+  std::exception_ptr updateException;
+  auto updateFn = [&]() {
+    try {
+      ribTables_.update(
+          resolver, toAdd, toDelete, ribMySidToSwitchStateFunc, cookie);
+    } catch (const std::exception&) {
+      updateException = std::current_exception();
+    }
+  };
+  ribUpdateEventBase_.runInFbossEventBaseThreadAndWait(updateFn);
+  if (updateException) {
+    std::rethrow_exception(updateException);
+  }
 }
 
 void RoutingInformationBase::updateStateInRibThread(
@@ -1128,5 +1258,20 @@ RibRouteTables::longestMatch(const folly::IPAddressV4& address, RouterID vrf)
 template std::shared_ptr<Route<folly::IPAddressV6>>
 RibRouteTables::longestMatch(const folly::IPAddressV6& address, RouterID vrf)
     const;
+
+template void reconstructRibFromFib<
+    folly::IPAddressV4,
+    ForwardingInformationBase<folly::IPAddressV4>>(
+    const std::shared_ptr<ForwardingInformationBase<folly::IPAddressV4>>& fib,
+    NetworkToRouteMap<folly::IPAddressV4>* addrToRoute);
+template void reconstructRibFromFib<
+    folly::IPAddressV6,
+    ForwardingInformationBase<folly::IPAddressV6>>(
+    const std::shared_ptr<ForwardingInformationBase<folly::IPAddressV6>>& fib,
+    NetworkToRouteMap<folly::IPAddressV6>* addrToRoute);
+template void
+reconstructRibFromFib<LabelID, MultiLabelForwardingInformationBase>(
+    const std::shared_ptr<MultiLabelForwardingInformationBase>& fib,
+    NetworkToRouteMap<LabelID>* addrToRoute);
 
 } // namespace facebook::fboss

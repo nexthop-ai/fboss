@@ -108,6 +108,14 @@ struct MplsRoute {
   6: common.NamedRouteDestination namedRouteDestination;
 }
 
+struct MySidEntry {
+  1: common.MySidType type;
+  # MySid entry in ip/mask format. 32 bits of this are
+  # locator block len and 32-maskLen are sid bits
+  2: Address.IPPrefix mySid;
+  3: list<common.NextHopThrift> nextHops;
+}
+
 struct ClientAndNextHops {
   1: i32 clientId;
   // Deprecated in favor of '3: nextHops'
@@ -914,6 +922,13 @@ service FbossCtrl extends phy.FbossCommonPhyCtrl {
     2: list<UnicastRoute> routes,
     3: i32 vrf,
   ) throws (1: fboss.FbossBaseError error, 2: FbossFibUpdateError fibError);
+
+  void addMySidEntries(1: list<MySidEntry> mySidEntries) throws (
+    1: fboss.FbossBaseError error,
+  );
+  void deleteMySidEntries(1: list<IpPrefix> prefixes) throws (
+    1: fboss.FbossBaseError error,
+  );
 
   // Get route counter values
   map<string, i64> getRouteCounterBytes(1: list<string> counters) throws (
