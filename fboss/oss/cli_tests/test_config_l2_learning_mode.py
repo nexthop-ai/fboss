@@ -23,13 +23,7 @@ Requirements:
 import sys
 from typing import Optional
 
-from cli_test_lib import (
-    commit_config,
-    run_cli,
-    running_config,
-    wait_for_agent_ready,
-)
-
+from cli_test_lib import commit_config, run_cli, running_config, wait_for_agent_ready
 
 # L2LearningMode enum values from switch_config.thrift
 L2_LEARNING_MODE_HARDWARE = 0
@@ -62,14 +56,14 @@ def get_l2_learning_mode() -> Optional[int]:
 def set_l2_learning_mode(mode: str) -> None:
     """Set the L2 learning mode and commit the change.
 
-    Note: L2 learning mode changes require an agent restart, so we need to
-    wait for the agent to be ready after the commit.
+    Note: L2 learning mode changes require an agent restart (coldboot).
+    The commit will trigger the restart automatically.
     """
     run_cli(["config", "l2", "learning-mode", mode])
     commit_config()
     # Wait for agent to be ready after restart
     print("  Waiting for agent to be ready after restart...")
-    if not wait_for_agent_ready(initial_wait=30, max_wait_seconds=60):
+    if not wait_for_agent_ready(timeout_seconds=60):
         raise RuntimeError("Agent did not become ready after restart")
 
 
@@ -90,34 +84,47 @@ def main() -> int:
         f"  Current mode: {MODE_INT_TO_STR.get(original_mode, f'unknown({original_mode})')}"
     )
 
-    # Step 2: Set L2 learning mode to "software"
-    print("\n[Step 2] Setting L2 learning mode to 'software'...")
-    set_l2_learning_mode("software")
-    print("  L2 learning mode set to 'software'")
+    # Step 2: Set L2 learning mode to a different mode (to trigger a change)
+    # If current is hardware, set to software; otherwise set to hardware
+    first_test_mode = (
+        "software" if original_mode == L2_LEARNING_MODE_HARDWARE else "hardware"
+    )
+    first_test_mode_int = MODE_STR_TO_INT[first_test_mode]
+
+    print(f"\n[Step 2] Setting L2 learning mode to '{first_test_mode}'...")
+    set_l2_learning_mode(first_test_mode)
+    print(f"  L2 learning mode set to '{first_test_mode}'")
 
     # Step 3: Verify the change
-    print("\n[Step 3] Verifying L2 learning mode is 'software'...")
+    print(f"\n[Step 3] Verifying L2 learning mode is '{first_test_mode}'...")
     current_mode = get_l2_learning_mode()
-    if current_mode != L2_LEARNING_MODE_SOFTWARE:
-        print(f"  ERROR: Expected software mode (1) but got: {current_mode}")
+    if current_mode != first_test_mode_int:
+        print(
+            f"  ERROR: Expected {first_test_mode} mode ({first_test_mode_int}) but got: {current_mode}"
+        )
         return 1
-    print("  Verified: L2 learning mode is 'software'")
+    print(f"  Verified: L2 learning mode is '{first_test_mode}'")
 
-    # Step 4: Set L2 learning mode to "hardware"
-    print("\n[Step 4] Setting L2 learning mode to 'hardware'...")
-    set_l2_learning_mode("hardware")
-    print("  L2 learning mode set to 'hardware'")
+    # Step 4: Set L2 learning mode back to the opposite mode
+    second_test_mode = "hardware" if first_test_mode == "software" else "software"
+    second_test_mode_int = MODE_STR_TO_INT[second_test_mode]
+
+    print(f"\n[Step 4] Setting L2 learning mode to '{second_test_mode}'...")
+    set_l2_learning_mode(second_test_mode)
+    print(f"  L2 learning mode set to '{second_test_mode}'")
 
     # Step 5: Verify the change
-    print("\n[Step 5] Verifying L2 learning mode is 'hardware'...")
+    print(f"\n[Step 5] Verifying L2 learning mode is '{second_test_mode}'...")
     current_mode = get_l2_learning_mode()
-    if current_mode != L2_LEARNING_MODE_HARDWARE:
-        print(f"  ERROR: Expected hardware mode (0) but got: {current_mode}")
+    if current_mode != second_test_mode_int:
+        print(
+            f"  ERROR: Expected {second_test_mode} mode ({second_test_mode_int}) but got: {current_mode}"
+        )
         return 1
-    print("  Verified: L2 learning mode is 'hardware'")
+    print(f"  Verified: L2 learning mode is '{second_test_mode}'")
 
-    # Restore original mode if it was different
-    if original_mode != L2_LEARNING_MODE_HARDWARE:
+    # Restore original mode if it was different from the final test mode
+    if original_mode != second_test_mode_int:
         original_mode_str = MODE_INT_TO_STR.get(original_mode, "hardware")
         print(
             f"\n[Cleanup] Restoring original L2 learning mode to '{original_mode_str}'..."

@@ -437,8 +437,6 @@ void ConfigSession::saveConfig(
   // /proc/self/cmdline may not contain the CLI command, so we gracefully skip
   // command tracking.
   std::string rawCmd = readCommandLineFromProc();
-  CHECK(!rawCmd.empty())
-      << "saveConfig() called with no command line arguments";
   // Only record if this is a config command and not already the last one
   // recorded as that'd be idempotent anyway. Strip any leading flags.
   auto pos = rawCmd.find("config ");

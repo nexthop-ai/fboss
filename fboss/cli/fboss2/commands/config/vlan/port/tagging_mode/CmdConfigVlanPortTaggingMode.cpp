@@ -21,7 +21,7 @@ namespace facebook::fboss {
 
 CmdConfigVlanPortTaggingModeTraits::RetType
 CmdConfigVlanPortTaggingMode::queryClient(
-    const HostInfo& hostInfo,
+    const HostInfo& /* hostInfo */,
     const VlanId& vlanIdArg,
     const utils::PortList& portList,
     const ObjectArgType& taggingMode) {
@@ -60,6 +60,7 @@ CmdConfigVlanPortTaggingMode::queryClient(
   }
 
   bool emitTags = taggingMode.getEmitTags();
+  bool emitPriorityTags = taggingMode.getEmitPriorityTags();
   std::vector<std::string> updatedPorts;
 
   // Update VlanPort entries
@@ -69,6 +70,7 @@ CmdConfigVlanPortTaggingMode::queryClient(
       if (*vlanPort.vlanID() == vlanId &&
           *vlanPort.logicalPort() == portLogicalId) {
         vlanPort.emitTags() = emitTags;
+        vlanPort.emitPriorityTags() = emitPriorityTags;
         found = true;
         updatedPorts.push_back(portName);
         break;
@@ -89,7 +91,15 @@ CmdConfigVlanPortTaggingMode::queryClient(
   // restart)
   session.saveConfig();
 
-  std::string modeStr = emitTags ? "tagged" : "untagged";
+  std::string modeStr;
+  if (emitPriorityTags) {
+    modeStr = "priority-tagged";
+  } else if (emitTags) {
+    modeStr = "tagged";
+  } else {
+    modeStr = "untagged";
+  }
+
   if (updatedPorts.size() == 1) {
     return fmt::format(
         "Successfully set port {} tagging mode to {} on VLAN {}",

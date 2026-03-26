@@ -33,8 +33,18 @@ namespace facebook::fboss {
 class SwitchState;
 class MultiSwitchForwardingInformationBaseMap;
 class MultiSwitchFibInfoMap;
+class MultiSwitchMySidMap;
 class SwitchIdScopeResolver;
 class StateDelta;
+
+template <typename AddressT, typename FibType>
+void reconstructRibFromFib(
+    const std::shared_ptr<FibType>& fib,
+    NetworkToRouteMap<AddressT>* addrToRoute);
+
+void reconstructMySidTableFromSwitchState(
+    const std::shared_ptr<MultiSwitchMySidMap>& mySidMap,
+    MySidTable* mySidTable);
 
 using RibToSwitchStateFunction = std::function<StateDelta(
     const SwitchIdScopeResolver* resolver,
@@ -46,6 +56,10 @@ using RibToSwitchStateFunction = std::function<StateDelta(
     const MySidTable& mySidTable,
     void* cookie)>;
 
+using RibMySidToSwitchStateFunction = std::function<StateDelta(
+    const SwitchIdScopeResolver* resolver,
+    const MySidTable& mySidTable,
+    void* cookie)>;
 /*
  * RibRouteTables provides a thread safe abstraction for maintaining Rib data
  * structures and programming them down to the FIB. Its designed to abstract
@@ -73,6 +87,13 @@ class RibRouteTables {
       bool resetClientsRoutes,
       folly::StringPiece updateType,
       const RibToSwitchStateFunction& ribToSwitchStateFunc,
+      void* cookie);
+
+  void update(
+      const SwitchIdScopeResolver* resolver,
+      const std::vector<MySidEntry>& toAdd,
+      const std::vector<IpPrefix>& toDelete,
+      const RibMySidToSwitchStateFunction& ribMySidToSwitchStateFunc,
       void* cookie);
 
   void setClassID(
@@ -140,12 +161,18 @@ class RibRouteTables {
       const std::map<int32_t, state::RouteTableFields>& ribThrift,
       const std::shared_ptr<MultiSwitchFibInfoMap>& fibsInfoMap,
       const std::shared_ptr<MultiLabelForwardingInformationBase>& labelFib,
+      const std::shared_ptr<MultiSwitchMySidMap>& mySidMap,
       NextHopIDManager* nextHopIDManager);
 
   void ensureVrf(RouterID rid);
   std::vector<RouterID> getVrfList() const;
   std::vector<RouteDetails> getRouteTableDetails(RouterID rid) const;
   std::vector<MplsRouteDetails> getMplsRouteTableDetails() const;
+
+  // Returns a copy of the MySidTable as thrift fields.
+  // This is expensive and should only be used in tests.
+  std::unordered_map<folly::CIDRNetworkV6, state::MySidFields>
+  getMySidTableCopy() const;
 
   template <typename AddressT>
   std::shared_ptr<Route<AddressT>> longestMatch(
@@ -196,6 +223,16 @@ class RibRouteTables {
   template <typename RibUpdateFn>
   void updateRib(RouterID vrf, const RibUpdateFn& updateRib);
   void updateEcmpOverrides(RouterID vrf, const StateDelta& delta);
+
+  /*
+   * MySid updates
+   */
+  void updateFib(
+      const SwitchIdScopeResolver* resolver,
+      const RibMySidToSwitchStateFunction& ribMySidToSwitchStateFunc,
+      void* cookie);
+  template <typename RibUpdateFn>
+  void updateRib(const RibUpdateFn& updateRib);
 
   /*
    * Currently, route updates to separate VRFs are made to be sequential. In the
@@ -296,7 +333,16 @@ class RoutingInformationBase {
       folly::StringPiece updateType,
       RibToSwitchStateFunction ribToSwitchStateFunc,
       void* cookie);
-
+  /*
+   * Update mySids in RIB and switchState
+   */
+  void update(
+      const SwitchIdScopeResolver* resolver,
+      const std::vector<MySidEntry>& toAdd,
+      const std::vector<IpPrefix>& toDelete,
+      folly::StringPiece updateType,
+      const RibMySidToSwitchStateFunction ribMySidToSwitchStateFunc,
+      void* cookie);
   /*
    * VrfAndNetworkToInterfaceRoute is conceptually a mapping from the pair
    * (RouterID, folly::CIDRNetwork) to the pair (Interface(1),
@@ -366,7 +412,8 @@ class RoutingInformationBase {
   static std::unique_ptr<RoutingInformationBase> fromThrift(
       const std::map<int32_t, state::RouteTableFields>& ribJson,
       const std::shared_ptr<MultiSwitchFibInfoMap>& fibsInfoMap,
-      const std::shared_ptr<MultiLabelForwardingInformationBase>& labelFib);
+      const std::shared_ptr<MultiLabelForwardingInformationBase>& labelFib,
+      const std::shared_ptr<MultiSwitchMySidMap>& mySidMap);
 
   void ensureVrf(RouterID rid) {
     ribTables_.ensureVrf(rid);
@@ -379,6 +426,10 @@ class RoutingInformationBase {
   }
   std::vector<MplsRouteDetails> getMplsRouteTableDetails() const {
     return ribTables_.getMplsRouteTableDetails();
+  }
+  std::unordered_map<folly::CIDRNetworkV6, state::MySidFields>
+  getMySidTableCopy() const {
+    return ribTables_.getMySidTableCopy();
   }
   void waitForRibUpdates() {
     ensureRunning();

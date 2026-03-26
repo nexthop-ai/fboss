@@ -153,26 +153,55 @@ class CmdConfigVlanPortTaggingModeTestFixture : public CmdHandlerTestBase {
 TEST_F(CmdConfigVlanPortTaggingModeTestFixture, taggingModeTaggedValid) {
   TaggingModeArg arg({"tagged"});
   EXPECT_TRUE(arg.getEmitTags());
+  EXPECT_FALSE(arg.getEmitPriorityTags());
 }
 
 TEST_F(CmdConfigVlanPortTaggingModeTestFixture, taggingModeUntaggedValid) {
   TaggingModeArg arg({"untagged"});
   EXPECT_FALSE(arg.getEmitTags());
+  EXPECT_FALSE(arg.getEmitPriorityTags());
+}
+
+TEST_F(
+    CmdConfigVlanPortTaggingModeTestFixture,
+    taggingModePriorityTaggedValid) {
+  TaggingModeArg arg({"priority-tagged"});
+  EXPECT_FALSE(arg.getEmitTags());
+  EXPECT_TRUE(arg.getEmitPriorityTags());
 }
 
 TEST_F(CmdConfigVlanPortTaggingModeTestFixture, taggingModeTaggedUpperCase) {
   TaggingModeArg arg({"TAGGED"});
   EXPECT_TRUE(arg.getEmitTags());
+  EXPECT_FALSE(arg.getEmitPriorityTags());
 }
 
 TEST_F(CmdConfigVlanPortTaggingModeTestFixture, taggingModeUntaggedUpperCase) {
   TaggingModeArg arg({"UNTAGGED"});
   EXPECT_FALSE(arg.getEmitTags());
+  EXPECT_FALSE(arg.getEmitPriorityTags());
+}
+
+TEST_F(
+    CmdConfigVlanPortTaggingModeTestFixture,
+    taggingModePriorityTaggedUpperCase) {
+  TaggingModeArg arg({"PRIORITY-TAGGED"});
+  EXPECT_FALSE(arg.getEmitTags());
+  EXPECT_TRUE(arg.getEmitPriorityTags());
 }
 
 TEST_F(CmdConfigVlanPortTaggingModeTestFixture, taggingModeMixedCase) {
   TaggingModeArg arg({"TaGgEd"});
   EXPECT_TRUE(arg.getEmitTags());
+  EXPECT_FALSE(arg.getEmitPriorityTags());
+}
+
+TEST_F(
+    CmdConfigVlanPortTaggingModeTestFixture,
+    taggingModePriorityTaggedMixedCase) {
+  TaggingModeArg arg({"PrIoRiTy-TaGgEd"});
+  EXPECT_FALSE(arg.getEmitTags());
+  EXPECT_TRUE(arg.getEmitPriorityTags());
 }
 
 TEST_F(CmdConfigVlanPortTaggingModeTestFixture, taggingModeEmptyInvalid) {
@@ -200,6 +229,7 @@ TEST_F(
     EXPECT_THAT(errorMsg, HasSubstr("bad-mode"));
     EXPECT_THAT(errorMsg, HasSubstr("tagged"));
     EXPECT_THAT(errorMsg, HasSubstr("untagged"));
+    EXPECT_THAT(errorMsg, HasSubstr("priority-tagged"));
   }
 }
 
@@ -212,12 +242,6 @@ TEST_F(CmdConfigVlanPortTaggingModeTestFixture, setTaggingModeTaggedSuccess) {
   VlanId vlanId({"100"});
   utils::PortList portList({"eth1/1/1"});
   TaggingModeArg taggingMode({"tagged"});
-
-  // Set command line before calling queryClient to satisfy saveConfig()
-  // requirement
-  auto& session =
-      dynamic_cast<TestableConfigSession&>(ConfigSession::getInstance());
-  session.setCommandLine("config vlan 100 port eth1/1/1 tagging-mode tagged");
 
   auto result = cmd.queryClient(localhost(), vlanId, portList, taggingMode);
 
@@ -233,6 +257,7 @@ TEST_F(CmdConfigVlanPortTaggingModeTestFixture, setTaggingModeTaggedSuccess) {
   for (const auto& vlanPort : *swConfig.vlanPorts()) {
     if (*vlanPort.vlanID() == 100 && *vlanPort.logicalPort() == 1) {
       EXPECT_TRUE(*vlanPort.emitTags());
+      EXPECT_FALSE(*vlanPort.emitPriorityTags());
       found = true;
       break;
     }
@@ -246,15 +271,10 @@ TEST_F(CmdConfigVlanPortTaggingModeTestFixture, setTaggingModeUntaggedSuccess) {
   VlanId vlanId({"100"});
   utils::PortList portList({"eth1/1/1"});
   TaggingModeArg taggedMode({"tagged"});
-
-  auto& session =
-      dynamic_cast<TestableConfigSession&>(ConfigSession::getInstance());
-  session.setCommandLine("config vlan 100 port eth1/1/1 tagging-mode tagged");
   cmd.queryClient(localhost(), vlanId, portList, taggedMode);
 
   // Now set to untagged
   TaggingModeArg untaggedMode({"untagged"});
-  session.setCommandLine("config vlan 100 port eth1/1/1 tagging-mode untagged");
   auto result = cmd.queryClient(localhost(), vlanId, portList, untaggedMode);
 
   EXPECT_THAT(result, HasSubstr("Successfully set port"));
@@ -266,6 +286,7 @@ TEST_F(CmdConfigVlanPortTaggingModeTestFixture, setTaggingModeUntaggedSuccess) {
   for (const auto& vlanPort : *swConfig.vlanPorts()) {
     if (*vlanPort.vlanID() == 100 && *vlanPort.logicalPort() == 1) {
       EXPECT_FALSE(*vlanPort.emitTags());
+      EXPECT_FALSE(*vlanPort.emitPriorityTags());
       break;
     }
   }
@@ -312,11 +333,6 @@ TEST_F(CmdConfigVlanPortTaggingModeTestFixture, setTaggingModeMultiplePorts) {
   utils::PortList portList({"eth1/1/1", "eth1/2/1"});
   TaggingModeArg taggingMode({"tagged"});
 
-  auto& session =
-      dynamic_cast<TestableConfigSession&>(ConfigSession::getInstance());
-  session.setCommandLine(
-      "config vlan 100 port eth1/1/1 eth1/2/1 tagging-mode tagged");
-
   auto result = cmd.queryClient(localhost(), vlanId, portList, taggingMode);
 
   EXPECT_THAT(result, HasSubstr("Successfully set 2 ports"));
@@ -330,10 +346,41 @@ TEST_F(CmdConfigVlanPortTaggingModeTestFixture, setTaggingModeMultiplePorts) {
   for (const auto& vlanPort : *swConfig.vlanPorts()) {
     if (*vlanPort.vlanID() == 100) {
       EXPECT_TRUE(*vlanPort.emitTags());
+      EXPECT_FALSE(*vlanPort.emitPriorityTags());
       updatedCount++;
     }
   }
   EXPECT_EQ(updatedCount, 2);
+}
+
+TEST_F(
+    CmdConfigVlanPortTaggingModeTestFixture,
+    setTaggingModePriorityTaggedSuccess) {
+  auto cmd = CmdConfigVlanPortTaggingMode();
+  VlanId vlanId({"100"});
+  utils::PortList portList({"eth1/1/1"});
+  TaggingModeArg taggingMode({"priority-tagged"});
+
+  auto result = cmd.queryClient(localhost(), vlanId, portList, taggingMode);
+
+  EXPECT_THAT(result, HasSubstr("Successfully set port"));
+  EXPECT_THAT(result, HasSubstr("eth1/1/1"));
+  EXPECT_THAT(result, HasSubstr("priority-tagged"));
+  EXPECT_THAT(result, HasSubstr("VLAN 100"));
+
+  // Verify the emitPriorityTags was updated in config
+  auto& config = ConfigSession::getInstance().getAgentConfig();
+  auto& swConfig = *config.sw();
+  bool found = false;
+  for (const auto& vlanPort : *swConfig.vlanPorts()) {
+    if (*vlanPort.vlanID() == 100 && *vlanPort.logicalPort() == 1) {
+      EXPECT_FALSE(*vlanPort.emitTags());
+      EXPECT_TRUE(*vlanPort.emitPriorityTags());
+      found = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found);
 }
 
 } // namespace facebook::fboss

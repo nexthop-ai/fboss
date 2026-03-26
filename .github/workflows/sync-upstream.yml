@@ -3,8 +3,8 @@ name: Sync Upstream Stable Commits
 on:
   # Check for upstream changes periodically
   schedule:
-    # Run every 6 hours at :30 (4 times per day)
-    - cron: "30 */6 * * *"
+    # Run every 4 hours at :42 (6 times per day)
+    - cron: "42 */4 * * *"
   # Allow manual triggering
   workflow_dispatch:
 

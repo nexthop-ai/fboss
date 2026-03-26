@@ -736,12 +736,12 @@ const CommandTree& kConfigCommandTree() {
           argTypeHandler<CmdConfigVlanTraits>,
           {{
                "port",
-               "Configure port settings for a VLAN",
+               "Configure VLAN port settings",
                commandHandler<CmdConfigVlanPort>,
                argTypeHandler<CmdConfigVlanPortTraits>,
                {{
                    "taggingMode",
-                   "Set port tagging mode (tagged/untagged) for the VLAN",
+                   "Set VLAN port tagging mode (tagged, untagged, priority-tagged)",
                    commandHandler<CmdConfigVlanPortTaggingMode>,
                    argTypeHandler<CmdConfigVlanPortTaggingModeTraits>,
                }},

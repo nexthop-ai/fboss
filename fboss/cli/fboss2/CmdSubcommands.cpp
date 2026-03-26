@@ -322,7 +322,7 @@ CLI::App* CmdSubcommands::addCommand(
           subCmd->add_option(
               "port_and_tagging_mode",
               args,
-              "Port name and tagging mode (e.g., eth1/1/1 tagged|untagged)");
+              "Port name and tagging mode (e.g., eth1/1/1 tagged|untagged|priority-tagged)");
           break;
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_L2_LEARNING_MODE:
           subCmd->add_option(

@@ -61,9 +61,10 @@ std::string l2LearningModeToString(cfg::L2LearningMode mode) {
 } // namespace
 
 CmdConfigL2LearningModeTraits::RetType CmdConfigL2LearningMode::queryClient(
-    const HostInfo& hostInfo,
+    const HostInfo& /* hostInfo */,
     const ObjectArgType& learningMode) {
-  auto& config = ConfigSession::getInstance().getAgentConfig();
+  auto& session = ConfigSession::getInstance();
+  auto& config = session.getAgentConfig();
   auto& swConfig = *config.sw();
 
   cfg::L2LearningMode newMode = learningMode.getL2LearningMode();
@@ -83,7 +84,7 @@ CmdConfigL2LearningModeTraits::RetType CmdConfigL2LearningMode::queryClient(
 
   // Save the updated config - L2 learning mode changes require agent cold boot
   // to clear ASIC state
-  ConfigSession::getInstance().saveConfig(
+  session.saveConfig(
       cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_COLDBOOT);
 
   return fmt::format(

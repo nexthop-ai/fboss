@@ -50,7 +50,7 @@ REQUIRED_BINARIES = [
     "fboss_hw_agent-fake",
     "fboss2",
     "fboss2-dev",
-    "cli_test",
+    "fboss2_integration_test",
     "setup_fboss_env",
 ]
 

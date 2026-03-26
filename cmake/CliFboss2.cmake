@@ -530,6 +530,7 @@ add_library(fboss2_lib
   fboss/cli/fboss2/CmdSubcommands.cpp
   fboss/cli/fboss2/oss/CmdGlobalOptions.cpp
   fboss/cli/fboss2/oss/CmdList.cpp
+  fboss/cli/fboss2/oss/CmdListShowConfig.cpp
   fboss/cli/fboss2/utils/CmdUtils.cpp
   fboss/cli/fboss2/utils/CLIParserUtils.cpp
   fboss/cli/fboss2/utils/CmdClientUtils.cpp
@@ -660,8 +661,8 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.h
   fboss/cli/fboss2/commands/config/l2/CmdConfigL2.cpp
   fboss/cli/fboss2/commands/config/l2/CmdConfigL2.h
-  fboss/cli/fboss2/commands/config/l2/learning_mode/CmdConfigL2LearningMode.h
   fboss/cli/fboss2/commands/config/l2/learning_mode/CmdConfigL2LearningMode.cpp
+  fboss/cli/fboss2/commands/config/l2/learning_mode/CmdConfigL2LearningMode.h
   fboss/cli/fboss2/commands/config/protocol/CmdConfigProtocol.h
   fboss/cli/fboss2/commands/config/protocol/CmdConfigProtocol.cpp
   fboss/cli/fboss2/commands/config/protocol/bgp/BgpConfigSession.h

@@ -27,43 +27,43 @@ from cli_test_lib import (
     commit_config,
     find_first_eth_interface,
     run_cli,
+    running_config,
 )
 
 
-def get_vlan_port_tagging_mode(vlan_id: int, port_name: str) -> Optional[bool]:
+def get_vlan_port_tagging_mode(vlan_id: int, port_name: str) -> Optional[str]:
     """
-    Get the current tagging mode (emitTags) for a port on a VLAN.
+    Get the current tagging mode for a port on a VLAN.
 
     Returns:
-        True if tagged (emitTags=true), False if untagged (emitTags=false),
+        "tagged" if emitTags=true and emitPriorityTags=false,
+        "untagged" if both are false,
+        "priority-tagged" if emitPriorityTags=true and emitTags=false,
         None if the port is not a member of the VLAN.
     """
-    import json as json_module
+    data = running_config()
 
-    data = run_cli(["show", "running-config"])
+    # running_config() already unwraps the host-level structure
+    sw_config = data.get("sw", {})
+    vlan_ports = sw_config.get("vlanPorts", [])
+    port_list = sw_config.get("ports", [])
 
-    # The JSON has a host key (e.g., "localhost") containing a JSON string
-    for host_data_str in data.values():
-        # The value is a JSON string that needs to be parsed
-        if isinstance(host_data_str, str):
-            host_data = json_module.loads(host_data_str)
-        else:
-            host_data = host_data_str
+    # Build a map of logicalID -> port name
+    logical_to_name = {}
+    for port in port_list:
+        logical_to_name[port.get("logicalID")] = port.get("name")
 
-        sw_config = host_data.get("sw", {})
-        vlan_ports = sw_config.get("vlanPorts", [])
-        port_list = sw_config.get("ports", [])
-
-        # Build a map of logicalID -> port name
-        logical_to_name = {}
-        for port in port_list:
-            logical_to_name[port.get("logicalID")] = port.get("name")
-
-        for vp in vlan_ports:
-            if vp.get("vlanID") == vlan_id:
-                logical_port = vp.get("logicalPort")
-                if logical_to_name.get(logical_port) == port_name:
-                    return vp.get("emitTags", False)
+    for vp in vlan_ports:
+        if vp.get("vlanID") == vlan_id:
+            logical_port = vp.get("logicalPort")
+            if logical_to_name.get(logical_port) == port_name:
+                emit_tags = vp.get("emitTags", False)
+                emit_priority_tags = vp.get("emitPriorityTags", False)
+                if emit_priority_tags:
+                    return "priority-tagged"
+                if emit_tags:
+                    return "tagged"
+                return "untagged"
     return None
 
 
@@ -90,44 +90,57 @@ def main() -> int:
     port_name = interface.name
 
     # Step 2: Get current tagging mode
-    print(f"\n[Step 2] Getting current tagging mode...")
+    print("\n[Step 2] Getting current tagging mode...")
     original_mode = get_vlan_port_tagging_mode(vlan_id, port_name)
     if original_mode is None:
-        print(f"  WARNING: Could not determine current tagging mode, assuming untagged")
-        original_mode = False
-    print(f"  Current mode: {'tagged' if original_mode else 'untagged'}")
+        print("  WARNING: Could not determine current tagging mode, assuming untagged")
+        original_mode = "untagged"
+    print(f"  Current mode: {original_mode}")
 
     # Step 3: Set tagging mode to "tagged"
-    print(f"\n[Step 3] Setting tagging mode to 'tagged'...")
+    print("\n[Step 3] Setting tagging mode to 'tagged'...")
     set_tagging_mode(vlan_id, port_name, "tagged")
-    print(f"  Tagging mode set to 'tagged'")
+    print("  Tagging mode set to 'tagged'")
 
     # Step 4: Verify the change
     print("\n[Step 4] Verifying tagging mode is 'tagged'...")
     current_mode = get_vlan_port_tagging_mode(vlan_id, port_name)
-    if current_mode is not True:
-        print(f"  ERROR: Expected tagged mode but got: {current_mode}")
+    if current_mode != "tagged":
+        print(f"  ERROR: Expected 'tagged' mode but got: {current_mode}")
         return 1
-    print(f"  Verified: Tagging mode is 'tagged'")
+    print("  Verified: Tagging mode is 'tagged'")
 
-    # Step 5: Set tagging mode to "untagged"
-    print(f"\n[Step 5] Setting tagging mode to 'untagged'...")
-    set_tagging_mode(vlan_id, port_name, "untagged")
-    print(f"  Tagging mode set to 'untagged'")
+    # Step 5: Set tagging mode to "priority-tagged"
+    print("\n[Step 5] Setting tagging mode to 'priority-tagged'...")
+    set_tagging_mode(vlan_id, port_name, "priority-tagged")
+    print("  Tagging mode set to 'priority-tagged'")
 
     # Step 6: Verify the change
-    print("\n[Step 6] Verifying tagging mode is 'untagged'...")
+    print("\n[Step 6] Verifying tagging mode is 'priority-tagged'...")
     current_mode = get_vlan_port_tagging_mode(vlan_id, port_name)
-    if current_mode is not False:
-        print(f"  ERROR: Expected untagged mode but got: {current_mode}")
+    if current_mode != "priority-tagged":
+        print(f"  ERROR: Expected 'priority-tagged' mode but got: {current_mode}")
         return 1
-    print(f"  Verified: Tagging mode is 'untagged'")
+    print("  Verified: Tagging mode is 'priority-tagged'")
+
+    # Step 7: Set tagging mode to "untagged"
+    print("\n[Step 7] Setting tagging mode to 'untagged'...")
+    set_tagging_mode(vlan_id, port_name, "untagged")
+    print("  Tagging mode set to 'untagged'")
+
+    # Step 8: Verify the change
+    print("\n[Step 8] Verifying tagging mode is 'untagged'...")
+    current_mode = get_vlan_port_tagging_mode(vlan_id, port_name)
+    if current_mode != "untagged":
+        print(f"  ERROR: Expected 'untagged' mode but got: {current_mode}")
+        return 1
+    print("  Verified: Tagging mode is 'untagged'")
 
     # Restore original mode if it was different
-    if original_mode:
-        print(f"\n[Cleanup] Restoring original tagging mode to 'tagged'...")
-        set_tagging_mode(vlan_id, port_name, "tagged")
-        print(f"  Original mode restored")
+    if original_mode != "untagged":
+        print(f"\n[Cleanup] Restoring original tagging mode to '{original_mode}'...")
+        set_tagging_mode(vlan_id, port_name, original_mode)
+        print("  Original mode restored")
 
     print("\n" + "=" * 60)
     print("TEST PASSED")
