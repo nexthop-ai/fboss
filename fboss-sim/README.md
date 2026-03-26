@@ -12,7 +12,7 @@ docker exec FBOSS_build_${USER} bash -c \
   "cd /var/FBOSS/fboss && \
    SAI_IMPL=fake ./fboss/oss/scripts/nhfboss-build.sh \
      --cmake-target fboss_forwarding_stack \
-     --cmake-target cli_test"
+     --cmake-target fboss2_integration_test"
 
 # 2. Package binaries with dependencies (inside build container)
 docker exec FBOSS_build_${USER} bash -c \
@@ -38,7 +38,7 @@ docker exec fboss_sim_runtime_${USER} /opt/fboss/bin/fboss2 --help
 ## What You Get
 
 - **Minimal Runtime**: ~1.2 GB (vs 34 GB build environment)
-- **7 Essential Binaries**: wedge_agent-fake, fboss_sw_agent, fboss_hw_agent-fake, fboss2, fboss2-dev, cli_test, setup_fboss_env
+- **7 Essential Binaries**: wedge_agent-fake, fboss_sw_agent, fboss_hw_agent-fake, fboss2, fboss2-dev, fboss2_integration_test, setup_fboss_env
 - **35 System Libraries**: Automatically bundled with `--copy-root-libs`
 - **Dual Agent Modes**: Monolithic (default) and split mode
 - **Fake SAI**: No hardware required for testing
@@ -52,7 +52,7 @@ docker exec fboss_sim_runtime_${USER} /opt/fboss/bin/fboss2 --help
 --cmake-target fboss_forwarding_stack
 
 # CLI test binary
---cmake-target cli_test
+--cmake-target fboss2_integration_test
 ```
 
 ### Critical Flags

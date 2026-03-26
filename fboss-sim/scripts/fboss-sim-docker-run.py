@@ -138,7 +138,7 @@ def main():
         f"  • Switch mode:   docker exec {DEFAULT_CONTAINER_NAME} switch-agent-mode.sh split"
     )
     print(
-        f"  • Run CLI test:  docker exec {DEFAULT_CONTAINER_NAME} /opt/fboss/bin/cli_test"
+        f"  • Run CLI test:  docker exec {DEFAULT_CONTAINER_NAME} /opt/fboss/bin/fboss2_integration_test"
     )
     print()
 

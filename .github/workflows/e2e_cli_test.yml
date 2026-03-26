@@ -148,10 +148,10 @@ jobs:
         if: steps.find_dut.outputs.dut_found == 'true' && steps.prepare_dut.outputs.dut_prepared == 'true' && steps.check_wedge_agent.outputs.wedge_agent_enabled == 'true'
         run: |
           set -e
-          echo "Copying cli_test to DUT ${{ steps.find_dut.outputs.dut_name }}:~/cli_test"
-          ls -l ./cli_test || echo "cli_test not found in workspace"
-          if ! nh dvc scp ./cli_test ${{ steps.find_dut.outputs.dut_name }}:~/; then
-            echo "::error::Failed to copy cli_test to DUT ${{ steps.find_dut.outputs.dut_name }}"
+          echo "Copying fboss2_integration_test to DUT ${{ steps.find_dut.outputs.dut_name }}:~/fboss2_integration_test"
+          ls -l ./fboss2_integration_test || echo "fboss2_integration_test not found in workspace"
+          if ! nh dvc scp ./fboss2_integration_test ${{ steps.find_dut.outputs.dut_name }}:~/; then
+            echo "::error::Failed to copy fboss2_integration_test to DUT ${{ steps.find_dut.outputs.dut_name }}"
             exit 1
           fi
 
@@ -168,7 +168,7 @@ jobs:
         run: |
           echo "Using build_id: ${{ steps.latest_nexis_build.outputs.latest_build_id }}"
           echo "Using DUT: ${{ steps.find_dut.outputs.dut_name }}"
-          if ! nh dvc ssh ${{ steps.find_dut.outputs.dut_name }} -c "./cli_test"; then
+          if ! nh dvc ssh ${{ steps.find_dut.outputs.dut_name }} -c "./fboss2_integration_test"; then
             echo "::warning::E2E CLI tests failed on DUT ${{ steps.find_dut.outputs.dut_name }}."
             echo "tests_passed=false" >> $GITHUB_OUTPUT
             exit 0

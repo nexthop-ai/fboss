@@ -18,13 +18,13 @@
 #include <gtest/gtest.h>
 #include <filesystem>
 #include <string>
-#include "fboss/cli/test/CliTest.h"
+#include "fboss/cli/fboss2/test/integration_test/Fboss2IntegrationTest.h"
 
 namespace fs = std::filesystem;
 
 using namespace facebook::fboss;
 
-class ConfigSessionClearTest : public CliTest {
+class ConfigSessionClearTest : public Fboss2IntegrationTest {
  protected:
   fs::path getSessionConfigPath() const {
     // NOLINTNEXTLINE(concurrency-mt-unsafe): HOME is read-only in practice

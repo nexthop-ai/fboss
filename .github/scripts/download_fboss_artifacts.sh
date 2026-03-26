@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Download cli_test and fboss2-dev artifacts from the PR Validation workflow
+# Download fboss2_integration_test and fboss2-dev artifacts from the PR Validation workflow
 # for the given commit SHA (HEAD_SHA).
 #
 # Usage: download_fboss_artifacts.sh <HEAD_SHA>
@@ -33,13 +33,13 @@ if [[ -z ${RUN_ID} ]]; then
   exit 1
 fi
 
-echo "Downloading cli_test artifact from PR Validation run: ${RUN_ID} (commit: ${HEAD_SHA})"
-if ! gh run download "${RUN_ID}" -n cli_test --dir ./; then
-  echo "::error::Failed to download cli_test artifact for run ${RUN_ID} (commit: ${HEAD_SHA})" >&2
+echo "Downloading fboss2_integration_test artifact from PR Validation run: ${RUN_ID} (commit: ${HEAD_SHA})"
+if ! gh run download "${RUN_ID}" -n fboss2_integration_test --dir ./; then
+  echo "::error::Failed to download fboss2_integration_test artifact for run ${RUN_ID} (commit: ${HEAD_SHA})" >&2
   exit 1
 fi
-if [[ ! -f "./cli_test" ]]; then
-  echo "::error::cli_test artifact not found after download for run ${RUN_ID} (commit: ${HEAD_SHA})" >&2
+if [[ ! -f "./fboss2_integration_test" ]]; then
+  echo "::error::fboss2_integration_test artifact not found after download for run ${RUN_ID} (commit: ${HEAD_SHA})" >&2
   exit 1
 fi
 
@@ -53,4 +53,4 @@ if [[ ! -f "./fboss2-dev" ]]; then
   exit 1
 fi
 
-echo "Successfully downloaded cli_test and fboss2-dev artifacts for commit ${HEAD_SHA}."
+echo "Successfully downloaded fboss2_integration_test and fboss2-dev artifacts for commit ${HEAD_SHA}."
