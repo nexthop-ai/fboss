@@ -1,0 +1,276 @@
+exports_files([
+    "ruff.toml",
+    "scripts/build_and_tag_docker.sh",
+])
+
+filegroup(
+    name = "builder",
+    visibility = ["//visibility:public"],
+    srcs = glob(
+        ["**"],
+        exclude = [
+            ".artifacts/**",
+            "**/__pycache__/**",
+            "**/*.pyc",
+            "**/*.swp",
+            "**/*.swo",
+            "**/*~",
+        ],
+    ),
+)
+
+# Shared library containing all the distro_cli code
+py_library(
+    name = "distro_cli_lib",
+    srcs = glob(
+        ["**/*.py"],
+        exclude = ["tests/**/*.py"],
+    ),
+    imports = [".."],
+    visibility = ["//visibility:public"],
+)
+
+# Shared test helpers library
+py_library(
+    name = "test_helpers",
+    srcs = ["tests/test_helpers.py"],
+    imports = [".."],
+    visibility = ["//visibility:public"],
+    deps = [":distro_cli_lib"],
+)
+
+py_test(
+    name = "manifest_test",
+    srcs = ["tests/manifest_test.py"],
+    imports = [".."],
+    deps = [":distro_cli_lib"],
+    data = glob(["tests/data/*.json"]),
+    main = "tests/manifest_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "small",
+)
+
+py_test(
+    name = "image_builder_test",
+    srcs = ["tests/image_builder_test.py"],
+    imports = [".."],
+    deps = [
+        ":distro_cli_lib",
+        ":test_helpers",
+    ],
+    data = glob(["tests/data/*.json"]),
+    main = "tests/image_builder_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "medium",
+    tags = ["disabled"],  # Fails due to read-only filesystem
+)
+
+py_test(
+    name = "build_test",
+    srcs = ["tests/build_test.py"],
+    imports = [".."],
+    deps = [
+        ":distro_cli_lib",
+        ":test_helpers",
+    ],
+    data = glob(["tests/data/*.json", "tests/data/**/*.sh"], allow_empty = True),
+    main = "tests/build_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "medium",
+    tags = ["disabled"], # Fails due to read-only filesystem
+)
+
+py_test(
+    name = "device_test",
+    srcs = ["tests/device_test.py"],
+    imports = [".."],
+    deps = [
+        ":distro_cli_lib",
+        ":test_helpers",
+    ],
+    data = glob([
+        "tests/data/*.json",
+        "tests/data/artifacts/*.tar.zst",
+    ]) + [
+        "scripts/update_component.sh",
+        "//fboss/fboss-image/distro_infra:distro_infra_docker_image",
+    ],
+    main = "tests/device_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "medium",
+)
+
+sh_test(
+    name = "device_integration_test",
+    srcs = ["tests/run_device_integration_test.sh"],
+    data = glob([
+        "tests/data/*.json",
+        "tests/test_topology/integration_data/*.json",
+        "tests/test_topology/integration_data/*.sh",
+        "tests/test_topology/integration_data/*.tar",
+    ]) + [
+        "scripts/update_component.sh",
+        "tests/test_topology/start.sh",
+        "tests/device_integration_test.py",
+        "//fboss/fboss-image/distro_cli/tests/proxy_device:proxy_device_files",
+        "//fboss:fboss_builder_docker",
+        "//fboss/fboss-image/distro_cli/tests/proxy_device:proxy_device_docker_image",
+        ":distro_cli_lib",
+        ":test_helpers",
+    ],
+    size = "large",
+    tags = ["requires-network"]
+)
+
+py_test(
+    name = "cli_test",
+    srcs = ["tests/cli_test.py"],
+    imports = [".."],
+    deps = [":distro_cli_lib"],
+    main = "tests/cli_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "small",
+)
+
+py_test(
+    name = "docker_test",
+    srcs = [
+        "tests/docker_test.py",
+    ],
+    imports = [".."],
+    deps = [
+        ":distro_cli_lib",
+        ":test_helpers",
+    ],
+    main = "tests/docker_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "small",
+    tags = ["disabled"],
+)
+
+py_test(
+    name = "kernel_build_test",
+    srcs = [
+        "tests/kernel_build_test.py",
+    ],
+    imports = [".."],
+    deps = [
+        ":distro_cli_lib",
+        ":test_helpers",
+    ],
+    data = glob(["tests/data/*.json", "tests/data/*.tar.zst"]) + [
+        "//fboss/fboss-image/kernel:kernel_build_files",
+    ],
+    main = "tests/kernel_build_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "large",  # E2E test takes ~10 minutes
+    tags = ["not-for-ci"],  # E2E test - run manually due to excessive execution times
+)
+
+py_test(
+    name = "artifact_test",
+    srcs = ["tests/artifact_test.py"],
+    imports = [".."],
+    deps = [":distro_cli_lib"],
+    data = glob(["tests/data/*.json"]),
+    main = "tests/artifact_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "small",
+)
+
+py_test(
+    name = "download_test",
+    srcs = [
+        "tests/download_test.py",
+    ],
+    imports = [".."],
+    deps = [
+        ":distro_cli_lib",
+        ":test_helpers",
+    ],
+    data = glob(["tests/data/*.json"]),
+    main = "tests/download_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "small",
+)
+
+py_test(
+    name = "kernel_download_test",
+    srcs = ["tests/kernel_download_test.py"],
+    imports = [".."],
+    deps = [
+        ":distro_cli_lib",
+        ":test_helpers",
+    ],
+    data = glob(["tests/data/*.json", "tests/data/*.tar.zst"]),
+    main = "tests/kernel_download_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "small",
+)
+
+py_test(
+    name = "build_entrypoint_test",
+    srcs = ["tests/build_entrypoint_test.py"],
+    imports = [".."],
+    deps = [
+        ":distro_cli_lib",
+        ":test_helpers",
+    ],
+    data = glob(["tests/data/*.json"]),
+    main = "tests/build_entrypoint_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "medium",
+    tags = ["disabled"],
+)
+
+py_test(
+    name = "docker_image_test",
+    srcs = ["tests/docker_image_test.py"],
+    imports = [".."],
+    deps = [":distro_cli_lib"],
+    data = glob(["tests/data/*.json"]),
+    main = "tests/docker_image_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "small",
+)
+
+py_test(
+    name = "sai_build_test",
+    srcs = [
+        "tests/sai_build_test.py",
+        "tests/test_helpers.py",
+    ],
+    imports = [".."],
+    deps = [
+        ":distro_cli_lib",
+    ],
+    data = glob(["tests/data/*.json"]),
+    main = "tests/sai_build_test.py",
+    python_version = "PY3",
+    srcs_version = "PY3",
+    size = "large",  # E2E test takes several minutes
+    tags = ["not-for-ci"],  # E2E test - run manually due to excessive execution times
+)
+
+# Disabling linting due to ruff not getting installed during build.
+# Until this is resolved, we depend on pre-commit checks.
+#load("//bazel_lib:python_lint.bzl", "py_lint_test")
+#
+#
+#py_lint_test(
+#     name = "lint_check",
+#     srcs = glob(["**/*.py"]),
+#     config = "ruff.toml",
+#)
