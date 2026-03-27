@@ -97,6 +97,7 @@ if [ "$need_sai" -eq 1 ]; then
 
   log "Found SAI at $SAI_DIR (installed by build_entrypoint.py)"
 fi
+export SAI_DIR
 
 # Function to perform complete build with given suffix, called in a subshell
 # to isolate environments
@@ -104,6 +105,7 @@ perform_build() {
   local build_suffix="$1"
   local output_suffix="$2"
   local sai_env_file="$3"
+  local -a npu_flags=()
 
   log "----- perform_build Command: $0, ARGS: $build_suffix $output_suffix $sai_env_file --------"
 
@@ -119,26 +121,32 @@ perform_build() {
   if [ "$need_sai" -eq 1 ]; then
     log "Using SAI_SDK_VERSION=${SAI_SDK_VERSION:-N/A} for SAI_VERSION=${SAI_VERSION:-Unknown}"
 
+    npu_flags+=("--npu-libsai-impl-path" "$SAI_DIR/lib/libsai_impl.a")
+    npu_flags+=("--npu-experiments-path" "$SAI_DIR/include")
+
     if [ -n "${BUILD_SAI_FAKE:-}" ]; then
       sai_name="sai-fake"
-      export BUILD_SAI_FAKE
-      export BUILD_SAI_FAKE_LINK_TEST
+      # Default for run-getdeps.py is to assume Fake SAI. Must unset real-SAI arguments above
+      npu_flags=()
     elif [ -n "${SAI_BRCM_IMPL:-}" ]; then
       sai_name="sai-bcm-${SAI_SDK_VERSION}"
-      export SAI_BRCM_IMPL
+      npu_flags+=("--npu-sai-impl" "SAI_BRCM_IMPL")
     elif [ -n "${SAI_BRCM_PAI_IMPL:-}" ]; then
       sai_name="sai-brcm-pai-${SAI_SDK_VERSION}"
-      export SAI_BRCM_PAI_IMPL
+      npu_flags+=("--phy-sai-impl" "SAI_BRCM_PAI_IMPL")
+    elif [ -n "${SAI_TAJO_IMPL:-}" ]; then
+      sai_name="sai-tajo-${SAI_SDK_VERSION}"
+      npu_flags+=("--npu-sai-impl" "SAI_TAJO_IMPL")
     else
       sai_name="sai-unknown-${SAI_SDK_VERSION}"
     fi
     log "Using SAI implementation: $sai_name"
 
     if [ -n "${SAI_VERSION:-}" ]; then
-      export SAI_VERSION
+      npu_flags+=("--npu-sai-version" "$SAI_VERSION")
     fi
     if [ -n "${SAI_SDK_VERSION:-}" ]; then
-      export SAI_SDK_VERSION
+      npu_flags+=("--npu-sai-sdk-version" "$SAI_SDK_VERSION")
     fi
   fi
 
@@ -183,34 +191,7 @@ perform_build() {
   # tar -xf fboss/oss/stable_commits/latest_stable_hashes.tar.gz
   chmod -R a+r build/fbcode_builder/manifests
 
-  # Setup SAI environment
-  if [ "$stack_type" = "forwarding" ]; then
-    # Setup SAI implementation
-    SAI_INCLUDE_PATH="$SAI_DIR/include"
-    log "Using SAI include path for build-helper: $SAI_INCLUDE_PATH"
-
-    SAI_IMPL_OUTPUT_DIR="$build_dir/sai_impl_output"
-    log "Preparing SAI manifests and HTTP server via build-helper.py into $SAI_IMPL_OUTPUT_DIR"
-
-    # This will:
-    #   * Copy libsai_impl.a and headers into $SAI_IMPL_OUTPUT_DIR
-    #   * Create libsai_impl.tar.gz
-    #   * Rewrite libsai and sai_impl manifests
-    #   * Ensure fboss manifest depends on sai_impl
-    #   * Start a local http.server on port 8000 serving libsai_impl.tar.gz
-    #
-    # getdeps.py will then be able to download sai_impl from
-    # http://localhost:8000/libsai_impl.tar.gz using these manifests
-    if [ -z "${BUILD_SAI_FAKE:-}" ]; then
-      ./fboss/oss/scripts/build-helper.py \
-        "$SAI_DIR/lib/libsai_impl.a" \
-        "$SAI_INCLUDE_PATH" \
-        "$SAI_IMPL_OUTPUT_DIR" \
-        "$SAI_VERSION"
-    else
-      log "BUILD_SAI_FAKE is set; skipping build-helper.py (no vendor SAI manifests)"
-    fi
-  elif [ "$stack_type" = "platform" ]; then
+  if [ "$stack_type" = "platform" ]; then
     # For a platform-only build we do not need the vendor SAI implementation.
     # Temporarily drop sai_impl from the fboss manifest so getdeps will not try
     # to fetch it. The open-source SAI headers (libsai) remain in the manifest.
@@ -225,14 +206,18 @@ perform_build() {
 
   # Install system dependencies
   log "Installing system dependencies..."
-  time nice -n 10 ./fboss/oss/scripts/run-getdeps.py install-system-deps \
-    --num-jobs $num_jobs --recursive $common_options
+  time nice -n 10 ./fboss/oss/scripts/run-getdeps.py \
+    "${npu_flags[@]}" \
+    install-system-deps \
+    --num-jobs "$num_jobs" --recursive $common_options
 
   # Build dependencies
   log "Building FBOSS dependencies..."
-  time nice -n 10 ./fboss/oss/scripts/run-getdeps.py build \
-    --num-jobs $num_jobs \
-    --build-type $BUILD_TYPE \
+  time nice -n 10 ./fboss/oss/scripts/run-getdeps.py \
+    "${npu_flags[@]}" \
+    build \
+    --num-jobs "$num_jobs" \
+    --build-type "$BUILD_TYPE" \
     --only-deps $common_options
 
   log "Get deps SUCCESS"
@@ -240,8 +225,10 @@ perform_build() {
   # Build FBOSS stack
   log "Building FBOSS ${stack_label} stack..."
 
-  time nice -n 10 ./fboss/oss/scripts/run-getdeps.py build \
-    --num-jobs ${num_jobs:?} \
+  time nice -n 10 ./fboss/oss/scripts/run-getdeps.py \
+    "${npu_flags[@]}" \
+    build \
+    --num-jobs "${num_jobs:?}" \
     --no-deps \
     --build-type "${BUILD_TYPE:-MinSizeRel}" \
     --cmake-target "$cmake_target" \
