@@ -12,10 +12,6 @@
 
 #include <fmt/format.h>
 #include <algorithm>
-<<<<<<< HEAD
-#include <unordered_set>
-||||||| ffa2d44645
-=======
 #include <cctype>
 #include <cstddef>
 #include <stdexcept>
@@ -24,7 +20,6 @@
 #include <utility>
 #include <vector>
 #include "fboss/cli/fboss2/utils/InterfaceList.h"
->>>>>>> 59441e2075970d66ad374dee81cab9e96a5bf99d
 
 namespace facebook::fboss::utils {
 

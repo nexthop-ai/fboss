@@ -4,15 +4,8 @@ distro_infra/parts/ipxe/ipxev6.efi
 image_builder/logs
 image_builder/output
 kernel/dist
-<<<<<<< HEAD
 .cache
-*.iso
-*.tar
-||||||| ffa2d44645
-=======
 distro_cli/.artifacts
 image_builder/templates/centos-09.0/root
 *.iso
 *.tar*
-image_builder/output/
->>>>>>> 59441e2075970d66ad374dee81cab9e96a5bf99d

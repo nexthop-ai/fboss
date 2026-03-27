@@ -392,6 +392,8 @@ add_library(fboss2_lib
   fboss/cli/fboss2/CmdArgsLists.cpp
   fboss/cli/fboss2/CmdList.cpp
   fboss/cli/fboss2/CmdLocalOptions.cpp
+  fboss/cli/fboss2/commands/delete/config/CmdDeleteConfig.h
+  fboss/cli/fboss2/commands/delete/config/CmdDeleteConfig.cpp
   fboss/cli/fboss2/commands/get/pcap/CmdGetPcap.h
   fboss/cli/fboss2/commands/set/interface/CmdSetInterface.h
   fboss/cli/fboss2/commands/set/interface/prbs/CmdSetInterfacePrbs.h
