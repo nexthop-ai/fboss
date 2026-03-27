@@ -243,37 +243,41 @@ def find_first_eth_interface() -> Interface:
     return matches[0]
 
 
-def wait_for_agent_ready(initial_wait: int = 0, max_wait_seconds: int = 60) -> bool:
+def wait_for_agent_ready(
+    timeout_seconds: float = 60.0,
+    poll_interval_ms: int = 500,
+) -> None:
     """
-    Wait for the wedge_agent to be ready after a restart.
-
-    The agent restart typically takes 40-50 seconds. We wait for an initial
-    period and then poll until the agent responds with valid data.
+    Wait for the FBOSS agent to be ready by polling 'config applied-info'.
 
     Args:
-        max_wait_seconds: Maximum time to wait for the agent to be ready.
+        timeout_seconds: Maximum time to wait in seconds (default: 60)
+        poll_interval_ms: How often to poll in milliseconds (default: 500)
 
-    Returns:
-        True if the agent is ready, False if timeout.
+    Raises:
+        RuntimeError: If the agent is not ready within the timeout
     """
-    if initial_wait > 0:
-        print(f"  Sleeping {initial_wait}s for agent restart...")
-        time.sleep(initial_wait)
-
-    # Now poll until agent is ready or timeout
     start_time = time.time()
-    remaining = max_wait_seconds - initial_wait
-    while time.time() - start_time < remaining:
+    poll_interval_s = poll_interval_ms / 1000.0
+
+    while True:
+        elapsed = time.time() - start_time
+        if elapsed >= timeout_seconds:
+            raise RuntimeError(f"Agent not ready after {timeout_seconds}s")
+
         try:
-            # Try to get the running config - if it works, agent is ready
-            data = run_cli(["show", "running-config"], check=False)
-            # Make sure we got valid data (not empty due to connection issues)
-            if data and any(data.values()):
-                return True
-        except (RuntimeError, json.JSONDecodeError):
+            # Try to run 'config applied-info' - a simple command to check agent is ready
+            data = run_cli(["config", "applied-info"], check=False, quiet=True)
+            if data:
+                print(f"[CLI] Agent is ready (waited {elapsed:.1f}s)")
+                # Log the applied-info output for debugging
+                print(f"[CLI] Applied info: {json.dumps(data)}")
+                return
+        except Exception:
             pass
-        time.sleep(2)
-    return False
+
+        # Agent not ready yet, wait and retry
+        time.sleep(poll_interval_s)
 
 
 def commit_config() -> None:

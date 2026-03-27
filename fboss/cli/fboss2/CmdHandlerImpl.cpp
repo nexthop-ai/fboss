@@ -118,7 +118,6 @@
 #include "fboss/cli/fboss2/commands/show/route/CmdShowRouteDetails.h"
 #include "fboss/cli/fboss2/commands/show/route/CmdShowRouteSummary.h"
 #include "fboss/cli/fboss2/commands/show/route/gen-cpp2/model_visitation.h"
-#include "fboss/cli/fboss2/commands/show/running_config/CmdShowRunningConfig.h"
 #include "fboss/cli/fboss2/commands/show/sdk/dump/CmdShowSdkDump.h"
 #include "fboss/cli/fboss2/commands/show/systemport/CmdShowSystemPort.h"
 #include "fboss/cli/fboss2/commands/show/systemport/gen-cpp2/model_visitation.h"
@@ -269,8 +268,6 @@ template void CmdHandler<CmdShowTeFlow, CmdShowTeFlowTraits>::run();
 template void CmdHandler<CmdStartPcap, CmdStartPcapTraits>::run();
 template void CmdHandler<CmdStopPcap, CmdStopPcapTraits>::run();
 template void CmdHandler<CmdShowRif, CmdShowRifTraits>::run();
-template void
-CmdHandler<CmdShowRunningConfig, CmdShowRunningConfigTraits>::run();
 
 template const ValidAggMapType
 CmdHandler<CmdShowPort, CmdShowPortTraits>::getValidAggs();
