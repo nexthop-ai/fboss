@@ -12,6 +12,7 @@
 
 #include <fmt/format.h>
 #include <folly/Conv.h>
+<<<<<<< HEAD
 #include "fboss/cli/fboss2/CmdHandler.cpp"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/utils/CmdUtilsCommon.h"
@@ -92,5 +93,95 @@ void CmdConfigInterface::printOutput(const RetType& logMsg) {
 
 // Explicit template instantiation
 template void CmdHandler<CmdConfigInterface, CmdConfigInterfaceTraits>::run();
+||||||| ffa2d44645
+=======
+#include <folly/String.h>
+#include <cstdint>
+#include <exception>
+#include <iostream>
+#include <ostream>
+#include <stdexcept>
+#include <string>
+#include <vector>
+#include "fboss/agent/gen-cpp2/switch_config_types.h"
+#include "fboss/cli/fboss2/session/ConfigSession.h"
+#include "fboss/cli/fboss2/utils/CmdUtilsCommon.h"
+#include "fboss/cli/fboss2/utils/HostInfo.h"
+#include "fboss/cli/fboss2/utils/InterfaceList.h"
+
+namespace facebook::fboss {
+
+CmdConfigInterfaceTraits::RetType CmdConfigInterface::queryClient(
+    const HostInfo& /* hostInfo */,
+    const ObjectArgType& interfaceConfig) {
+  const auto& interfaces = interfaceConfig.getInterfaces();
+  const auto& attributes = interfaceConfig.getAttributes();
+
+  if (interfaces.empty()) {
+    throw std::invalid_argument("No interface name provided");
+  }
+
+  // If no attributes provided, this is a pass-through to subcommands
+  if (!interfaceConfig.hasAttributes()) {
+    throw std::runtime_error(
+        "Incomplete command. Either provide attributes (description, mtu) "
+        "or use a subcommand (switchport)");
+  }
+
+  std::vector<std::string> results;
+
+  // Process each attribute
+  for (const auto& [attr, value] : attributes) {
+    if (attr == "description") {
+      // Set description for all ports
+      for (const utils::Intf& intf : interfaces) {
+        cfg::Port* port = intf.getPort();
+        if (port) {
+          port->description() = value;
+        }
+      }
+      results.push_back(fmt::format("description=\"{}\"", value));
+    } else if (attr == "mtu") {
+      // Validate and set MTU for all interfaces
+      int32_t mtu = 0;
+      try {
+        mtu = folly::to<int32_t>(value);
+      } catch (const std::exception&) {
+        throw std::invalid_argument(
+            fmt::format("Invalid MTU value '{}': must be an integer", value));
+      }
+
+      if (mtu < utils::kMtuMin || mtu > utils::kMtuMax) {
+        throw std::invalid_argument(
+            fmt::format(
+                "MTU value {} is out of range. Valid range is {}-{}",
+                mtu,
+                utils::kMtuMin,
+                utils::kMtuMax));
+      }
+
+      for (const utils::Intf& intf : interfaces) {
+        cfg::Interface* interface = intf.getInterface();
+        if (interface) {
+          interface->mtu() = mtu;
+        }
+      }
+      results.push_back(fmt::format("mtu={}", mtu));
+    }
+  }
+
+  // Save the updated config
+  ConfigSession::getInstance().saveConfig();
+
+  std::string interfaceList = folly::join(", ", interfaces.getNames());
+  std::string attrList = folly::join(", ", results);
+  return fmt::format(
+      "Successfully configured interface(s) {}: {}", interfaceList, attrList);
+}
+
+void CmdConfigInterface::printOutput(const RetType& logMsg) {
+  std::cout << logMsg << std::endl;
+}
+>>>>>>> 59441e2075970d66ad374dee81cab9e96a5bf99d
 
 } // namespace facebook::fboss

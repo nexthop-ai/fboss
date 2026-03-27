@@ -315,8 +315,15 @@ CLI::App* CmdSubcommands::addCommand(
           subCmd->add_option(
               "map_entry",
               args,
-              "<map-type> <key> <value> where map-type is one of: "
-              "tc-to-queue, pfc-pri-to-queue, tc-to-pg, pfc-pri-to-pg");
+              "<map-type> ... where map-type is one of:\n"
+              "  tc-to-queue (traffic class to queue)\n"
+              "  pfc-pri-to-queue (PFC priority to queue)\n"
+              "  tc-to-pg (traffic class to priority group)\n"
+              "  pfc-pri-to-pg (PFC priority to priority group)\n"
+              "  dscp (DSCP marking)\n"
+              "  mpls-exp (MPLS EXP bits)\n"
+              "  dot1p (802.1p priority)\n"
+              "  traffic-class");
           break;
         case utils::ObjectArgTypeId::OBJECT_ARG_TYPE_PORT_AND_TAGGING_MODE:
           subCmd->add_option(
@@ -353,13 +360,28 @@ void CmdSubcommands::addCommandBranch(
     const Command& cmd,
     std::string& fullCmd,
     int depth) {
-  // Command should not already exists since we only traverse the tree once
-  if (utils::getSubcommandIf(app, cmd.name)) {
-    // TODO explore moving this check to a compile time check
-    throw std::runtime_error(
-        fmt::format(
-            "Command `{}` already exists, command tree must be invalid",
-            cmd.name));
+  if (auto* existing = utils::getSubcommandIf(app, cmd.name)) {
+    // Command already exists. Allow merging when either side has subcommands
+    // to contribute. Reject only when both the existing and incoming commands
+    // are leaf nodes (no children) — that means the exact same path from root
+    // to leaf exists in multiple trees, which is a true conflict.
+    if (cmd.subcommands.empty() &&
+        existing->get_subcommands([](CLI::App*) { return true; }).empty()) {
+      throw std::runtime_error(
+          fmt::format(
+              "Command `{}` already exists, command tree must be invalid",
+              cmd.name));
+    }
+    if (fullCmd.empty()) {
+      fullCmd += cmd.name;
+    } else {
+      fullCmd += fmt::format("_{}", cmd.name);
+    }
+    for (const auto& child : cmd.subcommands) {
+      std::string newFullCmd = fullCmd;
+      addCommandBranch(*existing, child, newFullCmd, depth);
+    }
+    return;
   }
   auto* subCmd = addCommand(app, cmd, fullCmd, depth);
   if (cmd.commandHandler) {

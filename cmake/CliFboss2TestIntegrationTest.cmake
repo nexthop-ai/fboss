@@ -6,10 +6,11 @@
 # communicates with the agent via Thrift, without running the actual fboss2-dev
 # binary.
 add_executable(fboss2_integration_test
-  fboss/cli/fboss2/oss/CmdListConfig.cpp
+  fboss/cli/fboss2/oss/config/CmdListImpl.cpp
   fboss/cli/fboss2/test/integration_test/Fboss2IntegrationTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigInterfaceDescriptionTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigInterfaceMtuTest.cpp
+  fboss/cli/fboss2/test/integration_test/ConfigQosPolicyMapTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigSessionClearTest.cpp
   fboss/cli/fboss2/utils/CmdInitUtils.cpp
   fboss/cli/fboss2/utils/oss/CmdInitUtils.cpp

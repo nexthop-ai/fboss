@@ -10,12 +10,13 @@
 
 #pragma once
 
-#include "fboss/cli/fboss2/CmdList.h"
+#include <cstdint>
 
 namespace facebook::fboss {
+class HwSwitch;
+namespace utility {
 
-// Returns the "show config" command tree that is shared between
-// fboss2 and fboss2-dev binaries
-const CommandTree& kShowConfigCommandTree();
+int32_t getSwitchingModeFromHw(const facebook::fboss::HwSwitch* hw);
 
+} // namespace utility
 } // namespace facebook::fboss

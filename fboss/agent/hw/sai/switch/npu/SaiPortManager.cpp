@@ -601,7 +601,14 @@ SaiPortTraits::CreateAttributes SaiPortManager::attributesFromSwPort(
     }
     hwLaneList = pportList;
   }
-  auto globalFlowControlMode = utility::getSaiPortPauseMode(swPort->getPause());
+  std::optional<SaiPortTraits::Attributes::GlobalFlowControlMode>
+      globalFlowControlMode;
+  if (swPort->getPortType() != cfg::PortType::HYPER_PORT_MEMBER) {
+    globalFlowControlMode = utility::getSaiPortPauseMode(swPort->getPause());
+  } else {
+    CHECK(!*swPort->getPause().tx() && !*swPort->getPause().rx())
+        << "Programming global flow control mode on hyper port member is not supported";
+  }
 #if SAI_API_VERSION >= SAI_VERSION(1, 12, 0)
   std::optional<int> loopbackMode;
   if (swPort->getPortType() != cfg::PortType::HYPER_PORT_MEMBER) {
@@ -711,7 +718,9 @@ SaiPortTraits::CreateAttributes SaiPortManager::attributesFromSwPort(
 
   std::optional<bool> fdrEnable;
 #if defined(BRCM_SAI_SDK_GTE_10_0) || defined(BRCM_SAI_SDK_DNX_GTE_11_0)
-  if (swPort->getPortType() == cfg::PortType::INTERFACE_PORT && adminState &&
+  if ((swPort->getPortType() == cfg::PortType::INTERFACE_PORT ||
+       swPort->getPortType() == cfg::PortType::HYPER_PORT_MEMBER) &&
+      adminState &&
       platform_->getAsic()->isSupported(
           HwAsic::Feature::SAI_FEC_CODEWORDS_STATS)) {
     fdrEnable = true;
@@ -729,7 +738,10 @@ SaiPortTraits::CreateAttributes SaiPortManager::attributesFromSwPort(
       std::nullopt;
   std::optional<SaiPortTraits::Attributes::PrbsConfig> prbsConfig =
       std::nullopt;
-  if (platform_->getAsic()->isSupported(HwAsic::Feature::SAI_PRBS)) {
+  if (platform_->getAsic()->isSupported(HwAsic::Feature::SAI_PRBS) &&
+      swPort->getPortType() != cfg::PortType::HYPER_PORT) {
+    // PRBS should only be configured on hyper port member or normal ports,
+    // not on hyper port
     auto asicPrbs = swPort->getAsicPrbs();
     prbsConfig = getSaiPortPrbsConfig(asicPrbs.enabled().value());
     if (asicPrbs.enabled().value()) {
@@ -748,7 +760,13 @@ SaiPortTraits::CreateAttributes SaiPortManager::attributesFromSwPort(
   if (auto txEnable = swPort->getTxEnable()) {
     pktTxEnable = SaiPortTraits::Attributes::PktTxEnable{txEnable.value()};
   }
-  auto portPfcInfo = getPortPfcAttributes(swPort);
+  SaiPortPfcInfo portPfcInfo;
+  if (swPort->getPortType() != cfg::PortType::HYPER_PORT_MEMBER) {
+    portPfcInfo = getPortPfcAttributes(swPort);
+  } else {
+    CHECK(!swPort->getPfc().has_value())
+        << "Enabling PFC on hyper port member is not supported";
+  }
 
 #if SAI_API_VERSION >= SAI_VERSION(1, 14, 0)
   std::optional<SaiPortTraits::Attributes::ArsEnable> arsEnable = std::nullopt;
