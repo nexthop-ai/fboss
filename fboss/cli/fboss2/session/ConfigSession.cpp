@@ -587,10 +587,13 @@ const std::vector<std::string>& ConfigSession::getCommands() const {
   return commands_;
 }
 
-bool ConfigSession::isSplitMode() const {
+bool ConfigSession::isSplitMode() {
   try {
-    // Check if fboss_sw_agent service is enabled
-    return systemd_->isServiceEnabled("fboss_sw_agent");
+    // Check multi_switch flag in agent config's defaultCommandLineArgs
+    auto& config = getAgentConfig();
+    const auto& args = *config.defaultCommandLineArgs();
+    auto it = args.find("multi_switch");
+    return it != args.end() && it->second == "true";
   } catch (const std::exception& ex) {
     LOG(WARNING) << "Failed to detect split mode: " << ex.what()
                  << ". Assuming monolithic mode.";
@@ -712,7 +715,8 @@ std::vector<std::string> ConfigSession::getServicesToRestart(
   bool splitMode = isSplitMode();
 
   if (splitMode) {
-    LOG(INFO) << "Detected split mode (fboss_sw_agent is enabled)";
+    LOG(INFO)
+        << "Detected split mode (multi_switch flag is set in agent config)";
 
     // Add sw_agent
     services.emplace_back("fboss_sw_agent");
@@ -728,7 +732,7 @@ std::vector<std::string> ConfigSession::getServicesToRestart(
     }
     LOG(INFO) << "Found " << (services.size() - 1) << " hw_agent instances";
   } else {
-    LOG(INFO) << "Detected monolithic mode (fboss_sw_agent is not enabled)";
+    LOG(INFO) << "Detected monolithic mode (multi_switch flag is not set)";
     // Monolithic mode: just wedge_agent
     services.emplace_back(getServiceName(service));
   }

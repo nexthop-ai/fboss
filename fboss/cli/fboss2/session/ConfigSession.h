@@ -204,11 +204,12 @@ class ConfigSession {
   // Virtual to allow tests to override with mock command lines.
   virtual std::string readCommandLineFromProc() const;
 
-  // Detect if running in split mode by checking if fboss_sw_agent is enabled.
-  // Returns true if fboss_sw_agent is enabled (split mode), false otherwise
+  // Detect if running in split mode by checking the multi_switch flag in
+  // the agent config's defaultCommandLineArgs.
+  // Returns true if multi_switch is "true" (split mode), false otherwise
   // (monolithic mode).
   // Virtual to allow tests to override with mock implementations.
-  virtual bool isSplitMode() const;
+  virtual bool isSplitMode();
 
   // Restart a service via systemd and wait for it to be active
   // For AGENT_WARMBOOT, does a simple restart.

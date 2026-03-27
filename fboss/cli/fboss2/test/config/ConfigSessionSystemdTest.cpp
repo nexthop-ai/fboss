@@ -26,11 +26,34 @@ namespace facebook::fboss {
 class ConfigSessionSystemdTest : public CmdConfigTestBase {
  public:
   ConfigSessionSystemdTest()
-      : CmdConfigTestBase("systemd_test_%%%%-%%%%-%%%%", kMinimalConfig) {}
+      : CmdConfigTestBase("systemd_test_%%%%-%%%%-%%%%", kMonoConfig) {}
 
- private:
-  // Minimal config with a single switch for systemd tests
-  static constexpr auto kMinimalConfig = R"({
+ protected:
+  // Write a config to the system config path to change mode for a test
+  void writeSystemConfig(const std::string& content) {
+    createTestConfig(getCliConfigDir() / "agent.conf", content);
+  }
+
+  // Monolithic config: no multi_switch flag (default)
+  static constexpr auto kMonoConfig = R"({
+  "sw": {
+    "switchSettings": {
+      "switchIdToSwitchInfo": {
+        "0": {
+          "switchType": 0,
+          "asicType": 13,
+          "switchIndex": 0
+        }
+      }
+    }
+  }
+})";
+
+  // Split mode config: multi_switch flag set in defaultCommandLineArgs
+  static constexpr auto kSplitConfig = R"({
+  "defaultCommandLineArgs": {
+    "multi_switch": "true"
+  },
   "sw": {
     "switchSettings": {
       "switchIdToSwitchInfo": {
@@ -45,12 +68,11 @@ class ConfigSessionSystemdTest : public CmdConfigTestBase {
 })";
 };
 
-// Test: isSplitMode() returns true when fboss_sw_agent is enabled
-TEST_F(ConfigSessionSystemdTest, IsSplitMode_ReturnsTrueWhenSwAgentEnabled) {
-  auto mockSystemd = std::make_unique<MockSystemdInterface>();
+// Test: isSplitMode() returns true when multi_switch flag is set in agent conf
+TEST_F(ConfigSessionSystemdTest, IsSplitMode_ReturnsTrueWhenMultiSwitchSet) {
+  writeSystemConfig(kSplitConfig);
 
-  EXPECT_CALL(*mockSystemd, isServiceEnabled("fboss_sw_agent"))
-      .WillOnce(Return(true));
+  auto mockSystemd = std::make_unique<MockSystemdInterface>();
 
   TestableConfigSession session(
       (getTestHomeDir() / ".fboss2").string(),
@@ -60,14 +82,13 @@ TEST_F(ConfigSessionSystemdTest, IsSplitMode_ReturnsTrueWhenSwAgentEnabled) {
   EXPECT_TRUE(session.isSplitMode());
 }
 
-// Test: isSplitMode() returns false when fboss_sw_agent is not enabled
+// Test: isSplitMode() returns false when multi_switch flag is not set
 TEST_F(
     ConfigSessionSystemdTest,
-    IsSplitMode_ReturnsFalseWhenSwAgentNotEnabled) {
-  auto mockSystemd = std::make_unique<MockSystemdInterface>();
+    IsSplitMode_ReturnsFalseWhenMultiSwitchNotSet) {
+  writeSystemConfig(kMonoConfig);
 
-  EXPECT_CALL(*mockSystemd, isServiceEnabled("fboss_sw_agent"))
-      .WillOnce(Return(false));
+  auto mockSystemd = std::make_unique<MockSystemdInterface>();
 
   TestableConfigSession session(
       (getTestHomeDir() / ".fboss2").string(),
@@ -77,29 +98,42 @@ TEST_F(
   EXPECT_FALSE(session.isSplitMode());
 }
 
-// Test: isSplitMode() returns false when isServiceEnabled throws
-TEST_F(ConfigSessionSystemdTest, IsSplitMode_ReturnsFalseOnException) {
-  auto mockSystemd = std::make_unique<MockSystemdInterface>();
+// Test: isSplitMode() returns false when defaultCommandLineArgs has
+// multi_switch set to something other than "true"
+TEST_F(ConfigSessionSystemdTest, IsSplitMode_ReturnsFalseWhenMultiSwitchFalse) {
+  static constexpr auto kFalseMultiSwitchConfig = R"({
+  "defaultCommandLineArgs": {
+    "multi_switch": "false"
+  },
+  "sw": {
+    "switchSettings": {
+      "switchIdToSwitchInfo": {
+        "0": {
+          "switchType": 0,
+          "asicType": 13,
+          "switchIndex": 0
+        }
+      }
+    }
+  }
+})";
+  writeSystemConfig(kFalseMultiSwitchConfig);
 
-  EXPECT_CALL(*mockSystemd, isServiceEnabled("fboss_sw_agent"))
-      .WillOnce(Throw(std::runtime_error("systemctl failed")));
+  auto mockSystemd = std::make_unique<MockSystemdInterface>();
 
   TestableConfigSession session(
       (getTestHomeDir() / ".fboss2").string(),
       (getTestEtcDir() / "coop").string(),
       std::move(mockSystemd));
 
-  // Should gracefully handle exception and assume monolithic mode
   EXPECT_FALSE(session.isSplitMode());
 }
 
 // Test: Monolithic mode warmboot restart
 TEST_F(ConfigSessionSystemdTest, RestartService_MonolithicMode_Warmboot) {
-  auto mockSystemd = std::make_unique<MockSystemdInterface>();
+  writeSystemConfig(kMonoConfig);
 
-  // Expect split mode check
-  EXPECT_CALL(*mockSystemd, isServiceEnabled("fboss_sw_agent"))
-      .WillOnce(Return(false)); // Monolithic mode
+  auto mockSystemd = std::make_unique<MockSystemdInterface>();
 
   // Expect restart of wedge_agent
   EXPECT_CALL(*mockSystemd, restartService("wedge_agent")).Times(1);
@@ -122,10 +156,9 @@ TEST_F(ConfigSessionSystemdTest, RestartService_MonolithicMode_Warmboot) {
 
 // Test: Monolithic mode coldboot restart
 TEST_F(ConfigSessionSystemdTest, RestartService_MonolithicMode_Coldboot) {
-  auto mockSystemd = std::make_unique<MockSystemdInterface>();
+  writeSystemConfig(kMonoConfig);
 
-  EXPECT_CALL(*mockSystemd, isServiceEnabled("fboss_sw_agent"))
-      .WillOnce(Return(false));
+  auto mockSystemd = std::make_unique<MockSystemdInterface>();
 
   // Expect stop, then start (not restart) for coldboot
   InSequence seq;
@@ -149,10 +182,9 @@ TEST_F(ConfigSessionSystemdTest, RestartService_MonolithicMode_Coldboot) {
 TEST_F(
     ConfigSessionSystemdTest,
     RestartService_SplitMode_Warmboot_SingleHwAgent) {
-  auto mockSystemd = std::make_unique<MockSystemdInterface>();
+  writeSystemConfig(kSplitConfig);
 
-  EXPECT_CALL(*mockSystemd, isServiceEnabled("fboss_sw_agent"))
-      .WillOnce(Return(true)); // Split mode
+  auto mockSystemd = std::make_unique<MockSystemdInterface>();
 
   // Expect restart of sw_agent and hw_agent@0
   EXPECT_CALL(*mockSystemd, restartService("fboss_sw_agent")).Times(1);
@@ -182,10 +214,9 @@ TEST_F(
 TEST_F(
     ConfigSessionSystemdTest,
     RestartService_SplitMode_Coldboot_SingleHwAgent) {
-  auto mockSystemd = std::make_unique<MockSystemdInterface>();
+  writeSystemConfig(kSplitConfig);
 
-  EXPECT_CALL(*mockSystemd, isServiceEnabled("fboss_sw_agent"))
-      .WillOnce(Return(true));
+  auto mockSystemd = std::make_unique<MockSystemdInterface>();
 
   // Expect sequential coldboot: stop -> start -> wait for each service
   InSequence seq;
@@ -215,10 +246,9 @@ TEST_F(
 
 // Test: Service restart failure is propagated
 TEST_F(ConfigSessionSystemdTest, RestartService_PropagatesFailure) {
-  auto mockSystemd = std::make_unique<MockSystemdInterface>();
+  writeSystemConfig(kMonoConfig);
 
-  EXPECT_CALL(*mockSystemd, isServiceEnabled("fboss_sw_agent"))
-      .WillOnce(Return(false));
+  auto mockSystemd = std::make_unique<MockSystemdInterface>();
 
   EXPECT_CALL(*mockSystemd, restartService("wedge_agent"))
       .WillOnce(Throw(std::runtime_error("Failed to restart wedge_agent")));
@@ -236,10 +266,9 @@ TEST_F(ConfigSessionSystemdTest, RestartService_PropagatesFailure) {
 
 // Test: Service fails to become active within timeout
 TEST_F(ConfigSessionSystemdTest, RestartService_ServiceFailsToStart) {
-  auto mockSystemd = std::make_unique<MockSystemdInterface>();
+  writeSystemConfig(kMonoConfig);
 
-  EXPECT_CALL(*mockSystemd, isServiceEnabled("fboss_sw_agent"))
-      .WillOnce(Return(false));
+  auto mockSystemd = std::make_unique<MockSystemdInterface>();
 
   EXPECT_CALL(*mockSystemd, restartService("wedge_agent")).Times(1);
 
