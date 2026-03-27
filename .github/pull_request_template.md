@@ -10,3 +10,7 @@
 
 - [ ] Yes
 - [ ] No
+
+#### Upstream requirements (if PR has "Upstream Required" label)
+
+- [ ] PR title is free of sensitive information (customer names, product codenames, internal references)
