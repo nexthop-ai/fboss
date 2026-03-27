@@ -12,6 +12,7 @@ add_executable(fboss2_cmd_config_test
   fboss/cli/fboss2/test/config/CmdConfigQosBufferPoolTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigReloadTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigSessionClearTest.cpp
+  fboss/cli/fboss2/test/config/CmdConfigSessionCommitTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigSessionDiffTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigSessionTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigTestBase.cpp

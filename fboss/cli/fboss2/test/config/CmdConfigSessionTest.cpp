@@ -1228,4 +1228,79 @@ TEST_F(ConfigSessionTestFixture, threeWayMergeScenarios) {
   }
 }
 
+// Test that committing an empty session (no changes) returns an empty result
+// and doesn't create a git commit
+TEST_F(ConfigSessionTestFixture, emptyCommit) {
+  fs::path sessionDir = getTestHomeDir() / ".fboss2";
+  fs::path cliConfigPath = getTestEtcDir() / "coop" / "cli" / "agent.conf";
+
+  // Setup mock agent server (should not be called for empty commit)
+  setupMockedAgentServer();
+  EXPECT_CALL(getMockAgent(), reloadConfig()).Times(0);
+
+  // Create a session but don't make any changes
+  TestableConfigSession session(
+      sessionDir.string(), (getTestEtcDir() / "coop").string());
+
+  // Get the current git HEAD before commit
+  Git git((getTestEtcDir() / "coop").string());
+  auto commitsBefore = git.log(cliConfigPath.string(), 10);
+
+  // Commit without making any changes
+  auto result = session.commit(localhost());
+
+  // Verify the result indicates no commit was made
+  EXPECT_TRUE(result.commitSha.empty());
+  EXPECT_TRUE(result.actions.empty());
+
+  // Verify no new git commit was created
+  auto commitsAfter = git.log(cliConfigPath.string(), 10);
+  EXPECT_EQ(commitsBefore.size(), commitsAfter.size());
+
+  // Verify session still exists (not removed on empty commit)
+  EXPECT_TRUE(session.sessionExists());
+}
+
+// Test that committing twice in a row - second commit should be empty
+TEST_F(ConfigSessionTestFixture, commitTwiceSecondIsEmpty) {
+  fs::path sessionDir = getTestHomeDir() / ".fboss2";
+  fs::path cliConfigPath = getTestEtcDir() / "coop" / "cli" / "agent.conf";
+
+  // Setup mock agent server (should only be called once for the first commit)
+  setupMockedAgentServer();
+  EXPECT_CALL(getMockAgent(), reloadConfig()).Times(1);
+
+  // First commit: make a change and commit
+  {
+    TestableConfigSession session(
+        sessionDir.string(), (getTestEtcDir() / "coop").string());
+
+    auto& config = session.getAgentConfig();
+    auto& ports = *config.sw()->ports();
+    ASSERT_FALSE(ports.empty());
+    ports[0].description() = "First commit change";
+    session.setCommandLine(
+        "config interface eth1/1/1 description \"First commit change\"");
+    session.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
+
+    auto result = session.commit(localhost());
+    EXPECT_FALSE(result.commitSha.empty());
+    EXPECT_FALSE(result.actions.empty());
+  }
+
+  // Second commit: try to commit again without making changes
+  {
+    TestableConfigSession session(
+        sessionDir.string(), (getTestEtcDir() / "coop").string());
+
+    // Don't make any changes, just try to commit
+    auto result = session.commit(localhost());
+
+    // Verify the result indicates no commit was made
+    EXPECT_TRUE(result.commitSha.empty());
+    EXPECT_TRUE(result.actions.empty());
+  }
+}
+
 } // namespace facebook::fboss
