@@ -25,7 +25,7 @@
   ],
   "fboss-platform-stack": {
     "execute": [
-      "../fboss/oss/scripts/nhfboss-stack.sh",
+      "../fboss/oss/scripts/build_fboss_stack.sh",
       "platform"
     ],
     "artifact": "platform-stack.tar"
@@ -37,7 +37,7 @@
   "phy_sai": {},
   "fboss-forwarding-stack": {
     "execute": [
-      "../fboss/oss/scripts/nhfboss-stack.sh",
+      "../fboss/oss/scripts/build_fboss_stack.sh",
       "forwarding"
     ],
     "artifact": "forwarding-stack.tar"

@@ -225,6 +225,18 @@ perform_build() {
     fi
   fi
 
+  #
+  # Nexthop-only
+  #
+  # Use sccache. Overrides common_options
+  #
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  source "$SCRIPT_DIR/nhfboss-common.sh"
+
+  #
+  # End Nexthop-only
+  #
+
   # Install system dependencies
   log "Installing system dependencies..."
   time nice -n 10 ./fboss/oss/scripts/run-getdeps.py install-system-deps \
