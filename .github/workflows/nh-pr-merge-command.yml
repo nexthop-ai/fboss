@@ -196,7 +196,14 @@ jobs:
             [[ -z "$check_name" ]] && continue
 
             # First try to find in check runs
-            check_info=$(jq <<<"$check_runs" -r --arg name "$check_name" '.check_runs[] | select(.name == $name) | "\(.status)|\(.conclusion)"')
+            # When there are multiple check runs with the same name (e.g. after re-runs),
+            # take the most recent one (highest ID = most recent)
+            check_info=$(jq <<<"$check_runs" -r --arg name "$check_name" '
+              [.check_runs[] | select(.name == $name)] |
+              sort_by(.id) | reverse |
+              .[0] // empty |
+              "\(.status)|\(.conclusion)"
+            ')
 
             # If not found in check runs, try commit statuses
             if [[ -z "$check_info" ]]; then
