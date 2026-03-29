@@ -52,7 +52,6 @@
 #include "fboss/agent/hw/sai/switch/SaiRouterInterfaceManager.h"
 #include "fboss/agent/hw/sai/switch/SaiRxPacket.h"
 #include "fboss/agent/hw/sai/switch/SaiSrv6MySidManager.h"
-#include "fboss/agent/hw/sai/switch/SaiSrv6SidListManager.h"
 #include "fboss/agent/hw/sai/switch/SaiSrv6TunnelManager.h"
 #include "fboss/agent/hw/sai/switch/SaiSwitchManager.h"
 #include "fboss/agent/hw/sai/switch/SaiSystemPortManager.h"
@@ -1909,6 +1908,19 @@ void SaiSwitch::processSwitchSettingsChangeSansDrainedEntryLocked(
       managerTable_->switchManager().setPtpTcEnabled(newVal);
       // update already added ports
       managerTable_->portManager().setPtpTcEnable(newVal);
+    }
+  }
+
+  {
+    const auto oldMode = oldSwitchSettings->getPacketForwardingMode();
+    const auto newMode = newSwitchSettings->getPacketForwardingMode();
+    if (oldMode != newMode && newMode.has_value()) {
+      XLOG(DBG3) << "Configuring packetForwardingMode old: "
+                 << (oldMode.has_value()
+                         ? apache::thrift::util::enumNameSafe(*oldMode)
+                         : "none")
+                 << " new: " << apache::thrift::util::enumNameSafe(*newMode);
+      managerTable_->switchManager().setSwitchingMode(*newMode);
     }
   }
 

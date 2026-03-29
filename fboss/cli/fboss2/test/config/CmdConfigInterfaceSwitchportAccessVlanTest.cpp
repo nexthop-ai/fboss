@@ -2,14 +2,14 @@
 
 #include "fboss/cli/fboss2/test/config/CmdConfigTestBase.h"
 
-#include <boost/filesystem/operations.hpp>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <filesystem>
-#include <fstream>
+#include <stdexcept>
+#include <string>
 
 #include "fboss/cli/fboss2/commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
+#include "fboss/cli/fboss2/utils/InterfacesConfig.h"
 
 using namespace ::testing;
 

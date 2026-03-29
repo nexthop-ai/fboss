@@ -5,5 +5,7 @@ image_builder/logs
 image_builder/output
 kernel/dist
 .cache
+distro_cli/.artifacts
+image_builder/templates/centos-09.0/root
 *.iso
-*.tar
+*.tar*

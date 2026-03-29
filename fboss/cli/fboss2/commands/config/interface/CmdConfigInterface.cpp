@@ -10,11 +10,23 @@
 
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
 
+#include "fboss/cli/fboss2/CmdHandler.cpp"
+
 #include <fmt/format.h>
 #include <folly/Conv.h>
-#include "fboss/cli/fboss2/CmdHandler.cpp"
+#include <folly/String.h>
+#include <cstdint>
+#include <exception>
+#include <iostream>
+#include <ostream>
+#include <stdexcept>
+#include <string>
+#include <vector>
+#include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/utils/CmdUtilsCommon.h"
+#include "fboss/cli/fboss2/utils/HostInfo.h"
+#include "fboss/cli/fboss2/utils/InterfaceList.h"
 
 namespace facebook::fboss {
 

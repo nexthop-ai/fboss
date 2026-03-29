@@ -870,6 +870,8 @@ void SaiPortManager::programPfc(
     const std::shared_ptr<Port>& swPort,
     sai_uint8_t txPfc,
     sai_uint8_t rxPfc) {
+  CHECK(swPort->getPortType() != cfg::PortType::HYPER_PORT_MEMBER)
+      << "Enabling PFC on hyper port member is not supported";
   auto portHandle = getPortHandle(swPort->getID());
 
   auto pfcInfo = getPfcAttributes(txPfc, rxPfc);
@@ -2968,11 +2970,15 @@ void SaiPortManager::clearArsConfig() {
 void SaiPortManager::setTamObject(
     PortID portId,
     std::vector<sai_object_id_t> tamObjects) {
+  CHECK(getPortType(portId) != cfg::PortType::HYPER_PORT_MEMBER)
+      << "Setting TAM object on hyper port member is not supported";
   getPortHandle(portId)->port->setOptionalAttribute(
       SaiPortTraits::Attributes::TamObject{std::move(tamObjects)});
 }
 
 void SaiPortManager::resetTamObject(PortID portId) {
+  CHECK(getPortType(portId) != cfg::PortType::HYPER_PORT_MEMBER)
+      << "Resetting TAM object on hyper port member is not supported";
   getPortHandle(portId)->port->setOptionalAttribute(
       SaiPortTraits::Attributes::TamObject{
           std::vector<sai_object_id_t>{SAI_NULL_OBJECT_ID}});

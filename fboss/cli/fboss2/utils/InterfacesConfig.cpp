@@ -12,7 +12,14 @@
 
 #include <fmt/format.h>
 #include <algorithm>
+#include <cctype>
+#include <cstddef>
+#include <stdexcept>
+#include <string>
 #include <unordered_set>
+#include <utility>
+#include <vector>
+#include "fboss/cli/fboss2/utils/InterfaceList.h"
 
 namespace facebook::fboss::utils {
 

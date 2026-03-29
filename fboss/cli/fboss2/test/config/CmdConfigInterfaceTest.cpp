@@ -26,8 +26,6 @@
 #include "fboss/cli/fboss2/utils/InterfacesConfig.h"
 #include "fboss/cli/fboss2/utils/PortMap.h" // NOLINT(misc-include-cleaner)
 
-namespace fs = std::filesystem;
-
 using namespace ::testing;
 
 namespace facebook::fboss {

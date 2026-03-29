@@ -1,6 +1,7 @@
 load("@fbcode//clifoundation/cli_target/buck_defs:cli.bzl", "cli")
 load("@fbcode_macros//build_defs:cpp_binary.bzl", "cpp_binary")
 load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")
+load("@fbcode_macros//build_defs:export_files.bzl", "export_file")
 load("@fbcode_macros//build_defs:thrift_library.bzl", "thrift_library")
 load("//fastcli:defs.bzl", "auto_tab_complete")
 
@@ -481,6 +482,7 @@ cpp_library(
         "commands/debug/facebook/bgp/neighbors/CmdDebugBgpNeighborsRestart.h",
         "commands/debug/facebook/bgp/neighbors/CmdDebugBgpNeighborsShutdown.h",
         "commands/debug/facebook/bgp/neighbors/CmdDebugBgpNeighborsStart.h",
+        "commands/delete/config/CmdDeleteConfig.h",
         "commands/delete/config/facebook/CmdDeleteConfigPatcherAgent.h",
         "commands/delete/config/facebook/CmdDeleteConfigUtils.h",
         "commands/facebook/rage/CmdRage.h",
@@ -862,6 +864,7 @@ cpp_binary(
     name = "fboss2",
     srcs = [
         "Main.cpp",
+        "facebook/CmdListImpl.cpp",
     ],
     deps = [
         ":cmd-init-utils",
@@ -990,6 +993,7 @@ cpp_library(
         "session/SystemdInterface.cpp",
         "utils/InterfacesConfig.cpp",
         "utils/InterfaceList.cpp",
+        "utils/InterfacesConfig.cpp",
     ],
     headers = [
         "commands/config/CmdConfigAppliedInfo.h",
@@ -1070,6 +1074,7 @@ cpp_library(
         "session/SystemdInterface.h",
         "utils/InterfacesConfig.h",
         "utils/InterfaceList.h",
+        "utils/InterfacesConfig.h",
     ],
     exported_deps = [
         "fbsource//third-party/fmt:fmt",
@@ -1102,15 +1107,16 @@ cpp_library(
     ],
 )
 
+export_file(
+    name = "cmd-list-config-impl",
+    src = "facebook/config/CmdListImpl.cpp",
+)
+
 cpp_binary(
     name = "fboss2-dev",
     srcs = [
         "Main.cpp",
-        "oss/CmdListConfig.cpp",
-        "oss/CmdListShowConfig.cpp",
-    ],
-    headers = [
-        "oss/CmdListShowConfig.h",
+        "facebook/config/CmdListImpl.cpp",
     ],
     deps = [
         ":cmd-init-utils",

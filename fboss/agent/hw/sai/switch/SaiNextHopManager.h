@@ -78,6 +78,7 @@ class ManagedNextHop : public SaiObjectEventAggregateSubscriber<
   ~ManagedNextHop() {
     this->resetObject();
   }
+
   void createObject(PublishedObjects /*added*/);
 
   void removeObject(size_t index, PublishedObjects removed) {
