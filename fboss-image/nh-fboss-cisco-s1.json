@@ -1,7 +1,6 @@
 {
   "distribution_formats": {
-    "pxe": "nh-fboss-cisco-s1.tar",
-    "onie": "nh-fboss-cisco-s1.bin"
+    "pxe": "nh-fboss-cisco-s1.tar"
   },
   "kernel": {
     "download": "file:distro_kernel_6.11.tar"
@@ -11,11 +10,12 @@
     "artifact": "platform-stack.tar"
   },
   "bsps": [
-      {"execute": "../../fboss_bsps/nexthop_bsp/distro_build.sh"},
-      {"execute": "../../fboss_bsps/fboss_bsp/distro_build.sh"}
+      {"download": "file:distro_fboss_bsp.tar"}
   ],
   "npu_sai": {
     "download": "file:distro_sai.tar"
+  },
+  "phy_sai": {
   },
   "fboss-forwarding-stack": {
     "execute": ["../fboss/oss/scripts/nhfboss-stack.sh", "forwarding"],

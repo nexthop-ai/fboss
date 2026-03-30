@@ -138,11 +138,14 @@ def process_dependency(dep_path: Path) -> Optional[Path]:
         search_dir = dep_path
 
     # Find and install RPMs
-    rpms = find_rpms(search_dir)
-    if rpms:
-        install_rpms(rpms)
-    else:
-        logger.info(f"No RPMs found in dependency '{dep_name}'")
+    if dep_name in ["kernel"]:
+        logger.info(f"Build-time installation of RPMs for dependency '{dep_name}'")
+        rpms = find_rpms(search_dir)
+        if rpms:
+            install_rpms(rpms)
+        else:
+            logger.info(f"No RPMs found in dependency '{dep_name}'")
+
     return extract_dir
 
 
