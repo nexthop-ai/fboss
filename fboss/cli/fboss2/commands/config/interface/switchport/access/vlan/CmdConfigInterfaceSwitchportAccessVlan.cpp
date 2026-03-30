@@ -20,10 +20,9 @@ namespace facebook::fboss {
 CmdConfigInterfaceSwitchportAccessVlanTraits::RetType
 CmdConfigInterfaceSwitchportAccessVlan::queryClient(
     const HostInfo& /* hostInfo */,
-    const utils::InterfacesConfig& interfaceConfig,
+    const utils::InterfaceList& interfaces,
     const CmdConfigInterfaceSwitchportAccessVlanTraits::ObjectArgType&
         vlanIdValue) {
-  const auto& interfaces = interfaceConfig.getInterfaces();
   if (interfaces.empty()) {
     throw std::invalid_argument("No interface name provided");
   }
