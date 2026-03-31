@@ -20,13 +20,6 @@
 
 #include <folly/coro/AsyncPipe.h>
 #include <folly/coro/Task.h>
-<<<<<<< HEAD
-#include <thrift/lib/cpp2/gen/module_types_h.h>
-||||||| 59441e2075
-#include <servicerouter/client/cpp2/ServiceRouter.h>
-#include <thrift/lib/cpp2/gen/module_types_h.h>
-=======
->>>>>>> b0c750988a45627abe043dcb2a8df3573e790e5e
 #include <thrift/lib/cpp2/protocol/Serializer.h>
 #include <unistd.h>
 
