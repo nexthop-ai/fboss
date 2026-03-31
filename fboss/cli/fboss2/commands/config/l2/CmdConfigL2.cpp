@@ -1,5 +1,10 @@
 /*
+<<<<<<< HEAD
  *  Copyright (c) 2023-present, Facebook, Inc.
+||||||| 59441e2075
+=======
+ *  Copyright (c) 2004-present, Facebook, Inc.
+>>>>>>> b0c750988a45627abe043dcb2a8df3573e790e5e
  *  All rights reserved.
  *
  *  This source code is licensed under the BSD-style license found in the

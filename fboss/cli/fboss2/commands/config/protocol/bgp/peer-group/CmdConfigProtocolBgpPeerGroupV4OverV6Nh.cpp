@@ -10,6 +10,8 @@
 
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/peer-group/CmdConfigProtocolBgpPeerGroupV4OverV6Nh.h"
 
+#include "fboss/cli/fboss2/CmdHandler.cpp"
+
 #include <fmt/core.h>
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/BgpConfigSession.h"
 
