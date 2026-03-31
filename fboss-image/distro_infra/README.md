@@ -45,7 +45,7 @@ precise names:
 
 ```
 $ cd images/dc-da-4d-fc-ad-2d
-$ tar -xf ../../../fboss-distro-image_pxe.tar
+$ tar -xf fboss-distro-image_pxe.tar
 $ ls -1
 FBOSS-Distro-Image.x86_64-1.0.config.bootoptions
 FBOSS-Distro-Image.x86_64-1.0.initrd
