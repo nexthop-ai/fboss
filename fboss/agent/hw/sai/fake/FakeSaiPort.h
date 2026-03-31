@@ -25,7 +25,26 @@ namespace facebook::fboss {
 
 struct FakePort {
   FakePort(std::vector<uint32_t> lanes, sai_uint32_t speed)
-      : lanes(lanes), speed(speed) {}
+      : id(0),
+        lanes(std::move(lanes)),
+        speed(speed),
+        portEyeValues{0, nullptr}
+#if SAI_API_VERSION >= SAI_VERSION(1, 10, 3)
+        ,
+        portRxSignalDetect{0, nullptr},
+        portRxLockStatus{0, nullptr},
+        portFecAlignmentLockStatus{0, nullptr},
+        portPcsLinkStatus{false, false},
+        portCrcErrDetect{false, false}
+#endif
+#if SAI_API_VERSION >= SAI_VERSION(1, 13, 0)
+        ,
+        portRxPPM{0, nullptr},
+        portRxSNR{0, nullptr}
+#endif
+        ,
+        portError{0, nullptr} {
+  }
   sai_object_id_t id;
   bool adminState{false};
   std::vector<uint32_t> lanes;
