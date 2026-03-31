@@ -1159,6 +1159,9 @@ void SwSwitch::updateTeFlowStats() {
     return;
   }
   auto multiTeFlowTable = state->getTeFlowTable();
+  if (!multiTeFlowTable) {
+    return;
+  }
   fb303::fbData->setCounter(
       SwitchStats::kCounterPrefix + "teflows", multiTeFlowTable->numNodes());
   auto inactiveFlows = 0;

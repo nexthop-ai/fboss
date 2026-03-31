@@ -20,7 +20,12 @@ TeFlowNexthopHandler::~TeFlowNexthopHandler() {
   sw_->unregisterStateObserver(this);
 }
 bool TeFlowNexthopHandler::hasTeFlowChanges(const StateDelta& delta) {
-  return (sw_->getState()->getTeFlowTable()->numNodes() > 0) &&
+  auto state = sw_->getState();
+  if (!state) {
+    return false;
+  }
+  auto teFlowTable = state->getTeFlowTable();
+  return teFlowTable && (teFlowTable->numNodes() > 0) &&
       (!isEmpty(delta.getIntfsDelta()));
 }
 
