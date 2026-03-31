@@ -157,33 +157,16 @@ jobs:
           # Save BASE_REF for reviewdog step
           echo "$BASE_REF" > /tmp/clang_tidy_base_ref.txt
 
-          # Get changed C++ files in this PR (compared to base ref)
-          CHANGED_FILES=$(git diff --name-only "$BASE_REF"..HEAD -- '*.cpp' '*.h' 2>/dev/null | grep -E '^fboss/' || true)
-          echo "Found files: $CHANGED_FILES"
-          if [[ -z "$CHANGED_FILES" ]]; then
-            echo "No C++ files changed in this PR, skipping clang-tidy"
+          # Run clang-tidy on all C++ files changed in this PR and save output for reviewdog
+          docker exec -e BASE_REF="$BASE_REF" FBOSS_build_${USER} bash -c '
+            cd /var/FBOSS/fboss
+            python3 fboss/oss/scripts/run-clang-tool.py --no-run-if-empty --range "$BASE_REF..HEAD" 2>&1
+          ' | tee /tmp/clang-tidy-output.txt
+          if [[ ! -s /tmp/clang-tidy-output.txt ]]; then
+            echo "clang-tidy produced no output, everything's perfectly tidy."
             echo "skip=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          echo "Changed C++ files:"
-          echo "$CHANGED_FILES"
-          # Write changed files to a temp file for the container
-          echo "$CHANGED_FILES" > /tmp/changed_files.txt
-          docker cp /tmp/changed_files.txt FBOSS_build_${USER}:/tmp/changed_files.txt
-          # Run clang-tidy and save output for reviewdog
-          docker exec FBOSS_build_${USER} bash -c '
-            cd /var/FBOSS/fboss
-            BUILD_DIR=/var/FBOSS/tmp_bld_dir/build/fboss
-            if [[ ! -f "$BUILD_DIR/compile_commands.json" ]]; then
-              echo "ERROR: compile_commands.json not found"
-              exit 1
-            fi
-            # clang-tidy can be memory hungry, make sure it gets killed if OOM.
-            echo 1000 >/proc/self/oom_score_adj
-            # Run clang-tidy on all changed files (use ~2/3 of cores to avoid OOM)
-            JOBS=$(($(nproc) / 2 + 1))
-            cat /tmp/changed_files.txt | xargs -P$JOBS -I{} clang-tidy -p "$BUILD_DIR" {} 2>&1
-          ' | tee /tmp/clang-tidy-output.txt
           # Post-process clang-tidy output:
           # - Strip container path prefix so reviewdog can find files
           # - Add helpful suggestions for banned headers
@@ -191,10 +174,6 @@ jobs:
             -e 's|/var/FBOSS/fboss/||g' \
             -e 's/system include regex not allowed/system include regex not allowed (use RE2 instead)/g' \
             /tmp/clang-tidy-output.txt
-          if [[ ! -s /tmp/clang-tidy-output.txt ]]; then
-            echo "clang-tidy produced no output, everything's perfectly tidy."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          fi
 
       - name: Setup reviewdog
         if: github.event_name == 'pull_request' && steps.nhci.outputs.clang_tidy_mode != 'skip' && steps.clang-tidy.outputs.skip != 'true'
