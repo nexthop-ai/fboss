@@ -195,3 +195,20 @@ class LinkTestRunner(BaseHwTestRunner):
             f"--config ./share/link_test_configs/{hwsku}.materialized_JSON "
             f"--qsfp-config ./share/qsfp_test_configs/{hwsku}.materialized_JSON"
         )
+
+
+class PlatformTestRunner(BaseHwTestRunner):
+    """Runner for platform services hardware tests.
+
+    Supports all platform test types via the --type flag:
+    platform_hw_test, fan_service_hw_test, sensor_service_hw_test,
+    fw_util_hw_test, weutil_hw_test, data_corral_service_hw_test,
+    platform_manager_hw_test.
+    """
+
+    def __init__(self, test_type="platform_hw_test"):
+        super().__init__()
+        self.test_type = test_type
+
+    def test_args(self, hwsku: str) -> str:
+        return f"platform --type {self.test_type}"
