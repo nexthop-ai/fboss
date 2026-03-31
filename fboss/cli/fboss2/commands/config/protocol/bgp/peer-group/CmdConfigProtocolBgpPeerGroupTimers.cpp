@@ -14,8 +14,6 @@
 
 #include <fmt/core.h>
 
-#include "fboss/cli/fboss2/CmdHandler.cpp"
-
 namespace facebook::fboss {
 
 CmdConfigProtocolBgpPeerGroupTimersTraits::RetType

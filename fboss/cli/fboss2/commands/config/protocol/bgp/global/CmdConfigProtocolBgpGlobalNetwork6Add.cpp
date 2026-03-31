@@ -16,8 +16,6 @@
 #include <folly/Conv.h>
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/BgpConfigSession.h"
 
-#include "fboss/cli/fboss2/CmdHandler.cpp"
-
 namespace facebook::fboss {
 
 CmdConfigProtocolBgpGlobalNetwork6AddTraits::RetType
