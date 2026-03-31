@@ -34,15 +34,10 @@
 
             <bootloader name="grub2" console="serial" serial_line="ttyS0,57600n8"/>
             <size unit="G">64</size>
-<<<<<<< HEAD
             <systemdisk name="vmdisk">
                 <!-- Add extra free space during build to accommodate large RPMs like sai-runtime -->
                 <volume name="@root=root" freespace="2G"/>
             </systemdisk>
-||||||| 59441e2075
-            <size unit="G">16</size>
-=======
->>>>>>> b0c750988a45627abe043dcb2a8df3573e790e5e
             <oemconfig>
                 <!-- The oem-resize element should be false for a fixed-size disk -->
                 <oem-resize>true</oem-resize>
