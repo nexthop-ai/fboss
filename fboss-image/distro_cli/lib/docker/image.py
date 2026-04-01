@@ -273,9 +273,4 @@ def build_fboss_builder_image() -> None:
         logger.info(f"Tagged image with checksum: {checksum[:12]}")
 
     except subprocess.CalledProcessError as e:
-        # TODO (NOS-6274): find root issue for why this is not properly handled by monobuild
-        result = subprocess.run(["docker", "image", "inspect", f"{FBOSS_BUILDER_IMAGE}:latest"], capture_output=True)
-        if result.returncode == 0:
-           logger.info("Image already built by another process, reusing")
-           return
         raise RuntimeError(f"Failed to build {FBOSS_BUILDER_IMAGE} image: {e}") from e
