@@ -12,14 +12,8 @@ on:
     # Run daily at 7:36PM UTC = 12:36PM PDT
     - cron: '36 1,13,19 * * *'
 jobs:
-<<<<<<< HEAD
-  Agent-Service-Build-Hourly:
-    if: github.repository_owner == 'facebook'
-||||||| b0c750988a
-  Agent-Service-Build-Hourly:
-=======
   Agent-Service-Build:
->>>>>>> 9d56536daa982c3029fd3bf3ffdf05d22152278a
+    if: github.repository_owner == 'facebook'
     runs-on: 32-core-ubuntu
     steps:
       - run: echo "Confirming hardware specifications:"; sudo lscpu

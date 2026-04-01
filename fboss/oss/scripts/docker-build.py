@@ -447,39 +447,7 @@ def main():
     docker_dir_path = get_docker_path()
     build_docker_image(docker_dir_path, args.use_clang)
 
-<<<<<<< HEAD
-    status_code = run_fboss_build(
-        args.scratch_path,
-        args.target,
-        args.docker_output,
-        args.use_system_deps,
-        args.env_vars,
-        args.local,
-        args.use_clang,
-        args.num_jobs,
-        args.schedule_type,
-        args.cache_config,
-        args.extras_dir,
-        args.extra_cmake_defines,
-        args.dot_files,
-    )
-||||||| b0c750988a
-    status_code = run_fboss_build(
-        args.scratch_path,
-        args.target,
-        args.docker_output,
-        args.use_system_deps,
-        args.env_vars,
-        args.local,
-        args.use_clang,
-        args.num_jobs,
-        args.extras_dir,
-        args.extra_cmake_defines,
-        args.dot_files,
-    )
-=======
     targets = args.targets if args.targets else [None]
->>>>>>> 9d56536daa982c3029fd3bf3ffdf05d22152278a
 
     for target in targets:
         status_code = run_fboss_build(
@@ -491,6 +459,8 @@ def main():
             args.local,
             args.use_clang,
             args.num_jobs,
+            args.schedule_type,
+            args.cache_config,
             args.extras_dir,
             args.extra_cmake_defines,
             args.dot_files,
