@@ -10,11 +10,11 @@
 
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalNetwork6Add.h"
 
+#include "fboss/cli/fboss2/CmdHandler.cpp"
+
 #include <fmt/core.h>
 #include <folly/Conv.h>
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/BgpConfigSession.h"
-
-#include "fboss/cli/fboss2/CmdHandler.cpp"
 
 namespace facebook::fboss {
 

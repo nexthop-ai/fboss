@@ -10,9 +10,9 @@
 
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/peer-group/CmdConfigProtocolBgpPeerGroupTimers.h"
 
-#include <fmt/core.h>
-
 #include "fboss/cli/fboss2/CmdHandler.cpp"
+
+#include <fmt/core.h>
 
 namespace facebook::fboss {
 

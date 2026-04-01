@@ -9,7 +9,6 @@
  */
 
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionRebase.h"
-
 #include "fboss/cli/fboss2/CmdHandler.cpp"
 
 #include <iostream>
