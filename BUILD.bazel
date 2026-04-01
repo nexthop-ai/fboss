@@ -267,6 +267,7 @@ genrule(
         "functions.cmake",
         "getdeps.sh",
         "sdk_dependencies.txt",
+        "nh-fboss-broadcom-xgs.bin", # Serialize building
     ] + glob(["build/**", # Avoid dot files, especially .sccache to which bazel doesn't have permission
               "cmake/**",
               "common/**",
