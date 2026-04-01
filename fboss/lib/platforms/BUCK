@@ -25,6 +25,7 @@ cpp_library(
     ],
 )
 
+# bazelify: add_src = oss/PlatformProductInfo.cpp
 cpp_library(
     name = "product-info",
     srcs = [

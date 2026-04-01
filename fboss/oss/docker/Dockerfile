@@ -118,4 +118,9 @@ RUN curl -L https://github.com/nexthop-ai/sccache/releases/download/v7-outer-ret
     zstdmt -d > /usr/local/bin/sccache && \
     chmod +x /usr/local/bin/sccache
 
+# Install Bazelisk (auto-downloads the correct Bazel version)
+RUN dnf install -y java-11-openjdk-devel && \
+    curl -L https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64 -o /usr/local/bin/bazel && \
+    chmod +x /usr/local/bin/bazel
+
 USER ${USERNAME}

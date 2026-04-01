@@ -1,0 +1,19 @@
+# Hand-written package marker for fboss/build_defs/.
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(glob(["*.bzl"]))
+
+load(
+    "@hedron_compile_commands//:refresh_compile_commands.bzl",
+    "refresh_compile_commands",
+)
+
+# Generates compile_commands.json for clang tooling (clang-tidy,
+# clang-include-cleaner, clangd).  Output goes to
+# /var/FBOSS/tmp_bld_dir/build/fboss/compile_commands.json.
+# Run: bazel run //fboss/build_defs:refresh_compile_commands
+refresh_compile_commands(
+    name = "refresh_compile_commands",
+    targets = {"//fboss/...": ""},
+)

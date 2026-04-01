@@ -64,6 +64,7 @@ cpp_library(
     ],
 )
 
+# bazelify: exclude
 cpp_unittest(
     name = "rib_tests",
     srcs = [
@@ -119,6 +120,7 @@ cpp_unittest(
     ],
 )
 
+# bazelify: exclude
 cpp_unittest(
     name = "config_application_tests",
     srcs = [
