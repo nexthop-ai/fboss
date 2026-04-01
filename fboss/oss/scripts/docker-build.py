@@ -120,10 +120,10 @@ def parse_args():
     )
     parser.add_argument(
         OPT_ARG_CMAKE_TARGET,
-        type=str,
-        required=False,
+        dest="targets",
+        action="append",
         default=None,
-        help="CMake Target to be built (default: build all FBOSS targets)",
+        help="CMake Target to be built. Can be specified multiple times to build sequentially (default: build all FBOSS targets)",
     )
     parser.add_argument(
         OPT_ARG_NO_DOCKER_OUTPUT,
@@ -447,6 +447,7 @@ def main():
     docker_dir_path = get_docker_path()
     build_docker_image(docker_dir_path, args.use_clang)
 
+<<<<<<< HEAD
     status_code = run_fboss_build(
         args.scratch_path,
         args.target,
@@ -462,10 +463,45 @@ def main():
         args.extra_cmake_defines,
         args.dot_files,
     )
+||||||| b0c750988a
+    status_code = run_fboss_build(
+        args.scratch_path,
+        args.target,
+        args.docker_output,
+        args.use_system_deps,
+        args.env_vars,
+        args.local,
+        args.use_clang,
+        args.num_jobs,
+        args.extras_dir,
+        args.extra_cmake_defines,
+        args.dot_files,
+    )
+=======
+    targets = args.targets if args.targets else [None]
+>>>>>>> 9d56536daa982c3029fd3bf3ffdf05d22152278a
 
-    cleanup_fboss_build_container()
+    for target in targets:
+        status_code = run_fboss_build(
+            args.scratch_path,
+            target,
+            args.docker_output,
+            args.use_system_deps,
+            args.env_vars,
+            args.local,
+            args.use_clang,
+            args.num_jobs,
+            args.extras_dir,
+            args.extra_cmake_defines,
+            args.dot_files,
+        )
 
-    return status_code
+        cleanup_fboss_build_container()
+
+        if status_code != 0:
+            return status_code
+
+    return 0
 
 
 if __name__ == "__main__":
