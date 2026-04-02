@@ -83,8 +83,8 @@ SUPPORTED_SAI_SDK_VERSIONS = {
     "TAJO_SDK_VERSION_25_5_4210",
     "TAJO_SDK_VERSION_25_11_5210",
     # Chenab
-    "CHENAB_SAI_SDK_VERSION_2505_34_0_32",
-    "CHENAB_SAI_SDK_VERSION_2511_35_0_0",
+    "CHENAB_SAI_SDK_VERSION_2505_34_0_38",
+    "CHENAB_SAI_SDK_VERSION_2511_35_0_19",
 }
 
 
@@ -334,7 +334,9 @@ def setup_clang_environment(toolchain_info):
     for manifest in glob.glob(
         os.path.join(path_to("build", "fbcode_builder", "manifests"), "*")
     ):
-        with open(manifest) as f:
+        if not os.path.isfile(manifest):
+            continue
+        with open(manifest, "r") as f:
             content = f.read()
         if "\nbinutils" in content:
             with open(manifest, "w") as f:
