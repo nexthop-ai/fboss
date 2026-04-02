@@ -226,7 +226,12 @@ TEST_F(ConfigSessionTestFixture, commitOnNewlyInitializedSession) {
   ASSERT_FALSE(ports.empty());
   ports[0].description() = "Test change for commit";
   session.setCommandLine(
+<<<<<<< HEAD
       "fboss2-dev config interface eth1/1/1 description \"Test change for commit\"");
+||||||| 9d56536daa
+=======
+      "config interface eth1/1/1 description Test change for commit");
+>>>>>>> b26cf51cf9a8f2a4a694d6c560f5dfcf2c044867
   session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   // Commit should succeed
@@ -368,7 +373,12 @@ TEST_F(ConfigSessionTestFixture, concurrentCommits) {
     ASSERT_FALSE(ports.empty());
     ports[0].description() = "First commit";
     session.setCommandLine(
+<<<<<<< HEAD
         "config interface eth1/1/1 description \"First commit\"");
+||||||| 9d56536daa
+=======
+        "config interface eth1/1/1 description First commit");
+>>>>>>> b26cf51cf9a8f2a4a694d6c560f5dfcf2c044867
     session.saveConfig(
         cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
@@ -388,7 +398,12 @@ TEST_F(ConfigSessionTestFixture, concurrentCommits) {
     ASSERT_FALSE(ports.empty());
     ports[0].description() = "Second commit";
     session.setCommandLine(
+<<<<<<< HEAD
         "config interface eth1/1/1 description \"Second commit\"");
+||||||| 9d56536daa
+=======
+        "config interface eth1/1/1 description Second commit");
+>>>>>>> b26cf51cf9a8f2a4a694d6c560f5dfcf2c044867
     session.saveConfig(
         cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
@@ -534,7 +549,12 @@ TEST_F(ConfigSessionTestFixture, rollbackToPreviousCommit) {
     auto& config1 = session.getAgentConfig();
     (*config1.sw()->ports())[0].description() = "First version";
     session.setCommandLine(
+<<<<<<< HEAD
         "config interface eth1/1/1 description \"First version\"");
+||||||| 9d56536daa
+=======
+        "config interface eth1/1/1 description First version");
+>>>>>>> b26cf51cf9a8f2a4a694d6c560f5dfcf2c044867
     session.saveConfig(
         cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
     session.commit(localhost());
@@ -546,7 +566,12 @@ TEST_F(ConfigSessionTestFixture, rollbackToPreviousCommit) {
     auto& config2 = session.getAgentConfig();
     (*config2.sw()->ports())[0].description() = "Second version";
     session.setCommandLine(
+<<<<<<< HEAD
         "config interface eth1/1/1 description \"Second version\"");
+||||||| 9d56536daa
+=======
+        "config interface eth1/1/1 description Second version");
+>>>>>>> b26cf51cf9a8f2a4a694d6c560f5dfcf2c044867
     session.saveConfig(
         cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
     session.commit(localhost());
@@ -967,8 +992,13 @@ TEST_F(ConfigSessionTestFixture, concurrentSessionConflict) {
   // User1 makes a change and commits
   auto& config1 = session1.getAgentConfig();
   (*config1.sw()->ports())[0].description() = "User1 change";
+<<<<<<< HEAD
   session1.setCommandLine(
       "config interface eth1/1/1 description \"User1 change\"");
+||||||| 9d56536daa
+=======
+  session1.setCommandLine("config interface eth1/1/1 description User1 change");
+>>>>>>> b26cf51cf9a8f2a4a694d6c560f5dfcf2c044867
   session1.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
   auto result1 = session1.commit(localhost());
   EXPECT_FALSE(result1.commitSha.empty());
@@ -976,8 +1006,13 @@ TEST_F(ConfigSessionTestFixture, concurrentSessionConflict) {
   // User2 makes a different change
   auto& config2 = session2.getAgentConfig();
   (*config2.sw()->ports())[0].description() = "User2 change";
+<<<<<<< HEAD
   session2.setCommandLine(
       "config interface eth1/1/1 description \"User2 change\"");
+||||||| 9d56536daa
+=======
+  session2.setCommandLine("config interface eth1/1/1 description User2 change");
+>>>>>>> b26cf51cf9a8f2a4a694d6c560f5dfcf2c044867
   session2.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   // User2 tries to commit but should fail because user1 already committed
@@ -1023,8 +1058,13 @@ TEST_F(ConfigSessionTestFixture, rebaseSuccessNoConflict) {
   // User1 changes port[0] description and commits
   auto& config1 = session1.getAgentConfig();
   (*config1.sw()->ports())[0].description() = "User1 change";
+<<<<<<< HEAD
   session1.setCommandLine(
       "config interface eth1/1/1 description \"User1 change\"");
+||||||| 9d56536daa
+=======
+  session1.setCommandLine("config interface eth1/1/1 description User1 change");
+>>>>>>> b26cf51cf9a8f2a4a694d6c560f5dfcf2c044867
   session1.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
   auto result1 = session1.commit(localhost());
   EXPECT_FALSE(result1.commitSha.empty());
@@ -1033,8 +1073,13 @@ TEST_F(ConfigSessionTestFixture, rebaseSuccessNoConflict) {
   auto& config2 = session2.getAgentConfig();
   ASSERT_GE(config2.sw()->ports()->size(), 2) << "Need at least 2 ports";
   (*config2.sw()->ports())[1].description() = "User2 change";
+<<<<<<< HEAD
   session2.setCommandLine(
       "config interface eth1/2/1 description \"User2 change\"");
+||||||| 9d56536daa
+=======
+  session2.setCommandLine("config interface eth1/1/2 description User2 change");
+>>>>>>> b26cf51cf9a8f2a4a694d6c560f5dfcf2c044867
   session2.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   // User2 tries to commit but fails due to stale base
@@ -1075,8 +1120,13 @@ TEST_F(ConfigSessionTestFixture, rebaseFailsOnConflict) {
   // User1 changes port[0] description to "User1 change"
   auto& config1 = session1.getAgentConfig();
   (*config1.sw()->ports())[0].description() = "User1 change";
+<<<<<<< HEAD
   session1.setCommandLine(
       "config interface eth1/1/1 description \"User1 change\"");
+||||||| 9d56536daa
+=======
+  session1.setCommandLine("config interface eth1/1/1 description User1 change");
+>>>>>>> b26cf51cf9a8f2a4a694d6c560f5dfcf2c044867
   session1.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
   auto result1 = session1.commit(localhost());
   EXPECT_FALSE(result1.commitSha.empty());
@@ -1084,8 +1134,13 @@ TEST_F(ConfigSessionTestFixture, rebaseFailsOnConflict) {
   // User2 changes the SAME port[0] description to "User2 change" (conflict!)
   auto& config2 = session2.getAgentConfig();
   (*config2.sw()->ports())[0].description() = "User2 change";
+<<<<<<< HEAD
   session2.setCommandLine(
       "config interface eth1/1/1 description \"User2 change\"");
+||||||| 9d56536daa
+=======
+  session2.setCommandLine("config interface eth1/1/1 description User2 change");
+>>>>>>> b26cf51cf9a8f2a4a694d6c560f5dfcf2c044867
   session2.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   // User2 tries to rebase but should fail due to conflict
@@ -1159,7 +1214,12 @@ TEST_F(ConfigSessionTestFixture, threeWayMergeScenarios) {
     session1.commit(localhost());
 
     (*session2.getAgentConfig().sw()->ports())[1].description() = "port1_desc";
+<<<<<<< HEAD
     session2.setCommandLine("config interface eth1/2/1 description port1_desc");
+||||||| 9d56536daa
+=======
+    session2.setCommandLine("config interface eth1/1/2 description port1_desc");
+>>>>>>> b26cf51cf9a8f2a4a694d6c560f5dfcf2c044867
     session2.saveConfig(
         cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
     EXPECT_NO_THROW(session2.rebase());
