@@ -374,9 +374,8 @@ systemctl enable fan_service.service
 systemctl enable sensor_service.service
 systemctl enable fsdb.service
 systemctl enable qsfp_service.service
-systemctl enable wedge_agent.service
-#systemctl enable fboss_sw_agent.service
-#systemctl enable fboss_hw_agents.target
+systemctl enable fboss_sw_agent.service
+systemctl enable fboss_hw_agents.target
 
 # 8. Fix NetworkManager connection profile permissions
 # NM ignores profiles that are world-readable

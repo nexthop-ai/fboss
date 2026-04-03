@@ -133,7 +133,7 @@ main() {
   create_distro_base_snapshot
   setup_coop_configs "$platform_dir"
   generate_fruid
-  #enable_hw_agents "$platform_dir" # disabled to revert to combined wedge agent
+  enable_hw_agents "$platform_dir"
 
   log "FBOSS initialization complete"
 }
