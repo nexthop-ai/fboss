@@ -11,33 +11,41 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          # Fetch at least 2 commits so HEAD^ exists for diffing
-          fetch-depth: 2
-      - name: Fetch PR history for sync merge detection
-        if: github.event_name == 'pull_request' && github.event.pull_request.commits > 1
+          # For PRs, checkout the actual PR head (not the synthetic merge commit)
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || '' }}
+          # Most PRs will be fewer than 20 commits
+          fetch-depth: 20
+      - name: Fetch base branch and deepen history for PR diff
+        if: github.event_name == 'pull_request'
         run: |
-          # Fetch enough history to find sync merge commits (PR commits + buffer)
-          DEPTH=$(( ${{ github.event.pull_request.commits }} + 10 ))
-          git fetch --deepen=$DEPTH --no-tags origin ${{ github.head_ref }}
+          # Fetch the base branch so we can compute merge-base
+          git fetch --no-tags origin ${{ github.base_ref }}
+          # Deepen history until merge-base is found
+          DEPTH=${{ github.event.pull_request.commits }}
+          while ! git merge-base origin/${{ github.base_ref }} HEAD >/dev/null 2>&1; do
+            DEPTH=$(( DEPTH + 50 ))
+            git fetch --deepen=$DEPTH --no-tags origin ${{ github.base_ref }} ${{ github.head_ref }}
+          done
       - uses: actions/setup-python@v6
         with:
           python-version: "3.9" # pre-commit-hooks requires Python 3.9+
       - name: Determine base ref for pre-commit
         id: base-ref
         run: |
-          # For sync PRs, find the merge commit titled "Sync with upstream stable commit <sha>"
-          # and use it as the base ref (so we only lint commits after the merge)
-          # Search only within the PR's commits (last N commits where N = PR commit count)
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            SYNC_MERGE_COMMIT=$(git log HEAD~${{ github.event.pull_request.commits }}..HEAD --merges --grep="^Sync with upstream stable commit" -1 --format="%H" 2>/dev/null || true)
+            MERGE_BASE=$(git merge-base origin/${{ github.base_ref }} HEAD)
+            # For sync PRs, find the merge commit titled "Sync with upstream stable commit <sha>"
+            # and use it as the base ref (so we only lint commits after the merge)
+            SYNC_MERGE_COMMIT=$(git log ${MERGE_BASE}..HEAD --first-parent --merges --grep="^Sync with upstream stable commit" -1 --format="%H" 2>/dev/null || true)
+            if [ -n "$SYNC_MERGE_COMMIT" ]; then
+              echo "Detected sync PR with merge commit: $SYNC_MERGE_COMMIT"
+              echo "base_ref=$SYNC_MERGE_COMMIT" >> $GITHUB_OUTPUT
+            else
+              echo "PR merge-base: $MERGE_BASE"
+              echo "base_ref=$MERGE_BASE" >> $GITHUB_OUTPUT
+            fi
           else
-            SYNC_MERGE_COMMIT=""
-          fi
-          if [ -n "$SYNC_MERGE_COMMIT" ]; then
-            echo "Detected sync PR with merge commit: $SYNC_MERGE_COMMIT"
-            echo "base_ref=$SYNC_MERGE_COMMIT" >> $GITHUB_OUTPUT
-          else
-            echo "Regular PR, using HEAD^ as base"
+            echo "Push event, using HEAD^ as base"
             echo "base_ref=HEAD^" >> $GITHUB_OUTPUT
           fi
       - name: Show changed files
