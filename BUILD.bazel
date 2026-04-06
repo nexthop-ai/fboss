@@ -1,4 +1,5 @@
 load("//fboss:fboss_build_types.bzl", "fboss_unit_test")
+load("//bazel_lib:heavy_genrule.bzl", "heavy_genrule")
 load("//bazel_lib:upload_artifact.bzl", "upload_build_artifact")
 
 filegroup(
@@ -38,7 +39,7 @@ sh_library(
     srcs = ["fboss/oss/scripts/run_in_builder.sh"],
 )
 
-genrule(
+heavy_genrule(
     name = "fboss-fake-sai",
     srcs = [
         "//bazel_lib:ln_or_cp",
@@ -103,8 +104,7 @@ genrule(
     tags = [
         "no-sandbox",
         "not-for-ci",
-        "exclusive",
-    ]
+    ],
 )
 
 fboss_unit_test(name = "api_test", tags = ["disabled", "not-for-ci"]) # Fails
@@ -129,9 +129,10 @@ fboss_unit_test(name = "thrift_node_tests", tags = ["not-for-ci"])
 fboss_unit_test(name = "weutil_crc16_ccitt_test", tags = ["not-for-ci"])
 fboss_unit_test(name = "weutil_fboss_eeprom_interface_test", tags = ["not-for-ci"])
 
-genrule(
+heavy_genrule(
     name = "distro_kernel_6.11",
     visibility = ["//visibility:public"],
+    needs = "all_cpus",
     srcs = [
         "//bazel_lib:ln_or_cp",
         "//fboss/fboss-image/distro_cli:builder",
@@ -152,13 +153,10 @@ genrule(
 
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/kernel/dist/kernel-6.11.1.rpms.tar $(location distro_kernel_6.11.tar)
     """,
-    tags = [
-        "no-sandbox",
-        "exclusive",
-    ]
+    tags = ["no-sandbox"],
 )
 
-genrule(
+heavy_genrule(
     name = "nh-fboss-broadcom-xgs",
     srcs = [
         "//fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm",
@@ -229,14 +227,12 @@ genrule(
         $(execpath //bazel_lib:ln_or_cp) fboss/forwarding-stack-tests.tar $(location fboss_forwarding_stack_tests_broadcom_xgs.tar)
         $(execpath //bazel_lib:ln_or_cp) fboss/platform-stack-tests.tar $(location fboss_platform_stack_tests_broadcom_xgs.tar)
     """,
-    tags = [
-        "no-sandbox",
-        "exclusive",
-    ]
+    tags = ["no-sandbox"],
 )
 
-genrule(
+heavy_genrule(
     name = "compress_test_artifacts",
+    needs = "all_cpus",
     srcs = [
         "fboss_forwarding_stack_tests_broadcom_xgs.tar",
         "fboss_platform_stack_tests_broadcom_xgs.tar",
@@ -256,7 +252,7 @@ genrule(
         zstd -T0 -19 -f -o $(location fboss_platform_stack_tests_cisco_s1.tar.zst) $(location fboss_platform_stack_tests_cisco_s1.tar)
     """,
 )
-genrule(
+heavy_genrule(
     name = "nh-fboss-cisco-s1",
     srcs = [
         "//fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm",
@@ -271,7 +267,6 @@ genrule(
         "functions.cmake",
         "getdeps.sh",
         "sdk_dependencies.txt",
-        "nh-fboss-broadcom-xgs.bin", # Serialize building
     ] + glob(["build/**", # Avoid dot files, especially .sccache to which bazel doesn't have permission
               "cmake/**",
               "common/**",
@@ -320,10 +315,7 @@ genrule(
         $(execpath //bazel_lib:ln_or_cp) fboss/forwarding-stack-tests.tar $(location fboss_forwarding_stack_tests_cisco_s1.tar)
         $(execpath //bazel_lib:ln_or_cp) fboss/platform-stack-tests.tar $(location fboss_platform_stack_tests_cisco_s1.tar)
     """,
-    tags = [
-        "no-sandbox",
-        "exclusive",
-    ]
+    tags = ["no-sandbox"],
 )
 
 upload_build_artifact("nh-fboss-broadcom-xgs.bin")
