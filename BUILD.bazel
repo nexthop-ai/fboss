@@ -157,6 +157,65 @@ heavy_genrule(
 )
 
 heavy_genrule(
+    name = "fboss_platform_stack",
+    visibility = ["//visibility:public"],
+    srcs = [
+        "//bazel_lib:ln_or_cp",
+        "//fboss/fboss-image/distro_cli:builder",
+        "//fboss:nh-fboss-manifests",
+        ":fboss_builder_docker", # Prevent concurrent building
+        ".buckconfig",
+        "CMakeLists.txt",
+        "buck2",
+        "functions.cmake",
+        "getdeps.sh",
+        "sdk_dependencies.txt",
+    ] + glob(["build/**",
+              "cmake/**",
+              "common/**",
+              "docs/**",
+              "fboss/**",
+    ], exclude = [
+        "fboss-image/kernel",
+        "fboss-image/kernel.json",
+        "fboss-image/npu_sai.json",
+        "fboss-image/*.tar",
+        "fboss-image/*.rpm",
+        "fboss-image/*.bin",
+        "fboss-image/distro_cli/.artifacts/**",
+        "fboss-image/.docker/**",
+        "fboss-image/image_builder/output/**",
+        "fboss-image/image_builder/logs/**",
+        "fboss-image/image_builder/deps_staging/**",
+        "fboss-image/image_builder/templates/centos-09.0/root/**",
+        "fboss-image/image_builder/templates/centos-09.0/after_pkgs_install_file.json",
+        "fboss/oss/scripts/dist/**",
+        "**/*.swp",
+        "**/*.swo",
+        "**/*~",
+        "**/__pycache__/**",
+        "**/*.pyc",
+    ]),
+    outs = [
+        "fboss_platform_stack.tar",
+        "fboss_platform_stack_tests.tar",
+    ],
+    cmd = """
+        pushd fboss/fboss-image
+        jq '.["fboss-platform-stack"] = {"execute": ["../fboss/oss/scripts/nhfboss-stack.sh", "platform"]}' nh-fboss-broadcom-xgs.json > platform-stack.json
+        ./distro_cli/fboss-image build platform-stack.json fboss-platform-stack
+        popd
+
+        $(execpath //bazel_lib:ln_or_cp) fboss/fboss/oss/scripts/dist/platform-stack.tar $(location fboss_platform_stack.tar)
+        $(execpath //bazel_lib:ln_or_cp) fboss/platform-stack-tests.tar $(location fboss_platform_stack_tests.tar)
+    """,
+    tags = [
+        "no-sandbox",
+        "exclusive",
+    ]
+)
+
+heavy_genrule(
     name = "nh-fboss-broadcom-xgs",
     srcs = [
         "//fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm",
@@ -167,6 +226,7 @@ heavy_genrule(
         "//nhbroadcomsai/fboss-xgs:distro_sai.tar",
         ":fboss_builder_docker", # Prevent concurrent building
         "distro_kernel_6.11.tar",
+        "fboss_platform_stack.tar",
         ".buckconfig",
         "CMakeLists.txt",
         "buck2",
@@ -189,6 +249,7 @@ heavy_genrule(
         "fboss-image/distro_bgp_pp.rpm",
         "fboss-image/distro_fboss_bsp.tar",
         "fboss-image/distro_nexthop_bsp.tar",
+        "fboss-image/fboss_platform_stack.tar",
         "fboss-image/nh-fboss-broadcom-xgs.tar",
         "fboss-image/nh-fboss-broadcom-xgs.bin",
         "fboss-image/distro_cli/.artifacts/**",
@@ -209,7 +270,6 @@ heavy_genrule(
         "nh-fboss-broadcom-xgs.bin",
         "nh-fboss-broadcom-xgs.tar",
         "fboss_forwarding_stack_tests_broadcom_xgs.tar",
-        "fboss_platform_stack_tests_broadcom_xgs.tar",
     ],
     cmd = """
         ln -f $(location distro_kernel_6.11.tar) fboss/fboss-image/distro_kernel_6.11.tar
@@ -217,6 +277,7 @@ heavy_genrule(
         ln -f $(location //fboss_extras/asic_init:distro_asic_init.rpm) fboss/fboss-image/distro_asic_init.rpm
         ln -f $(location //fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar) fboss/fboss-image/distro_fboss_bsp.tar
         ln -f $(location //fboss_bsps/nexthop_bsp:distro_nexthop_bsp.tar) fboss/fboss-image/distro_nexthop_bsp.tar
+        ln -f $(location fboss_platform_stack.tar) fboss/fboss-image/fboss_platform_stack.tar
         ln -f $(location //fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm) fboss/fboss-image/distro_bgp_pp.rpm
         pushd fboss/fboss-image
         ./distro_cli/fboss-image build nh-fboss-broadcom-xgs.json 2>&1
@@ -225,7 +286,6 @@ heavy_genrule(
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.tar $(location nh-fboss-broadcom-xgs.tar)
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.bin $(location nh-fboss-broadcom-xgs.bin)
         $(execpath //bazel_lib:ln_or_cp) fboss/forwarding-stack-tests.tar $(location fboss_forwarding_stack_tests_broadcom_xgs.tar)
-        $(execpath //bazel_lib:ln_or_cp) fboss/platform-stack-tests.tar $(location fboss_platform_stack_tests_broadcom_xgs.tar)
     """,
     tags = ["no-sandbox"],
 )
@@ -235,21 +295,18 @@ heavy_genrule(
     needs = "all_cpus",
     srcs = [
         "fboss_forwarding_stack_tests_broadcom_xgs.tar",
-        "fboss_platform_stack_tests_broadcom_xgs.tar",
         "fboss_forwarding_stack_tests_cisco_s1.tar",
-        "fboss_platform_stack_tests_cisco_s1.tar",
+        "fboss_platform_stack_tests.tar",
     ],
     outs = [
         "fboss_forwarding_stack_tests_broadcom_xgs.tar.zst",
-        "fboss_platform_stack_tests_broadcom_xgs.tar.zst",
         "fboss_forwarding_stack_tests_cisco_s1.tar.zst",
-        "fboss_platform_stack_tests_cisco_s1.tar.zst",
+        "fboss_platform_stack_tests.tar.zst",
     ],
     cmd = """
         zstd -T0 -19 -f -o $(location fboss_forwarding_stack_tests_broadcom_xgs.tar.zst) $(location fboss_forwarding_stack_tests_broadcom_xgs.tar)
-        zstd -T0 -19 -f -o $(location fboss_platform_stack_tests_broadcom_xgs.tar.zst) $(location fboss_platform_stack_tests_broadcom_xgs.tar)
         zstd -T0 -19 -f -o $(location fboss_forwarding_stack_tests_cisco_s1.tar.zst) $(location fboss_forwarding_stack_tests_cisco_s1.tar)
-        zstd -T0 -19 -f -o $(location fboss_platform_stack_tests_cisco_s1.tar.zst) $(location fboss_platform_stack_tests_cisco_s1.tar)
+        zstd -T0 -19 -f -o $(location fboss_platform_stack_tests.tar.zst) $(location fboss_platform_stack_tests.tar)
     """,
 )
 heavy_genrule(
@@ -261,6 +318,7 @@ heavy_genrule(
         "//nhciscosai/fboss-s1:distro_sai.tar",
         ":fboss_builder_docker", # Prevent concurrent building
         "distro_kernel_6.11.tar",
+        "fboss_platform_stack.tar",
         ".buckconfig",
         "CMakeLists.txt",
         "buck2",
@@ -281,6 +339,7 @@ heavy_genrule(
         "fboss-image/distro_sai.tar",
         "fboss-image/distro_fboss_bsp.tar",
         "fboss-image/distro_nexthop_bsp.tar",
+        "fboss-image/fboss_platform_stack.tar",
         "fboss-image/nh-fboss-cisco-s1.tar",
         "fboss-image/distro_bgp_pp.rpm",
         "fboss-image/distro_cli/.artifacts/**",
@@ -300,12 +359,12 @@ heavy_genrule(
     outs = [
         "nh-fboss-cisco-s1.tar",
         "fboss_forwarding_stack_tests_cisco_s1.tar",
-        "fboss_platform_stack_tests_cisco_s1.tar",
     ],
     cmd = """
         ln -f $(location distro_kernel_6.11.tar) fboss/fboss-image/distro_kernel_6.11.tar
         ln -f $(location //nhciscosai/fboss-s1:distro_sai.tar) fboss/fboss-image/distro_sai.tar
         ln -f $(location //fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar) fboss/fboss-image/distro_fboss_bsp.tar
+        ln -f $(location fboss_platform_stack.tar) fboss/fboss-image/fboss_platform_stack.tar
         ln -f $(location //fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm) fboss/fboss-image/distro_bgp_pp.rpm
         pushd fboss/fboss-image
         ./distro_cli/fboss-image build nh-fboss-cisco-s1.json 2>&1
@@ -313,7 +372,6 @@ heavy_genrule(
 
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-cisco-s1.tar $(location nh-fboss-cisco-s1.tar)
         $(execpath //bazel_lib:ln_or_cp) fboss/forwarding-stack-tests.tar $(location fboss_forwarding_stack_tests_cisco_s1.tar)
-        $(execpath //bazel_lib:ln_or_cp) fboss/platform-stack-tests.tar $(location fboss_platform_stack_tests_cisco_s1.tar)
     """,
     tags = ["no-sandbox"],
 )
@@ -321,7 +379,6 @@ heavy_genrule(
 upload_build_artifact("nh-fboss-broadcom-xgs.bin")
 upload_build_artifact("nh-fboss-broadcom-xgs.tar")
 upload_build_artifact("fboss_forwarding_stack_tests_broadcom_xgs.tar.zst")
-upload_build_artifact("fboss_platform_stack_tests_broadcom_xgs.tar.zst")
 upload_build_artifact("nh-fboss-cisco-s1.tar")
 upload_build_artifact("fboss_forwarding_stack_tests_cisco_s1.tar.zst")
-upload_build_artifact("fboss_platform_stack_tests_cisco_s1.tar.zst")
+upload_build_artifact("fboss_platform_stack_tests.tar.zst")

@@ -11,8 +11,7 @@
       {"download": "file:distro_bgp_pp.rpm"}
   ],
   "fboss-platform-stack": {
-    "execute": ["../fboss/oss/scripts/nhfboss-stack.sh", "platform"],
-    "artifact": "platform-stack.tar"
+    "download": "file:fboss_platform_stack.tar"
   },
   "bsps": [
       {"download": "file:distro_nexthop_bsp.tar"},
