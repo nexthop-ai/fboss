@@ -22,7 +22,8 @@ fake)
   echo "Building with fake SAI"
   export BUILD_SAI_FAKE=1
   export BUILD_SAI_FAKE_LINK_TEST=1
-  npu_sai_impl_flag="--npu-sai-impl BUILD_SAI_FAKE"
+  # Don't pass --npu-sai-impl for fake SAI; run-getdeps.py defaults to fake when not specified
+  npu_sai_impl_flag=""
   ;;
 
 brcm)

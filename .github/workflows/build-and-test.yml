@@ -236,6 +236,22 @@ jobs:
             echo "Test output not found - tests did not run (build may have failed)"
           fi
 
+      - name: Clean build directory for fake SAI build
+        run: |
+          # Remove build artifacts
+          sudo rm -rf .build_dir/build/fboss .build_dir/installed/fboss .build_dir/installed/sai_impl-*
+          # Revert/remove manifests modified/created by build-helper.py (testing on host due to bind mount)
+          git checkout build/fbcode_builder/manifests/libsai build/fbcode_builder/manifests/fboss
+          rm -f build/fbcode_builder/manifests/sai_impl
+
+      - name: Fetch dependencies
+        run: |
+          docker exec -e SAI_IMPL=fake FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-get-deps.sh
+
+      - name: Build FBOSS with Fake SAI
+        run: |
+          docker exec -e SAI_IMPL=fake FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss_fake_agent_targets
+
       - name: Cleanup FBOSS container
         if: always()
         run: |
