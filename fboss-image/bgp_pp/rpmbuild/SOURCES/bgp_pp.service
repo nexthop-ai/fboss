@@ -1,0 +1,22 @@
+[Unit]
+Description=Meta bgp++ routing daemon
+# Advisory ordering: bgpd_cpp retries FibService connection internally,
+# so strict dependency (Wants=) on fboss_sw_agent is not required.
+After=network-online.target fboss_sw_agent.service
+Wants=network-online.target
+
+StartLimitIntervalSec=600
+StartLimitBurst=5
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/bgpd_cpp --config /etc/bgp_pp/bgpcpp.conf
+Restart=always
+RestartSec=30
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=bgp_pp
+
+[Install]
+WantedBy=multi-user.target

@@ -161,6 +161,7 @@ genrule(
 genrule(
     name = "nh-fboss-broadcom-xgs",
     srcs = [
+        "//fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm",
         "//bazel_lib:ln_or_cp",
         "//fboss_bsps/nexthop_bsp:distro_nexthop_bsp.tar",
         "//fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar",
@@ -187,6 +188,7 @@ genrule(
         "fboss-image/distro_kernel_6.11.tar",
         "fboss-image/distro_sai.tar",
         "fboss-image/distro_asic_init.rpm",
+        "fboss-image/distro_bgp_pp.rpm",
         "fboss-image/distro_fboss_bsp.tar",
         "fboss-image/distro_nexthop_bsp.tar",
         "fboss-image/nh-fboss-broadcom-xgs.tar",
@@ -217,6 +219,7 @@ genrule(
         ln -f $(location //fboss_extras/asic_init:distro_asic_init.rpm) fboss/fboss-image/distro_asic_init.rpm
         ln -f $(location //fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar) fboss/fboss-image/distro_fboss_bsp.tar
         ln -f $(location //fboss_bsps/nexthop_bsp:distro_nexthop_bsp.tar) fboss/fboss-image/distro_nexthop_bsp.tar
+        ln -f $(location //fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm) fboss/fboss-image/distro_bgp_pp.rpm
         pushd fboss/fboss-image
         ./distro_cli/fboss-image build nh-fboss-broadcom-xgs.json 2>&1
         popd
@@ -256,6 +259,7 @@ genrule(
 genrule(
     name = "nh-fboss-cisco-s1",
     srcs = [
+        "//fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm",
         "//bazel_lib:ln_or_cp",
         "//fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar",
         "//nhciscosai/fboss-s1:distro_sai.tar",
@@ -283,6 +287,7 @@ genrule(
         "fboss-image/distro_fboss_bsp.tar",
         "fboss-image/distro_nexthop_bsp.tar",
         "fboss-image/nh-fboss-cisco-s1.tar",
+        "fboss-image/distro_bgp_pp.rpm",
         "fboss-image/distro_cli/.artifacts/**",
         "fboss-image/.docker/**",
         "fboss-image/image_builder/output/**",
@@ -306,6 +311,7 @@ genrule(
         ln -f $(location distro_kernel_6.11.tar) fboss/fboss-image/distro_kernel_6.11.tar
         ln -f $(location //nhciscosai/fboss-s1:distro_sai.tar) fboss/fboss-image/distro_sai.tar
         ln -f $(location //fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar) fboss/fboss-image/distro_fboss_bsp.tar
+        ln -f $(location //fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm) fboss/fboss-image/distro_bgp_pp.rpm
         pushd fboss/fboss-image
         ./distro_cli/fboss-image build nh-fboss-cisco-s1.json 2>&1
         popd

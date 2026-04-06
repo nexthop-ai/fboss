@@ -1,0 +1,29 @@
+# Bazel package for bgp_pp (bgp++ routing daemon).
+# - deps.bzl is referenced as //fboss/fboss-image/bgp_pp:deps.bzl from MODULE.bazel.
+# - distro_bgp_pp builds the bgp-pp RPM from the S3 tarball for use in image builds.
+
+genrule(
+    name = "distro_bgp_pp",
+    visibility = ["//fboss:__subpackages__"],
+    srcs = [
+        "@bgp_pp_tarball//file",
+        "//bazel_lib:ln_or_cp",
+        "//fboss/fboss-image/distro_cli:builder",
+        "//fboss:fboss_builder_docker",
+        "//fboss:nh-fboss-manifests",
+        "build.sh",
+        "rpmbuild/SPECS/bgp_pp.spec",
+        "rpmbuild/SOURCES/bgp_pp.service",
+    ],
+    outs = ["distro_bgp_pp.rpm"],
+    cmd = """
+        ln -f $(location @bgp_pp_tarball//file) fboss/fboss-image/bgp_pp/rpmbuild/SOURCES/bgp_pp-1.0.tar.gz
+        pushd fboss/fboss-image
+        jq '.["other_dependencies"] = [{"execute": ["bgp_pp/build.sh"], "artifact": "bgp-pp-1.0-1.x86_64.rpm"}]' nh-fboss-broadcom-xgs.json > bgp_pp.json
+        ./distro_cli/fboss-image build bgp_pp.json other_dependencies
+        popd
+
+        $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/bgp_pp/rpmbuild/RPMS/x86_64/bgp-pp-*.x86_64.rpm $(location distro_bgp_pp.rpm)
+    """,
+    tags = ["no-sandbox"],
+)

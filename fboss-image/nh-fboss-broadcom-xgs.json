@@ -7,7 +7,8 @@
     "download": "file:distro_kernel_6.11.tar"
   },
   "other_dependencies": [
-      {"download": "file:distro_asic_init.rpm"}
+      {"download": "file:distro_asic_init.rpm"},
+      {"download": "file:distro_bgp_pp.rpm"}
   ],
   "fboss-platform-stack": {
     "execute": ["../fboss/oss/scripts/nhfboss-stack.sh", "platform"],
