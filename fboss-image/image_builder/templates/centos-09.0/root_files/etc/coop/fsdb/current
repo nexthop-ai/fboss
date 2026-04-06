@@ -1,11 +1,4 @@
 {
-<<<<<<< HEAD
-  "defaultCommandLineArgs": {},
-  "trustedSubnets": [],
-  "publishers": {},
-  "subscribers": {}
-||||||| b26cf51cf9
-=======
   "defaultCommandLineArgs": {
     "serveHeartbeats": "true",
     "statsSubscriptionHeartbeat_s": "5",
@@ -85,5 +78,4 @@
       "numExpectedSubscriptions": 1
     }
   }
->>>>>>> 777bee98fb2dac5a55b0c1f6bcff90812b5f7522
 }
