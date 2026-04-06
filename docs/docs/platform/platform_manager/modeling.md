@@ -71,7 +71,7 @@ It should store content in [Meta EEPROM V6 format](/docs/platform/meta_eeprom_fo
 
 - The unit must be a PMUnit (FRU) for it to be field-replaceable.
 
-## Re-Spin
+## Board Revisions (Re-Spins)
 
 - Any respin of a PMUnit, should involve update of the IDPROM of that PMUnit.
 - Any respin of a non-PMUnit, should be bundled with changes in IDPROM of a
