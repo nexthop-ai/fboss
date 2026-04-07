@@ -32,6 +32,7 @@ RUN mkdir -p \
     /etc/coop \
     /root/config \
     /var/facebook/fboss \
+    /var/facebook/logs/fboss \
     /dev/shm/fboss
 
 # Copy FBOSS production rootfs overlay (systemd services, helper scripts, configs)
@@ -61,6 +62,10 @@ COPY fboss-sim/docker/runtime/setup-container.sh /tmp/setup-container.sh
 # Layer 1: Shared libraries (rarely change)
 COPY tmp_build_dir/lib/ /opt/fboss/lib/
 
+# Register /opt/fboss/lib with the dynamic linker so binaries resolve their deps
+# without needing LD_LIBRARY_PATH to be set in the calling shell.
+RUN echo "/opt/fboss/lib" > /etc/ld.so.conf.d/fboss.conf && ldconfig
+
 # Layer 2: Share configs and platform data (rarely change)
 COPY tmp_build_dir/share/ /opt/fboss/share/
 
@@ -75,7 +80,7 @@ RUN chmod +x /tmp/setup-container.sh && \
     rm /tmp/setup-container.sh
 
 ENV PATH="/opt/fboss/bin:/usr/local/bin:${PATH}" \
-    LD_LIBRARY_PATH="/opt/fboss/lib:${LD_LIBRARY_PATH}" \
+    LD_LIBRARY_PATH="/opt/fboss/lib" \
     MALLOC_ARENA_MAX=1 \
     MALLOC_MMAP_THRESHOLD_=0 \
     MALLOC_CHECK_=0
