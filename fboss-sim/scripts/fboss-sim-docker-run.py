@@ -8,9 +8,10 @@ This script launches the minimal fboss-sim runtime container created by
 fboss-sim-docker-package.py with all necessary flags and capabilities.
 
 Features:
-- Proper systemd support (--privileged, --cgroupns=host)
+- Proper systemd support (--cgroupns=host)
 - Shared memory configuration (--shm-size=512m) to prevent malloc corruption
 - Network capabilities for interface management
+- IPv6-enabled Docker network so Thrift servers bind to :: (not 0.0.0.0)
 - Support for monolithic and split agent modes
 - Automatically stops and removes existing container
 """
@@ -18,82 +19,81 @@ Features:
 import getpass
 import subprocess
 import sys
-import time
 
 USERNAME = getpass.getuser()
 DEFAULT_IMAGE_NAME = f"fboss_sim_runtime_{USERNAME}"
 DEFAULT_CONTAINER_NAME = f"fboss_sim_runtime_{USERNAME}"
+# User-defined network with IPv6 enabled.
+# Docker sets net.ipv6.conf.eth0.disable_ipv6=1 on the default bridge, which
+# causes folly/Thrift (using getaddrinfo+AI_ADDRCONFIG) to bind 0.0.0.0 only.
+# A user-defined network with --ipv6 avoids that and gives the container a real
+# non-loopback IPv6 address, so AI_ADDRCONFIG returns AF_INET6 results.
+NETWORK_NAME = f"fboss_sim_net_{USERNAME}"
+NETWORK_SUBNET_V6 = "fd00:fb05:5::/64"
 
 
-def stop_existing_container(container_name: str):
-    """Stop and remove existing container if it exists"""
-    print(f"🔍 Checking for existing container: {container_name}")
+def ensure_network(network_name: str) -> None:
+    result = subprocess.run(
+        ["docker", "network", "inspect", network_name],
+        capture_output=True, check=False,
+    )
+    if result.returncode == 0:
+        print(f"  → Network {network_name} already exists")
+        return
+    print(f"  → Creating IPv6-enabled network {network_name}...")
+    result = subprocess.run(
+        ["docker", "network", "create", "--ipv6",
+         f"--subnet={NETWORK_SUBNET_V6}", network_name],
+        check=False, capture_output=True, text=True,
+    )
+    if result.returncode == 0:
+        print(f"  ✓ Network created ({NETWORK_SUBNET_V6})")
+    else:
+        print(f"  ❌ Network creation failed: {result.stderr.strip()}")
+        sys.exit(1)
 
-    # Check if container exists
+
+def stop_existing_container(container_name: str) -> None:
     check_cmd = ["docker", "ps", "-a", "-q", "-f", f"name={container_name}"]
     result = subprocess.run(check_cmd, check=False, capture_output=True, text=True)
-
     if result.stdout.strip():
         print("  → Found existing container, stopping...")
-        stop_result = subprocess.run(
-            ["docker", "stop", container_name], check=False, capture_output=True
-        )
-        if stop_result.returncode == 0:
-            print("  ✓ Container stopped")
-
-        print("  → Removing container...")
-        rm_result = subprocess.run(
-            ["docker", "rm", container_name], check=False, capture_output=True
-        )
-        if rm_result.returncode == 0:
-            print("  ✓ Container removed")
+        subprocess.run(["docker", "stop", container_name], check=False, capture_output=True)
+        print("  ✓ Container stopped")
+        subprocess.run(["docker", "rm", container_name], check=False, capture_output=True)
+        print("  ✓ Container removed")
     else:
         print("  → No existing container found")
 
 
-def run_container():
-    """Run the cfboss runtime container"""
-    print("\n🚀 Starting cfboss runtime container...")
-    print(f"  Image: {DEFAULT_IMAGE_NAME}:latest")
+def run_container() -> int:
+    image_tag = f"{DEFAULT_IMAGE_NAME}:latest"
+    print("\n🚀 Starting fboss-sim runtime container...")
+    print(f"  Image:     {image_tag}")
     print(f"  Container: {DEFAULT_CONTAINER_NAME}")
-    print("  Configuration:")
-    print("    - Shared memory: 512m")
-    print("    - Memory limit: 4g")
-    print("    - Cgroup namespace: host")
-    print("    - Capabilities: NET_ADMIN (network interfaces), SYS_ADMIN (systemd)")
+    print(f"  Network:   {NETWORK_NAME} (IPv6-enabled)")
 
     cmd = [
-        "docker",
-        "run",
-        "-d",
-        # Security: Use minimal capabilities instead of --privileged
-        # CAP_NET_ADMIN: Required for TunManager to create/manage network interfaces
-        # CAP_SYS_ADMIN: Required for systemd to manage cgroups
+        "docker", "run", "-d",
+        # CAP_NET_ADMIN: TunManager network interface creation
+        # CAP_SYS_ADMIN: systemd cgroup management
         "--cap-add=NET_ADMIN",
         "--cap-add=SYS_ADMIN",
-        # TUN device access for TunManager
         "--device=/dev/net/tun",
-        # Shared memory for warm boot state and IPC
+        # IPv6-enabled user-defined network (avoids Docker default bridge
+        # setting net.ipv6.conf.eth0.disable_ipv6=1)
+        f"--network={NETWORK_NAME}",
         "--shm-size=512m",
-        # Memory limit to prevent runaway processes
         "--memory=4g",
-        # Systemd requires host cgroup namespace and cgroup mount
         "--cgroupns=host",
-        "-v",
-        "/sys/fs/cgroup:/sys/fs/cgroup:rw",
-        # Systemd needs tmpfs for /run and /tmp
-        "--tmpfs",
-        "/run",
-        "--tmpfs",
-        "/tmp",
-        "--name",
-        DEFAULT_CONTAINER_NAME,
-        f"{DEFAULT_IMAGE_NAME}:latest",
+        "-v", "/sys/fs/cgroup:/sys/fs/cgroup:rw",
+        "--tmpfs", "/run",
+        "--tmpfs", "/tmp",
+        "--name", DEFAULT_CONTAINER_NAME,
+        image_tag,
     ]
 
-    print("\n  → Running docker command...")
     result = subprocess.run(cmd, check=False, capture_output=True, text=True)
-
     if result.returncode != 0:
         print("❌ Failed to start container")
         if result.stderr:
@@ -102,24 +102,20 @@ def run_container():
 
     container_id = result.stdout.strip()
     print(f"  ✓ Container started (ID: {container_id[:12]})")
-
-    # Wait for systemd to initialize
-    print("  → Waiting for systemd to initialize...")
-    time.sleep(3)
-    print("  ✓ Systemd initialized")
-
     return 0
 
 
-def main():
+def main() -> int:
     print("=" * 60)
-    print("cfboss Runtime Container Launcher")
+    print("fboss-sim Runtime Container Launcher")
     print("=" * 60)
 
-    # Stop existing container
+    print("\n🔍 Checking for existing container...")
     stop_existing_container(DEFAULT_CONTAINER_NAME)
 
-    # Run container
+    print("\n🌐 Setting up network...")
+    ensure_network(NETWORK_NAME)
+
     ret = run_container()
     if ret != 0:
         return ret
@@ -128,20 +124,15 @@ def main():
     print("✅ Container started successfully!")
     print(f"{'=' * 60}")
     print(f"\nContainer name: {DEFAULT_CONTAINER_NAME}")
+    print("Agent mode:     split (fboss_sw_agent + fboss_hw_agent)")
     print("\nUseful commands:")
-    print(
-        f"  • Check status:  docker exec {DEFAULT_CONTAINER_NAME} systemctl status wedge_agent"
-    )
-    print(f"  • View logs:     docker logs {DEFAULT_CONTAINER_NAME}")
-    print(f"  • Enter shell:   docker exec -it {DEFAULT_CONTAINER_NAME} bash")
-    print(
-        f"  • Switch mode:   docker exec {DEFAULT_CONTAINER_NAME} switch-agent-mode.sh split"
-    )
-    print(
-        f"  • Run CLI test:  docker exec {DEFAULT_CONTAINER_NAME} /opt/fboss/bin/fboss2_integration_test"
-    )
+    print(f"  • SW agent status:  docker exec {DEFAULT_CONTAINER_NAME} systemctl status fboss_sw_agent")
+    print(f"  • HW agent status:  docker exec {DEFAULT_CONTAINER_NAME} systemctl status fboss_hw_agent@0")
+    print(f"  • View logs:        docker logs {DEFAULT_CONTAINER_NAME}")
+    print(f"  • Enter shell:      docker exec -it {DEFAULT_CONTAINER_NAME} bash")
+    print(f"  • Switch to mono:   docker exec {DEFAULT_CONTAINER_NAME} switch-agent-mode.sh mono")
+    print(f"  • Run CLI test:     docker exec {DEFAULT_CONTAINER_NAME} /opt/fboss/bin/fboss2_integration_test")
     print()
-
     return 0
 
 

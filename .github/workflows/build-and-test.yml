@@ -19,7 +19,6 @@ on:
         required: false
         default: ""
         type: string
-
     outputs:
       failed_tests:
         description: "List of failed tests (up to 10)"
@@ -251,6 +250,50 @@ jobs:
       - name: Build FBOSS with Fake SAI
         run: |
           docker exec -e SAI_IMPL=fake FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss_fake_agent_targets
+          docker exec -e SAI_IMPL=fake FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss2_targets
+
+      - name: Build fboss-sim runtime image
+        run: python3 fboss-sim/scripts/fboss-sim-docker-package.py
+
+      - name: Start fboss-sim runtime container
+        run: python3 fboss-sim/scripts/fboss-sim-docker-run.py
+
+      - name: Wait for agent services to be ready
+        run: |
+          for i in $(seq 1 5); do
+            elapsed=$(( (i - 1) * 2 ))
+            if docker exec fboss_sim_runtime_${USER} /opt/fboss/bin/fboss2 show interface 2>/dev/null; then
+              echo "✓ Agent ready after ${elapsed}s"
+              exit 0
+            fi
+            echo "  [${elapsed}s] not ready yet, retrying..."
+            sleep 2
+          done
+          echo "❌ Agent not ready after 10s"
+          docker exec fboss_sim_runtime_${USER} tail -n 50 /var/facebook/logs/fboss/wedge_agent.log || true
+          exit 1
+
+      - name: Detect changed files
+        id: changes
+        if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            cli:
+              - 'fboss/cli/**'
+
+      - name: Run fboss2 integration test
+        if: (github.event_name != 'pull_request' && github.event_name != 'merge_group') || steps.changes.outputs.cli == 'true'
+        run: |
+          docker exec fboss_sim_runtime_${USER} /opt/fboss/bin/fboss2_integration_test
+
+      - name: Cleanup fboss-sim runtime container and image
+        if: always()
+        run: |
+          docker stop fboss_sim_runtime_${USER} 2>/dev/null || true
+          docker rm   fboss_sim_runtime_${USER} 2>/dev/null || true
+          docker rmi  fboss_sim_runtime_${USER}:latest 2>/dev/null || true
+          docker network rm fboss_sim_net_${USER} 2>/dev/null || true
 
       - name: Cleanup FBOSS container
         if: always()

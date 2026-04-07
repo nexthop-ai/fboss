@@ -29,9 +29,9 @@ git init
 git config user.email "fboss@container"
 git config user.name "FBOSS Container"
 
-# Copy mono config as default agent.conf
-echo "→ Installing mono agent config..."
-cp /root/config/mono.conf /etc/coop/agent.conf
+# Copy split config as default agent.conf
+echo "→ Installing split agent config..."
+cp /root/config/split.conf /etc/coop/agent.conf
 
 # 5. Configure services to use jemalloc instead of glibc malloc
 # jemalloc is more robust against memory corruption issues in fake SAI
@@ -48,24 +48,28 @@ done
 echo "→ Reloading systemd daemon..."
 systemctl daemon-reload || true
 
-# 7. Enable wedge_agent (monolithic mode) by default
-echo "→ Enabling monolithic mode (wedge_agent) by default..."
+# 7. Enable split mode (fboss_sw_agent + fboss_hw_agent) by default
+echo "→ Enabling split mode (fboss_sw_agent + fboss_hw_agent) by default..."
 mkdir -p /etc/systemd/system/multi-user.target.wants
-ln -sf /usr/lib/systemd/system/wedge_agent.service \
-  /etc/systemd/system/multi-user.target.wants/wedge_agent.service
+ln -sf /usr/lib/systemd/system/fboss_sw_agent.service \
+  /etc/systemd/system/multi-user.target.wants/fboss_sw_agent.service
+# Template instance: symlink name is the instance (@0), but target is the template (@)
+ln -sf /usr/lib/systemd/system/fboss_hw_agent@.service \
+  /etc/systemd/system/multi-user.target.wants/fboss_hw_agent@0.service
 
-# Verify the symlink was created
-if [ -L /etc/systemd/system/multi-user.target.wants/wedge_agent.service ]; then
-  echo "✓ wedge_agent enabled"
+# Verify the symlinks were created
+if [ -L /etc/systemd/system/multi-user.target.wants/fboss_sw_agent.service ] &&
+  [ -L /etc/systemd/system/multi-user.target.wants/fboss_hw_agent@0.service ]; then
+  echo "✓ fboss_sw_agent enabled"
+  echo "✓ fboss_hw_agent@0 enabled"
 else
-  echo "✗ Failed to enable wedge_agent"
+  echo "✗ Failed to enable split agent services"
   exit 1
 fi
 
-# 8. Mask split-agent services (can be unmasked at runtime with switch-agent-mode.sh)
-echo "→ Masking split-agent services..."
-systemctl mask fboss_sw_agent.service || true
-systemctl mask fboss_hw_agent@0.service || true
+# 8. Mask monolithic agent service (can be unmasked at runtime with switch-agent-mode.sh)
+echo "→ Masking monolithic agent service..."
+systemctl mask wedge_agent.service || true
 
 # Note: Other FBOSS services (platform_manager, qsfp_service, etc.) are not enabled
 # by default, so they won't start. No need to explicitly mask them.
@@ -76,8 +80,8 @@ echo "✅ Container Setup Complete!"
 echo "=========================================="
 echo ""
 echo "Configuration Summary:"
-echo "  - Monolithic mode: ENABLED (wedge_agent)"
-echo "  - Split mode: DISABLED (masked, use switch-agent-mode.sh to enable)"
+echo "  - Split mode: ENABLED (fboss_sw_agent + fboss_hw_agent)"
+echo "  - Monolithic mode: DISABLED (masked, use switch-agent-mode.sh to enable)"
 echo "  - Memory allocator: jemalloc (via LD_PRELOAD)"
 echo "  - Multi-switch flag: ENABLED (via /etc/coop/agent.conf)"
 echo ""
