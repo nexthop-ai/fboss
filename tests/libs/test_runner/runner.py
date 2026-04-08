@@ -13,6 +13,22 @@ from tests.libs.device.device_ssh_helper import DeviceSCPClient, DeviceSSHClient
 
 logger = logging.getLogger("test_runner")
 
+# Map normalized HWSKU (from device DB model name) to FBOSS config codename
+# for hw_test_configs (SAI/agent tests). Only applies to SaiTestRunner and
+# SaiAgentTestRunner — QSFP and link configs already use the hwsku name directly.
+#
+# Wedge800 naming: B/C = Broadcom/Cisco ASIC, ACT/NHP = Accton/Nexthop vendor.
+# ACT DUTs use NHP configs (same ASIC, different manufacturer).
+#
+# Sources of truth:
+#   - fboss/fboss/lib/platforms/PlatformProductInfo.cpp (model -> PlatformType)
+#   - fboss/fboss/oss/hw_test_configs/ (available config files)
+_HW_TEST_CONFIG_NAME: dict[str, str] = {
+    "minipack3": "montblanc",
+    "wedge800bact": "wedge800bnhp",
+    # "wedge800cact": "wedge800cnhp",  # TODO: add when cnhp config is checked in
+}
+
 
 class BaseHwTestRunner(ABC):
     """Base class for hardware test runners."""
@@ -168,14 +184,18 @@ class SaiTestRunner(BaseHwTestRunner):
     """Runner for SAI hardware tests."""
 
     def test_args(self, hwsku: str) -> str:
-        return f"sai --config ./share/hw_test_configs/{hwsku}.agent.materialized_JSON"
+        config_name = _HW_TEST_CONFIG_NAME.get(hwsku, hwsku)
+        logger.info("hwsku=%s hw_test_config=%s", hwsku, config_name)
+        return f"sai --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON"
 
 
 class SaiAgentTestRunner(BaseHwTestRunner):
     """Runner for SAI agent tests."""
 
     def test_args(self, hwsku: str) -> str:
-        return f"sai_agent --config ./share/hw_test_configs/{hwsku}.agent.materialized_JSON"
+        config_name = _HW_TEST_CONFIG_NAME.get(hwsku, hwsku)
+        logger.info("hwsku=%s hw_test_config=%s", hwsku, config_name)
+        return f"sai_agent --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON"
 
 
 class QsfpTestRunner(BaseHwTestRunner):
