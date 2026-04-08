@@ -17,7 +17,7 @@ fboss2 | fboss2-dev | diag_shell_client)
   update_prefix="fboss-forwarding"
   ;;
 
-fw_util | sensor_service_client | showtech | weutil)
+fw_util | sensor_service_client | rma-showtech | weutil)
   # Platform stack commands
   update_prefix="fboss-platform_stack"
   ;;
