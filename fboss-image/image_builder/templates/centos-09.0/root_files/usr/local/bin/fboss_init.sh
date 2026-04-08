@@ -25,7 +25,13 @@ get_platform_dir() {
   fi
   log "Detected platform: $platform"
 
-  local platform_dir="${FBOSS_SHARE}/default_configs/${platform}"
+  # Map DMI platform names to config directory names where they differ.
+  # Wedge800B: NHP devices use the same configs as ACT (same ASIC, different vendor).
+  local config_name
+  config_name=$(map_platform_to_config "$platform")
+  log "Config name: $config_name"
+
+  local platform_dir="${FBOSS_SHARE}/default_configs/${config_name}"
   if [[ ! -d $platform_dir ]]; then
     error "Platform config directory not found: $platform_dir"
     return 1
@@ -33,6 +39,15 @@ get_platform_dir() {
   log "Using platform config directory: $platform_dir"
 
   echo "$platform_dir"
+}
+
+map_platform_to_config() {
+  local platform="$1"
+  declare -A platform_map=(
+    ["wedge800bnhp"]="wedge800bact"
+    ["wedge800cnhp"]="wedge800cact"
+  )
+  echo "${platform_map[$platform]:-$platform}"
 }
 
 copy_config() {
