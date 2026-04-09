@@ -835,6 +835,8 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/vlan/static_mac/delete/CmdConfigVlanStaticMacDelete.cpp
   fboss/cli/fboss2/session/ConfigSession.h
   fboss/cli/fboss2/session/ConfigSession.cpp
+  fboss/cli/fboss2/session/FbossServiceUtil.h
+  fboss/cli/fboss2/session/FbossServiceUtil.cpp
   fboss/cli/fboss2/session/Git.h
   fboss/cli/fboss2/session/Git.cpp
   fboss/cli/fboss2/session/SystemdInterface.cpp
