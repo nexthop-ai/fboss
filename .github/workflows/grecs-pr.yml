@@ -1,7 +1,7 @@
 name: GRECS PR
 
 on:
-  pull_request_target:
+  pull_request:
     types:
       - opened
       - reopened
@@ -9,6 +9,8 @@ on:
       - labeled
       - unlabeled
       - closed
+      - synchronize
+  merge_group:
 
 permissions:
   contents: read
