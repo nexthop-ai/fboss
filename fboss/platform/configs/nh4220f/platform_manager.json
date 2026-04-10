@@ -200,6 +200,18 @@
           "address": "0x4c",
           "kernelDeviceName": "lm90",
           "pmUnitScopedName": "MGMT_TEMP_SENSOR"
+        },
+        {
+          "busName": "SMB_MUX_0@0",
+          "address": "0x58",
+          "kernelDeviceName": "pmbus",
+          "pmUnitScopedName": "PSU1"
+        },
+        {
+          "busName": "SMB_MUX_0@1",
+          "address": "0x58",
+          "kernelDeviceName": "pmbus",
+          "pmUnitScopedName": "PSU2"
         }
       ]
     }
@@ -230,6 +242,8 @@
     "/run/devmap/i2c-busses/SMB_IOB_I2C_3": "/SMB_SLOT@0/[SMB_IOB_I2C_3]",
     "/run/devmap/i2c-busses/SMB_IOB_I2C_4": "/SMB_SLOT@0/[SMB_IOB_I2C_4]",
     "/run/devmap/sensors/MGMT_TEMP_SENSOR": "/SMB_SLOT@0/[MGMT_TEMP_SENSOR]",
+    "/run/devmap/sensors/PSU1": "/SMB_SLOT@0/[PSU1]",
+    "/run/devmap/sensors/PSU2": "/SMB_SLOT@0/[PSU2]",
     "/run/devmap/sensors/FAN_CTRL": "/SMB_SLOT@0/[FAN_CTRL]",
     "/run/devmap/xcvrs/xcvr_io_1": "/SMB_SLOT@0/[SMB_OSFP_I2C_1]",
     "/run/devmap/xcvrs/xcvr_ctrl_1": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_1]",
