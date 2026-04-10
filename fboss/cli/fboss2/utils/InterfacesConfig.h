@@ -28,7 +28,7 @@ namespace facebook::fboss::utils {
  * treated as port/interface names. The remaining tokens are parsed
  * as attribute-value pairs.
  *
- * Supported attributes: description, mtu
+ * Supported attributes: description, mtu, speed
  */
 class InterfacesConfig : public BaseObjectArgType<std::string> {
  public:

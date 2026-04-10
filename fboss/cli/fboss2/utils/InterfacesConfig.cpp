@@ -28,6 +28,7 @@ namespace {
 const std::unordered_set<std::string> kKnownAttributes = {
     "description",
     "mtu",
+    "speed",
 };
 } // namespace
 
@@ -71,7 +72,7 @@ InterfacesConfig::InterfacesConfig(std::vector<std::string> v)
     if (!isKnownAttribute(attr)) {
       throw std::invalid_argument(
           fmt::format(
-              "Unknown attribute '{}'. Valid attributes are: description, mtu",
+              "Unknown attribute '{}'. Valid attributes are: description, mtu, speed",
               attr));
     }
 
