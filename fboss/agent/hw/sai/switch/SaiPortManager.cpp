@@ -47,6 +47,10 @@
 #endif
 #endif
 
+#if defined(CHENAB_SAI_SDK)
+#include "saiportcustom.h"
+#endif
+
 DEFINE_bool(
     sai_configure_six_tap,
     false,
@@ -462,6 +466,14 @@ void fillHwPortStats(
         break;
       }
 #endif
+#if defined(CHENAB_SAI_SDK)
+      case SAI_PORT_STAT_IF_OUT_DISCARDS_SLL:
+        hwPortStats.outDiscardsSll_() = value;
+        break;
+      case SAI_PORT_STAT_IF_OUT_DISCARDS_HLL:
+        hwPortStats.outDiscardsHll_() = value;
+        break;
+#endif
       default:
         auto configuredDebugCounters =
             debugCounterManager.getConfiguredDebugStatIds();
@@ -484,6 +496,11 @@ void fillHwPortStats(
         } else if (
             counterId == debugCounterManager.getEgressForwardingDropStatId()) {
           hwPortStats.outForwardingDiscards_() = value;
+#if SAI_API_VERSION >= SAI_VERSION(1, 9, 0)
+        } else if (
+            counterId == debugCounterManager.getSrv6MySidDropCounterStatId()) {
+          hwPortStats.inSrv6MySidDiscards_() = value;
+#endif
         } else {
           XLOG(FATAL)
               << " Should never get here, check configured debugCounterStatIds";

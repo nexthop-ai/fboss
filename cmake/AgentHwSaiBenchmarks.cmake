@@ -53,8 +53,14 @@ list(APPEND SAI_BENCHMARKS init_and_exit_400Gx400G)
 list(APPEND SAI_BENCHMARKS rib_resolution_speed)
 list(APPEND SAI_BENCHMARKS rib_sync_fib_speed)
 list(APPEND SAI_BENCHMARKS ucmp_scale_benchmark)
+<<<<<<< HEAD
 # Check if building for DNX platform (SAI_SDK_VERSION contains "DNX")
 string(FIND "${SAI_SDK_VERSION}" "DNX" IS_DNX_BUILD)
+||||||| 777bee98fb
+=======
+list(APPEND SAI_BENCHMARKS srv6_scale_benchmark)
+list(APPEND SAI_BENCHMARKS srv6_mysid_scale_benchmark)
+>>>>>>> e541ed832cc3a3dc60af5c88d029cd65b6c4714b
 if (SAI_BRCM_IMPL OR BUILD_SAI_FAKE)
   list(APPEND SAI_BENCHMARKS init_and_exit_voq)
   list(APPEND SAI_BENCHMARKS init_and_exit_fabric)

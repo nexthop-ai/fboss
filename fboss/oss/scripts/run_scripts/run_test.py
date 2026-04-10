@@ -125,6 +125,7 @@ SUB_CMD_SAI_AGENT = "sai_agent"
 SUB_CMD_PLATFORM = "platform"
 SUB_CMD_BENCHMARK = "benchmark"
 SUB_CMD_FBOSS2_INTEGRATION = "fboss2_integration"
+SUB_CMD_BENCHMARK = "benchmark"
 SUB_ARG_AGENT_RUN_MODE = "--agent-run-mode"
 SUB_ARG_AGENT_RUN_MODE_MONO = "mono"
 SUB_ARG_AGENT_RUN_MODE_MULTI = "multi_switch"
@@ -204,6 +205,37 @@ def _load_from_file(file_path):
                 if (line_sanitized := line.strip())
                 and not line_sanitized.startswith("#")
             ]
+    return file_lines
+
+
+def _load_from_file(file_path, profile=None):
+    """Load list from a configuration file, skipping comment lines.
+
+    Args:
+        file_path: Path to the configuration file
+        profile: Optional tag to filter the input file
+
+    Returns:
+        List of strings in the file
+    """
+    file_lines = []
+    if os.path.exists(file_path):
+        with open(file_path) as file:
+            file_lines = []
+            for line in file:
+                stripped_line = line.strip()
+                if not stripped_line or stripped_line.startswith("#"):
+                    continue
+                parts = stripped_line.split()
+                pattern = parts[0]
+                tags = parts[1:] if len(parts) > 1 else []
+                if profile:
+                    if profile not in tags:
+                        continue
+                # no --profile: include untagged lines and t-tagged lines
+                elif tags and "t" not in tags:
+                    continue
+                file_lines.append(pattern)
     return file_lines
 
 
@@ -554,6 +586,7 @@ class TestRunner(abc.ABC):
         test_names = []
         if args.filter or args.filter_file:
             if args.filter_file:
+<<<<<<< HEAD
                 with open(args.filter_file) as file:
                     gtest_regexes = []
                     for line in file:
@@ -571,6 +604,28 @@ class TestRunner(abc.ABC):
                             continue
                         gtest_regexes.append(pattern)
                     test_names = self._list_tests_to_run(":".join(gtest_regexes))
+||||||| 777bee98fb
+                with open(args.filter_file) as file:
+                    gtest_regexes = []
+                    for line in file:
+                        stripped_line = line.strip()
+                        if not stripped_line or stripped_line.startswith("#"):
+                            continue
+                        parts = stripped_line.split()
+                        pattern = parts[0]
+                        tags = parts[1:] if len(parts) > 1 else []
+                        if args.profile:
+                            if args.profile not in tags:
+                                continue
+                        # no --profile: include untagged lines and t-tagged lines
+                        elif tags and "t" not in tags:
+                            continue
+                        gtest_regexes.append(pattern)
+                    test_names = self._list_tests_to_run(":".join(gtest_regexes), False)
+=======
+                gtest_regexes = _load_from_file(args.filter_file, args.profile)
+                test_names = self._list_tests_to_run(":".join(gtest_regexes), False)
+>>>>>>> e541ed832cc3a3dc60af5c88d029cd65b6c4714b
             elif args.filter:
                 test_names = self._list_tests_to_run(args.filter)
         else:
@@ -1872,6 +1927,7 @@ class BenchmarkTestRunner:
             r"^([A-Za-z0-9_]+)\s+(\d+\.?\d*[a-z]?s)\s+(\d+\.?\d*[a-z]?)$"
         )
 
+<<<<<<< HEAD
         # Look for JSON output with cpu_time_usec and max_rss (multiline pattern)
         json_pattern = r'\{[^}]*"cpu_time_usec":\s*(\d+)[^}]*"max_rss":\s*(\d+)[^}]*\}'
 
@@ -2062,6 +2118,202 @@ class BenchmarkTestRunner:
             benchmark_result = self._run_benchmark_binary(benchmark_path, args)
             results.append(benchmark_result)
 
+||||||| 777bee98fb
+=======
+        # Look for cpu_time_usec and max_rss in JSON output (separate patterns so order doesn't matter)
+        cpu_time_pattern = r'"cpu_time_usec":\s*(\d+)'
+        max_rss_pattern = r'"max_rss":\s*(\d+)'
+
+        found_benchmark_line = False
+        found_json = False
+
+        # Parse multiline benchmark result line
+        match = re.search(benchmark_line_pattern, stdout, re.MULTILINE)
+        if match:
+            result["benchmark_test_name"] = match.group(1)
+            result["relative_time_per_iter"] = match.group(2)
+            result["iters_per_sec"] = match.group(3)
+            found_benchmark_line = True
+
+        # Parse JSON output for cpu_time_usec and max_rss independently
+        cpu_match = re.search(cpu_time_pattern, stdout)
+        rss_match = re.search(max_rss_pattern, stdout)
+        if cpu_match and rss_match:
+            result["cpu_time_usec"] = cpu_match.group(1)
+            result["max_rss"] = rss_match.group(1)
+            found_json = True
+
+        # Only mark as OK if we found both the benchmark line and JSON
+        if found_benchmark_line and found_json:
+            result["test_status"] = "OK"
+
+        return result
+
+    def _run_benchmark_binary(self, binary_name, args):
+        """Run a single benchmark binary and return parsed results"""
+        print(f"########## Running benchmark binary: {binary_name}", flush=True)
+
+        # Build command to run the benchmark
+        run_cmd = [binary_name]
+
+        # Add config and other args if provided
+        if args.config:
+            run_cmd.extend(["--config", args.config, "--mgmt-if", args.mgmt_if])
+        if args.platform_mapping_override_path is not None:
+            run_cmd.extend(
+                [
+                    "--platform_mapping_override_path",
+                    args.platform_mapping_override_path,
+                ]
+            )
+        if args.fruid_path is not None:
+            run_cmd.extend(["--fruid_filepath=" + args.fruid_path])
+
+        # Add logging flags
+        run_cmd.extend(["--enable_sai_log", args.sai_logging])
+        run_cmd.extend(["--logging", args.fboss_logging])
+
+        print(f"Running command: {' '.join(run_cmd)}", flush=True)
+
+        try:
+            # Run the benchmark binary
+            result = subprocess.run(
+                run_cmd,
+                check=False,
+                timeout=args.test_run_timeout,
+                capture_output=True,
+                text=True,
+            )
+
+            print(f"########## Benchmark output for {binary_name}:")
+            print(result.stdout)
+            if result.stderr:
+                print(f"########## Benchmark stderr for {binary_name}:")
+                print(result.stderr)
+
+            if result.returncode != 0:
+                print(
+                    f"########## Benchmark {binary_name} failed with return code {result.returncode}"
+                )
+                # Parse output even on failure to get partial results
+            else:
+                print(f"########## Benchmark {binary_name} completed")
+            return self._parse_benchmark_output(binary_name, result.stdout)
+
+        except subprocess.TimeoutExpired:
+            print(
+                f"########## Benchmark {binary_name} timed out after {args.test_run_timeout} seconds"
+            )
+            # Return timed out result with no metrics
+            return {
+                "benchmark_binary_name": binary_name,
+                "benchmark_test_name": "",
+                "test_status": "TIMEOUT",
+                "relative_time_per_iter": "",
+                "iters_per_sec": "",
+                "cpu_time_usec": "",
+                "max_rss": "",
+            }
+        except Exception as e:
+            print(f"########## Error running benchmark {binary_name}: {e!s}")
+            # Return failed result with no metrics
+            return {
+                "benchmark_binary_name": binary_name,
+                "benchmark_test_name": "",
+                "test_status": "FAILED",
+                "relative_time_per_iter": "",
+                "iters_per_sec": "",
+                "cpu_time_usec": "",
+                "max_rss": "",
+            }
+
+    def _get_benchmarks_to_run(self, filter_file=None):
+        """Get list of benchmarks to run based on filter_file or default config.
+
+        Args:
+            filter_file: Optional path to file containing list of benchmarks.
+                        If None, loads from T1, T2, and additional benchmark configs
+
+        Returns:
+            List of benchmark names to run, or None if no benchmarks found
+        """
+        benchmarks_to_run = []
+
+        if filter_file:
+            # User specified a custom filter file
+            if not os.path.exists(filter_file):
+                print(f"Error: Benchmark configuration file not found: {filter_file}")
+                return None
+            benchmarks_to_run = _load_from_file(filter_file)
+        else:
+            # Default: concatenate T1, T2, and additional benchmarks
+            for conf_file in [
+                self.T1_BENCHMARKS_CONF,
+                self.T2_BENCHMARKS_CONF,
+                self.ADDITIONAL_BENCHMARKS_CONF,
+            ]:
+                if os.path.exists(conf_file):
+                    benchmarks_from_file = _load_from_file(conf_file)
+                    benchmarks_to_run.extend(benchmarks_from_file)
+                else:
+                    print(f"  Warning: Configuration file not found: {conf_file}")
+
+        if not benchmarks_to_run:
+            print("Error: No benchmarks found in configuration files")
+            return None
+
+        return benchmarks_to_run
+
+    def run_test(self, args):  # noqa: PLR0912 - complex benchmark orchestration; splitting would harm readability
+        """Run benchmark test binaries"""
+        benchmarks_to_run = self._get_benchmarks_to_run(args.filter_file)
+
+        if benchmarks_to_run is None:
+            return
+
+        # If --list_tests is specified, just list the benchmarks and exit
+        if args.list_tests:
+            for benchmark in benchmarks_to_run:
+                print(benchmark)
+            return
+
+        print(f"Total benchmarks to run: {len(benchmarks_to_run)}")
+
+        # Filter out binaries that don't exist
+        existing_benchmarks = []
+        missing_benchmarks = []
+        for benchmark in benchmarks_to_run:
+            # Construct full path to binary
+            binary_path = os.path.join(self.BENCHMARK_BIN_DIR, benchmark)
+            if os.path.exists(binary_path) and os.path.isfile(binary_path):
+                existing_benchmarks.append(binary_path)
+            else:
+                missing_benchmarks.append(benchmark)
+
+        if missing_benchmarks:
+            print(
+                f"\nWarning: {len(missing_benchmarks)} benchmark binaries not found in {self.BENCHMARK_BIN_DIR}:"
+            )
+            for benchmark in missing_benchmarks:
+                print(f"  - {benchmark}")
+
+        if not existing_benchmarks:
+            print(f"\nError: No benchmark binaries found in {self.BENCHMARK_BIN_DIR}.")
+            print(
+                f"Make sure you have built the benchmarks with BENCHMARK_INSTALL=1 and copied them to {self.BENCHMARK_BIN_DIR} directory."
+            )
+            return
+
+        print(f"\nFound {len(existing_benchmarks)} benchmark binaries to run")
+
+        # Run each benchmark and collect detailed results
+        results = []
+        for benchmark_path in existing_benchmarks:
+            benchmark_result = self._run_benchmark_binary(benchmark_path, args)
+            results.append(benchmark_result)
+
+        # Write results to CSV file
+>>>>>>> e541ed832cc3a3dc60af5c88d029cd65b6c4714b
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         csv_filename = f"benchmark_results_{timestamp}.csv"
 

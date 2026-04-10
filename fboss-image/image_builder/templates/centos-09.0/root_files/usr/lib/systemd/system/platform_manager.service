@@ -8,6 +8,12 @@ Before=led_service.service
 Before=qsfp_service.service
 Before=fruid.service
 After=rc-local.service
+<<<<<<< HEAD
+||||||| 777bee98fb
+After=fboss_init.service
+=======
+Before=fboss_init.service
+>>>>>>> e541ed832cc3a3dc60af5c88d029cd65b6c4714b
 Wants=local_rpm_repo.service
 
 StartLimitIntervalSec=600

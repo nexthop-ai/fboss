@@ -16,15 +16,23 @@
 #include <fstream>
 #include <memory>
 #include <stdexcept>
-#include <system_error>
 #include <vector>
 
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/test/config/CmdConfigTestBase.h"
 #include "fboss/cli/fboss2/utils/CmdUtilsCommon.h"
+<<<<<<< HEAD
 #include "fboss/cli/fboss2/utils/InterfacesConfig.h"
 #include "fboss/cli/fboss2/utils/PortMap.h" // NOLINT(misc-include-cleaner)
+||||||| 777bee98fb
+#include "fboss/cli/fboss2/utils/InterfacesConfig.h"
+#include "fboss/cli/fboss2/utils/PortMap.h" // NOLINT(misc-include-cleaner)
+
+namespace fs = std::filesystem;
+
+=======
+>>>>>>> e541ed832cc3a3dc60af5c88d029cd65b6c4714b
 
 using namespace ::testing;
 
@@ -81,6 +89,7 @@ class CmdConfigInterfaceTestFixture : public CmdConfigTestBase {
     ]
   }
 })") {}
+<<<<<<< HEAD
 
   void SetUp() override {
     CmdConfigTestBase::SetUp();
@@ -223,6 +232,38 @@ class CmdConfigInterfaceTestFixture : public CmdConfigTestBase {
     EXPECT_CALL(getQsfpService(), getAllPortSupportedProfiles(_, _))
         .WillRepeatedly(DoAll(SetArgReferee<0>(emptyProfiles), Return()));
   }
+||||||| 777bee98fb
+})");
+
+    // Create symlink at /etc/coop/agent.conf -> cli/agent.conf
+    fs::create_symlink("cli/agent.conf", systemConfigDir_ / "agent.conf");
+
+    // Initialize Git repository and create initial commit
+    Git git(systemConfigDir_.string());
+    git.init();
+    git.commit({cliConfigPath.string()}, "Initial commit");
+
+    // Initialize the ConfigSession singleton for all tests
+    fs::create_directories(sessionConfigDir_);
+    TestableConfigSession::setInstance(
+        std::make_unique<TestableConfigSession>(
+            sessionConfigDir_.string(), systemConfigDir_.string()));
+  }
+
+  void TearDown() override {
+    // Reset the singleton to ensure tests don't interfere with each other
+    TestableConfigSession::setInstance(nullptr);
+    std::error_code ec;
+    if (fs::exists(testHomeDir_)) {
+      fs::remove_all(testHomeDir_, ec);
+    }
+    if (fs::exists(testEtcDir_)) {
+      fs::remove_all(testEtcDir_, ec);
+    }
+    CmdHandlerTestBase::TearDown();
+  }
+=======
+>>>>>>> e541ed832cc3a3dc60af5c88d029cd65b6c4714b
 
  protected:
   const std::string cmdPrefix_ = "config interface";
@@ -235,7 +276,13 @@ class CmdConfigInterfaceTestFixture : public CmdConfigTestBase {
 // Test valid config with port + description
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigValidPortAndDescription) {
   setupTestableConfigSession();
+<<<<<<< HEAD
   utils::InterfacesConfig config({"eth1/1/1", "description", "My port"});
+||||||| 777bee98fb
+  utils::InterfacesConfig config({"eth1/1/1", "description", "My port"});
+=======
+  InterfacesConfig config({"eth1/1/1", "description", "My port"});
+>>>>>>> e541ed832cc3a3dc60af5c88d029cd65b6c4714b
   EXPECT_EQ(config.getInterfaces().size(), 1);
   EXPECT_TRUE(config.hasAttributes());
   ASSERT_EQ(config.getAttributes().size(), 1);
@@ -246,7 +293,13 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigValidPortAndDescription) {
 // Test valid config with port + mtu
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigValidPortAndMtu) {
   setupTestableConfigSession();
+<<<<<<< HEAD
   utils::InterfacesConfig config({"eth1/1/1", "mtu", "9000"});
+||||||| 777bee98fb
+  utils::InterfacesConfig config({"eth1/1/1", "mtu", "9000"});
+=======
+  InterfacesConfig config({"eth1/1/1", "mtu", "9000"});
+>>>>>>> e541ed832cc3a3dc60af5c88d029cd65b6c4714b
   EXPECT_EQ(config.getInterfaces().size(), 1);
   EXPECT_TRUE(config.hasAttributes());
   ASSERT_EQ(config.getAttributes().size(), 1);
@@ -257,7 +310,13 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigValidPortAndMtu) {
 // Test valid config with port + both attributes
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigValidPortAndBothAttrs) {
   setupTestableConfigSession();
+<<<<<<< HEAD
   utils::InterfacesConfig config(
+||||||| 777bee98fb
+  utils::InterfacesConfig config(
+=======
+  InterfacesConfig config(
+>>>>>>> e541ed832cc3a3dc60af5c88d029cd65b6c4714b
       {"eth1/1/1", "description", "My port", "mtu", "9000"});
   EXPECT_EQ(config.getInterfaces().size(), 1);
   EXPECT_TRUE(config.hasAttributes());
@@ -271,7 +330,13 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigValidPortAndBothAttrs) {
 // Test valid config with multiple ports + attributes
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigMultiplePorts) {
   setupTestableConfigSession();
+<<<<<<< HEAD
   utils::InterfacesConfig config(
+||||||| 777bee98fb
+  utils::InterfacesConfig config(
+=======
+  InterfacesConfig config(
+>>>>>>> e541ed832cc3a3dc60af5c88d029cd65b6c4714b
       {"eth1/1/1", "eth1/2/1", "description", "Uplink ports"});
   EXPECT_EQ(config.getInterfaces().size(), 2);
   EXPECT_TRUE(config.hasAttributes());
@@ -283,7 +348,13 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigMultiplePorts) {
 // Test port only (no attributes) - for subcommand pass-through
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigPortOnly) {
   setupTestableConfigSession();
+<<<<<<< HEAD
   utils::InterfacesConfig config({"eth1/1/1"});
+||||||| 777bee98fb
+  utils::InterfacesConfig config({"eth1/1/1"});
+=======
+  InterfacesConfig config({"eth1/1/1"});
+>>>>>>> e541ed832cc3a3dc60af5c88d029cd65b6c4714b
   EXPECT_EQ(config.getInterfaces().size(), 1);
   EXPECT_FALSE(config.hasAttributes());
   EXPECT_TRUE(config.getAttributes().empty());
@@ -292,8 +363,15 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigPortOnly) {
 // Test case-insensitive attribute names
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigCaseInsensitiveAttrs) {
   setupTestableConfigSession();
+<<<<<<< HEAD
   utils::InterfacesConfig config(
       {"eth1/1/1", "DESCRIPTION", "Test", "MTU", "9000"});
+||||||| 777bee98fb
+  utils::InterfacesConfig config(
+      {"eth1/1/1", "DESCRIPTION", "Test", "MTU", "9000"});
+=======
+  InterfacesConfig config({"eth1/1/1", "DESCRIPTION", "Test", "MTU", "9000"});
+>>>>>>> e541ed832cc3a3dc60af5c88d029cd65b6c4714b
   EXPECT_TRUE(config.hasAttributes());
   ASSERT_EQ(config.getAttributes().size(), 2);
   // Attributes should be normalized to lowercase
@@ -304,14 +382,20 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigCaseInsensitiveAttrs) {
 // Test empty input throws
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigEmptyThrows) {
   setupTestableConfigSession();
+<<<<<<< HEAD
   EXPECT_THROW(utils::InterfacesConfig({}), std::invalid_argument);
+||||||| 777bee98fb
+  EXPECT_THROW(utils::InterfacesConfig({}), std::invalid_argument);
+=======
+  EXPECT_THROW(InterfacesConfig({}), std::invalid_argument);
+>>>>>>> e541ed832cc3a3dc60af5c88d029cd65b6c4714b
 }
 
 // Test first token is attribute (no port name)
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigNoPortNameThrows) {
   setupTestableConfigSession();
   try {
-    utils::InterfacesConfig config({"description", "My port"});
+    InterfacesConfig config({"description", "My port"});
     FAIL() << "Expected std::invalid_argument";
   } catch (const std::invalid_argument& e) {
     EXPECT_THAT(e.what(), HasSubstr("No interface name provided"));
@@ -323,7 +407,7 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigNoPortNameThrows) {
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigMissingValueThrows) {
   setupTestableConfigSession();
   try {
-    utils::InterfacesConfig config({"eth1/1/1", "description"});
+    InterfacesConfig config({"eth1/1/1", "description"});
     FAIL() << "Expected std::invalid_argument";
   } catch (const std::invalid_argument& e) {
     EXPECT_THAT(e.what(), HasSubstr("Missing value for attribute"));
@@ -335,7 +419,7 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigMissingValueThrows) {
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigValueIsAttributeThrows) {
   setupTestableConfigSession();
   try {
-    utils::InterfacesConfig config({"eth1/1/1", "description", "mtu"});
+    InterfacesConfig config({"eth1/1/1", "description", "mtu"});
     FAIL() << "Expected std::invalid_argument";
   } catch (const std::invalid_argument& e) {
     EXPECT_THAT(e.what(), HasSubstr("Missing value for attribute"));
@@ -361,9 +445,19 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigValidPortAndSpeed) {
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigUnknownAttributeThrows) {
   setupTestableConfigSession();
   try {
+<<<<<<< HEAD
     // "foobar" comes after "description", so it's recognized as an attribute
     utils::InterfacesConfig config(
         {"eth1/1/1", "description", "Test", "foobar", "value"});
+||||||| 777bee98fb
+    // "speed" comes after "description", so it's recognized as an attribute
+    utils::InterfacesConfig config(
+        {"eth1/1/1", "description", "Test", "speed", "100000"});
+=======
+    // "speed" comes after "description", so it's recognized as an attribute
+    InterfacesConfig config(
+        {"eth1/1/1", "description", "Test", "speed", "100000"});
+>>>>>>> e541ed832cc3a3dc60af5c88d029cd65b6c4714b
     FAIL() << "Expected std::invalid_argument";
   } catch (const std::invalid_argument& e) {
     EXPECT_THAT(e.what(), HasSubstr("Unknown attribute"));
@@ -375,7 +469,7 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigUnknownAttributeThrows) {
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigNonExistentPortThrows) {
   setupTestableConfigSession();
   EXPECT_THROW(
-      utils::InterfacesConfig({"eth1/99/1", "description", "Test"}),
+      InterfacesConfig({"eth1/99/1", "description", "Test"}),
       std::invalid_argument);
 }
 
@@ -388,8 +482,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientSetsDescription) {
   setupTestableConfigSession(
       cmdPrefix_, "eth1/1/1 description \"New description\"");
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config(
-      {"eth1/1/1", "description", "New description"});
+  InterfacesConfig config({"eth1/1/1", "description", "New description"});
 
   auto result = cmd.queryClient(localhost(), config);
 
@@ -416,7 +509,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientSetsDescription) {
 TEST_F(CmdConfigInterfaceTestFixture, queryClientSetsMtu) {
   setupTestableConfigSession(cmdPrefix_, "eth1/1/1 mtu 9000");
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config({"eth1/1/1", "mtu", "9000"});
+  InterfacesConfig config({"eth1/1/1", "mtu", "9000"});
 
   auto result = cmd.queryClient(localhost(), config);
 
@@ -444,7 +537,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientSetsBothAttributes) {
   setupTestableConfigSession(
       cmdPrefix_, "eth1/1/1 description \"Updated port\" mtu 9000");
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config(
+  InterfacesConfig config(
       {"eth1/1/1", "description", "Updated port", "mtu", "9000"});
 
   auto result = cmd.queryClient(localhost(), config);
@@ -479,7 +572,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientMultipleInterfaces) {
   setupTestableConfigSession(
       cmdPrefix_, "eth1/1/1 eth1/2/1 description \"Shared description\"");
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config(
+  InterfacesConfig config(
       {"eth1/1/1", "eth1/2/1", "description", "Shared description"});
 
   auto result = cmd.queryClient(localhost(), config);
@@ -502,7 +595,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientMultipleInterfaces) {
 TEST_F(CmdConfigInterfaceTestFixture, queryClientNoAttributesThrows) {
   setupTestableConfigSession();
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config({"eth1/1/1"});
+  InterfacesConfig config({"eth1/1/1"});
 
   EXPECT_THROW(cmd.queryClient(localhost(), config), std::runtime_error);
 }
@@ -511,7 +604,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientNoAttributesThrows) {
 TEST_F(CmdConfigInterfaceTestFixture, queryClientInvalidMtuNonNumeric) {
   setupTestableConfigSession();
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config({"eth1/1/1", "mtu", "abc"});
+  InterfacesConfig config({"eth1/1/1", "mtu", "abc"});
 
   try {
     cmd.queryClient(localhost(), config);
@@ -526,7 +619,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientInvalidMtuNonNumeric) {
 TEST_F(CmdConfigInterfaceTestFixture, queryClientMtuTooLow) {
   setupTestableConfigSession();
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config(
+  InterfacesConfig config(
       {"eth1/1/1", "mtu", std::to_string(utils::kMtuMin - 1)});
 
   try {
@@ -541,7 +634,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientMtuTooLow) {
 TEST_F(CmdConfigInterfaceTestFixture, queryClientMtuTooHigh) {
   setupTestableConfigSession();
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config(
+  InterfacesConfig config(
       {"eth1/1/1", "mtu", std::to_string(utils::kMtuMax + 1)});
 
   try {
@@ -559,7 +652,13 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientMtuBoundaryValid) {
   // Test minimum MTU
   setupTestableConfigSession(
       cmdPrefix_, "eth1/1/1 mtu " + std::to_string(utils::kMtuMin));
+<<<<<<< HEAD
   utils::InterfacesConfig configMin(
+||||||| 777bee98fb
+  utils::InterfacesConfig configMin(
+=======
+  InterfacesConfig configMin(
+>>>>>>> e541ed832cc3a3dc60af5c88d029cd65b6c4714b
       {"eth1/1/1", "mtu", std::to_string(utils::kMtuMin)});
   EXPECT_THAT(
       cmd.queryClient(localhost(), configMin),
@@ -568,7 +667,13 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientMtuBoundaryValid) {
   // Test maximum MTU
   setupTestableConfigSession(
       cmdPrefix_, "eth1/1/1 mtu " + std::to_string(utils::kMtuMax));
+<<<<<<< HEAD
   utils::InterfacesConfig configMax(
+||||||| 777bee98fb
+  utils::InterfacesConfig configMax(
+=======
+  InterfacesConfig configMax(
+>>>>>>> e541ed832cc3a3dc60af5c88d029cd65b6c4714b
       {"eth1/1/1", "mtu", std::to_string(utils::kMtuMax)});
   EXPECT_THAT(
       cmd.queryClient(localhost(), configMax),
