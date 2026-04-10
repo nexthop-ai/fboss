@@ -5,6 +5,7 @@
 
 import argparse
 import concurrent.futures
+import glob
 import os
 import pathlib
 import sys
@@ -20,6 +21,10 @@ TARGET_NAMES = ("agent-benchmarks", "forwarding-stack", "platform-stack")
 
 
 # Global definitions describing what we package for each target.
+
+COMMON_LIBS = [
+    "glog",
+]
 
 FORWARDING_BINARIES = [
     "diag_shell_client",
@@ -51,6 +56,8 @@ FORWARDING_EXTRA = {
     RUN_CONFIGS_DIR / "th4": "share/th4",
     RUN_CONFIGS_DIR / "th5": "share/th5",
 }
+
+FORWARDING_LIBS = []
 
 FORWARDING_TEST_BINARIES = [
     "fboss-platform-mapping-gen",
@@ -136,6 +143,8 @@ PLATFORM_EXTRA = {
     / "hw_sanity_tests/bsp_sanity_tests.conf": "share/hw_sanity_tests/bsp_sanity_tests.conf",
 }
 
+PLATFORM_LIBS = []
+
 PLATFORM_TEST_BINARIES = [
     "bsp_tests",
     "data_corral_service_hw_test",
@@ -161,6 +170,41 @@ PLATFORM_TEST_EXTRA = {
 }
 
 
+def _find_getdeps_libs(
+    build_dir: pathlib.Path, packages: list[str]
+) -> dict[pathlib.Path, str]:
+    """Find shared libraries for the given packages under the getdeps installed directory."""
+    installed_dir = build_dir / "installed"
+    libs = {}
+    for pkg in packages:
+        # Find all matching package directories and pick the most recent one.
+        pkg_dirs = sorted(
+            installed_dir.glob(f"{pkg}-*"),
+            key=lambda p: p.stat().st_mtime,
+            reverse=True,
+        )
+        if not pkg_dirs:
+            print(f"Warning: no .so libraries found for {pkg}")
+            continue
+
+        pkg_dir = pkg_dirs[0]
+        if len(pkg_dirs) > 1:
+            print(
+                f"Multiple directories found for {pkg}, using most recent: {pkg_dir.name}"
+            )
+
+        matches = []
+        for lib_dir in ("lib64", "lib"):
+            pattern = str(pkg_dir / lib_dir / f"lib{pkg}.so*")
+            matches.extend(glob.glob(pattern))
+        if matches:
+            for path in matches:
+                libs[pathlib.Path(path)] = f"lib/{os.path.basename(path)}"
+        else:
+            print(f"Warning: no .so libraries found for {pkg}")
+    return libs
+
+
 def write_tar(filename: str, contents: dict[str, str]) -> None:
     if not contents:
         return
@@ -183,17 +227,20 @@ def _build_target(target: str, build_dir: pathlib.Path):
 
     bins = []
     extras = {}
+    libs = []
     test_bins = {}
     test_extras = {}
 
     if target == "forwarding-stack":
         bins = FORWARDING_BINARIES
         extras = FORWARDING_EXTRA
+        libs = FORWARDING_LIBS + COMMON_LIBS
         test_bins = FORWARDING_TEST_BINARIES
         test_extras = FORWARDING_TEST_EXTRA
     elif target == "platform-stack":
         bins = PLATFORM_BINARIES
         extras = PLATFORM_EXTRA
+        libs = PLATFORM_LIBS + COMMON_LIBS
         test_bins = PLATFORM_TEST_BINARIES
         test_extras = PLATFORM_TEST_EXTRA
     elif target == "agent-benchmarks":
@@ -206,6 +253,7 @@ def _build_target(target: str, build_dir: pathlib.Path):
 
     prod_files = {fboss_build_dir / bin_name: f"bin/{bin_name}" for bin_name in bins}
     prod_files.update(extras)
+    prod_files.update(_find_getdeps_libs(build_dir, libs))
 
     test_files = {
         fboss_build_dir / bin_name: f"bin/{bin_name}" for bin_name in test_bins
