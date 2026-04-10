@@ -3,7 +3,7 @@
 
 Usage:
     generate_agent_config.py --platform <name> [--platforms-dir <path>]
-                             [--output <path>]
+                             [--asic-config-source <path>] [--output <path>]
 
 Example:
     generate_agent_config.py --platform nh4010f --output agent.conf
@@ -17,76 +17,105 @@ import pathlib
 import re
 import sys
 
-# ---------------------------------------------------------------------------
-# Profile ID → speed_mbps table
-# Derived from switch_config.thrift PortProfileID enum.
-# ---------------------------------------------------------------------------
+# Profile ID → speed_mbps, derived from switch_config.thrift PortProfileID enum.
 PROFILE_SPEED: dict[int, int] = {
-    0: 0,  # DEFAULT
-    1: 10000,  # 10G_NRZ
-    3: 25000,  # 25G_NRZ
-    8: 100000,  # 100G_4_NRZ_RS528
-    9: 200000,  # 200G_4_PAM4
-    10: 400000,  # 400G_8_PAM4
-    11: 10000,  # 10G_COPPER
-    14: 25000,  # 25G_COPPER
-    19: 50000,  # 50G_1_NRZ_NOFEC_COPPER (guessed)
-    21: 50000,  # 50G_1_NRZ_RS528_COPPER (guessed)
-    22: 100000,  # 100G_4_RS528_COPPER
-    23: 100000,  # 100G_4_RS528_OPTICAL
-    24: 200000,  # 200G_4_COPPER
-    25: 200000,  # 200G_4_OPTICAL
-    26: 400000,  # 400G_8_OPTICAL
-    32: 400000,  # 400G (guessed)
-    35: 400000,  # 400G_8_COPPER
-    36: 53000,  # 53G_1_COPPER
-    37: 53000,  # 53G_1_OPTICAL
-    38: 400000,  # 400G_4_OPTICAL  ← primary preferred
-    39: 800000,  # 800G_8_OPTICAL
-    41: 106000,  # 106G_1_COPPER
-    42: 106000,  # 106G_1_OPTICAL
-    43: 400000,  # 400G (guessed, copper variant)
-    45: 400000,  # 400G_4_COPPER
-    47: 100000,  # 100G_1_OPTICAL
-    49: 100000,  # 100G_1_NOFEC_COPPER
-    50: 800000,  # 800G_8_COPPER
-    54: 800000,  # 800G (guessed)
-    55: 800000,  # 800G (guessed)
-    56: 800000,  # 800G (guessed)
+    0: 0,
+    1: 10000,
+    3: 25000,
+    8: 100000,
+    9: 200000,
+    10: 400000,
+    11: 10000,
+    14: 25000,
+    19: 50000,
+    21: 50000,
+    22: 100000,
+    23: 100000,
+    24: 200000,
+    25: 200000,
+    26: 400000,
+    32: 400000,
+    35: 400000,
+    36: 53000,
+    37: 53000,
+    38: 400000,
+    39: 800000,
+    41: 106000,
+    42: 106000,
+    43: 400000,
+    45: 400000,
+    47: 100000,
+    49: 100000,
+    50: 800000,
+    54: 800000,
+    55: 800000,
+    56: 800000,
 }
 
-# Optical profile IDs (prefer these over copper when choosing best profile)
-OPTICAL_PROFILES = {
-    1,
-    3,
-    8,
-    9,
-    10,
-    23,
-    25,
-    26,
-    37,
-    38,
-    39,
-    42,
-    47,
-    54,
-    55,
-    56,
-}
+OPTICAL_PROFILES = {1, 3, 8, 9, 10, 23, 25, 26, 37, 38, 39, 42, 47, 54, 55, 56}
 
-# ASIC core type string → asicType integer
 CORE_TYPE_TO_ASIC: dict[str, int] = {
-    "TH5_NIF": 13,  # MEMORY_ASIC_TYPE_MEMORY_BCM56990
-    "J3_NIF": 15,  # Jericho3
+    "TH5_NIF": 13,
+    "J3_NIF": 15,
 }
 
 DEFAULT_ASIC_TYPE = 13
 
+# FBOSS derives the kernel routing table ID by subtracting a type-specific
+# constant from the intfID (2000 for port-based interfaces).  We start intfIDs
+# at INTF_ID_OFFSET + 1 so that routing table IDs begin at 1, avoiding
+# kernel-reserved IDs (0, 253, 254, 255).
+INTF_ID_OFFSET = 2000
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
+# Map every supported --platform value to the FBOSS platform_mapping_v2
+# directory name (codename).  Entries are only needed when the two differ;
+# platforms whose name already matches (nh4010f, wedge800bnhp, ...) are
+# resolved automatically by _resolve_codename().
+#
+# Sources of truth:
+#   • platform_mapping_v2.py  _PLATFORM_VARIANTS_MAP
+#   • platform_name_lib.py    sanitize_platform_name()
+#   • nhdiags                 platform_map.py
+PLATFORM_CODENAME: dict[str, str] = {
+    # dmidecode / run-config name  ->  platform_mapping_v2 codename
+    "minipack3": "montblanc",
+    # NH marketing aliases (add new platforms here as they ship).
+    # Keys are stored in normalised form (lowercase, no separators) so that
+    # _resolve_codename() matches "golden_eagle", "goldeneagle", "Golden-Eagle", etc.
+    "goldeneagle": "nh4010f",
+    "crownedeagle": "wedge800bnhp",
+    "friscoeagle": "wedge800cact",
+    "blackkite": "nh4220f",
+}
+
+
+def _resolve_codename(platform: str, platforms_dir: pathlib.Path | None = None) -> str:
+    """Resolve a platform name to the FBOSS platform_mapping_v2 codename.
+
+    1. Direct match — platform dir exists under platforms_dir.
+    2. Explicit alias — PLATFORM_CODENAME lookup.
+    3. Normalised match — lowercase, strip hyphens/underscores/spaces
+       (mimics fboss_init.sh logic), then retry 1 and 2.
+    """
+    # 1. Direct directory match
+    if platforms_dir and (platforms_dir / platform).is_dir():
+        return platform
+
+    # 2. Explicit alias
+    if platform in PLATFORM_CODENAME:
+        return PLATFORM_CODENAME[platform]
+
+    # 3. Normalise and retry
+    normalised = platform.lower().replace("-", "").replace("_", "").replace(" ", "")
+    if normalised != platform:
+        if platforms_dir and (platforms_dir / normalised).is_dir():
+            return normalised
+        if normalised in PLATFORM_CODENAME:
+            return PLATFORM_CODENAME[normalised]
+
+    # Fall through — caller will use the original name and get a
+    # FileNotFoundError with a clear message.
+    return platform
 
 
 def _find_platforms_dir(script_path: pathlib.Path) -> pathlib.Path:
@@ -107,32 +136,77 @@ def _find_platforms_dir(script_path: pathlib.Path) -> pathlib.Path:
     )
 
 
+def _find_hw_test_config(
+    codename: str, script_path: pathlib.Path
+) -> pathlib.Path | None:
+    """Locate the materialized HW test config for the resolved codename."""
+    hw_test_dir = script_path.parent.parent / "hw_test_configs"
+    if not hw_test_dir.is_dir():
+        return None
+    for suffix in ("agent.materialized_JSON", "materialized_JSON"):
+        candidate = hw_test_dir / f"{codename}.{suffix}"
+        if candidate.exists():
+            return candidate
+    return None
+
+
+def _load_asic_config(
+    source: pathlib.Path | None,
+    platform: str,
+    script_path: pathlib.Path,
+) -> dict:
+    """Load ASIC config from a materialized JSON or standalone YAML file.
+
+    Auto-detects from hw_test_configs/ when *source* is None.
+    Returns the dict for ``platform.chip.asicConfig.common``.
+    """
+    if source is None:
+        source = _find_hw_test_config(platform, script_path)
+    if source is None:
+        print(
+            f"WARNING: No ASIC config source found for '{platform}'. "
+            "The generated config will have an empty platform section.",
+            file=sys.stderr,
+        )
+        return {}
+
+    if source.suffix in (".yml", ".yaml"):
+        return {"yamlConfig": source.read_text()}
+
+    with source.open() as fh:
+        data = json.load(fh)
+    try:
+        return data["platform"]["chip"]["asicConfig"]["common"]
+    except KeyError:
+        print(
+            f"WARNING: Could not extract platform.chip.asicConfig.common "
+            f"from {source}.",
+            file=sys.stderr,
+        )
+        return {}
+
+
 def _read_csv(path: pathlib.Path) -> list[dict[str, str]]:
     with path.open(newline="") as fh:
         return list(csv.DictReader(fh))
 
 
 def _detect_asic_type(static_rows: list[dict[str, str]]) -> int:
-    """Infer asicType integer from Z_CORE_TYPE values in the static mapping."""
+    """Infer asicType integer from core-type values in the static mapping."""
     for row in static_rows:
-        core_type = row.get("Z_CORE_TYPE", "").strip()
-        if core_type in CORE_TYPE_TO_ASIC:
-            return CORE_TYPE_TO_ASIC[core_type]
-        core_type = row.get("A_CORE_TYPE", "").strip()
-        if core_type in CORE_TYPE_TO_ASIC:
-            return CORE_TYPE_TO_ASIC[core_type]
+        for col in ("Z_CORE_TYPE", "A_CORE_TYPE"):
+            core_type = row.get(col, "").strip()
+            if core_type in CORE_TYPE_TO_ASIC:
+                return CORE_TYPE_TO_ASIC[core_type]
     return DEFAULT_ASIC_TYPE
 
 
 def _choose_profile(supported_profiles_str: str) -> tuple[int, int]:
     """Return (profile_id, speed_mbps) for the highest-speed optical profile.
 
-    Falls back to the highest-speed profile overall only if no optical
-    profiles are available.
+    Falls back to the highest-speed profile overall when no optical profiles
+    are available.
     """
-    if not supported_profiles_str.strip():
-        return 0, 0
-
     ids = [int(p) for p in supported_profiles_str.split("-") if p.strip()]
     if not ids:
         return 0, 0
@@ -154,7 +228,6 @@ def _is_primary_port(port_name: str) -> bool:
 
 
 def _build_cpu_queues() -> list[dict]:
-    """4 CPU queues: high, mid, default (1000 pps), low (500 pps)."""
     return [
         {"id": 9, "streamType": 1, "scheduling": 1, "name": "cpuQueue-high"},
         {"id": 2, "streamType": 1, "scheduling": 1, "name": "cpuQueue-mid"},
@@ -224,15 +297,14 @@ def _build_load_balancers() -> list[dict]:
 
 
 def _build_qos_policies() -> list[dict]:
-    """SONiC-standard QoS: 8 DSCP blocks → 8 traffic classes, 1:1 TC-to-queue."""
-    dscp_maps = []
-    for tc in range(8):
-        dscp_maps.append(
-            {
-                "internalTrafficClass": tc,
-                "fromDscpToTrafficClass": list(range(tc * 8, tc * 8 + 8)),
-            }
-        )
+    """8 DSCP blocks -> 8 traffic classes, 1:1 TC-to-queue."""
+    dscp_maps = [
+        {
+            "internalTrafficClass": tc,
+            "fromDscpToTrafficClass": list(range(tc * 8, tc * 8 + 8)),
+        }
+        for tc in range(8)
+    ]
     return [
         {
             "name": "default",
@@ -245,40 +317,43 @@ def _build_qos_policies() -> list[dict]:
     ]
 
 
+def _port_name_sort_key(name: str) -> list[int | str]:
+    """Natural sort key for port names like 'eth1/42/1'."""
+    return [int(tok) if tok.isdigit() else tok for tok in re.split(r"(\d+)", name)]
+
+
 def _select_primary_ports(ppm_rows: list[dict[str, str]]) -> list[dict[str, str]]:
-    """Filter to primary INTERFACE ports (ending in /1), sorted by port name."""
-    selected = [
-        row
-        for row in ppm_rows
-        if row.get("Port_Type", "0").strip() == "0"
-        and _is_primary_port(row.get("Port_Name", "").strip())
-        and row.get("Supported_Port_Profiles", "").strip()
-    ]
-    selected.sort(
-        key=lambda r: [
-            int(x) for x in re.findall(r"\d+", r.get("Port_Name", "").strip())
-        ]
-    )
+    """Filter to primary INTERFACE ports (ending in /1), sorted by front-panel order."""
+    selected = []
+    for row in ppm_rows:
+        port_name = row.get("Port_Name", "").strip()
+        if (
+            row.get("Port_Type", "0").strip() == "0"
+            and _is_primary_port(port_name)
+            and row.get("Supported_Port_Profiles", "").strip()
+        ):
+            selected.append(row)
+    selected.sort(key=lambda r: _port_name_sort_key(r["Port_Name"].strip()))
     return selected
-
-
-# ---------------------------------------------------------------------------
-# Main generation logic
-# ---------------------------------------------------------------------------
 
 
 def generate_config(
     platform: str,
     platforms_dir: pathlib.Path,
+    asic_config_source: pathlib.Path | None = None,
 ) -> dict:
-    """Build and return the agent config dict."""
+    """Build and return the agent config dict.
 
-    platform_dir = platforms_dir / platform
+    Uses port-based L3 interfaces (type=3).
+    ASIC config is loaded from hw_test_configs/ materialized JSON by default.
+    """
+    codename = _resolve_codename(platform, platforms_dir)
+    platform_dir = platforms_dir / codename
     if not platform_dir.is_dir():
         raise FileNotFoundError(f"Platform directory not found: {platform_dir}")
 
-    ppm_path = platform_dir / f"{platform}_port_profile_mapping.csv"
-    static_path = platform_dir / f"{platform}_static_mapping.csv"
+    ppm_path = platform_dir / f"{codename}_port_profile_mapping.csv"
+    static_path = platform_dir / f"{codename}_static_mapping.csv"
 
     if not ppm_path.exists():
         raise FileNotFoundError(f"Port profile mapping not found: {ppm_path}")
@@ -287,33 +362,21 @@ def generate_config(
 
     ppm_rows = _read_csv(ppm_path)
     static_rows = _read_csv(static_path)
-
     asic_type = _detect_asic_type(static_rows)
     selected_rows = _select_primary_ports(ppm_rows)
 
-    # Each interface uses a kernel routing table, but only 253 are available for use. Thus we cannot leave gaps to
-    # account for future breakouts at the moment.
-    vlan_stride = 1
-
-    # ------------------------------------------------------------------
-    # Build port, VLAN, vlanPort, and interface lists
-    # ------------------------------------------------------------------
+    # Build port and interface lists
     ports = []
-    vlans = []
-    vlan_ports = []
     interfaces = []
 
-    vlan_offset = 1
-    for row in selected_rows:
+    for idx, row in enumerate(selected_rows):
         global_port_id = int(row.get("Global_PortID", "0").strip())
         port_name = row.get("Port_Name", "").strip()
         scope_str = row.get("Scope", "0").strip()
         scope = int(scope_str) if scope_str.isdigit() else 0
-        supported = row.get("Supported_Port_Profiles", "").strip()
-
-        profile_id, speed = _choose_profile(supported)
-        vlan_id = 2000 + vlan_offset
-        vlan_offset += vlan_stride
+        profile_id, speed = _choose_profile(
+            row.get("Supported_Port_Profiles", "").strip()
+        )
 
         ports.append(
             {
@@ -326,7 +389,7 @@ def generate_config(
                 "maxFrameSize": 9412,
                 "parserType": 1,
                 "routable": True,
-                "ingressVlan": vlan_id,
+                "ingressVlan": 4094,
                 "pause": {"rx": False, "tx": False},
                 "sFlowIngressRate": 0,
                 "sFlowEgressRate": 0,
@@ -338,61 +401,24 @@ def generate_config(
             }
         )
 
-        vlans.append(
-            {
-                "name": f"vlan{vlan_id}",
-                "id": vlan_id,
-                "recordStats": True,
-                "routable": True,
-                "ipAddresses": [],
-            }
-        )
-
-        vlan_ports.append(
-            {
-                "vlanID": vlan_id,
-                "logicalPort": global_port_id,
-                "spanningTreeState": 2,
-                "emitTags": False,
-            }
-        )
-
+        # intfIDs are sequential in front-panel order (2001, 2002, ...).
+        # FBOSS derives routing table ID = intfID - 2000, so tables start at 1.
+        intf_id = INTF_ID_OFFSET + idx + 1
         interfaces.append(
             {
-                "intfID": vlan_id,
+                "intfID": intf_id,
                 "routerID": 0,
-                "vlanID": vlan_id,
+                "portID": global_port_id,
                 "ipAddresses": [],
                 "mtu": 9412,
                 "isVirtual": False,
                 "isStateSyncDisabled": False,
-                "type": 1,
+                "type": 3,  # PORT
                 "scope": 0,
             }
         )
 
-    # Add loopback VLAN (10) and default VLAN (4094)
-    vlans.insert(
-        0,
-        {
-            "name": "fbossLoopback0",
-            "id": 10,
-            "recordStats": True,
-            "routable": True,
-            "ipAddresses": [],
-        },
-    )
-    vlans.append(
-        {
-            "name": "default",
-            "id": 4094,
-            "recordStats": True,
-            "routable": False,
-            "ipAddresses": [],
-        }
-    )
-
-    # Loopback interface
+    # Loopback interface (VLAN-based, virtual, no physical port)
     interfaces.insert(
         0,
         {
@@ -403,19 +429,33 @@ def generate_config(
             "mtu": 9412,
             "isVirtual": True,
             "isStateSyncDisabled": False,
-            "type": 1,
+            "type": 1,  # VLAN
             "scope": 0,
         },
     )
 
-    # ------------------------------------------------------------------
-    # Assemble sw section
-    # ------------------------------------------------------------------
+    vlans = [
+        {
+            "name": "fbossLoopback0",
+            "id": 10,
+            "recordStats": True,
+            "routable": True,
+            "ipAddresses": [],
+        },
+        {
+            "name": "default",
+            "id": 4094,
+            "recordStats": True,
+            "routable": False,
+            "ipAddresses": [],
+        },
+    ]
+
     sw = {
         "version": 0,
         "ports": ports,
         "vlans": vlans,
-        "vlanPorts": vlan_ports,
+        "vlanPorts": [],
         "defaultVlan": 4094,
         "interfaces": interfaces,
         "arpTimeoutSeconds": 60,
@@ -471,38 +511,29 @@ def generate_config(
         "mirrorOnDropReports": [],
     }
 
-    # ------------------------------------------------------------------
-    # Platform section (ASIC YAML populated externally or left empty)
-    # ------------------------------------------------------------------
-    platform_section: dict = {"chip": {"asicConfig": {"common": {}}}}
+    # Platform section — ASIC config from materialized HW test config
+    script_path = pathlib.Path(__file__).resolve()
+    asic_common = _load_asic_config(asic_config_source, codename, script_path)
 
-    # ------------------------------------------------------------------
-    # Assemble top-level config
-    # ------------------------------------------------------------------
-    config: dict = {
+    return {
         "defaultCommandLineArgs": {
             "check_wb_handles": "true",
+            "cleanup_probed_kernel_data": "true",
             "counter_refresh_interval": "0",
-            "disable_neighbor_updates": "true",
+            "disable_neighbor_updates": "false",
             "ecmp_width": "320",
+            "enable_1to1_intf_route_table_mapping": "true",
             "enable_replayer": "true",
             "log_variable_name": "true",
-            "sai_configure_six_tap": "true",
-            "multi_switch": "false",
+            "multi_switch": "true",
             "publish_state_to_fsdb": "true",
             "publish_stats_to_fsdb": "true",
+            "sai_configure_six_tap": "true",
             "use_full_dlb_scale": "true",
         },
         "sw": sw,
-        "platform": platform_section,
+        "platform": {"chip": {"asicConfig": {"common": asic_common}}},
     }
-
-    return config
-
-
-# ---------------------------------------------------------------------------
-# CLI entry point
-# ---------------------------------------------------------------------------
 
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -524,10 +555,12 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--platforms-dir",
         default=default_platforms_dir,
-        help=(
-            "Path to the platform_mapping_v2/platforms directory "
-            "(auto-detected by default)"
-        ),
+        help="Path to platform_mapping_v2/platforms (auto-detected by default)",
+    )
+    parser.add_argument(
+        "--asic-config-source",
+        default=None,
+        help="Path to materialized JSON or YAML with ASIC config (auto-detected)",
     )
     parser.add_argument(
         "--output",
@@ -553,10 +586,15 @@ def main(argv: list[str] | None = None) -> int:
         print(f"ERROR: platforms directory not found: {platforms_dir}", file=sys.stderr)
         return 1
 
+    asic_source = (
+        pathlib.Path(args.asic_config_source) if args.asic_config_source else None
+    )
+
     try:
         config = generate_config(
             platform=args.platform,
             platforms_dir=platforms_dir,
+            asic_config_source=asic_source,
         )
     except FileNotFoundError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
