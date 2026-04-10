@@ -68,6 +68,7 @@ TEST_F(WeutilTest, ValidateAllEepromContents) {
 TEST_F(WeutilTest, getInfoJson) {
   auto constexpr kDarwinJsonSize = 22;
   auto constexpr kBmcLiteJsonSize = 29;
+  auto constexpr kOnieJsonSize = 20;
 
   for (const auto& [fruName, eepromConfig] : fruList_) {
     try {
@@ -77,7 +78,10 @@ TEST_F(WeutilTest, getInfoJson) {
       EXPECT_GT(contents.size(), 0)
           << "EEPROM " << fruName << " returned empty contents";
       auto json = weutilInstance->getInfoJson();
-      EXPECT_GE(json.size(), std::min(kDarwinJsonSize, kBmcLiteJsonSize))
+      bool isOnie = json.getDefault("Format", "").asString() == "ONIE TlvInfo";
+      size_t expectedMin =
+          isOnie ? kOnieJsonSize : std::min(kDarwinJsonSize, kBmcLiteJsonSize);
+      EXPECT_GE(json.size(), expectedMin)
           << "EEPROM " << fruName << " returned empty json";
     } catch (const std::exception& e) {
       FAIL() << "Exception when testing EEPROM content in JSON format "
