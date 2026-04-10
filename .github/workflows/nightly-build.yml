@@ -26,9 +26,37 @@ jobs:
     secrets:
       GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
 
+  fboss-itest:
+    needs: monobuild
+    if: ${{ needs.monobuild.result == 'success' && needs.monobuild.outputs.build_id != '' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        testbed_config:
+          - name: "Gold Eagle Testbeds"
+            pattern: "gold[2-9].*"
+            priority: 50
+            platform: "broadcom"
+          - name: "Wedge Testbeds"
+            pattern: "wdg.*"
+            priority: 50
+            platform: "broadcom"
+    uses: ./.github/workflows/fboss-itest.reusable.yml
+    with:
+      build_id: ${{ needs.monobuild.outputs.build_id }}
+      platform: ${{ matrix.testbed_config.platform }}
+      priority: ${{ matrix.testbed_config.priority }}
+      target_testbeds: ${{ matrix.testbed_config.pattern }}
+    secrets:
+      GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+      AWS_NEXIS_BUILDRUNNER_SSH_KEY: ${{ secrets.AWS_NEXIS_BUILDRUNNER_SSH_KEY }}
+      AZURE_NEXIS_BUILDRUNNER_SSH_KEY: ${{ secrets.AZURE_NEXIS_BUILDRUNNER_SSH_KEY }}
+      NEXIS_BUILDRUNNER_TASKRABBIT_SSH_KEY: ${{ secrets.NEXIS_BUILDRUNNER_TASKRABBIT_SSH_KEY }}
+    name: ${{ matrix.testbed_config.name }}
+
   notify-slack-on-failure:
     runs-on: cloudstack-ubuntu24-small
-    needs: [build-and-test-clang, monobuild]
+    needs: [build-and-test-clang, monobuild, fboss-itest]
     if: failure()
     steps:
       - name: Determine which builds failed and collect test failures
