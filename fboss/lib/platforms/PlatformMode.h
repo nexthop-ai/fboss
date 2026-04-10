@@ -124,6 +124,8 @@ inline std::string toString(PlatformType mode) {
       return "MERU400BFU";
     case PlatformType::PLATFORM_MERU400BIA_DEPRECATED:
       return "MERU400BIA";
+    case PlatformType::PLATFORM_NOVA4000:
+      return "NOVA4000";
     case PlatformType::PLATFORM_UNKNOWN:
       return "UNKNOWN";
   }

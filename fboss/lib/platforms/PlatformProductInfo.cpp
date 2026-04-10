@@ -201,6 +201,8 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_TAHAN800BC;
     } else if (modelName.find("ICECUBE") == 0) {
       type_ = PlatformType::PLATFORM_ICECUBE800BC;
+    } else if (modelName.find("Nova4000") == 0) {
+      type_ = PlatformType::PLATFORM_NOVA4000;
     } else if (modelName.find("NH-4010-F") == 0) {
       type_ = PlatformType::PLATFORM_NH4010F;
     } else if (modelName.find("ICETEA") == 0) {
@@ -301,6 +303,8 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_BLACKWOLF800BANW;
     } else if (FLAGS_mode == "yangra2") {
       type_ = PlatformType::PLATFORM_YANGRA2;
+    } else if (FLAGS_mode == "nova4000") {
+      type_ = PlatformType::PLATFORM_NOVA4000;
     } else {
       throw std::runtime_error("invalid mode " + FLAGS_mode);
     }
