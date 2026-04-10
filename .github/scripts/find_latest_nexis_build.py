@@ -40,7 +40,7 @@ def main() -> None:
                 "nexis",
                 "show",
                 "--repo",
-                "private-fboss",
+                "nh/private-fboss",
                 "--status",
                 "success",
                 "--branch",

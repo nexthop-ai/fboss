@@ -31,7 +31,7 @@ jobs:
           echo "Base SHA: $BASE_SHA"
           echo "Head SHA: $HEAD_SHA"
 
-          git diff --name-only "$BASE_SHA" "$HEAD_SHA" > /tmp/changed_files.txt || true
+          git diff --name-only "$BASE_SHA"..."$HEAD_SHA" > /tmp/changed_files.txt || true
 
           if grep -q '^fboss/cli/' /tmp/changed_files.txt; then
             echo "Detected changes under fboss/cli/ - E2E CLI tests will run"
@@ -123,29 +123,34 @@ jobs:
           fi
           echo "dut_prepared=true" >> $GITHUB_OUTPUT
 
-      - name: Check wedge_agent service on DUT
-        # Only do the testing when wedge_agent is running.
-        # We will remove the check once we start supporting CLI with split agent.
-        id: check_wedge_agent
+      - name: Check agent services on DUT
+        id: check_agent
         if: steps.find_dut.outputs.dut_found == 'true' && steps.prepare_dut.outputs.dut_prepared == 'true'
         run: |
           set -e
           DUT_NAME="${{ steps.find_dut.outputs.dut_name }}"
-          echo "Checking wedge_agent systemd service on DUT ${DUT_NAME}"
+          echo "Checking agent systemd services on DUT ${DUT_NAME}"
 
-          STATUS=$(nh dvc ssh "${DUT_NAME}" -c "systemctl is-enabled wedge_agent.service" 2>/dev/null || echo "unknown")
-          echo "wedge_agent systemd status on ${DUT_NAME}: ${STATUS}"
+          ALL_ACTIVE=true
+          for SVC in fboss_sw_agent fboss_hw_agent@0 fboss_init; do
+            STATUS=$(nh dvc ssh "${DUT_NAME}" -c "systemctl is-active ${SVC}.service" 2>/dev/null || echo "inactive")
+            echo "${SVC} status on ${DUT_NAME}: ${STATUS}"
+            if [ "${STATUS}" != "active" ]; then
+              echo "::warning::${SVC} is not active on ${DUT_NAME}."
+              ALL_ACTIVE=false
+            fi
+          done
 
-          if [ "${STATUS}" = "enabled" ]; then
-            echo "wedge_agent is enabled on ${DUT_NAME}. Continuing with E2E CLI tests."
-            echo "wedge_agent_enabled=true" >> "$GITHUB_OUTPUT"
+          if [ "${ALL_ACTIVE}" = "true" ]; then
+            echo "All agent services are active on ${DUT_NAME}. Continuing with E2E CLI tests."
+            echo "agent_enabled=true" >> "$GITHUB_OUTPUT"
           else
-            echo "::warning::wedge_agent is not enabled on ${DUT_NAME}. Skipping copy and E2E CLI test steps."
-            echo "wedge_agent_enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::One or more agent services are not active on ${DUT_NAME}. Skipping copy and E2E CLI test steps."
+            echo "agent_enabled=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Copy CLI and test binaries to DUT
-        if: steps.find_dut.outputs.dut_found == 'true' && steps.prepare_dut.outputs.dut_prepared == 'true' && steps.check_wedge_agent.outputs.wedge_agent_enabled == 'true'
+        if: steps.find_dut.outputs.dut_found == 'true' && steps.prepare_dut.outputs.dut_prepared == 'true' && steps.check_agent.outputs.agent_enabled == 'true'
         run: |
           set -e
           echo "Copying fboss2_integration_test to DUT ${{ steps.find_dut.outputs.dut_name }}:~/fboss2_integration_test"
@@ -164,7 +169,7 @@ jobs:
 
       - name: Run E2E CLI tests
         id: run_tests
-        if: steps.find_dut.outputs.dut_found == 'true' && steps.prepare_dut.outputs.dut_prepared == 'true' && steps.check_wedge_agent.outputs.wedge_agent_enabled == 'true'
+        if: steps.find_dut.outputs.dut_found == 'true' && steps.prepare_dut.outputs.dut_prepared == 'true' && steps.check_agent.outputs.agent_enabled == 'true'
         run: |
           echo "Using build_id: ${{ steps.latest_nexis_build.outputs.latest_build_id }}"
           echo "Using DUT: ${{ steps.find_dut.outputs.dut_name }}"
