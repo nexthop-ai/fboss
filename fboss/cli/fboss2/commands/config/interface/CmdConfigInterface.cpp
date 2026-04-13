@@ -15,11 +15,7 @@
 #include <fmt/format.h>
 #include <folly/Conv.h>
 #include <folly/String.h>
-<<<<<<< HEAD
-||||||| 777bee98fb
-=======
 #include <algorithm>
->>>>>>> e541ed832cc3a3dc60af5c88d029cd65b6c4714b
 #include <cctype>
 #include <cstdint>
 #include <exception>
@@ -43,6 +39,7 @@ namespace {
 const std::unordered_set<std::string> kKnownAttributes = {
     "description",
     "mtu",
+    "speed",
 };
 } // namespace
 
@@ -86,7 +83,7 @@ InterfacesConfig::InterfacesConfig(std::vector<std::string> v)
     if (!isKnownAttribute(attr)) {
       throw std::invalid_argument(
           fmt::format(
-              "Unknown attribute '{}'. Valid attributes are: description, mtu",
+              "Unknown attribute '{}'. Valid attributes are: description, mtu, speed",
               attr));
     }
 

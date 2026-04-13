@@ -1014,7 +1014,6 @@ cpp_library(
         "session/FbossServiceUtil.cpp",
         "session/Git.cpp",
         "session/SystemdInterface.cpp",
-        "utils/InterfacesConfig.cpp",
         "utils/InterfaceList.cpp",
     ],
     headers = [
@@ -1096,7 +1095,6 @@ cpp_library(
         "session/FbossServiceUtil.h",
         "session/Git.h",
         "session/SystemdInterface.h",
-        "utils/InterfacesConfig.h",
         "utils/InterfaceList.h",
     ],
     exported_deps = [
