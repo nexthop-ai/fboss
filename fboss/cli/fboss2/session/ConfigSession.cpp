@@ -742,12 +742,7 @@ ConfigSession::CommitResult ConfigSession::commit(const HostInfo& hostInfo) {
 
   // Early return if there are no changes to commit
   if (sessionConfigData == oldConfigData && requiredActions_.empty()) {
-<<<<<<< HEAD
     return CommitResult{"", {}, {}};
-||||||| e541ed832c
-=======
-    return CommitResult{"", {}};
->>>>>>> 1e762cd6eeacd1edc9977d8043fa0c54ef469e2c
   }
 
   // Copy the metadata file alongside the config revision
