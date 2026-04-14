@@ -8,6 +8,7 @@ Tests verify:
 - Service restart picks up the new version
 """
 
+import shutil
 import subprocess
 import unittest
 from pathlib import Path
@@ -45,6 +46,10 @@ class TestDeviceTopologyIntegration(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Start the test topology (or reuse if already running)"""
+        # Check if docker command is available
+        if shutil.which("docker") is None:
+            raise unittest.SkipTest("Docker is not available in this environment")
+
         test_dir = Path(__file__).parent
         cls.topology_dir = test_dir / "test_topology"
         cls.start_script = cls.topology_dir / "start.sh"
@@ -385,9 +390,7 @@ class TestDeviceTopologyIntegration(unittest.TestCase):
                     if not first_root_dir:
                         first_root_dir = root_dir
                         self.assertTrue(
-                            root_dir.startswith(
-                                f"/mnt/btrfs/updates/{component}-"
-                            ),
+                            root_dir.startswith(f"/mnt/btrfs/updates/{component}-"),
                             f"Component {component} should have valid RootDirectory after first update (got {root_dir})",
                         )
                     else:
@@ -426,9 +429,7 @@ class TestDeviceTopologyIntegration(unittest.TestCase):
                     if not second_root_dir:
                         second_root_dir = root_dir
                         self.assertTrue(
-                            root_dir.startswith(
-                                f"/mnt/btrfs/updates/{component}-"
-                            ),
+                            root_dir.startswith(f"/mnt/btrfs/updates/{component}-"),
                             f"Component {component} should have valid RootDirectory after second update (got {root_dir})",
                         )
                         # Verify RootDirectory changed (new component snapshot created)

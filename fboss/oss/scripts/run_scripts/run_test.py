@@ -572,11 +572,9 @@ class TestRunner(abc.ABC):
         else:
             test_names = self._list_tests_to_run("*")
         test_filter = ""
-        known_bad_test_regexes = self._known_bad_test_regexes
-        unsupported_test_regexes = self._unsupported_test_regexes
         for test_name in test_names:
-            if any(re.match(r, test_name) for r in known_bad_test_regexes) or any(
-                re.match(r, test_name) for r in unsupported_test_regexes
+            if self._is_known_bad_test(test_name) or self._is_unsupported_test(
+                test_name
             ):
                 continue
             test_filter += f"{test_name}:"
@@ -1010,13 +1008,11 @@ class TestRunner(abc.ABC):
         tests_to_run = self._get_tests_to_run()
         tests_to_run = self._filter_tests(tests_to_run)
 
-        if getattr(args, "list_tests_for_features", None):
-            for test in tests_to_run:
-                print(test)
-            return
-
         # Check if tests need to be run or only listed
-        if args.list_tests is False:
+        if (
+            args.list_tests is False
+            and getattr(args, "list_tests_for_features", None) is None
+        ):
             start_time = datetime.now()
 
             original_conf_file = (

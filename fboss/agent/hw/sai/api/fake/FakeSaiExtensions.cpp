@@ -318,6 +318,14 @@ SaiPortTraits::Attributes::AttributePfcPauseDurationOverride::operator()() {
 }
 
 std::optional<sai_attr_id_t>
+SaiPortTraits::Attributes::AttributeCablePropagationDelayMeasure::operator()() {
+  /* NH TODO:
+  return SAI_PORT_ATTR_CABLE_PROPAGATION_DELAY_MEASURE;
+  */
+  return std::nullopt;
+}
+
+std::optional<sai_attr_id_t>
 SaiPortTraits::Attributes::AttributeAmIdles::operator()() {
   return std::nullopt;
 }

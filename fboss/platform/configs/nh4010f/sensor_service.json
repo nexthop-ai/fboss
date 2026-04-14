@@ -1,4 +1,5 @@
 {
+  "platformName": "NH4010F",
   "pmUnitSensorsList": [
     {
       "slotPath": "/",

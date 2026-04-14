@@ -1,4 +1,5 @@
 {
+  "platformName": "TAHANSB800BC",
   "pmUnitSensorsList": [
     {
       "slotPath": "/",
@@ -844,7 +845,7 @@
           "sysfsPath": "/run/devmap/sensors/OSFP_PWR/curr1_input",
           "type": 2,
           "thresholds": {
-            "minAlarmVal": -1.5
+            "minAlarmVal": -2.5
           },
           "compute": "@/1000.0"
         },
@@ -866,7 +867,7 @@
           "type": 2,
           "thresholds": {
             "maxAlarmVal": 110,
-            "minAlarmVal": -1.5,
+            "minAlarmVal": -2.5,
             "upperCriticalVal": 120
           },
           "compute": "@/1000.0"

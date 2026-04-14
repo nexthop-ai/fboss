@@ -469,7 +469,7 @@ class HwAsic {
     DELETED_CREDITS_STAT,
     INGRESS_PRIORITY_GROUP_DROPPED_PACKETS,
     // replace all ACL based trap reasons by
-    // explicty ACL config programmed by FBOSS
+    // explicitly ACL config programmed by FBOSS
     NO_RX_REASON_TRAP,
     EGRESS_GVOQ_WATERMARK_BYTES,
     INGRESS_PRIORITY_GROUP_SHARED_WATERMARK,
@@ -712,6 +712,16 @@ class HwAsic {
   }
 
   virtual std::optional<uint32_t> getMaxMySidEntries() const {
+    return std::nullopt;
+  }
+
+  // SRv6 next hops used as ECMP group members (NextHopSet size > 1)
+  virtual std::optional<uint32_t> getMaxSrv6EcmpNextHops() const {
+    return std::nullopt;
+  }
+
+  // SRv6 next hops used by single-nhop routes (NextHopSet size == 1)
+  virtual std::optional<uint32_t> getMaxSrv6SingleNextHops() const {
     return std::nullopt;
   }
 

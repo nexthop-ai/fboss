@@ -3398,7 +3398,7 @@ bool SwSwitch::sendPacketOutViaThriftStream(
 
 bool SwSwitch::sendPacketSwitchedAsync(
     std::unique_ptr<TxPacket> pkt,
-    const SwitchIDs& switchIds) noexcept {
+    const LocalSwitchIDs& switchIds) noexcept {
   pcapMgr_->packetSent(pkt.get());
   if (!multiHwSwitchHandler_->sendPacketSwitchedAsync(
           std::move(pkt), switchIds)) {

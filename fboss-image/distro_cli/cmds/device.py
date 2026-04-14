@@ -108,7 +108,6 @@ def _download_with_cache(cache_dir: Path, url_prefix: str, filename: str) -> Pat
     except Exception as e:
         raise DistroInfraError(f"Failed to download {url}: {e}") from e
 
-
 def image_upstream_command(args):
     """Download full image from upstream repository and set it to be loaded onto device"""
     image_repo = "https://facebook.github.io/fboss/images/latest"
