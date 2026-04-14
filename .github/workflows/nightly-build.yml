@@ -140,7 +140,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "${{ steps.check-failures.outputs.test_details }}"
+                    "text": ${{ toJson(steps.check-failures.outputs.test_details) }}
                   }
                 },
                 {
