@@ -101,7 +101,7 @@ class BaseHwTestRunner(ABC):
     def normalize_test_results_file(self):
         """Normalize test results XML file."""
         logger.info("Normalizing test results file")
-        with open("/tmp/tr.xml", "r", encoding="utf-8") as f:
+        with open("/tmp/tr.xml", encoding="utf-8") as f:
             lines = f.readlines()
 
         with open("/tmp/tr.xml", "w", encoding="utf-8") as f:
@@ -121,6 +121,15 @@ class BaseHwTestRunner(ABC):
         """Run the hardware test on the DUT."""
         logger.info("Running tests")
         self.setup(test_context)
+
+        # Ensure /home/admin exists on the DUT — prepare creates it during
+        # _post_image_actions, but it may be missing if the DUT was reimaged
+        # without a full prepare cycle or if the directory was cleaned up.
+        exit_status, output = self.ssh_client.run_cmd(
+            "sudo mkdir -p /home/admin && sudo chmod 755 /home/admin"
+        )
+        if exit_status != 0:
+            logger.warning("Failed to ensure /home/admin exists: %s", output)
 
         status = self.set_filters("/tmp/tests.conf", self.filter_filepath)
         if not status:
