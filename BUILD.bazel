@@ -222,7 +222,7 @@ heavy_genrule(
         "//bazel_lib:ln_or_cp",
         "//fboss_bsps/nexthop_bsp:distro_nexthop_bsp.tar",
         "//fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar",
-        "//fboss_extras/asic_init:distro_asic_init.rpm",
+        "//fboss_extras/nexthop_product_support:distro_nexthop_product_support.rpm",
         "//nhbroadcomsai/fboss-xgs:distro_sai.tar",
         ":fboss_builder_docker", # Prevent concurrent building
         "distro_kernel_6.11.tar",
@@ -245,7 +245,7 @@ heavy_genrule(
         "fboss-image/npu_sai.json",
         "fboss-image/distro_kernel_6.11.tar",
         "fboss-image/distro_sai.tar",
-        "fboss-image/distro_asic_init.rpm",
+        "fboss-image/distro_nexthop_product_support.rpm",
         "fboss-image/distro_bgp_pp.rpm",
         "fboss-image/distro_fboss_bsp.tar",
         "fboss-image/distro_nexthop_bsp.tar",
@@ -274,7 +274,7 @@ heavy_genrule(
     cmd = """
         ln -f $(location distro_kernel_6.11.tar) fboss/fboss-image/distro_kernel_6.11.tar
         ln -f $(location //nhbroadcomsai/fboss-xgs:distro_sai.tar) fboss/fboss-image/distro_sai.tar
-        ln -f $(location //fboss_extras/asic_init:distro_asic_init.rpm) fboss/fboss-image/distro_asic_init.rpm
+        ln -f $(location //fboss_extras/nexthop_product_support:distro_nexthop_product_support.rpm) fboss/fboss-image/distro_nexthop_product_support.rpm
         ln -f $(location //fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar) fboss/fboss-image/distro_fboss_bsp.tar
         ln -f $(location //fboss_bsps/nexthop_bsp:distro_nexthop_bsp.tar) fboss/fboss-image/distro_nexthop_bsp.tar
         ln -f $(location fboss_platform_stack.tar) fboss/fboss-image/fboss_platform_stack.tar

@@ -218,6 +218,13 @@ def write_tar(filename: str, contents: dict[str, str]) -> None:
                 continue
             tar.add(src, dest)
 
+        # Add lib64 -> lib symlink so binaries with RPATH/RUNPATH pointing to
+        # lib64/ can find libraries packaged under lib/ (e.g. fboss2-dev).
+        tarinfo = tarfile.TarInfo(name="lib64")
+        tarinfo.type = tarfile.SYMTYPE
+        tarinfo.linkname = "lib"
+        tar.addfile(tarinfo)
+
 
 def _build_target(target: str, build_dir: pathlib.Path):
     """Return mappings for a given target and build_dir
@@ -255,6 +262,15 @@ def _build_target(target: str, build_dir: pathlib.Path):
     prod_files = {fboss_build_dir / bin_name: f"bin/{bin_name}" for bin_name in bins}
     prod_files.update(extras)
     prod_files.update(_find_getdeps_libs(build_dir, libs))
+
+    # Include libunwind from llvm locally installed in the build container because CentOS does not have an equivalent
+    # version and it is not installed by getdeps to be handled in _find_getdeps_libs().
+    for ext in ("so", "so.1", "so.1.0"):
+        prod_files[
+            pathlib.Path(
+                f"/usr/local/llvm/lib/x86_64-unknown-linux-gnu/libunwind.{ext}"
+            )
+        ] = f"lib/libunwind.{ext}"
 
     test_files = {
         fboss_build_dir / bin_name: f"bin/{bin_name}" for bin_name in test_bins
