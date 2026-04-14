@@ -41,6 +41,10 @@ jobs:
             pattern: "wdg.*"
             priority: 50
             platform: "broadcom"
+          - name: "FBOSS Testbeds"
+            pattern: "fboss.*"
+            priority: 50
+            platform: "broadcom"
     uses: ./.github/workflows/fboss-itest.reusable.yml
     with:
       build_id: ${{ needs.monobuild.outputs.build_id }}
