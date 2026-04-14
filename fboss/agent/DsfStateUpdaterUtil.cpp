@@ -90,6 +90,11 @@ void DsfStateUpdaterUtil::updateNeighborEntry(
     if (skipProgramming(nbrEntryIter)) {
       XLOG(DBG2) << "Skip programming remote neighbor: "
                  << nbrEntryIter->second->str();
+      XLOG(DBG3) << "Skip remote neighbor " << nbrEntryIter->second->getIP()
+                 << " on intf " << nbrEntryIter->second->getIntfID()
+                 << " (linkLocal="
+                 << nbrEntryIter->second->getIP().isLinkLocal() << ", state="
+                 << static_cast<int>(nbrEntryIter->second->getState()) << ")";
       nbrEntryIter = clonedTable->erase(nbrEntryIter);
     } else {
       // Entries received from remote are non-Local on current node
@@ -98,6 +103,12 @@ void DsfStateUpdaterUtil::updateNeighborEntry(
       nbrEntryIter->second->setNoHostRoute(false);
       updateResolvedTimestamp(oldTable, nbrEntryIter);
       XLOG(DBG2) << "Program remote neighbor: " << nbrEntryIter->second->str();
+      XLOG(DBG3) << "Program remote neighbor " << nbrEntryIter->second->getIP()
+                 << " on intf " << nbrEntryIter->second->getIntfID()
+                 << " mac=" << nbrEntryIter->second->getMac() << " isNew="
+                 << (!oldTable ||
+                     std::as_const(*oldTable).find(
+                         nbrEntryIter->second->getID()) == oldTable->cend());
       ++nbrEntryIter;
     }
   }
@@ -212,18 +223,24 @@ std::shared_ptr<SwitchState> DsfStateUpdaterUtil::getUpdatedState(
               mapToUpdate->updateNode(
                   clonedNode, scopeResolver->scope(clonedNode));
             } else {
-              processRemoteInterfaceRoutes(
-                  oldNode,
-                  out,
-                  false /* add */,
-                  remoteIntfRoutesToAdd,
-                  remoteIntfRoutesToDel);
-              processRemoteInterfaceRoutes(
-                  newNode,
-                  out,
-                  true /* add */,
-                  remoteIntfRoutesToAdd,
-                  remoteIntfRoutesToDel);
+              // Only process routes if addresses or routerID changed.
+              // Neighbor-only changes don't affect routes.
+              if (oldNode->getAddresses()->toThrift() !=
+                      newNode->getAddresses()->toThrift() ||
+                  oldNode->getRouterID() != newNode->getRouterID()) {
+                processRemoteInterfaceRoutes(
+                    oldNode,
+                    out,
+                    false /* add */,
+                    remoteIntfRoutesToAdd,
+                    remoteIntfRoutesToDel);
+                processRemoteInterfaceRoutes(
+                    newNode,
+                    out,
+                    true /* add */,
+                    remoteIntfRoutesToAdd,
+                    remoteIntfRoutesToDel);
+              }
               mapToUpdate->updateNode(
                   clonedNode, scopeResolver->scope(clonedNode, in));
             }

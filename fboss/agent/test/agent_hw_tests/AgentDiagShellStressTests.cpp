@@ -58,8 +58,7 @@ class AgentDiagShellStressTest : public AgentHwTest {
 
   std::vector<ProductionFeature> getProductionFeaturesVerified()
       const override {
-    // TODO: introduce diag shell feature
-    return {};
+    return {ProductionFeature::HW_SWITCH};
   }
 
   void setCmdLineFlagOverrides() const override {
@@ -135,6 +134,11 @@ class AgentDiagShellStressTest : public AgentHwTest {
                   << "switchId: " << static_cast<int>(id)
                   << ", exception: " << ex.what();
     }
+    // Disable debug counter to avoid persistent debug output from BCM SDK
+    // that can block stdout during subsequent SAI API calls (see D76308958)
+    ensemble->runDiagCommand(makeDiagCmd(""), out, id);
+    ensemble->runDiagCommand(makeDiagCmd("debug soc counter off"), out, id);
+    ensemble->runDiagCommand(makeDiagCmd("\x0d"), out, id);
 
     std::ignore = out;
   }

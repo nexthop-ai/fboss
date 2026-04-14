@@ -243,10 +243,6 @@ jobs:
           git checkout build/fbcode_builder/manifests/libsai build/fbcode_builder/manifests/fboss
           rm -f build/fbcode_builder/manifests/sai_impl
 
-      - name: Fetch dependencies
-        run: |
-          docker exec -e SAI_IMPL=fake FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-get-deps.sh
-
       - name: Build FBOSS with Fake SAI
         run: |
           docker exec -e SAI_IMPL=fake FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss_fake_agent_targets

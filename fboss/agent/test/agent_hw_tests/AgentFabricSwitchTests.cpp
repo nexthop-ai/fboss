@@ -244,12 +244,12 @@ class AgentFabricSwitchSelfLoopTest : public AgentFabricSwitchTest {
     WITH_RETRIES_N(180, {
       if (desiredState == cfg::PortState::DISABLED) {
         auto numPorts = ports.size();
-        auto switch2SwitchStats = getSw()->getHwSwitchStatsExpensive();
-        int missingConnectivity{0};
-        for (const auto& [_, switchStats] : switch2SwitchStats) {
-          missingConnectivity +=
-              *switchStats.fabricReachabilityStats()->missingCount();
-        }
+        auto switchId = getCurrentSwitchIdForTesting();
+        auto switchIndex =
+            getSw()->getSwitchInfoTable().getSwitchIndexFromSwitchId(switchId);
+        auto missingConnectivity = *getHwSwitchStats(switchIndex)
+                                        .fabricReachabilityStats()
+                                        ->missingCount();
         // When disabled all ports should lose connectivity info
         EXPECT_EVENTUALLY_EQ(missingConnectivity, numPorts);
       }
@@ -310,62 +310,57 @@ class AgentFabricSwitchSelfLoopTest : public AgentFabricSwitchTest {
 
 TEST_F(AgentFabricSwitchSelfLoopTest, selfLoopDetection) {
   auto setup = [this]() {
-    auto allPorts = getProgrammedState()->getPorts()->getAllNodes();
+    auto ports = fabricPortIdsForTesting();
     // Since switch is drained, ports should stay enabled
-    verifyState(cfg::PortState::ENABLED, *allPorts);
+    verifyState(cfg::PortState::ENABLED, ports);
     // Data filter should be turned off since we never enabled
     // wrong_fabric_connections
-    checkDataCellFilter(false /*expectFilterOn*/);
+    checkDataCellFilter(false /*expectFilterOn*/, fabricPortIdsForTesting());
     // Undrain
     setSwitchDrainState(getSw()->getConfig(), cfg::SwitchDrainState::UNDRAINED);
   };
   auto verify = [this]() {
-    auto allPorts = getProgrammedState()->getPorts()->getAllNodes();
+    auto ports = fabricPortIdsForTesting();
     // Ports should now get disabled
-    verifyState(cfg::PortState::DISABLED, *allPorts);
+    verifyState(cfg::PortState::DISABLED, ports);
   };
   verifyAcrossWarmBoots(setup, verify);
 }
 
 TEST_F(AgentFabricSwitchSelfLoopTest, portDrained) {
-  std::set<PortID> drainedPorts;
-  for (const auto& [_, ports] : switch2FabricPortIds()) {
-    drainedPorts.insert(ports[0]);
-  }
-  auto setup = [this, drainedPorts]() {
+  auto drainedPortId = fabricPortIdsForTesting()[0];
+  auto setup = [this, drainedPortId]() {
     // Drain port
     auto newCfg = getSw()->getConfig();
     for (auto& port : *newCfg.ports()) {
-      if (drainedPorts.find(PortID(*port.logicalID())) != drainedPorts.end()) {
+      if (PortID(*port.logicalID()) == drainedPortId) {
         port.drainState() = cfg::PortDrainState::DRAINED;
       }
     }
     applyNewConfig(newCfg);
-    auto portsToCheck = getProgrammedState()->getPorts()->getAllNodes();
+    auto ports = fabricPortIdsForTesting();
     // Since switch is drained, ports should stay enabled
-    verifyState(cfg::PortState::ENABLED, *portsToCheck);
+    verifyState(cfg::PortState::ENABLED, ports);
     // Data filter should be turned off since we never enabled
     // wrong_fabric_connections
-    checkDataCellFilter(false /*expectFilterOn*/);
+    checkDataCellFilter(false /*expectFilterOn*/, fabricPortIdsForTesting());
     // Undrain
     setSwitchDrainState(newCfg, cfg::SwitchDrainState::UNDRAINED);
   };
-  auto verify = [this, drainedPorts]() {
-    auto portsToCheck = getProgrammedState()->getPorts()->getAllNodes();
+  auto verify = [this, drainedPortId]() {
+    auto ports = fabricPortIdsForTesting();
     // All but the drained ports should now get disabled
-    for (auto port : drainedPorts) {
-      portsToCheck->removeNode(port);
-    }
-    verifyState(cfg::PortState::DISABLED, *portsToCheck);
+    std::erase(ports, drainedPortId);
+    verifyState(cfg::PortState::DISABLED, ports);
     // Data filter should be turned off since we never enabled
     // wrong_fabric_connections
-    checkDataCellFilter(false /*expectFilterOn*/);
+    checkDataCellFilter(false /*expectFilterOn*/, fabricPortIdsForTesting());
     // Verify that global drops are zero
-    auto switch2SwitchStats = getSw()->getHwSwitchStatsExpensive();
-    for (const auto& [_, switchStats] : switch2SwitchStats) {
-      const auto& dropStats = *switchStats.switchDropStats();
-      EXPECT_EQ(*dropStats.globalDrops(), 0);
-    }
+    auto switchId = getCurrentSwitchIdForTesting();
+    auto switchIndex =
+        getSw()->getSwitchInfoTable().getSwitchIndexFromSwitchId(switchId);
+    const auto& dropStats = *getHwSwitchStats(switchIndex).switchDropStats();
+    EXPECT_EQ(*dropStats.globalDrops(), 0);
   };
   verifyAcrossWarmBoots(setup, verify);
 }
@@ -470,12 +465,16 @@ TEST_F(AgentFabricSwitchTest, ValidateFecErrorDetect) {
   auto verify = [this]() {
     utility::setupFecErrorDetectEnable(
         getAgentEnsemble(), true /*fecErrorDetectEnable*/);
-    utility::validateFecErrorDetectInState(
-        getProgrammedState().get(), true /*fecErrorDetectEnable*/);
+    for (auto portId : fabricPortIdsForTesting()) {
+      auto port = getProgrammedState()->getPorts()->getNodeIf(portId);
+      EXPECT_EQ(*port->getFecErrorDetectEnable(), true);
+    }
     utility::setupFecErrorDetectEnable(
         getAgentEnsemble(), false /*fecErrorDetectEnable*/);
-    utility::validateFecErrorDetectInState(
-        getProgrammedState().get(), false /*fecErrorDetectEnable*/);
+    for (auto portId : fabricPortIdsForTesting()) {
+      auto port = getProgrammedState()->getPorts()->getNodeIf(portId);
+      EXPECT_EQ(*port->getFecErrorDetectEnable(), false);
+    }
   };
   verifyAcrossWarmBoots([]() {}, verify);
 }
@@ -573,18 +572,17 @@ TEST_F(AgentFabricSwitchTest, verifyRtpGpdAlwaysDisabled) {
     auto expectedValues = {
         "RTP_GRACEFUL_POWER_DOWN_CONFIGURATION.RTP0[0x135]=0:",
         "RTP_GRACEFUL_POWER_DOWN_CONFIGURATION.RTP1[0x135]=0:"};
-    for (const auto& switchId : getFabricSwitchIdsWithPorts()) {
-      std::string out;
-      WITH_RETRIES({
-        getAgentEnsemble()->runDiagCommand(
-            "g RTP_GRACEFUL_POWER_DOWN_CONFIGURATION\nquit\n", out, switchId);
-        XLOG(DBG0) << "SwitchId: " << static_cast<int>(switchId)
-                   << ", output: " << out;
-        for (auto& entry : expectedValues) {
-          EXPECT_EVENTUALLY_TRUE(out.find(entry) != std::string::npos);
-        }
-      });
-    }
+    auto switchId = getCurrentSwitchIdForTesting();
+    std::string out;
+    WITH_RETRIES({
+      getAgentEnsemble()->runDiagCommand(
+          "g RTP_GRACEFUL_POWER_DOWN_CONFIGURATION\n", out, switchId);
+      XLOG(DBG0) << "SwitchId: " << static_cast<int>(switchId)
+                 << ", output: " << out;
+      for (auto& entry : expectedValues) {
+        EXPECT_EVENTUALLY_TRUE(out.find(entry) != std::string::npos);
+      }
+    });
   };
   verifyAcrossWarmBoots([]() {}, verify);
 }
@@ -657,31 +655,32 @@ TEST_F(AgentFabricSwitchTest, verifySourceRoutedCellHandling) {
 
 TEST_F(AgentFabricSwitchTest, verifyFabricInterCellJitterWatermark) {
   auto verify = [&]() {
-    for (const auto& switchId : getFabricSwitchIdsWithPorts()) {
-      std::string out;
-      WITH_RETRIES({
-        // Mark module ID 1 as reachable over some fabric ports
-        getAgentEnsemble()->runDiagCommand(
-            "mod RTP_RMHMT 1 1 LINK_BIT_MAP=1\n", out, switchId);
-        // Send packets to module ID 1, such that length is > 512B.
-        // These will be split into multiple cells and sent over the
-        // fabric links and will be reassembled back into packets,
-        // resulting in some value in inter cell jitter watermark.
-        getAgentEnsemble()->runDiagCommand(
-            "TX 100 DeSTination=0 DeSTinationModid=1 LENgth=1400\n",
-            out,
-            switchId);
-        auto watermarkStats = getAllSwitchWatermarkStats();
-        auto switchWatermarksIter = watermarkStats.find(switchId);
-        ASSERT_EVENTUALLY_TRUE(switchWatermarksIter != watermarkStats.end());
-        auto jitterWatermark =
-            switchWatermarksIter->second.fabricInterCellJitterWatermarkUsec();
-        ASSERT_EVENTUALLY_TRUE(jitterWatermark.has_value());
-        EXPECT_EVENTUALLY_GT(jitterWatermark.value(), 0);
-        XLOG(DBG0) << "Fabric Inter Cell Jitter Watermark usec : "
-                   << jitterWatermark.value();
-      });
-    }
+    auto switchId = getCurrentSwitchIdForTesting();
+    auto switchIndex =
+        getSw()->getSwitchInfoTable().getSwitchIndexFromSwitchId(switchId);
+    std::string out;
+    WITH_RETRIES({
+      // Mark module ID 1 as reachable over some fabric ports
+      getAgentEnsemble()->runDiagCommand(
+          "mod RTP_RMHMT 1 1 LINK_BIT_MAP=1\n", out, switchId);
+      // Send packets to module ID 1, such that length is > 512B.
+      // These will be split into multiple cells and sent over the
+      // fabric links and will be reassembled back into packets,
+      // resulting in some value in inter cell jitter watermark.
+      getAgentEnsemble()->runDiagCommand(
+          "TX 100 DeSTination=0 DeSTinationModid=1 LENgth=1400\n",
+          out,
+          switchId);
+      auto watermarkStats = getAllSwitchWatermarkStats();
+      auto switchWatermarksIter = watermarkStats.find(switchIndex);
+      ASSERT_EVENTUALLY_TRUE(switchWatermarksIter != watermarkStats.end());
+      auto jitterWatermark =
+          switchWatermarksIter->second.fabricInterCellJitterWatermarkUsec();
+      ASSERT_EVENTUALLY_TRUE(jitterWatermark.has_value());
+      EXPECT_EVENTUALLY_GT(jitterWatermark.value(), 0);
+      XLOG(DBG0) << "Fabric Inter Cell Jitter Watermark usec : "
+                 << jitterWatermark.value();
+    });
   };
   verifyAcrossWarmBoots([]() {}, verify);
 }

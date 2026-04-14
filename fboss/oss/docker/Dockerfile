@@ -25,12 +25,24 @@ RUN dnf install -y 'dnf-command(config-manager)' && \
     libffi libffi-devel libnghttp2 libnghttp2-devel libnl3 libnl3-devel \
     libsodium-devel libsodium-static libunwind libunwind-devel libusb libusb-devel \
     libzstd libzstd-devel lz4-devel ncurses-devel ninja-build \
-    openssl openssl-devel openssl-libs python3 python3-devel \
+    openssl openssl-devel openssl-libs \
     re2 re2-devel snappy-devel xxhash-devel xz-devel zlib-devel zlib-static \
     libxml2-devel expat-devel wget git sudo lsof `basename "$USER_SHELL"` \
-    libcap-devel libmount-devel \
-    gcc-toolset-12 gcc-toolset-12-libasan-devel gcc-toolset-12-libubsan-devel && \
-    rpm -e binutils --nodeps && \
+    libcap-devel libmount-devel
+
+# Set up Python 3.12 as the system default.
+# Python 3.12 is chosen to match the getdeps python manifest which installs
+# python3.12 on CentOS Stream 9 (the default python3 is 3.9, too old).
+# All -python variant dependency builds (folly-python, fbthrift-python, etc.)
+# must use the same Python version consistently.
+RUN dnf install -y python3.12 python3.12-devel python3.12-pip && \
+    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 100
+
+# Necessary for using update-alternatives.
+RUN rpm -e binutils --nodeps
+
+# Set up gcc.
+RUN dnf install -y --allowerasing gcc-toolset-12 gcc-toolset-12-libasan-devel gcc-toolset-12-libubsan-devel && \
     update-alternatives --install /usr/bin/gcc gcc /opt/rh/gcc-toolset-12/root/usr/bin/gcc 100 \
     --slave /usr/bin/g++ g++ /opt/rh/gcc-toolset-12/root/usr/bin/g++ \
     --slave /usr/bin/c++ c++ /opt/rh/gcc-toolset-12/root/usr/bin/g++ \
@@ -50,8 +62,9 @@ RUN dnf install -y 'dnf-command(config-manager)' && \
     --slave /usr/bin/gcc-ranlib gcc-ranlib /opt/rh/gcc-toolset-12/root/usr/bin/gcc-ranlib && \
     dnf download libtool && \
     rpm -ivh --nodeps libtool-*.rpm && \
-    rm -f libtool-*.rpm && \
-    python3 -m pip install boto3 botocore gitpython meson jinja2 pytest
+    rm -f libtool-*.rpm
+
+RUN python3 -m pip install setuptools 'Cython>=3.0,<3.2' wheel auditwheel patchelf boto3 botocore gitpython meson jinja2 pyyaml filelock pytest
 
 COPY .pre-commit-config.yaml /tmp/.pre-commit-config.yaml
 COPY ./fboss/oss/docker/setup_clang.sh /tmp/setup_clang.sh
@@ -83,10 +96,9 @@ RUN dnf install -y perl-diagnostics perl-sort perl-English perl-Clone perl-Data-
     perl-List-MoreUtils perl-Moose perl-YAML perl-namespace-autoclean perl-JSON-XS perl-FindBin \
     perl-Math-BigInt perl-YAML-LibYAML perl-Sys-Hostname perl-Time
 RUN ln -s /usr/bin/python3 /usr/bin/python
-RUN pip install pyyaml filelock
-RUN --mount=type=bind,source=requirements-dev.txt,target=/tmp/requirements-dev.txt \
-    pip install -r /tmp/requirements-dev.txt
 # ============================================================
+COPY requirements-dev.txt /tmp/requirements-dev.txt
+RUN python3 -m pip install -r /tmp/requirements-dev.txt && rm /tmp/requirements-dev.txt
 
 # Configure sudoers to allow wheel group passwordless sudo
 RUN echo "%wheel ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers

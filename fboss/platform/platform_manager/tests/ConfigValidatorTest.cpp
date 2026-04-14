@@ -18,6 +18,7 @@ SlotTypeConfig getValidSlotTypeConfig() {
   slotTypeConfig.pmUnitName() = "SCM";
   slotTypeConfig.idpromConfig() = IdpromConfig();
   slotTypeConfig.idpromConfig()->address() = "0x14";
+  slotTypeConfig.idpromConfig()->busName() = "SMBus I801 adapter at 2000";
   return slotTypeConfig;
 }
 
@@ -53,6 +54,7 @@ PlatformConfig getBasicConfig() {
   config.rootSlotType() = "SCM_SLOT";
   config.bspKmodsRpmName() = "sample_bsp_kmods";
   config.bspKmodsRpmVersion() = "1.0.0-4";
+  config.i2cAdaptersFromCpu() = {"SMBus I801 adapter at 2000"};
   config.slotTypeConfigs() = {{"SCM_SLOT", getValidSlotTypeConfig()}};
   auto pmUnitConfig = PmUnitConfig();
   pmUnitConfig.pluggedInSlotType() = "SCM_SLOT";
@@ -143,6 +145,34 @@ TEST(ConfigValidatorTest, I2cAdaptersFromCpuValidation) {
 TEST(ConfigValidatorTest, ValidConfig) {
   auto config = getBasicConfig();
   EXPECT_TRUE(ConfigValidator().isValid(config));
+}
+
+TEST(ConfigValidatorTest, IdpromBusDirectlyConnected) {
+  // Valid: CPU adapter bus
+  auto config = getBasicConfig();
+  config.slotTypeConfigs()["SCM_SLOT"].idpromConfig()->busName() =
+      "SMBus I801 adapter at 2000";
+  EXPECT_TRUE(ConfigValidator().isValid(config));
+
+  // Valid: INCOMING@0 bus with numOutgoingI2cBuses >= 1
+  config.slotTypeConfigs()["SCM_SLOT"].idpromConfig()->busName() = "INCOMING@0";
+  config.slotTypeConfigs()["SCM_SLOT"].numOutgoingI2cBuses() = 2;
+  EXPECT_TRUE(ConfigValidator().isValid(config));
+
+  // Invalid: INCOMING@ index out of range
+  config.slotTypeConfigs()["SCM_SLOT"].idpromConfig()->busName() = "INCOMING@3";
+  config.slotTypeConfigs()["SCM_SLOT"].numOutgoingI2cBuses() = 2;
+  EXPECT_FALSE(ConfigValidator().isValid(config));
+
+  // Invalid: MUX bus name (not directly connected)
+  config.slotTypeConfigs()["SCM_SLOT"].idpromConfig()->busName() =
+      "MCB_MUX_A@0";
+  EXPECT_FALSE(ConfigValidator().isValid(config));
+
+  // Invalid: FPGA I2C adapter name (not directly connected)
+  config.slotTypeConfigs()["SCM_SLOT"].idpromConfig()->busName() =
+      "MCB_IOB_I2C_MASTER_7";
+  EXPECT_FALSE(ConfigValidator().isValid(config));
 }
 
 TEST(ConfigValidatorTest, InvalidVersionedPmUnitConfigs) {
@@ -276,6 +306,7 @@ TEST(ConfigValidatorTest, PmUnitNameReferentialIntegrity) {
   slotTypeConfig.pmUnitName() = "NON_EXISTENT_PMUNIT";
   slotTypeConfig.idpromConfig() = IdpromConfig();
   slotTypeConfig.idpromConfig()->address() = "0x14";
+  slotTypeConfig.idpromConfig()->busName() = "SMBus I801 adapter at 2000";
   config.slotTypeConfigs() = {{"SCM_SLOT", slotTypeConfig}};
   EXPECT_FALSE(ConfigValidator().isValid(config));
 
@@ -309,6 +340,8 @@ TEST(ConfigValidatorTest, PmUnitNameAllowedListValidation) {
   auto slotTypeConfig = SlotTypeConfig();
   slotTypeConfig.idpromConfig() = IdpromConfig();
   slotTypeConfig.idpromConfig()->address() = "0x14";
+  slotTypeConfig.idpromConfig()->busName() = "INCOMING@0";
+  slotTypeConfig.numOutgoingI2cBuses() = 1;
   config.slotTypeConfigs()->emplace("PIM_SLOT", slotTypeConfig);
 
   auto pmUnitConfig = PmUnitConfig();
@@ -349,33 +382,79 @@ TEST(ConfigValidatorTest, SlotTypeConfig) {
 }
 
 TEST(ConfigValidatorTest, SlotConfig) {
+  std::map<std::string, SlotTypeConfig> slotTypeConfigs = {
+      {"MCB_SLOT", SlotTypeConfig()}, {"SMB_SLOT", SlotTypeConfig()}};
+
+  // Invalid: empty slotType
   auto slotConfig = SlotConfig();
   slotConfig.presenceDetection() = PresenceDetection();
   slotConfig.presenceDetection()->gpioLineHandle() = getValidGpioLineHandle();
-  EXPECT_FALSE(ConfigValidator().isValidSlotConfig(slotConfig));
-  slotConfig.slotType() = "MCB_SLOT";
-  EXPECT_TRUE(ConfigValidator().isValidSlotConfig(slotConfig));
-}
+  EXPECT_FALSE(
+      ConfigValidator().isValidSlotConfig(
+          slotConfig, "MCB_SLOT@0", slotTypeConfigs));
 
-TEST(ConfigValidatorTest, OutgoingSlotConfig) {
-  std::map<std::string, SlotTypeConfig> slotTypeConfigs = {
-      {"MCB_SLOT", SlotTypeConfig()}};
-  PmUnitConfig pmUnitConfig;
-  pmUnitConfig.pluggedInSlotType() = "MCB_SLOT";
+  // Valid: slotType matches SlotName prefix
+  slotConfig.slotType() = "MCB_SLOT";
+  EXPECT_TRUE(
+      ConfigValidator().isValidSlotConfig(
+          slotConfig, "MCB_SLOT@0", slotTypeConfigs));
+
+  // Invalid: SlotName format missing @<Num>
+  EXPECT_FALSE(
+      ConfigValidator().isValidSlotConfig(
+          slotConfig, "MCB_SLOT", slotTypeConfigs));
+
+  // Invalid: SlotName SlotType doesn't match SlotConfig slotType
+  EXPECT_FALSE(
+      ConfigValidator().isValidSlotConfig(
+          slotConfig, "SCM_SLOT@0", slotTypeConfigs));
+
   SlotConfig smbSlotConfig;
   smbSlotConfig.slotType() = "SMB_SLOT";
-  // Valid OutgoingSlotConfig
-  pmUnitConfig.outgoingSlotConfigs() = {{"SMB_SLOT@0", smbSlotConfig}};
+  // Invalid: outgoing slot name format missing @<Num>
+  EXPECT_FALSE(
+      ConfigValidator().isValidSlotConfig(
+          smbSlotConfig, "SMB_SLOT", slotTypeConfigs));
+
+  // Invalid: outgoing slot unmatching SlotType
+  EXPECT_FALSE(
+      ConfigValidator().isValidSlotConfig(
+          smbSlotConfig, "SCM_SLOT@0", slotTypeConfigs));
+}
+
+TEST(ConfigValidatorTest, OutgoingI2cBusNamesMatchesNumOutgoingI2cBuses) {
+  std::map<std::string, SlotTypeConfig> slotTypeConfigs;
+
+  SlotTypeConfig pimSlotType;
+  pimSlotType.numOutgoingI2cBuses() = 2;
+  slotTypeConfigs["PIM_SLOT"] = pimSlotType;
+
+  // Valid: outgoingI2cBusNames size matches numOutgoingI2cBuses
+  SlotConfig slotConfig;
+  slotConfig.slotType() = "PIM_SLOT";
+  slotConfig.outgoingI2cBusNames() = {"BUS_A", "BUS_B"};
   EXPECT_TRUE(
-      ConfigValidator().isValidPmUnitConfig(slotTypeConfigs, pmUnitConfig));
-  // Invalid SlotName format
-  pmUnitConfig.outgoingSlotConfigs() = {{"SMB_SLOT", smbSlotConfig}};
+      ConfigValidator().isValidSlotConfig(
+          slotConfig, "PIM_SLOT@0", slotTypeConfigs));
+
+  // Invalid: too few outgoingI2cBusNames
+  slotConfig.outgoingI2cBusNames() = {"BUS_A"};
   EXPECT_FALSE(
-      ConfigValidator().isValidPmUnitConfig(slotTypeConfigs, pmUnitConfig));
-  // Invalid unmatching SlotType; expect SMB_SLOT but has SCM_SLOT.
-  pmUnitConfig.outgoingSlotConfigs() = {{"SCM_SLOT@0", smbSlotConfig}};
+      ConfigValidator().isValidSlotConfig(
+          slotConfig, "PIM_SLOT@0", slotTypeConfigs));
+
+  // Invalid: too many outgoingI2cBusNames
+  slotConfig.outgoingI2cBusNames() = {"BUS_A", "BUS_B", "BUS_C"};
   EXPECT_FALSE(
-      ConfigValidator().isValidPmUnitConfig(slotTypeConfigs, pmUnitConfig));
+      ConfigValidator().isValidSlotConfig(
+          slotConfig, "PIM_SLOT@0", slotTypeConfigs));
+
+  // Invalid: SlotType has no SlotTypeConfig definition
+  slotConfig.slotType() = "UNKNOWN_SLOT";
+  slotConfig.outgoingI2cBusNames() = {};
+  EXPECT_FALSE(
+      ConfigValidator().isValidSlotConfig(
+          slotConfig, "UNKNOWN_SLOT@0", slotTypeConfigs));
 }
 
 TEST(ConfigValidatorTest, PresenceDetection) {

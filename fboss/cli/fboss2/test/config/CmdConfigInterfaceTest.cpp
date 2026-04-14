@@ -8,23 +8,23 @@
  *
  */
 
-#include <boost/filesystem/operations.hpp>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <cstdlib>
-#include <filesystem>
-#include <fstream>
-#include <memory>
+#include <iostream>
+#include <map>
+#include <sstream>
 #include <stdexcept>
-#include <system_error>
+#include <streambuf>
+#include <string>
 #include <vector>
 
+#include "fboss/agent/gen-cpp2/platform_config_types.h"
+#include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/test/config/CmdConfigTestBase.h"
 #include "fboss/cli/fboss2/utils/CmdUtilsCommon.h"
-#include "fboss/cli/fboss2/utils/InterfacesConfig.h"
-#include "fboss/cli/fboss2/utils/PortMap.h" // NOLINT(misc-include-cleaner)
 
 using namespace ::testing;
 
@@ -235,7 +235,7 @@ class CmdConfigInterfaceTestFixture : public CmdConfigTestBase {
 // Test valid config with port + description
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigValidPortAndDescription) {
   setupTestableConfigSession();
-  utils::InterfacesConfig config({"eth1/1/1", "description", "My port"});
+  InterfacesConfig config({"eth1/1/1", "description", "My port"});
   EXPECT_EQ(config.getInterfaces().size(), 1);
   EXPECT_TRUE(config.hasAttributes());
   ASSERT_EQ(config.getAttributes().size(), 1);
@@ -246,7 +246,7 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigValidPortAndDescription) {
 // Test valid config with port + mtu
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigValidPortAndMtu) {
   setupTestableConfigSession();
-  utils::InterfacesConfig config({"eth1/1/1", "mtu", "9000"});
+  InterfacesConfig config({"eth1/1/1", "mtu", "9000"});
   EXPECT_EQ(config.getInterfaces().size(), 1);
   EXPECT_TRUE(config.hasAttributes());
   ASSERT_EQ(config.getAttributes().size(), 1);
@@ -257,7 +257,7 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigValidPortAndMtu) {
 // Test valid config with port + both attributes
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigValidPortAndBothAttrs) {
   setupTestableConfigSession();
-  utils::InterfacesConfig config(
+  InterfacesConfig config(
       {"eth1/1/1", "description", "My port", "mtu", "9000"});
   EXPECT_EQ(config.getInterfaces().size(), 1);
   EXPECT_TRUE(config.hasAttributes());
@@ -271,7 +271,7 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigValidPortAndBothAttrs) {
 // Test valid config with multiple ports + attributes
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigMultiplePorts) {
   setupTestableConfigSession();
-  utils::InterfacesConfig config(
+  InterfacesConfig config(
       {"eth1/1/1", "eth1/2/1", "description", "Uplink ports"});
   EXPECT_EQ(config.getInterfaces().size(), 2);
   EXPECT_TRUE(config.hasAttributes());
@@ -283,7 +283,7 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigMultiplePorts) {
 // Test port only (no attributes) - for subcommand pass-through
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigPortOnly) {
   setupTestableConfigSession();
-  utils::InterfacesConfig config({"eth1/1/1"});
+  InterfacesConfig config({"eth1/1/1"});
   EXPECT_EQ(config.getInterfaces().size(), 1);
   EXPECT_FALSE(config.hasAttributes());
   EXPECT_TRUE(config.getAttributes().empty());
@@ -292,8 +292,7 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigPortOnly) {
 // Test case-insensitive attribute names
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigCaseInsensitiveAttrs) {
   setupTestableConfigSession();
-  utils::InterfacesConfig config(
-      {"eth1/1/1", "DESCRIPTION", "Test", "MTU", "9000"});
+  InterfacesConfig config({"eth1/1/1", "DESCRIPTION", "Test", "MTU", "9000"});
   EXPECT_TRUE(config.hasAttributes());
   ASSERT_EQ(config.getAttributes().size(), 2);
   // Attributes should be normalized to lowercase
@@ -304,14 +303,14 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigCaseInsensitiveAttrs) {
 // Test empty input throws
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigEmptyThrows) {
   setupTestableConfigSession();
-  EXPECT_THROW(utils::InterfacesConfig({}), std::invalid_argument);
+  EXPECT_THROW(InterfacesConfig({}), std::invalid_argument);
 }
 
 // Test first token is attribute (no port name)
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigNoPortNameThrows) {
   setupTestableConfigSession();
   try {
-    utils::InterfacesConfig config({"description", "My port"});
+    InterfacesConfig config({"description", "My port"});
     FAIL() << "Expected std::invalid_argument";
   } catch (const std::invalid_argument& e) {
     EXPECT_THAT(e.what(), HasSubstr("No interface name provided"));
@@ -323,7 +322,7 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigNoPortNameThrows) {
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigMissingValueThrows) {
   setupTestableConfigSession();
   try {
-    utils::InterfacesConfig config({"eth1/1/1", "description"});
+    InterfacesConfig config({"eth1/1/1", "description"});
     FAIL() << "Expected std::invalid_argument";
   } catch (const std::invalid_argument& e) {
     EXPECT_THAT(e.what(), HasSubstr("Missing value for attribute"));
@@ -335,7 +334,7 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigMissingValueThrows) {
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigValueIsAttributeThrows) {
   setupTestableConfigSession();
   try {
-    utils::InterfacesConfig config({"eth1/1/1", "description", "mtu"});
+    InterfacesConfig config({"eth1/1/1", "description", "mtu"});
     FAIL() << "Expected std::invalid_argument";
   } catch (const std::invalid_argument& e) {
     EXPECT_THAT(e.what(), HasSubstr("Missing value for attribute"));
@@ -347,7 +346,7 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigValueIsAttributeThrows) {
 // Test valid config with port + speed
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigValidPortAndSpeed) {
   setupTestableConfigSession();
-  utils::InterfacesConfig config({"eth1/1/1", "speed", "100000"});
+  InterfacesConfig config({"eth1/1/1", "speed", "100000"});
   EXPECT_EQ(config.getInterfaces().size(), 1);
   EXPECT_TRUE(config.hasAttributes());
   ASSERT_EQ(config.getAttributes().size(), 1);
@@ -362,7 +361,7 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigUnknownAttributeThrows) {
   setupTestableConfigSession();
   try {
     // "foobar" comes after "description", so it's recognized as an attribute
-    utils::InterfacesConfig config(
+    InterfacesConfig config(
         {"eth1/1/1", "description", "Test", "foobar", "value"});
     FAIL() << "Expected std::invalid_argument";
   } catch (const std::invalid_argument& e) {
@@ -375,7 +374,7 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigUnknownAttributeThrows) {
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigNonExistentPortThrows) {
   setupTestableConfigSession();
   EXPECT_THROW(
-      utils::InterfacesConfig({"eth1/99/1", "description", "Test"}),
+      InterfacesConfig({"eth1/99/1", "description", "Test"}),
       std::invalid_argument);
 }
 
@@ -388,8 +387,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientSetsDescription) {
   setupTestableConfigSession(
       cmdPrefix_, "eth1/1/1 description \"New description\"");
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config(
-      {"eth1/1/1", "description", "New description"});
+  InterfacesConfig config({"eth1/1/1", "description", "New description"});
 
   auto result = cmd.queryClient(localhost(), config);
 
@@ -416,7 +414,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientSetsDescription) {
 TEST_F(CmdConfigInterfaceTestFixture, queryClientSetsMtu) {
   setupTestableConfigSession(cmdPrefix_, "eth1/1/1 mtu 9000");
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config({"eth1/1/1", "mtu", "9000"});
+  InterfacesConfig config({"eth1/1/1", "mtu", "9000"});
 
   auto result = cmd.queryClient(localhost(), config);
 
@@ -444,7 +442,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientSetsBothAttributes) {
   setupTestableConfigSession(
       cmdPrefix_, "eth1/1/1 description \"Updated port\" mtu 9000");
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config(
+  InterfacesConfig config(
       {"eth1/1/1", "description", "Updated port", "mtu", "9000"});
 
   auto result = cmd.queryClient(localhost(), config);
@@ -479,7 +477,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientMultipleInterfaces) {
   setupTestableConfigSession(
       cmdPrefix_, "eth1/1/1 eth1/2/1 description \"Shared description\"");
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config(
+  InterfacesConfig config(
       {"eth1/1/1", "eth1/2/1", "description", "Shared description"});
 
   auto result = cmd.queryClient(localhost(), config);
@@ -502,7 +500,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientMultipleInterfaces) {
 TEST_F(CmdConfigInterfaceTestFixture, queryClientNoAttributesThrows) {
   setupTestableConfigSession();
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config({"eth1/1/1"});
+  InterfacesConfig config({"eth1/1/1"});
 
   EXPECT_THROW(cmd.queryClient(localhost(), config), std::runtime_error);
 }
@@ -511,7 +509,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientNoAttributesThrows) {
 TEST_F(CmdConfigInterfaceTestFixture, queryClientInvalidMtuNonNumeric) {
   setupTestableConfigSession();
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config({"eth1/1/1", "mtu", "abc"});
+  InterfacesConfig config({"eth1/1/1", "mtu", "abc"});
 
   try {
     cmd.queryClient(localhost(), config);
@@ -526,7 +524,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientInvalidMtuNonNumeric) {
 TEST_F(CmdConfigInterfaceTestFixture, queryClientMtuTooLow) {
   setupTestableConfigSession();
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config(
+  InterfacesConfig config(
       {"eth1/1/1", "mtu", std::to_string(utils::kMtuMin - 1)});
 
   try {
@@ -541,7 +539,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientMtuTooLow) {
 TEST_F(CmdConfigInterfaceTestFixture, queryClientMtuTooHigh) {
   setupTestableConfigSession();
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config(
+  InterfacesConfig config(
       {"eth1/1/1", "mtu", std::to_string(utils::kMtuMax + 1)});
 
   try {
@@ -559,7 +557,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientMtuBoundaryValid) {
   // Test minimum MTU
   setupTestableConfigSession(
       cmdPrefix_, "eth1/1/1 mtu " + std::to_string(utils::kMtuMin));
-  utils::InterfacesConfig configMin(
+  InterfacesConfig configMin(
       {"eth1/1/1", "mtu", std::to_string(utils::kMtuMin)});
   EXPECT_THAT(
       cmd.queryClient(localhost(), configMin),
@@ -568,7 +566,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientMtuBoundaryValid) {
   // Test maximum MTU
   setupTestableConfigSession(
       cmdPrefix_, "eth1/1/1 mtu " + std::to_string(utils::kMtuMax));
-  utils::InterfacesConfig configMax(
+  InterfacesConfig configMax(
       {"eth1/1/1", "mtu", std::to_string(utils::kMtuMax)});
   EXPECT_THAT(
       cmd.queryClient(localhost(), configMax),
@@ -579,7 +577,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientMtuBoundaryValid) {
 TEST_F(CmdConfigInterfaceTestFixture, queryClientSpeedNumeric) {
   setupTestableConfigSession(cmdPrefix_, "eth1/1/1 speed 100000");
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config({"eth1/1/1", "speed", "100000"});
+  InterfacesConfig config({"eth1/1/1", "speed", "100000"});
   auto result = cmd.queryClient(localhost(), config);
   EXPECT_THAT(result, HasSubstr("Successfully configured"));
   EXPECT_THAT(result, HasSubstr("speed=100000"));
@@ -589,7 +587,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientSpeedNumeric) {
 TEST_F(CmdConfigInterfaceTestFixture, queryClientSpeedAuto) {
   setupTestableConfigSession(cmdPrefix_, "eth1/1/1 speed auto");
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config({"eth1/1/1", "speed", "auto"});
+  InterfacesConfig config({"eth1/1/1", "speed", "auto"});
   auto result = cmd.queryClient(localhost(), config);
   EXPECT_THAT(result, HasSubstr("Successfully configured"));
   EXPECT_THAT(result, HasSubstr("speed=auto"));
@@ -599,7 +597,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientSpeedAuto) {
 TEST_F(CmdConfigInterfaceTestFixture, queryClientSpeedAutoCaseInsensitive) {
   setupTestableConfigSession(cmdPrefix_, "eth1/1/1 speed AUTO");
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config({"eth1/1/1", "speed", "AUTO"});
+  InterfacesConfig config({"eth1/1/1", "speed", "AUTO"});
   auto result = cmd.queryClient(localhost(), config);
   EXPECT_THAT(result, HasSubstr("Successfully configured"));
   EXPECT_THAT(result, HasSubstr("speed=auto"));
@@ -611,28 +609,28 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientSpeedCommonValues) {
 
   // 10G = 10000 Mbps
   setupTestableConfigSession(cmdPrefix_, "eth1/1/1 speed 10000");
-  utils::InterfacesConfig config10G({"eth1/1/1", "speed", "10000"});
+  InterfacesConfig config10G({"eth1/1/1", "speed", "10000"});
   EXPECT_THAT(
       cmd.queryClient(localhost(), config10G),
       HasSubstr("Successfully configured"));
 
   // 25G = 25000 Mbps
   setupTestableConfigSession(cmdPrefix_, "eth1/1/1 speed 25000");
-  utils::InterfacesConfig config25G({"eth1/1/1", "speed", "25000"});
+  InterfacesConfig config25G({"eth1/1/1", "speed", "25000"});
   EXPECT_THAT(
       cmd.queryClient(localhost(), config25G),
       HasSubstr("Successfully configured"));
 
   // 40G = 40000 Mbps
   setupTestableConfigSession(cmdPrefix_, "eth1/1/1 speed 40000");
-  utils::InterfacesConfig config40G({"eth1/1/1", "speed", "40000"});
+  InterfacesConfig config40G({"eth1/1/1", "speed", "40000"});
   EXPECT_THAT(
       cmd.queryClient(localhost(), config40G),
       HasSubstr("Successfully configured"));
 
   // 400G = 400000 Mbps
   setupTestableConfigSession(cmdPrefix_, "eth1/1/1 speed 400000");
-  utils::InterfacesConfig config400G({"eth1/1/1", "speed", "400000"});
+  InterfacesConfig config400G({"eth1/1/1", "speed", "400000"});
   EXPECT_THAT(
       cmd.queryClient(localhost(), config400G),
       HasSubstr("Successfully configured"));
@@ -642,7 +640,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientSpeedCommonValues) {
 TEST_F(CmdConfigInterfaceTestFixture, queryClientSpeedInvalid) {
   setupTestableConfigSession();
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config({"eth1/1/1", "speed", "invalid"});
+  InterfacesConfig config({"eth1/1/1", "speed", "invalid"});
 
   try {
     cmd.queryClient(localhost(), config);
@@ -656,7 +654,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientSpeedInvalid) {
 TEST_F(CmdConfigInterfaceTestFixture, queryClientSpeedInvalidNumeric) {
   setupTestableConfigSession();
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config({"eth1/1/1", "speed", "999999"});
+  InterfacesConfig config({"eth1/1/1", "speed", "999999"});
 
   try {
     cmd.queryClient(localhost(), config);
@@ -675,7 +673,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientMultipleInterfacesSpeed) {
   // Configure first port
   setupTestableConfigSession(cmdPrefix_, "eth1/1/1 speed 100000");
   auto cmd1 = CmdConfigInterface();
-  utils::InterfacesConfig config1({"eth1/1/1", "speed", "100000"});
+  InterfacesConfig config1({"eth1/1/1", "speed", "100000"});
   auto result1 = cmd1.queryClient(localhost(), config1);
   EXPECT_THAT(result1, HasSubstr("Successfully configured"));
   EXPECT_THAT(result1, HasSubstr("eth1/1/1"));
@@ -684,7 +682,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientMultipleInterfacesSpeed) {
   // Configure second port
   setupTestableConfigSession(cmdPrefix_, "eth1/2/1 speed 100000");
   auto cmd2 = CmdConfigInterface();
-  utils::InterfacesConfig config2({"eth1/2/1", "speed", "100000"});
+  InterfacesConfig config2({"eth1/2/1", "speed", "100000"});
   auto result2 = cmd2.queryClient(localhost(), config2);
   EXPECT_THAT(result2, HasSubstr("Successfully configured"));
   EXPECT_THAT(result2, HasSubstr("eth1/2/1"));
@@ -699,7 +697,7 @@ TEST_F(
                                // validation
   setupTestableConfigSession(cmdPrefix_, "eth1/1/1 eth1/2/1 speed 100000");
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config({"eth1/1/1", "eth1/2/1", "speed", "100000"});
+  InterfacesConfig config({"eth1/1/1", "eth1/2/1", "speed", "100000"});
   auto result = cmd.queryClient(localhost(), config);
   EXPECT_THAT(result, HasSubstr("Successfully configured"));
   EXPECT_THAT(result, HasSubstr("eth1/1/1"));
@@ -750,7 +748,7 @@ TEST_F(
 
   setupTestableConfigSession();
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config({"eth1/1/1", "eth1/2/1", "speed", "100000"});
+  InterfacesConfig config({"eth1/1/1", "eth1/2/1", "speed", "100000"});
 
   // Should fail because eth1/2/1 doesn't support 100G
   try {
@@ -773,7 +771,7 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientMultipleAttributesWithSpeed) {
   setupTestableConfigSession(
       cmdPrefix_, "eth1/1/1 description TestPort mtu 9000 speed 100000");
   auto cmd = CmdConfigInterface();
-  utils::InterfacesConfig config(
+  InterfacesConfig config(
       {"eth1/1/1",
        "description",
        "TestPort",

@@ -500,6 +500,7 @@ cpp_library(
         "//fboss/agent/hw/switch_asics:switch_asics",
         "//fboss/agent/state:state",
         "//folly:network_address",
+        "//folly/logging:logging",
     ],
     exported_external_deps = [
         ("boost", None, "boost_container"),
@@ -1221,6 +1222,7 @@ cpp_library(
     ],
     headers = [
         "PortDescriptorTemplate.h",
+        "SwitchIDs.h",
         "types.h",
     ],
     exported_deps = [
@@ -1232,6 +1234,7 @@ cpp_library(
     ],
     exported_external_deps = [
         "boost",
+        ("boost", None, "boost_container"),
         ("boost", None, "boost_serialization"),
     ],
 )
