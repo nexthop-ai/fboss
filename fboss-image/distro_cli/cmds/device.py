@@ -10,20 +10,34 @@
 import json
 import logging
 import os
+<<<<<<< HEAD
 import shutil
 import sys
 import urllib.request
 from http import HTTPStatus
+||||||| e541ed832c
+=======
+import sys
+>>>>>>> 1e762cd6eeacd1edc9977d8043fa0c54ef469e2c
 from pathlib import Path
 
 from distro_cli.lib.cli import validate_path
 from distro_cli.lib.device_update import DeviceUpdateError, DeviceUpdater
 from distro_cli.lib.distro_infra import (
+<<<<<<< HEAD
     DISTRO_INFRA_CONTAINER,
     GETIP_SCRIPT_CONTAINER_PATH,
     deploy_image_to_device,
     find_persistent_dir,
     get_interface_name,
+||||||| e541ed832c
+from lib.cli import validate_path
+=======
+    deploy_image_to_device,
+    DISTRO_INFRA_CONTAINER,
+    get_interface_name,
+    GETIP_SCRIPT_CONTAINER_PATH,
+>>>>>>> 1e762cd6eeacd1edc9977d8043fa0c54ef469e2c
 )
 from distro_cli.lib.docker import container
 from distro_cli.lib.exceptions import DistroInfraError
@@ -37,6 +51,7 @@ def print_to_console(message: str) -> None:
     print(message)  # noqa: T201
 
 
+<<<<<<< HEAD
 def _download_with_cache(cache_dir: Path, url_prefix: str, filename: str) -> Path:
     """Download from HTTP/HTTPS with caching support using ETag and Last-Modified headers.
 
@@ -109,6 +124,9 @@ def _download_with_cache(cache_dir: Path, url_prefix: str, filename: str) -> Pat
         raise DistroInfraError(f"Failed to download {url}: {e}") from e
 
 
+||||||| e541ed832c
+=======
+>>>>>>> 1e762cd6eeacd1edc9977d8043fa0c54ef469e2c
 def image_upstream_command(args):
     """Download full image from upstream repository and set it to be loaded onto device"""
     image_repo = "https://facebook.github.io/fboss/images/latest"
