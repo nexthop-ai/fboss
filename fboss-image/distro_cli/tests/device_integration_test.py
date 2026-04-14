@@ -8,6 +8,7 @@ Tests verify:
 - Service restart picks up the new version
 """
 
+import shutil
 import subprocess
 import unittest
 from pathlib import Path
@@ -45,6 +46,10 @@ class TestDeviceTopologyIntegration(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Start the test topology (or reuse if already running)"""
+        # Check if docker command is available
+        if shutil.which("docker") is None:
+            raise unittest.SkipTest("Docker is not available in this environment")
+
         test_dir = Path(__file__).parent
         cls.topology_dir = test_dir / "test_topology"
         cls.start_script = cls.topology_dir / "start.sh"
