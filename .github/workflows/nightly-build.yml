@@ -29,6 +29,9 @@ jobs:
   fboss-itest:
     needs: monobuild
     if: ${{ needs.monobuild.result == 'success' && needs.monobuild.outputs.build_id != '' }}
+    permissions:
+      id-token: write
+      contents: read
     strategy:
       fail-fast: false
       matrix:
