@@ -572,14 +572,6 @@ class TestRunner(abc.ABC):
         else:
             test_names = self._list_tests_to_run("*")
         test_filter = ""
-<<<<<<< HEAD
-        known_bad_test_regexes = self._known_bad_test_regexes
-        unsupported_test_regexes = self._unsupported_test_regexes
-||||||| e541ed832c
-        known_bad_test_regexes = self._get_known_bad_test_regexes()
-        unsupported_test_regexes = self._get_unsupported_test_regexes()
-=======
->>>>>>> 1e762cd6eeacd1edc9977d8043fa0c54ef469e2c
         for test_name in test_names:
             if self._is_known_bad_test(test_name) or self._is_unsupported_test(
                 test_name
@@ -1035,11 +1027,7 @@ class TestRunner(abc.ABC):
                 flush=True,
             )
             self._print_output_summary(output)
-<<<<<<< HEAD
             self._write_results_to_xml(results)
-||||||| e541ed832c
-=======
->>>>>>> 1e762cd6eeacd1edc9977d8043fa0c54ef469e2c
         else:
             # Print the filtered tests
             for test in tests_to_run:
@@ -1739,21 +1727,11 @@ class PlatformServicesTestRunner(TestRunner):
                     else self._get_config_path()
                 )
                 conf_file = self._backup_and_modify_config(original_conf_file)
-<<<<<<< HEAD
                 test_outputs, test_results = self._run_tests(
                     tests_to_run, conf_file, args
                 )
                 output.extend(test_outputs)
                 results.extend(test_results)
-||||||| e541ed832c
-                output.extend(self._run_tests(tests_to_run, conf_file, args))
-=======
-                output.extend(self._run_tests(tests_to_run, conf_file, args))
-            else:
-                for test in tests_to_run:
-                    print(test)
-                return
->>>>>>> 1e762cd6eeacd1edc9977d8043fa0c54ef469e2c
 
         end_time = datetime.now()
         delta_time = end_time - start_time

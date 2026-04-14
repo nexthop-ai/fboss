@@ -100,9 +100,8 @@ class DeviceUpdater:
             )
 
         component_data = self.manifest.get_component(self.component)
-<<<<<<< HEAD
-        has_download = "download" in component_data
-        has_execute = "execute" in component_data
+        has_download = "download" in component_data  # pyre-ignore[58]
+        has_execute = "execute" in component_data  # pyre-ignore[58]
 
         if not has_download and not has_execute:
             raise DeviceUpdateError(
@@ -185,89 +184,6 @@ class DeviceUpdater:
                 artifact_path if isinstance(artifact_path, list) else [artifact_path]
             )
             scp_files = [str(a) for a in artifacts] + [str(UPDATE_SCRIPT_PATH)]
-||||||| e541ed832c
-=======
-        has_download = "download" in component_data  # pyre-ignore[58]
-        has_execute = "execute" in component_data  # pyre-ignore[58]
-
-        if not has_download and not has_execute:
-            raise DeviceUpdateError(
-                f"Component '{self.component}' has neither 'download' nor 'execute'"
-            )
-
-    def _acquire_artifacts(self) -> Path:
-        """Acquire component artifacts via build or download.
-
-        Uses ImageBuilder to handle both execute (build) and download modes.
-        Dependencies are automatically built if needed.
-
-        Returns:
-            Path to the component artifact (tarball)
-
-        Raises:
-            DeviceUpdateError: If artifact acquisition fails
-        """
-        logger.info(f"Acquiring artifacts for {self.component}")
-
-        builder = ImageBuilder(self.manifest)
-        builder.build_components([self.component])
-
-        artifact_path = builder.component_artifacts.get(self.component)
-        if not artifact_path:
-            raise DeviceUpdateError(
-                f"No artifact produced for component '{self.component}'"
-            )
-
-        logger.info(f"Artifact acquired: {artifact_path}")
-        return artifact_path
-
-    def _transfer_and_execute(self, artifact_path: Path, services: list[str]) -> None:
-        """Transfer artifact and update script to device and execute.
-
-        Args:
-            artifact_path: Path to the component artifact tarball
-            services: List of services to update
-
-        Raises:
-            DeviceUpdateError: If transfer or execution fails
-        """
-        if not self.device_ip:
-            raise DeviceUpdateError("Device IP not set")
-
-        if not UPDATE_SCRIPT_PATH.exists():
-            raise DeviceUpdateError(f"Update script not found: {UPDATE_SCRIPT_PATH}")
-
-        device_user = "root"
-        remote_dir = f"/tmp/fboss-update-{uuid.uuid4().hex[:8]}"
-        ssh_opts = [
-            "-o",
-            "StrictHostKeyChecking=no",
-            "-o",
-            "UserKnownHostsFile=/dev/null",
-        ]
-
-        logger.info(f"Transferring files to {self.device_ip}:{remote_dir}")
-
-        try:
-            # Create remote directory
-            result = subprocess.run(
-                [
-                    "ssh",
-                    *ssh_opts,
-                    f"{device_user}@{self.device_ip}",
-                    f"mkdir -p {remote_dir}",
-                ],
-                capture_output=True,
-                check=False,
-            )
-            if result.returncode != 0:
-                raise DeviceUpdateError(
-                    f"Failed to create remote directory: {result.stderr.decode()}"
-                )
-
-            # SCP artifact and update script to device
-            scp_files = [str(artifact_path), str(UPDATE_SCRIPT_PATH)]
->>>>>>> 1e762cd6eeacd1edc9977d8043fa0c54ef469e2c
 
             result = subprocess.run(
                 [

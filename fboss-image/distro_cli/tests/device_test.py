@@ -16,44 +16,12 @@ import subprocess
 import tarfile
 import tempfile
 import unittest
-<<<<<<< HEAD
 import urllib.error
 from pathlib import Path
 from unittest.mock import MagicMock, Mock, patch
 
 from distro_cli.cmds.device import (
     _download_with_cache,
-||||||| e541ed832c
-"""
-Unit tests for device commands
-
-NOTE: These are skeleton tests for stub implementations.
-When device commands are fully implemented, these tests will be expanded
-to verify actual functionality.
-
-These tests verify that:
-1. Device command group exists and has expected subcommands
-2. Commands can be called without crashing (stub behavior)
-3. Context passing works correctly
-"""
-
-import sys
-import tempfile
-import unittest
-from pathlib import Path
-
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-import argparse
-
-from cmds.device import (
-=======
-from pathlib import Path
-from unittest.mock import patch
-
-from distro_cli.cmds.device import (
->>>>>>> 1e762cd6eeacd1edc9977d8043fa0c54ef469e2c
     get_device_ip,
     getip_command,
     image_command,
@@ -67,11 +35,7 @@ from distro_cli.lib.cli import CLI
 from distro_cli.lib.device_update import DeviceUpdateError, DeviceUpdater
 from distro_cli.lib.distro_infra import DISTRO_INFRA_CONTAINER
 from distro_cli.lib.docker import container
-<<<<<<< HEAD
 from distro_cli.lib.exceptions import DistroInfraError
-||||||| e541ed832c
-=======
->>>>>>> 1e762cd6eeacd1edc9977d8043fa0c54ef469e2c
 from distro_cli.lib.manifest import ImageManifest
 from distro_cli.tests.test_helpers import waitfor
 
@@ -226,7 +190,6 @@ class TestDeviceCommands(unittest.TestCase):
         self.assertTrue(callable(getip_command))
         self.assertTrue(callable(ssh_command))
 
-<<<<<<< HEAD
     def test_image_upstream(self):
         """Test image-upstream command"""
         args = argparse.Namespace(
@@ -252,21 +215,6 @@ class TestDeviceCommands(unittest.TestCase):
             mock_deploy.assert_called_once_with(
                 self.test_mac, Path("/tmp/test_image.tar")
             )
-||||||| e541ed832c
-    def test_image_upstream_stub(self):
-        """Test image-upstream command (stub)"""
-        args = argparse.Namespace(mac=self.test_mac, components=["kernel", "sai"])
-        # Call command - just verify it doesn't crash
-        image_upstream_command(args)
-=======
-    def test_image_upstream_stub(self):
-        """Test image-upstream command (stub)"""
-        args = argparse.Namespace(
-            mac=self.test_mac, components=["kernel", "hw_agent_sai"]
-        )
-        # Call command - just verify it doesn't crash
-        image_upstream_command(args)
->>>>>>> 1e762cd6eeacd1edc9977d8043fa0c54ef469e2c
 
     def test_image_command_with_tarball(self):
         """Test image command with tarball extraction"""
@@ -655,7 +603,6 @@ class TestDeviceUpdater(unittest.TestCase):
             ["wedge_agent", "fsdb", "qsfp_service"],
         )
 
-<<<<<<< HEAD
 
 class TestDownloadWithCache(unittest.TestCase):
     """Test _download_with_cache() error cases."""
@@ -957,9 +904,6 @@ class TestDownloadWithCache(unittest.TestCase):
                 self.assertIn("Failed to download", str(context.exception))
                 self.assertIn(full_url, str(context.exception))
 
-||||||| e541ed832c
-=======
->>>>>>> 1e762cd6eeacd1edc9977d8043fa0c54ef469e2c
 
 if __name__ == "__main__":
     unittest.main()
