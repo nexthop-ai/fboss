@@ -191,7 +191,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Successfully synced and merged upstream commit \`${{ needs.sync-upstream.outputs.stable_commit }}\` to main."
+                    "text": "Successfully synced and merged upstream commit `${{ needs.sync-upstream.outputs.stable_commit }}` to main."
                   }
                 },
                 {
@@ -257,7 +257,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Build/test failed for upstream commit \`${{ needs.sync-upstream.outputs.stable_commit }}\`: ${{ steps.check-failures.outputs.test_details }}"
+                    "text": ${{ toJson(format('Build/test failed for upstream commit `{0}`: {1}', needs.sync-upstream.outputs.stable_commit, steps.check-failures.outputs.test_details)) }}
                   }
                 },
                 {
@@ -269,6 +269,20 @@ jobs:
                 }
               ]
             }
+
+  # Clean up orphaned sync branches when the build fails (no PR is created in push_direct mode)
+  cleanup-orphan-branch:
+    name: Cleanup orphan sync branch
+    needs: [sync-upstream, build-and-test]
+    if: always() && needs.sync-upstream.outputs.push_direct == 'true' && needs.sync-upstream.outputs.sync_branch != '' && needs.build-and-test.result == 'failure'
+    runs-on: cloudstack-ubuntu24-small
+    steps:
+      - name: Delete orphaned sync branch
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          echo "Deleting orphaned sync branch: ${{ needs.sync-upstream.outputs.sync_branch }}"
+          gh api -X DELETE "repos/${{ github.repository }}/git/refs/heads/${{ needs.sync-upstream.outputs.sync_branch }}" || echo "Branch already deleted or not found"
 
   # Slack notification: PR created for conflict resolution
   notify-pr-created:
