@@ -19,7 +19,7 @@ jobs:
       conflicting_files: ${{ steps.sync.outputs.conflicting_files }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
         with:
           fetch-depth: 0
           token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
@@ -61,7 +61,7 @@ jobs:
     runs-on: cloudstack-ubuntu24-small
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
         with:
           fetch-depth: 0
           ref: ${{ needs.sync-upstream.outputs.sync_branch }}
@@ -104,7 +104,7 @@ jobs:
       pr_url: ${{ steps.create-pr.outputs.pr_url }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
         with:
           ref: ${{ needs.sync-upstream.outputs.sync_branch }}
           token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
@@ -178,65 +178,100 @@ jobs:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           payload: |
             {
-              "text": ":white_check_mark: Upstream Sync Successful",
-              "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": ":white_check_mark: Automated Upstream Sync Successful"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "Successfully synced and merged upstream commit `${{ needs.sync-upstream.outputs.stable_commit }}` to main."
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow Run>"
-                  }
-                }
-              ]
+              "text": ":white_check_mark: Successfully synced and merged upstream commit `${{ needs.sync-upstream.outputs.stable_commit }}` to main. (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|workflow run>)"
             }
 
-  # Slack notification: build/test failed
-  notify-build-failure:
-    name: Notify Slack (Build Failed)
+  # Create PR when build/test fails (so someone can fix the build failure)
+  create-pr-build-failure:
+    name: Create PR for build failure
     needs: [sync-upstream, build-and-test]
-    if: failure()
+    if: always() && needs.sync-upstream.outputs.push_direct == 'true' && needs.sync-upstream.outputs.sync_branch != '' && needs.build-and-test.result == 'failure'
     runs-on: cloudstack-ubuntu24-small
+    outputs:
+      pr_created: ${{ steps.create-pr.outputs.pr_created }}
+      pr_url: ${{ steps.create-pr.outputs.pr_url }}
     steps:
-      - name: Collect test failures
-        id: check-failures
+      - name: Checkout repository
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          ref: ${{ needs.sync-upstream.outputs.sync_branch }}
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+
+      - name: Check for existing sync PR
+        id: check-existing-pr
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          title='[sync] Sync with upstream stable commit'
+          existing_pr=$(gh pr list --state open --search "$title" --json number,title --jq '.[] | select(.title == "'"$title"'") | .number' | head -1)
+          if [[ -n "$existing_pr" ]]; then
+            echo "existing_pr=$existing_pr" >> "$GITHUB_OUTPUT"
+            echo "⚠️ Sync PR #$existing_pr already exists, skipping PR creation"
+            # Delete the sync branch since a PR already exists
+            git push origin --delete ${{ needs.sync-upstream.outputs.sync_branch }} || true
+          else
+            echo "existing_pr=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Collect failure details
+        id: failures
+        if: steps.check-existing-pr.outputs.existing_pr == ''
         run: |
           FAILED_TESTS="${{ needs.build-and-test.outputs.failed_tests }}"
           FAILED_COUNT="${{ needs.build-and-test.outputs.failed_test_count }}"
 
-          # Build test failure details (show max 5 inline)
-          test_details=""
-          shown=0
+          details=""
           if [[ -n "$FAILED_TESTS" ]]; then
-            test_details="*Failed tests (${FAILED_COUNT:-?}):* "
-            while IFS= read -r test && [[ $shown -lt 5 ]]; do
-              [[ -n "$test" ]] && test_details+="\`$test\` " && ((shown++))
+            details="Failed tests (${FAILED_COUNT:-?}):"$'\n'
+            while IFS= read -r test; do
+              [[ -n "$test" ]] && details+="- \`$test\`"$'\n'
             done <<< "$FAILED_TESTS"
-            [[ "${FAILED_COUNT:-0}" -gt 5 ]] && test_details+="_(+$((FAILED_COUNT - 5)) more)_"
+          else
+            details="Build or infrastructure failure (no test results available)"
           fi
 
-          # If no test details, might be a build failure
-          if [[ -z "$test_details" ]]; then
-            test_details="Build or infrastructure failure (no test results available)"
-          fi
-
-          echo "test_details<<EOF" >> "$GITHUB_OUTPUT"
-          echo -e "$test_details" >> "$GITHUB_OUTPUT"
+          echo "details<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$details" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
+      - name: Create PR
+        id: create-pr
+        if: steps.check-existing-pr.outputs.existing_pr == ''
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          FAILURE_DETAILS: ${{ steps.failures.outputs.details }}
+        run: |
+          PR_BODY="This PR syncs private-fboss with upstream stable commit.
+
+          **Stable Commit:** \`${{ needs.sync-upstream.outputs.stable_commit }}\`
+
+          :x: **Build/test failed — manual fix required**
+
+          ${FAILURE_DETAILS}
+
+          See the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for full logs.
+
+          NHCI: clang-tidy=warn-only"
+
+          PR_URL=$(gh pr create \
+            --title "[sync] Sync with upstream stable commit" \
+            --body "$PR_BODY" \
+            --base main \
+            --head ${{ needs.sync-upstream.outputs.sync_branch }} \
+            --assignee benoit-nexthop \
+            --draft)
+          echo "PR created: $PR_URL"
+
+          echo "pr_created=true" >> "$GITHUB_OUTPUT"
+          echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+
+  # Slack notification: build/test failed, PR created
+  notify-build-failure:
+    name: Notify Slack (Build Failed)
+    needs: [sync-upstream, build-and-test, create-pr-build-failure]
+    if: always() && needs.create-pr-build-failure.outputs.pr_created == 'true'
+    runs-on: cloudstack-ubuntu24-small
+    steps:
       - name: Send Slack notification
         uses: slackapi/slack-github-action@v2.1.1
         with:
@@ -244,45 +279,8 @@ jobs:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           payload: |
             {
-              "text": ":x: Upstream Sync Build/Test Failed",
-              "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": ":x: Upstream Sync Build/Test Failed"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": ${{ toJson(format('Build/test failed for upstream commit `{0}`: {1}', needs.sync-upstream.outputs.stable_commit, steps.check-failures.outputs.test_details)) }}
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow Run>"
-                  }
-                }
-              ]
+              "text": ":x: Build/test failed for upstream commit `${{ needs.sync-upstream.outputs.stable_commit }}`. A <${{ needs.create-pr-build-failure.outputs.pr_url }}|sync PR> has been created and requires a manual fix. (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|workflow run>)"
             }
-
-  # Clean up orphaned sync branches when the build fails (no PR is created in push_direct mode)
-  cleanup-orphan-branch:
-    name: Cleanup orphan sync branch
-    needs: [sync-upstream, build-and-test]
-    if: always() && needs.sync-upstream.outputs.push_direct == 'true' && needs.sync-upstream.outputs.sync_branch != '' && needs.build-and-test.result == 'failure'
-    runs-on: cloudstack-ubuntu24-small
-    steps:
-      - name: Delete orphaned sync branch
-        env:
-          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
-        run: |
-          echo "Deleting orphaned sync branch: ${{ needs.sync-upstream.outputs.sync_branch }}"
-          gh api -X DELETE "repos/${{ github.repository }}/git/refs/heads/${{ needs.sync-upstream.outputs.sync_branch }}" || echo "Branch already deleted or not found"
 
   # Slack notification: PR created for conflict resolution
   notify-pr-created:
@@ -298,21 +296,5 @@ jobs:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           payload: |
             {
-              "text": ":warning: Upstream Sync Needs Conflict Resolution",
-              "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": ":warning: Upstream Sync Needs Conflict Resolution"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "A new <${{ needs.create-pr.outputs.pr_url }}|sync PR> has been created and requires manual conflict resolution."
-                  }
-                }
-              ]
+              "text": ":warning: Upstream sync has conflicts. A <${{ needs.create-pr.outputs.pr_url }}|sync PR> has been created and requires manual conflict resolution. (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|workflow run>)"
             }
