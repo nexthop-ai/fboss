@@ -135,7 +135,9 @@ git checkout -B "$sync_branch" "origin/$base_branch"
 prev_sha1=$(git rev-parse HEAD)
 has_conflicts=false
 
-if git merge "$stable_commit" --no-edit; then
+commit_msg="Sync with upstream stable commit $stable_commit"
+
+if git merge "$stable_commit" -m "$commit_msg"; then
   cur_sha1=$(git rev-parse HEAD)
   if [[ $prev_sha1 == "$cur_sha1" ]]; then
     echo_info "✅ No new changes to merge from upstream"
@@ -162,7 +164,7 @@ else
   fi
 
   git add -A
-  git commit --no-verify -m "Sync with upstream stable commit $stable_commit"
+  git commit --no-verify -m "$commit_msg"
 fi
 
 # Output variables for the workflow
