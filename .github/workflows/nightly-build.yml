@@ -69,7 +69,11 @@ jobs:
       contents: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          repository: nexthop-ai/nh
+          ref: main
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
 
       - name: "Install NHTools"
         uses: nexthop-ai/nh/.github/actions/install-nhtools@main
@@ -98,7 +102,7 @@ jobs:
           "
   notify-slack-on-failure:
     runs-on: cloudstack-ubuntu24-small
-    needs: [build-and-test-clang, monobuild, fboss-itest]
+    needs: [build-and-test-clang, monobuild, fboss-itest, mark-stable]
     if: failure()
     steps:
       - name: Determine which builds failed and collect test failures
