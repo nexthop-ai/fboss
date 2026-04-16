@@ -27719,6 +27719,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -27826,6 +27829,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -27925,6 +27931,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -28029,6 +28038,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -28138,6 +28150,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -28237,6 +28252,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -28341,6 +28359,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -28450,6 +28471,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -28549,6 +28573,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -28653,6 +28680,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -28762,6 +28792,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -28861,6 +28894,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -28965,6 +29001,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -29074,6 +29113,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -29173,6 +29215,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -29277,6 +29322,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -29386,6 +29434,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -29485,6 +29536,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -29589,6 +29643,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -29698,6 +29755,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -29797,6 +29857,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -29901,6 +29964,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -30010,6 +30076,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -30109,6 +30178,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -30213,6 +30285,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -30322,6 +30397,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -30421,6 +30499,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -30527,6 +30608,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -30628,6 +30712,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -30721,6 +30808,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -30819,6 +30909,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -30922,6 +31015,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -31015,6 +31111,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -31113,6 +31212,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -31216,6 +31318,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -31309,6 +31414,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -31407,6 +31515,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -31510,6 +31621,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -31603,6 +31717,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -31701,6 +31818,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -31804,6 +31924,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -31897,6 +32020,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -31995,6 +32121,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -32098,6 +32227,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -32191,6 +32323,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -32289,6 +32424,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -32392,6 +32530,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -32485,6 +32626,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -32583,6 +32727,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -32686,6 +32833,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -32779,6 +32929,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -32877,6 +33030,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -32980,6 +33136,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -33073,6 +33232,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -33171,6 +33333,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -33274,6 +33439,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -33367,6 +33535,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -33465,6 +33636,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -33568,6 +33742,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -33661,6 +33838,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -33759,6 +33939,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -33862,6 +34045,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -33955,6 +34141,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -34053,6 +34242,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -34156,6 +34348,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -34249,6 +34444,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -34347,6 +34545,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -34450,6 +34651,9 @@
           "test_name_regex": "AgentEnsembleLinkTest.qsfpWarmbootIsHitLess$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
         },
         {
@@ -34543,6 +34747,9 @@
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.ptpEnableIsHitless$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecBerCounters$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkTest.verifyIphyFecCounters$"
@@ -77798,6 +78005,9 @@
           "test_name_regex": "AgentEnsembleLacpTest.lacpFlap$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkEcmpTest.ecmpShrink$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.ptpEnableIsHitless$"
         },
         {
@@ -77921,6 +78131,9 @@
     "meru800bfa/sai/asicsdk-11.7.0.0_dnx_odp/11.7.0.0_dnx_odp/physdk-credo-0.7.2/credo-0.7.2": [
         {
           "test_name_regex": "AgentEnsembleLacpTest.lacpFlap$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkEcmpTest.ecmpShrink$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.ptpEnableIsHitless$"
@@ -78048,6 +78261,9 @@
           "test_name_regex": "AgentEnsembleLacpTest.lacpFlap$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkEcmpTest.ecmpShrink$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.ptpEnableIsHitless$"
         },
         {
@@ -78171,6 +78387,9 @@
     "meru800bfa/sai/asicsdk-12.2.0.0_dnx_odp/12.2.0.0_dnx_odp": [
         {
           "test_name_regex": "AgentEnsembleLacpTest.lacpFlap$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkEcmpTest.ecmpShrink$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.ptpEnableIsHitless$"
@@ -78298,6 +78517,9 @@
           "test_name_regex": "AgentEnsembleLacpTest.lacpFlap$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkEcmpTest.ecmpShrink$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.ptpEnableIsHitless$"
         },
         {
@@ -78421,6 +78643,9 @@
     "meru800bfa/sai/asicsdk-12.2.0.0_dnx_odp/12.2.0.0_dnx_odp/physdk-credo-0.9.0/credo-0.9.0": [
         {
           "test_name_regex": "AgentEnsembleLacpTest.lacpFlap$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkEcmpTest.ecmpShrink$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.ptpEnableIsHitless$"
@@ -78548,6 +78773,9 @@
           "test_name_regex": "AgentEnsembleLacpTest.lacpFlap$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkEcmpTest.ecmpShrink$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.ptpEnableIsHitless$"
         },
         {
@@ -78671,6 +78899,9 @@
     "meru800bfa/sai/asicsdk-13.3.0.0_dnx_odp/13.3.0.0_dnx_odp/physdk-credo-0.7.2/credo-0.7.2": [
         {
           "test_name_regex": "AgentEnsembleLacpTest.lacpFlap$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkEcmpTest.ecmpShrink$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.ptpEnableIsHitless$"
@@ -78798,6 +79029,9 @@
           "test_name_regex": "AgentEnsembleLacpTest.lacpFlap$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkEcmpTest.ecmpShrink$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.ptpEnableIsHitless$"
         },
         {
@@ -78921,6 +79155,9 @@
     "meru800bfa/sai/asicsdk-14.0_ea_dnx_odp/14.0_ea_dnx_odp": [
         {
           "test_name_regex": "AgentEnsembleLacpTest.lacpFlap$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkEcmpTest.ecmpShrink$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.ptpEnableIsHitless$"
@@ -79048,6 +79285,9 @@
           "test_name_regex": "AgentEnsembleLacpTest.lacpFlap$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkEcmpTest.ecmpShrink$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.ptpEnableIsHitless$"
         },
         {
@@ -79171,6 +79411,9 @@
     "meru800bfa/sai/asicsdk-14.0_ea_dnx_odp/14.0_ea_dnx_odp/physdk-credo-0.9.0/credo-0.9.0": [
         {
           "test_name_regex": "AgentEnsembleLacpTest.lacpFlap$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkEcmpTest.ecmpShrink$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.ptpEnableIsHitless$"
@@ -79298,6 +79541,9 @@
           "test_name_regex": "AgentEnsembleLacpTest.lacpFlap$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkEcmpTest.ecmpShrink$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.ptpEnableIsHitless$"
         },
         {
@@ -79423,6 +79669,9 @@
           "test_name_regex": "AgentEnsembleLacpTest.lacpFlap$"
         },
         {
+          "test_name_regex": "AgentEnsembleLinkEcmpTest.ecmpShrink$"
+        },
+        {
           "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.ptpEnableIsHitless$"
         },
         {
@@ -79546,6 +79795,9 @@
     "meru800bfa/sai/asicsdk-14.2.0.0_dnx_odp/14.2.0.0_dnx_odp/physdk-credo-0.9.0/credo-0.9.0": [
         {
           "test_name_regex": "AgentEnsembleLacpTest.lacpFlap$"
+        },
+        {
+          "test_name_regex": "AgentEnsembleLinkEcmpTest.ecmpShrink$"
         },
         {
           "test_name_regex": "AgentEnsembleLinkSanityTestDataPlaneFlood.ptpEnableIsHitless$"
@@ -120836,6 +121088,9 @@
         },
         {
           "test_name_regex": "roundtrip.preprod.*cold_boot.AgentEnsembleFsdbTest.statsPublishSubscribe$"
+        },
+        {
+          "test_name_regex": "roundtrip.preprod.*cold_boot.AgentEnsembleLinkEcmpTest.ecmpShrink$"
         },
         {
           "test_name_regex": "roundtrip.preprod.*cold_boot.AgentEnsembleLinkSanityTestDataPlaneFlood.warmbootIsHitLess$"
