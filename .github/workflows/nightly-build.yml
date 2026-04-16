@@ -60,7 +60,42 @@ jobs:
       AZURE_NEXIS_BUILDRUNNER_SSH_KEY: ${{ secrets.AZURE_NEXIS_BUILDRUNNER_SSH_KEY }}
       NEXIS_BUILDRUNNER_TASKRABBIT_SSH_KEY: ${{ secrets.NEXIS_BUILDRUNNER_TASKRABBIT_SSH_KEY }}
     name: ${{ matrix.testbed_config.name }}
+  mark-stable:
+    runs-on: cloudstack-ubuntu24-small
+    needs: [monobuild, fboss-itest]
+    if: success()
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      - name: "Install NHTools"
+        uses: nexthop-ai/nh/.github/actions/install-nhtools@main
+        with:
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+      - name: Setup Python Environment
+        run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install -r nhtools/packages.txt
+      - name: Mark build as stable
+        run: |
+          source venv/bin/activate
+          python3 -c "
+          from nhtools.helpers.nexis.builds_helper import BuildsHelper
+          bh = BuildsHelper()
+          bh.write_latest_stable_build(
+              organization='nexthop-ai',
+              repo='nh/private-fboss',
+              branch='main',
+              platform='broadcom',
+              target='default',
+              build_id=${{ needs.monobuild.outputs.build_id }},
+          )
+          print('Marked build ${{ needs.monobuild.outputs.build_id }} as stable')
+          "
   notify-slack-on-failure:
     runs-on: cloudstack-ubuntu24-small
     needs: [build-and-test-clang, monobuild, fboss-itest]
