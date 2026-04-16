@@ -101,6 +101,9 @@ class BaseHwTestRunner(ABC):
     def normalize_test_results_file(self):
         """Normalize test results XML file."""
         logger.info("Normalizing test results file")
+        if not os.path.exists("/tmp/tr.xml"):
+            logger.warning("tr.xml not found, skipping normalization")
+            return
         with open("/tmp/tr.xml", encoding="utf-8") as f:
             lines = f.readlines()
 
@@ -157,12 +160,8 @@ class BaseHwTestRunner(ABC):
         )
 
         logger.info("Running remote command: %s", cmd)
-        exit_status, output = self.ssh_client.run_cmd(cmd)
-        logger.debug("exit_status %s output %s", exit_status, output)
-
-        if exit_status != 0:
-            logger.error("Failed to run tests: %s", output)
-            return False
+        test_exit_status, test_output = self.ssh_client.run_cmd(cmd)
+        logger.debug("exit_status %s output %s", test_exit_status, test_output)
 
         logger.info("Fetching test logs and results files")
         exit_status, output = self.scp_client.get_file(
@@ -176,10 +175,14 @@ class BaseHwTestRunner(ABC):
             self.testresult_filepath, "/tmp/tr.xml"
         )
         if exit_status != 0:
-            logger.error("Failed to fetch test results: %s", output)
-            return False
+            logger.warning("Failed to fetch test results (tr.xml may not exist if binary crashed): %s", output)
 
         self.normalize_test_results_file()
+
+        if test_exit_status != 0:
+            logger.error("Failed to run tests: %s", test_output)
+            return False
+
         return True
 
     def close(self):
