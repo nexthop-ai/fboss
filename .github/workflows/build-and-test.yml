@@ -41,16 +41,22 @@ jobs:
           # We'll clean the workspace ourselves to preserve most of .build_dir
           # so keep vendored dependencies across builds.
           clean: false
-          ref: ${{ inputs.ref || github.ref }}
-          # Fetch at least 2 commits so HEAD~1 exists for clang-tidy diffing
-          fetch-depth: 2
+          # For PRs, checkout the actual PR head (not the synthetic merge commit)
+          ref: ${{ inputs.ref || (github.event_name == 'pull_request' && github.event.pull_request.head.sha) || github.ref }}
+          # Most PRs will be fewer than 20 commits
+          fetch-depth: 20
 
-      - name: Fetch PR history for sync merge detection
-        if: github.event_name == 'pull_request' && github.event.pull_request.commits > 1
+      - name: Fetch base branch and deepen history for PR diff
+        if: github.event_name == 'pull_request'
         run: |
-          # Fetch enough history to find sync merge commits (PR commits + buffer)
-          DEPTH=$(( ${{ github.event.pull_request.commits }} + 10 ))
-          git fetch --deepen=$DEPTH --no-tags origin ${{ github.head_ref }}
+          # Fetch the base branch so we can compute merge-base
+          git fetch --no-tags origin ${{ github.base_ref }}
+          # Deepen history until merge-base is found
+          DEPTH=${{ github.event.pull_request.commits }}
+          while ! git merge-base origin/${{ github.base_ref }} HEAD >/dev/null 2>&1; do
+            DEPTH=$(( DEPTH + 50 ))
+            git fetch --deepen=$DEPTH --no-tags origin ${{ github.base_ref }} ${{ github.head_ref }}
+          done
 
       - name: Clean workspace
         run: |
@@ -137,20 +143,16 @@ jobs:
         run: |
           echo "Current HEAD: $(git rev-parse HEAD)"
 
+          MERGE_BASE=$(git merge-base origin/${{ github.base_ref }} HEAD)
+
           # For sync PRs, find the merge commit and use it as base (so we only lint our changes, not upstream)
-          # Search only within the PR's commits (last N commits where N = PR commit count)
-          PR_COMMITS=${{ github.event.pull_request.commits }}
-          echo "Searching for sync merge commits in last $PR_COMMITS commits"
-          echo "Merge commits in range:"
-          git log HEAD~${PR_COMMITS}..HEAD --merges --oneline || true
-          SYNC_MERGE_COMMIT=$(git log HEAD~${PR_COMMITS}..HEAD --merges --grep="^Sync with upstream stable commit" -1 --format="%H" 2>/dev/null || true)
+          SYNC_MERGE_COMMIT=$(git log ${MERGE_BASE}..HEAD --first-parent --merges --grep="^Sync with upstream stable commit" -1 --format="%H" 2>/dev/null || true)
           if [[ -n "$SYNC_MERGE_COMMIT" ]]; then
             echo "Detected sync PR with merge commit: $SYNC_MERGE_COMMIT"
             BASE_REF="$SYNC_MERGE_COMMIT"
           else
-            # For regular PRs, use HEAD~N as base (the commit before the first PR commit)
-            echo "Regular PR, using HEAD~$PR_COMMITS ($(git rev-parse HEAD~$PR_COMMITS)) as base"
-            BASE_REF="HEAD~${PR_COMMITS}"
+            echo "PR merge-base: $MERGE_BASE"
+            BASE_REF="$MERGE_BASE"
           fi
 
           # Save BASE_REF for reviewdog step
