@@ -62,7 +62,7 @@ jobs:
     name: ${{ matrix.testbed_config.name }}
   mark-stable:
     runs-on: cloudstack-ubuntu24-small
-    needs: [monobuild, fboss-itest]
+    needs: [build-and-test-clang, monobuild, fboss-itest]
     if: success()
     permissions:
       id-token: write
