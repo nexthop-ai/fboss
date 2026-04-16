@@ -65,43 +65,64 @@ export SCCACHE_LOG=info
 
 # Detect if distributed sccache is available and configure accordingly
 SCCACHE_SCHEDULER_HOST=sccache.us-west-1.nexthop.ai
-# ping is not available inside the container, and also our scheduler host
-# ignores pings.
-if timeout 1 bash -c ">/dev/tcp/$SCCACHE_SCHEDULER_HOST/10600" 2>/dev/null; then
-  echo "Using sccache scheduler: $SCCACHE_SCHEDULER_HOST"
-
-  export SCCACHE_CONF="$COMMON_SCRIPT_DIR/sccache-dist.toml"
-  # With distributed sccache, we can use high parallelism for compilation
-  # but linking is local and memory-intensive, so limit it to 2 jobs
-
-  # Running sccache to just send a job somewhere else is cheap. We can do a
-  # lot per core, but we still preprocess files locally, and that can eat into
-  # our RAM, which is important because we need a lot of it for linking.
-  nproc_jobs=$(($(nproc) * 20))
-  ram_jobs=$((SERVER_RAM_GB * 5))
-  COMPILE_JOBS=$((nproc_jobs < ram_jobs ? nproc_jobs : ram_jobs))
-
-  if [[ ${BUILD_TYPE:-} == "Debug" ]]; then
-    # PathValidator.cpp takes at least 32 minutes to build in debug mode
-    # Increase timeout to 45 minutes
-    export SCCACHE_DIST_REQUEST_TIMEOUT=2700
-    # Need to increase the idle timeout also, otherwise the local sccache
-    # server will exit because only *starting* a compile job counts as
-    # activity.
-    export SCCACHE_IDLE_TIMEOUT=2700
-  fi
-
-  if sccache --dist-status | grep Disabled; then
-    echo Remote sccache not working!
-    exit 1
-  fi
-
-  # Stop the server because we haven't configured S3 yet.
-  sccache --stop-server >/dev/null 2>&1 || true
-else
-  echo "Only using local sccache cache"
-  COMPILE_JOBS=$(jobs_for_ram 6)
+SCCACHE_SCHEDULER_PORT=10600
+SCCACHE_DIST_CONFIG="$COMMON_SCRIPT_DIR/sccache-dist.toml"
+# Check if the scheduler is actually responding to API requests, not just accepting TCP connections
+# Extract the auth token from the config file
+SCCACHE_AUTH_TOKEN=$(grep '^token = ' "$SCCACHE_DIST_CONFIG" | sed 's/^token = "\(.*\)"$/\1/')
+if [[ -z $SCCACHE_AUTH_TOKEN ]]; then
+  echo "ERROR: Failed to extract auth token from $SCCACHE_DIST_CONFIG"
+  echo 'Expected format: token = "..."'
+  exit 1
 fi
+curl_output=$(curl -s -o /dev/null -w '%{http_code}' -m 2 -H "Authorization: Bearer $SCCACHE_AUTH_TOKEN" "http://$SCCACHE_SCHEDULER_HOST:$SCCACHE_SCHEDULER_PORT/api/v1/scheduler/status" 2>&1)
+curl_exit_code=$?
+http_code="${curl_output##*$'\n'}"
+
+if [[ $http_code != "200" ]]; then
+  echo "ERROR: sccache scheduler at $SCCACHE_SCHEDULER_HOST:$SCCACHE_SCHEDULER_PORT is not responding!"
+  if [[ $http_code == "000" ]] || [[ $curl_exit_code -ne 0 ]]; then
+    echo "Connection failed (curl exit code: $curl_exit_code)"
+    if [[ $curl_output != "000" ]]; then
+      echo "Error details: $curl_output"
+    fi
+  else
+    echo "HTTP status code: $http_code (expected 200)"
+  fi
+  echo "Please check the scheduler status or contact the infrastructure team."
+  exit 1
+fi
+
+echo "Using sccache scheduler: $SCCACHE_SCHEDULER_HOST"
+
+export SCCACHE_CONF="$COMMON_SCRIPT_DIR/sccache-dist.toml"
+# With distributed sccache, we can use high parallelism for compilation
+# but linking is local and memory-intensive, so limit it to 2 jobs
+
+# Running sccache to just send a job somewhere else is cheap. We can do a
+# lot per core, but we still preprocess files locally, and that can eat into
+# our RAM, which is important because we need a lot of it for linking.
+nproc_jobs=$(($(nproc) * 20))
+ram_jobs=$((SERVER_RAM_GB * 5))
+COMPILE_JOBS=$((nproc_jobs < ram_jobs ? nproc_jobs : ram_jobs))
+
+if [[ ${BUILD_TYPE:-} == "Debug" ]]; then
+  # PathValidator.cpp takes at least 32 minutes to build in debug mode
+  # Increase timeout to 45 minutes
+  export SCCACHE_DIST_REQUEST_TIMEOUT=2700
+  # Need to increase the idle timeout also, otherwise the local sccache
+  # server will exit because only *starting* a compile job counts as
+  # activity.
+  export SCCACHE_IDLE_TIMEOUT=2700
+fi
+
+if sccache --dist-status | grep Disabled; then
+  echo Remote sccache not working!
+  exit 1
+fi
+
+# Stop the server because we haven't configured S3 yet.
+sccache --stop-server >/dev/null 2>&1 || true
 if [ $COMPILE_JOBS -eq 0 ]; then
   echo "Not enough memory to compile"
   exit 1
