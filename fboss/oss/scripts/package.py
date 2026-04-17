@@ -20,10 +20,20 @@ BUILD_DIR = "--build-dir"
 TARGET_NAMES = ("agent-benchmarks", "forwarding-stack", "platform-stack")
 
 
+# Maps getdeps package name to library name when they differ.
+LIB_NAME_OVERRIDES = {
+    "fmt-python": "fmt",
+}
+
 # Global definitions describing what we package for each target.
 
 COMMON_LIBS = [
     "glog",
+    "folly",
+    "fmt-python",
+    "wangle",
+    "fizz",
+    "mvfst",
 ]
 
 FORWARDING_BINARIES = [
@@ -194,9 +204,10 @@ def _find_getdeps_libs(
                 f"Multiple directories found for {pkg}, using most recent: {pkg_dir.name}"
             )
 
+        lib_name = LIB_NAME_OVERRIDES.get(pkg, pkg)
         matches = []
         for lib_dir in ("lib64", "lib"):
-            pattern = str(pkg_dir / lib_dir / f"lib{pkg}.so*")
+            pattern = str(pkg_dir / lib_dir / f"lib{lib_name}*.so*")
             matches.extend(glob.glob(pattern))
         if matches:
             for path in matches:
