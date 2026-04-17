@@ -234,23 +234,6 @@ void Fboss2IntegrationTest::waitForAgentReady(
   // start coming back up. Polling immediately after a restart can interfere
   // with the initialization sequence.
   XLOG(INFO) << "  Waiting 5s before first poll...";
-<<<<<<< HEAD
-  std::this_thread::sleep_for(std::chrono::seconds(5));
-  auto deadline = std::chrono::steady_clock::now() + timeout;
-  while (std::chrono::steady_clock::now() < deadline) {
-    auto result = executeCliCommand({"show", "interface"});
-    if (result.exitCode == 0) {
-      XLOG(INFO) << "Agent is ready";
-      return;
-    }
-    // Two expected failure modes during restart:
-    // 1. "Connection refused"  — process not yet listening
-    // 2. "switch is still initializing" — process up, HW init in progress
-    // Both resolve naturally once the agent finishes warmboot/coldboot (~50s).
-    XLOG(DBG1) << "Agent not ready: " << result.stderr;
-    XLOG(INFO) << "Agent not ready yet, retrying in 10s...";
-||||||| 3cf3e18625
-=======
   // NOLINTNEXTLINE(facebook-hte-BadCall-sleep_for)
   std::this_thread::sleep_for(std::chrono::seconds(5));
   auto deadline = std::chrono::steady_clock::now() + timeout;
@@ -267,7 +250,6 @@ void Fboss2IntegrationTest::waitForAgentReady(
     XLOG(DBG1) << "Agent not ready: " << result.stderr;
     XLOG(INFO) << "Agent not ready yet, retrying in 10s...";
     // NOLINTNEXTLINE(facebook-hte-BadCall-sleep_for)
->>>>>>> d0ca543a9d7a2d0d03fd0f51917c9aad1160e2b3
     std::this_thread::sleep_for(std::chrono::seconds(10));
   }
   FAIL() << "Agent did not become ready within " << timeout.count()

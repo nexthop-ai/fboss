@@ -194,19 +194,10 @@ class TestDeviceCommands(unittest.TestCase):
         """Test image-upstream command"""
         args = argparse.Namespace(
             mac=self.test_mac,
-<<<<<<< HEAD
             npu_sai="13.3",
             train="stable",
             kernel="v6.11",
             phy_sai="",
-||||||| 3cf3e18625
-            mac=self.test_mac, components=["kernel", "hw_agent_sai"]
-=======
-            hw_agent_sai="13.3",
-            train="stable",
-            kernel="v6.11",
-            qsfp_service_sai="",
->>>>>>> d0ca543a9d7a2d0d03fd0f51917c9aad1160e2b3
             bsps="oss",
             tag="",
         )

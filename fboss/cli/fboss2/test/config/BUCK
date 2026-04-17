@@ -20,14 +20,10 @@ cpp_unittest(
         "CmdConfigVlanPortTaggingModeTest.cpp",
         "CmdConfigVlanStaticMacTest.cpp",
         "ConfigSessionSystemdTest.cpp",
-<<<<<<< HEAD
-||||||| 3cf3e18625
-=======
     ],
     headers = [
         "MockFbossServiceUtil.h",
         "MockSystemdInterface.h",
->>>>>>> d0ca543a9d7a2d0d03fd0f51917c9aad1160e2b3
     ],
     deps = [
         "fbsource//third-party/fmt:fmt",

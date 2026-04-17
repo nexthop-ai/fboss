@@ -185,17 +185,11 @@ def detect_toolchain():
     """
     try:
         gxx_version = subprocess.run(
-<<<<<<< HEAD
-            ["g++", "--version"], check=False, capture_output=True, text=True, timeout=5
-||||||| 3cf3e18625
-            ["g++", "--version"], capture_output=True, text=True, timeout=5
-=======
             ["g++", "--version"],
             capture_output=True,
             text=True,
             timeout=5,
             check=False,
->>>>>>> d0ca543a9d7a2d0d03fd0f51917c9aad1160e2b3
         )
     except (subprocess.TimeoutExpired, FileNotFoundError, OSError) as e:
         print(f"Warning: Could not detect compiler: {e}", file=sys.stderr)
@@ -348,27 +342,8 @@ def setup_clang_environment(toolchain_info):
         print_info("Warning: Could not determine target triple")
         return
 
-    # Read clang-specific CXXFLAGS from CMakeLists.txt using regex
-<<<<<<< HEAD
-    cxxflags = []
-    try:
-        with open(os.path.join(os.getcwd(), "CMakeLists.txt")) as f:
-            content = f.read()
-    except FileNotFoundError:
-        # CMakeLists.txt not found - this can happen during Docker build
-        print_info("Warning: CMakeLists.txt not found, skipping clang-specific flags")
-||||||| 3cf3e18625
-    cxxflags = []
-    try:
-        with open(os.path.join(os.getcwd(), "CMakeLists.txt"), "r") as f:
-            content = f.read()
-    except FileNotFoundError:
-        # CMakeLists.txt not found - this can happen during Docker build
-        print_info("Warning: CMakeLists.txt not found, skipping clang-specific flags")
-=======
     cxxflags = _extract_clang_cxxflags()
     if cxxflags is None:
->>>>>>> d0ca543a9d7a2d0d03fd0f51917c9aad1160e2b3
         return
 
     # Helper to prepend a value to an environment variable
