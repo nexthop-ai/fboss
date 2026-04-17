@@ -131,7 +131,12 @@ TEST_F(ConfigSessionColdbootTest, CommitTriggersColdboot) {
   // Step 4: Restore original L2 learning mode
   XLOG(INFO) << "[Step 4] Restoring L2 learning mode to '" << restoreMode
              << "'...";
+<<<<<<< HEAD
   result = runCli({"config", "l2", "learning-mode", restoreMode});
+||||||| 3cf3e18625
+=======
+  result = runCli({"config", "l2", "learning-mode", std::move(restoreMode)});
+>>>>>>> d0ca543a9d7a2d0d03fd0f51917c9aad1160e2b3
   ASSERT_EQ(result.exitCode, 0) << result.stderr;
   if (result.stdout.find("already") == std::string::npos) {
     commitConfig();

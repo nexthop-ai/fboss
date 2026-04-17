@@ -85,6 +85,11 @@ void SystemdInterface::waitForServiceActive(
       XLOG(INFO) << serviceName << " is now active";
       return;
     }
+<<<<<<< HEAD
+||||||| 3cf3e18625
+=======
+    // NOLINTNEXTLINE(facebook-hte-BadCall-sleep_for)
+>>>>>>> d0ca543a9d7a2d0d03fd0f51917c9aad1160e2b3
     std::this_thread::sleep_for(std::chrono::milliseconds(pollIntervalMs));
     waitedMs += pollIntervalMs;
   }

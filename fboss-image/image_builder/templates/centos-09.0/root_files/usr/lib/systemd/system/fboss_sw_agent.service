@@ -4,6 +4,14 @@ Description=FBOSS SW Agent
 After=platform_manager.service
 After=qsfp_service.service
 After=rc-local.service
+<<<<<<< HEAD
+||||||| 3cf3e18625
+StartLimitIntervalSec=600
+StartLimitBurst=5
+=======
+# Unlimited restarts (no start limit hit within a given time period)
+StartLimitIntervalSec=0
+>>>>>>> d0ca543a9d7a2d0d03fd0f51917c9aad1160e2b3
 
 [Service]
 Type=simple

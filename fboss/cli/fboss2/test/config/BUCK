@@ -20,15 +20,25 @@ cpp_unittest(
         "CmdConfigVlanPortTaggingModeTest.cpp",
         "CmdConfigVlanStaticMacTest.cpp",
         "ConfigSessionSystemdTest.cpp",
+<<<<<<< HEAD
+||||||| 3cf3e18625
+=======
+    ],
+    headers = [
+        "MockFbossServiceUtil.h",
+        "MockSystemdInterface.h",
+>>>>>>> d0ca543a9d7a2d0d03fd0f51917c9aad1160e2b3
     ],
     deps = [
         "fbsource//third-party/fmt:fmt",
         "fbsource//third-party/googletest:gmock",
+        "//fboss/agent:switch_config-cpp2-types",
         "//fboss/cli/fboss2:cli_metadata-cpp2-types",
         "//fboss/cli/fboss2:cmd-common-utils",
         "//fboss/cli/fboss2:fboss2-config-lib",
         "//fboss/cli/fboss2:fboss2-lib",
         "//fboss/cli/fboss2/test:cmd_test_utils",
+        "//folly:dynamic",
         "//folly:file_util",
         "//folly/json:dynamic",
     ],

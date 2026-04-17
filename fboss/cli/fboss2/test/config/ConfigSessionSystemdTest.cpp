@@ -20,6 +20,11 @@
 
 using ::testing::_; // NOLINT(bugprone-reserved-identifier)
 using ::testing::InSequence;
+<<<<<<< HEAD
+||||||| 3cf3e18625
+=======
+using ::testing::Return;
+>>>>>>> d0ca543a9d7a2d0d03fd0f51917c9aad1160e2b3
 using ::testing::Throw;
 
 namespace facebook::fboss {

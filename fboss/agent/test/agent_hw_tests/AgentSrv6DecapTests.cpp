@@ -87,7 +87,7 @@ class AgentSrv6DecapTest : public AgentHwTest {
     }
     // Add trap ACLs for inner packet destinations so snooper can capture
     // the decapped and forwarded packets
-    auto asic = checkSameAndGetAsic(ensemble.getL3Asics());
+    auto asic = checkSameAndGetAsicForTesting(ensemble.getL3Asics());
     utility::addTrapPacketAcl(
         asic,
         &cfg,
@@ -124,7 +124,7 @@ class AgentSrv6DecapTest : public AgentHwTest {
     this->resolveNeighbors(ecmpHelper4, numNextHops);
   }
 
-  void setupHelper(bool resolveNeighbors = true) {
+  void setupHelper(bool resolveNeighbors = true, bool addMySid = true) {
     if constexpr (kIsTrunk) {
       applyConfigAndEnableTrunks(
           this->initialConfig(*this->getAgentEnsemble()));
@@ -138,7 +138,9 @@ class AgentSrv6DecapTest : public AgentHwTest {
     // IPv4 route with regular next hops (no SID lists)
     addRoute<folly::CIDRNetworkV4>(
         {folly::IPAddressV4("100.0.0.0"), 24}, 1 /*numNextHops*/);
-    addMySidEntry(kMySidAddr.str(), kMySidPrefixLen);
+    if (addMySid) {
+      addMySidEntry(kMySidAddr.str(), kMySidPrefixLen);
+    }
   }
 
   template <typename CIDRNetworkT>
@@ -160,7 +162,7 @@ class AgentSrv6DecapTest : public AgentHwTest {
     routeUpdater.program();
   }
 
-  void addMySidEntry(const std::string& addr, uint8_t prefixLen) {
+  MySidEntry makeMySidEntry(const std::string& addr, uint8_t prefixLen) {
     MySidEntry entry;
     entry.type() = MySidType::DECAPSULATE_AND_LOOKUP;
     facebook::network::thrift::IPPrefix prefix;
@@ -168,6 +170,11 @@ class AgentSrv6DecapTest : public AgentHwTest {
         facebook::network::toBinaryAddress(folly::IPAddressV6(addr));
     prefix.prefixLength() = prefixLen;
     entry.mySid() = prefix;
+    return entry;
+  }
+
+  void addMySidEntry(const std::string& addr, uint8_t prefixLen) {
+    auto entry = makeMySidEntry(addr, prefixLen);
     auto sw = this->getSw();
     auto rib = sw->getRib();
     auto ribMySidToSwitchStateFunc =

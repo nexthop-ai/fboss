@@ -108,11 +108,17 @@ def _download_with_cache(cache_dir: Path, url_prefix: str, filename: str) -> Pat
     except Exception as e:
         raise DistroInfraError(f"Failed to download {url}: {e}") from e
 
+<<<<<<< HEAD
+||||||| 3cf3e18625
+=======
+
+>>>>>>> d0ca543a9d7a2d0d03fd0f51917c9aad1160e2b3
 def image_upstream_command(args):
     """Download full image from upstream repository and set it to be loaded onto device"""
     image_repo = "https://facebook.github.io/fboss/images/latest"
 
     filename = "fboss"
+<<<<<<< HEAD
     filename += f"_{args.npu_sai}"
     if args.phy_sai != "":
         filename += f"_{args.phy_sai}"
@@ -125,6 +131,20 @@ def image_upstream_command(args):
 
     url_prefix = "http://is101/images/private-fboss/nh-fboss-broadcom-xgs-20260302/"
     filename = "nh-fboss-broadcom-xgs.tar"
+||||||| 3cf3e18625
+    logger.info(f"Setting upstream image for device {args.mac}")
+    logger.info("Device image-upstream command (stub)")
+=======
+    filename += f"_{args.hw_agent_sai}"
+    if args.qsfp_service_sai != "":
+        filename += f"_{args.qsfp_service_sai}"
+    filename += f"_{args.kernel}"
+    filename += f"_{args.bsps}"
+    filename += ".tar"
+
+    url_prefix = f"{image_repo}/{args.train}/"
+    logger.info(f"Would download {url_prefix}{filename}")
+>>>>>>> d0ca543a9d7a2d0d03fd0f51917c9aad1160e2b3
 
     cache_dir = find_persistent_dir() / "cache"
 
@@ -334,6 +354,7 @@ def setup_device_commands(cli):
         help_text="Download and set upstream Distro Image to be loaded onto device",
         arguments=[
             (
+<<<<<<< HEAD
                 "--npu_sai",
                 {
                     "required": True,
@@ -358,6 +379,34 @@ def setup_device_commands(cli):
             ),
             (
                 "--phy_sai",
+||||||| 3cf3e18625
+        arguments=[],
+=======
+                "--hw_agent_sai",
+                {
+                    "required": True,
+                    "help": "hw_agent ASIC SAI version to use, decides ASIC support",
+                },
+            ),
+            (
+                "--train",
+                {
+                    "default": "stable",
+                    "choices": ("stable", "head"),
+                    "help": "Image release train to use",
+                },
+            ),
+            (
+                "--kernel",
+                {
+                    "default": "v6.11",
+                    "choices": ("v6.11", "v6.4"),
+                    "help": "Kernel version to use",
+                },
+            ),
+            (
+                "--qsfp_service_sai",
+>>>>>>> d0ca543a9d7a2d0d03fd0f51917c9aad1160e2b3
                 {
                     "default": "",
                     "help": "qsfp_service Phy SAI version to use",

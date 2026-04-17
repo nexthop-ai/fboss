@@ -887,7 +887,12 @@ target_link_libraries(fboss2_config_lib
   cli_metadata
   fboss2_lib
   agent_dir_util
+<<<<<<< HEAD
   platform_mapping
+||||||| 3cf3e18625
+=======
+  common_file_utils
+>>>>>>> d0ca543a9d7a2d0d03fd0f51917c9aad1160e2b3
   switch_config_cpp2
   switchinfo_utils
   Folly::folly
