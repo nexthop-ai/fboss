@@ -10,7 +10,6 @@
 import logging
 import os
 import shutil
-import subprocess
 import tempfile
 import time
 from collections.abc import Generator

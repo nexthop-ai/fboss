@@ -236,18 +236,13 @@ env -i \
   kernel-install add "${KERNEL_VERSION}" "${VMLINUZ_PATH}" --initrd-file "${INITRD_PATH}"
 echo "Custom kernel ${KERNEL_VERSION} install complete."
 
-# 5. Configure SSH to allow password authentication and root login
-echo "Configuring SSH..."
-sed -i 's/^[# \t]*PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
-sed -i 's/^[# \t]*PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
-
-# 6. Generate a fix-nvme script that "may" need to be run
+# 5. Generate a fix-nvme script that "may" need to be run
 # --- Install Custom NVMe Fix Module (Inline Method) ---
 
 MODULE_DIR="/usr/lib/dracut/modules.d/99nvme-fix"
 mkdir -p "$MODULE_DIR"
 
-# 6a. Generate the script directly in the target directory
+# 5a. Generate the script directly in the target directory
 cat >"$MODULE_DIR/fix-nvme.sh" <<'EOF'
 #!/bin/bash
 # Force all NVMe drives to 512e mode for KIWI compatibility if they are
@@ -289,16 +284,14 @@ if [ -b "$DEV" ]; then
     else
       echo "NVMe-Fix: ERROR - No 512-byte format supported by this drive." >&2
     fi
-  else
-    echo "NVMe-Fix: Device ${DEV} already at 512-byte block size." >&2
   fi
 fi
 EOF
 
-# 6b. Make the hook executable
+# 5b. Make the hook executable
 chmod +x "$MODULE_DIR/fix-nvme.sh"
 
-# 6c. Generate the module-setup.sh
+# 5c. Generate the module-setup.sh
 cat >"$MODULE_DIR/module-setup.sh" <<'EOF'
 #!/bin/bash
 
@@ -322,7 +315,7 @@ install() {
 }
 EOF
 
-# 6d. Make the setup script executable
+# 5d. Make the setup script executable
 chmod +x "$MODULE_DIR/module-setup.sh"
 
 #-------------------------------------------------------

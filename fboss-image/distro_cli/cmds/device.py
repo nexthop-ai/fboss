@@ -19,11 +19,11 @@ from pathlib import Path
 from distro_cli.lib.cli import validate_path
 from distro_cli.lib.device_update import DeviceUpdateError, DeviceUpdater
 from distro_cli.lib.distro_infra import (
-    DISTRO_INFRA_CONTAINER,
-    GETIP_SCRIPT_CONTAINER_PATH,
     deploy_image_to_device,
+    DISTRO_INFRA_CONTAINER,
     find_persistent_dir,
     get_interface_name,
+    GETIP_SCRIPT_CONTAINER_PATH,
 )
 from distro_cli.lib.docker import container
 from distro_cli.lib.exceptions import DistroInfraError
