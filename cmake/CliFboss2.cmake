@@ -888,6 +888,7 @@ target_link_libraries(fboss2_config_lib
   fboss2_lib
   agent_dir_util
   platform_mapping
+  common_file_utils
   switch_config_cpp2
   switchinfo_utils
   Folly::folly

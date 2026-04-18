@@ -234,6 +234,7 @@ void Fboss2IntegrationTest::waitForAgentReady(
   // start coming back up. Polling immediately after a restart can interfere
   // with the initialization sequence.
   XLOG(INFO) << "  Waiting 5s before first poll...";
+  // NOLINTNEXTLINE(facebook-hte-BadCall-sleep_for)
   std::this_thread::sleep_for(std::chrono::seconds(5));
   auto deadline = std::chrono::steady_clock::now() + timeout;
   while (std::chrono::steady_clock::now() < deadline) {
@@ -248,6 +249,7 @@ void Fboss2IntegrationTest::waitForAgentReady(
     // Both resolve naturally once the agent finishes warmboot/coldboot (~50s).
     XLOG(DBG1) << "Agent not ready: " << result.stderr;
     XLOG(INFO) << "Agent not ready yet, retrying in 10s...";
+    // NOLINTNEXTLINE(facebook-hte-BadCall-sleep_for)
     std::this_thread::sleep_for(std::chrono::seconds(10));
   }
   FAIL() << "Agent did not become ready within " << timeout.count()

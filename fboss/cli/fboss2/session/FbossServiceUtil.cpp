@@ -11,20 +11,20 @@
 #include "fboss/cli/fboss2/session/FbossServiceUtil.h"
 
 #include <fmt/format.h>
-#include <folly/String.h>
-#include <folly/Subprocess.h>
 #include <glog/logging.h>
-#include <cerrno>
-#include <filesystem>
-#include <fstream>
 #include <stdexcept>
 #include "fboss/agent/AgentDirectoryUtil.h"
 #include "fboss/agent/if/gen-cpp2/FbossCtrl.h"
 #include "fboss/cli/fboss2/session/SystemdInterface.h"
 #include "fboss/cli/fboss2/utils/CmdClientUtilsCommon.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
+#include "fboss/lib/CommonFileUtils.h"
 
-namespace fs = std::filesystem;
+namespace {
+constexpr std::string_view kWedgeAgent = "wedge_agent";
+constexpr std::string_view kSwAgent = "fboss_sw_agent";
+constexpr std::string_view kHwAgentPrefix = "fboss_hw_agent@";
+} // namespace
 
 namespace facebook::fboss {
 
@@ -46,7 +46,7 @@ FbossServiceUtil::FbossServiceUtil(
 std::string FbossServiceUtil::getServiceName(cli::ServiceType service) {
   switch (service) {
     case cli::ServiceType::AGENT:
-      return "wedge_agent";
+      return std::string(kWedgeAgent);
   }
   throw std::runtime_error("Unknown service type");
 }
@@ -59,13 +59,13 @@ std::string FbossServiceUtil::getColdbootFileForService(
     const std::string& service) {
   AgentDirectoryUtil dirUtil;
 
-  if (service == "fboss_sw_agent") {
+  if (service == kSwAgent) {
     return dirUtil.getSwColdBootOnceFile();
-  } else if (service.find("fboss_hw_agent@") == 0) {
-    std::string indexStr = service.substr(strlen("fboss_hw_agent@"));
+  } else if (service.find(kHwAgentPrefix) == 0) {
+    std::string indexStr = service.substr(kHwAgentPrefix.size());
     int switchIndex = folly::to<int>(indexStr);
     return dirUtil.getHwColdBootOnceFile(switchIndex);
-  } else if (service == "wedge_agent") {
+  } else if (service == kWedgeAgent) {
     return dirUtil.getColdBootOnceFile();
   } else {
     throw std::runtime_error(
@@ -75,56 +75,8 @@ std::string FbossServiceUtil::getColdbootFileForService(
 
 void FbossServiceUtil::createColdbootMarkerFile(
     const std::string& coldbootFile) {
-  fs::path filePath(coldbootFile);
-  std::error_code ec;
-  fs::create_directories(filePath.parent_path(), ec);
-  if (ec) {
-    throw std::runtime_error(
-        fmt::format(
-            "Failed to create directory for coldboot file {}: {}",
-            coldbootFile,
-            ec.message()));
-  }
-
-  std::ofstream touchFile(coldbootFile);
-  if (!touchFile.good()) {
-    int savedErrno = errno;
-    if (savedErrno == EACCES || savedErrno == EPERM) {
-      if (getuid() == 0) {
-        // Already root - permission error is unexpected, don't attempt sudo
-        throw std::runtime_error(
-            fmt::format(
-                "Failed to create coldboot file {} (permission denied, running as root)",
-                coldbootFile));
-      }
-      try {
-        folly::Subprocess touchProc(
-            {"/usr/bin/sudo", "/usr/bin/touch", coldbootFile});
-        touchProc.waitChecked();
-      } catch (const std::exception& ex) {
-        throw std::runtime_error(
-            fmt::format(
-                "Failed to create coldboot file {} (permission denied, sudo touch also failed): {}",
-                coldbootFile,
-                ex.what()));
-      }
-    } else {
-      throw std::runtime_error(
-          fmt::format(
-              "Failed to create coldboot file {}: {}",
-              coldbootFile,
-              folly::errnoStr(savedErrno)));
-    }
-  } else {
-    touchFile.close();
-  }
-
-  if (!fs::exists(coldbootFile)) {
-    throw std::runtime_error(
-        fmt::format(
-            "Failed to create coldboot file {}: file does not exist after creation",
-            coldbootFile));
-  }
+  createDir(parentDirectoryTree(coldbootFile));
+  touchFile(coldbootFile);
 }
 
 void FbossServiceUtil::performRestartAndWait(const std::string& service) {
@@ -153,29 +105,30 @@ void FbossServiceUtil::performWarmboot(
 
 std::vector<std::string> FbossServiceUtil::getServicesToRestart(
     cli::ServiceType service) const {
-  std::vector<std::string> services;
+  switch (service) {
+    case cli::ServiceType::AGENT: {
+      std::vector<std::string> services;
+      if (isSplitMode()) {
+        LOG(INFO)
+            << "Detected split mode (multi_switch flag is set in agent config)";
 
-  if (isSplitMode()) {
-    LOG(INFO)
-        << "Detected split mode (multi_switch flag is set in agent config)";
+        // Add hw_agent instances first (hw before sw ordering)
+        for (const auto& [switchId, switchInfo] : switchInfoMap_) {
+          services.emplace_back(
+              fmt::format("{}{}", kHwAgentPrefix, *switchInfo.switchIndex()));
+        }
+        LOG(INFO) << "Found " << services.size() << " hw_agent instances";
 
-    // Add hw_agent instances first (hw before sw ordering)
-    for (const auto& [switchId, switchInfo] : switchInfoMap_) {
-      if (switchInfo.switchIndex().has_value()) {
-        services.emplace_back(
-            fmt::format("fboss_hw_agent@{}", *switchInfo.switchIndex()));
+        // Add sw_agent last so hw_agent restarts first
+        services.emplace_back(kSwAgent);
+      } else {
+        LOG(INFO) << "Detected monolithic mode (multi_switch flag is not set)";
+        services.emplace_back(getServiceName(service));
       }
+      return services;
     }
-    LOG(INFO) << "Found " << services.size() << " hw_agent instances";
-
-    // Add sw_agent last so hw_agent restarts first
-    services.emplace_back("fboss_sw_agent");
-  } else {
-    LOG(INFO) << "Detected monolithic mode (multi_switch flag is not set)";
-    services.emplace_back(getServiceName(service));
   }
-
-  return services;
+  throw std::runtime_error("Unknown service type");
 }
 
 std::vector<std::string> FbossServiceUtil::reloadConfig(
@@ -185,7 +138,7 @@ std::vector<std::string> FbossServiceUtil::reloadConfig(
   switch (service) {
     case cli::ServiceType::AGENT: {
       std::string serviceName =
-          isSplitMode() ? "fboss_sw_agent" : getServiceName(service);
+          isSplitMode() ? std::string(kSwAgent) : getServiceName(service);
 
       LOG(INFO) << "Reloading config for " << serviceName;
 
