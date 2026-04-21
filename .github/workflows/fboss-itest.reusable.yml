@@ -20,10 +20,6 @@ on:
         description: "Build ID to use for testing"
         required: true
         type: string
-      platform:
-        description: "Platform to use for testing"
-        required: true
-        type: string
       priority:
         description: "Priority of the test (0-100, higher values indicate higher priority)"
         required: false
@@ -31,6 +27,11 @@ on:
         default: 50
       target_testbeds:
         description: "Comma-separated testbed names or regex patterns (e.g., 'fboss101,fboss102' or 'fboss\\d+')"
+        required: false
+        type: string
+        default: ""
+      file_path_filter:
+        description: "Glob pattern to filter tests (e.g., 'tests/bgp/*'). If not provided, defaults to --all-eligible-tests."
         required: false
         type: string
         default: ""
@@ -52,9 +53,9 @@ jobs:
 
     env:
       BUILD_ID: ${{ inputs.build_id }}
-      PLATFORM: ${{ inputs.platform }}
       PRIORITY: ${{ inputs.priority }}
       TARGET_TESTBEDS: ${{ inputs.target_testbeds }}
+      FILE_PATH_FILTER: ${{ inputs.file_path_filter }}
 
     steps:
       - name: "Install NHTools"
@@ -81,9 +82,14 @@ jobs:
           CMD="$CMD --build-id $BUILD_ID"
           CMD="$CMD --test-env fboss"
           CMD="$CMD --nos fboss"
-          CMD="$CMD --all-eligible-tests"
           CMD="$CMD --priority $PRIORITY"
-          CMD="$CMD --platform $PLATFORM"
+
+          # Use file_path_filter if provided, otherwise default to all eligible tests
+          if [ -n "$FILE_PATH_FILTER" ]; then
+            CMD="$CMD --file-path-filter $FILE_PATH_FILTER"
+          else
+            CMD="$CMD --all-eligible-tests"
+          fi
 
           if [ -n "$TARGET_TESTBEDS" ]; then
             CMD="$CMD --target-testbeds $TARGET_TESTBEDS"
@@ -101,5 +107,6 @@ jobs:
             echo "batch_id=$batch_id" >> "$GITHUB_OUTPUT"
           else
             echo "⚠️ Attempt failed."
+            echo "$output"
             exit 1
           fi
