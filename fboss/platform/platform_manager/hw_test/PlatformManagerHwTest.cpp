@@ -222,27 +222,57 @@ TEST_F(PlatformManagerHwTest, XcvrLedFiles) {
   explorationOk();
 
   auto primaryColor = xcvrLib_.getPrimaryLedColor();
-  auto secondaryColor = fboss::XcvrLib::LedColor::AMBER;
+
+  std::string primaryColorStr =
+      (primaryColor == fboss::XcvrLib::LedColor::BLUE) ? "blue" : "green";
+  std::string secondaryColorStr = "amber";
 
   for (auto xcvrNum = 1; xcvrNum <= xcvrLib_.getNumTransceivers(); xcvrNum++) {
     auto numLeds = xcvrLib_.getNumLedsForTransceiver(xcvrNum).value();
-    for (auto ledNum = 1; ledNum <= numLeds; ledNum++) {
-      auto primaryLedDir = fs::path(
-          xcvrLib_.getLedSysfsPath(xcvrNum, ledNum, primaryColor).value());
-      auto secondaryLedDir = fs::path(
-          xcvrLib_.getLedSysfsPath(xcvrNum, ledNum, secondaryColor).value());
 
-      XLOG(DBG2) << fmt::format(
-          "Checking {} and {}",
-          primaryLedDir.string(),
-          secondaryLedDir.string());
+    // Find all LED directories for this port
+    std::string portLedPattern = fmt::format("port{}_", xcvrNum);
+    std::vector<fs::path> foundLeds;
+
+    for (const auto& entry : fs::directory_iterator("/sys/class/leds")) {
+      std::string ledName = entry.path().filename().string();
+      if (ledName.find(portLedPattern) == 0) {
+        foundLeds.push_back(entry.path());
+      }
+    }
+
+    // Verify we found the expected number of LEDs
+    EXPECT_EQ(foundLeds.size(), numLeds) << fmt::format(
+        "Port {} expected {} LEDs, found {}",
+        xcvrNum,
+        numLeds,
+        foundLeds.size());
+
+    bool hasPrimaryColor = false;
+    bool hasSecondaryColor = false;
+
+    for (const auto& ledPath : foundLeds) {
+      std::string ledName = ledPath.filename().string();
+      if (ledName.find(primaryColorStr) != std::string::npos) {
+        hasPrimaryColor = true;
+      }
+      if (ledName.find(secondaryColorStr) != std::string::npos) {
+        hasSecondaryColor = true;
+      }
+    }
+
+    EXPECT_TRUE(hasPrimaryColor)
+        << fmt::format("Port {} missing {} LED", xcvrNum, primaryColorStr);
+    EXPECT_TRUE(hasSecondaryColor)
+        << fmt::format("Port {} missing {} LED", xcvrNum, secondaryColorStr);
+
+    // Check each found LED has the required files
+    for (const auto& ledPath : foundLeds) {
+      XLOG(DBG2) << fmt::format("Checking LED {}", ledPath.string());
       for (auto& ledFile : {"brightness", "max_brightness", "trigger"}) {
-        auto primaryLedFullPath = primaryLedDir / fs::path(ledFile);
-        auto secondaryLedFullPath = secondaryLedDir / fs::path(ledFile);
-        EXPECT_TRUE(fs::exists(primaryLedFullPath))
-            << fmt::format("{} doesn't exist", primaryLedFullPath.string());
-        EXPECT_TRUE(fs::exists(secondaryLedFullPath))
-            << fmt::format("{} doesn't exist", secondaryLedFullPath.string());
+        auto ledFullPath = ledPath / fs::path(ledFile);
+        EXPECT_TRUE(fs::exists(ledFullPath))
+            << fmt::format("{} doesn't exist", ledFullPath.string());
       }
     }
   }
