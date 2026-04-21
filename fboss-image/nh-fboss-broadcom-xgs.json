@@ -4,21 +4,21 @@
     "onie": "nh-fboss-broadcom-xgs.bin"
   },
   "kernel": {
-    "download": "file:distro_kernel_6.11.tar"
+    "download": "file:.nh-broadcom-xgs/distro_kernel_6.11.tar"
   },
   "other_dependencies": [
-      {"download": "file:distro_nexthop_product_support.rpm"},
-      {"download": "file:distro_bgp_pp.rpm"}
+    { "download": "file:.nh-broadcom-xgs/distro_nexthop_product_support.rpm" },
+    { "download": "file:.nh-broadcom-xgs/distro_bgp_pp.rpm" }
   ],
   "fboss-platform-stack": {
-    "download": "file:fboss_platform_stack.tar"
+    "download": "file:.nh-broadcom-xgs/fboss_platform_stack.tar"
   },
   "bsps": [
-      {"download": "file:distro_nexthop_bsp.tar"},
-      {"download": "file:distro_fboss_bsp.tar"}
+    { "download": "file:.nh-broadcom-xgs/distro_nexthop_bsp.tar" },
+    { "download": "file:.nh-broadcom-xgs/distro_fboss_bsp.tar" }
   ],
   "npu_sai": {
-    "download": "file:distro_sai.tar"
+    "download": "file:.nh-broadcom-xgs/distro_sai.tar"
   },
   "phy_sai": {
   },
@@ -27,6 +27,6 @@
     "artifact": "forwarding-stack.tar"
   },
   "image_build_hooks": {
-     "after_pkgs_install": "nexthop-extra-pkgs.json"
+    "after_pkgs_install": "nexthop-extra-pkgs.json"
   }
 }

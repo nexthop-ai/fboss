@@ -298,13 +298,18 @@ heavy_genrule(
         "fboss_forwarding_stack_tests_broadcom_xgs.tar",
     ],
     cmd = """
-        ln -f $(location distro_kernel_6.11.tar) fboss/fboss-image/distro_kernel_6.11.tar
-        ln -f $(location //nhbroadcomsai/fboss-xgs:distro_sai.tar) fboss/fboss-image/distro_sai.tar
-        ln -f $(location //fboss_extras/nexthop_product_support:distro_nexthop_product_support.rpm) fboss/fboss-image/distro_nexthop_product_support.rpm
-        ln -f $(location //fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar) fboss/fboss-image/distro_fboss_bsp.tar
-        ln -f $(location //fboss_bsps/nexthop_bsp:distro_nexthop_bsp.tar) fboss/fboss-image/distro_nexthop_bsp.tar
-        ln -f $(location fboss_platform_stack.tar) fboss/fboss-image/fboss_platform_stack.tar
-        ln -f $(location //fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm) fboss/fboss-image/distro_bgp_pp.rpm
+        BUILD_DIR="fboss/fboss-image/.nh-broadcom-xgs"
+        rm -rf "${BUILD_DIR}"
+        mkdir -p "${BUILD_DIR}"
+
+        ln -f $(location distro_kernel_6.11.tar) "${BUILD_DIR}/distro_kernel_6.11.tar"
+        ln -f $(location //nhbroadcomsai/fboss-xgs:distro_sai.tar) "${BUILD_DIR}/distro_sai.tar"
+        ln -f $(location //fboss_extras/nexthop_product_support:distro_nexthop_product_support.rpm) "${BUILD_DIR}/distro_nexthop_product_support.rpm"
+        ln -f $(location //fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar) "${BUILD_DIR}/distro_fboss_bsp.tar"
+        ln -f $(location //fboss_bsps/nexthop_bsp:distro_nexthop_bsp.tar) "${BUILD_DIR}/distro_nexthop_bsp.tar"
+        ln -f $(location fboss_platform_stack.tar) "${BUILD_DIR}/fboss_platform_stack.tar"
+        ln -f $(location //fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm) "${BUILD_DIR}/distro_bgp_pp.rpm"
+
         pushd fboss/fboss-image
         ./distro_cli/fboss-image build nh-fboss-broadcom-xgs.json 2>&1
         popd
@@ -402,11 +407,16 @@ heavy_genrule(
         "fboss_forwarding_stack_tests_cisco_s1.tar",
     ],
     cmd = """
-        ln -f $(location distro_kernel_6.11.tar) fboss/fboss-image/distro_kernel_6.11.tar
-        ln -f $(location //nhciscosai/fboss-s1:distro_sai.tar) fboss/fboss-image/distro_sai.tar
-        ln -f $(location //fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar) fboss/fboss-image/distro_fboss_bsp.tar
-        ln -f $(location fboss_platform_stack.tar) fboss/fboss-image/fboss_platform_stack.tar
-        ln -f $(location //fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm) fboss/fboss-image/distro_bgp_pp.rpm
+        BUILD_DIR="fboss/fboss-image/.nh-cisco-s1"
+        rm -rf "${BUILD_DIR}"
+        mkdir -p "${BUILD_DIR}"
+
+        ln -f $(location distro_kernel_6.11.tar) "${BUILD_DIR}/distro_kernel_6.11.tar"
+        ln -f $(location //nhciscosai/fboss-s1:distro_sai.tar) "${BUILD_DIR}/distro_sai.tar"
+        ln -f $(location //fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar) "${BUILD_DIR}/distro_fboss_bsp.tar"
+        ln -f $(location fboss_platform_stack.tar) "${BUILD_DIR}/fboss_platform_stack.tar"
+        ln -f $(location //fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm) "${BUILD_DIR}/distro_bgp_pp.rpm"
+
         pushd fboss/fboss-image
         ./distro_cli/fboss-image build nh-fboss-cisco-s1.json 2>&1
         popd
