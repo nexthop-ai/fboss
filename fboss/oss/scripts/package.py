@@ -15,6 +15,7 @@ SRC_DIR = pathlib.Path("/var/FBOSS/fboss")
 OSS_DIR = SRC_DIR / "fboss/oss"
 RUN_SCRIPTS_DIR = SRC_DIR / "fboss/oss/scripts/run_scripts"
 RUN_CONFIGS_DIR = SRC_DIR / "fboss/oss/scripts/run_configs"
+PYTHON_TESTS_DIR = OSS_DIR / "python_tests"
 
 BUILD_DIR = "--build-dir"
 TARGET_NAMES = ("agent-benchmarks", "forwarding-stack", "platform-stack")
@@ -96,6 +97,8 @@ FORWARDING_TEST_EXTRA = {
     OSS_DIR / "qsfp_unsupported_tests": "share/qsfp_unsupported_tests",
     OSS_DIR / "sai_hw_unsupported_tests": "share/sai_hw_unsupported_tests",
     RUN_SCRIPTS_DIR / "brcmsim.py": "bin/brcmsim.py",
+    PYTHON_TESTS_DIR / "agent_smoke.py": "bin/python_tests/agent_smoke.py",
+    PYTHON_TESTS_DIR / "junit.py": "bin/python_tests/junit.py",
 }
 
 AGENT_BENCHMARK_BINARIES = [
