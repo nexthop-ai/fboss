@@ -54,7 +54,6 @@ jobs:
     uses: ./.github/workflows/fboss-itest.reusable.yml
     with:
       build_id: ${{ needs.monobuild.outputs.build_id }}
-      platform: ${{ matrix.testbed_config.platform }}
       priority: ${{ matrix.testbed_config.priority }}
       target_testbeds: ${{ matrix.testbed_config.pattern }}
       file_path_filter: "tests/platform/t0_platform_hw_tests.py"
