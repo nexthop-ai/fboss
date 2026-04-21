@@ -7,6 +7,7 @@ Each test runner subclass specifies its default configuration directories.
 
 import logging
 import os
+import time
 import shlex
 from abc import ABC, abstractmethod
 
@@ -121,6 +122,20 @@ class BaseHwTestRunner(ABC):
                     line = line.replace(f'name="{name}"', f'name="{classname}.{name}"')
                 f.write(line)
 
+    def pre_test(self):
+        pass
+
+    def post_test(self):
+        pass
+
+    def build_test_cmd(self, hwsku: str) -> str:
+        test_args = self.test_args(hwsku)
+        return (
+            f"sudo su -c 'cd /opt/fboss && ./bin/run_test.py {test_args} "
+            f"--filter_file=/home/admin/tests.conf "
+            f"' > {self.testlog_filepath} 2>&1"
+        )
+
     def run_test(self, test_context):
         """Run the hardware test on the DUT."""
         logger.info("Running tests")
@@ -152,17 +167,16 @@ class BaseHwTestRunner(ABC):
             logger.error("Failed to run command: %s %s", cmd, output)
             return False
 
-        # Build the complete test command
-        test_args = self.test_args(hwsku)
-        cmd = (
-            f"sudo su -c 'cd /opt/fboss && ./bin/run_test.py {test_args} "
-            f"--filter_file=/home/admin/tests.conf "
-            f"' > {self.testlog_filepath} 2>&1"
-        )
-
-        logger.info("Running remote command: %s", cmd)
-        test_exit_status, test_output = self.ssh_client.run_cmd(cmd)
-        logger.debug("exit_status %s output %s", test_exit_status, test_output)
+        self.pre_test()
+        try:
+            cmd = self.build_test_cmd(hwsku)
+            logger.info("Running remote command: %s", cmd)
+            test_exit_status, test_output = self.ssh_client.run_cmd(cmd)
+            logger.debug("exit_status %s output %s", test_exit_status, test_output)
+            if test_exit_status != 0:
+                logger.error("Failed to run tests: %s", test_output)
+        finally:
+            self.post_test()
 
         logger.info("Fetching test logs and results files")
         exit_status, output = self.scp_client.get_file(
@@ -246,6 +260,45 @@ class PlatformTestRunner(BaseHwTestRunner):
     def test_args(self, hwsku: str) -> str:
         return f"platform --type {self.test_type}"
 
+class BspTestRunner(BaseHwTestRunner):
+    """Runner for BSP hardware tests. Invokes bsp_tests binary directly."""
+
+    BSP_DISABLE_SERVICES = [
+        "fan_service",
+        "qsfp_service",
+    ]
+
+    def test_args(self, hwsku: str) -> str:
+        return ""
+
+    def build_test_cmd(self, hwsku: str) -> str:
+        return (
+            f"sudo su -c 'cd /opt/fboss && ./bin/bsp_tests "
+            f"--enable_stress_tests "
+            f"--gtest_output=xml:{self.testresult_filepath}' "
+            f"> {self.testlog_filepath} 2>&1"
+        )
+
+    def pre_test(self):
+        """Disable FBOSS services that conflict with BSP tests."""
+        services = " ".join(self.BSP_DISABLE_SERVICES)
+        logger.info("Stopping services for BSP tests: %s", services)
+        self.ssh_client.run_cmd(f"sudo systemctl mask {services}")
+        self.ssh_client.run_cmd(f"sudo systemctl stop {services}")
+        time.sleep(2)
+        logger.info("Services stopped")
+
+    def set_filters(self, src_filepath, dst_filepath):
+        """BSP tests run all cases via the bsp_tests binary — no filter file needed."""
+        return True
+
+    def post_test(self):
+        """Re-enable FBOSS services after BSP tests."""
+        services = " ".join(self.BSP_DISABLE_SERVICES)
+        logger.info("Re-enabling services: %s", services)
+        self.ssh_client.run_cmd(f"sudo systemctl unmask {services}")
+        self.ssh_client.run_cmd(f"sudo systemctl restart {services}")
+        logger.info("Services restart initiated")
 
 class SmokeTestRunner(BaseHwTestRunner):
     """Runner for the FBOSS agent smoke test.

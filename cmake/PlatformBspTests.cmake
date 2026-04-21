@@ -93,6 +93,8 @@ target_link_libraries(bsp_tests
   ${GFLAGS}
 )
 
+install(TARGETS bsp_tests)
+
 add_executable(runtime_config_builder_test
   fboss/platform/bsp_tests/RuntimeConfigBuilderTest.cpp
 )

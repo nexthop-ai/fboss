@@ -2,6 +2,7 @@ import logging
 import pytest
 
 from tests.libs.test_runner.runner import (
+    BspTestRunner,
     LinkTestRunner,
     PlatformTestRunner,
     QsfpTestRunner,
@@ -108,6 +109,13 @@ def platform_manager_hw_test_runner():
 
 
 @pytest.fixture
+def bsp_test_runner():
+    """Fixture for BSP hardware tests."""
+    runner = BspTestRunner()
+    yield runner
+    runner.close()
+
+
 def smoke_test_runner():
     """Fixture for FBOSS daemon smoke tests."""
     runner = SmokeTestRunner()

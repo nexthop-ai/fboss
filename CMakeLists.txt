@@ -1135,6 +1135,7 @@ add_dependencies(fboss_platform_services
   platform_manager_hw_test
   cross_config_validator_test
   fw_util_hw_test
+  bsp_tests
 )
 
 add_custom_target(qsfp_targets)
