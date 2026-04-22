@@ -292,6 +292,7 @@ heavy_genrule(
         "//nhbroadcomsai/fboss-xgs:distro_sai.tar",
         ":fboss_builder_docker", # Prevent concurrent building
         "CMakeLists.txt",
+        "distro_kernel_6.11.tar",
         "functions.cmake",
         "sdk_dependencies.txt",
         ":fboss_forwarding_stack_srcs",
@@ -303,6 +304,7 @@ heavy_genrule(
     cmd = """
         BUILD_DIR="fboss/fboss-image/.nh-broadcom-xgs"
         mkdir -p "${BUILD_DIR}"
+        ln -f $(location distro_kernel_6.11.tar) "${BUILD_DIR}/distro_kernel_6.11.tar"
         ln -f $(location //nhbroadcomsai/fboss-xgs:distro_sai.tar) "${BUILD_DIR}/distro_sai.tar"
 
         pushd fboss/fboss-image
@@ -392,6 +394,7 @@ heavy_genrule(
         "//nhciscosai/fboss-s1:distro_sai.tar",
         ":fboss_builder_docker", # Prevent concurrent building
         "CMakeLists.txt",
+        "distro_kernel_6.11.tar",
         "functions.cmake",
         "sdk_dependencies.txt",
         ":fboss_forwarding_stack_srcs",
@@ -403,6 +406,7 @@ heavy_genrule(
     cmd = """
         BUILD_DIR="fboss/fboss-image/.nh-cisco-s1"
         mkdir -p "${BUILD_DIR}"
+        ln -f $(location distro_kernel_6.11.tar) "${BUILD_DIR}/distro_kernel_6.11.tar"
         ln -f $(location //nhciscosai/fboss-s1:distro_sai.tar) "${BUILD_DIR}/distro_sai.tar"
 
         pushd fboss/fboss-image
