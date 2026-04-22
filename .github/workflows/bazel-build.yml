@@ -1,0 +1,75 @@
+name: Bazel Build
+run-name: Bazel Build (experimental)
+
+on:
+  workflow_dispatch:
+    inputs:
+      sai_version:
+        description: "SAI version to build against"
+        required: false
+        default: "1.16.1"
+        type: string
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SAI_VERSION: ${{ inputs.sai_version || '1.16.1' }}
+
+permissions:
+  contents: read
+
+jobs:
+  bazel-build:
+    if: github.repository_owner == 'nexthop-ai'
+    runs-on: cloudstack-ubuntu24-large
+    steps:
+      - name: Check out repository code
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+
+      - name: Set up HTTP proxy
+        uses: nexthop-ai/nh/.github/actions/http-proxy@main
+
+      - name: Build FBOSS Docker image (with registry cache)
+        env:
+          USE_CLANG: true
+          REGISTRY: container-registry.sw.internal.nexthop.ai
+        run: |
+          CACHE_IMAGE="${REGISTRY}/fboss-builder:cache"
+          # Compute cache key from Dockerfile + build scripts
+          CACHE_KEY=$(cat fboss/oss/docker/Dockerfile fboss/oss/docker/setup_clang.sh requirements-dev.txt .pre-commit-config.yaml 2>/dev/null | sha256sum | cut -c1-12)
+          CACHE_TAG="${CACHE_IMAGE}-${CACHE_KEY}"
+
+          # Try to pull cached image
+          if docker pull "${CACHE_TAG}" 2>/dev/null; then
+            echo "Cache hit: ${CACHE_TAG}"
+            docker tag "${CACHE_TAG}" "fboss_image_${USER}:latest"
+          else
+            echo "Cache miss, building image..."
+            ./fboss/oss/scripts/nhfboss-docker-build.py
+            # Push to registry for next run
+            docker tag "fboss_image_${USER}:latest" "${CACHE_TAG}"
+            docker push "${CACHE_TAG}" || echo "Warning: failed to push cache image"
+          fi
+
+      - name: Start FBOSS build container
+        run: ./fboss/oss/scripts/nhfboss-docker-enter.py
+
+      - name: Build FBOSS with Bazel
+        run: |
+          docker exec -e SAI_VERSION=${{ env.SAI_VERSION }} FBOSS_build_${USER} fboss/oss/scripts/bazel.sh build --remote_upload_local_results=true --keep_going //fboss/...
+
+      - name: Collect sccache statistics
+        if: always()
+        run: |
+          docker exec FBOSS_build_${USER} sccache -s || true
+
+      - name: Run Bazel tests
+        run: |
+          docker exec -e SAI_VERSION=${{ env.SAI_VERSION }} FBOSS_build_${USER} fboss/oss/scripts/bazel.sh test --remote_upload_local_results=true --keep_going --test_output=errors //fboss/...
+
+      - name: Run bazelify unit tests
+        run: |
+          docker exec FBOSS_build_${USER} python3 -m pytest fboss/oss/scripts/test_bazelify.py fboss/oss/scripts/test_cached_get_deps.py -v
