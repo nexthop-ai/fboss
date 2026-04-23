@@ -30,18 +30,10 @@ from qsfp_service_utils import cleanup_qsfp_service, setup_and_start_qsfp_servic
 # This script runs hardware tests for FBOSS. It supports multiple test types:
 # - sai_agent: SAI agent hardware tests
 # - sai: SAI hardware tests
-<<<<<<< HEAD
-# - qsfp: QSFP hardware tests
-# - link: Link tests
-||||||| d0ca543a9d
-# RUNNING HW TESTS:
-# -----------------
-=======
 # - bcm: BCM hardware tests
 # - qsfp: QSFP hardware tests
 # - link: Link tests
 # - platform: Platform service hardware tests
->>>>>>> 6a42110932a12d62820215e8963bfc90ca622b59
 # - benchmark: Benchmark tests
 # - cli: CLI tests
 #
@@ -66,92 +58,9 @@ from qsfp_service_utils import cleanup_qsfp_service, setup_and_start_qsfp_servic
 #   ./run_test.py sai --config $CONFIG --filter=HwVlanTest.VlanApplyConfig
 #   ./run_test.py sai --config $CONFIG --filter=*Route*V6*
 #
-<<<<<<< HEAD
-||||||| d0ca543a9d
-# Sample invocation for HW Tests:
-#
-#  1. Running all HW SAI TESTS:
-#      ./run_test.py sai --config $confFile
-#      desc: Runs ALL Hw SAI tests: coldboot and warmboot
-#
-#  2. Running all HW QSFP TESTS:
-#     ./run_test.py qsfp --qsfp-config $qsfpConfFile
-#     desc: Runs ALL Hw QSFP tests: coldboot and warmboot
-#
-#  3. Running all HW Link TESTS:
-#     ./run_test.py link --config $linkConfFile --qsfp-config $qsfpConfFile
-#     desc: Runs ALL Hw Link tests: coldboot and warmboot
-#
-#  4. Running only coldboot tests:
-#      ./run_test.py sai --config $confFile --coldboot_only
-#      desc: Runs all HW tests only on coldboot mode
-#
-#  5. Running specific tests through regex:
-#      ./run_test.py sai --config $confFile --filter=*Route*V6*
-#      desc: Runs only the HW test matching the regex *Route*V6*
-#
-#      e./run_test.py sai --config $confFile --filter=*Vlan*:*Port*
-#      desc: Run tests matching "Vlan" and "Port" filters
-#
-#  6. Running specific tests through regex and excluding certain tests:
-#      ./run_test.py sai --config $confFile --filter=*Vlan*:*Port*:-*Mac*:*Intf*
-#      desc: Run tests matching "Vlan" and "Port" filters, but excluding "Mac" and "Intf" tests in that list
-#
-#  7. Running a targeted test:
-#      ./run_test.py sai --config $confFile --filter=HwVlanTest.VlanApplyConfig
-#      desc: Runs a single test by providing the entire test name as a filter
-#
-#  8. Enable SAI Replayer Logging:
-#      ./run_test.py sai --config $confFile --filter=HwVlanTest.VlanApplyConfig --sai_replayer_logging /tmp/XYZ #
-#      desc: Enables SAI Replayer Logging for the specified test case
-#
-#      ./run_test.py sai --config $confFile --sai_replayer_logging /root/all_replayer_logs
-#      desc: Enables SAI replayer Logging for all test cases
-#
-#  9. Running a single test in coldboot mode:
-#      ./run_test.py sai --config $confFile --filter=HwVlanTest.VlanApplyConfig --coldboot_only
-#      desc: Runs a single test and performs only coldboot
-#
-#  10. Example of control plane tests:
-#      ./run_test.py sai --config $confFile --filter=HwAclQualifierTest*
-#      desc: Sample HW test by programming the hardware and validating the functionality
-#
-#  11. Example of data plane tests:
-#      ./run_test.py sai --config $confFile --filter=HwOlympicQosSchedulerTest*
-#      desc: Sample HW test by programming the hardware, creating a dataplane loop and validating functionality
-#
-#  12. List all tests in the test binary:
-#      ./run_test.py sai --config $confFile --list_tests
-#      desc: Print all the tests but do not run any test
-#
-#  13. List tests matching given regex:
-#      ./run_test.py sai --config $confFile --filter=<filter_regex> --list_tests
-#      desc: Print the matching tests but do not run any test
-#
-#  14. Skip running Known Bad Tests:
-#      ./run_test.py sai --config $confFile --skip-known-bad-tests $test-config
-#      desc: Run tests but skip running known bad tests for a specific platform
-#
-#  15. Use Custom Management Interface:
-#      ./run_test.py sai --config $confFile --filter=HwVlanTest.VlanApplyConfig --mgmt-if eth0
-#      desc: Instead of eth0, provide a custom mgmt-if
-#
-#  16. Running non-OSS Binary using run_test helper:
-#      ./run_test.py sai --config fuji.agent.materialized_JSON --filter HwVlanTest.VlanApplyConfig --sai_replayer_logging /root/skhare/sai_replayer_logs --no-oss --sai-bin /root/skhare/sai_test-brcm-8.2.0.0_odp --mgmt-if eth0
-#      desc: Runs tests but does not use OSS binary for testing
-#
-#  17. Enable more FBOSS Logging:
-#      ./run_test.py sai --config $confFile --filter=HwVlanTest.VlanApplyConfig --fboss_logging DBG5
-#      desc: Enable more FBOSS logging
-#
-#
-# TERMS & DEFINITIONS:
-# ---------------------
-=======
 # Run tests with multiple filters and negative filter:
 #   ./run_test.py sai --config $CONFIG --filter=*Vlan*:*Port*:-*Mac*:*Intf*
 #
->>>>>>> 6a42110932a12d62820215e8963bfc90ca622b59
 # Run tests from a filter file:
 #   ./run_test.py sai_agent --config $CONFIG --filter_file=./share/hw_sanity_tests/t0_agent_hw_tests.conf
 #
@@ -852,28 +761,15 @@ class TestRunner(abc.ABC):
         if args.coldboot_only is False:
             warmboot = True
 
-<<<<<<< HEAD
-        test_binary_name = self._get_test_binary_name()
-        file_name = os.path.basename(test_binary_name)
-        if file_name != "qsfp_hw_test" and not os.path.exists(conf_file):
-            print("########## Conf file not found: " + conf_file)
-            return [], []
-||||||| d0ca543a9d
-        test_binary_name = self._get_test_binary_name()
-        if test_binary_name != "qsfp_hw_test" and not os.path.exists(conf_file):
-            print("########## Conf file not found: " + conf_file)
-            return []
-=======
         if conf_file and not os.path.exists(conf_file):
             print(f"########## Required configuration file not found: {conf_file}")
             return []
->>>>>>> 6a42110932a12d62820215e8963bfc90ca622b59
 
         test_outputs = []
         test_results = []
         num_tests = len(tests_to_run)
 
-        disable_services(file_name)
+        disable_services(args.type)
         try:
             for idx, test_to_run in enumerate(tests_to_run):
                 test_prefix = self.COLDBOOT_PREFIX
@@ -941,7 +837,7 @@ class TestRunner(abc.ABC):
                         )
                     )
         finally:
-            enable_services(file_name)
+            enable_services(args.type)
 
         self._end_run()
         return test_outputs, test_results
@@ -1398,22 +1294,9 @@ class LinkTestRunner(TestRunner):
     def _get_test_binary_name(self):
         if args.agent_run_mode == SUB_ARG_AGENT_RUN_MODE_MONO:
             return "/opt/fboss/bin/sai_mono_link_test-sai_impl"
-<<<<<<< HEAD
-        if args.agent_run_mode == SUB_ARG_AGENT_RUN_MODE_MULTI:
-            return "/opt/fboss/bin/sai_multi_link_test-sai_impl"
-        # Deprecate legacy mode when we finish testing mono mode on all platforms
-        return "/opt/fboss/bin/sai_link_test-sai_impl"
-||||||| d0ca543a9d
-            return "sai_mono_link_test-sai_impl"
-        if args.agent_run_mode == SUB_ARG_AGENT_RUN_MODE_MULTI:
-            return "sai_multi_link_test-sai_impl"
-        # Deprecate legacy mode when we finish testing mono mode on all platforms
-        return "sai_link_test-sai_impl"
-=======
 
         # Default to multi_switch mode
         return "/opt/fboss/bin/sai_multi_link_test-sai_impl"
->>>>>>> 6a42110932a12d62820215e8963bfc90ca622b59
 
     def _get_sai_replayer_logging_flags(
         self, sai_replayer_log_path: str | None
@@ -1568,25 +1451,11 @@ class SaiAgentTestRunner(TestRunner):
         return args.unsupported_tests_file
 
     def _get_test_binary_name(self):
-<<<<<<< HEAD
-        if args.agent_run_mode == SUB_ARG_AGENT_RUN_MODE_MULTI:
-            return "/opt/fboss/bin/multi_switch_agent_hw_test"
-        # Default is mono mode
-        return "/opt/fboss/bin/sai_agent_hw_test-sai_impl"
-||||||| d0ca543a9d
-        if args.sai_bin:
-            return args.sai_bin
-        if args.agent_run_mode == SUB_ARG_AGENT_RUN_MODE_MULTI:
-            return "multi_switch_agent_hw_test"
-        # Default is mono mode
-        return "sai_agent_hw_test-sai_impl"
-=======
         if args.agent_run_mode == SUB_ARG_AGENT_RUN_MODE_MONO:
             return "/opt/fboss/bin/sai_agent_hw_test-sai_impl"
 
         # Default to multi_switch mode
         return "/opt/fboss/bin/multi_switch_agent_hw_test"
->>>>>>> 6a42110932a12d62820215e8963bfc90ca622b59
 
     def _get_sai_replayer_logging_flags(
         self, sai_replayer_log_path: str | None
@@ -2350,39 +2219,6 @@ if __name__ == "__main__":
         default="eth0",
         help=("Management interface (default = eth0)"),
     )
-<<<<<<< HEAD
-
-    ap.add_argument(
-        OPT_ARG_OSS,
-        action="store_true",
-        help="OSS build",
-    )
-
-    ap.add_argument(
-        OPT_ARG_NO_OSS,
-        action="store_false",
-        dest="oss",
-        help="No OSS build",
-    )
-    ap.set_defaults(oss=True)
-||||||| d0ca543a9d
-    ap.add_argument(OPT_ARG_SAI_BIN, type=str, help=("SAI Test binary name"))
-
-    ap.add_argument(
-        OPT_ARG_OSS,
-        action="store_true",
-        help="OSS build",
-    )
-
-    ap.add_argument(
-        OPT_ARG_NO_OSS,
-        action="store_false",
-        dest="oss",
-        help="No OSS build",
-    )
-    ap.set_defaults(oss=True)
-=======
->>>>>>> 6a42110932a12d62820215e8963bfc90ca622b59
 
     ap.add_argument(
         OPT_ARG_FRUID_PATH,

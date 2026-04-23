@@ -182,14 +182,7 @@ class DeviceUpdater:
 
             # SCP artifact(s) and update script to device
             # Handle both single artifact (Path) and multiple artifacts (list of Paths)
-<<<<<<< HEAD
-            artifacts = (
-||||||| d0ca543a9d
-            # SCP artifact and update script to device
-            scp_files = [str(artifact_path), str(UPDATE_SCRIPT_PATH)]
-=======
             artifacts: list[Path] = (
->>>>>>> 6a42110932a12d62820215e8963bfc90ca622b59
                 artifact_path if isinstance(artifact_path, list) else [artifact_path]
             )
             scp_files = [str(a) for a in artifacts] + [str(UPDATE_SCRIPT_PATH)]
