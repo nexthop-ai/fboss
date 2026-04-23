@@ -108,7 +108,7 @@ class DeviceUpdater:
                 f"Component '{self.component}' has neither 'download' nor 'execute'"
             )
 
-    def _acquire_artifacts(self) -> Path:
+    def _acquire_artifacts(self) -> Path | list[Path]:
         """Acquire component artifacts via build or download.
 
         Uses ImageBuilder to handle both execute (build) and download modes.
@@ -134,7 +134,9 @@ class DeviceUpdater:
         logger.info(f"Artifact acquired: {artifact_path}")
         return artifact_path
 
-    def _transfer_and_execute(self, artifact_path: Path, services: list[str]) -> None:
+    def _transfer_and_execute(
+        self, artifact_path: Path | list[Path], services: list[str]
+    ) -> None:
         """Transfer artifact and update script to device and execute.
 
         Args:
@@ -180,7 +182,14 @@ class DeviceUpdater:
 
             # SCP artifact(s) and update script to device
             # Handle both single artifact (Path) and multiple artifacts (list of Paths)
+<<<<<<< HEAD
             artifacts = (
+||||||| d0ca543a9d
+            # SCP artifact and update script to device
+            scp_files = [str(artifact_path), str(UPDATE_SCRIPT_PATH)]
+=======
+            artifacts: list[Path] = (
+>>>>>>> 6a42110932a12d62820215e8963bfc90ca622b59
                 artifact_path if isinstance(artifact_path, list) else [artifact_path]
             )
             scp_files = [str(a) for a in artifacts] + [str(UPDATE_SCRIPT_PATH)]

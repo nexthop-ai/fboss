@@ -76,9 +76,22 @@ class TestImageBuilder(unittest.TestCase):
         mock_run_container.return_value = 0
 
         # Mock _build_base_image and _move_distro_file to avoid file operations
+<<<<<<< HEAD
         with patch.object(
             self.builder, "_build_base_image"
         ) as mock_build_base, patch.object(self.builder, "_move_distro_file"):
+||||||| d0ca543a9d
+    def test_build_components_stub(self):
+        """Test build_components method (stub)"""
+        # Just verify it doesn't crash
+        # When implemented, this should verify component-specific builds
+        components = ["kernel", "sai"]
+=======
+        with (
+            patch.object(self.builder, "_build_base_image") as mock_build_base,
+            patch.object(self.builder, "_move_distro_file"),
+        ):
+>>>>>>> 6a42110932a12d62820215e8963bfc90ca622b59
             self.builder.build_all()
 
         # Verify _build_base_image was called (we mock it to avoid file writes)
@@ -166,8 +179,15 @@ class TestImageBuilder(unittest.TestCase):
         mock_run_container.return_value = 0
 
         # Mock _build_base_image and _move_distro_file to avoid file operations
+<<<<<<< HEAD
         with patch.object(self.builder, "_build_base_image"), patch.object(
             self.builder, "_move_distro_file"
+||||||| d0ca543a9d
+=======
+        with (
+            patch.object(self.builder, "_build_base_image"),
+            patch.object(self.builder, "_move_distro_file"),
+>>>>>>> 6a42110932a12d62820215e8963bfc90ca622b59
         ):
             # Build all (which keeps artifacts uncompressed)
             self.builder.build_all()
