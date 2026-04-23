@@ -17,6 +17,10 @@ genrule(
     ],
     outs = ["distro_bgp_pp.rpm"],
     cmd = """
+        if ! docker images | grep -q fboss_builder; then
+            cat $(location //fboss:fboss_builder_docker) | docker image load
+        fi
+
         ln -f $(location @bgp_pp_tarball//file) fboss/fboss-image/bgp_pp/rpmbuild/SOURCES/bgp_pp-1.0.tar.gz
         pushd fboss/fboss-image
         jq '.["other_dependencies"] = [{"execute": ["bgp_pp/build.sh"], "artifact": "bgp-pp-1.0-1.x86_64.rpm"}]' nh-fboss-broadcom-xgs.json > bgp_pp.json

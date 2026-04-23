@@ -81,8 +81,8 @@ heavy_genrule(
         "weutil_fboss_eeprom_interface_test",
     ],
     cmd = """
-        if ! $$(docker images | grep -q fboss_builder); then
-            cat $(location //fboss:fboss_builder.tar) | docker image load
+        if ! docker images | grep -q fboss_builder; then
+            cat $(location //fboss:fboss_builder_docker) | docker image load
         fi
 
         pushd fboss
@@ -146,6 +146,10 @@ heavy_genrule(
     ]),
     outs = ["distro_kernel_6.11.tar"],
     cmd = """
+        if ! docker images | grep -q fboss_builder; then
+            cat $(location //fboss:fboss_builder_docker) | docker image load
+        fi
+
         pushd fboss/fboss-image
         jq '.["kernel"] = {"execute": ["kernel/scripts/build_kernel.sh", "6.11.1", "/output"]}' nh-fboss-broadcom-xgs.json > kernel.json
         ./distro_cli/fboss-image build kernel.json kernel
@@ -212,6 +216,10 @@ heavy_genrule(
         "fboss_platform_stack_tests.tar",
     ],
     cmd = """
+        if ! docker images | grep -q fboss_builder; then
+            cat $(location //fboss:fboss_builder_docker) | docker image load
+        fi
+
         pushd fboss/fboss-image
         jq '.["fboss-platform-stack"] = {"execute": ["../fboss/oss/scripts/nhfboss-stack.sh", "platform"]}' nh-fboss-broadcom-xgs.json > platform-stack.json
         ./distro_cli/fboss-image build platform-stack.json fboss-platform-stack
@@ -302,6 +310,10 @@ heavy_genrule(
         "fboss_forwarding_stack_tests_broadcom_xgs.tar",
     ],
     cmd = """
+        if ! docker images | grep -q fboss_builder; then
+            cat $(location //fboss:fboss_builder_docker) | docker image load
+        fi
+
         BUILD_DIR="fboss/fboss-image/.nh-broadcom-xgs"
         mkdir -p "${BUILD_DIR}"
         ln -f $(location distro_kernel_6.11.tar) "${BUILD_DIR}/distro_kernel_6.11.tar"
@@ -342,6 +354,10 @@ heavy_genrule(
         "nh-fboss-broadcom-xgs.tar",
     ],
     cmd = """
+        if ! docker images | grep -q fboss_builder; then
+            cat $(location //fboss:fboss_builder_docker) | docker image load
+        fi
+
         BUILD_DIR="fboss/fboss-image/.nh-broadcom-xgs"
         mkdir -p "${BUILD_DIR}"
 
@@ -404,6 +420,10 @@ heavy_genrule(
         "fboss_forwarding_stack_tests_cisco_s1.tar",
     ],
     cmd = """
+        if ! docker images | grep -q fboss_builder; then
+            cat $(location //fboss:fboss_builder_docker) | docker image load
+        fi
+
         BUILD_DIR="fboss/fboss-image/.nh-cisco-s1"
         mkdir -p "${BUILD_DIR}"
         ln -f $(location distro_kernel_6.11.tar) "${BUILD_DIR}/distro_kernel_6.11.tar"
@@ -441,6 +461,10 @@ heavy_genrule(
         "nh-fboss-cisco-s1.tar",
     ],
     cmd = """
+        if ! docker images | grep -q fboss_builder; then
+            cat $(location //fboss:fboss_builder_docker) | docker image load
+        fi
+
         BUILD_DIR="fboss/fboss-image/.nh-cisco-s1"
         mkdir -p "${BUILD_DIR}"
 
