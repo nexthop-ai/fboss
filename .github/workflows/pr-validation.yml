@@ -15,7 +15,7 @@ permissions:
   id-token: write  # Required for aws-actions/configure-aws-credentials (OIDC to assume AWS role)
   contents: read
   pull-requests: write
-  actions: read  # Required for gh run list used by e2e_cli_test workflow
+  actions: read  # Required for gh run list used by integration_test workflow
 
 jobs:
   build-and-test-clang:
@@ -24,7 +24,7 @@ jobs:
       sai_version: "1.16.1"
       use_clang: true
 
-  e2e-cli:
+  cli-integration-test:
     needs: build-and-test-clang
-    uses: ./.github/workflows/e2e_cli_test.yml
+    uses: ./.github/workflows/integration_test.yml
     secrets: inherit
