@@ -53,7 +53,7 @@ csco)
   if [ -z "$SAI_SDK_VERSION" ]; then
     case $SAI_VERSION in
     1.14.0) SAI_SDK_VERSION=TAJO_SDK_VERSION_24_8_3001 ;;
-    1.17.0) SAI_SDK_VERSION=TAJO_SDK_VERSION_25_11_5210 ;;
+    1.17.0) SAI_SDK_VERSION=TAJO_SDK_VERSION_25_11_4210 ;;
     *)
       echo "Don't know what SAI_SDK_VERSION to use for SAI_VERSION=$SAI_VERSION"
       exit 1

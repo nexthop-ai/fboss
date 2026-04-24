@@ -148,7 +148,7 @@ if (SAI_BRCM_IMPL OR SAI_TAJO_IMPL)
       message(FATAL_ERROR
         "SAI_SDK_VERSION environment variable is required when SAI_TAJO_IMPL is enabled.\n"
         "Please set SAI_SDK_VERSION to the appropriate SDK version, for example:\n"
-        "  export SAI_SDK_VERSION=TAJO_SDK_VERSION_25_11_5210")
+        "  export SAI_SDK_VERSION=TAJO_SDK_VERSION_25_11_4210")
     endif()
   endif()
 
