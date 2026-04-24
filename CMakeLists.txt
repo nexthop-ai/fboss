@@ -1187,7 +1187,6 @@ if (SAI_IMPL OR BUILD_SAI_FAKE)
       sai_agent_hw_test-sai_impl
       sai_agent_scale_test-sai_impl
       sai_invariant_agent_test-sai_impl
-      sai_link_test-sai_impl
       sai_mono_link_test-sai_impl
       sai_multi_link_test-sai_impl
       sai_replayer-sai_impl
