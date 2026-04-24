@@ -1,4 +1,4 @@
-load("//fboss:fboss_build_types.bzl", "fboss_unit_test")
+load("//fboss:fboss_build_types.bzl", "LOAD_FBOSS_BUILDER_CMD", "fboss_unit_test")
 load("//bazel_lib:heavy_genrule.bzl", "heavy_genrule")
 load("//bazel_lib:upload_artifact.bzl", "upload_build_artifact")
 
@@ -80,11 +80,7 @@ heavy_genrule(
         "weutil_crc16_ccitt_test",
         "weutil_fboss_eeprom_interface_test",
     ],
-    cmd = """
-        if ! docker images | grep -q fboss_builder; then
-            cat $(location //fboss:fboss_builder_docker) | docker image load
-        fi
-
+    cmd = LOAD_FBOSS_BUILDER_CMD + """
         pushd fboss
         mkdir -p .build_dir/sai .sccache
         tar -C .build_dir/sai -xf ./fboss/oss/scripts/fake-sai-devel.tar
@@ -145,11 +141,7 @@ heavy_genrule(
         "fboss-image/kernel/specs/**",
     ]),
     outs = ["distro_kernel_6.11.tar"],
-    cmd = """
-        if ! docker images | grep -q fboss_builder; then
-            cat $(location //fboss:fboss_builder_docker) | docker image load
-        fi
-
+    cmd = LOAD_FBOSS_BUILDER_CMD + """
         pushd fboss/fboss-image
         jq '.["kernel"] = {"execute": ["kernel/scripts/build_kernel.sh", "6.11.1", "/output"]}' nh-fboss-broadcom-xgs.json > kernel.json
         ./distro_cli/fboss-image build kernel.json kernel
@@ -215,11 +207,7 @@ heavy_genrule(
         "fboss_platform_stack.tar",
         "fboss_platform_stack_tests.tar",
     ],
-    cmd = """
-        if ! docker images | grep -q fboss_builder; then
-            cat $(location //fboss:fboss_builder_docker) | docker image load
-        fi
-
+    cmd = LOAD_FBOSS_BUILDER_CMD + """
         pushd fboss/fboss-image
         jq '.["fboss-platform-stack"] = {"execute": ["../fboss/oss/scripts/nhfboss-stack.sh", "platform"]}' nh-fboss-broadcom-xgs.json > platform-stack.json
         ./distro_cli/fboss-image build platform-stack.json fboss-platform-stack
@@ -309,11 +297,7 @@ heavy_genrule(
         "fboss_forwarding_stack_broadcom_xgs.tar",
         "fboss_forwarding_stack_tests_broadcom_xgs.tar",
     ],
-    cmd = """
-        if ! docker images | grep -q fboss_builder; then
-            cat $(location //fboss:fboss_builder_docker) | docker image load
-        fi
-
+    cmd = LOAD_FBOSS_BUILDER_CMD + """
         BUILD_DIR="fboss/fboss-image/.nh-broadcom-xgs"
         mkdir -p "${BUILD_DIR}"
         ln -f $(location distro_kernel_6.11.tar) "${BUILD_DIR}/distro_kernel_6.11.tar"
@@ -353,11 +337,7 @@ heavy_genrule(
         "nh-fboss-broadcom-xgs.bin",
         "nh-fboss-broadcom-xgs.tar",
     ],
-    cmd = """
-        if ! docker images | grep -q fboss_builder; then
-            cat $(location //fboss:fboss_builder_docker) | docker image load
-        fi
-
+    cmd = LOAD_FBOSS_BUILDER_CMD + """
         BUILD_DIR="fboss/fboss-image/.nh-broadcom-xgs"
         mkdir -p "${BUILD_DIR}"
 
@@ -419,11 +399,7 @@ heavy_genrule(
         "fboss_forwarding_stack_cisco_s1.tar",
         "fboss_forwarding_stack_tests_cisco_s1.tar",
     ],
-    cmd = """
-        if ! docker images | grep -q fboss_builder; then
-            cat $(location //fboss:fboss_builder_docker) | docker image load
-        fi
-
+    cmd = LOAD_FBOSS_BUILDER_CMD + """
         BUILD_DIR="fboss/fboss-image/.nh-cisco-s1"
         mkdir -p "${BUILD_DIR}"
         ln -f $(location distro_kernel_6.11.tar) "${BUILD_DIR}/distro_kernel_6.11.tar"
@@ -460,11 +436,7 @@ heavy_genrule(
     outs = [
         "nh-fboss-cisco-s1.tar",
     ],
-    cmd = """
-        if ! docker images | grep -q fboss_builder; then
-            cat $(location //fboss:fboss_builder_docker) | docker image load
-        fi
-
+    cmd = LOAD_FBOSS_BUILDER_CMD + """
         BUILD_DIR="fboss/fboss-image/.nh-cisco-s1"
         mkdir -p "${BUILD_DIR}"
 
