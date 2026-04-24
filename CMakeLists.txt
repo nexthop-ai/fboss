@@ -148,7 +148,7 @@ if (SAI_BRCM_IMPL OR SAI_TAJO_IMPL)
       message(FATAL_ERROR
         "SAI_SDK_VERSION environment variable is required when SAI_TAJO_IMPL is enabled.\n"
         "Please set SAI_SDK_VERSION to the appropriate SDK version, for example:\n"
-        "  export SAI_SDK_VERSION=TAJO_SDK_VERSION_25_11_5210")
+        "  export SAI_SDK_VERSION=TAJO_SDK_VERSION_25_11_4210")
     endif()
   endif()
 
@@ -1187,7 +1187,6 @@ if (SAI_IMPL OR BUILD_SAI_FAKE)
       sai_agent_hw_test-sai_impl
       sai_agent_scale_test-sai_impl
       sai_invariant_agent_test-sai_impl
-      sai_link_test-sai_impl
       sai_mono_link_test-sai_impl
       sai_multi_link_test-sai_impl
       sai_replayer-sai_impl
@@ -1276,7 +1275,6 @@ endif()
 
 if (BUILD_SAI_FAKE_LINK_TEST)
 add_dependencies(fboss_fake_agent_test_targets
-  sai_link_test-fake
   sai_mono_link_test-fake
   sai_multi_link_test-fake
 )
