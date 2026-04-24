@@ -4,9 +4,10 @@ run-name: Nightly Build - Full FBOSS
 on:
   # Allow manually triggering the workflow
   workflow_dispatch:
-  # Schedule build twice a day, every 12 hours (5:00 AM and 5:00 PM UTC)
+  # 7:00 PM IST (13:30 UTC) and 7:00 PM PST / 8:00 PM PDT (03:00 UTC)
   schedule:
-    - cron: "0 5,17 * * *"
+    - cron: "30 13 * * *"
+    - cron: "0 3 * * *"
 
 jobs:
   build-and-test-clang:
