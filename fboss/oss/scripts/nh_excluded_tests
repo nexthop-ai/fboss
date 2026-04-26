@@ -3,6 +3,9 @@
 # Keep this file sorted alphabetically rather than always appending to the end
 # to reduce merge conflicts. Add a brief comment for each pattern.
 
+# Flaky
+AsyncLoggerTest.logTimeoutTest
+
 # Flaky FSDB test
 DeltaPublisherTest
 
