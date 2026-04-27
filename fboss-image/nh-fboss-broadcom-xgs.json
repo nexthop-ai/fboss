@@ -8,7 +8,8 @@
   },
   "other_dependencies": [
     { "download": "file:.nh-broadcom-xgs/distro_nexthop_product_support.rpm" },
-    { "download": "file:.nh-broadcom-xgs/distro_bgp_pp.rpm" }
+    { "download": "file:.nh-broadcom-xgs/distro_bgp_pp.rpm" },
+    { "execute": ["flashrom/build.sh"], "artifact": "flashrom-1.7.0-1.x86_64.rpm" }
   ],
   "fboss-platform-stack": {
     "download": "file:.nh-broadcom-xgs/fboss_platform_stack.tar"
