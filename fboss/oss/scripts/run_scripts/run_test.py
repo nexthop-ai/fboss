@@ -123,6 +123,8 @@ SUB_CMD_SAI = "sai"
 SUB_CMD_QSFP = "qsfp"
 SUB_CMD_LINK = "link"
 SUB_CMD_SAI_AGENT = "sai_agent"
+SUB_CMD_SAI_AGENT_MONO_BINARY = "sai_agent_hw_test-sai_impl"
+SUB_CMD_SAI_AGENT_MULTI_BINARY = "multi_switch_agent_hw_test"
 SUB_CMD_PLATFORM = "platform"
 SUB_CMD_BENCHMARK = "benchmark"
 SUB_CMD_FBOSS2_INTEGRATION = "fboss2_integration"
@@ -182,7 +184,11 @@ TEST_DISABLE_SERVICES = {
         "fan_service",
         "data_corral_service",
         "qsfp_service",
-    ]
+    ],
+    SUB_CMD_SAI_AGENT_MONO_BINARY: [
+        "fboss_sw_agent",
+    ],
+    SUB_CMD_SAI_AGENT_MULTI_BINARY: SUB_CMD_SAI_AGENT_MONO_BINARY,
 }
 
 
