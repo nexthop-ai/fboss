@@ -71,14 +71,9 @@ jobs:
           output-env-credentials: true
 
       - name: Setup NHTools
-        run: |
-          set -e
-          echo "${{ secrets.RABBIT_NEXTHOP_PAT }}" | gh auth login --with-token
-          docker pull container-registry.sw.internal.nexthop.ai:443/nhtools:latest > /dev/null 2>&1
-          docker run --rm --entrypoint=/bin/cat container-registry.sw.internal.nexthop.ai:443/nhtools:latest /nhtools/nhtools-install | sudo install -m 755 -o root -g root /dev/stdin /usr/local/bin/nhtools-install
-          sudo /usr/local/bin/nhtools-install /usr/local/bin
-          sudo sed -i -e 's/^search.*//' /etc/resolv.conf
-          echo "search internal.nexthop.ai" | sudo tee -a /etc/resolv.conf > /dev/null
+        uses: nexthop-ai/nh/.github/actions/install-nhtools@main
+        with:
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
 
       - name: Download FBOSS packages from PR Validation
         env:
