@@ -177,6 +177,10 @@ FEATURE_LIST_PREFIX = "Feature List: "
 
 DEFAULT_TEST_RUN_TIMEOUT_IN_SECOND = 1200
 
+_SAI_AGENT_DISABLE_SERVICES = [
+    "fboss_sw_agent",
+]
+
 TEST_DISABLE_SERVICES = {
     SUB_ARG_PLATFORM_MANAGER_HW_TEST: [
         "platform_manager",
@@ -185,10 +189,8 @@ TEST_DISABLE_SERVICES = {
         "data_corral_service",
         "qsfp_service",
     ],
-    SUB_CMD_SAI_AGENT_MONO_BINARY: [
-        "fboss_sw_agent",
-    ],
-    SUB_CMD_SAI_AGENT_MULTI_BINARY: SUB_CMD_SAI_AGENT_MONO_BINARY,
+    SUB_CMD_SAI_AGENT_MONO_BINARY: _SAI_AGENT_DISABLE_SERVICES,
+    SUB_CMD_SAI_AGENT_MULTI_BINARY: _SAI_AGENT_DISABLE_SERVICES,
 }
 
 
@@ -775,7 +777,9 @@ class TestRunner(abc.ABC):
         test_results = []
         num_tests = len(tests_to_run)
 
-        disable_services(args.type)
+        test_binary_name = self._get_test_binary_name()
+        file_name = os.path.basename(test_binary_name)
+        disable_services(file_name)
         try:
             for idx, test_to_run in enumerate(tests_to_run):
                 test_prefix = self.COLDBOOT_PREFIX
@@ -843,7 +847,7 @@ class TestRunner(abc.ABC):
                         )
                     )
         finally:
-            enable_services(args.type)
+            enable_services(file_name)
 
         self._end_run()
         return test_outputs, test_results
