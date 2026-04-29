@@ -354,6 +354,7 @@ void PortUpdateHandler::computeFabricOverdrainPct(const StateDelta& delta) {
             "Unhandled asic type: ",
             apache::thrift::util::enumNameSafe(asicType));
     }
+    __builtin_unreachable();
   };
   for (const auto& [swIndex, bwInfo] : swIndexToBwInfo) {
     double fabricOverdrainPct = 0;
