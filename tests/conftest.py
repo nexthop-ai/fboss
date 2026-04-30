@@ -116,6 +116,7 @@ def bsp_test_runner():
     runner.close()
 
 
+@pytest.fixture
 def smoke_test_runner():
     """Fixture for FBOSS daemon smoke tests."""
     runner = SmokeTestRunner()
