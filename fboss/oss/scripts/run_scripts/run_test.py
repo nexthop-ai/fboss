@@ -1840,7 +1840,15 @@ class BenchmarkTestRunner:
             "metrics": {},
         }
 
+<<<<<<< HEAD
         json_dicts = self._find_jsons_in_str(stdout)
+=======
+        # Look for the benchmark name line (e.g., "RibResolutionBenchmark                                       1.46s   684.78m")
+        # Pattern: benchmark name followed by time and rate
+        benchmark_line_pattern = (
+            r"^([A-Za-z0-9_]+)\s+(\d+\.?\d*(?:[a-z]?s|min))\s+(\d+\.?\d*[a-z]?)$"
+        )
+>>>>>>> 8e09fb10a7 (NOS-6754: Add support to run_test.py for benchmark binaries with multiple test cases and rename symbols for clarity (#797))
 
         # Merge all JSON dicts into a flat metrics dict
         all_metrics = {}
@@ -1884,6 +1892,7 @@ class BenchmarkTestRunner:
 
         return result
 
+<<<<<<< HEAD
     BENCHMARK_CLEANUP_DELAY_SECONDS = 5
 
     @staticmethod
@@ -1903,6 +1912,18 @@ class BenchmarkTestRunner:
 
         # --json makes folly output {"BenchmarkName": <picoseconds>} instead of table
         run_cmd = [binary_name, "--json"]
+=======
+    def _run_single_benchmark(self, binary_path, test_name, args):
+        """Run a single test case within the benchmark binary and return parsed results"""
+
+        print(
+            f'########## Running benchmark binary "{binary_path}" for test: {test_name}',
+            flush=True,
+        )
+
+        # Build command to run the benchmark
+        run_cmd = [binary_path, f"--bm_regex=^{test_name}$"]
+>>>>>>> 8e09fb10a7 (NOS-6754: Add support to run_test.py for benchmark binaries with multiple test cases and rename symbols for clarity (#797))
 
         if args.config:
             run_cmd.extend(["--config", args.config, "--mgmt-if", args.mgmt_if])
@@ -1921,6 +1942,8 @@ class BenchmarkTestRunner:
 
         print(f"Running command: {' '.join(run_cmd)}", flush=True)
 
+        full_bm_name = f"{binary_path}::{test_name}"
+
         try:
             process = subprocess.Popen(
                 run_cmd,
@@ -1929,6 +1952,7 @@ class BenchmarkTestRunner:
                 text=True,
             )
 
+<<<<<<< HEAD
             stdout_lines = []
             stderr_lines = []
 
@@ -1981,8 +2005,42 @@ class BenchmarkTestRunner:
 
         except Exception as e:
             print(f"########## Error running benchmark {binary_name}: {e!s}")
+=======
+            print(f"########## Benchmark output for {full_bm_name}:")
+            print(result.stdout)
+            if result.stderr:
+                print(f"########## Benchmark stderr for {full_bm_name}:")
+                print(result.stderr)
+
+            if result.returncode != 0:
+                print(
+                    f"########## Benchmark {full_bm_name} failed with return code {result.returncode}"
+                )
+                # Parse output even on failure to get partial results
+            else:
+                print(f"########## Benchmark {full_bm_name} completed")
+            return self._parse_benchmark_output(binary_path, result.stdout)
+
+        except subprocess.TimeoutExpired:
+            print(
+                f"########## Benchmark {full_bm_name} timed out after {args.test_run_timeout} seconds"
+            )
+            # Return timed out result with no metrics
             return {
-                "benchmark_binary_name": binary_name,
+                "benchmark_binary_name": binary_path,
+                "benchmark_test_name": "",
+                "test_status": "TIMEOUT",
+                "relative_time_per_iter": "",
+                "iters_per_sec": "",
+                "cpu_time_usec": "",
+                "max_rss": "",
+            }
+        except Exception as e:
+            print(f"########## Error running benchmark {full_bm_name}: {e!s}")
+            # Return failed result with no metrics
+>>>>>>> 8e09fb10a7 (NOS-6754: Add support to run_test.py for benchmark binaries with multiple test cases and rename symbols for clarity (#797))
+            return {
+                "benchmark_binary_name": binary_path,
                 "benchmark_test_name": "",
                 "test_status": "FAILED",
                 "cpu_time_usec": "",
@@ -1992,24 +2050,24 @@ class BenchmarkTestRunner:
                 "metrics": {},
             }
 
-    def _get_benchmarks_to_run(self, filter_file=None):
-        """Get list of benchmarks to run based on filter_file or default config.
+    def _get_bm_binaries_to_run(self, filter_file=None):
+        """Get list of benchmark binaries to run based on filter_file or default config.
 
         Args:
-            filter_file: Optional path to file containing list of benchmarks.
+            filter_file: Optional path to file containing list of benchmark binaries.
                         If None, loads from T1, T2, and additional benchmark configs
 
         Returns:
-            List of benchmark names to run, or None if no benchmarks found
+            List of benchmark binary names to run, or None if no benchmark binaries found
         """
-        benchmarks_to_run = []
+        bm_binaries_to_run = []
 
         if filter_file:
             # User specified a custom filter file
             if not os.path.exists(filter_file):
                 print(f"Error: Benchmark configuration file not found: {filter_file}")
                 return None
-            benchmarks_to_run = _load_from_file(filter_file)
+            bm_binaries_to_run = _load_from_file(filter_file)
         else:
             # Default: concatenate T1, T2, and additional benchmarks
             for conf_file in [
@@ -2018,30 +2076,97 @@ class BenchmarkTestRunner:
                 self.ADDITIONAL_BENCHMARKS_CONF,
             ]:
                 if os.path.exists(conf_file):
-                    benchmarks_from_file = _load_from_file(conf_file)
-                    benchmarks_to_run.extend(benchmarks_from_file)
+                    bm_binaries_from_file = _load_from_file(conf_file)
+                    bm_binaries_to_run.extend(bm_binaries_from_file)
                 else:
                     print(f"  Warning: Configuration file not found: {conf_file}")
 
-        if not benchmarks_to_run:
-            print("Error: No benchmarks found in configuration files")
+        if not bm_binaries_to_run:
+            print("Error: No benchmark binaries found in configuration files")
             return None
 
-        return benchmarks_to_run
+        return bm_binaries_to_run
+
+    def _list_tests_in_bm_binary(self, binary_path: str) -> list[str]:
+        """List all test cases in a benchmark binary using --bm_list"""
+
+        print(
+            f"########## Finding benchmarks within benchmark binary: {binary_path}",
+            flush=True,
+        )
+
+        # Build command to list tests in the benchmark binary
+        run_cmd = [binary_path, "--bm_list"]
+        bm_list_timeout_sec = 10
+
+        print(f"Running command: {' '.join(run_cmd)}", flush=True)
+
+        try:
+            # Run the command (does NOT actually run the benchmarks, only lists them)
+            result = subprocess.run(
+                run_cmd,
+                check=False,
+                timeout=bm_list_timeout_sec,
+                capture_output=True,
+                text=True,
+            )
+
+            print(f"########## Benchmark discovery output for {binary_path}:")
+            print(result.stdout)
+            if result.stderr:
+                print(f"########## Benchmark discovery stderr for {binary_path}:")
+                print(result.stderr)
+
+            if result.returncode != 0:
+                print(
+                    f"########## Benchmark discovery for {binary_path} failed with return code {result.returncode}"
+                )
+            else:
+                print(f"########## Benchmark discovery for {binary_path} completed")
+
+        except subprocess.TimeoutExpired:
+            print(
+                f"########## Benchmark discovery for {binary_path} timed out after {bm_list_timeout_sec} seconds"
+            )
+            return []
+        except Exception as e:
+            print(f"########## Error discovering benchmarks in {binary_path}: {e!s}")
+            return []
+
+        # Parse the output for test case names
+        tests: list[str] = []
+        for line in result.stdout.splitlines():
+            stripped_line = line.strip()
+            # Skip separators or other decoration lines if any
+            if not stripped_line:
+                continue
+            if stripped_line.startswith("-"):
+                continue
+            # Stop when we reach the JSON trailer (starts with '{')
+            if stripped_line.startswith("{"):
+                break
+            tests.append(stripped_line)
+
+        print(f"Found {len(tests)} benchmarks in {binary_path}:")
+        for test in tests:
+            print(f"  - {test}")
+
+        return tests
 
     def run_test(self, args):  # noqa: PLR0912, PLR0915
         """Run benchmark test binaries"""
-        benchmarks_to_run = self._get_benchmarks_to_run(args.filter_file)
+        bm_binaries_to_run = self._get_bm_binaries_to_run(args.filter_file)
 
-        if benchmarks_to_run is None:
+        if bm_binaries_to_run is None:
             return
 
         # If --list_tests is specified, just list the benchmarks and exit
         if args.list_tests:
-            for benchmark in benchmarks_to_run:
-                print(benchmark)
+            for bm_binary in bm_binaries_to_run:
+                print(bm_binary)
             return
 
+<<<<<<< HEAD
         # Initialize known-bad regexes and thresholds
         known_bad_regexes = []
         all_thresholds = {}
@@ -2055,36 +2180,40 @@ class BenchmarkTestRunner:
             )
 
         print(f"Total benchmarks to run: {len(benchmarks_to_run)}")
+=======
+        print(f"Total benchmark binaries to run: {len(bm_binaries_to_run)}")
+>>>>>>> 8e09fb10a7 (NOS-6754: Add support to run_test.py for benchmark binaries with multiple test cases and rename symbols for clarity (#797))
 
         # Filter out binaries that don't exist
-        existing_benchmarks = []
-        missing_benchmarks = []
-        for benchmark in benchmarks_to_run:
+        existing_bm_binaries = []
+        missing_bm_binaries = []
+        for bm_binary in bm_binaries_to_run:
             # Construct full path to binary
-            binary_path = os.path.join(self.BENCHMARK_BIN_DIR, benchmark)
+            binary_path = os.path.join(self.BENCHMARK_BIN_DIR, bm_binary)
             if os.path.exists(binary_path) and os.path.isfile(binary_path):
-                existing_benchmarks.append(binary_path)
+                existing_bm_binaries.append(binary_path)
             else:
-                missing_benchmarks.append(benchmark)
+                missing_bm_binaries.append(bm_binary)
 
-        if missing_benchmarks:
+        if missing_bm_binaries:
             print(
-                f"\nWarning: {len(missing_benchmarks)} benchmark binaries not found in {self.BENCHMARK_BIN_DIR}:"
+                f"\nWarning: {len(missing_bm_binaries)} benchmark binaries not found in {self.BENCHMARK_BIN_DIR}:"
             )
-            for benchmark in missing_benchmarks:
-                print(f"  - {benchmark}")
+            for bm_binary in missing_bm_binaries:
+                print(f"  - {bm_binary}")
 
-        if not existing_benchmarks:
+        if not existing_bm_binaries:
             print(f"\nError: No benchmark binaries found in {self.BENCHMARK_BIN_DIR}.")
             print(
                 f"Make sure you have built the benchmarks with BENCHMARK_INSTALL=1 and copied them to {self.BENCHMARK_BIN_DIR} directory."
             )
             return
 
-        print(f"\nFound {len(existing_benchmarks)} benchmark binaries to run")
+        print(f"\nFound {len(existing_bm_binaries)} benchmark binaries to run")
 
-        # Run each benchmark and collect detailed results
+        # Run each benchmark binary and collect detailed results
         results = []
+<<<<<<< HEAD
         for benchmark_path in existing_benchmarks:
             benchmark_result = self._run_benchmark_binary(benchmark_path, args)
 
@@ -2135,6 +2264,15 @@ class BenchmarkTestRunner:
                 benchmark_result["threshold_details"] = ""
 
             results.append(benchmark_result)
+=======
+        for bm_binary_path in existing_bm_binaries:
+            tests = self._list_tests_in_bm_binary(bm_binary_path)
+            for test in tests:
+                benchmark_result = self._run_single_benchmark(
+                    bm_binary_path, test, args
+                )
+                results.append(benchmark_result)
+>>>>>>> 8e09fb10a7 (NOS-6754: Add support to run_test.py for benchmark binaries with multiple test cases and rename symbols for clarity (#797))
 
             # Delay between runs to allow SAI/ASIC cleanup
             print(
@@ -2175,6 +2313,7 @@ class BenchmarkTestRunner:
         print("BENCHMARK RESULTS SUMMARY")
         print("=" * 80)
         for result in results:
+<<<<<<< HEAD
             status = result["test_status"]
             threshold = result.get("threshold_status", "")
             suffix = ""
@@ -2183,6 +2322,11 @@ class BenchmarkTestRunner:
             elif threshold == "PASS":
                 suffix = " [THRESHOLD PASS]"
             print(f"{result['benchmark_binary_name']}: {status}{suffix}")
+=======
+            print(
+                f"{result['benchmark_binary_name']}::{result['benchmark_test_name']}: {result['test_status']}"
+            )
+>>>>>>> 8e09fb10a7 (NOS-6754: Add support to run_test.py for benchmark binaries with multiple test cases and rename symbols for clarity (#797))
         print("=" * 80)
 
         # Count results
