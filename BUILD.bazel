@@ -318,6 +318,7 @@ heavy_genrule(
 
 heavy_genrule(
     name = "nh-fboss-broadcom-xgs",
+    stamp = True,
     srcs = [
         "//fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm",
         "//bazel_lib:ln_or_cp",
@@ -349,6 +350,16 @@ heavy_genrule(
         ln -f $(location fboss_platform_stack.tar) "${BUILD_DIR}/fboss_platform_stack.tar"
         ln -f $(location //fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm) "${BUILD_DIR}/distro_bgp_pp.rpm"
         ln -f $(location fboss_forwarding_stack_broadcom_xgs.tar) "${BUILD_DIR}/forwarding-stack.tar"
+
+        BUILD_INFO="fboss/fboss-image/image_builder/templates/centos-09.0/root_files/etc/nexthop_build_info"
+        mkdir -p "${BUILD_INFO%/*}"
+        grep \\
+            -e 'BUILD_ID ' \\
+            -e 'GIT_COMMIT_NH ' \\
+            -e 'GIT_COMMIT_FBOSS ' \\
+            -e 'GIT_COMMIT_FBOSS_BSPS_FBOSS_BSP_KMODS ' \\
+            -e 'GIT_COMMIT_NHBROADCOMSAI_FBOSS_XGS ' \\
+            bazel-out/volatile-status.txt > "${BUILD_INFO}"
 
         pushd fboss/fboss-image
         ./distro_cli/fboss-image build nh-fboss-broadcom-xgs.json 2>&1
@@ -420,6 +431,7 @@ heavy_genrule(
 
 heavy_genrule(
     name = "nh-fboss-cisco-s1",
+    stamp = True,
     srcs = [
         "//fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm",
         "//bazel_lib:ln_or_cp",
@@ -446,6 +458,15 @@ heavy_genrule(
         ln -f $(location fboss_platform_stack.tar) "${BUILD_DIR}/fboss_platform_stack.tar"
         ln -f $(location //fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm) "${BUILD_DIR}/distro_bgp_pp.rpm"
         ln -f $(location fboss_forwarding_stack_cisco_s1.tar) "${BUILD_DIR}/forwarding-stack.tar"
+
+        BUILD_INFO="fboss/fboss-image/image_builder/templates/centos-09.0/root_files/etc/nexthop_build_info"
+        mkdir -p "${BUILD_INFO%/*}"
+        grep \\
+            -e 'BUILD_ID ' \\
+            -e 'GIT_COMMIT_NH ' \\
+            -e 'GIT_COMMIT_FBOSS ' \\
+            -e 'GIT_COMMIT_FBOSS_BSPS_FBOSS_BSP_KMODS ' \\
+            bazel-out/volatile-status.txt > "${BUILD_INFO}"
 
         pushd fboss/fboss-image
         ./distro_cli/fboss-image build nh-fboss-cisco-s1.json 2>&1

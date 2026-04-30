@@ -17,3 +17,6 @@ __pycache__/
 *.so
 .Python
 .venv/
+
+# Generated at image-build time from bazel-out/volatile-status.txt
+/fboss-image/image_builder/templates/centos-09.0/root_files/etc/nexthop_build_info
