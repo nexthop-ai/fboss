@@ -7,6 +7,7 @@ filegroup(
     visibility = ["//visibility:public"],
     srcs = [
     "fboss-image/nh-fboss-broadcom-xgs.json",
+    "fboss-image/nh-fboss-cisco-s1.json",
     ]
 )
 
@@ -182,19 +183,6 @@ heavy_genrule(
         "fboss/util/**",
     ], exclude = [
         "build/buck2/**",
-        "fboss-image/kernel",
-        "fboss-image/kernel.json",
-        "fboss-image/npu_sai.json",
-        "fboss-image/*.tar",
-        "fboss-image/*.rpm",
-        "fboss-image/*.bin",
-        "fboss-image/distro_cli/.artifacts/**",
-        "fboss-image/.docker/**",
-        "fboss-image/image_builder/output/**",
-        "fboss-image/image_builder/logs/**",
-        "fboss-image/image_builder/deps_staging/**",
-        "fboss-image/image_builder/templates/centos-09.0/root/**",
-        "fboss-image/image_builder/templates/centos-09.0/after_pkgs_install_file.json",
         # exclude generated distro artifacts dir inside fboss/oss
         "fboss/oss/scripts/dist/**",
         "**/*.swp",
@@ -244,30 +232,8 @@ filegroup(
         "fboss/thrift_visitors/**",
         "fboss/thriftpath_plugin/**",
         "fboss/util/**",
-        "fboss-image/**",
     ], exclude = [
         "build/buck2/**",
-        "fboss-image/kernel",
-        "fboss-image/kernel.json",
-        "fboss-image/npu_sai.json",
-        "fboss-image/distro_kernel_6.11.tar",
-        "fboss-image/distro_sai.tar",
-        "fboss-image/distro_nexthop_product_support.rpm",
-        "fboss-image/distro_bgp_pp.rpm",
-        "fboss-image/distro_fboss_bsp.tar",
-        "fboss-image/distro_nexthop_bsp.tar",
-        "fboss-image/fboss_platform_stack.tar",
-        "fboss-image/nh-fboss-broadcom-xgs.tar",
-        "fboss-image/nh-fboss-broadcom-xgs.bin",
-        "fboss-image/nh-fboss-cisco-s1.tar",
-        "fboss-image/distro_bgp_pp.rpm",
-        "fboss-image/distro_cli/.artifacts/**",
-        "fboss-image/.docker/**",
-        "fboss-image/image_builder/output/**",
-        "fboss-image/image_builder/logs/**",
-        "fboss-image/image_builder/deps_staging/**",
-        "fboss-image/image_builder/templates/centos-09.0/root/**",
-        "fboss-image/image_builder/templates/centos-09.0/after_pkgs_install_file.json",
         # exclude generated distro artifacts dir inside fboss/oss
         "fboss/oss/scripts/dist/**",
         "**/*.swp",
@@ -316,6 +282,23 @@ heavy_genrule(
     ],
 )
 
+# Committed image_builder sources (scripts, kiwi configs, rootfs templates)
+# consumed by the final image assembly step.
+filegroup(
+    name = "image_builder",
+    srcs = glob(
+        ["fboss-image/image_builder/**"],
+        exclude = [
+            "fboss-image/image_builder/templates/centos-09.0/root/**",
+            "fboss-image/image_builder/templates/centos-09.0/root_files/etc/nexthop_build_info",
+            "fboss-image/image_builder/templates/centos-09.0/after_pkgs_install_file.json",
+            "fboss-image/image_builder/output/**",
+            "fboss-image/image_builder/logs/**",
+            "fboss-image/image_builder/deps_staging/**",
+        ],
+    ),
+)
+
 heavy_genrule(
     name = "nh-fboss-broadcom-xgs",
     stamp = True,
@@ -330,6 +313,7 @@ heavy_genrule(
         "distro_kernel_6.11.tar",
         "fboss_platform_stack.tar",
         "fboss_forwarding_stack_broadcom_xgs.tar",
+        ":image_builder",
         "CMakeLists.txt",
         "functions.cmake",
         "sdk_dependencies.txt",
@@ -402,6 +386,7 @@ heavy_genrule(
         ":fboss_builder_docker", # Prevent concurrent building
         "CMakeLists.txt",
         "distro_kernel_6.11.tar",
+        ":image_builder",
         "functions.cmake",
         "sdk_dependencies.txt",
         ":fboss_forwarding_stack_srcs",
