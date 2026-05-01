@@ -202,9 +202,6 @@ perform_build() {
   # Navigate to FBOSS source root
   cd /var/FBOSS/fboss
 
-  # Return to FBOSS source root as nhfboss-common.sh may have changed it
-  cd /var/FBOSS/fboss
-
   log "Building FBOSS ${stack_label} stack${build_suffix}"
 
   # Save the manifests because we must modify them
@@ -239,15 +236,17 @@ perform_build() {
 
   # Install system dependencies
   log "Installing system dependencies..."
-  time nice -n 10 ./fboss/oss/scripts/run-getdeps.py install-system-deps \
+  time nice -n 10 ./fboss/oss/scripts/run-getdeps.py \
     "${npu_flags[@]}" \
+    install-system-deps \
     --recursive \
     $common_options
 
   # Build dependencies
   log "Building FBOSS dependencies..."
-  time nice -n 10 ./fboss/oss/scripts/run-getdeps.py build \
+  time nice -n 10 ./fboss/oss/scripts/run-getdeps.py \
     "${npu_flags[@]}" \
+    build \
     --build-type $BUILD_TYPE \
     --only-deps \
     $common_options
@@ -257,8 +256,9 @@ perform_build() {
   # Build FBOSS stack
   log "Building FBOSS ${stack_label} stack..."
 
-  time nice -n 10 ./fboss/oss/scripts/run-getdeps.py build \
+  time nice -n 10 ./fboss/oss/scripts/run-getdeps.py \
     "${npu_flags[@]}" \
+    build \
     --num-jobs "${num_jobs}" \
     --build-type "${BUILD_TYPE}" \
     --no-deps \
