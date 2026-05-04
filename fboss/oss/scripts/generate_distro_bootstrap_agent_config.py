@@ -468,6 +468,22 @@ def generate_config(
         "staticRoutesToNull": [],
         "staticRoutesToCPU": [],
         "acls": [],
+        "aclTableGroups": [
+            {
+                "name": "acl-table-group-ingress",
+                "aclTables": [
+                    {
+                        "name": "AclTable1",
+                        "priority": 0,
+                        "aclEntries": [],
+                        "actionTypes": [],
+                        "qualifiers": [],
+                        "udfGroups": [],
+                    }
+                ],
+                "stage": 0,
+            }
+        ],
         "aggregatePorts": [],
         "sFlowCollectors": [],
         "cpuQueues": _build_cpu_queues(),
@@ -523,6 +539,7 @@ def generate_config(
             "disable_neighbor_updates": "false",
             "ecmp_width": "320",
             "enable_1to1_intf_route_table_mapping": "true",
+            "enable_acl_table_group": "true",
             "enable_replayer": "true",
             "log_variable_name": "true",
             "multi_switch": "true",
