@@ -1,3 +1,5 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
 # Shell snippet that loads the fboss_builder docker image if it is not
 # already present. Prepend this to the `cmd` of any genrule / heavy_genrule
 # that invokes the fboss builder, and list "//fboss:fboss_builder_docker"
@@ -9,7 +11,7 @@ LOAD_FBOSS_BUILDER_CMD = """
 """
 
 def fboss_unit_test(name, tags=None):
-    native.sh_test(
+    sh_test(
         name = "unittest-" + name,
         srcs = ["fboss/oss/scripts/bazel_test.sh"],
         args = [name],
