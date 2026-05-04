@@ -5,12 +5,44 @@ on:
     types:
       - opened
       - reopened
+      - ready_for_review
       - edited
       - labeled
       - unlabeled
       - closed
       - synchronize
   merge_group:
+
+concurrency:
+  # For open PRs:
+  # - Body events (opened/edited/synchronize/closed-before-merge) share a
+  #   per-PR group.
+  # - Label events (labeled/unlabeled) share a separate per-PR group.
+  # - ready_for_review gets its own per-PR group so Jira transitions are
+  #   not cancelled by body events that follow quickly.
+  # - opened/reopened get their own per-PR group so the Jira transition
+  #   and GRECS upserts are not cancelled by an edited/synchronize event
+  #   that arrives shortly after.
+  # This lets body events cancel each other, and label events cancel each
+  # other, without cross-cancel between body, label, opened, and review flows.
+  #
+  # For merged PRs and merge_group events:
+  # - Group by run_id so closed/merged flows and merge queue runs are never
+  #   canceled.
+  group: >
+    ${{ (github.event_name == 'pull_request_target' && !github.event.pull_request.merged
+          && contains(fromJSON('["labeled","unlabeled"]'), github.event.action)
+          && format('grecs-pr-label-{0}-{1}', github.repository, github.event.pull_request.number))
+        || (github.event_name == 'pull_request_target' && !github.event.pull_request.merged
+          && github.event.action == 'ready_for_review'
+          && format('grecs-pr-review-{0}-{1}', github.repository, github.event.pull_request.number))
+        || (github.event_name == 'pull_request_target' && !github.event.pull_request.merged
+          && contains(fromJSON('["opened","reopened"]'), github.event.action)
+          && format('grecs-pr-opened-{0}-{1}', github.repository, github.event.pull_request.number))
+        || (github.event_name == 'pull_request_target' && !github.event.pull_request.merged
+          && format('grecs-pr-body-{0}-{1}', github.repository, github.event.pull_request.number))
+        || format('grecs-pr-run-{0}', github.run_id) }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
