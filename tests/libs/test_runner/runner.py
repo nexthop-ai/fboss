@@ -131,7 +131,7 @@ class BaseHwTestRunner(ABC):
     def build_test_cmd(self, hwsku: str) -> str:
         test_args = self.test_args(hwsku)
         return (
-            f"sudo su -c 'cd /opt/fboss &&  source ./bin/setup_fboss_env && "
+            f"sudo su -c 'cd /opt/fboss && "
             f" ./bin/run_test.py {test_args} --filter_file=/home/admin/tests.conf "
             f"' > {self.testlog_filepath} 2>&1"
         )
@@ -273,8 +273,8 @@ class BspTestRunner(BaseHwTestRunner):
 
     def build_test_cmd(self, hwsku: str) -> str:
         return (
-            f"sudo su -c 'cd /opt/fboss && ./bin/bsp_tests "
-            f"--enable_stress_tests "
+            f"sudo su -c 'cd /opt/fboss && source ./bin/setup_fboss_env && "
+            f"./bin/bsp_tests --enable_stress_tests "
             f"--gtest_output=xml:{self.testresult_filepath}' "
             f"> {self.testlog_filepath} 2>&1"
         )
