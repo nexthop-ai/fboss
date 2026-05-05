@@ -14,6 +14,7 @@ add_executable(fboss2_integration_test
   fboss/cli/fboss2/test/integration_test/ConfigQosPolicyMapTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigSessionClearTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigSessionRestartTest.cpp
+  fboss/cli/fboss2/test/integration_test/ConfigVlanDefaultTest.cpp
   fboss/cli/fboss2/utils/CmdInitUtils.cpp
   fboss/cli/fboss2/utils/oss/CmdInitUtils.cpp
 )

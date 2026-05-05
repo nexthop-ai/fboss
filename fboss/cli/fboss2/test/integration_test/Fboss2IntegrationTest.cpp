@@ -45,9 +45,6 @@ void Fboss2IntegrationTest::TearDown() {
 }
 
 void Fboss2IntegrationTest::discardSession() const {
-  // Delete the session files to ensure we start with a fresh session
-  // based on the current HEAD. ConfigSession::initializeSession() will
-  // reset internal state when it detects no session file exists.
   // NOLINTNEXTLINE(concurrency-mt-unsafe): HOME is read-only in practice
   const char* home = std::getenv("HOME");
   if (home == nullptr) {
@@ -89,8 +86,7 @@ Fboss2IntegrationTest::Result Fboss2IntegrationTest::executeCliCommand(
 
   // Build argv-style argument list
   // Prepend program name and --fmt json
-  std::vector<std::string> fullArgs = {
-      "fboss2_integration_test", "--fmt", "json"};
+  std::vector<std::string> fullArgs = {"fboss2", "--fmt", "json"};
   fullArgs.insert(fullArgs.end(), args.begin(), args.end());
 
   // Convert to argc/argv format
