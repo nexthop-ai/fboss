@@ -26,9 +26,13 @@ cpp_binary(
         "ConfigQosPolicyMapTest.cpp",
         "ConfigSessionClearTest.cpp",
         "ConfigSessionRestartTest.cpp",
+<<<<<<< HEAD
         "ConfigVlanPortTaggingModeTest.cpp",
         "ConfigVlanStaticMacTest.cpp",
         "ConfigVlanSwitchportAccessTest.cpp",
+=======
+        "ConfigVlanDefaultTest.cpp",
+>>>>>>> f1254e85fc (NOS-7162: Default vlan changes for fboss cli (#788))
         "Fboss2IntegrationTest.cpp",
         "//fboss/cli/fboss2:cmd-list-config-impl",
     ],

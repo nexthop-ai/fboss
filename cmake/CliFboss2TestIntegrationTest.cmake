@@ -18,9 +18,13 @@ add_executable(fboss2_integration_test
   fboss/cli/fboss2/test/integration_test/ConfigQosPolicyMapTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigSessionClearTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigSessionRestartTest.cpp
+<<<<<<< HEAD
   fboss/cli/fboss2/test/integration_test/ConfigVlanPortTaggingModeTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigVlanStaticMacTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigVlanSwitchportAccessTest.cpp
+=======
+  fboss/cli/fboss2/test/integration_test/ConfigVlanDefaultTest.cpp
+>>>>>>> f1254e85fc (NOS-7162: Default vlan changes for fboss cli (#788))
   fboss/cli/fboss2/utils/CmdInitUtils.cpp
   fboss/cli/fboss2/utils/oss/CmdInitUtils.cpp
 )
