@@ -36,6 +36,7 @@
 #include "fboss/agent/platforms/common/montblanc/MontblancPlatformMapping.h"
 #include "fboss/agent/platforms/common/morgan800cc/Morgan800ccPlatformMapping.h"
 #include "fboss/agent/platforms/common/nh4010f/Nh4010fPlatformMapping.h"
+#include "fboss/agent/platforms/common/nova4000/Nova4000PlatformMapping.h"
 #include "fboss/agent/platforms/common/tahan800bc/Tahan800bcPlatformMapping.h"
 #include "fboss/agent/platforms/common/tahansb800bc/Tahansb800bcPlatformMapping.h"
 #include "fboss/agent/platforms/common/wedge100/Wedge100PlatformMapping.h"
@@ -189,6 +190,10 @@ std::unique_ptr<PlatformMapping> initPlatformMapping(PlatformType type) {
       return platformMappingStr.empty()
           ? std::make_unique<Nh4010fPlatformMapping>()
           : std::make_unique<Nh4010fPlatformMapping>(platformMappingStr);
+    case PlatformType::PLATFORM_NOVA4000:
+      return platformMappingStr.empty()
+          ? std::make_unique<Nova4000PlatformMapping>()
+          : std::make_unique<Nova4000PlatformMapping>(platformMappingStr);
     case PlatformType::PLATFORM_ICECUBE800BANW:
       return platformMappingStr.empty()
           ? std::make_unique<Icecube800banwPlatformMapping>()
@@ -244,7 +249,6 @@ std::unique_ptr<PlatformMapping> initPlatformMapping(PlatformType type) {
     case PlatformType::PLATFORM_MERU400BIU_DEPRECATED:
     case PlatformType::PLATFORM_MERU400BFU_DEPRECATED:
     case PlatformType::PLATFORM_MERU400BIA_DEPRECATED:
-    case PlatformType::PLATFORM_NOVA4000:
     case PlatformType::PLATFORM_UNKNOWN:
       throw FbossError("Unsupported platform type");
   }

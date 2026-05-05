@@ -128,6 +128,7 @@ target_link_libraries(sai_platform
   icecube800banw_platform_mapping
   icecube800bc_platform_mapping
   nh4010f_platform_mapping
+  nova4000_platform_mapping
   icetea800bc_platform_mapping
   j4sim_platform_mapping
   led_structs_types_cpp2
