@@ -222,7 +222,7 @@ class SaiAgentTestRunner(BaseHwTestRunner):
     def test_args(self, hwsku: str) -> str:
         config_name = _HW_TEST_CONFIG_NAME.get(hwsku, hwsku)
         logger.info("hwsku=%s hw_test_config=%s", hwsku, config_name)
-        return f"sai_agent --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON"
+        return f"sai_agent --agent-run-mode mono --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON"
 
 
 class QsfpTestRunner(BaseHwTestRunner):
