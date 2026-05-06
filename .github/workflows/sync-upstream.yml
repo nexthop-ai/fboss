@@ -164,6 +164,14 @@ jobs:
           echo "pr_created=true" >> "$GITHUB_OUTPUT"
           echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
 
+      - name: Add merge guard review thread
+        if: steps.create-pr.outputs.pr_created == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          PR_URL: ${{ steps.create-pr.outputs.pr_url }}
+        run: |
+          .github/scripts/add_sync_merge_guard.sh "$PR_URL"
+
   # Slack notification: sync merged successfully
   notify-sync-success:
     name: Notify Slack (Success)
@@ -264,6 +272,14 @@ jobs:
 
           echo "pr_created=true" >> "$GITHUB_OUTPUT"
           echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Add merge guard review thread
+        if: steps.create-pr.outputs.pr_created == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          PR_URL: ${{ steps.create-pr.outputs.pr_url }}
+        run: |
+          .github/scripts/add_sync_merge_guard.sh "$PR_URL"
 
   # Slack notification: build/test failed, PR created
   notify-build-failure:

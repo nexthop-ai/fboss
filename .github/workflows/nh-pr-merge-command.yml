@@ -274,6 +274,12 @@ jobs:
 
           echo "✅ All required checks passed or skipped for PR #${PR_NUMBER}"
 
+      - name: Resolve merge guard threads
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          .github/scripts/resolve_sync_merge_guard.sh "${{ steps.pr-details.outputs.pr_number }}"
+
       - name: Merge PR
         id: merge
         env:
