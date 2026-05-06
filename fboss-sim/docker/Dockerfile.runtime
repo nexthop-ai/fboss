@@ -81,6 +81,7 @@ RUN chmod +x /tmp/setup-container.sh && \
 
 ENV PATH="/opt/fboss/bin:/usr/local/bin:${PATH}" \
     LD_LIBRARY_PATH="/opt/fboss/lib" \
+    FBOSS2_DEV_PATH="/opt/fboss/bin/fboss2-dev" \
     MALLOC_ARENA_MAX=1 \
     MALLOC_MMAP_THRESHOLD_=0 \
     MALLOC_CHECK_=0

@@ -604,10 +604,24 @@ SaiPortTraits::Attributes::AttributePfcPauseDurationOverride::operator()() {
 std::optional<sai_attr_id_t>
 SaiPortTraits::Attributes::AttributeCablePropagationDelayMeasure::operator()() {
 #if defined(BRCM_SAI_SDK_DNX_GTE_14_0) || defined(BRCM_SAI_SDK_XGS_GTE_13_0)
+  /* NH TODO: re-enable once sai_impl headers expose
+   * SAI_PORT_ATTR_CABLE_PROPAGATION_DELAY_MEASURE.
   return SAI_PORT_ATTR_CABLE_PROPAGATION_DELAY_MEASURE;
+  */
+  return std::nullopt;
 #else
   return std::nullopt;
 #endif
+}
+
+std::optional<sai_attr_id_t>
+SaiPortTraits::Attributes::AttributeLinkUpDebouncePeriodMs::operator()() {
+  return std::nullopt;
+}
+
+std::optional<sai_attr_id_t>
+SaiPortTraits::Attributes::AttributeLinkDownDebouncePeriodMs::operator()() {
+  return std::nullopt;
 }
 
 const std::vector<sai_stat_id_t>&
