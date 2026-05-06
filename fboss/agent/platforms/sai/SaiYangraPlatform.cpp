@@ -195,6 +195,11 @@ SaiYangraPlatform::getSaiProfileVendorExtensionValues() const {
   // throttle other TCs.
   kv_map.insert(std::make_pair("SAI_KEY_NO_HQOS_QUEUE_TO_SUBGROUP", "1"));
 
+  kv_map.insert(std::make_pair("SAI_KEY_SDK_SNIFFER_MODE", "cyclic"));
+  kv_map.insert(
+      std::make_pair("SAI_KEY_SDK_SNIFFER_LOG_MAX_SIZE", "314572800"));
+  kv_map.insert(std::make_pair("SAI_KEY_SDK_SNIFFER_LOG_NUM", "4"));
+  kv_map.insert(std::make_pair("SAI_KEY_SDK_SNIFFER_WRITE_INTERVAL", "10"));
   return kv_map;
 }
 

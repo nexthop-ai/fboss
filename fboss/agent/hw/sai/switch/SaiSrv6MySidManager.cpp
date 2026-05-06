@@ -31,7 +31,7 @@ SaiMySidEntryTraits::CreateAttributes getMySidCreateAttributes(
     const std::optional<SaiMySidEntryHandle::NextHopHandle>& nexthopHandle,
     SaiManagerTable* managerTable) {
   sai_int32_t endpointBehavior;
-  sai_object_id_t vrId{SAI_NULL_OBJECT_ID};
+  std::optional<SaiMySidEntryTraits::Attributes::Vrf> vrId;
   switch (mySid.getType()) {
     case MySidType::ADJACENCY_MICRO_SID:
       endpointBehavior = SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_UA;
@@ -46,7 +46,8 @@ SaiMySidEntryTraits::CreateAttributes getMySidCreateAttributes(
           managerTable->virtualRouterManager().getVirtualRouterHandle(
               RouterID(0));
       CHECK(vrHandle) << "No default virtual router";
-      vrId = vrHandle->virtualRouter->adapterKey();
+      vrId = SaiMySidEntryTraits::Attributes::Vrf{
+          vrHandle->virtualRouter->adapterKey()};
 #else
       throw FbossError("Decapsulate with uSids requires SAI >= 1.16.0");
 #endif
@@ -73,7 +74,7 @@ SaiMySidEntryTraits::CreateAttributes getMySidCreateAttributes(
 
   return SaiMySidEntryTraits::CreateAttributes{
       endpointBehavior,
-      SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_PSP_AND_USP,
+      SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_NONE,
       nextHopId,
       vrId,
       packetAction};

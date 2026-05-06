@@ -29,9 +29,23 @@ git init
 git config user.email "fboss@container"
 git config user.name "FBOSS Container"
 
-# Copy split config as default agent.conf
+# Install split config under cli/ and symlink agent.conf, matching the
+# layout fboss2-dev produces after its first commit. Without this, sessions
+# created on a fresh runtime capture an empty base SHA (no commits in the
+# repo), which silently disables config-session conflict detection. See
+# ConfigSession::initializeGit().
 echo "→ Installing split agent config..."
-cp /root/config/split.conf /etc/coop/agent.conf
+mkdir -p /etc/coop/cli
+cp /root/config/split.conf /etc/coop/cli/agent.conf
+ln -sf cli/agent.conf /etc/coop/agent.conf
+
+# Seed an initial commit so ConfigSession::initializeSession() captures a
+# non-empty base_ on the very first session. Include an empty metadata file
+# so `config rollback <initial-sha>` can read cli/cli_metadata.json from the
+# revision (ConfigSession::rollback requires it).
+echo '{"action":{},"commands":[],"base":""}' >/etc/coop/cli/cli_metadata.json
+git add cli/agent.conf cli/cli_metadata.json agent.conf
+git commit -m "Initial fboss-sim runtime config" --quiet
 
 # 5. Configure services to use jemalloc instead of glibc malloc
 # jemalloc is more robust against memory corruption issues in fake SAI

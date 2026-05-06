@@ -151,6 +151,8 @@ struct RouteDetails {
   10: optional switch_config.AclLookupClass classID;
   11: optional switch_config.SwitchingMode overridenEcmpMode;
   12: optional list<common.NextHopThrift> overridenNextHops;
+  13: optional i64 resolvedNextHopSetID;
+  14: optional i64 normalizedResolvedNextHopSetID;
 }
 
 struct MplsRouteDetails {
@@ -312,7 +314,7 @@ struct FabricLinkMonPortStats {
  * ports and received back via the IP2ME (CPU_IS_NHOP) trap mechanism.
  */
 struct CpuLatencyPortStats {
-  1: double latencyMs;
+  1: double latencyUs;
 }
 
 /*

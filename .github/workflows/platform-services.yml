@@ -71,7 +71,7 @@ jobs:
           retention-days: 14
   Platform-Services-Test:
     if: github.repository_owner == 'facebook'
-    runs-on: ubuntu-latest
+    runs-on: 4-core-ubuntu
     needs: Platform-Services-Build
     steps:
       - name: Check out repository code
