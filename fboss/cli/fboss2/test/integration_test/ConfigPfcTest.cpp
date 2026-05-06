@@ -12,6 +12,7 @@
  */
 
 #include <fmt/format.h>
+<<<<<<< HEAD
 #include <folly/String.h>
 #include <folly/json/dynamic.h>
 #include <folly/logging/xlog.h>
@@ -83,6 +84,54 @@ class ConfigPfcTest : public Fboss2IntegrationTest {
     }
     runCmd({"/usr/bin/rm", "-f", kSnapshot});
     Fboss2IntegrationTest::TearDown();
+||||||| 6a42110932
+=======
+#include <folly/json/dynamic.h>
+#include <folly/logging/xlog.h>
+#include <gtest/gtest.h>
+#include <cstdint>
+#include <initializer_list>
+#include <string>
+#include <vector>
+#include "fboss/cli/fboss2/test/integration_test/Fboss2IntegrationTest.h"
+
+using namespace facebook::fboss;
+
+namespace {
+// Use stable (non-unique) names because the agent only supports a single
+// bufferPool in the running config ("Only one bufferPool supported!").
+// Unique-per-run names would accumulate pools across runs and wedge the
+// agent on next restart. With stable names each run overwrites the prior
+// definition. Shared with ConfigPortQueueConfigTest for the same reason.
+constexpr auto kBufferPoolName = "cli_e2e_test_buffer_pool";
+constexpr auto kPolicyName = "cli_e2e_test_pg_policy";
+
+// MMUScalingFactor enum values from switch_config.thrift
+constexpr int kOneHalf = 8;
+constexpr int kTwo = 9;
+// PfcWatchdogRecoveryAction enum: NO_DROP=0, DROP=1
+constexpr int kRecoveryNoDrop = 0;
+
+struct PgSpec {
+  int id;
+  const char* scalingFactorName; // "ONE_HALF" / "TWO"
+  int scalingFactorInt;
+  int64_t minLimitBytes;
+  int64_t headroomLimitBytes;
+  int64_t resumeOffsetBytes;
+};
+} // namespace
+
+class ConfigPfcTest : public Fboss2IntegrationTest {
+ protected:
+  std::string bufferPoolName_ = kBufferPoolName;
+  std::string policyName_ = kPolicyName;
+
+  void SetUp() override {
+    Fboss2IntegrationTest::SetUp();
+    XLOG(INFO) << "Using buffer-pool: " << bufferPoolName_;
+    XLOG(INFO) << "Using pg-policy:  " << policyName_;
+>>>>>>> 674c9f54578416c4a2aec75305664ce7b949c961
   }
 
   void configureBufferPool(int sharedBytes, int headroomBytes) {

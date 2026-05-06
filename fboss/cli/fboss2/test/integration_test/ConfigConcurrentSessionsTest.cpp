@@ -9,6 +9,7 @@
  * in-process-CLI limitation where a single process can only track one active
  * session.
  *
+<<<<<<< HEAD
  * The path to the fboss2-dev binary is taken from FBOSS2_DEV_PATH, falling
  * back to /opt/fboss/bin/fboss2-dev (the deployed location on the DUT).
  *
@@ -113,6 +114,116 @@ class ConfigConcurrentSessionsTest : public Fboss2IntegrationTest {
 TEST_F(ConfigConcurrentSessionsTest, ConflictAndRebase) {
   auto probe = runAsUser(user1Home_, {"--help"});
   ASSERT_EQ(probe.exitCode, 0) << probe.stderr;
+||||||| 6a42110932
+=======
+ * The path to the fboss2-dev binary is taken from FBOSS2_DEV_PATH (falling
+ * back to "fboss2-dev" in PATH). The test is skipped if no such binary is
+ * runnable — when the suite is deployed alongside fboss2-dev on the DUT,
+ * the caller sets FBOSS2_DEV_PATH explicitly.
+ *
+ * Verifies:
+ *   1. User1 opens a session and commits successfully.
+ *   2. User2's commit is rejected because the system config has changed.
+ *   3. User2's rebase surfaces a conflict (same field, different value).
+ */
+
+#include <folly/Subprocess.h>
+#include <folly/logging/xlog.h>
+#include <gtest/gtest.h>
+#include <unistd.h>
+#include <algorithm>
+#include <cctype>
+#include <cstdlib>
+#include <filesystem>
+#include <string>
+#include <system_error>
+#include <utility>
+#include <vector>
+#include "fboss/cli/fboss2/test/integration_test/Fboss2IntegrationTest.h"
+#include "folly/String.h"
+
+using namespace facebook::fboss;
+namespace fs = std::filesystem;
+
+namespace {
+std::string toLower(std::string s) {
+  std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+  return s;
+}
+
+std::string fboss2DevPath() {
+  // NOLINTNEXTLINE(concurrency-mt-unsafe)
+  const char* env = std::getenv("FBOSS2_DEV_PATH");
+  return env ? env : "fboss2-dev";
+}
+} // namespace
+
+class ConfigConcurrentSessionsTest : public Fboss2IntegrationTest {
+ protected:
+  fs::path user1Home_;
+  fs::path user2Home_;
+
+  void SetUp() override {
+    Fboss2IntegrationTest::SetUp();
+    auto tmpBase = fs::temp_directory_path() /
+        ("fboss2_concurrent_" + std::to_string(::getpid()));
+    user1Home_ = tmpBase / "user1";
+    user2Home_ = tmpBase / "user2";
+    fs::create_directories(user1Home_);
+    fs::create_directories(user2Home_);
+  }
+
+  void TearDown() override {
+    std::error_code ec;
+    fs::remove_all(user1Home_.parent_path(), ec);
+    Fboss2IntegrationTest::TearDown();
+  }
+
+  struct SubprocResult {
+    int exitCode;
+    std::string stdout;
+    std::string stderr;
+  };
+
+  SubprocResult runAsUser(
+      const fs::path& home,
+      const std::vector<std::string>& args) const {
+    std::vector<std::string> cmd = {fboss2DevPath()};
+    cmd.insert(cmd.end(), args.begin(), args.end());
+    XLOG(INFO) << "[HOME=" << home.string() << "] " << folly::join(" ", cmd);
+
+    folly::Subprocess::Options options;
+    options.pipeStdout();
+    options.pipeStderr();
+
+    std::vector<std::string> env;
+    // Inherit the caller's environment, but override HOME.
+    // NOLINTNEXTLINE(concurrency-mt-unsafe): SetUp/TearDown single-threaded
+    for (char** e = environ; *e != nullptr; ++e) {
+      std::string entry(*e);
+      if (entry.rfind("HOME=", 0) != 0) {
+        env.push_back(std::move(entry));
+      }
+    }
+    env.push_back("HOME=" + home.string());
+
+    folly::Subprocess proc(cmd, options, /*executable=*/nullptr, &env);
+    auto [out, err] = proc.communicate();
+    int exitCode = proc.wait().exitStatus();
+    return SubprocResult{exitCode, std::move(out), std::move(err)};
+  }
+};
+
+TEST_F(ConfigConcurrentSessionsTest, ConflictAndRebase) {
+  // Quick sanity check — skip if fboss2-dev is not invokable.
+  {
+    auto probe = runAsUser(user1Home_, {"--help"});
+    if (probe.exitCode != 0) {
+      GTEST_SKIP() << "Cannot exec fboss2-dev (set FBOSS2_DEV_PATH). stderr="
+                   << probe.stderr;
+    }
+  }
+>>>>>>> 674c9f54578416c4a2aec75305664ce7b949c961
 
   XLOG(INFO) << "[Step 1] Finding test interface...";
   Interface intf = findFirstEthInterface();

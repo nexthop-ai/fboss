@@ -16,6 +16,7 @@
  * then assigns the policy to an interface and verifies the running config.
  */
 
+<<<<<<< HEAD
 #include <folly/String.h>
 #include <folly/json/dynamic.h>
 #include <folly/logging/xlog.h>
@@ -72,6 +73,43 @@ class ConfigPortQueueConfigTest : public Fboss2IntegrationTest {
     }
     runCmd({"/usr/bin/rm", "-f", kSnapshot});
     Fboss2IntegrationTest::TearDown();
+||||||| 6a42110932
+=======
+#include <folly/json/dynamic.h>
+#include <folly/logging/xlog.h>
+#include <gtest/gtest.h>
+#include <string>
+#include <vector>
+#include "fboss/cli/fboss2/test/integration_test/Fboss2IntegrationTest.h"
+
+using namespace facebook::fboss;
+
+namespace {
+// Stable names (see matching rationale in ConfigPfcTest.cpp). Shares the
+// buffer pool name with ConfigPfcTest because FBOSS only permits one
+// bufferPool in the running config.
+constexpr auto kBufferPoolName = "cli_e2e_test_buffer_pool";
+constexpr auto kQueuingPolicyName = "cli_e2e_test_queue_policy";
+
+// Enum values from switch_config.thrift
+constexpr int kSchedWrr = 0;
+constexpr int kSchedSp = 1;
+constexpr int kScalingTwo = 9;
+constexpr int kStreamUnicast = 0;
+constexpr int kStreamMulticast = 1;
+constexpr int kBehaviorEcn = 1;
+} // namespace
+
+class ConfigPortQueueConfigTest : public Fboss2IntegrationTest {
+ protected:
+  std::string bufferPoolName_ = kBufferPoolName;
+  std::string policyName_ = kQueuingPolicyName;
+
+  void SetUp() override {
+    Fboss2IntegrationTest::SetUp();
+    XLOG(INFO) << "Using buffer-pool: " << bufferPoolName_;
+    XLOG(INFO) << "Using queuing-policy: " << policyName_;
+>>>>>>> 674c9f54578416c4a2aec75305664ce7b949c961
   }
 
   void configureBufferPool(int sharedBytes, int headroomBytes) {

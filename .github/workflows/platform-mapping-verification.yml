@@ -69,7 +69,12 @@ jobs:
           # Explicitly set the retention at the object level
           retention-days: 14
   Platform-Mapping-Generation-Verification:
+<<<<<<< HEAD
     if: github.repository_owner == 'facebook'
+||||||| 6a42110932
+    runs-on: ubuntu-latest
+=======
+>>>>>>> 674c9f54578416c4a2aec75305664ce7b949c961
     runs-on: 4-core-ubuntu
     needs: Platform-Mapping-Generation-Build
     steps:
