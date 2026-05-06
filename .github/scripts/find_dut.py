@@ -43,7 +43,7 @@ import sys
 from typing import Iterator, List
 
 # Supported FBOSS platform prefixes: Golden Eagle, Wedge, Minipack
-FBOSS_PLATFORMS = ("gold")
+FBOSS_PLATFORMS = ("gold",)
 
 # Known devices that are incompatible with the CLI integration tests
 INCOMPATIBLE_DUTS = {"gold208"}
