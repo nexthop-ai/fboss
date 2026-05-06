@@ -51,13 +51,14 @@ jobs:
     outputs:
       batch_id: ${{ steps.schedule-tests.outputs.batch_id }}
 
-    env:
-      BUILD_ID: ${{ inputs.build_id }}
-      PRIORITY: ${{ inputs.priority }}
-      TARGET_TESTBEDS: ${{ inputs.target_testbeds }}
-      FILE_PATH_FILTER: ${{ inputs.file_path_filter }}
-
     steps:
+      # Local composite action lookup needs the repo on disk; cheap and
+      # one-time per call.
+      - name: Checkout
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          repository: nexthop-ai/private-fboss
       - name: "Install NHTools"
         uses: nexthop-ai/nh/.github/actions/install-nhtools@main
         with:
@@ -76,37 +77,9 @@ jobs:
 
       - name: Schedule FBOSS tests
         id: schedule-tests
-        run: |
-          # Build the nh te schedule command
-          CMD="nh te schedule"
-          CMD="$CMD --build-id $BUILD_ID"
-          CMD="$CMD --test-env fboss"
-          CMD="$CMD --nos fboss"
-          CMD="$CMD --priority $PRIORITY"
-
-          # Use file_path_filter if provided, otherwise default to all eligible tests
-          if [ -n "$FILE_PATH_FILTER" ]; then
-            CMD="$CMD --file-path-filter $FILE_PATH_FILTER"
-          else
-            CMD="$CMD --all-eligible-tests"
-          fi
-
-          if [ -n "$TARGET_TESTBEDS" ]; then
-            CMD="$CMD --target-testbeds $TARGET_TESTBEDS"
-          fi
-
-          exit_code=0
-          output=$($CMD 2>&1) || exit_code=$?
-
-          # Try to extract Batch ID
-          batch_id=$(echo "$output" | grep "Batch ID:" | awk '{print $3}')
-
-          # Success Condition: Exit code is 0 AND Batch ID is a valid number
-          if [[ ${exit_code:-0} -eq 0 ]] && [[ -n "$batch_id" ]] && [[ "$batch_id" =~ ^[0-9]+$ ]] && [[ "$batch_id" -ne 0 ]]; then
-            echo "✅ Success! Batch ID: $batch_id"
-            echo "batch_id=$batch_id" >> "$GITHUB_OUTPUT"
-          else
-            echo "⚠️ Attempt failed."
-            echo "$output"
-            exit 1
-          fi
+        uses: ./.github/actions/fboss-schedule-test
+        with:
+          build_id: ${{ inputs.build_id }}
+          priority: ${{ inputs.priority }}
+          target_testbeds: ${{ inputs.target_testbeds }}
+          file_path_filter: ${{ inputs.file_path_filter }}

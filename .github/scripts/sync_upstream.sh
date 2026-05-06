@@ -170,6 +170,14 @@ fi
 # Output variables for the workflow
 echo "sync_branch=$sync_branch" >>"$GITHUB_OUTPUT"
 echo "stable_commit=$stable_commit" >>"$GITHUB_OUTPUT"
+# HEAD here is the merge commit produced by `git merge "$stable_commit"` (or the
+# auto-resolve commit). This is what `push-to-main` will publish, and what any
+# pre-merge gate (e.g. monobuild + smoke) needs to validate. `stable_commit` is
+# only one parent of this merge and is not sufficient to test on its own.
+# Capture into a variable first so `set -e` aborts on `git rev-parse` failure
+# (which it doesn't do for command substitution embedded in `echo "x=$(...)"`).
+submodule_commit=$(git rev-parse HEAD)
+echo "submodule_commit=$submodule_commit" >>"$GITHUB_OUTPUT"
 
 if [[ $has_conflicts == "false" ]]; then
   echo_info "🚀 No conflicts - will push directly to $base_branch"

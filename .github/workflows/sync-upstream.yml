@@ -15,6 +15,7 @@ jobs:
     outputs:
       sync_branch: ${{ steps.sync.outputs.sync_branch }}
       stable_commit: ${{ steps.sync.outputs.stable_commit }}
+      submodule_commit: ${{ steps.sync.outputs.submodule_commit }}
       push_direct: ${{ steps.sync.outputs.push_direct }}
       conflicting_files: ${{ steps.sync.outputs.conflicting_files }}
     steps:
@@ -53,10 +54,51 @@ jobs:
       use_clang: true
       ref: ${{ needs.sync-upstream.outputs.sync_branch }}
 
-  # Push to main after successful build (no conflicts case)
+  # Build the full nh image with the candidate fboss SHA so the smoke tests
+  # exercise an image that actually contains the upstream changes being synced.
+  monobuild:
+    name: Monobuild (candidate fboss)
+    # Independent of build-and-test: monobuild builds the full nh image; the
+    # two run in parallel after sync-upstream.
+    needs: sync-upstream
+    if: needs.sync-upstream.outputs.push_direct == 'true'
+    permissions:
+      id-token: write
+      contents: read
+    uses: nexthop-ai/nh/.github/workflows/monobuild.reusable.yml@main
+    with:
+      submodule: fboss
+      nh_branch: main
+      submodule_commit: ${{ needs.sync-upstream.outputs.submodule_commit }}
+    secrets:
+      GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+
+  # Schedule smoke tests against the candidate image and block until results
+  # are available (or timeout_minutes elapses, which fails the job).
+  smoke-tests:
+    name: Smoke Tests
+    needs: monobuild
+    if: needs.monobuild.result == 'success' && needs.monobuild.outputs.build_id != ''
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/fboss-sync-smoke.reusable.yml
+    with:
+      build_id: ${{ needs.monobuild.outputs.build_id }}
+      # The test surface for the sync gate. Pinned here (rather than
+      # defaulted in the reusable) so changes to what we run on every sync
+      # are visible at the call site.
+      file_path_filter: "tests/platform/t0_platform_hw_tests.py"
+      timeout_minutes: 240
+    secrets:
+      GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+      AWS_NEXIS_BUILDRUNNER_SSH_KEY: ${{ secrets.AWS_NEXIS_BUILDRUNNER_SSH_KEY }}
+      AZURE_NEXIS_BUILDRUNNER_SSH_KEY: ${{ secrets.AZURE_NEXIS_BUILDRUNNER_SSH_KEY }}
+      NEXIS_BUILDRUNNER_TASKRABBIT_SSH_KEY: ${{ secrets.NEXIS_BUILDRUNNER_TASKRABBIT_SSH_KEY }}
+
   push-to-main:
     name: Push to main
-    needs: [sync-upstream, build-and-test]
+    needs: [sync-upstream, build-and-test, monobuild, smoke-tests]
     if: needs.sync-upstream.outputs.push_direct == 'true'
     runs-on: cloudstack-ubuntu24-small
     steps:
@@ -192,8 +234,14 @@ jobs:
   # Create PR when build/test fails (so someone can fix the build failure)
   create-pr-build-failure:
     name: Create PR for build failure
-    needs: [sync-upstream, build-and-test]
-    if: always() && needs.sync-upstream.outputs.push_direct == 'true' && needs.sync-upstream.outputs.sync_branch != '' && needs.build-and-test.result == 'failure'
+    needs: [sync-upstream, build-and-test, monobuild, smoke-tests]
+    if: >-
+      always() &&
+      needs.sync-upstream.outputs.push_direct == 'true' &&
+      needs.sync-upstream.outputs.sync_branch != '' &&
+      (needs.build-and-test.result == 'failure' ||
+       needs.monobuild.result == 'failure' ||
+       needs.smoke-tests.result == 'failure')
     runs-on: cloudstack-ubuntu24-small
     outputs:
       pr_created: ${{ steps.create-pr.outputs.pr_created }}
@@ -283,8 +331,8 @@ jobs:
 
   # Slack notification: build/test failed, PR created
   notify-build-failure:
-    name: Notify Slack (Build Failed)
-    needs: [sync-upstream, build-and-test, create-pr-build-failure]
+    name: Notify Slack (Sync Gate Failed)
+    needs: [sync-upstream, build-and-test, monobuild, smoke-tests, create-pr-build-failure]
     if: always() && needs.create-pr-build-failure.outputs.pr_created == 'true'
     runs-on: cloudstack-ubuntu24-small
     steps:
@@ -295,7 +343,7 @@ jobs:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           payload: |
             {
-              "text": ":x: Build/test failed for upstream commit `${{ needs.sync-upstream.outputs.stable_commit }}`. A <${{ needs.create-pr-build-failure.outputs.pr_url }}|sync PR> has been created and requires a manual fix. (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|workflow run>)"
+              "text": ":x: Sync pre-merge check failed for upstream commit `${{ needs.sync-upstream.outputs.stable_commit }}`. A <${{ needs.create-pr-build-failure.outputs.pr_url }}|sync PR> has been created and requires a manual fix. (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|workflow run>)"
             }
 
   # Slack notification: PR created for conflict resolution

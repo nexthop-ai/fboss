@@ -1,0 +1,170 @@
+name: FBOSS Sync Smoke Tests
+# Pre-merge gate for fboss upstream syncs. Sequentially schedules a test
+# batch for each testbed pool, then a single wait job polls all batches in
+# parallel and reports failures. The PR sees 2 check rows (Schedule pools
+# and Wait & Verify); only Wait & Verify is long-running, so during the
+# polling phase only one check is in-progress.
+
+on:
+  workflow_call:
+    secrets:
+      GH_TOKEN:
+        description: "Token used to clone nh repo"
+        required: true
+      AWS_NEXIS_BUILDRUNNER_SSH_KEY:
+        required: true
+      AZURE_NEXIS_BUILDRUNNER_SSH_KEY:
+        required: true
+      NEXIS_BUILDRUNNER_TASKRABBIT_SSH_KEY:
+        required: true
+    inputs:
+      build_id:
+        description: "Build ID produced by monobuild for the candidate fboss SHA"
+        required: true
+        type: string
+      file_path_filter:
+        description: "Glob selecting which tests to run on every pool. Required (no default) because the chosen test surface is a deliberate sync-gate decision and is expected to evolve."
+        required: true
+        type: string
+      timeout_minutes:
+        description: "Job-level timeout for the wait phase (covers the slowest pool). Required (no default) so the choice is visible at every top-level call site rather than absorbed by a default."
+        required: true
+        type: number
+      poll_interval_seconds:
+        description: "Seconds between polls per batch."
+        required: false
+        type: number
+        default: 30
+
+jobs:
+  schedule-all:
+    name: Schedule pools
+    runs-on: cloudstack-ubuntu24-small
+    timeout-minutes: 30
+    permissions:
+      id-token: write
+      contents: read
+    outputs:
+      batches: ${{ steps.aggregate.outputs.batches }}
+
+    steps:
+      - name: Checkout
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          repository: nexthop-ai/private-fboss
+      - name: Install NHTools
+        uses: nexthop-ai/nh/.github/actions/install-nhtools@main
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          aws_ssh_key: ${{ secrets.AWS_NEXIS_BUILDRUNNER_SSH_KEY }}
+          azure_ssh_key: ${{ secrets.AZURE_NEXIS_BUILDRUNNER_SSH_KEY }}
+          taskrabbit_ssh_key: ${{ secrets.NEXIS_BUILDRUNNER_TASKRABBIT_SSH_KEY }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::867344435357:role/GitHubActions-EC2-Role
+          aws-region: us-east-2
+          role-duration-seconds: 14400
+          output-env-credentials: true
+
+      # Each pool is scheduled via the shared composite action so the
+      # `nh te schedule` invocation lives in exactly one place. Steps execute
+      # sequentially in declaration order; each takes only seconds.
+
+      - name: Schedule Gold Eagle
+        id: schedule-gold-eagle
+        uses: ./.github/actions/fboss-schedule-test
+        with:
+          build_id: ${{ inputs.build_id }}
+          priority: 75
+          target_testbeds: "gold[2-9].*"
+          file_path_filter: ${{ inputs.file_path_filter }}
+
+      - name: Schedule Wedge800B
+        id: schedule-wedge800b
+        uses: ./.github/actions/fboss-schedule-test
+        with:
+          build_id: ${{ inputs.build_id }}
+          priority: 75
+          target_testbeds: "wdg10.*"
+          file_path_filter: ${{ inputs.file_path_filter }}
+
+      - name: Schedule Wedge800C
+        id: schedule-wedge800c
+        uses: ./.github/actions/fboss-schedule-test
+        with:
+          build_id: ${{ inputs.build_id }}
+          priority: 75
+          target_testbeds: "wdg15.*"
+          file_path_filter: ${{ inputs.file_path_filter }}
+
+      - name: Schedule Minipack3
+        id: schedule-minipack3
+        uses: ./.github/actions/fboss-schedule-test
+        with:
+          build_id: ${{ inputs.build_id }}
+          priority: 75
+          target_testbeds: "fboss.*"
+          file_path_filter: ${{ inputs.file_path_filter }}
+
+      - name: Schedule Black Kite
+        id: schedule-black-kite
+        uses: ./.github/actions/fboss-schedule-test
+        with:
+          build_id: ${{ inputs.build_id }}
+          priority: 75
+          target_testbeds: "blkt.*"
+          file_path_filter: ${{ inputs.file_path_filter }}
+
+      - name: Aggregate batch IDs into JSON
+        id: aggregate
+        env:
+          GE_ID: ${{ steps.schedule-gold-eagle.outputs.batch_id }}
+          W8B_ID: ${{ steps.schedule-wedge800b.outputs.batch_id }}
+          W8C_ID: ${{ steps.schedule-wedge800c.outputs.batch_id }}
+          MP3_ID: ${{ steps.schedule-minipack3.outputs.batch_id }}
+          BK_ID: ${{ steps.schedule-black-kite.outputs.batch_id }}
+        run: |
+          batches=$(jq -n \
+            --arg ge "$GE_ID" \
+            --arg w8b "$W8B_ID" \
+            --arg w8c "$W8C_ID" \
+            --arg mp3 "$MP3_ID" \
+            --arg bk "$BK_ID" \
+            '[
+              {"pool_name":"Gold Eagle", "batch_id":$ge},
+              {"pool_name":"Wedge800B",  "batch_id":$w8b},
+              {"pool_name":"Wedge800C",  "batch_id":$w8c},
+              {"pool_name":"Minipack3",  "batch_id":$mp3},
+              {"pool_name":"Black Kite", "batch_id":$bk}
+            ]')
+
+          echo "All pools scheduled:"
+          echo "$batches" | jq
+
+          # Multiline heredoc so jq's pretty-printed JSON (with newlines)
+          # passes through GITHUB_OUTPUT cleanly.
+          {
+            echo "batches<<EOF"
+            echo "$batches"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+  wait-all:
+    name: Wait & Verify
+    needs: schedule-all
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/fboss-batch-wait.reusable.yml
+    with:
+      batches: ${{ needs.schedule-all.outputs.batches }}
+      timeout_minutes: ${{ inputs.timeout_minutes }}
+      poll_interval_seconds: ${{ inputs.poll_interval_seconds }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      AWS_NEXIS_BUILDRUNNER_SSH_KEY: ${{ secrets.AWS_NEXIS_BUILDRUNNER_SSH_KEY }}
+      AZURE_NEXIS_BUILDRUNNER_SSH_KEY: ${{ secrets.AZURE_NEXIS_BUILDRUNNER_SSH_KEY }}
+      NEXIS_BUILDRUNNER_TASKRABBIT_SSH_KEY: ${{ secrets.NEXIS_BUILDRUNNER_TASKRABBIT_SSH_KEY }}

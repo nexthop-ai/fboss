@@ -1,0 +1,71 @@
+name: Schedule FBOSS Test
+description: |
+  Runs `nh te schedule` for an fboss test batch and returns the batch_id.
+  Designed to be called from steps inside a job that has already installed
+  nhtools and configured AWS credentials. Lightweight on purpose so callers
+  can invoke it multiple times in a loop (e.g. fboss-sync-smoke schedules
+  per testbed pool) without re-installing tools per call.
+
+inputs:
+  build_id:
+    description: "Build ID to schedule against"
+    required: true
+  priority:
+    description: "Scheduler priority (0-100, higher = more important)"
+    required: false
+    default: "50"
+  target_testbeds:
+    description: "Comma-separated testbed names or regex patterns"
+    required: false
+    default: ""
+  file_path_filter:
+    description: "Glob selecting which tests to run. Empty -> --all-eligible-tests."
+    required: false
+    default: ""
+
+outputs:
+  batch_id:
+    description: "Batch ID returned by the scheduler"
+    value: ${{ steps.schedule.outputs.batch_id }}
+
+runs:
+  using: composite
+  steps:
+    - name: Schedule
+      id: schedule
+      shell: bash
+      env:
+        BUILD_ID: ${{ inputs.build_id }}
+        PRIORITY: ${{ inputs.priority }}
+        TARGET_TESTBEDS: ${{ inputs.target_testbeds }}
+        FILE_PATH_FILTER: ${{ inputs.file_path_filter }}
+      run: |
+        CMD="nh te schedule"
+        CMD="$CMD --build-id $BUILD_ID"
+        CMD="$CMD --test-env fboss"
+        CMD="$CMD --nos fboss"
+        CMD="$CMD --priority $PRIORITY"
+
+        if [ -n "$FILE_PATH_FILTER" ]; then
+          CMD="$CMD --file-path-filter $FILE_PATH_FILTER"
+        else
+          CMD="$CMD --all-eligible-tests"
+        fi
+
+        if [ -n "$TARGET_TESTBEDS" ]; then
+          CMD="$CMD --target-testbeds $TARGET_TESTBEDS"
+        fi
+
+        exit_code=0
+        output=$($CMD 2>&1) || exit_code=$?
+
+        batch_id=$(echo "$output" | grep "Batch ID:" | awk '{print $3}')
+
+        if [[ ${exit_code:-0} -eq 0 ]] && [[ -n "$batch_id" ]] && [[ "$batch_id" =~ ^[0-9]+$ ]] && [[ "$batch_id" -ne 0 ]]; then
+          echo "✅ Success! Batch ID: $batch_id"
+          echo "batch_id=$batch_id" >> "$GITHUB_OUTPUT"
+        else
+          echo "⚠️ Schedule failed."
+          echo "$output"
+          exit 1
+        fi

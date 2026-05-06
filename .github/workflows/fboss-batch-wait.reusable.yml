@@ -1,0 +1,166 @@
+name: FBOSS Batch Wait
+# Polls multiple test batches sequentially in a single loop and reports
+# per-pool pass/fail at the end. Designed to be the single check that
+# gates a multi-pool smoke run.
+#
+# Loop semantics:
+#   - On each cycle, query each still-pending batch once.
+#   - When a batch reaches 100%, record pass/fail and stop polling it.
+#   - Do NOT break early on failure — keep polling the others so the final
+#     report shows every pool's result.
+#   - Exit when all batches have completed.
+#   - Job-level timeout-minutes is the hard cap; if exceeded, the runner
+#     is killed and the workflow fails (no per-pool report in that case,
+#     but the polling log shows what was still in progress).
+
+on:
+  workflow_call:
+    secrets:
+      GH_TOKEN:
+        description: "Token used to clone nh repo when installing nhtools"
+        required: false
+      AWS_NEXIS_BUILDRUNNER_SSH_KEY:
+        required: true
+      AZURE_NEXIS_BUILDRUNNER_SSH_KEY:
+        required: true
+      NEXIS_BUILDRUNNER_TASKRABBIT_SSH_KEY:
+        required: true
+    inputs:
+      batches:
+        description: 'JSON array of {pool_name, batch_id} objects to wait on, e.g. ''[{"pool_name":"Gold Eagle","batch_id":"12345"},...]''.'
+        required: true
+        type: string
+      timeout_minutes:
+        description: "Job-level timeout (hard cap on the whole wait). Required (no default) so the caller picks a value appropriate to the test surface."
+        required: true
+        type: number
+      poll_interval_seconds:
+        description: "Seconds to sleep between polling cycles."
+        required: false
+        type: number
+        default: 30
+
+jobs:
+  wait:
+    name: Wait & Verify
+    runs-on: cloudstack-ubuntu24-small
+    timeout-minutes: ${{ inputs.timeout_minutes }}
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      BATCHES: ${{ inputs.batches }}
+      POLL_INTERVAL: ${{ inputs.poll_interval_seconds }}
+
+    steps:
+      - name: Install NHTools
+        uses: nexthop-ai/nh/.github/actions/install-nhtools@main
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          aws_ssh_key: ${{ secrets.AWS_NEXIS_BUILDRUNNER_SSH_KEY }}
+          azure_ssh_key: ${{ secrets.AZURE_NEXIS_BUILDRUNNER_SSH_KEY }}
+          taskrabbit_ssh_key: ${{ secrets.NEXIS_BUILDRUNNER_TASKRABBIT_SSH_KEY }}
+
+      - name: Wait for all batches
+        run: |
+          set -uo pipefail
+
+          # Parse input into parallel arrays.
+          mapfile -t POOL_NAMES < <(echo "$BATCHES" | jq -r '.[].pool_name')
+          mapfile -t BATCH_IDS  < <(echo "$BATCHES" | jq -r '.[].batch_id')
+          N=${#POOL_NAMES[@]}
+
+          if [ "$N" -eq 0 ]; then
+            echo "❌ No batches provided"
+            exit 1
+          fi
+
+          # Per-pool state machine: "pending" -> "pass" or "fail".
+          # Once a pool leaves "pending", we stop polling it but keep
+          # printing its last-known status each cycle.
+          declare -a STATE
+          declare -a DISPLAY        # what to show for this pool each cycle
+          declare -a FAILED_COUNT
+          for ((i=0; i<N; i++)); do
+            STATE[i]="pending"
+            DISPLAY[i]="(not yet polled)"
+            FAILED_COUNT[i]=0
+          done
+
+          echo "Polling ${N} batches sequentially every ${POLL_INTERVAL}s"
+          echo
+
+          cycle=0
+          while :; do
+            cycle=$((cycle + 1))
+            echo "=== Cycle ${cycle} ==="
+
+            all_done=1
+            for ((i=0; i<N; i++)); do
+              pool="${POOL_NAMES[i]}"
+              bid="${BATCH_IDS[i]}"
+
+              # Only poll pools that haven't reached a terminal state yet.
+              if [ "${STATE[i]}" = "pending" ]; then
+                if ! summary=$(nh te batch summary "$bid" 2>&1); then
+                  DISPLAY[i]="⚠️  query failed (transient?)"
+                  all_done=0
+                else
+                  progress=$(echo "$summary" | grep "Percentage completed:" | awk '{print $3}' | sed 's/%//' | awk '{printf "%.0f", $1}')
+                  if ! [[ "$progress" =~ ^[0-9]+$ ]]; then
+                    DISPLAY[i]="⚠️  could not parse progress"
+                    all_done=0
+                  elif [ "$progress" -ge 100 ]; then
+                    failed=$(echo "$summary" | grep "Failed tests:" | awk '{print $3}')
+                    if [[ "$failed" =~ ^[0-9]+$ ]] && [ "$failed" -gt 0 ]; then
+                      STATE[i]="fail"
+                      FAILED_COUNT[i]="$failed"
+                      DISPLAY[i]="❌ DONE (fail, ${failed} test(s))"
+                    else
+                      STATE[i]="pass"
+                      DISPLAY[i]="✅ DONE (pass)"
+                    fi
+                  elif [ "$progress" -eq 0 ]; then
+                    DISPLAY[i]="⏸  0% (not started)"
+                    all_done=0
+                  else
+                    DISPLAY[i]="⏳ ${progress}%"
+                    all_done=0
+                  fi
+                fi
+              fi
+
+              # Print this pool's status every cycle, regardless of state,
+              # so a single cycle block tells you where every pool stands.
+              echo "  ${pool} (batch ${bid}): ${DISPLAY[i]}"
+            done
+
+            echo  # blank line between cycles for readability
+
+            if [ "$all_done" -eq 1 ]; then
+              break
+            fi
+            sleep "$POLL_INTERVAL"
+          done
+
+          # Final report — every pool, regardless of outcome.
+          echo
+          echo "=== Final Results ==="
+          fails=0
+          for ((i=0; i<N; i++)); do
+            case "${STATE[i]}" in
+              pass)
+                echo "✅ ${POOL_NAMES[i]} (batch ${BATCH_IDS[i]}): PASS"
+                ;;
+              fail)
+                echo "❌ ${POOL_NAMES[i]} (batch ${BATCH_IDS[i]}): FAIL (${FAILED_COUNT[i]} test(s))"
+                fails=$((fails + 1))
+                ;;
+            esac
+          done
+
+          if [ "$fails" -gt 0 ]; then
+            echo "❌ ${fails} of ${N} pools failed"
+            exit 1
+          fi
+          echo "✅ All ${N} pools passed"
