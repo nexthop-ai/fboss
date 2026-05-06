@@ -363,6 +363,50 @@ class TestRunner(abc.ABC):
     def _filter_tests(self, tests: list[str]) -> list[str]:
         pass
 
+    def _write_synthetic_failure_xml(self, test_to_run: str, reason: str) -> None:
+        """Write a minimal GTest XML marking test_to_run as failed.
+
+        Called when the test binary crashes or times out without producing
+        its own XML, so the result aggregation records a real failure instead
+        of silently producing tests=0 (which nhtest maps to SKIP).
+        """
+        parts = test_to_run.split(".", 1)
+        suite_name = parts[0] if len(parts) == 2 else "Unknown"
+        case_name = parts[1] if len(parts) == 2 else test_to_run
+        timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+
+        testsuites = ET.Element(
+            "testsuites",
+            tests="1",
+            failures="1",
+            disabled="0",
+            errors="0",
+            time="0.0",
+            timestamp=timestamp,
+        )
+        testsuite = ET.SubElement(
+            testsuites,
+            "testsuite",
+            name=suite_name,
+            tests="1",
+            failures="1",
+            disabled="0",
+            errors="0",
+            time="0.0",
+        )
+        testcase = ET.SubElement(
+            testsuite,
+            "testcase",
+            name=case_name,
+            classname=suite_name,
+            time="0.0",
+        )
+        ET.SubElement(testcase, "failure", message=reason).text = reason
+        ET.indent(testsuites)
+        with open(self.TESTRESULT_CURRENT_RUN_FILE, "w") as f:
+            f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+            f.write(ET.tostring(testsuites, encoding="unicode"))
+
     def _get_sai_replayer_log_path(
         self,
         test_prefix: str,
@@ -659,6 +703,8 @@ class TestRunner(abc.ABC):
             print(f"Test output {output}", flush=True)
             stderr = e.stderr.decode("utf-8") if e.stderr else None
             print(f"Test error {stderr}", flush=True)
+            timeout_reason = f"Test timed out after {test_run_timeout_in_second}s"
+            self._write_synthetic_failure_xml(test_to_run, timeout_reason)
             run_test_result = (
                 "[  TIMEOUT ] "
                 + test_prefix
@@ -674,6 +720,8 @@ class TestRunner(abc.ABC):
             print(f"Test output {output}", flush=True)
             stderr = e.stderr.decode("utf-8") if e.stderr else None
             print(f"Test error {stderr}", flush=True)
+            crash_reason = f"Test binary exited with return code {e.returncode}"
+            self._write_synthetic_failure_xml(test_to_run, crash_reason)
             run_test_result = (
                 "[   FAILED ] " + test_prefix + test_to_run + " (0 ms)"
             ).encode("utf-8")
