@@ -183,11 +183,16 @@ jobs:
             fi
           done <<< "$ruleset_ids"
 
-          # Get check runs (GitHub Apps, some CI systems)
-          check_runs=$(gh api repos/${{ github.repository }}/commits/${HEAD_SHA}/check-runs)
+          # Get check runs (GitHub Apps, some CI systems).
+          # Paginate to capture all runs — without --paginate gh defaults to 30 results
+          # per page, so on PRs with many re-runs (e.g. cancelled concurrency runs) the
+          # actually-required checks can fall off the first page and get treated as pending.
+          check_runs=$(gh api --paginate "repos/${{ github.repository }}/commits/${HEAD_SHA}/check-runs?per_page=100" \
+            | jq -s '{check_runs: map(.check_runs[])}')
 
-          # Get commit statuses (GitHub Actions workflows)
-          commit_statuses=$(gh api repos/${{ github.repository }}/commits/${HEAD_SHA}/status)
+          # Get commit statuses (GitHub Actions workflows). Same pagination concern as above.
+          commit_statuses=$(gh api --paginate "repos/${{ github.repository }}/commits/${HEAD_SHA}/status?per_page=100" \
+            | jq -s '{statuses: map(.statuses[])}')
 
           # Find failed or incomplete required checks
           failed_required=()
@@ -205,9 +210,16 @@ jobs:
               "\(.status)|\(.conclusion)"
             ')
 
-            # If not found in check runs, try commit statuses
+            # If not found in check runs, try commit statuses.
+            # When there are multiple statuses with the same context (e.g. after re-runs),
+            # take the most recent one (highest ID = most recent).
             if [[ -z "$check_info" ]]; then
-              status_info=$(jq <<<"$commit_statuses" -r --arg name "$check_name" '.statuses[] | select(.context == $name) | .state')
+              status_info=$(jq <<<"$commit_statuses" -r --arg name "$check_name" '
+                [.statuses[] | select(.context == $name)] |
+                sort_by(.id) | reverse |
+                .[0] // empty |
+                .state
+              ')
               if [[ -n "$status_info" ]]; then
                 # Convert status state to check run format
                 case "$status_info" in
