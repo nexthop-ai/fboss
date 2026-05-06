@@ -8,7 +8,6 @@ on:
   # Allow manually triggering the workflow
   workflow_dispatch:
   push:
-<<<<<<< HEAD
     branches: [main]
     paths:
       - 'fboss-image/**'
@@ -20,13 +19,6 @@ concurrency:
 permissions:
   id-token: write
   contents: read
-||||||| 6a42110932
-    branches: [ main ]
-=======
-    branches: [ main ]
-    paths:
-      - 'fboss-image/**'
->>>>>>> 674c9f54578416c4a2aec75305664ce7b949c961
 
 jobs:
   Distro-Image-Build:

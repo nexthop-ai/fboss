@@ -17,7 +17,6 @@
 #include <folly/logging/xlog.h>
 #include <gtest/gtest.h>
 #include <optional>
-<<<<<<< HEAD
 #include <set>
 #include <string>
 #include "fboss/cli/fboss2/test/integration_test/Fboss2IntegrationTest.h"
@@ -88,45 +87,6 @@ TEST_F(ConfigVlanSwitchportAccessTest, SetAndVerifyAccessVlan) {
   ASSERT_FALSE(candidateVlans.empty())
       << "Need at least 2 VLANs with L3 interfaces to test transition";
   int testVlan = *candidateVlans.begin();
-||||||| 6a42110932
-=======
-#include <string>
-#include "fboss/cli/fboss2/test/integration_test/Fboss2IntegrationTest.h"
-
-using namespace facebook::fboss;
-
-class ConfigVlanSwitchportAccessTest : public Fboss2IntegrationTest {
- protected:
-  // 'switchport access vlan' writes to sw.ports[].ingressVlan in the running
-  // config. show-interface's 'vlan' field is derived from a different source
-  // (L3 interface / portID mapping), so is not a reliable read-back.
-  std::optional<int> getIngressVlan(const std::string& portName) const {
-    auto config = getRunningConfig();
-    const auto& sw = config["sw"];
-    if (!sw.count("ports")) {
-      return std::nullopt;
-    }
-    for (const auto& port : sw["ports"]) {
-      if (port.count("name") && port["name"].asString() == portName) {
-        if (port.count("ingressVlan") && !port["ingressVlan"].isNull()) {
-          return static_cast<int>(port["ingressVlan"].asInt());
-        }
-        return std::nullopt;
-      }
-    }
-    return std::nullopt;
-  }
-};
-
-TEST_F(ConfigVlanSwitchportAccessTest, SetAndVerifyAccessVlan) {
-  XLOG(INFO) << "[Step 1] Finding an interface...";
-  Interface intf = findFirstEthInterface();
-  auto originalOpt = getIngressVlan(intf.name);
-  ASSERT_TRUE(originalOpt.has_value())
-      << "Port " << intf.name << " has no ingressVlan in running config";
-  int originalVlan = *originalOpt;
-  int testVlan = (originalVlan == 4094) ? originalVlan - 1 : originalVlan + 1;
->>>>>>> 674c9f54578416c4a2aec75305664ce7b949c961
   XLOG(INFO) << "  Using " << intf.name << " (ingressVlan: " << originalVlan
              << " -> " << testVlan << ")";
 

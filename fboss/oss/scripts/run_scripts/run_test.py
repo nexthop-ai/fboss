@@ -2018,13 +2018,7 @@ class BenchmarkTestRunner:
                 idx += 1
         return results
 
-<<<<<<< HEAD
     def _parse_benchmark_output(self, binary_path, stdout):
-||||||| 6a42110932
-    def _parse_benchmark_output(self, binary_name, stdout):
-=======
-    def _parse_benchmark_output(self, binary_name, stdout):
->>>>>>> 674c9f54578416c4a2aec75305664ce7b949c961
         """Parse benchmark output to extract metrics.
 
         With --json flag, the binary outputs multiple JSON objects:
@@ -2101,30 +2095,7 @@ class BenchmarkTestRunner:
         return result
 
     BENCHMARK_CLEANUP_DELAY_SECONDS = 5
-<<<<<<< HEAD
-||||||| 6a42110932
-    def _run_benchmark_binary(self, binary_name, args):
-        """Run a single benchmark binary and return parsed results"""
-        print(f"########## Running benchmark binary: {binary_name}", flush=True)
-=======
 
-    @staticmethod
-    def _read_stream(stream, lines_list, prefix=""):
-        """Read lines from a stream, print them in real-time, and collect them."""
-        for line in stream:
-            print(f"{prefix}{line}", end="", flush=True)
-            lines_list.append(line)
-
-    def _run_benchmark_binary(self, binary_name, args):
-        """Run a single benchmark binary and return parsed results.
-
-        Uses Popen to stream output in real-time instead of buffering
-        until process exit, so users can see benchmark progress.
-        """
-        print(f"########## Running benchmark binary: {binary_name}", flush=True)
->>>>>>> 674c9f54578416c4a2aec75305664ce7b949c961
-
-<<<<<<< HEAD
     @staticmethod
     def _read_stream(stream, lines_list, prefix=""):
         """Read lines from a stream, print them in real-time, and collect them."""
@@ -2145,13 +2116,6 @@ class BenchmarkTestRunner:
 
         # --json makes folly output {"BenchmarkName": <picoseconds>} instead of table
         run_cmd = [binary_path, "--json", f"--bm_regex=^{test_name}$"]
-||||||| 6a42110932
-        # Build command to run the benchmark
-        run_cmd = [binary_name]
-=======
-        # --json makes folly output {"BenchmarkName": <picoseconds>} instead of table
-        run_cmd = [binary_name, "--json"]
->>>>>>> 674c9f54578416c4a2aec75305664ce7b949c961
 
         if args.config:
             run_cmd.extend(["--config", args.config, "--mgmt-if", args.mgmt_if])
@@ -2201,7 +2165,6 @@ class BenchmarkTestRunner:
                 stdout_thread.join()
                 stderr_thread.join()
                 print(
-<<<<<<< HEAD
                     f"\n########## Benchmark {full_bm_name} timed out after "
                     f"{args.test_run_timeout} seconds"
                 )
@@ -2230,58 +2193,10 @@ class BenchmarkTestRunner:
                 print(f"\n########## Benchmark {full_bm_name} completed")
 
             return self._parse_benchmark_output(binary_path, captured_stdout)
-||||||| 6a42110932
-            # Return timed out result with no metrics
-            return {
-                "benchmark_binary_name": binary_name,
-                "benchmark_test_name": "",
-                "test_status": "TIMEOUT",
-                "relative_time_per_iter": "",
-                "iters_per_sec": "",
-                "cpu_time_usec": "",
-                "max_rss": "",
-            }
-=======
-                    f"\n########## Benchmark {binary_name} timed out after "
-                    f"{args.test_run_timeout} seconds"
-                )
-                return {
-                    "benchmark_binary_name": binary_name,
-                    "benchmark_test_name": "",
-                    "test_status": "TIMEOUT",
-                    "cpu_time_usec": "",
-                    "max_rss": "",
-                    "cpu_rx_pps": "",
-                    "cpu_tx_pps": "",
-                    "metrics": {},
-                }
-
-            stdout_thread.join()
-            stderr_thread.join()
-
-            captured_stdout = "".join(stdout_lines)
-
-            if process.returncode != 0:
-                print(
-                    f"\n########## Benchmark {binary_name} failed with "
-                    f"return code {process.returncode}"
-                )
-            else:
-                print(f"\n########## Benchmark {binary_name} completed")
-
-            return self._parse_benchmark_output(binary_name, captured_stdout)
->>>>>>> 674c9f54578416c4a2aec75305664ce7b949c961
 
         except Exception as e:
-<<<<<<< HEAD
             print(f"########## Error running benchmark {full_bm_name}: {e!s}")
             # Return failed result with no metrics
-||||||| 6a42110932
-            print(f"########## Error running benchmark {binary_name}: {e!s}")
-            # Return failed result with no metrics
-=======
-            print(f"########## Error running benchmark {binary_name}: {e!s}")
->>>>>>> 674c9f54578416c4a2aec75305664ce7b949c961
             return {
                 "benchmark_binary_name": binary_path,
                 "benchmark_test_name": test_name,
@@ -2330,7 +2245,6 @@ class BenchmarkTestRunner:
 
         return bm_binaries_to_run
 
-<<<<<<< HEAD
     def _list_tests_in_bm_binary(self, binary_path: str) -> list[str]:
         """List all test cases in a benchmark binary using --bm_list"""
 
@@ -2397,10 +2311,6 @@ class BenchmarkTestRunner:
 
         return tests
 
-||||||| 6a42110932
-    def run_test(self, args):  # noqa: PLR0912 - complex benchmark orchestration; splitting would harm readability
-=======
->>>>>>> 674c9f54578416c4a2aec75305664ce7b949c961
     def run_test(self, args):  # noqa: PLR0912, PLR0915
         """Run benchmark test binaries"""
         bm_binaries_to_run = self._get_bm_binaries_to_run(args.filter_file)
@@ -2426,13 +2336,7 @@ class BenchmarkTestRunner:
                 f"and {len(all_thresholds)} threshold configs for '{platform_key}'"
             )
 
-<<<<<<< HEAD
         print(f"Total benchmark binaries to run: {len(bm_binaries_to_run)}")
-||||||| 6a42110932
-        print(f"Total benchmarks to run: {len(benchmarks_to_run)}")
-=======
-        print(f"Total benchmarks to run: {len(benchmarks_to_run)}")
->>>>>>> 674c9f54578416c4a2aec75305664ce7b949c961
 
         # Filter out binaries that don't exist
         existing_bm_binaries = []
@@ -2463,7 +2367,6 @@ class BenchmarkTestRunner:
 
         # Run each benchmark binary and collect detailed results
         results = []
-<<<<<<< HEAD
         for bm_binary_path in existing_bm_binaries:
             tests = self._list_tests_in_bm_binary(bm_binary_path)
             for test in tests:
@@ -2530,62 +2433,6 @@ class BenchmarkTestRunner:
                     flush=True,
                 )
                 time.sleep(self.BENCHMARK_CLEANUP_DELAY_SECONDS)
-||||||| 6a42110932
-        for benchmark_path in existing_benchmarks:
-            benchmark_result = self._run_benchmark_binary(benchmark_path, args)
-            results.append(benchmark_result)
-=======
-        for benchmark_path in existing_benchmarks:
-            benchmark_result = self._run_benchmark_binary(benchmark_path, args)
-
-            test_name = benchmark_result.get("benchmark_test_name", "")
-
-            # Check if known bad test
-            if (
-                test_name
-                and known_bad_regexes
-                and TestRunner._test_matches_any_regex(
-                    self, test_name, known_bad_regexes
-                )
-            ):
-                benchmark_result["test_status"] = "SKIPPED"
-                benchmark_result["threshold_status"] = "N/A"
-                benchmark_result["threshold_details"] = "Known bad test"
-                print(f"  >> SKIPPED (known bad): {test_name}")
-            elif (
-                benchmark_result["test_status"] == "OK"
-                and all_thresholds
-                and platform_key
-            ):
-                # Check thresholds for passing benchmarks
-                is_multi = "multi_switch" in os.path.basename(benchmark_path)
-                thresholds = self._find_thresholds_for_benchmark(
-                    benchmark_result.get("metrics", {}),
-                    is_multi,
-                    platform_key,
-                    all_thresholds,
-                )
-                if thresholds:
-                    violations = self._check_thresholds(benchmark_result, thresholds)
-                    if violations:
-                        benchmark_result["threshold_status"] = "EXCEEDED"
-                        benchmark_result["threshold_details"] = "; ".join(violations)
-                        print(
-                            f"  >> THRESHOLD EXCEEDED: {test_name}: "
-                            f"{benchmark_result['threshold_details']}"
-                        )
-                    else:
-                        benchmark_result["threshold_status"] = "PASS"
-                        benchmark_result["threshold_details"] = ""
-                else:
-                    benchmark_result["threshold_status"] = "NO_THRESHOLD"
-                    benchmark_result["threshold_details"] = ""
-            else:
-                benchmark_result["threshold_status"] = "N/A"
-                benchmark_result["threshold_details"] = ""
-
-            results.append(benchmark_result)
->>>>>>> 674c9f54578416c4a2aec75305664ce7b949c961
 
             # Delay between runs to allow SAI/ASIC cleanup
             print(
@@ -2633,15 +2480,9 @@ class BenchmarkTestRunner:
                 suffix = f" [THRESHOLD EXCEEDED: {result['threshold_details']}]"
             elif threshold == "PASS":
                 suffix = " [THRESHOLD PASS]"
-<<<<<<< HEAD
             print(
                 f"{result['benchmark_binary_name']}::{result['benchmark_test_name']}: {status}{suffix}"
             )
-||||||| 6a42110932
-            print(f"{result['benchmark_binary_name']}: {result['test_status']}")
-=======
-            print(f"{result['benchmark_binary_name']}: {status}{suffix}")
->>>>>>> 674c9f54578416c4a2aec75305664ce7b949c961
         print("=" * 80)
 
         # Count results
