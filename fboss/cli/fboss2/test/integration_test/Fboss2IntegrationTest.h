@@ -148,6 +148,14 @@ class Fboss2IntegrationTest : public ::testing::Test {
   void waitForAgentReady(
       std::chrono::seconds timeout = std::chrono::seconds(300)) const;
 
+  /**
+   * Dump systemd unit status and the tail of the agent log to stderr.
+   * Called from waitForAgentReady() on timeout so CI output captures why the
+   * agent never became reachable (otherwise we only see "connection refused"
+   * polls and have nothing to triage from).
+   */
+  void dumpAgentDiagnostics() const;
+
  private:
   Interface parseInterfaceJson(const folly::dynamic& data) const;
 
