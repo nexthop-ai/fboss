@@ -183,16 +183,10 @@ jobs:
             fi
           done <<< "$ruleset_ids"
 
-          # Get check runs (GitHub Apps, some CI systems).
-          # Paginate to capture all runs — without --paginate gh defaults to 30 results
-          # per page, so on PRs with many re-runs (e.g. cancelled concurrency runs) the
-          # actually-required checks can fall off the first page and get treated as pending.
-          check_runs=$(gh api --paginate "repos/${{ github.repository }}/commits/${HEAD_SHA}/check-runs?per_page=100" \
-            | jq -s '{check_runs: map(.check_runs[])}')
-
-          # Get commit statuses (GitHub Actions workflows). Same pagination concern as above.
-          commit_statuses=$(gh api --paginate "repos/${{ github.repository }}/commits/${HEAD_SHA}/status?per_page=100" \
-            | jq -s '{statuses: map(.statuses[])}')
+          # Fetch the combined commit status once. The combined endpoint deduplicates
+          # per context server-side, returning only the most recent state per context,
+          # so we can look up any required status by context without paginating.
+          commit_statuses=$(gh api "repos/${{ github.repository }}/commits/${HEAD_SHA}/status?per_page=100")
 
           # Find failed or incomplete required checks
           failed_required=()
@@ -200,25 +194,27 @@ jobs:
           while IFS= read -r check_name; do
             [[ -z "$check_name" ]] && continue
 
-            # First try to find in check runs
-            # When there are multiple check runs with the same name (e.g. after re-runs),
-            # take the most recent one (highest ID = most recent)
-            check_info=$(jq <<<"$check_runs" -r --arg name "$check_name" '
-              [.check_runs[] | select(.name == $name)] |
-              sort_by(.id) | reverse |
-              .[0] // empty |
-              "\(.status)|\(.conclusion)"
-            ')
+            # Query the check-runs API filtered to this specific check name with
+            # filter=latest. This returns only the latest run per check_suite for the
+            # given name, so we don't have to fetch and paginate through every run on
+            # the commit (which on sync PRs can include dozens of cancelled re-runs).
+            # If multiple suites still produce a run with the same name, pick the
+            # highest id (most recent).
+            encoded_name=$(jq -rn --arg n "$check_name" '$n|@uri')
+            check_info=$(gh api "repos/${{ github.repository }}/commits/${HEAD_SHA}/check-runs?check_name=${encoded_name}&filter=latest&per_page=100" \
+              | jq -r '
+                  [.check_runs[]] |
+                  sort_by(.id) | reverse |
+                  .[0] // empty |
+                  "\(.status)|\(.conclusion)"
+                ')
 
-            # If not found in check runs, try commit statuses.
-            # When there are multiple statuses with the same context (e.g. after re-runs),
-            # take the most recent one (highest ID = most recent).
+            # If not found in check runs, try commit statuses. The combined /status
+            # endpoint already returns one entry per context (the latest), so no
+            # client-side dedup is required.
             if [[ -z "$check_info" ]]; then
               status_info=$(jq <<<"$commit_statuses" -r --arg name "$check_name" '
-                [.statuses[] | select(.context == $name)] |
-                sort_by(.id) | reverse |
-                .[0] // empty |
-                .state
+                .statuses[]? | select(.context == $name) | .state
               ')
               if [[ -n "$status_info" ]]; then
                 # Convert status state to check run format
