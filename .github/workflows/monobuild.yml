@@ -23,3 +23,27 @@ jobs:
     secrets:
       GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
     name: Monobuild
+
+  # Smoke tests for upstream sync PRs only — gated on the PR title produced
+  # by sync-upstream.yml. Other PRs/pushes/merge-groups skip this job.
+  smoke-tests:
+    name: Smoke Tests
+    needs: monobuild
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.title == '[sync] Sync with upstream stable commit' &&
+      needs.monobuild.result == 'success' &&
+      needs.monobuild.outputs.build_id != ''
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/fboss-sync-smoke.reusable.yml
+    with:
+      build_id: ${{ needs.monobuild.outputs.build_id }}
+      file_path_filter: "tests/platform/t0_platform_hw_tests.py"
+      timeout_minutes: 240
+    secrets:
+      GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+      AWS_NEXIS_BUILDRUNNER_SSH_KEY: ${{ secrets.AWS_NEXIS_BUILDRUNNER_SSH_KEY }}
+      AZURE_NEXIS_BUILDRUNNER_SSH_KEY: ${{ secrets.AZURE_NEXIS_BUILDRUNNER_SSH_KEY }}
+      NEXIS_BUILDRUNNER_TASKRABBIT_SSH_KEY: ${{ secrets.NEXIS_BUILDRUNNER_TASKRABBIT_SSH_KEY }}
