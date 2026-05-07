@@ -194,9 +194,9 @@ jobs:
         run: |
           DUT="${{ steps.prepare_dut.outputs.dut_name }}"
           if ! nh dvc ssh "$DUT" -c "./fboss2_integration_test"; then
-            echo "::warning::Integration tests failed on DUT $DUT."
+            echo "::error::Integration tests failed on DUT $DUT."
             echo "tests_passed=false" >> "$GITHUB_OUTPUT"
-            exit 0
+            exit 1
           fi
           echo "tests_passed=true" >> "$GITHUB_OUTPUT"
 
