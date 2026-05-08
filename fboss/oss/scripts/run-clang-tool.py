@@ -22,6 +22,7 @@ from pathlib import Path
 DEFAULT_BUILD_DIR = "/var/FBOSS/tmp_bld_dir/build/fboss"
 RAM_PER_WORKER_GB = 6  # Clang tools use a lot of RAM.
 CPP_EXTENSIONS = {".cpp", ".h"}  # Nothing else is used in FBOSS
+REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
 def set_oom_score() -> None:
@@ -122,6 +123,49 @@ def run_on_file(
     cmd = [tool, "-p", build_dir, *extra_args, filepath]
     result = subprocess.run(cmd, capture_output=True, text=True, check=False)
     return filepath, result.returncode, result.stdout + result.stderr
+
+
+def refresh_compile_commands_if_stale(compile_commands: Path, files: list[str]) -> None:
+    """If we have a Bazel build (MODULE.bazel present) and compile_commands.json
+    is missing or older than any input file, regenerate it via Hedron."""
+    if not (REPO_ROOT / "MODULE.bazel").exists():
+        return  # No Bazel build configured — leave compile_commands.json alone
+
+    if compile_commands.exists():
+        cc_mtime = compile_commands.stat().st_mtime
+        newest_input = max(
+            (Path(f).stat().st_mtime for f in files if Path(f).exists()),
+            default=0,
+        )
+        if newest_input <= cc_mtime:
+            return  # Up to date
+
+    print(
+        "compile_commands.json is stale or missing — regenerating via Bazel...",
+        file=sys.stderr,
+    )
+    # Capture the extractor's output. On success it can be thousands of
+    # lines of Bazel action-graph dump that would flood the terminal; on
+    # failure we print it so the user can diagnose.
+    result = subprocess.run(
+        [
+            str(REPO_ROOT / "fboss" / "oss" / "scripts" / "bazel.sh"),
+            "run",
+            "//fboss/build_defs:refresh_compile_commands",
+        ],
+        cwd=REPO_ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        sys.stderr.write(result.stdout)
+        sys.stderr.write(result.stderr)
+        print(
+            "WARNING: refresh_compile_commands failed; using existing "
+            "compile_commands.json if present",
+            file=sys.stderr,
+        )
 
 
 def collect_files(args: argparse.Namespace) -> list[str]:
@@ -253,18 +297,19 @@ def main() -> None:
     # OOM protection — do this before anything else
     set_oom_score()
 
+    files = collect_files(args)
+    if not files:
+        print("No files to process.", file=sys.stderr)
+        sys.exit(0 if args.no_run_if_empty else 1)
+
     compile_commands = Path(args.build_dir) / "compile_commands.json"
+    refresh_compile_commands_if_stale(compile_commands, files)
     if not compile_commands.exists():
         print(
             f"ERROR: compile_commands.json not found in {args.build_dir}",
             file=sys.stderr,
         )
         sys.exit(1)
-
-    files = collect_files(args)
-    if not files:
-        print("No files to process.", file=sys.stderr)
-        sys.exit(0 if args.no_run_if_empty else 1)
 
     jobs = min(compute_jobs(), len(files))
     print(

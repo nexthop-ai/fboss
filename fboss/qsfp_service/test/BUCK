@@ -5,6 +5,7 @@ load("//fboss/qsfp_service:qsfp_service.bzl", "QSFP_COMMON_COMPILER_FLAGS")
 
 oncall("fboss_optics_phy")
 
+# bazelify: exclude
 cpp_binary(
     name = "qsfp_service_test",
     srcs = [
@@ -35,6 +36,7 @@ cpp_library(
     ],
 )
 
+# bazelify: exclude
 cpp_library(
     name = "transceiver_manager_test_helper",
     srcs = [
@@ -53,6 +55,7 @@ cpp_library(
     ],
 )
 
+# bazelify: exclude
 cpp_unittest(
     name = "transceiver_manager_test",
     srcs = [
@@ -66,6 +69,7 @@ cpp_unittest(
     ],
 )
 
+# bazelify: exclude
 cpp_unittest(
     name = "bsp_platform_map_test",
     srcs = [
@@ -92,6 +96,7 @@ cpp_unittest(
     ],
 )
 
+# bazelify: exclude
 cpp_unittest(
     name = "transceiver_state_machine_test",
     srcs = [
@@ -112,6 +117,7 @@ cpp_unittest(
     ],
 )
 
+# bazelify: exclude
 cpp_library(
     name = "mock-state-machine",
     srcs = ["MockStateMachine.cpp"],
@@ -128,6 +134,7 @@ cpp_library(
     ],
 )
 
+# bazelify: exclude
 cpp_unittest(
     name = "state_machine_update_test",
     srcs = [
@@ -139,6 +146,7 @@ cpp_unittest(
     ],
 )
 
+# bazelify: exclude
 cpp_unittest(
     name = "state_machine_controller_test",
     srcs = ["StateMachineControllerTest.cpp"],
@@ -202,6 +210,7 @@ cpp_library(
     ],
 )
 
+# bazelify: exclude
 cpp_unittest(
     name = "port_manager_test",
     srcs = ["PortManagerTest.cpp"],
@@ -218,6 +227,7 @@ cpp_unittest(
     ],
 )
 
+# bazelify: exclude
 cpp_unittest(
     name = "port_state_machine_test",
     srcs = [
