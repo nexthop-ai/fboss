@@ -229,7 +229,7 @@ class QsfpTestRunner(BaseHwTestRunner):
     """Runner for QSFP hardware tests."""
 
     def test_args(self, hwsku: str) -> str:
-        return f"qsfp --qsfp-config ./share/qsfp_test_configs/{hwsku}.materialized_JSON"
+        return f"qsfp --qsfp-config /etc/coop/qsfp.conf"
 
 
 class LinkTestRunner(BaseHwTestRunner):
