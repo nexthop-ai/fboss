@@ -26,9 +26,22 @@ jobs:
       nh_branch: main
     secrets:
       GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+  read-smoke-tests:
+    name: Read smoke test list
+    runs-on: cloudstack-ubuntu24-small
+    outputs:
+      tests: ${{ steps.smoke.outputs.tests }}
+    steps:
+      - uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          repository: nexthop-ai/private-fboss
+      - id: smoke
+        shell: bash
+        run: echo "tests=$(paste -sd, .github/fboss-smoke-tests.txt)" >> "$GITHUB_OUTPUT"
 
   fboss-smoke-tests:
-    needs: monobuild
+    needs: [monobuild, read-smoke-tests]
     if: ${{ needs.monobuild.result == 'success' && needs.monobuild.outputs.build_id != '' }}
     permissions:
       id-token: write
@@ -57,7 +70,7 @@ jobs:
       build_id: ${{ needs.monobuild.outputs.build_id }}
       priority: ${{ matrix.testbed_config.priority }}
       target_testbeds: ${{ matrix.testbed_config.pattern }}
-      file_path_filter: "tests/platform/t0_platform_hw_tests.py"
+      tests: ${{ needs.read-smoke-tests.outputs.tests }}
     secrets:
       GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
       AWS_NEXIS_BUILDRUNNER_SSH_KEY: ${{ secrets.AWS_NEXIS_BUILDRUNNER_SSH_KEY }}

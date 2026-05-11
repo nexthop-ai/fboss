@@ -85,10 +85,6 @@ jobs:
     uses: ./.github/workflows/fboss-sync-smoke.reusable.yml
     with:
       build_id: ${{ needs.monobuild.outputs.build_id }}
-      # The test surface for the sync gate. Pinned here (rather than
-      # defaulted in the reusable) so changes to what we run on every sync
-      # are visible at the call site.
-      file_path_filter: "tests/platform/t0_platform_hw_tests.py"
       timeout_minutes: 240
     secrets:
       GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}

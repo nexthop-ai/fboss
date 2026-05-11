@@ -1,0 +1,2 @@
+tests/platform/t0_platform_hw_tests.py
+tests/smoke_tests/test_agent.py

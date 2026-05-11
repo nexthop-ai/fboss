@@ -30,8 +30,8 @@ on:
         required: false
         type: string
         default: ""
-      file_path_filter:
-        description: "Glob pattern to filter tests (e.g., 'tests/bgp/*'). If not provided, defaults to --all-eligible-tests."
+      tests:
+        description: "Comma-separated list of specific test file paths. If not provided, defaults to --all-eligible-tests."
         required: false
         type: string
         default: ""
@@ -82,4 +82,4 @@ jobs:
           build_id: ${{ inputs.build_id }}
           priority: ${{ inputs.priority }}
           target_testbeds: ${{ inputs.target_testbeds }}
-          file_path_filter: ${{ inputs.file_path_filter }}
+          tests: ${{ inputs.tests }}

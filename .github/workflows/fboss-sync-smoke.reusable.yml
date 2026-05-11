@@ -22,10 +22,6 @@ on:
         description: "Build ID produced by monobuild for the candidate fboss SHA"
         required: true
         type: string
-      file_path_filter:
-        description: "Glob selecting which tests to run on every pool. Required (no default) because the chosen test surface is a deliberate sync-gate decision and is expected to evolve."
-        required: true
-        type: string
       timeout_minutes:
         description: "Job-level timeout for the wait phase (covers the slowest pool). Required (no default) so the choice is visible at every top-level call site rather than absorbed by a default."
         required: true
@@ -53,6 +49,11 @@ jobs:
         with:
           token: ${{ secrets.GH_TOKEN }}
           repository: nexthop-ai/private-fboss
+      - name: Read smoke test list
+        id: smoke
+        shell: bash
+        run: echo "tests=$(paste -sd, .github/fboss-smoke-tests.txt)" >> "$GITHUB_OUTPUT"
+
       - name: Install NHTools
         uses: nexthop-ai/nh/.github/actions/install-nhtools@main
         with:
@@ -80,7 +81,7 @@ jobs:
           build_id: ${{ inputs.build_id }}
           priority: 75
           target_testbeds: "gold[2-9].*"
-          file_path_filter: ${{ inputs.file_path_filter }}
+          tests: ${{ steps.smoke.outputs.tests }}
 
       - name: Schedule Wedge800B
         id: schedule-wedge800b
@@ -89,7 +90,7 @@ jobs:
           build_id: ${{ inputs.build_id }}
           priority: 75
           target_testbeds: "wdg10.*"
-          file_path_filter: ${{ inputs.file_path_filter }}
+          tests: ${{ steps.smoke.outputs.tests }}
 
       - name: Schedule Wedge800C
         id: schedule-wedge800c
@@ -98,7 +99,7 @@ jobs:
           build_id: ${{ inputs.build_id }}
           priority: 75
           target_testbeds: "wdg15.*"
-          file_path_filter: ${{ inputs.file_path_filter }}
+          tests: ${{ steps.smoke.outputs.tests }}
 
       - name: Schedule Minipack3
         id: schedule-minipack3
@@ -107,7 +108,7 @@ jobs:
           build_id: ${{ inputs.build_id }}
           priority: 75
           target_testbeds: "fboss.*"
-          file_path_filter: ${{ inputs.file_path_filter }}
+          tests: ${{ steps.smoke.outputs.tests }}
 
       - name: Schedule Black Kite
         id: schedule-black-kite
@@ -116,7 +117,7 @@ jobs:
           build_id: ${{ inputs.build_id }}
           priority: 75
           target_testbeds: "blkt.*"
-          file_path_filter: ${{ inputs.file_path_filter }}
+          tests: ${{ steps.smoke.outputs.tests }}
 
       - name: Aggregate batch IDs into JSON
         id: aggregate

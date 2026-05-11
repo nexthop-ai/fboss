@@ -18,8 +18,8 @@ inputs:
     description: "Comma-separated testbed names or regex patterns"
     required: false
     default: ""
-  file_path_filter:
-    description: "Glob selecting which tests to run. Empty -> --all-eligible-tests."
+  tests:
+    description: "Comma-separated list of specific test file paths. Empty -> --all-eligible-tests."
     required: false
     default: ""
 
@@ -38,7 +38,7 @@ runs:
         BUILD_ID: ${{ inputs.build_id }}
         PRIORITY: ${{ inputs.priority }}
         TARGET_TESTBEDS: ${{ inputs.target_testbeds }}
-        FILE_PATH_FILTER: ${{ inputs.file_path_filter }}
+        TESTS: ${{ inputs.tests }}
       run: |
         CMD="nh te schedule"
         CMD="$CMD --build-id $BUILD_ID"
@@ -46,8 +46,8 @@ runs:
         CMD="$CMD --nos fboss"
         CMD="$CMD --priority $PRIORITY"
 
-        if [ -n "$FILE_PATH_FILTER" ]; then
-          CMD="$CMD --file-path-filter $FILE_PATH_FILTER"
+        if [ -n "$TESTS" ]; then
+          CMD="$CMD --tests $TESTS"
         else
           CMD="$CMD --all-eligible-tests"
         fi
