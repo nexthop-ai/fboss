@@ -30,7 +30,7 @@
             installiso="true"
             bootpartition="false"
             editbootinstall="editbootinstall.sh"
-            kernelcmdline="nomodeset console=ttyS0,57600n8 8250.nr_uarts=1 biosdevname=0 net.ifnames=0 quiet rootfstype=btrfs">
+            kernelcmdline="nomodeset console=ttyS0,57600n8 8250.nr_uarts=1 biosdevname=0 net.ifnames=0 quiet rootfstype=btrfs iommu=pt">
 
             <bootloader name="grub2" console="serial" serial_line="ttyS0,57600n8"/>
             <size unit="G">64</size>
