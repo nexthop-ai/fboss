@@ -10,7 +10,7 @@ StartLimitBurst=5
 
 [Service]
 Type=simple
-ExecStart=/usr/sbin/bgpd_cpp --config /etc/bgp_pp/bgpcpp.conf
+ExecStart=/usr/sbin/bgpd_cpp --config /etc/bgp_pp/bgpcpp.conf --thrift_ssl_policy=disabled --logtostderr --fbwhoami_strict=false --route_watcher=false --enable_configerator_client_ods_logging=false --ods3_sdk_enable_publishing=false --disable_scribe_producer_metrics=true
 Restart=always
 RestartSec=30
 
