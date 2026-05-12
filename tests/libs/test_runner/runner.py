@@ -8,7 +8,6 @@ Each test runner subclass specifies its default configuration directories.
 import logging
 import os
 import time
-import shlex
 from abc import ABC, abstractmethod
 
 from tests.libs.device.device_ssh_helper import DeviceSCPClient, DeviceSSHClient
@@ -299,82 +298,3 @@ class BspTestRunner(BaseHwTestRunner):
         self.ssh_client.run_cmd(f"sudo systemctl unmask {services}")
         self.ssh_client.run_cmd(f"sudo systemctl restart {services}")
         logger.info("Services restart initiated")
-
-class SmokeTestRunner(BaseHwTestRunner):
-    """Runner for the FBOSS agent smoke test.
-
-    Unlike the gtest-based runners above, this one invokes
-    ``agent_smoke.py`` directly on the DUT — no filter file, no
-    ``run_test.py`` indirection — and consumes the JUnit XML it produces
-    at ``self.testresult_filepath``.
-    """
-
-    AGENT_SMOKE_PATH = "/opt/fboss/bin/python_tests/agent_smoke.py"
-
-    def test_args(self, hwsku: str) -> str:
-        # Unused; SmokeTestRunner overrides run_test entirely.
-        return ""
-
-    def _build_remote_cmd(self) -> str:
-        parts = [
-            "python3",
-            self.AGENT_SMOKE_PATH,
-            "--results-xml",
-            self.testresult_filepath,
-        ]
-        for key, flag in (
-            ("stability_window", "--stability-window"),
-            ("startup_timeout", "--startup-timeout"),
-            ("expected_hw_agents", "--expected-hw-agents"),
-            ("services", "--services"),
-        ):
-            value = self.tc.get(key)
-            if value is not None and value != "":
-                parts += [flag, str(value)]
-        return shlex.join(parts)
-
-    def run_test(self, test_context):
-        logger.info("Running agent smoke test")
-        self.setup(test_context)
-
-        # Ensure /home/admin exists; the redirect below runs as the SSH user
-        # (sudo applies only to the script body), so a missing dir would
-        # break test.log / tr.xml capture.
-        exit_status, output = self.ssh_client.run_cmd(
-            "sudo mkdir -p /home/admin && sudo chmod 755 /home/admin"
-        )
-        if exit_status != 0:
-            logger.warning("Failed to ensure /home/admin exists: %s", output)
-
-        cmd = (
-            f"sudo rm -f {self.testlog_filepath} {self.testresult_filepath}"
-        )
-        exit_status, output = self.ssh_client.run_cmd(cmd)
-        if exit_status != 0:
-            logger.error("Failed to clear remote files: %s %s", cmd, output)
-            return False
-
-        remote = self._build_remote_cmd()
-        cmd = f"sudo {remote} > {self.testlog_filepath} 2>&1"
-        logger.info("Running remote command: %s", cmd)
-        smoke_status, output = self.ssh_client.run_cmd(cmd)
-        logger.debug("smoke exit_status %s output %s", smoke_status, output)
-
-        for remote_path, local_path in (
-            (self.testlog_filepath, "/tmp/test.log"),
-            (self.testresult_filepath, "/tmp/tr.xml"),
-        ):
-            exit_status, output = self.scp_client.get_file(
-                remote_path, local_path
-            )
-            if exit_status != 0:
-                logger.error(
-                    "Failed to fetch %s: %s", remote_path, output
-                )
-                return False
-
-        if smoke_status != 0:
-            logger.error("agent_smoke.py exited %s; see /tmp/tr.xml",
-                         smoke_status)
-            return False
-        return True

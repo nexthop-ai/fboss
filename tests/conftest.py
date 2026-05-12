@@ -8,7 +8,6 @@ from tests.libs.test_runner.runner import (
     QsfpTestRunner,
     SaiAgentTestRunner,
     SaiTestRunner,
-    SmokeTestRunner,
 )
 
 
@@ -112,13 +111,5 @@ def platform_manager_hw_test_runner():
 def bsp_test_runner():
     """Fixture for BSP hardware tests."""
     runner = BspTestRunner()
-    yield runner
-    runner.close()
-
-
-@pytest.fixture
-def smoke_test_runner():
-    """Fixture for FBOSS daemon smoke tests."""
-    runner = SmokeTestRunner()
     yield runner
     runner.close()
