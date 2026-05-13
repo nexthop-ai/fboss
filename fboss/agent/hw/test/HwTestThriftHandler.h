@@ -154,6 +154,14 @@ class HwTestThriftHandler : public AgentHwTestCtrlSvIf {
 
   bool validateUdfIdsInQset(int aclGroupId, bool isSet) override;
 
+  // pfc related APIs
+  bool getPfcEnabled(int32_t portId, bool rx) override;
+  bool pfcWatchdogProgrammingMatchesConfig(
+      int32_t portId,
+      bool watchdogEnabled,
+      std::unique_ptr<cfg::PfcWatchdog> watchdog) override;
+  int32_t getPfcWatchdogRecoveryAction(int32_t portId) override;
+
   int32_t getNumTeFlowEntries() override;
   bool checkSwHwTeFlowMatch(
       std::unique_ptr<::facebook::fboss::state::TeFlowEntryFields>

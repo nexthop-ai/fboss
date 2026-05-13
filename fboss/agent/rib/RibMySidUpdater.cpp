@@ -78,7 +78,17 @@ RouteNextHopSet RibMySidUpdater::resolveNhop(const NextHop& nh) const {
     const auto& fwdNhops = route->getForwardInfo().normalizedNextHops();
     if (route->isConnected()) {
       resolved.insert(ResolvedNextHop(
-          nh.addr(), fwdNhops.begin()->intf(), fwdNhops.begin()->weight()));
+          nh.addr(),
+          fwdNhops.begin()->intf(),
+          fwdNhops.begin()->weight(),
+          nh.labelForwardingAction(),
+          nh.disableTTLDecrement(),
+          nh.topologyInfo(),
+          nh.adjustedWeight(),
+          nh.srv6SegmentList(),
+          nh.tunnelType(),
+          nh.tunnelId(),
+          nh.cost()));
     } else {
       resolved.insert(fwdNhops.begin(), fwdNhops.end());
     }

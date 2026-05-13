@@ -165,6 +165,15 @@ service AgentHwTestCtrl {
   bool validateUdfAclRoceOpcodeConfig(1: switch_state.SwitchState curState);
   bool validateUdfIdsInQset(1: i32 aclGroupId, 2: bool isSet);
 
+  // PFC utils
+  bool getPfcEnabled(1: i32 portId, 2: bool rx);
+  bool pfcWatchdogProgrammingMatchesConfig(
+    1: i32 portId,
+    2: bool watchdogEnabled,
+    3: switch_config.PfcWatchdog watchdog,
+  );
+  i32 getPfcWatchdogRecoveryAction(1: i32 portId);
+
   // Te flow utils
   i32 getNumTeFlowEntries();
   bool checkSwHwTeFlowMatch(1: switch_state.TeFlowEntryFields flowEntryFields);

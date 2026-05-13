@@ -280,8 +280,7 @@ BcmRouteFlexCounterTable::BcmRouteFlexCounterTable(BcmSwitch* hw)
  *      - create new counter action with max counter
  *      - reattach all counters
  * Due to this limitation, we are pre allocating kMaxFlexRouteCounters(1k)
- * counters regardless of maxRouteCounterID value. This allows us to
- * avoid complexity of maintaing counter to route mapping.
+ * This allows us to avoid complexity of maintaing counter to route mapping.
  * If kMaxFlexRouteCounters were to change in future, the route counters
  * needs to be withdrawn and readded from application.
  */

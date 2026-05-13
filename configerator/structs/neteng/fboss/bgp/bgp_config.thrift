@@ -14,7 +14,6 @@ include "configerator/structs/neteng/bgp_policy/thrift/bgp_policy.thrift"
 include "configerator/structs/neteng/fboss/bgp/if/bgp_attr.thrift"
 include "thrift/annotation/thrift.thrift"
 include "thrift/annotation/python.thrift"
-include "configerator/structs/neteng/config/vip_service_config.thrift"
 
 package "facebook.com/neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp/bgp_config"
 
@@ -664,10 +663,10 @@ struct BgpConfig {
   20: optional BgpUcmpQuantizerConfig ucmp_quantizer_config;
 
   /**
-  * VipService related configs
+  * VipService related configs (VIP not in OSS scope)
   */
   21: bool enable_vip_service = false;
-  22: optional vip_service_config.VipServiceConfig vip_service_config;
+  // 22: reserved
 
   /**
    * 4-byte ASN definition for local ASN and local confed ASN

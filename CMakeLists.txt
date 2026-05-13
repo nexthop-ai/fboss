@@ -1158,6 +1158,9 @@ add_dependencies(qsfp_targets
   qsfp_hw_test
   qsfp_hal_test
   wedge_qsfp_util
+  cmis_test
+  transceiver_manager_test
+  transceiver_state_machine_test
 )
 
 add_custom_target(led_targets)

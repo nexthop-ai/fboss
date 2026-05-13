@@ -185,6 +185,7 @@ class RibRouteUpdater {
       const std::vector<folly::IPAddressV6>& srv6SegmentList,
       const std::optional<TunnelType>& tunnelType,
       const std::optional<std::string>& tunnelId,
+      const std::optional<int64_t>& cost,
       RouteNextHopSet& fwd);
 
   template <typename AddressT>

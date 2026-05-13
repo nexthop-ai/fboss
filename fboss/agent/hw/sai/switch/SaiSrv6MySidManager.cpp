@@ -67,8 +67,9 @@ SaiMySidEntryTraits::CreateAttributes getMySidCreateAttributes(
   }
 
   sai_int32_t packetAction = SAI_PACKET_ACTION_FORWARD;
+  // For uA / uN, drop traffic when the next hop isn't resolved.
   if (mySid.getType() != MySidType::DECAPSULATE_AND_LOOKUP &&
-      nextHopId == SAI_NULL_OBJECT_ID && nexthopHandle) {
+      nextHopId == SAI_NULL_OBJECT_ID) {
     packetAction = SAI_PACKET_ACTION_DROP;
   }
 
@@ -171,12 +172,6 @@ void SaiSrv6MySidManager::addMySidEntry(
     throw FbossError("MySid entry already exists for ", mySid->getID());
   }
 
-  if (!mySid->resolved()) {
-    XLOG(DBG2) << "Skipping MySid entry " << mySid->getID()
-               << " without resolved next hop";
-    return;
-  }
-
   std::optional<SaiMySidEntryHandle::NextHopHandle> nexthopHandle;
 
   auto resolvedNextHopsId = mySid->getResolvedNextHopsId();
@@ -223,9 +218,6 @@ void SaiSrv6MySidManager::addMySidEntry(
 void SaiSrv6MySidManager::removeMySidEntry(
     const std::shared_ptr<MySid>& mySid,
     const std::shared_ptr<SwitchState>& /*state*/) {
-  if (!mySid->resolved()) {
-    return;
-  }
   auto key = getMySidAdapterHostKey(*mySid, managerTable_);
   auto itr = handles_.find(key);
   if (itr == handles_.end()) {

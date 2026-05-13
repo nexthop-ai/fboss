@@ -705,6 +705,812 @@ TEST(Route, resolveUcmpDistinctSrv6TunnelIds) {
   EXPECT_TRUE(foundTunnelB);
 }
 
+TEST(Route, resolveEcmpRouteWithCost) {
+  IPv4NetworkToRouteMap v4Routes;
+  IPv6NetworkToRouteMap v6Routes;
+
+  RouteNextHopSet intfNhop1;
+  intfNhop1.emplace(ResolvedNextHop(
+      IPAddress("fc00:1::1"), InterfaceID(1), UCMP_DEFAULT_WEIGHT));
+  RouteNextHopSet intfNhop2;
+  intfNhop2.emplace(ResolvedNextHop(
+      IPAddress("fc00:2::1"), InterfaceID(2), UCMP_DEFAULT_WEIGHT));
+
+  NextHopIDManager nhopIds;
+  RibRouteUpdater u(&v4Routes, &v6Routes, &nhopIds, nullptr);
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      ClientID::INTERFACE_ROUTE,
+      {
+          {{IPAddress("fc00:1::"), 64},
+           RouteNextHopEntry(intfNhop1, AdminDistance::DIRECTLY_CONNECTED)},
+          {{IPAddress("fc00:2::"), 64},
+           RouteNextHopEntry(intfNhop2, AdminDistance::DIRECTLY_CONNECTED)},
+      },
+      {},
+      false);
+
+  RouteNextHopSet nhops;
+  nhops.emplace(UnresolvedNextHop(
+      IPAddress("fc00:1::10"),
+      ECMP_WEIGHT,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(100)));
+  nhops.emplace(UnresolvedNextHop(
+      IPAddress("fc00:2::10"),
+      ECMP_WEIGHT,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(200)));
+
+  RouteV6::Prefix r1{IPAddressV6("2800:1::"), 64};
+
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      kClientA,
+      {
+          {{r1.network(), r1.mask()}, RouteNextHopEntry(nhops, kDistance)},
+      },
+      {},
+      false);
+
+  auto it = v6Routes.exactMatch(r1.network(), r1.mask());
+  ASSERT_NE(v6Routes.end(), it);
+  auto route = it->value();
+  EXPECT_TRUE(route->isResolved());
+
+  const auto& resolvedNhops = route->getForwardInfo().getNextHopSet();
+  ASSERT_EQ(resolvedNhops.size(), 2);
+
+  for (const auto& nh : resolvedNhops) {
+    EXPECT_TRUE(nh.isResolved());
+    EXPECT_TRUE(nh.cost().has_value());
+    if (nh.intf() == InterfaceID(1)) {
+      EXPECT_EQ(nh.cost(), int64_t(100));
+    } else {
+      EXPECT_EQ(nh.cost(), int64_t(200));
+    }
+  }
+}
+
+TEST(Route, resolveUcmpRouteWithCost) {
+  IPv4NetworkToRouteMap v4Routes;
+  IPv6NetworkToRouteMap v6Routes;
+
+  RouteNextHopSet intfNhop1;
+  intfNhop1.emplace(ResolvedNextHop(
+      IPAddress("fc00:1::1"), InterfaceID(1), UCMP_DEFAULT_WEIGHT));
+  RouteNextHopSet intfNhop2;
+  intfNhop2.emplace(ResolvedNextHop(
+      IPAddress("fc00:2::1"), InterfaceID(2), UCMP_DEFAULT_WEIGHT));
+
+  NextHopIDManager nhopIds;
+  RibRouteUpdater u(&v4Routes, &v6Routes, &nhopIds, nullptr);
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      ClientID::INTERFACE_ROUTE,
+      {
+          {{IPAddress("fc00:1::"), 64},
+           RouteNextHopEntry(intfNhop1, AdminDistance::DIRECTLY_CONNECTED)},
+          {{IPAddress("fc00:2::"), 64},
+           RouteNextHopEntry(intfNhop2, AdminDistance::DIRECTLY_CONNECTED)},
+      },
+      {},
+      false);
+
+  RouteNextHopSet nhops;
+  nhops.emplace(UnresolvedNextHop(
+      IPAddress("fc00:1::10"),
+      3,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(500)));
+  nhops.emplace(UnresolvedNextHop(
+      IPAddress("fc00:2::10"),
+      2,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(600)));
+
+  RouteV6::Prefix r1{IPAddressV6("2800:1::"), 64};
+
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      kClientA,
+      {
+          {{r1.network(), r1.mask()}, RouteNextHopEntry(nhops, kDistance)},
+      },
+      {},
+      false);
+
+  auto it = v6Routes.exactMatch(r1.network(), r1.mask());
+  ASSERT_NE(v6Routes.end(), it);
+  auto route = it->value();
+  EXPECT_TRUE(route->isResolved());
+
+  const auto& resolvedNhops = route->getForwardInfo().getNextHopSet();
+  ASSERT_EQ(resolvedNhops.size(), 2);
+
+  for (const auto& nh : resolvedNhops) {
+    EXPECT_TRUE(nh.isResolved());
+    EXPECT_TRUE(nh.cost().has_value());
+    if (nh.intf() == InterfaceID(1)) {
+      EXPECT_EQ(nh.cost(), int64_t(500));
+    } else {
+      EXPECT_EQ(nh.cost(), int64_t(600));
+    }
+  }
+}
+
+TEST(Route, resolveUcmpDistinctCosts) {
+  IPv4NetworkToRouteMap v4Routes;
+  IPv6NetworkToRouteMap v6Routes;
+
+  RouteNextHopSet intfNhop;
+  intfNhop.emplace(ResolvedNextHop(
+      IPAddress("fc00:1::1"), InterfaceID(1), UCMP_DEFAULT_WEIGHT));
+
+  NextHopIDManager nhopIds;
+  RibRouteUpdater u(&v4Routes, &v6Routes, &nhopIds, nullptr);
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      ClientID::INTERFACE_ROUTE,
+      {
+          {{IPAddress("fc00:1::"), 64},
+           RouteNextHopEntry(intfNhop, AdminDistance::DIRECTLY_CONNECTED)},
+      },
+      {},
+      false);
+
+  RouteNextHopSet nhops;
+  nhops.emplace(UnresolvedNextHop(
+      IPAddress("fc00:1::10"),
+      5,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(100)));
+  nhops.emplace(UnresolvedNextHop(
+      IPAddress("fc00:1::10"),
+      3,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(200)));
+
+  RouteV6::Prefix r1{IPAddressV6("2800:1::"), 64};
+
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      kClientA,
+      {
+          {{r1.network(), r1.mask()}, RouteNextHopEntry(nhops, kDistance)},
+      },
+      {},
+      false);
+
+  auto it = v6Routes.exactMatch(r1.network(), r1.mask());
+  ASSERT_NE(v6Routes.end(), it);
+  auto route = it->value();
+  EXPECT_TRUE(route->isResolved());
+
+  const auto& resolvedNhops = route->getForwardInfo().getNextHopSet();
+  ASSERT_EQ(resolvedNhops.size(), 2);
+
+  bool foundCost100 = false;
+  bool foundCost200 = false;
+  for (const auto& nh : resolvedNhops) {
+    EXPECT_TRUE(nh.isResolved());
+    EXPECT_EQ(nh.intf(), InterfaceID(1));
+    if (nh.cost() == int64_t(100)) {
+      foundCost100 = true;
+    } else if (nh.cost() == int64_t(200)) {
+      foundCost200 = true;
+    }
+  }
+  EXPECT_TRUE(foundCost100);
+  EXPECT_TRUE(foundCost200);
+}
+
+TEST(Route, resolveMixedCostAndNoCost) {
+  IPv4NetworkToRouteMap v4Routes;
+  IPv6NetworkToRouteMap v6Routes;
+
+  RouteNextHopSet intfNhop1;
+  intfNhop1.emplace(ResolvedNextHop(
+      IPAddress("fc00:1::1"), InterfaceID(1), UCMP_DEFAULT_WEIGHT));
+  RouteNextHopSet intfNhop2;
+  intfNhop2.emplace(ResolvedNextHop(
+      IPAddress("fc00:2::1"), InterfaceID(2), UCMP_DEFAULT_WEIGHT));
+
+  NextHopIDManager nhopIds;
+  RibRouteUpdater u(&v4Routes, &v6Routes, &nhopIds, nullptr);
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      ClientID::INTERFACE_ROUTE,
+      {
+          {{IPAddress("fc00:1::"), 64},
+           RouteNextHopEntry(intfNhop1, AdminDistance::DIRECTLY_CONNECTED)},
+          {{IPAddress("fc00:2::"), 64},
+           RouteNextHopEntry(intfNhop2, AdminDistance::DIRECTLY_CONNECTED)},
+      },
+      {},
+      false);
+
+  RouteNextHopSet nhops;
+  nhops.emplace(UnresolvedNextHop(
+      IPAddress("fc00:1::10"),
+      ECMP_WEIGHT,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(42)));
+  nhops.emplace(UnresolvedNextHop(IPAddress("fc00:2::10"), ECMP_WEIGHT));
+
+  RouteV6::Prefix r1{IPAddressV6("2800:1::"), 64};
+
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      kClientA,
+      {
+          {{r1.network(), r1.mask()}, RouteNextHopEntry(nhops, kDistance)},
+      },
+      {},
+      false);
+
+  auto it = v6Routes.exactMatch(r1.network(), r1.mask());
+  ASSERT_NE(v6Routes.end(), it);
+  auto route = it->value();
+  EXPECT_TRUE(route->isResolved());
+
+  const auto& resolvedNhops = route->getForwardInfo().getNextHopSet();
+  ASSERT_EQ(resolvedNhops.size(), 2);
+
+  for (const auto& nh : resolvedNhops) {
+    EXPECT_TRUE(nh.isResolved());
+    if (nh.intf() == InterfaceID(1)) {
+      EXPECT_EQ(nh.cost(), int64_t(42));
+    } else {
+      EXPECT_FALSE(nh.cost().has_value());
+    }
+  }
+}
+
+TEST(Route, resolveRecursiveRouteWithCost) {
+  IPv4NetworkToRouteMap v4Routes;
+  IPv6NetworkToRouteMap v6Routes;
+
+  RouteNextHopSet intfNhop;
+  intfNhop.emplace(ResolvedNextHop(
+      IPAddress("fc00:1::1"), InterfaceID(1), UCMP_DEFAULT_WEIGHT));
+
+  NextHopIDManager nhopIds;
+  RibRouteUpdater u(&v4Routes, &v6Routes, &nhopIds, nullptr);
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      ClientID::INTERFACE_ROUTE,
+      {
+          {{IPAddress("fc00:1::"), 64},
+           RouteNextHopEntry(intfNhop, AdminDistance::DIRECTLY_CONNECTED)},
+      },
+      {},
+      false);
+
+  // Intermediate route: fc00:10::/32 via fc00:1::10 (resolves via interface)
+  RouteNextHopSet intermediateNhops;
+  intermediateNhops.emplace(
+      UnresolvedNextHop(IPAddress("fc00:1::10"), ECMP_WEIGHT));
+
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      kClientA,
+      {
+          {{IPAddress("fc00:10::"), 32},
+           RouteNextHopEntry(intermediateNhops, kDistance)},
+      },
+      {},
+      false);
+
+  // Final route: 2800:2::/64 via fc00:10::10 with cost
+  // Resolves recursively through the intermediate route
+  RouteNextHopSet finalNhops;
+  finalNhops.emplace(UnresolvedNextHop(
+      IPAddress("fc00:10::10"),
+      ECMP_WEIGHT,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(999)));
+
+  RouteV6::Prefix r1{IPAddressV6("2800:2::"), 64};
+
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      kClientA,
+      {
+          {{r1.network(), r1.mask()}, RouteNextHopEntry(finalNhops, kDistance)},
+      },
+      {},
+      false);
+
+  auto it = v6Routes.exactMatch(r1.network(), r1.mask());
+  ASSERT_NE(v6Routes.end(), it);
+  auto route = it->value();
+  EXPECT_TRUE(route->isResolved());
+
+  const auto& resolvedNhops = route->getForwardInfo().getNextHopSet();
+  ASSERT_EQ(resolvedNhops.size(), 1);
+
+  const auto& nh = *resolvedNhops.begin();
+  EXPECT_TRUE(nh.isResolved());
+  EXPECT_EQ(nh.intf(), InterfaceID(1));
+  EXPECT_EQ(nh.cost(), int64_t(999));
+}
+
+TEST(Route, resolveRecursiveUcmpRouteWithCost) {
+  IPv4NetworkToRouteMap v4Routes;
+  IPv6NetworkToRouteMap v6Routes;
+
+  RouteNextHopSet intfNhop1;
+  intfNhop1.emplace(ResolvedNextHop(
+      IPAddress("fc00:1::1"), InterfaceID(1), UCMP_DEFAULT_WEIGHT));
+  RouteNextHopSet intfNhop2;
+  intfNhop2.emplace(ResolvedNextHop(
+      IPAddress("fc00:2::1"), InterfaceID(2), UCMP_DEFAULT_WEIGHT));
+
+  NextHopIDManager nhopIds;
+  RibRouteUpdater u(&v4Routes, &v6Routes, &nhopIds, nullptr);
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      ClientID::INTERFACE_ROUTE,
+      {
+          {{IPAddress("fc00:1::"), 64},
+           RouteNextHopEntry(intfNhop1, AdminDistance::DIRECTLY_CONNECTED)},
+          {{IPAddress("fc00:2::"), 64},
+           RouteNextHopEntry(intfNhop2, AdminDistance::DIRECTLY_CONNECTED)},
+      },
+      {},
+      false);
+
+  // Intermediate route: fc00:10::/32 via fc00:1::10 and fc00:2::10
+  RouteNextHopSet intermediateNhops;
+  intermediateNhops.emplace(
+      UnresolvedNextHop(IPAddress("fc00:1::10"), ECMP_WEIGHT));
+  intermediateNhops.emplace(
+      UnresolvedNextHop(IPAddress("fc00:2::10"), ECMP_WEIGHT));
+
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      kClientA,
+      {
+          {{IPAddress("fc00:10::"), 32},
+           RouteNextHopEntry(intermediateNhops, kDistance)},
+      },
+      {},
+      false);
+
+  // Final route: 2800:2::/64 via fc00:10::10 with cost, UCMP weight
+  // Resolves recursively — the non-connected branch copies the intermediate
+  // route's resolved next hops but applies cost from the original next hop
+  RouteNextHopSet finalNhops;
+  finalNhops.emplace(UnresolvedNextHop(
+      IPAddress("fc00:10::10"),
+      3,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(777)));
+
+  RouteV6::Prefix r1{IPAddressV6("2800:2::"), 64};
+
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      kClientA,
+      {
+          {{r1.network(), r1.mask()}, RouteNextHopEntry(finalNhops, kDistance)},
+      },
+      {},
+      false);
+
+  auto it = v6Routes.exactMatch(r1.network(), r1.mask());
+  ASSERT_NE(v6Routes.end(), it);
+  auto route = it->value();
+  EXPECT_TRUE(route->isResolved());
+
+  const auto& resolvedNhops = route->getForwardInfo().getNextHopSet();
+  ASSERT_EQ(resolvedNhops.size(), 2);
+
+  for (const auto& nh : resolvedNhops) {
+    EXPECT_TRUE(nh.isResolved());
+    EXPECT_EQ(nh.cost(), int64_t(777));
+  }
+}
+
+// Intermediate route's next hops carry cost, but the final (immediate) route's
+// next hop has no cost. The final resolved next hops should have no cost
+// because getFwdInfoFromNhop uses the caller's cost, not the intermediate's.
+TEST(Route, resolveRecursiveEcmpIntermediateCostDropped) {
+  IPv4NetworkToRouteMap v4Routes;
+  IPv6NetworkToRouteMap v6Routes;
+
+  RouteNextHopSet intfNhop1;
+  intfNhop1.emplace(ResolvedNextHop(
+      IPAddress("fc00:1::1"), InterfaceID(1), UCMP_DEFAULT_WEIGHT));
+  RouteNextHopSet intfNhop2;
+  intfNhop2.emplace(ResolvedNextHop(
+      IPAddress("fc00:2::1"), InterfaceID(2), UCMP_DEFAULT_WEIGHT));
+
+  NextHopIDManager nhopIds;
+  RibRouteUpdater u(&v4Routes, &v6Routes, &nhopIds, nullptr);
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      ClientID::INTERFACE_ROUTE,
+      {
+          {{IPAddress("fc00:1::"), 64},
+           RouteNextHopEntry(intfNhop1, AdminDistance::DIRECTLY_CONNECTED)},
+          {{IPAddress("fc00:2::"), 64},
+           RouteNextHopEntry(intfNhop2, AdminDistance::DIRECTLY_CONNECTED)},
+      },
+      {},
+      false);
+
+  // Intermediate route with cost on its next hops
+  RouteNextHopSet intermediateNhops;
+  intermediateNhops.emplace(UnresolvedNextHop(
+      IPAddress("fc00:1::10"),
+      ECMP_WEIGHT,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(333)));
+  intermediateNhops.emplace(UnresolvedNextHop(
+      IPAddress("fc00:2::10"),
+      ECMP_WEIGHT,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(444)));
+
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      kClientA,
+      {
+          {{IPAddress("fc00:10::"), 32},
+           RouteNextHopEntry(intermediateNhops, kDistance)},
+      },
+      {},
+      false);
+
+  // Verify intermediate route resolved with cost preserved
+  auto intIt = v6Routes.exactMatch(IPAddressV6("fc00:10::"), 32);
+  ASSERT_NE(v6Routes.end(), intIt);
+  auto intRoute = intIt->value();
+  EXPECT_TRUE(intRoute->isResolved());
+  for (const auto& nh : intRoute->getForwardInfo().getNextHopSet()) {
+    EXPECT_TRUE(nh.cost().has_value());
+  }
+
+  // Final (immediate) route with NO cost, resolves recursively
+  RouteNextHopSet finalNhops;
+  finalNhops.emplace(UnresolvedNextHop(IPAddress("fc00:10::10"), ECMP_WEIGHT));
+
+  RouteV6::Prefix r1{IPAddressV6("2800:3::"), 64};
+
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      kClientA,
+      {
+          {{r1.network(), r1.mask()}, RouteNextHopEntry(finalNhops, kDistance)},
+      },
+      {},
+      false);
+
+  auto it = v6Routes.exactMatch(r1.network(), r1.mask());
+  ASSERT_NE(v6Routes.end(), it);
+  auto route = it->value();
+  EXPECT_TRUE(route->isResolved());
+
+  const auto& resolvedNhops = route->getForwardInfo().getNextHopSet();
+  ASSERT_EQ(resolvedNhops.size(), 2);
+
+  // Intermediate costs (333, 444) are not inherited — the immediate next
+  // hop's cost (nullopt) is what gets applied during recursive resolution
+  for (const auto& nh : resolvedNhops) {
+    EXPECT_TRUE(nh.isResolved());
+    EXPECT_FALSE(nh.cost().has_value());
+  }
+}
+
+TEST(Route, resolveRecursiveUcmpIntermediateCostDropped) {
+  IPv4NetworkToRouteMap v4Routes;
+  IPv6NetworkToRouteMap v6Routes;
+
+  RouteNextHopSet intfNhop1;
+  intfNhop1.emplace(ResolvedNextHop(
+      IPAddress("fc00:1::1"), InterfaceID(1), UCMP_DEFAULT_WEIGHT));
+  RouteNextHopSet intfNhop2;
+  intfNhop2.emplace(ResolvedNextHop(
+      IPAddress("fc00:2::1"), InterfaceID(2), UCMP_DEFAULT_WEIGHT));
+
+  NextHopIDManager nhopIds;
+  RibRouteUpdater u(&v4Routes, &v6Routes, &nhopIds, nullptr);
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      ClientID::INTERFACE_ROUTE,
+      {
+          {{IPAddress("fc00:1::"), 64},
+           RouteNextHopEntry(intfNhop1, AdminDistance::DIRECTLY_CONNECTED)},
+          {{IPAddress("fc00:2::"), 64},
+           RouteNextHopEntry(intfNhop2, AdminDistance::DIRECTLY_CONNECTED)},
+      },
+      {},
+      false);
+
+  // Intermediate route with cost on its next hops
+  RouteNextHopSet intermediateNhops;
+  intermediateNhops.emplace(UnresolvedNextHop(
+      IPAddress("fc00:1::10"),
+      ECMP_WEIGHT,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(111)));
+  intermediateNhops.emplace(UnresolvedNextHop(
+      IPAddress("fc00:2::10"),
+      ECMP_WEIGHT,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(222)));
+
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      kClientA,
+      {
+          {{IPAddress("fc00:10::"), 32},
+           RouteNextHopEntry(intermediateNhops, kDistance)},
+      },
+      {},
+      false);
+
+  // Verify intermediate route resolved with cost preserved
+  auto intIt = v6Routes.exactMatch(IPAddressV6("fc00:10::"), 32);
+  ASSERT_NE(v6Routes.end(), intIt);
+  auto intRoute = intIt->value();
+  EXPECT_TRUE(intRoute->isResolved());
+  for (const auto& nh : intRoute->getForwardInfo().getNextHopSet()) {
+    EXPECT_TRUE(nh.cost().has_value());
+  }
+
+  // Final (immediate) route with NO cost, resolves recursively
+  RouteNextHopSet finalNhops;
+  finalNhops.emplace(UnresolvedNextHop(IPAddress("fc00:10::10"), 5));
+
+  RouteV6::Prefix r1{IPAddressV6("2800:3::"), 64};
+
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      kClientA,
+      {
+          {{r1.network(), r1.mask()}, RouteNextHopEntry(finalNhops, kDistance)},
+      },
+      {},
+      false);
+
+  auto it = v6Routes.exactMatch(r1.network(), r1.mask());
+  ASSERT_NE(v6Routes.end(), it);
+  auto route = it->value();
+  EXPECT_TRUE(route->isResolved());
+
+  const auto& resolvedNhops = route->getForwardInfo().getNextHopSet();
+  ASSERT_EQ(resolvedNhops.size(), 2);
+
+  // Intermediate costs (111, 222) are not inherited — the immediate next
+  // hop's cost (nullopt) is what gets applied during recursive resolution
+  for (const auto& nh : resolvedNhops) {
+    EXPECT_TRUE(nh.isResolved());
+    EXPECT_FALSE(nh.cost().has_value());
+  }
+}
+
+TEST(Route, resolveRecursiveSrv6WithIntermediateLinkLocalCost) {
+  IPv4NetworkToRouteMap v4Routes;
+  IPv6NetworkToRouteMap v6Routes;
+
+  const std::vector<folly::IPAddressV6> segListA{
+      folly::IPAddressV6("2001:db8::1"), folly::IPAddressV6("2001:db8::2")};
+  const std::vector<folly::IPAddressV6> segListB{
+      folly::IPAddressV6("2001:db8::3"), folly::IPAddressV6("2001:db8::4")};
+
+  NextHopIDManager nhopIds;
+  RibRouteUpdater u(&v4Routes, &v6Routes, &nhopIds, nullptr);
+
+  // Covering route for fdad:ff02:10b::d:0 with 2 link-local next hops
+  // that carry cost
+  RouteNextHopSet coverNhopsD;
+  coverNhopsD.emplace(ResolvedNextHop(
+      IPAddress("fe80::1"),
+      InterfaceID(1),
+      ECMP_WEIGHT,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(100)));
+  coverNhopsD.emplace(ResolvedNextHop(
+      IPAddress("fe80::2"),
+      InterfaceID(2),
+      ECMP_WEIGHT,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(200)));
+
+  // Covering route for fdad:ff02:10b::c:0 with 2 link-local next hops
+  // that carry cost
+  RouteNextHopSet coverNhopsC;
+  coverNhopsC.emplace(ResolvedNextHop(
+      IPAddress("fe80::3"),
+      InterfaceID(3),
+      ECMP_WEIGHT,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(300)));
+  coverNhopsC.emplace(ResolvedNextHop(
+      IPAddress("fe80::4"),
+      InterfaceID(4),
+      ECMP_WEIGHT,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(400)));
+
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      kClientA,
+      {
+          {{IPAddress("fdad:ff02:10b::d:0"), 112},
+           RouteNextHopEntry(coverNhopsD, kDistance)},
+          {{IPAddress("fdad:ff02:10b::c:0"), 112},
+           RouteNextHopEntry(coverNhopsC, kDistance)},
+      },
+      {},
+      false);
+
+  // Verify covering routes resolved with cost on their link-local next hops
+  auto covDIt = v6Routes.exactMatch(IPAddressV6("fdad:ff02:10b::d:0"), 112);
+  ASSERT_NE(v6Routes.end(), covDIt);
+  EXPECT_TRUE(covDIt->value()->isResolved());
+  for (const auto& nh : covDIt->value()->getForwardInfo().getNextHopSet()) {
+    EXPECT_TRUE(nh.cost().has_value());
+  }
+
+  auto covCIt = v6Routes.exactMatch(IPAddressV6("fdad:ff02:10b::c:0"), 112);
+  ASSERT_NE(v6Routes.end(), covCIt);
+  EXPECT_TRUE(covCIt->value()->isResolved());
+  for (const auto& nh : covCIt->value()->getForwardInfo().getNextHopSet()) {
+    EXPECT_TRUE(nh.cost().has_value());
+  }
+
+  // BGP route 2001::/64 with 2 next hops, each with distinct SID lists
+  // but no cost
+  RouteNextHopSet bgpNhops;
+  bgpNhops.emplace(UnresolvedNextHop(
+      IPAddress("fdad:ff02:10b::d:0"),
+      ECMP_WEIGHT,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      segListA,
+      TunnelType::SRV6_ENCAP,
+      std::string("tunnel_A")));
+  bgpNhops.emplace(UnresolvedNextHop(
+      IPAddress("fdad:ff02:10b::c:0"),
+      ECMP_WEIGHT,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      segListB,
+      TunnelType::SRV6_ENCAP,
+      std::string("tunnel_B")));
+
+  RouteV6::Prefix bgpPrefix{IPAddressV6("2001::"), 64};
+
+  u.update<RibRouteUpdater::RouteEntry, folly::CIDRNetwork>(
+      kClientA,
+      {
+          {{bgpPrefix.network(), bgpPrefix.mask()},
+           RouteNextHopEntry(bgpNhops, kDistance)},
+      },
+      {},
+      false);
+
+  auto it = v6Routes.exactMatch(bgpPrefix.network(), bgpPrefix.mask());
+  ASSERT_NE(v6Routes.end(), it);
+  auto route = it->value();
+  EXPECT_TRUE(route->isResolved());
+
+  const auto& resolvedNhops = route->getForwardInfo().getNextHopSet();
+  ASSERT_EQ(resolvedNhops.size(), 4);
+
+  int segListACount = 0;
+  int segListBCount = 0;
+  for (const auto& nh : resolvedNhops) {
+    EXPECT_TRUE(nh.isResolved());
+    EXPECT_FALSE(nh.cost().has_value());
+
+    if (nh.srv6SegmentList() == segListA) {
+      EXPECT_EQ(nh.tunnelType(), TunnelType::SRV6_ENCAP);
+      EXPECT_EQ(nh.tunnelId(), "tunnel_A");
+      EXPECT_TRUE(nh.intf() == InterfaceID(1) || nh.intf() == InterfaceID(2));
+      segListACount++;
+    } else if (nh.srv6SegmentList() == segListB) {
+      EXPECT_EQ(nh.tunnelType(), TunnelType::SRV6_ENCAP);
+      EXPECT_EQ(nh.tunnelId(), "tunnel_B");
+      EXPECT_TRUE(nh.intf() == InterfaceID(3) || nh.intf() == InterfaceID(4));
+      segListBCount++;
+    } else {
+      FAIL() << "Unexpected SID list on resolved next hop";
+    }
+  }
+  EXPECT_EQ(segListACount, 2);
+  EXPECT_EQ(segListBCount, 2);
+}
+
 TEST(RibRouteTables, getVrfList) {
   RoutingInformationBase rib;
 

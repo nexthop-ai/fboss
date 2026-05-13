@@ -53,8 +53,8 @@ inline void runStatsCollectionBenchmark(bool alwaysCollectVoqStats = false) {
   int numRouteCounters = 255;
 
   AgentEnsembleSwitchConfigFn initialConfigFn =
-      [numPortsToCollectStats, numRouteCounters, alwaysCollectVoqStats](
-          const AgentEnsemble& ensemble) {
+      [numPortsToCollectStats,
+       alwaysCollectVoqStats](const AgentEnsemble& ensemble) {
         // Disable stats collection thread.
         FLAGS_enable_stats_update_thread = false;
         if (alwaysCollectVoqStats) {
@@ -88,10 +88,6 @@ inline void runStatsCollectionBenchmark(bool alwaysCollectVoqStats = false) {
             !hasFabric /* setInterfaceMac */,
             utility::kBaseVlanId,
             hasFabric || hasVoq /*enable fabric ports*/);
-        if (ensemble.getSw()->getHwAsicTable()->isFeatureSupportedOnAllAsic(
-                HwAsic::Feature::ROUTE_COUNTERS)) {
-          config.switchSettings()->maxRouteCounterIDs() = numRouteCounters;
-        }
         if (ensemble.getSw()->getSwitchInfoTable().haveVoqSwitches()) {
           utility::addNetworkAIQosMaps(config, ensemble.getL3Asics());
           utility::setDefaultCpuTrafficPolicyConfig(

@@ -441,7 +441,8 @@ RouteNextHopEntry::NextHopSet RouteNextHopEntry::normalizedNextHopsImpl(
         nhop.adjustedWeight(),
         nhop.srv6SegmentList(),
         nhop.tunnelType(),
-        nhop.tunnelId()));
+        nhop.tunnelId(),
+        nhop.cost()));
   }
   // 2)
   // Calculate the totalWeight. If that exceeds the max ecmp width, we use the
@@ -491,7 +492,8 @@ RouteNextHopEntry::NextHopSet RouteNextHopEntry::normalizedNextHopsImpl(
               nhop.adjustedWeight(),
               nhop.srv6SegmentList(),
               nhop.tunnelType(),
-              nhop.tunnelId()));
+              nhop.tunnelId(),
+              nhop.cost()));
           scaledTotalWeight += weight;
         }
         index++;
@@ -514,7 +516,8 @@ RouteNextHopEntry::NextHopSet RouteNextHopEntry::normalizedNextHopsImpl(
             nhop.adjustedWeight(),
             nhop.srv6SegmentList(),
             nhop.tunnelType(),
-            nhop.tunnelId()));
+            nhop.tunnelId(),
+            nhop.cost()));
         scaledTotalWeight += w;
       }
       // 2c)
@@ -544,7 +547,8 @@ RouteNextHopEntry::NextHopSet RouteNextHopEntry::normalizedNextHopsImpl(
               maxItr->adjustedWeight(),
               maxItr->srv6SegmentList(),
               maxItr->tunnelType(),
-              maxItr->tunnelId());
+              maxItr->tunnelId(),
+              maxItr->cost());
           // remove the max weight next hop and replace with the
           // decremented version, if the decremented version would
           // not have weight 0. If it would have weight 0, that means
@@ -584,7 +588,8 @@ RouteNextHopEntry::NextHopSet RouteNextHopEntry::normalizedNextHopsImpl(
           nhop.adjustedWeight(),
           nhop.srv6SegmentList(),
           nhop.tunnelType(),
-          nhop.tunnelId()));
+          nhop.tunnelId(),
+          nhop.cost()));
     }
     XLOG(DBG3) << "Scaled next hops from " << getNextHopSet() << " to "
                << normalizedToMaxPathNextHops;

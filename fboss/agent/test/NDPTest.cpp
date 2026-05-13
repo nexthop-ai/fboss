@@ -213,7 +213,7 @@ cfg::SwitchConfig createSwitchConfigPortRif(
   return config;
 }
 
-typedef std::function<void(Cursor* cursor, uint32_t length)> PayloadCheckFn;
+using PayloadCheckFn = std::function<void(Cursor* cursor, uint32_t length)>;
 
 TxMatchFn checkICMPv6Pkt(
     MacAddress srcMac,
@@ -339,7 +339,7 @@ TxMatchFn checkNeighborSolicitation(
       checkPayload);
 }
 
-typedef std::vector<std::pair<IPAddressV6, uint8_t>> PrefixVector;
+using PrefixVector = std::vector<std::pair<IPAddressV6, uint8_t>>;
 TxMatchFn checkRouterAdvert(
     MacAddress srcMac,
     IPAddressV6 srcIP,
@@ -2392,4 +2392,48 @@ TEST_F(NdpTest, stressSendMulticastNeighborSoclicitsDuringStateUpdate) {
       vlanID);
 
   EXPECT_TRUE(neighborReachable.value().wait());
+}
+
+TEST_F(NdpTest, SkipMulticastNsOnDisabledPort) {
+  auto handle = this->setupTestHandle();
+  auto sw = handle->getSw();
+
+  // Disable all ports in VLAN 5 administratively
+  auto updateFn = [](const std::shared_ptr<SwitchState>& state) {
+    auto newState = state->clone();
+    for (int n = 1; n <= 10; ++n) {
+      auto port = newState->getPorts()->getNode(PortID(n))->modify(&newState);
+      port->setAdminState(cfg::PortState::DISABLED);
+    }
+    return newState;
+  };
+  sw->updateState("Disable all ports", updateFn);
+  waitForStateUpdates(sw);
+
+  // Expect no inject-UP packets sent since all ports are disabled
+  EXPECT_HW_CALL(sw, sendPacketSwitchedAsync_(_)).Times(0);
+
+  auto* evb = sw->getBackgroundEvb();
+  evb->runInFbossEventBaseThread([&]() {
+    sw->getIPv6Handler()->sendMulticastNeighborSolicitation(
+        sw, IPAddressV6("fe80::face:b00c"));
+  });
+  waitForStateUpdates(sw);
+}
+
+TEST_F(NdpTest, SendMulticastNsOnEnabledPort) {
+  auto handle = this->setupTestHandle();
+  auto sw = handle->getSw();
+
+  // Keep ports enabled (default), expect NS packets to be sent
+  EXPECT_SWITCHED_PKT(sw, "multicast NS", [](const TxPacket* /*pkt*/) {
+    return true;
+  }).Times(testing::AtLeast(1));
+
+  auto* evb = sw->getBackgroundEvb();
+  evb->runInFbossEventBaseThread([&]() {
+    sw->getIPv6Handler()->sendMulticastNeighborSolicitation(
+        sw, IPAddressV6("fe80::face:b00c"));
+  });
+  waitForStateUpdates(sw);
 }

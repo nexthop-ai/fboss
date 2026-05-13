@@ -21,7 +21,13 @@
   "npu_sai": {
     "download": "file:../fboss/oss/scripts/fake-sai-devel.tar.zstd"
   },
+<<<<<<< HEAD
   "phy_sai": {},
+||||||| 674c9f5457
+=======
+  "phy_sai": {
+  },
+>>>>>>> 2ba3cb6d05524d527b829dd935c37e71266f520e
   "fboss-forwarding-stack": {
     "execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "forwarding"],
     "artifact": "forwarding-stack.tar"

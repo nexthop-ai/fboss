@@ -58,26 +58,6 @@ class AgentLoadBalancerTest
         deviation);
   }
 
-  void runDynamicLoadBalanceTest(
-      unsigned int ecmpWidth,
-      const cfg::LoadBalancer& loadBalancer,
-      const std::vector<NextHopWeight>& weights,
-      bool loopThroughFrontPanel = false,
-      bool loadBalanceExpected = true,
-      cfg::SwitchingMode preWBMode = cfg::SwitchingMode::FIXED_ASSIGNMENT,
-      cfg::SwitchingMode postWBMode = cfg::SwitchingMode::FLOWLET_QUALITY,
-      uint8_t deviation = 25) {
-    Runner::runDynamicLoadBalanceTest(
-        ecmpWidth,
-        loadBalancer,
-        weights,
-        loopThroughFrontPanel,
-        loadBalanceExpected,
-        preWBMode,
-        postWBMode,
-        deviation);
-  }
-
   void runEcmpShrinkExpandLoadBalanceTest(
       unsigned int ecmpWidth,
       const cfg::LoadBalancer& loadBalancer,

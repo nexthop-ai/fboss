@@ -29,23 +29,6 @@ def runner():
 
 
 @pytest.fixture
-def mock_args():
-    """Create a mock args object with common attributes"""
-    args = Mock()
-    args.filter_file = None
-    args.list_tests = False
-    args.config = None
-    args.mgmt_if = "eth0"
-    args.platform_mapping_override_path = None
-    args.fruid_path = None
-    args.sai_logging = "WARN"
-    args.fboss_logging = "WARN"
-    args.test_run_timeout = 300
-    args.skip_known_bad_tests = None
-    return args
-
-
-@pytest.fixture
 def temp_benchmark_file():
     """Create a temporary benchmark configuration file"""
     with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".conf") as f:

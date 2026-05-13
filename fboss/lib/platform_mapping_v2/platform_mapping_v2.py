@@ -73,9 +73,7 @@ _PLATFORM_VARIANTS_MAP: Dict[str, List[str]] = {
         "tahan800bc_test_fixture",
     ],
     "tahansb800bc": [
-        "tahansb800bc_rack",
         "tahansb800bc_test_fixture",
-        "tahansb800bc_link_training",
     ],
     "ladakh800bcls": [
         "ladakh800bcls_rack",
