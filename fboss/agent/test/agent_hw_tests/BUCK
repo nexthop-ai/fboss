@@ -210,7 +210,7 @@ cpp_library(
         "AgentMirrorOnDropDnxTests.cpp",  # bazelify: exclude
         "AgentMirrorOnDropStatelessTest.cpp",
         "AgentMirrorOnDropStatelessTests.cpp",
-        "AgentMirrorOnDropTestBase.cpp",  # bazelify: exclude
+        "AgentMirrorOnDropTestBase.cpp",
         "AgentMirrorOnDropXgsImpl.cpp",
         "AgentMirroringTests.cpp",
         "AgentMmuTuningTests.cpp",

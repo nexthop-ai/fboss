@@ -83,7 +83,7 @@ cpp_library(
         "BspTransceiverApi.cpp",
         "BspTransceiverContainer.cpp",
         "BspTransceiverCpldAccess.cpp",
-        "BspTransceiverGpioAccess.cpp",  # bazelify: exclude
+        "BspTransceiverGpioAccess.cpp",
         "BspTransceiverIO.cpp",
     ],
     headers = [

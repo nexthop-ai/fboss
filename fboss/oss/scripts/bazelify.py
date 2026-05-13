@@ -112,6 +112,7 @@ THIRD_PARTY_MAP = {
     "libusb": "@libusb//:libusb",
     "libnl": "@libnl//:libnl",
     "libgpiod": "@libgpiod//:libgpiod",
+    "libpciaccess": "@libpciaccess//:libpciaccess",
     "iproute2": "@iproute2//:iproute2",
     "range-v3": "@range_v3//:range_v3",
     "nlohmann-json": "@nlohmann_json//:nlohmann_json",
@@ -1209,6 +1210,15 @@ SYSTEM_LIB_STUBS: dict[str, str] = {
         '    hdrs = glob(["include/curl/**"]),\n'
         '    includes = ["include"],\n'
         '    linkopts = ["-lcurl"],\n'
+        '    visibility = ["//visibility:public"],\n'
+        ")"
+    ),
+    "libpciaccess": (
+        "cc_library(\n"
+        '    name = "libpciaccess",\n'
+        '    hdrs = glob(["include/pciaccess.h"], allow_empty = True),\n'
+        '    includes = ["include"],\n'
+        '    linkopts = ["-lpciaccess"],\n'
         '    visibility = ["//visibility:public"],\n'
         ")"
     ),

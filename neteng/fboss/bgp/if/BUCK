@@ -3,6 +3,8 @@ load("@fbcode_macros//build_defs:thrift_library.bzl", "thrift_library")
 
 oncall("routing_protocol")
 
+# bazelify: exclude-all
+
 thrift_library(
     name = "bgp-structs",
     go_thrift_namespaces = {
