@@ -38,6 +38,7 @@ target_link_libraries(agent_qos_test_src
 
 # VOQ/DSF test library - tests related to VOQ switches and distributed switch fabric
 add_library(agent_voq_test_src
+  fboss/agent/test/agent_hw_tests/AgentFabricSwitchFabricLinkMonitoringTests.cpp
   fboss/agent/test/agent_hw_tests/AgentFabricSwitchTests.cpp
   fboss/agent/test/agent_hw_tests/AgentVoqConditionalEntropyTests.cpp
   fboss/agent/test/agent_hw_tests/AgentVoqSwitchFabricLinkMonitoringTests.cpp
@@ -120,13 +121,17 @@ add_library(agent_hw_test_src
   fboss/agent/test/agent_hw_tests/AgentPacketSendTests.cpp
   fboss/agent/test/agent_hw_tests/AgentL3ForwardingTests.cpp
   fboss/agent/test/agent_hw_tests/AgentL4PortBlackholingTests.cpp
+  fboss/agent/test/agent_hw_tests/AgentLinkLocalForwardingTests.cpp
   fboss/agent/test/agent_hw_tests/AgentMacLearningTests.cpp
   fboss/agent/test/agent_hw_tests/AgentMacLearningAndNeighborResolutionTests.cpp
   fboss/agent/test/agent_hw_tests/AgentMirrorOnDropDnxTests.cpp
+  fboss/agent/test/agent_hw_tests/AgentMirrorOnDropStatelessTest.cpp
+  fboss/agent/test/agent_hw_tests/AgentMirrorOnDropStatelessTests.cpp
   fboss/agent/test/agent_hw_tests/AgentMirrorOnDropTestBase.cpp
-  fboss/agent/test/agent_hw_tests/AgentMirrorOnDropXgsTests.cpp
+  fboss/agent/test/agent_hw_tests/AgentMirrorOnDropXgsImpl.cpp
   fboss/agent/test/agent_hw_tests/AgentMirroringTests.cpp
   fboss/agent/test/agent_hw_tests/AgentMirroringScaleTests.cpp
+  fboss/agent/test/agent_hw_tests/AgentMPLSMidpointTests.cpp
   fboss/agent/test/agent_hw_tests/AgentMPLSTests.cpp
   fboss/agent/test/agent_hw_tests/AgentNSFScaleTests.cpp
   fboss/agent/test/agent_hw_tests/AgentNeighborTests.cpp
@@ -161,6 +166,7 @@ add_library(agent_hw_test_src
   fboss/agent/test/agent_hw_tests/AgentHwResourceStatsTests.cpp
   fboss/agent/test/agent_hw_tests/AgentHwParityErrorTests.cpp
   fboss/agent/test/agent_hw_tests/AgentTrafficPfcTests.cpp
+  fboss/agent/test/agent_hw_tests/AgentPfcConfigTest.cpp
   fboss/agent/test/agent_hw_tests/AgentIpInIpTunnelTests.cpp
   fboss/agent/test/agent_hw_tests/AgentSrv6EncapTests.cpp
   fboss/agent/test/agent_hw_tests/AgentSrv6DecapTests.cpp

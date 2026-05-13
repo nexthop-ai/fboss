@@ -856,6 +856,232 @@ TEST(RouteNextHopTest, Srv6ValidationEmptyTunnelId) {
       FbossError);
 }
 
+TEST(RouteNextHopTest, CostFieldDefaultEmpty) {
+  auto addr = folly::IPAddress("2401:db00::1");
+  auto intfID = InterfaceID(1);
+
+  ResolvedNextHop resolved(addr, intfID, 10);
+  EXPECT_EQ(resolved.cost(), std::nullopt);
+
+  UnresolvedNextHop unresolved(addr, 10);
+  EXPECT_EQ(unresolved.cost(), std::nullopt);
+}
+
+TEST(RouteNextHopTest, ResolvedNextHopCostEquality) {
+  auto addr = folly::IPAddress("2401:db00::1");
+  auto intfID = InterfaceID(1);
+
+  ResolvedNextHop nh1(
+      addr,
+      intfID,
+      10,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(100));
+  ResolvedNextHop nh2(
+      addr,
+      intfID,
+      10,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(100));
+  ResolvedNextHop nh3(
+      addr,
+      intfID,
+      10,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(200));
+  ResolvedNextHop nhNoCost(addr, intfID, 10);
+
+  EXPECT_EQ(nh1, nh2);
+  EXPECT_NE(nh1, nh3);
+  EXPECT_NE(nh1, nhNoCost);
+}
+
+TEST(RouteNextHopTest, UnresolvedNextHopCostEquality) {
+  auto addr = folly::IPAddress("2401:db00::1");
+
+  UnresolvedNextHop nh1(
+      addr,
+      10,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(100));
+  UnresolvedNextHop nh2(
+      addr,
+      10,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(100));
+  UnresolvedNextHop nh3(
+      addr,
+      10,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(200));
+  UnresolvedNextHop nhNoCost(addr, 10);
+
+  EXPECT_EQ(nh1, nh2);
+  EXPECT_NE(nh1, nh3);
+  EXPECT_NE(nh1, nhNoCost);
+}
+
+TEST(RouteNextHopTest, CostSetAndUnset) {
+  auto addr = folly::IPAddress("2401:db00::1");
+  auto intfID = InterfaceID(1);
+
+  ResolvedNextHop nh(addr, intfID, 10);
+  EXPECT_EQ(nh.cost(), std::nullopt);
+
+  nh.setCost(42);
+  EXPECT_EQ(nh.cost(), 42);
+
+  nh.setCost(std::nullopt);
+  EXPECT_EQ(nh.cost(), std::nullopt);
+}
+
+TEST(RouteNextHopTest, CostThriftRoundTrip) {
+  auto addr = folly::IPAddress("2401:db00::1");
+  auto intfID = InterfaceID(1);
+
+  // ResolvedNextHop with cost
+  ResolvedNextHop resolved(
+      addr,
+      intfID,
+      10,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(42));
+
+  NextHop nh = resolved;
+  auto thrift = nh.toThrift();
+  EXPECT_EQ(thrift.cost(), 42);
+
+  auto deserialized = util::fromThrift(thrift);
+  EXPECT_EQ(deserialized.cost(), int64_t(42));
+  EXPECT_EQ(deserialized.addr(), addr);
+  EXPECT_EQ(deserialized.weight(), 10);
+
+  // UnresolvedNextHop with cost
+  UnresolvedNextHop unresolved(
+      addr,
+      10,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(99));
+
+  NextHop unh = unresolved;
+  auto uthrift = unh.toThrift();
+  auto udeserialized = util::fromThrift(uthrift);
+  EXPECT_EQ(udeserialized.cost(), int64_t(99));
+
+  // Without cost
+  ResolvedNextHop noCost(addr, intfID, 10);
+  NextHop nhNoCost = noCost;
+  auto thriftNoCost = nhNoCost.toThrift();
+  EXPECT_FALSE(thriftNoCost.cost().has_value());
+  auto deserializedNoCost = util::fromThrift(thriftNoCost);
+  EXPECT_EQ(deserializedNoCost.cost(), std::nullopt);
+}
+
+TEST(RouteNextHopTest, CostHashCompleteness) {
+  std::hash<ResolvedNextHop> hasher;
+
+  auto addr = folly::IPAddress("10.0.0.1");
+  auto intfID = InterfaceID(1);
+
+  ResolvedNextHop base(addr, intfID, 10);
+  ResolvedNextHop withCost(
+      addr,
+      intfID,
+      10,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(100));
+
+  EXPECT_NE(hasher(base), hasher(withCost));
+}
+
+TEST(RouteNextHopTest, CostComparison) {
+  auto addr = folly::IPAddress("2401:db00::1");
+  auto intfID = InterfaceID(1);
+
+  NextHop nhA = ResolvedNextHop(
+      addr,
+      intfID,
+      10,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(100));
+  NextHop nhB = ResolvedNextHop(
+      addr,
+      intfID,
+      10,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      {},
+      std::nullopt,
+      std::nullopt,
+      int64_t(200));
+
+  EXPECT_NE(nhA, nhB);
+  EXPECT_TRUE(nhA < nhB);
+  EXPECT_TRUE(nhB > nhA);
+}
+
 TEST(RouteNextHopTest, Srv6ValidationMissingTunnelId) {
   auto addr = folly::IPAddress("2401:db00::1");
   auto intfID = InterfaceID(1);

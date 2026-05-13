@@ -455,7 +455,9 @@ class TestRunner(abc.ABC):
     def _add_test_prefix_to_gtest_result(self, run_test_output, test_prefix):
         run_test_result = run_test_output
         line = run_test_output.decode("utf-8")
-        m = re.search(r"(?:OK|FAILED).* ] ", line)
+        # Anchor to the gtest result-line format `[  STATUS ] ` so we don't
+        # match incidental tokens like "FAILED to allocate" in log noise.
+        m = re.search(r"\[\s*(?:OK|FAILED|SKIPPED|TIMEOUT)\s*\] ", line)
         if m is not None:
             idx = m.end()
             run_test_result = (line[:idx] + test_prefix + line[idx:]).encode("utf-8")

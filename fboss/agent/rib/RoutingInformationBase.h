@@ -101,8 +101,10 @@ class RibRouteTables {
   }
 
   void addOrUpdateNamedNextHopGroups(
+      const SwitchIdScopeResolver* resolver,
       const std::vector<std::pair<std::string, RouteNextHopSet>>& groups,
-      const std::function<void(const NextHopIDManager*)>& stateUpdateFn);
+      const RibToSwitchStateFunction& ribToSwitchStateFunc,
+      void* cookie);
 
   void deleteNamedNextHopGroups(
       const std::vector<std::string>& names,
@@ -588,8 +590,10 @@ class RoutingInformationBase {
   // thread-safe access to NextHopIDManager. Allocation/deallocation is followed
   // by a state update callback (under rlock) to sync switch state.
   void addOrUpdateNamedNextHopGroups(
+      const SwitchIdScopeResolver* resolver,
       const std::vector<std::pair<std::string, RouteNextHopSet>>& groups,
-      const std::function<void(const NextHopIDManager*)>& stateUpdateFn);
+      const RibToSwitchStateFunction& ribToSwitchStateFunc,
+      void* cookie);
 
   void deleteNamedNextHopGroups(
       const std::vector<std::string>& names,

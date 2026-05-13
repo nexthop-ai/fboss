@@ -5,7 +5,7 @@
 import json
 import os
 import tempfile
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -105,6 +105,38 @@ class TestAddTestPrefixToGtestResult:
         output = b"Some random output without gtest markers"
         result = runner._add_test_prefix_to_gtest_result(output, "cold_boot.")
         assert result == output
+
+    @pytest.mark.parametrize(
+        "status_token, raw_line",
+        [
+            ("OK", b"[       OK ] FooTest.Bar (5 ms)\n"),
+            ("FAILED", b"[  FAILED  ] FooTest.Bar (5 ms)\n"),
+            ("SKIPPED", b"[  SKIPPED ] FooTest.Bar (5 ms)\n"),
+            ("TIMEOUT", b"[  TIMEOUT ] FooTest.Bar (5 ms)\n"),
+        ],
+    )
+    def test_inserts_for_all_statuses(self, runner, status_token, raw_line):
+        """All four gtest statuses must have the boot prefix inserted after `] `."""
+        result = runner._add_test_prefix_to_gtest_result(raw_line, "cold_boot.")
+        assert result != raw_line, (
+            f"{status_token} line was not modified — fallback would synthesize OK"
+        )
+        assert b"] cold_boot.FooTest.Bar" in result
+
+    def test_skipped_distinct_from_ok(self, runner):
+        """Regression guard: SKIPPED line must not be confused with an OK line."""
+        raw = b"[  SKIPPED ] HwFooTest.Bar (5 ms)\n"
+        result = runner._add_test_prefix_to_gtest_result(raw, "cold_boot.")
+        assert b"SKIPPED" in result
+        assert b"OK" not in result.split(b"]")[0]
+
+    def test_ignores_log_noise(self, runner):
+        """Regression guard: the prefix regex must not match unrelated tokens like
+        'FAILED to allocate ... ]' in surrounding log noise."""
+        raw = b"E0506 12:00:00 some_module.cpp:42] FAILED to allocate buffer ] \n"
+        # No gtest result line present; should return unchanged so the
+        # synthesize-OK fallback can decide what to do.
+        assert runner._add_test_prefix_to_gtest_result(raw, "cold_boot.") == raw
 
 
 class TestRegexMatching:
@@ -313,3 +345,55 @@ class TestInitializeTestLists:
 
         assert len(runner._unsupported_test_regexes) == 1
         assert "HwMirrorTest\\..*" in runner._unsupported_test_regexes
+
+
+# End-to-end tests for TestRunner._run_test exercising the SKIPPED /
+# synthesize-OK fallback paths in run_test.py.
+
+
+class TestRunTestGtestFallback:
+    """Tests for _run_test gtest output post-processing (prefix injection,
+    synthesize-OK fallback for empty output)."""
+
+    @patch("subprocess.check_output")
+    def test_preserves_skipped_does_not_synthesize_ok(
+        self, mock_check_output, runner, mock_args
+    ):
+        """End-to-end: a SKIPPED gtest result must not be rewritten as OK."""
+        mock_check_output.return_value = b"[  SKIPPED ] HwFooTest.Bar (5 ms)\n"
+        # _get_test_run_cmd reads the module-level `args` global, which is only
+        # bound under `if __name__ == "__main__":` — use create=True to inject it.
+        with patch("run_test.args", new=mock_args, create=True):
+            result = runner._run_test(
+                conf_file="dummy.conf",
+                test_prefix="cold_boot.",
+                test_to_run="HwFooTest.Bar",
+                setup_warmboot=False,
+                sai_logging="WARN",
+                fboss_logging="WARN",
+            )
+        decoded = result.decode("utf-8")
+        assert "SKIPPED" in decoded
+        assert "cold_boot.HwFooTest.Bar" in decoded
+        # Critical: the fallback must NOT have rewritten this to "[       OK ]".
+        assert "[       OK ]" not in decoded
+
+    @patch("subprocess.check_output")
+    def test_synthesize_ok_when_no_gtest_line(
+        self, mock_check_output, runner, mock_args
+    ):
+        """Fallback path still works: empty output (e.g. --setup-for-warmboot early
+        exit) should still synthesize an OK result so the test isn't lost from
+        the summary."""
+        mock_check_output.return_value = b""
+        with patch("run_test.args", new=mock_args, create=True):
+            result = runner._run_test(
+                conf_file="dummy.conf",
+                test_prefix="warm_boot.",
+                test_to_run="HwFooTest.Bar",
+                setup_warmboot=True,
+                sai_logging="WARN",
+                fboss_logging="WARN",
+            )
+        decoded = result.decode("utf-8")
+        assert "[       OK ] warm_boot.HwFooTest.Bar" in decoded

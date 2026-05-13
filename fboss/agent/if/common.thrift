@@ -62,6 +62,7 @@ struct NextHopThrift {
   */
   15: optional i32 adjustedWeight;
   16: optional NetworkTopologyInformation topologyInfo;
+  17: optional i64 cost;
 }
 
 /*
@@ -201,8 +202,9 @@ struct StateDeltaApplication {
 }
 
 enum TunnelType {
-  IP_IN_IP = 0,
+  IP_IN_IP = 0, // Decap
   SRV6_ENCAP = 1,
+  IP_IN_IP_ENCAP = 2,
 }
 
 enum MySidType {

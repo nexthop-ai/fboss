@@ -15,6 +15,7 @@
 #include <fmt/format.h>
 #include <folly/Conv.h>
 #include <folly/String.h>
+#include <thrift/lib/cpp2/FieldRef.h>
 #include <algorithm>
 #include <cctype>
 #include <cstdint>
@@ -129,14 +130,19 @@ std::string applyProfile(
   // Speed is a property of the profile, not the port — look it up once
   // using the first port's ID to avoid rebuilding PlatformMapping per port.
   const cfg::Port* firstPort = interfaces.begin()->getPort();
-  PortID firstPortId(
-      firstPort ? static_cast<uint32_t>(*firstPort->logicalID()) : 0);
+  if (!firstPort) {
+    throw std::runtime_error("No port found for the specified interface");
+  }
+  PortID firstPortId(static_cast<uint32_t>(*firstPort->logicalID()));
   cfg::PortSpeed profileSpeed =
       validator.getProfileSpeed(firstPortId, requestedProfile);
 
   for (const utils::Intf& intf : interfaces) {
     cfg::Port* port = intf.getPort();
-    const std::string& portName = *port->name();
+    if (!port) {
+      continue;
+    }
+    const std::string& portName = apache::thrift::can_throw(*port->name());
     validator.validateProfile(portName, value);
     port->profileID() = requestedProfile;
     port->speed() = profileSpeed;

@@ -1521,6 +1521,23 @@ void configurePortGroup(
   }
 }
 
+void configurePortGroupsForMaxSpeed(
+    const PlatformMapping* platformMapping,
+    bool supportsAddRemovePort,
+    cfg::SwitchConfig& config) {
+  auto subsidiaryPortIDs =
+      utility::getSubsidiaryPortIDs(platformMapping->getPlatformPorts());
+  for (const auto& [controllingPort, subsidiaryPorts] : subsidiaryPortIDs) {
+    auto maxSpeed = platformMapping->getPortMaxSpeed(controllingPort);
+    configurePortGroup(
+        platformMapping,
+        supportsAddRemovePort,
+        config,
+        maxSpeed,
+        subsidiaryPorts);
+  }
+}
+
 std::vector<PortID> getAllPortsInGroup(
     const PlatformMapping* platformMapping,
     PortID portID) {

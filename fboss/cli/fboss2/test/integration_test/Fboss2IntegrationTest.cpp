@@ -34,7 +34,9 @@
 #include <utility>
 #include <vector>
 
+#include "fboss/agent/if/gen-cpp2/FbossCtrl.h"
 #include "fboss/agent/if/gen-cpp2/FbossCtrlAsyncClient.h"
+#include "fboss/agent/if/gen-cpp2/ctrl_types.h"
 #include "fboss/cli/fboss2/CmdArgsLists.h"
 #include "fboss/cli/fboss2/utils/CmdClientUtilsCommon.h"
 #include "fboss/cli/fboss2/utils/CmdInitUtils.h"
@@ -436,7 +438,7 @@ Fboss2IntegrationTest::Interface Fboss2IntegrationTest::waitForInterfaceInfo(
     }
     XLOG(DBG1) << "Condition not yet met for interface " << interfaceName
                << ", retrying in " << interval.count() << "s...";
-    std::this_thread::sleep_for(interval);
+    /* sleep override */ std::this_thread::sleep_for(interval);
   } while (std::chrono::steady_clock::now() < deadline);
   XLOG(INFO) << "Timeout waiting for condition on interface " << interfaceName;
   return last;
@@ -457,7 +459,7 @@ int Fboss2IntegrationTest::waitForKernelMtu(
     XLOG(DBG1) << "Kernel MTU condition not yet met for fboss" << vlanId
                << " (mtu=" << last << "), retrying in " << interval.count()
                << "s...";
-    std::this_thread::sleep_for(interval);
+    /* sleep override */ std::this_thread::sleep_for(interval);
   } while (std::chrono::steady_clock::now() < deadline);
   XLOG(INFO) << "Timeout waiting for kernel MTU condition on fboss" << vlanId
              << " — last observed: " << last;
@@ -497,7 +499,7 @@ Fboss2IntegrationTest::waitForPortRunningInfo(
                << " (profile=" << last.profileId << ", speed=" << last.speedMbps
                << " Mbps)"
                << ", retrying in " << interval.count() << "s...";
-    std::this_thread::sleep_for(interval);
+    /* sleep override */ std::this_thread::sleep_for(interval);
   } while (std::chrono::steady_clock::now() < deadline);
   XLOG(INFO) << "Timeout waiting for condition on port " << portName
              << " — last observed: profile=" << last.profileId

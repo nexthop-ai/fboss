@@ -49,7 +49,6 @@ class AgentRouteStatTest : public AgentHwTest {
         ensemble.getSw(),
         ensemble.masterLogicalPortIds(),
         true /*interfaceHasSubnet*/);
-    config.switchSettings()->maxRouteCounterIDs() = 3;
     return config;
   }
 
