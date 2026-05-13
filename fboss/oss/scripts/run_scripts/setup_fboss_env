@@ -18,11 +18,7 @@ export PATH=${FBOSS_BIN}${PATH:+:${PATH}}
 export LD_LIBRARY_PATH=${FBOSS_LIB}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 export LD_LIBRARY_PATH=${FBOSS_LIB64}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 
-<<<<<<< HEAD
 # needed by Leaba SDK on G202X platforms
 [ -f /etc/profile.d/sai-env.sh ] && . /etc/profile.d/sai-env.sh
 
-||||||| 674c9f5457
-=======
->>>>>>> 2ba3cb6d05524d527b829dd935c37e71266f520e
 unset _FBOSS_ROOT

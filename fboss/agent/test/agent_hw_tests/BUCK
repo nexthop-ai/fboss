@@ -199,51 +199,27 @@ cpp_library(
         "AgentJumboFramesTests.cpp",
         "AgentL3ForwardingTests.cpp",
         "AgentL4PortBlackholingTests.cpp",
-<<<<<<< HEAD
-        "AgentLoadBalancerTests.cpp",  # bazelify: exclude
-||||||| 674c9f5457
-        "AgentLoadBalancerTests.cpp",
-=======
         "AgentLinkLocalForwardingTests.cpp",
-        "AgentLoadBalancerTests.cpp",
->>>>>>> 2ba3cb6d05524d527b829dd935c37e71266f520e
+        "AgentLoadBalancerTests.cpp",  # bazelify: exclude
         "AgentLoopBackTests.cpp",
         "AgentMPLSMidpointTests.cpp",
         "AgentMPLSTests.cpp",
         "AgentMacLearningAndNeighborResolutionTests.cpp",
         "AgentMacLearningTests.cpp",
-<<<<<<< HEAD
         "AgentMemoryUsageTests.cpp",  # bazelify: exclude
         "AgentMirrorOnDropDnxTests.cpp",  # bazelify: exclude
-        "AgentMirrorOnDropTestBase.cpp",  # bazelify: exclude
-        "AgentMirrorOnDropXgsTests.cpp",  # bazelify: exclude
-||||||| 674c9f5457
-        "AgentMemoryUsageTests.cpp",
-        "AgentMirrorOnDropDnxTests.cpp",
-        "AgentMirrorOnDropTestBase.cpp",
-        "AgentMirrorOnDropXgsTests.cpp",
-=======
-        "AgentMemoryUsageTests.cpp",
-        "AgentMirrorOnDropDnxTests.cpp",
         "AgentMirrorOnDropStatelessTest.cpp",
         "AgentMirrorOnDropStatelessTests.cpp",
-        "AgentMirrorOnDropTestBase.cpp",
+        "AgentMirrorOnDropTestBase.cpp",  # bazelify: exclude
         "AgentMirrorOnDropXgsImpl.cpp",
->>>>>>> 2ba3cb6d05524d527b829dd935c37e71266f520e
         "AgentMirroringTests.cpp",
         "AgentMmuTuningTests.cpp",
         "AgentNeighborTests.cpp",
         "AgentOverflowTestBase.cpp",
         "AgentPacketSendTests.cpp",
         "AgentPacketStreamHandlerTests.cpp",
-<<<<<<< HEAD
-        "AgentPfcTests.cpp",  # bazelify: exclude
-||||||| 674c9f5457
-        "AgentPfcTests.cpp",
-=======
         "AgentPfcConfigTest.cpp",
-        "AgentPfcTests.cpp",
->>>>>>> 2ba3cb6d05524d527b829dd935c37e71266f520e
+        "AgentPfcTests.cpp",  # bazelify: exclude
         "AgentPortBandWidthTests.cpp",
         "AgentPortLedTests.cpp",
         "AgentPrbsTests.cpp",

@@ -187,11 +187,7 @@ def _find_getdeps_libs(
     installed_dir = build_dir / "installed"
     libs = {}
     for pkg in packages:
-<<<<<<< HEAD
         # Find all matching package directories and pick the most recent one.
-||||||| 674c9f5457
-=======
->>>>>>> 2ba3cb6d05524d527b829dd935c37e71266f520e
         pkg_dirs = sorted(
             installed_dir.glob(f"{pkg}-*"),
             key=lambda p: p.stat().st_mtime,
