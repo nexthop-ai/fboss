@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <filesystem>
+#include <set>
 
 #include <fmt/format.h>
 #include <gtest/gtest.h>
@@ -233,20 +234,32 @@ TEST_F(PlatformManagerHwTest, XcvrLedFiles) {
     // Find all LED directories for this port
     std::string portLedPattern = fmt::format("port{}_", xcvrNum);
     std::vector<fs::path> foundLeds;
+    std::set<std::string> uniqueLedNumbers;
 
     for (const auto& entry : fs::directory_iterator("/sys/class/leds")) {
       std::string ledName = entry.path().filename().string();
       if (ledName.find(portLedPattern) == 0) {
         foundLeds.push_back(entry.path());
+
+        // Extract LED number (e.g., "led1" from "port10_led1:amber:status")
+        // Format is: port{num}_led{ledNum}:{color}:status
+        auto ledNumStart = ledName.find("_led") + 4;
+        auto ledNumEnd = ledName.find(':', ledNumStart);
+        if (ledNumEnd != std::string::npos) {
+          std::string ledNum =
+              ledName.substr(ledNumStart, ledNumEnd - ledNumStart);
+          uniqueLedNumbers.insert(ledNum);
+        }
       }
     }
 
-    // Verify we found the expected number of LEDs
-    EXPECT_EQ(foundLeds.size(), numLeds) << fmt::format(
+    // Verify we found the expected number of unique LEDs (ignoring color
+    // variants)
+    EXPECT_EQ(uniqueLedNumbers.size(), numLeds) << fmt::format(
         "Port {} expected {} LEDs, found {}",
         xcvrNum,
         numLeds,
-        foundLeds.size());
+        uniqueLedNumbers.size());
 
     bool hasPrimaryColor = false;
     bool hasSecondaryColor = false;
