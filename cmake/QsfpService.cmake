@@ -142,6 +142,15 @@ target_link_libraries(icecube800bc_bsp
   FBThrift::thriftcpp2
 )
 
+add_library(nova4000_bsp
+  fboss/lib/bsp/nova4000/Nova4000BspPlatformMapping.cpp
+)
+
+target_link_libraries(nova4000_bsp
+  bsp_platform_mapping
+  FBThrift::thriftcpp2
+)
+
 add_library(icetea800bc_bsp
   fboss/lib/bsp/icetea800bc/Icetea800bcBspPlatformMapping.cpp
 )
@@ -293,6 +302,7 @@ target_link_libraries(qsfp_bsp_core
   montblanc_bsp
   icecube800banw_bsp
   icecube800bc_bsp
+  nova4000_bsp
   icetea800bc_bsp
   minipack3bta_bsp
   minipack3n_bsp

@@ -23,6 +23,7 @@
 #include "fboss/lib/bsp/montblanc/MontblancBspPlatformMapping.h"
 #include "fboss/lib/bsp/morgan800cc/Morgan800ccBspPlatformMapping.h"
 #include "fboss/lib/bsp/nh4010f/Nh4010fBspPlatformMapping.h"
+#include "fboss/lib/bsp/nova4000/Nova4000BspPlatformMapping.h"
 #include "fboss/lib/bsp/tahan800bc/Tahan800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/tahansb800bc/Tahansb800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/wedge800bact/Wedge800BACTBspPlatformMapping.h"
@@ -127,6 +128,10 @@ std::unique_ptr<WedgeManager> createWedgeManager(
           Icecube800bcBspPlatformMapping,
           PlatformType::PLATFORM_ICECUBE800BC>(
           platformMapping, qsfpServiceThreads);
+    case PlatformType::PLATFORM_NOVA4000:
+      return createBspWedgeManager<
+          Nova4000BspPlatformMapping,
+          PlatformType::PLATFORM_NOVA4000>(platformMapping, qsfpServiceThreads);
     case PlatformType::PLATFORM_ICETEA800BC:
       return createBspWedgeManager<
           Icetea800bcBspPlatformMapping,
