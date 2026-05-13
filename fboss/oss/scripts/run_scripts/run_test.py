@@ -19,6 +19,7 @@ from datetime import datetime, timezone
 from typing import ClassVar
 
 from fboss_agent_utils import (
+    FBOSS_AGENT_VOLATILE_STATE_DIR,
     agent_can_warm_boot_file_path,
     cleanup_hw_agent_service,
     setup_and_start_hw_agent_service,
@@ -186,6 +187,7 @@ DEFAULT_TEST_RUN_TIMEOUT_IN_SECOND = 1200
 
 _SAI_AGENT_DISABLE_SERVICES = [
     "fboss_sw_agent",
+    "fboss_hw_agent@0",
 ]
 
 TEST_DISABLE_SERVICES = {
@@ -276,6 +278,16 @@ def disable_services(test_name: str):
         subprocess.run(["systemctl", "mask", *services], check=False)
         subprocess.run(["systemctl", "stop", *services], check=False)
         time.sleep(2)
+        # fboss_*_agent gracefulExit() writes can_warm_boot; wipe so the next
+        # test binary cold-boots instead of crashing on missing agent.conf.
+        if any(
+            s.startswith("fboss_sw_agent") or s.startswith("fboss_hw_agent")
+            for s in services
+        ):
+            subprocess.run(
+                ["rm", "-rf", f"{FBOSS_AGENT_VOLATILE_STATE_DIR}/warm_boot"],
+                check=False,
+            )
         print("Services stopped", flush=True)
 
 
