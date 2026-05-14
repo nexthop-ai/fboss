@@ -174,6 +174,12 @@ jobs:
               echo "::endgroup::"
               continue
             fi
+            if ! nh dvc scp ./fboss2-dev "$DUT":/opt/fboss/bin/; then
+              echo "::warning::Failed to copy fboss2-dev, trying next DUT"
+              nh tb release "$DUT" || true
+              echo "::endgroup::"
+              continue
+            fi
             for lib in ./*.so*; do
               [ -f "$lib" ] && nh dvc scp "$lib" "$DUT":~/ || true
             done
