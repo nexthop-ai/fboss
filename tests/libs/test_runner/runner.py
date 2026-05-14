@@ -122,6 +122,9 @@ class BaseHwTestRunner(ABC):
                     line = line.replace(f'name="{name}"', f'name="{classname}.{name}"')
                 f.write(line)
 
+    def binary_exit_is_fatal(self, exit_status: int) -> bool:
+        return exit_status != 0
+
     def pre_test(self):
         pass
 
@@ -140,6 +143,10 @@ class BaseHwTestRunner(ABC):
         """Run the hardware test on the DUT."""
         logger.info("Running tests")
         self.setup(test_context)
+
+        for local_path in ("/tmp/test.log", "/tmp/tr.xml"):
+            if os.path.exists(local_path):
+                os.unlink(local_path)
 
         # Ensure /home/admin exists on the DUT — prepare creates it during
         # _post_image_actions, but it may be missing if the DUT was reimaged
@@ -173,8 +180,6 @@ class BaseHwTestRunner(ABC):
             logger.info("Running remote command: %s", cmd)
             test_exit_status, test_output = self.ssh_client.run_cmd(cmd)
             logger.debug("exit_status %s output %s", test_exit_status, test_output)
-            if test_exit_status != 0:
-                logger.error("Failed to run tests: %s", test_output)
         finally:
             self.post_test()
 
@@ -194,7 +199,7 @@ class BaseHwTestRunner(ABC):
 
         self.normalize_test_results_file()
 
-        if test_exit_status != 0:
+        if self.binary_exit_is_fatal(test_exit_status):
             logger.error("Failed to run tests: %s", test_output)
             return False
 
@@ -291,6 +296,44 @@ class BspTestRunner(BaseHwTestRunner):
     def set_filters(self, src_filepath, dst_filepath):
         """BSP tests run all cases via the bsp_tests binary — no filter file needed."""
         return True
+
+    def binary_exit_is_fatal(self, exit_status: int) -> bool:
+        return not os.path.exists("/tmp/tr.xml")
+
+    def normalize_test_results_file(self):
+        super().normalize_test_results_file()
+
+        if not os.path.exists("/tmp/tr.xml"):
+            return
+
+        with open("/tmp/tr.xml", encoding="utf-8") as f:
+            lines = f.readlines()
+
+        if not any(line.lstrip().startswith("<testsuites") for line in lines):
+            return
+
+        logger.info("Collapsing BSP testsuites into a single suite")
+
+        out = []
+        for line in lines:
+            stripped = line.lstrip()
+            indent = line[: len(line) - len(stripped)]
+            if stripped.startswith("<testsuites"):
+                out.append(line)
+                inner = stripped.replace("<testsuites", "<testsuite", 1)
+                if 'skipped="' not in inner:
+                    inner = inner.replace("<testsuite", '<testsuite skipped="0"', 1)
+                out.append(indent + "  " + inner)
+            elif stripped.startswith("</testsuites>"):
+                out.append(indent + "  </testsuite>\n")
+                out.append(line)
+            elif stripped.startswith("<testsuite") or stripped.startswith("</testsuite>"):
+                continue
+            else:
+                out.append(line)
+
+        with open("/tmp/tr.xml", "w", encoding="utf-8") as f:
+            f.writelines(out)
 
     def post_test(self):
         """Re-enable FBOSS services after BSP tests."""
