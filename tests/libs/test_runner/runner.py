@@ -31,6 +31,33 @@ _HW_TEST_CONFIG_NAME: dict[str, str] = {
     # "wedge800cact": "wedge800cnhp",  # TODO: add when cnhp config is checked in
 }
 
+# vendor/coldboot-sai/warmboot-sai/asic — key for run_test.py
+# --skip-known-bad-tests against ./share/hw_known_bad_tests/sai*_known_bad_tests.
+# Without this, ~128 known-broken tests for tomahawk5 (and the unsupported list)
+# run and fail, gutting the pass rate. run_test.py auto-tries the /mono or
+# /multi_switch suffix for the sai_agent file, so the same 4-tuple covers both
+# SaiTestRunner and SaiAgentTestRunner.
+_SAI_KNOWN_BAD_KEY: dict[str, str] = {
+    "minipack3": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
+    "wedge800bact": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
+    "wedge800bnhp": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
+}
+
+
+def _sai_skip_known_bad(hwsku: str) -> str:
+    key = _SAI_KNOWN_BAD_KEY.get(hwsku)
+    return f" --skip-known-bad-tests {key}" if key else ""
+
+
+# Stale-state cleanup paths — must match AgentDirectoryUtil defaults
+# (fboss/agent/AgentDirectoryUtil.cpp):
+#   getWarmBootDir() = FLAGS_volatile_state_dir + "/warm_boot"
+#                      (default /dev/shm/fboss/warm_boot)
+#   agentEnsembleConfigDir() = FLAGS_persistent_state_dir + "/agent_ensemble/"
+#                      (default /var/facebook/fboss/agent_ensemble/)
+_WARM_BOOT_DIR = "/dev/shm/fboss/warm_boot"
+_AGENT_ENSEMBLE_DIR = "/var/facebook/fboss/agent_ensemble"
+
 
 class BaseHwTestRunner(ABC):
     """Base class for hardware test runners."""
@@ -126,7 +153,30 @@ class BaseHwTestRunner(ABC):
         return exit_status != 0
 
     def pre_test(self):
-        pass
+        """Wipe stale agent-ensemble state before each test.
+
+        AgentEnsemble::setBootType picks WARM_BOOT iff
+        <warm_boot_dir>/can_warm_boot exists, but only the COLD_BOOT path
+        in AgentEnsemble::setupEnsemble writes agent.conf. A stale marker
+        without a paired agent.conf wedges every test in SetUp() with
+        'unable to read .../agent.conf'. This is the dominant TE failure
+        mode (~43% of FAIL runs in T-Recs over the last month) because
+        TE batches run back-to-back without re-imaging between them,
+        unlike devs who install fresh images per run.
+
+        Force a known cold-boot state on every invocation by removing the
+        can_warm_boot marker (so setBootType returns COLD_BOOT) and the
+        agent_ensemble dir (so the cold-boot path writes a fresh
+        agent.conf from --config). AgentEnsemble re-creates the dir via
+        utilCreateDir(), so removal is safe.
+        """
+        cmd = (
+            f"sudo rm -f {_WARM_BOOT_DIR}/can_warm_boot* "
+            f"&& sudo rm -rf {_AGENT_ENSEMBLE_DIR}"
+        )
+        exit_status, output = self.ssh_client.run_cmd(cmd)
+        if exit_status != 0:
+            logger.warning("pre_test state cleanup failed: %s", output)
 
     def post_test(self):
         pass
@@ -218,7 +268,7 @@ class SaiTestRunner(BaseHwTestRunner):
     def test_args(self, hwsku: str) -> str:
         config_name = _HW_TEST_CONFIG_NAME.get(hwsku, hwsku)
         logger.info("hwsku=%s hw_test_config=%s", hwsku, config_name)
-        return f"sai --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON"
+        return f"sai --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON{_sai_skip_known_bad(hwsku)}"
 
 
 class SaiAgentTestRunner(BaseHwTestRunner):
@@ -227,7 +277,7 @@ class SaiAgentTestRunner(BaseHwTestRunner):
     def test_args(self, hwsku: str) -> str:
         config_name = _HW_TEST_CONFIG_NAME.get(hwsku, hwsku)
         logger.info("hwsku=%s hw_test_config=%s", hwsku, config_name)
-        return f"sai_agent --agent-run-mode mono --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON"
+        return f"sai_agent --agent-run-mode mono --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON{_sai_skip_known_bad(hwsku)}"
 
 
 class QsfpTestRunner(BaseHwTestRunner):
