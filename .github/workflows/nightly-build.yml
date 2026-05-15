@@ -112,16 +112,35 @@ jobs:
     steps:
       - name: Determine which builds failed and collect test failures
         id: check-failures
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           CLANG_RESULT="${{ needs.build-and-test-clang.result }}"
           CLANG_FAILED_TESTS="${{ needs.build-and-test-clang.outputs.failed_tests }}"
           CLANG_FAILED_COUNT="${{ needs.build-and-test-clang.outputs.failed_test_count }}"
           MONOBUILD_RESULT="${{ needs.monobuild.result }}"
+          SMOKE_RESULT="${{ needs.fboss-smoke-tests.result }}"
 
-          # Determine which builds failed
+          # Determine which top-level jobs failed
           FAILED=""
           [[ "$CLANG_RESULT" == "failure" ]] && FAILED="Clang build"
           [[ "$MONOBUILD_RESULT" == "failure" ]] && FAILED="${FAILED:+$FAILED, }Monobuild"
+          [[ "$SMOKE_RESULT" == "failure" ]] && FAILED="${FAILED:+$FAILED, }FBOSS smoke tests"
+
+          # Query the GitHub Actions API to identify the specific failed job
+          # name(s). This is necessary for matrix jobs (fboss-smoke-tests) where
+          # `needs.*.result` only exposes an aggregate result, hiding which
+          # matrix variant actually failed.
+          FAILED_JOB_NAMES=$(gh api \
+            "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs" \
+            --paginate \
+            -q '.jobs[] | select(.conclusion == "failure") | .name' \
+            2>/dev/null || true)
+
+          if [[ -z "$FAILED" && -n "$FAILED_JOB_NAMES" ]]; then
+            # Fallback: no known needs failed but the API reports failures.
+            FAILED="Unknown"
+          fi
 
           if [[ -n "$FAILED" ]]; then
             echo "failed_builds=$FAILED" >> "$GITHUB_OUTPUT"
@@ -148,9 +167,18 @@ jobs:
           test_details=""
           [[ "$CLANG_RESULT" == "failure" ]] && test_details+=$(format_failures "Clang" "$CLANG_FAILED_COUNT" "$CLANG_FAILED_TESTS")
 
-          # If no test details, might be a build failure
+          # If we don't have test-level failures, surface the specific failed
+          # job names from the API query so the Slack message is actionable
+          # rather than the misleading "no test results available".
           if [[ -z "$test_details" ]]; then
-            test_details="Build or infrastructure failure (no test results available)"
+            if [[ -n "$FAILED_JOB_NAMES" ]]; then
+              test_details="*Failed jobs:*"$'\n'
+              while IFS= read -r job; do
+                [[ -n "$job" ]] && test_details+="• \`$job\`"$'\n'
+              done <<< "$FAILED_JOB_NAMES"
+            else
+              test_details="Build or infrastructure failure (no test results available)"
+            fi
           fi
 
           echo "test_details<<EOF" >> "$GITHUB_OUTPUT"
