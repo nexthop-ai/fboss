@@ -184,7 +184,7 @@ class BaseHwTestRunner(ABC):
     def build_test_cmd(self, hwsku: str) -> str:
         test_args = self.test_args(hwsku)
         return (
-            f"sudo su -c 'cd /opt/fboss && "
+            f"sudo su -c 'cd /opt/fboss && source ./bin/setup_fboss_env && "
             f" ./bin/run_test.py {test_args} --filter_file=/home/admin/tests.conf "
             f"' > {self.testlog_filepath} 2>&1"
         )
