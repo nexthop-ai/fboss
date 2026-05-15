@@ -17,7 +17,12 @@ add_executable(fboss2_integration_test
   fboss/cli/fboss2/test/integration_test/ConfigPortQueueConfigTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigQosPolicyMapTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigSessionClearTest.cpp
+<<<<<<< HEAD
   fboss/cli/fboss2/test/integration_test/ConfigSessionRestartTest.cpp
+=======
+  fboss/cli/fboss2/test/integration_test/ConfigVlanCreateTest.cpp
+  fboss/cli/fboss2/test/integration_test/ConfigVlanDefaultTest.cpp
+>>>>>>> a8ba9047b0 (NOS-5555: Add VlanManager for auto-VLAN creation in config vlan subcommands (#608))
   fboss/cli/fboss2/test/integration_test/ConfigVlanPortTaggingModeTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigVlanStaticMacTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigVlanSwitchportAccessTest.cpp

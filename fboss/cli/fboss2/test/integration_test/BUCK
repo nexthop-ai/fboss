@@ -25,7 +25,12 @@ cpp_binary(
         "ConfigPortQueueConfigTest.cpp",
         "ConfigQosPolicyMapTest.cpp",
         "ConfigSessionClearTest.cpp",
+<<<<<<< HEAD
         "ConfigSessionRestartTest.cpp",
+=======
+        "ConfigVlanCreateTest.cpp",
+        "ConfigVlanDefaultTest.cpp",
+>>>>>>> a8ba9047b0 (NOS-5555: Add VlanManager for auto-VLAN creation in config vlan subcommands (#608))
         "ConfigVlanPortTaggingModeTest.cpp",
         "ConfigVlanStaticMacTest.cpp",
         "ConfigVlanSwitchportAccessTest.cpp",

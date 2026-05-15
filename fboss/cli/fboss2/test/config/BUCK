@@ -17,6 +17,11 @@ cpp_unittest(
         "CmdConfigSessionDiffTest.cpp",
         "CmdConfigSessionTest.cpp",
         "CmdConfigTestBase.cpp",
+<<<<<<< HEAD
+=======
+        "CmdConfigVlanDefaultTest.cpp",
+        "CmdConfigVlanManagerTest.cpp",
+>>>>>>> a8ba9047b0 (NOS-5555: Add VlanManager for auto-VLAN creation in config vlan subcommands (#608))
         "CmdConfigVlanPortTaggingModeTest.cpp",
         "CmdConfigVlanStaticMacTest.cpp",
         "ConfigSessionSystemdTest.cpp",

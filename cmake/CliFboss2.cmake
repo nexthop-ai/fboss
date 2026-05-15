@@ -865,6 +865,13 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/session/CmdConfigSessionRebase.cpp
   fboss/cli/fboss2/commands/config/vlan/CmdConfigVlan.cpp
   fboss/cli/fboss2/commands/config/vlan/CmdConfigVlan.h
+<<<<<<< HEAD
+=======
+  fboss/cli/fboss2/commands/config/vlan/CmdConfigVlanDefault.cpp
+  fboss/cli/fboss2/commands/config/vlan/CmdConfigVlanDefault.h
+  fboss/cli/fboss2/commands/config/vlan/VlanManager.cpp
+  fboss/cli/fboss2/commands/config/vlan/VlanManager.h
+>>>>>>> a8ba9047b0 (NOS-5555: Add VlanManager for auto-VLAN creation in config vlan subcommands (#608))
   fboss/cli/fboss2/commands/config/vlan/port/CmdConfigVlanPort.cpp
   fboss/cli/fboss2/commands/config/vlan/port/CmdConfigVlanPort.h
   fboss/cli/fboss2/commands/config/vlan/port/tagging_mode/CmdConfigVlanPortTaggingMode.h
