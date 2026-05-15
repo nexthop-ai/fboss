@@ -109,6 +109,11 @@ jobs:
     runs-on: cloudstack-ubuntu24-small
     needs: [build-and-test-clang, monobuild, fboss-smoke-tests]
     if: failure()
+    # `actions: read` is required for `gh api .../actions/runs/.../jobs`
+    # below; without it the default GITHUB_TOKEN gets a 403 and the error
+    # body leaks into the Slack message as the "failed job name".
+    permissions:
+      actions: read
     steps:
       - name: Determine which builds failed and collect test failures
         id: check-failures
@@ -131,11 +136,22 @@ jobs:
           # name(s). This is necessary for matrix jobs (fboss-smoke-tests) where
           # `needs.*.result` only exposes an aggregate result, hiding which
           # matrix variant actually failed.
-          FAILED_JOB_NAMES=$(gh api \
-            "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs" \
-            --paginate \
-            -q '.jobs[] | select(.conclusion == "failure") | .name' \
-            2>/dev/null || true)
+          #
+          # On any failure (e.g. missing `actions: read`), discard stdout so
+          # an error body like `{"message":"Resource not accessible…"}` never
+          # ends up rendered as a "failed job name" in the Slack message.
+          JOBS_API_OUT=$(mktemp)
+          if gh api \
+              "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs" \
+              --paginate \
+              -q '.jobs[] | select(.conclusion == "failure") | .name' \
+              >"$JOBS_API_OUT" 2>/dev/null; then
+            FAILED_JOB_NAMES=$(cat "$JOBS_API_OUT")
+          else
+            echo "::warning::Failed to query workflow jobs API; failed job names will not be listed."
+            FAILED_JOB_NAMES=""
+          fi
+          rm -f "$JOBS_API_OUT"
 
           if [[ -z "$FAILED" && -n "$FAILED_JOB_NAMES" ]]; then
             # Fallback: no known needs failed but the API reports failures.
