@@ -1,4 +1,7 @@
-// Copyright (c) 2025-present, Nexthop Systems, Inc.
+/*
+ *  Copyright (c) 2026 Nexthop Systems Inc.
+ *  SPDX-License-Identifier: BSD-3-Clause
+ */
 
 #include "fboss/led_service/Nova4000LedManager.h"
 #include "fboss/agent/platforms/common/nova4000/Nova4000PlatformMapping.h"

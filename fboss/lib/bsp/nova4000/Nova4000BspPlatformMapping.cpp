@@ -1,4 +1,7 @@
-// Copyright (c) 2025-present, Nexthop Systems, Inc.
+/*
+ *  Copyright (c) 2026 Nexthop Systems Inc.
+ *  SPDX-License-Identifier: BSD-3-Clause
+ */
 
 #include "fboss/lib/bsp/nova4000/Nova4000BspPlatformMapping.h"
 
