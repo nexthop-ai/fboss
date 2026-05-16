@@ -17,7 +17,7 @@
         },
         {
           "name": "CPU_CORE0_TEMP",
-          "sysfsPath": "/run/devmap/sensors/CPU_CORE_TEMP/temp3_input",
+          "sysfsPath": "/run/devmap/sensors/CPU_CORE_TEMP/temp5_input",
           "type": 3,
           "thresholds": {
             "upperCriticalVal": 100,
@@ -27,7 +27,7 @@
         },
         {
           "name": "CPU_CORE1_TEMP",
-          "sysfsPath": "/run/devmap/sensors/CPU_CORE_TEMP/temp4_input",
+          "sysfsPath": "/run/devmap/sensors/CPU_CORE_TEMP/temp6_input",
           "type": 3,
           "thresholds": {
             "upperCriticalVal": 100,
