@@ -245,6 +245,13 @@ jobs:
           git checkout build/fbcode_builder/manifests/libsai build/fbcode_builder/manifests/fboss
           rm -f build/fbcode_builder/manifests/sai_impl
 
+      - name: Fetch dependencies
+        run: |
+          # We have checked out manifests/libsai. Now either we run get-deps.sh or make sure the libs remains here
+          # from a previous run. The later is unpredictable. For any reason if the libs gets deleted, the build
+          # step will fail, so lets run the get-deps.sh
+          docker exec FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-get-deps.sh
+
       - name: Build FBOSS with Fake SAI
         run: |
           docker exec -e SAI_IMPL=fake FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss_fake_agent_targets
