@@ -130,6 +130,8 @@ SUB_CMD_SAI_AGENT = "sai_agent"
 SUB_CMD_SAI_AGENT_MONO_BINARY = "sai_agent_hw_test-sai_impl"
 SUB_CMD_SAI_AGENT_MULTI_BINARY = "multi_switch_agent_hw_test"
 SUB_CMD_SAI_BINARY = "sai_test-sai_impl"
+SUB_CMD_LINK_MONO_BINARY = "sai_mono_link_test-sai_impl"
+SUB_CMD_LINK_MULTI_BINARY = "sai_multi_link_test-sai_impl"
 SUB_CMD_PLATFORM = "platform"
 SUB_CMD_BENCHMARK = "benchmark"
 SUB_CMD_FBOSS2_INTEGRATION = "fboss2_integration"
@@ -191,6 +193,14 @@ _SAI_AGENT_DISABLE_SERVICES = [
     "fboss_hw_agent@0",
 ]
 
+# Shared by SAI hw_test and link binaries: prod agents hold port 5909 /
+# the SAI device; qsfp_service holds the transceivers.
+_SAI_DISABLE_SERVICES = [
+    "fboss_sw_agent",
+    "fboss_hw_agent@0",
+    "qsfp_service",
+]
+
 TEST_DISABLE_SERVICES = {
     SUB_ARG_PLATFORM_MANAGER_HW_TEST: [
         "platform_manager",
@@ -199,13 +209,11 @@ TEST_DISABLE_SERVICES = {
         "data_corral_service",
         "qsfp_service",
     ],
-    SUB_CMD_SAI_BINARY: [
-        "fboss_sw_agent",
-        "fboss_hw_agent@0",
-        "qsfp_service",
-    ],
+    SUB_CMD_SAI_BINARY: _SAI_DISABLE_SERVICES,
     SUB_CMD_SAI_AGENT_MONO_BINARY: _SAI_AGENT_DISABLE_SERVICES,
     SUB_CMD_SAI_AGENT_MULTI_BINARY: _SAI_AGENT_DISABLE_SERVICES,
+    SUB_CMD_LINK_MONO_BINARY: _SAI_DISABLE_SERVICES,
+    SUB_CMD_LINK_MULTI_BINARY: _SAI_DISABLE_SERVICES,
 }
 
 

@@ -17,7 +17,7 @@ logger = logging.getLogger("test_runner")
 
 # Map normalized HWSKU (from device DB model name) to FBOSS config codename
 # for hw_test_configs (SAI/agent tests). Only applies to SaiTestRunner and
-# SaiAgentTestRunner — QSFP and link configs already use the hwsku name directly.
+# SaiAgentTestRunner.
 #
 # Wedge800 naming: B/C = Broadcom/Cisco ASIC, ACT/NHP = Accton/Nexthop vendor.
 # ACT DUTs use NHP configs (same ASIC, different manufacturer).
@@ -57,6 +57,12 @@ def _sai_skip_known_bad(hwsku: str) -> str:
 #                      (default /var/facebook/fboss/agent_ensemble/)
 _WARM_BOOT_DIR = "/dev/shm/fboss/warm_boot"
 _AGENT_ENSEMBLE_DIR = "/var/facebook/fboss/agent_ensemble"
+
+# Link test configs use non-standard naming (no .agent. infix), so kept
+# separate from _HW_TEST_CONFIG_NAME.
+_LINK_TEST_CONFIG_NAME: dict[str, str] = {
+    "minipack3": "montblanc",
+}
 
 
 class BaseHwTestRunner(ABC):
@@ -291,11 +297,11 @@ class LinkTestRunner(BaseHwTestRunner):
     """Runner for link tests."""
 
     def test_args(self, hwsku: str) -> str:
-        # Link test configs use non-standard naming (no .agent. infix)
+        config_name = _LINK_TEST_CONFIG_NAME.get(hwsku, hwsku)
         return (
-            f"link --agent-run-mode mono "
-            f"--config ./share/link_test_configs/{hwsku}.materialized_JSON "
-            f"--qsfp-config ./share/qsfp_test_configs/{hwsku}.materialized_JSON"
+            "link --agent-run-mode mono "
+            f"--config ./share/link_test_configs/{config_name}.materialized_JSON "
+            "--qsfp-config /etc/coop/qsfp.conf"
         )
 
 
