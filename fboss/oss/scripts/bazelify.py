@@ -166,7 +166,11 @@ def _load_skip_dirs(repo_root: Path) -> set[str]:
                 line = raw.strip()
                 if line and not line.startswith("#"):
                     skip.add(line.strip("/"))
-        except FileNotFoundError:
+        except (FileNotFoundError, NotADirectoryError):
+            # NotADirectoryError happens in submodule layouts where `.git` is
+            # a gitlink file (not a directory), so `.git/info/exclude` can't
+            # be resolved via path traversal. Same semantics as missing file:
+            # there are no extra excludes to load.
             pass
     return skip
 
