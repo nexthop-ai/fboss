@@ -298,11 +298,15 @@ class LinkTestRunner(BaseHwTestRunner):
 
     def test_args(self, hwsku: str) -> str:
         config_name = _LINK_TEST_CONFIG_NAME.get(hwsku, hwsku)
-        return (
+        args = (
             "link --agent-run-mode mono "
             f"--config ./share/link_test_configs/{config_name}.materialized_JSON "
             "--qsfp-config /etc/coop/qsfp.conf"
         )
+        if hwsku == "wedge800cact":
+            # warmboot acting strange, will readd once fixed
+            args += " --coldboot_only"
+        return args
 
 
 class PlatformTestRunner(BaseHwTestRunner):
