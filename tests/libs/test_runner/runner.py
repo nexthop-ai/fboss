@@ -392,10 +392,23 @@ class BspTestRunner(BaseHwTestRunner):
             f.writelines(out)
 
     def post_test(self):
-        """Re-enable FBOSS services after BSP tests."""
+        """Re-enable FBOSS services after BSP tests.
+
+        platform_manager must restart first so it re-explores and rebuilds
+        /run/devmap/ — BSP stress tests reload kmods which invalidate the
+        symlinks qsfp_service opens (/run/devmap/xcvrs/xcvr_io_N).
+        """
         services = " ".join(self.BSP_DISABLE_SERVICES)
         logger.info("Re-enabling services: %s", services)
         self.ssh_client.run_cmd(f"sudo systemctl unmask {services}")
+
+        self.ssh_client.run_cmd("sudo systemctl restart platform_manager")
+        self.ssh_client.run_cmd(
+            "sudo bash -c 'for i in $(seq 1 30); do "
+            '[ -n "$(ls /run/devmap/xcvrs/ 2>/dev/null)" ] && exit 0; '
+            "sleep 1; done; exit 0'"
+        )
+
         self.ssh_client.run_cmd(f"sudo systemctl restart {services}")
         logger.info("Services restart initiated")
 
