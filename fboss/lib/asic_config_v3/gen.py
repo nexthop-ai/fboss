@@ -8,11 +8,17 @@ from fboss.lib.asic_config_v3.base_generator import (
     MODULE_DIR,
     BaseAsicConfigGenerator,
 )
+from fboss.lib.asic_config_v3.generators.broadcom_xgs_generator import (
+    BroadcomXgsGenerator,
+)
 
 OUTPUT_DIR: str = f"{MODULE_DIR}/generated_asic_configs"
 
 # Add a new (vendor, asic) entry when bringing up a new ASIC family.
-_GENERATOR_REGISTRY: dict[tuple[str, str], type[BaseAsicConfigGenerator]] = {}
+_GENERATOR_REGISTRY: dict[tuple[str, str], type[BaseAsicConfigGenerator]] = {
+    ("broadcom", "tomahawk5"): BroadcomXgsGenerator,
+    ("broadcom", "tomahawk6"): BroadcomXgsGenerator,
+}
 
 
 def get_generator(
