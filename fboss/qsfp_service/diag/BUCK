@@ -61,6 +61,7 @@ all_pai_diag_shell_libs()
 # Mirrors fboss/agent/hw/sai/diag:diag_shell_client. The OSS counterpart
 # (oss/PaiDiagShellClient.cpp) is used by the cmake build instead of the
 # facebook/ variant.
+# bazelify: add_src = oss/PaiDiagShellClient.cpp
 cpp_binary(
     name = "fboss_pai_diag_shell_client",
     srcs = [
