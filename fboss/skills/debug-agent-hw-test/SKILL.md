@@ -200,16 +200,23 @@ These scripts run **on the switch**. Upload them once per session, then run in t
 ### Remote Execution Pattern
 
 Upload scripts to the switch, run tests in the background, and fetch
-logs when complete. See [device-access.md](references/device-access.md)
-for the specific commands in your environment, and
+logs when complete. First resolve the device-access reference via the
+Reference Routing table below, then follow
 [run-tests.md](references/run-tests.md) for the full execution pattern.
 
 ## Reference Routing
 
-For each reference below, try the `facebook/` version first. If it does
-not exist, use the `references/` version. This ensures environment-specific
-overrides (e.g., internal build tools, device access methods) are used
-when available, with portable defaults as fallback.
+For each reference pair below, load the `facebook/` version first if it
+exists in your checkout. Otherwise load the `references/` version. Treat
+the selected file as the source of truth for that topic.
+
+This routing is client-agnostic:
+- internal checkouts typically provide `facebook/` overrides with lab-specific
+  device access and build instructions
+- OSS checkouts fall back to `references/` with standard ssh/scp and
+  open-source build instructions
+- client-specific command forms are optional conveniences only; the resolved
+  reference must always contain a direct runnable path as fallback
 
 | Need | Try first | Fallback |
 |------|-----------|----------|

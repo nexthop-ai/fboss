@@ -42,14 +42,7 @@ class TunnelStoreTest : public SaiStoreTest {
         ecnMode,
         std::nullopt,
         std::nullopt,
-        std::nullopt
-#if defined(TAJO_SDK_VERSION_25_11_4210)
-        ,
-        std::nullopt,
-        std::nullopt,
-        std::nullopt
-#endif
-    };
+        std::nullopt};
   }
   TunnelSaiId createTunnel() const {
     auto& tunnelApi = saiApiTable->tunnelApi();
@@ -92,14 +85,7 @@ class TunnelStoreTest : public SaiStoreTest {
         SAI_TUNNEL_DECAP_ECN_MODE_STANDARD,
         srcIp,
         ttlMode,
-        dscpMode
-#if defined(TAJO_SDK_VERSION_25_11_4210)
-        ,
-        SAI_TUNNEL_PEER_MODE_P2MP,
-        folly::IPAddress("0.0.0.0"),
-        SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD
-#endif
-    };
+        dscpMode};
   }
   TunnelSaiId createEncapTunnel() const {
     auto& tunnelApi = saiApiTable->tunnelApi();
@@ -140,14 +126,7 @@ TEST_F(TunnelStoreTest, loadTunnel) {
       SAI_TUNNEL_DECAP_ECN_MODE_STANDARD,
       folly::IPAddress("0.0.0.0"),
       0,
-      0
-#if defined(TAJO_SDK_VERSION_25_11_4210)
-      ,
-      SAI_TUNNEL_PEER_MODE_P2MP,
-      folly::IPAddress("0.0.0.0"),
-      0
-#endif
-  };
+      0};
   auto got = store.get(k);
   EXPECT_EQ(got->adapterKey(), tunnelId);
   EXPECT_EQ(
@@ -201,14 +180,7 @@ TEST_F(TunnelStoreTest, tunnelCreateCtor) {
       std::nullopt,
       std::nullopt,
       std::nullopt,
-      std::nullopt
-#if defined(TAJO_SDK_VERSION_25_11_4210)
-      ,
-      std::nullopt,
-      std::nullopt,
-      std::nullopt
-#endif
-  };
+      std::nullopt};
   SaiObject<SaiIpInIpTunnelTraits> obj =
       createObj<SaiIpInIpTunnelTraits>(k, k, 0);
   EXPECT_EQ(GET_ATTR(IpInIpTunnel, OverlayInterface, obj.attributes()), 42);
@@ -389,14 +361,7 @@ TEST_F(TunnelStoreTest, tunnelSetTtl) {
       SAI_TUNNEL_DECAP_ECN_MODE_STANDARD,
       std::nullopt,
       std::nullopt,
-      std::nullopt
-#if defined(TAJO_SDK_VERSION_25_11_4210)
-      ,
-      std::nullopt,
-      std::nullopt,
-      std::nullopt
-#endif
-  };
+      std::nullopt};
   obj.setAttributes(newAttrs);
   EXPECT_EQ(
       GET_OPT_ATTR(IpInIpTunnel, DecapTtlMode, obj.attributes()),

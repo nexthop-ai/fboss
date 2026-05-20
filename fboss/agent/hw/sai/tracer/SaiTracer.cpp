@@ -2025,6 +2025,9 @@ vector<string> SaiTracer::setAttrList(
     case SAI_OBJECT_TYPE_TAM_EVENT:
       setTamEventAttributes(attr_list, attr_count, attrLines, rv);
       break;
+    case SAI_OBJECT_TYPE_TAM_EVENT_THRESHOLD:
+      setTamEventThresholdAttributes(attr_list, attr_count, attrLines, rv);
+      break;
     case SAI_OBJECT_TYPE_TAM_EVENT_ACTION:
       setTamEventActionAttributes(attr_list, attr_count, attrLines, rv);
       break;
@@ -2564,6 +2567,7 @@ void SaiTracer::initVarCounts() {
       static_cast<sai_object_type_t>(SAI_OBJECT_TYPE_TAM_EVENT_AGING_GROUP), 0);
 #endif
   varCounts_.emplace(SAI_OBJECT_TYPE_TAM_EVENT, 0);
+  varCounts_.emplace(SAI_OBJECT_TYPE_TAM_EVENT_THRESHOLD, 0);
   varCounts_.emplace(SAI_OBJECT_TYPE_TAM, 0);
   varCounts_.emplace(SAI_OBJECT_TYPE_TUNNEL, 0);
   varCounts_.emplace(SAI_OBJECT_TYPE_TUNNEL_TERM_TABLE_ENTRY, 0);

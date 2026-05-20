@@ -142,6 +142,37 @@ std::vector<network::thrift::BinaryAddress> fromFwdNextHops(
 
 namespace {
 
+template <typename RouteT>
+UnicastRoute toUnicastRoute(
+    const std::shared_ptr<RouteT>& route,
+    const RouteNextHopEntry& entry,
+    std::vector<NextHopThrift> nextHops,
+    std::vector<facebook::network::thrift::BinaryAddress> nextHopAddrs,
+    std::optional<std::vector<NextHopThrift>> overrideNextHops = std::nullopt) {
+  UnicastRoute tempRoute;
+  tempRoute.dest()->ip() =
+      facebook::network::toBinaryAddress(route->prefix().network());
+  tempRoute.dest()->prefixLength() = route->prefix().mask();
+  tempRoute.nextHops() = std::move(nextHops);
+  tempRoute.nextHopAddrs() = std::move(nextHopAddrs);
+  if (entry.getCounterID()) {
+    tempRoute.counterID() = *entry.getCounterID();
+  }
+  if (auto classID = entry.getClassID()) {
+    tempRoute.classID() = *classID;
+  }
+  if (auto overrideEcmpSwitchingMode = entry.getOverrideEcmpSwitchingMode()) {
+    tempRoute.overrideEcmpSwitchingMode() = *overrideEcmpSwitchingMode;
+  }
+  if (auto namedDest = entry.getNamedRouteDestination()) {
+    tempRoute.namedRouteDestination() = *namedDest;
+  }
+  if (overrideNextHops) {
+    tempRoute.overrideNextHops() = std::move(*overrideNextHops);
+  }
+  return tempRoute;
+}
+
 void fillPortStats(
     const SwSwitch& sw,
     PortInfoThrift& portInfo,
@@ -683,6 +714,46 @@ void addRecylePortRifNeighbors(
     }
   }
 }
+
+void validateAndDefaultSrv6NextHops(
+    std::vector<NextHopThrift>& nextHops,
+    const std::optional<std::string>& defaultSrv6TunnelId) {
+  for (auto& nhop : nextHops) {
+    if (nhop.mplsAction().has_value() && !nhop.srv6SegmentList()->empty()) {
+      throw facebook::fboss::FbossError(
+          "Next hop cannot have both mplsAction (label stack) and srv6SegmentList");
+    }
+    if (!nhop.srv6SegmentList()->empty()) {
+      if (!nhop.tunnelType().has_value()) {
+        nhop.tunnelType() = facebook::fboss::TunnelType::SRV6_ENCAP;
+      } else if (
+          *nhop.tunnelType() != facebook::fboss::TunnelType::SRV6_ENCAP) {
+        throw facebook::fboss::FbossError(
+            "Next hop with srv6SegmentList must have tunnelType SRV6_ENCAP");
+      }
+      if (!nhop.tunnelId().has_value()) {
+        if (!defaultSrv6TunnelId.has_value()) {
+          throw facebook::fboss::FbossError(
+              "Next hop with srv6SegmentList requires a tunnelId, but no SRV6_ENCAP tunnel found in config");
+        }
+        nhop.tunnelId() = defaultSrv6TunnelId.value();
+      }
+    }
+  }
+}
+
+std::optional<std::string> getDefaultSrv6TunnelId(
+    const facebook::fboss::cfg::SwitchConfig& config) {
+  if (config.srv6Tunnels().has_value()) {
+    for (const auto& tunnel : config.srv6Tunnels().value()) {
+      if (*tunnel.tunnelType() == facebook::fboss::TunnelType::SRV6_ENCAP) {
+        return *tunnel.srv6TunnelId();
+      }
+    }
+  }
+  return std::nullopt;
+}
+
 } // namespace
 
 namespace facebook::fboss {
@@ -874,45 +945,14 @@ void ThriftHandler::updateUnicastRoutesImpl(
   auto updater = sw_->getRouteUpdater();
   auto routerID = RouterID(vrf);
   auto clientID = ClientID(client);
-  // Pre-compute the first SRV6_ENCAP tunnel name from config for defaulting
-  // tunnelId on next hops with non-empty srv6SegmentList
-  std::optional<std::string> defaultSrv6TunnelId;
-  auto config = sw_->getConfig();
-  if (config.srv6Tunnels().has_value()) {
-    for (const auto& tunnel : config.srv6Tunnels().value()) {
-      if (*tunnel.tunnelType() == TunnelType::SRV6_ENCAP) {
-        defaultSrv6TunnelId = *tunnel.srv6TunnelId();
-        break;
-      }
-    }
-  }
+  auto defaultSrv6TunnelId = getDefaultSrv6TunnelId(sw_->getConfig());
   for (auto& route : *routes) {
     if (route.overrideEcmpSwitchingMode().has_value() ||
         route.overrideNextHops().has_value()) {
       throw FbossError(
           "Override nhops or switching mode cannot be set by clients");
     }
-    for (auto& nhop : *route.nextHops()) {
-      if (nhop.mplsAction().has_value() && !nhop.srv6SegmentList()->empty()) {
-        throw FbossError(
-            "Next hop cannot have both mplsAction (label stack) and srv6SegmentList");
-      }
-      if (!nhop.srv6SegmentList()->empty()) {
-        if (!nhop.tunnelType().has_value()) {
-          nhop.tunnelType() = TunnelType::SRV6_ENCAP;
-        } else if (*nhop.tunnelType() != TunnelType::SRV6_ENCAP) {
-          throw FbossError(
-              "Next hop with srv6SegmentList must have tunnelType SRV6_ENCAP");
-        }
-        if (!nhop.tunnelId().has_value()) {
-          if (!defaultSrv6TunnelId.has_value()) {
-            throw FbossError(
-                "Next hop with srv6SegmentList requires a tunnelId, but no SRV6_ENCAP tunnel found in config");
-          }
-          nhop.tunnelId() = defaultSrv6TunnelId.value();
-        }
-      }
-    }
+    validateAndDefaultSrv6NextHops(*route.nextHops(), defaultSrv6TunnelId);
     if (FLAGS_enable_route_counters_for_named_nhg &&
         route.namedRouteDestination()->getType() ==
             NamedRouteDestination::Type::nextHopGroup) {
@@ -942,10 +982,14 @@ void ThriftHandler::addMySidEntries(
   auto log = LOG_THRIFT_CALL_WITH_STATS(DBG1, sw_->stats());
   ensureConfigured(__func__);
   for (const auto& entry : *mySidEntries) {
-    if (*entry.type() == MySidType::ADJACENCY_MICRO_SID ||
-        *entry.type() == MySidType::NODE_MICRO_SID) {
-      throw FbossError(
-          "ADJACENCY_MICRO_SID and NODE_MICRO_SID MySid types are not supported via ThriftHandler");
+    switch (*entry.type()) {
+      case MySidType::BINDING_MICRO_SID:
+        break;
+      case MySidType::ADJACENCY_MICRO_SID:
+      case MySidType::NODE_MICRO_SID:
+      case MySidType::DECAPSULATE_AND_LOOKUP:
+        throw FbossError(
+            "Only BINDING_MICRO_SID MySid type is supported via ThriftHandler");
     }
   }
   auto rib = sw_->getRib();
@@ -2009,36 +2053,24 @@ void ThriftHandler::getRouteTable(std::vector<UnicastRoute>& routes) {
   auto state = sw_->getState();
   forAllRoutes(
       state, [&routes, &state](const RouterID& /*rid*/, const auto& route) {
-        UnicastRoute tempRoute;
         if (!route->isResolved()) {
           XLOG(DBG2) << "Skipping unresolved route: "
                      << route->toFollyDynamic();
           return;
         }
         const auto& fwdInfo = route->getForwardInfo();
-        tempRoute.dest()->ip() = toBinaryAddress(route->prefix().network());
-        tempRoute.dest()->prefixLength() = route->prefix().mask();
-        tempRoute.nextHopAddrs() =
-            util::fromFwdNextHops(getNextHops(state, fwdInfo));
-        // If there are no overrides, nonOverrideNormalizedNextHops ==
-        // normalizedNextHops
-        tempRoute.nextHops() = util::fromRouteNextHopSet(
-            getNonOverrideNormalizedNextHops(state, fwdInfo));
-        if (fwdInfo.getCounterID().has_value()) {
-          tempRoute.counterID() = *fwdInfo.getCounterID();
-        }
-        if (fwdInfo.getClassID().has_value()) {
-          tempRoute.classID() = *fwdInfo.getClassID();
-        }
-        if (fwdInfo.getOverrideEcmpSwitchingMode().has_value()) {
-          tempRoute.overrideEcmpSwitchingMode() =
-              *fwdInfo.getOverrideEcmpSwitchingMode();
-        }
+        std::optional<std::vector<NextHopThrift>> overrideNextHops;
         if (fwdInfo.getOverrideNextHops().has_value()) {
-          tempRoute.overrideNextHops() =
+          overrideNextHops =
               util::fromRouteNextHopSet(getNormalizedNextHops(state, fwdInfo));
         }
-        routes.emplace_back(std::move(tempRoute));
+        routes.emplace_back(toUnicastRoute(
+            route,
+            fwdInfo,
+            util::fromRouteNextHopSet(
+                getNonOverrideNormalizedNextHops(state, fwdInfo)),
+            util::fromFwdNextHops(getNextHops(state, fwdInfo)),
+            std::move(overrideNextHops)));
       });
 }
 
@@ -2054,25 +2086,13 @@ void ThriftHandler::getRouteTableByClient(
         if (!entry) {
           return;
         }
-        UnicastRoute tempRoute;
-        tempRoute.dest()->ip() = toBinaryAddress(route->prefix().network());
-        tempRoute.dest()->prefixLength() = route->prefix().mask();
-        tempRoute.nextHops() =
-            util::fromRouteNextHopSet(entry->getNextHopSet());
-        if (entry->getCounterID()) {
-          tempRoute.counterID() = *entry->getCounterID();
+        auto nextHops = util::fromRouteNextHopSet(entry->getNextHopSet());
+        std::vector<network::thrift::BinaryAddress> nextHopAddrs;
+        for (const auto& nh : nextHops) {
+          nextHopAddrs.emplace_back(*nh.address());
         }
-        if (auto classID = entry->getClassID()) {
-          tempRoute.classID() = *classID;
-        }
-        if (auto overrideEcmpSwitchingMode =
-                entry->getOverrideEcmpSwitchingMode()) {
-          tempRoute.overrideEcmpSwitchingMode() = *overrideEcmpSwitchingMode;
-        }
-        for (const auto& nh : *tempRoute.nextHops()) {
-          tempRoute.nextHopAddrs()->emplace_back(*nh.address());
-        }
-        routes.emplace_back(std::move(tempRoute));
+        routes.emplace_back(toUnicastRoute(
+            route, *entry, std::move(nextHops), std::move(nextHopAddrs)));
       });
 }
 
@@ -2114,21 +2134,12 @@ void ThriftHandler::getIpRoute(
       return;
     }
     const auto& fwdInfo = match->getForwardInfo();
-    *route.dest()->ip() = toBinaryAddress(match->prefix().network());
-    *route.dest()->prefixLength() = match->prefix().mask();
-    *route.nextHopAddrs() = util::fromFwdNextHops(getNextHops(state, fwdInfo));
-    auto counterID = fwdInfo.getCounterID();
-    if (counterID.has_value()) {
-      route.counterID() = *counterID;
-    }
-    auto classID = fwdInfo.getClassID();
-    if (classID.has_value()) {
-      route.classID() = *classID;
-    }
-    auto overrideEcmpSwitchingMode = fwdInfo.getOverrideEcmpSwitchingMode();
-    if (overrideEcmpSwitchingMode.has_value()) {
-      route.overrideEcmpSwitchingMode() = *overrideEcmpSwitchingMode;
-    }
+    route = toUnicastRoute(
+        match,
+        fwdInfo,
+        util::fromRouteNextHopSet(
+            getNonOverrideNormalizedNextHops(state, fwdInfo)),
+        util::fromFwdNextHops(getNextHops(state, fwdInfo)));
   } else {
     auto match = sw_->longestMatch(state, ipAddr.asV6(), RouterID(vrfId));
     if (!match || !match->isResolved()) {
@@ -2137,21 +2148,12 @@ void ThriftHandler::getIpRoute(
       return;
     }
     const auto& fwdInfo = match->getForwardInfo();
-    *route.dest()->ip() = toBinaryAddress(match->prefix().network());
-    *route.dest()->prefixLength() = match->prefix().mask();
-    *route.nextHopAddrs() = util::fromFwdNextHops(getNextHops(state, fwdInfo));
-    auto counterID = fwdInfo.getCounterID();
-    if (counterID.has_value()) {
-      route.counterID() = *counterID;
-    }
-    auto classID = fwdInfo.getClassID();
-    if (classID.has_value()) {
-      route.classID() = *classID;
-    }
-    auto overrideEcmpSwitchingMode = fwdInfo.getOverrideEcmpSwitchingMode();
-    if (overrideEcmpSwitchingMode.has_value()) {
-      route.overrideEcmpSwitchingMode() = *overrideEcmpSwitchingMode;
-    }
+    route = toUnicastRoute(
+        match,
+        fwdInfo,
+        util::fromRouteNextHopSet(
+            getNonOverrideNormalizedNextHops(state, fwdInfo)),
+        util::fromFwdNextHops(getNextHops(state, fwdInfo)));
   }
 }
 
@@ -3256,8 +3258,9 @@ void ThriftHandler::addOrUpdateNamedNextHopGroups(
    * restrict it here.
    */
   static constexpr size_t kMaxGroupNameLen = 31;
+  auto defaultSrv6TunnelId = getDefaultSrv6TunnelId(sw_->getConfig());
   std::vector<std::pair<std::string, RouteNextHopSet>> groups;
-  for (const auto& group : *nextHopGroups) {
+  for (auto& group : *nextHopGroups) {
     if (group.name()->size() > kMaxGroupNameLen) {
       throw FbossError(
           "Named next-hop group name exceeds max length of ",
@@ -3265,6 +3268,7 @@ void ThriftHandler::addOrUpdateNamedNextHopGroups(
           " characters: ",
           *group.name());
     }
+    validateAndDefaultSrv6NextHops(*group.nexthops(), defaultSrv6TunnelId);
     groups.emplace_back(
         *group.name(),
         util::toRouteNextHopSet(
@@ -3387,10 +3391,7 @@ void ThriftHandler::getFabricConnectivity(
   for (const auto& switchId : sw_->getSwitchInfoTable().getSwitchIDs()) {
     auto portId2FabricEndpoint =
         sw_->getHwSwitchThriftClientTable()->getFabricConnectivity(switchId);
-    CHECK(portId2FabricEndpoint.has_value());
-    auto state = sw_->getState();
-    for (const auto& [portName, fabricEndpoint] :
-         portId2FabricEndpoint.value()) {
+    for (const auto& [portName, fabricEndpoint] : portId2FabricEndpoint) {
       connectivity.insert({portName, fabricEndpoint});
     }
   }

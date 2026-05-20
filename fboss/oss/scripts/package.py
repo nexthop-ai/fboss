@@ -101,41 +101,7 @@ FORWARDING_TEST_EXTRA = {
 }
 
 AGENT_BENCHMARK_BINARIES = [
-    "sai_anticipated_scale_route_add_speed-sai_impl",
-    "sai_anticipated_scale_route_del_speed-sai_impl",
-    "sai_fsw_scale_route_add_speed-sai_impl",
-    "sai_fsw_scale_route_del_speed-sai_impl",
-    "sai_hgrid_du_scale_route_add_speed-sai_impl",
-    "sai_hgrid_du_scale_route_del_speed-sai_impl",
-    "sai_hgrid_uu_scale_route_add_speed-sai_impl",
-    "sai_hgrid_uu_scale_route_del_speed-sai_impl",
-    "sai_th_alpm_scale_route_add_speed-sai_impl",
-    "sai_th_alpm_scale_route_del_speed-sai_impl",
-    # Performance benchmarks
-    "sai_ecmp_shrink_speed-sai_impl",
-    "sai_ecmp_shrink_with_competing_route_updates_speed-sai_impl",
-    "sai_rib_resolution_speed-sai_impl",
-    "sai_rib_sync_fib_speed-sai_impl",
-    "sai_rx_slow_path_rate-sai_impl",
-    "sai_stats_collection_speed-sai_impl",
-    "sai_tx_slow_path_rate-sai_impl",
-    "sai_ucmp_scale_benchmark-sai_impl",
-    # Init and exit benchmarks
-    "sai_init_and_exit_40Gx10G-sai_impl",
-    "sai_init_and_exit_100Gx10G-sai_impl",
-    "sai_init_and_exit_100Gx25G-sai_impl",
-    "sai_init_and_exit_100Gx50G-sai_impl",
-    "sai_init_and_exit_100Gx100G-sai_impl",
-    "sai_init_and_exit_400Gx400G-sai_impl",
-    # VOQ benchmarks (BRCM DNX only)
-    "sai_init_and_exit_fabric-sai_impl",
-    "sai_init_and_exit_voq-sai_impl",
-    "sai_voq_remote_entity_programming-sai_impl",
-    "sai_voq_scale_route_add_speed-sai_impl",
-    "sai_voq_scale_route_del_speed-sai_impl",
-    "sai_voq_sys_port_programming-sai_impl",
-    # DNX/FAKE only benchmarks
-    "sai_switch_reachability_change_speed-sai_impl",
+    "sai_all_benchmarks-sai_impl",
 ]
 
 PLATFORM_BINARIES = [
@@ -327,6 +293,7 @@ def parse_args(argv):
 def main(argv=None) -> None:
     args = parse_args(sys.argv[1:] if argv is None else argv)
     target_mappings = _build_target(args.target, args.build_dir)
+    # pyrefly: ignore [bad-argument-type]
     package_fboss(args.target, target_mappings)
 
 

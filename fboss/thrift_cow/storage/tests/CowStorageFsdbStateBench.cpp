@@ -217,6 +217,13 @@ BENCHMARK_COUNTERS_NAME_PARAM(
 BENCHMARK_COUNTERS_NAME_PARAM(
     ribmap_state_storage,
     counters,
+    RibMap_RSW_HybridCow,
+    test_data::RoleSelector::RSW,
+    true);
+
+BENCHMARK_COUNTERS_NAME_PARAM(
+    ribmap_state_storage,
+    counters,
     RibMap_FSW_ThriftCow,
     test_data::RoleSelector::FSW,
     false);
@@ -224,9 +231,23 @@ BENCHMARK_COUNTERS_NAME_PARAM(
 BENCHMARK_COUNTERS_NAME_PARAM(
     ribmap_state_storage,
     counters,
+    RibMap_FSW_HybridCow,
+    test_data::RoleSelector::FSW,
+    true);
+
+BENCHMARK_COUNTERS_NAME_PARAM(
+    ribmap_state_storage,
+    counters,
     RibMap_FA_ThriftCow,
     test_data::RoleSelector::FA,
     false);
+
+BENCHMARK_COUNTERS_NAME_PARAM(
+    ribmap_state_storage,
+    counters,
+    RibMap_FA_HybridCow,
+    test_data::RoleSelector::FA,
+    true);
 
 } // namespace facebook::fboss::thrift_cow::test
 

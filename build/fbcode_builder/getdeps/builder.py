@@ -27,6 +27,7 @@ from .dyndeps import create_dyn_dep_munger
 from .envfuncs import add_path_entry, Env, path_search
 from .fetcher import copy_if_different, is_public_commit
 from .runcmd import make_memory_limit_preexec_fn, run_cmd
+from .shared_lib import apply_shared_lib_dep_env
 
 if typing.TYPE_CHECKING:
     from .buildopts import BuildOptions
@@ -265,7 +266,6 @@ class BuilderBase:
             # 1.5 GiB is a lot to assume, but it's typical of Facebook-style C++.
             # Some manifests are even heavier and should override.
             default_job_weight = 1536
-        # pyrefly: ignore [no-matching-overload]
         return int(
             self.manifest.get(
                 "build", "job_weight_mib", str(default_job_weight), ctx=self.ctx
@@ -317,13 +317,15 @@ class BuilderBase:
             env = self.env
         # CMAKE_PREFIX_PATH is only respected when passed through the
         # environment, so we construct an appropriate path to pass down
-        return self.build_opts.compute_env_for_install_dirs(
+        computed = self.build_opts.compute_env_for_install_dirs(
             self.loader,
             self.dep_manifests,
             self.ctx,
             env=env,
             manifest=self.manifest,
         )
+        apply_shared_lib_dep_env(computed, self.build_opts, self.manifest.name)
+        return computed
 
     def get_dev_run_script_path(self) -> str:
         assert self.build_opts.is_windows()
@@ -484,11 +486,7 @@ class AutoconfBuilder(BuilderBase):
             inst_dir,
         )
         self.args: list[str] = args or []
-        if (
-            not build_opts.shared_libs
-            and "--disable-shared" not in self.args
-            and "--enable-shared" not in self.args
-        ):
+        if "--disable-shared" not in self.args and "--enable-shared" not in self.args:
             self.args.append("--disable-shared")
         self.conf_env_args: dict[str, list[str]] = conf_env_args or {}
 
@@ -795,15 +793,13 @@ if __name__ == "__main__":
                 self.defines.update(extra_vc_cmake_defines)
 
         self.loader = loader
-        if build_opts.shared_libs:
-            self.defines["BUILD_SHARED_LIBS"] = "ON"
-            self.defines["BOOST_LINK_STATIC"] = "OFF"
+        if build_opts.shared_lib:
+            self.defines["CMAKE_POSITION_INDEPENDENT_CODE"] = "ON"
 
-        # Apply caller-supplied extra defines last so a per-package
-        # --extra-cmake-defines can override defaults (notably
-        # BUILD_SHARED_LIBS=ON set by --shared-libs above), letting a
-        # single workflow build most projects shared while pinning a
-        # specific dependency to static.
+        # Apply caller-supplied extra defines last so per-package
+        # --extra-cmake-defines can override defaults — including the
+        # BUILD_SHARED_LIBS=ON that --shared-lib injects for the
+        # top-level project.
         if extra_cmake_defines:
             self.defines.update(extra_cmake_defines)
 
@@ -1010,6 +1006,12 @@ if __name__ == "__main__":
                 self.build_opts.build_type,
                 "-j",
                 str(self.num_jobs),
+                "--",
+                # Continue building even if we see an error
+                # Increases dev velocity by surfacing all errors
+                # `-k 0` is understood by ninja - the only build system we use
+                "-k",
+                "0",
             ],
             env=env,
             preexec_fn=self.memory_limit_preexec_fn,
@@ -1049,6 +1051,12 @@ if __name__ == "__main__":
                 self.build_opts.build_type,
                 "-j",
                 str(self.num_jobs),
+                "--",
+                # Continue building even if we see an error
+                # Increases dev velocity by surfacing all errors
+                # `-k 0` is understood by ninja - the only build system we use
+                "-k",
+                "0",
             ]
         )
 
@@ -1513,7 +1521,7 @@ class Boost(BuilderBase):
     def _build(self, reconfigure: bool) -> None:
         env = self._compute_env()
         linkage: list[str] = ["static"]
-        if self.build_opts.is_windows() or self.build_opts.shared_libs:
+        if self.build_opts.is_windows():
             linkage.append("shared")
 
         args = []
@@ -1540,6 +1548,9 @@ class Boost(BuilderBase):
                     env=env,
                 )
 
+            pic_args: list[str] = []
+            if self.build_opts.shared_lib and not self.build_opts.is_windows():
+                pic_args = ["cxxflags=-fPIC", "cflags=-fPIC"]
             b2 = os.path.join(self.src_dir, "b2")
             self._check_cmd(
                 [
@@ -1550,6 +1561,7 @@ class Boost(BuilderBase):
                 ]
                 + args
                 + self.b2_args
+                + pic_args
                 + [
                     "link=%s" % link,
                     "runtime-link=shared",
@@ -1735,9 +1747,11 @@ install(FILES sqlite3.h sqlite3ext.h DESTINATION include)
 
         defines = {
             "CMAKE_INSTALL_PREFIX": self.inst_dir,
-            "BUILD_SHARED_LIBS": "ON" if self.build_opts.shared_libs else "OFF",
+            "BUILD_SHARED_LIBS": "OFF",
             "CMAKE_BUILD_TYPE": "RelWithDebInfo",
         }
+        if self.build_opts.shared_lib:
+            defines["CMAKE_POSITION_INDEPENDENT_CODE"] = "ON"
         define_args = ["-D%s=%s" % (k, v) for (k, v) in defines.items()]
         define_args += ["-G", "Ninja"]
 

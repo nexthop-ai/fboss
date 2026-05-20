@@ -469,6 +469,13 @@ struct MirrorOnDropReport {
    * are sent (no sampling).
    */
   14: optional i32 samplingRate;
+  /*
+   * Optional packets-per-second rate cap for drop report generation.
+   * When set, the SAI TAM event threshold object limits the rate at
+   * which MoD reports are sent; drops exceeding this rate are silently
+   * discarded. If not set, no rate limiting is applied.
+   */
+  15: optional i32 dropPacketRateThreshold;
 }
 
 /**
@@ -669,6 +676,7 @@ enum AclTableActionType {
   DISABLE_ARS_FORWARDING = 7,
   SET_ARS_OBJECT = 8,
   L3_SWITCH_CANCEL = 9,
+  REDIRECT = 10,
 }
 
 enum AclTableQualifier {

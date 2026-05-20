@@ -45,14 +45,7 @@ class TunnelApiTest : public ::testing::Test {
         ecnMode,
         std::nullopt,
         std::nullopt,
-        std::nullopt
-#if defined(TAJO_SDK_VERSION_25_11_4210)
-        ,
-        std::nullopt,
-        std::nullopt,
-        std::nullopt
-#endif
-    };
+        std::nullopt};
     return tunnelApi->create<SaiIpInIpTunnelTraits>(a, 0);
   }
 
@@ -268,14 +261,7 @@ TEST_F(TunnelApiTest, createTunnelWithEncapAttrs) {
       std::nullopt,
       encapSrcIp,
       encapTtlMode,
-      encapDscpMode
-#if defined(TAJO_SDK_VERSION_25_11_4210)
-      ,
-      std::nullopt,
-      std::nullopt,
-      std::nullopt
-#endif
-  };
+      encapDscpMode};
   auto id = tunnelApi->create<SaiIpInIpTunnelTraits>(a, 0);
 
   EXPECT_EQ(

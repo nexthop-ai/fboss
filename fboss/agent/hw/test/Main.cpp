@@ -10,30 +10,30 @@
 
 #include "fboss/agent/FbossInit.h"
 
+#include <cstdlib>
+
 #include <folly/init/Init.h>
 #include <folly/logging/Init.h>
-#include <folly/logging/LoggerDB.h>
 #include <folly/logging/xlog.h>
 #include <gtest/gtest.h>
-#include <cstdlib>
-#include <iostream>
 
 FOLLY_INIT_LOGGING_CONFIG("fboss=DBG4; default:async=true");
 
 int main(int argc, char* argv[]) {
-  // Parse command line flags
   testing::InitGoogleTest(&argc, argv);
 
-  facebook::fboss::fbossInit(argc, argv);
+  if (!GTEST_FLAG_GET(list_tests)) {
+    facebook::fboss::fbossInit(argc, argv);
+  }
 
-  // Run the tests
-  int ret = RUN_ALL_TESTS();
-  // Use std::_Exit() to skip static destructors. initFacebook() spawns
-  // background threads (async_trace, scribe) that may still be running;
-  // normal exit() destroys globals (e.g. boost::regex mem_block_cache) while
-  // those threads still reference them, causing heap-use-after-free under ASan.
-  folly::LoggerDB::get().flushAllHandlers();
-  std::cout.flush();
-  std::cerr.flush();
-  std::_Exit(ret);
+  int rc = RUN_ALL_TESTS();
+
+  // Skip destructors during --gtest_list_tests to avoid an opt-asan UAF
+  // race with initFacebook background fibers. Real test runs use the
+  // normal return so ~SaiApiTable runs (Credo B52 warm boot). See
+  // D105067110.
+  if (GTEST_FLAG_GET(list_tests)) {
+    std::_Exit(rc);
+  }
+  return rc;
 }

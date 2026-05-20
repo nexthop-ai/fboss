@@ -17,7 +17,7 @@ HwSwitchMatcher scope() {
 
 std::shared_ptr<IpTunnel> makeTunnel(const std::string& tunnelId = "tunnel0") {
   auto tunnel = std::make_shared<IpTunnel>(tunnelId);
-  tunnel->setType(TunnelType::IP_IN_IP);
+  tunnel->setType(TunnelType::IP_IN_IP_DECAP);
   tunnel->setUnderlayIntfId(InterfaceID(42));
   tunnel->setTTLMode(cfg::TunnelMode::PIPE);
   tunnel->setDscpMode(cfg::TunnelMode::PIPE);
@@ -83,7 +83,7 @@ TEST(Tunnel, ApplyConfigDecapSwapsIps) {
   tunnelCfg.underlayIntfID() = 1;
   tunnelCfg.dstIp() = "2401:db00::1";
   tunnelCfg.srcIp() = "2401:db00::2";
-  tunnelCfg.tunnelType() = TunnelType::IP_IN_IP;
+  tunnelCfg.tunnelType() = TunnelType::IP_IN_IP_DECAP;
   tunnelCfg.tunnelTermType() = cfg::TunnelTerminationType::P2P;
   tunnelCfg.ttlMode() = cfg::TunnelMode::PIPE;
   tunnelCfg.dscpMode() = cfg::TunnelMode::PIPE;

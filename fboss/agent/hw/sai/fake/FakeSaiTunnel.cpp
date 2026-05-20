@@ -24,9 +24,7 @@ sai_status_t create_tunnel_fn(
       SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL};
   std::optional<sai_tunnel_decap_ecn_mode_t> ecnMode{
       SAI_TUNNEL_DECAP_ECN_MODE_STANDARD};
-  std::optional<sai_int32_t> peerMode;
   std::optional<sai_ip_address_t> encapSrcIp;
-  std::optional<sai_ip_address_t> encapDstIp;
   std::optional<sai_int32_t> encapTtlMode;
   std::optional<sai_int32_t> encapDscpMode;
   std::optional<sai_int32_t> encapEcnMode;
@@ -59,14 +57,8 @@ sai_status_t create_tunnel_fn(
         ecnMode =
             static_cast<sai_tunnel_decap_ecn_mode_t>(attr_list[i].value.s32);
         break;
-      case SAI_TUNNEL_ATTR_PEER_MODE:
-        peerMode = attr_list[i].value.s32;
-        break;
       case SAI_TUNNEL_ATTR_ENCAP_SRC_IP:
         encapSrcIp = attr_list[i].value.ipaddr;
-        break;
-      case SAI_TUNNEL_ATTR_ENCAP_DST_IP:
-        encapDstIp = attr_list[i].value.ipaddr;
         break;
       case SAI_TUNNEL_ATTR_ENCAP_TTL_MODE:
         encapTtlMode = attr_list[i].value.s32;
@@ -93,9 +85,7 @@ sai_status_t create_tunnel_fn(
   if (ecnMode.has_value()) {
     tunnel.ecnMode = ecnMode.value();
   }
-  tunnel.peerMode = peerMode;
   tunnel.encapSrcIp = encapSrcIp;
-  tunnel.encapDstIp = encapDstIp;
   tunnel.encapTtlMode = encapTtlMode;
   tunnel.encapDscpMode = encapDscpMode;
   tunnel.encapEcnMode = encapEcnMode;
@@ -137,21 +127,9 @@ sai_status_t get_tunnel_attribute_fn(
         attr[i].value.s32 =
             tunnel.ecnMode.has_value() ? tunnel.ecnMode.value() : 0;
         break;
-      case SAI_TUNNEL_ATTR_PEER_MODE:
-        attr[i].value.s32 = tunnel.peerMode.has_value()
-            ? tunnel.peerMode.value()
-            : SAI_TUNNEL_PEER_MODE_P2MP;
-        break;
       case SAI_TUNNEL_ATTR_ENCAP_SRC_IP:
         if (tunnel.encapSrcIp.has_value()) {
           attr[i].value.ipaddr = tunnel.encapSrcIp.value();
-        } else {
-          attr[i].value.ipaddr = toSaiIpAddress(folly::IPAddress("0.0.0.0"));
-        }
-        break;
-      case SAI_TUNNEL_ATTR_ENCAP_DST_IP:
-        if (tunnel.encapDstIp.has_value()) {
-          attr[i].value.ipaddr = tunnel.encapDstIp.value();
         } else {
           attr[i].value.ipaddr = toSaiIpAddress(folly::IPAddress("0.0.0.0"));
         }
@@ -200,14 +178,8 @@ sai_status_t set_tunnel_attribute_fn(
       tunnel.ecnMode =
           static_cast<sai_tunnel_decap_ecn_mode_t>(attr->value.s32);
       break;
-    case SAI_TUNNEL_ATTR_PEER_MODE:
-      tunnel.peerMode = attr->value.s32;
-      break;
     case SAI_TUNNEL_ATTR_ENCAP_SRC_IP:
       tunnel.encapSrcIp = attr->value.ipaddr;
-      break;
-    case SAI_TUNNEL_ATTR_ENCAP_DST_IP:
-      tunnel.encapDstIp = attr->value.ipaddr;
       break;
     case SAI_TUNNEL_ATTR_ENCAP_TTL_MODE:
       tunnel.encapTtlMode = attr->value.s32;

@@ -608,6 +608,9 @@ TEST_F(OpticsFwUpgradeTest, triggerOpticsFwUpgradeTest) {
       for (const auto& portName : interfacesToUpgrade) {
         upgradedTcvrIds.push_back(portNameToModule.at(portName));
       }
+      // One more refresh to ensure TransceiverInfo cache has the
+      // latest lastFwUpgradeEndTime set after upgradeFirmwareLocked
+      qsfpServiceHandler->refreshStateMachines();
       CHECK(verifyUpgrade(
           true /* upgradeExpected */,
           initDoneTimestampSec /* upgradeSinceTsSec */,
@@ -652,6 +655,9 @@ TEST_F(OpticsFwUpgradeTest, triggerOpticsFwUpgradeTest) {
         for (const auto& [upgradePortName, _] : upgradedPorts) {
           allUpgradedTcvrIds.push_back(portNameToModule.at(upgradePortName));
         }
+        // One more refresh to ensure TransceiverInfo cache has the
+        // latest lastFwUpgradeEndTime set after upgradeFirmwareLocked
+        qsfpServiceHandler->refreshStateMachines();
         CHECK(verifyUpgrade(
             true /* upgradeExpected */,
             verifyStartTimestampSec,

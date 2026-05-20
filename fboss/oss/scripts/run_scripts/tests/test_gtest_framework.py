@@ -5,7 +5,7 @@
 import json
 import os
 import tempfile
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -345,55 +345,3 @@ class TestInitializeTestLists:
 
         assert len(runner._unsupported_test_regexes) == 1
         assert "HwMirrorTest\\..*" in runner._unsupported_test_regexes
-
-
-# End-to-end tests for TestRunner._run_test exercising the SKIPPED /
-# synthesize-OK fallback paths in run_test.py.
-
-
-class TestRunTestGtestFallback:
-    """Tests for _run_test gtest output post-processing (prefix injection,
-    synthesize-OK fallback for empty output)."""
-
-    @patch("subprocess.check_output")
-    def test_preserves_skipped_does_not_synthesize_ok(
-        self, mock_check_output, runner, mock_args
-    ):
-        """End-to-end: a SKIPPED gtest result must not be rewritten as OK."""
-        mock_check_output.return_value = b"[  SKIPPED ] HwFooTest.Bar (5 ms)\n"
-        # _get_test_run_cmd reads the module-level `args` global, which is only
-        # bound under `if __name__ == "__main__":` — use create=True to inject it.
-        with patch("run_test.args", new=mock_args, create=True):
-            result = runner._run_test(
-                conf_file="dummy.conf",
-                test_prefix="cold_boot.",
-                test_to_run="HwFooTest.Bar",
-                setup_warmboot=False,
-                sai_logging="WARN",
-                fboss_logging="WARN",
-            )
-        decoded = result.decode("utf-8")
-        assert "SKIPPED" in decoded
-        assert "cold_boot.HwFooTest.Bar" in decoded
-        # Critical: the fallback must NOT have rewritten this to "[       OK ]".
-        assert "[       OK ]" not in decoded
-
-    @patch("subprocess.check_output")
-    def test_synthesize_ok_when_no_gtest_line(
-        self, mock_check_output, runner, mock_args
-    ):
-        """Fallback path still works: empty output (e.g. --setup-for-warmboot early
-        exit) should still synthesize an OK result so the test isn't lost from
-        the summary."""
-        mock_check_output.return_value = b""
-        with patch("run_test.args", new=mock_args, create=True):
-            result = runner._run_test(
-                conf_file="dummy.conf",
-                test_prefix="warm_boot.",
-                test_to_run="HwFooTest.Bar",
-                setup_warmboot=True,
-                sai_logging="WARN",
-                fboss_logging="WARN",
-            )
-        decoded = result.decode("utf-8")
-        assert "[       OK ] warm_boot.HwFooTest.Bar" in decoded

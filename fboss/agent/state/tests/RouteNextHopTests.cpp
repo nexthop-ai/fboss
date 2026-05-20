@@ -158,7 +158,7 @@ TEST(RouteNextHopTest, ResolvedNextHopEqualityWithOptionalFields) {
   auto nh17 =
       makeResolvedSrv6NextHop(addr, intfID, 10, {}, TunnelType::SRV6_ENCAP);
   auto nh18 =
-      makeResolvedSrv6NextHop(addr, intfID, 10, {}, TunnelType::IP_IN_IP);
+      makeResolvedSrv6NextHop(addr, intfID, 10, {}, TunnelType::IP_IN_IP_DECAP);
 
   EXPECT_EQ(nh16, nh17);
   EXPECT_NE(nh16, nh18);
@@ -262,7 +262,8 @@ TEST(RouteNextHopTest, UnresolvedNextHopEqualityWithOptionalFields) {
   // Test with tunnelType
   auto nh16 = makeSrv6UnresolvedNextHop(addr, 10, {}, TunnelType::SRV6_ENCAP);
   auto nh17 = makeSrv6UnresolvedNextHop(addr, 10, {}, TunnelType::SRV6_ENCAP);
-  auto nh18 = makeSrv6UnresolvedNextHop(addr, 10, {}, TunnelType::IP_IN_IP);
+  auto nh18 =
+      makeSrv6UnresolvedNextHop(addr, 10, {}, TunnelType::IP_IN_IP_DECAP);
 
   EXPECT_EQ(nh16, nh17);
   EXPECT_NE(nh16, nh18);
@@ -606,7 +607,7 @@ TEST(RouteNextHopTest, ResolvedNextHopHashWithOptionalFields) {
   auto nh17 =
       makeResolvedSrv6NextHop(addr, intfID, 10, {}, TunnelType::SRV6_ENCAP);
   auto nh18 =
-      makeResolvedSrv6NextHop(addr, intfID, 10, {}, TunnelType::IP_IN_IP);
+      makeResolvedSrv6NextHop(addr, intfID, 10, {}, TunnelType::IP_IN_IP_DECAP);
 
   EXPECT_EQ(hasher(nh16), hasher(nh17));
   EXPECT_NE(hasher(nh16), hasher(nh18));
@@ -793,7 +794,7 @@ TEST(RouteNextHopTest, NextHopComparisonWithSrv6Fields) {
 
   // NextHops differing only by tunnelType
   NextHop nhC =
-      makeResolvedSrv6NextHop(addr, intfID, 10, {}, TunnelType::IP_IN_IP);
+      makeResolvedSrv6NextHop(addr, intfID, 10, {}, TunnelType::IP_IN_IP_DECAP);
   NextHop nhD =
       makeResolvedSrv6NextHop(addr, intfID, 10, {}, TunnelType::SRV6_ENCAP);
 
@@ -832,12 +833,12 @@ TEST(RouteNextHopTest, Srv6ValidationWrongTunnelType) {
 
   EXPECT_THROW(
       makeResolvedSrv6NextHop(
-          addr, intfID, 10, segList, TunnelType::IP_IN_IP, "tunnel_1"),
+          addr, intfID, 10, segList, TunnelType::IP_IN_IP_DECAP, "tunnel_1"),
       FbossError);
 
   EXPECT_THROW(
       makeSrv6UnresolvedNextHop(
-          addr, 10, segList, TunnelType::IP_IN_IP, "tunnel_1"),
+          addr, 10, segList, TunnelType::IP_IN_IP_DECAP, "tunnel_1"),
       FbossError);
 }
 

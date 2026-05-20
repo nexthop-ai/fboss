@@ -20,7 +20,9 @@ Tests are run via shell scripts that handle the full cold boot + conditional war
 
 ### Execution Pattern
 
-See [device-access.md](device-access.md) for the specific upload, run, monitor, and download commands in your environment. The general pattern is:
+See the resolved device-access reference selected via the Reference
+Routing table in `SKILL.md` for the specific upload, run, monitor, and
+download commands in your environment. The general pattern is:
 
 ```
 1. UPLOAD: Copy the test script to the switch (once per session)

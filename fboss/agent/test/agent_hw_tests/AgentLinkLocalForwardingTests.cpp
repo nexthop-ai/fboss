@@ -64,7 +64,7 @@ class AgentLinkLocalForwardingTest : public AgentHwTest {
 // cannot match.
 TEST_F(AgentLinkLocalForwardingTest, SingleLinkLocalNeighbor) {
   auto setup = [this]() {
-    auto portIds = masterLogicalInterfacePortIds();
+    auto portIds = masterLogicalInterfaceOrHyperPortIds();
     CHECK(!portIds.empty());
     utility::EcmpSetupTargetedPorts<folly::IPAddressV6> ecmpHelper(
         getProgrammedState(), getSw()->needL2EntryForNeighbor());
@@ -75,7 +75,7 @@ TEST_F(AgentLinkLocalForwardingTest, SingleLinkLocalNeighbor) {
     });
   };
   auto verify = [this]() {
-    auto portIds = masterLogicalInterfacePortIds();
+    auto portIds = masterLogicalInterfaceOrHyperPortIds();
     utility::EcmpSetupTargetedPorts<folly::IPAddressV6> ecmpHelper(
         getProgrammedState(), getSw()->needL2EntryForNeighbor());
     // Read the dst from the same nhop the setup resolved against — guarantees
@@ -98,7 +98,7 @@ TEST_F(AgentLinkLocalForwardingTest, EcmpLinkLocalNexthopsLoadBalanced) {
   constexpr int kEcmpWidth = 4;
   constexpr int kMaxDeviationPct = 25;
   auto setup = [this]() {
-    auto portIds = masterLogicalInterfacePortIds();
+    auto portIds = masterLogicalInterfaceOrHyperPortIds();
     CHECK_GE(portIds.size(), kEcmpWidth);
     utility::EcmpSetupTargetedPorts<folly::IPAddressV6> ecmpHelper(
         getProgrammedState(), getSw()->needL2EntryForNeighbor());
@@ -127,7 +127,7 @@ TEST_F(AgentLinkLocalForwardingTest, EcmpLinkLocalNexthopsLoadBalanced) {
   auto verify = [this]() {
     std::vector<PortDescriptor> ecmpPorts;
     ecmpPorts.reserve(kEcmpWidth);
-    auto portIds = masterLogicalInterfacePortIds();
+    auto portIds = masterLogicalInterfaceOrHyperPortIds();
     for (int i = 0; i < kEcmpWidth; ++i) {
       ecmpPorts.emplace_back(portIds[i]);
     }

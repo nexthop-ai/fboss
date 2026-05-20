@@ -17,8 +17,6 @@ std::map<int32_t, std::pair<std::string, std::size_t>> _TunnelMap{
     SAI_ATTR_MAP(IpInIpTunnel, DecapTtlMode),
     SAI_ATTR_MAP(IpInIpTunnel, DecapDscpMode),
     SAI_ATTR_MAP(IpInIpTunnel, DecapEcnMode),
-    SAI_ATTR_MAP(IpInIpTunnel, PeerMode),
-    SAI_ATTR_MAP(IpInIpTunnel, EncapDstIp),
     SAI_ATTR_MAP(IpInIpTunnel, EncapSrcIp),
     SAI_ATTR_MAP(IpInIpTunnel, EncapTtlMode),
     SAI_ATTR_MAP(IpInIpTunnel, EncapDscpMode),

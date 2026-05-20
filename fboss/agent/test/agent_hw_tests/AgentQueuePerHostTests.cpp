@@ -144,6 +144,29 @@ class AgentQueuePerHostTest : public AgentHwTest {
     return outState;
   }
 
+  std::shared_ptr<typename NeighborTableT::Entry> getNeighborEntry(AddrT ip) {
+    return getProgrammedState()
+        ->getInterfaces()
+        ->getNode(kIntfID)
+        ->template getNeighborTable<NeighborTableT>()
+        ->getEntryIf(ip);
+  }
+
+  std::shared_ptr<SwitchState> removeNeighbors(
+      const std::shared_ptr<SwitchState>& inState) {
+    auto outState{inState->clone()};
+    for (const auto& ipToMacAndClassID : getIpToMacAndClassID()) {
+      auto ip = ipToMacAndClassID.first;
+      NeighborTableT* neighborTable;
+      neighborTable = outState->getInterfaces()
+                          ->getNode(kIntfID)
+                          ->template getNeighborTable<NeighborTableT>()
+                          ->modify(kIntfID, &outState);
+      neighborTable->removeEntry(ip);
+    }
+    return outState;
+  }
+
   std::shared_ptr<SwitchState> updateNeighbors(
       const std::shared_ptr<SwitchState>& inState,
       bool setClassIDs,
@@ -525,6 +548,34 @@ TYPED_TEST(
 // incremented.
 TYPED_TEST(AgentQueuePerHostTest, VerifyTtldCounter) {
   this->verifyTtldCounter();
+}
+
+// Verify that removing a Pending NDP/ARP entry that was never Reachable
+// is handled cleanly by LookupClassUpdater on a QPH-enabled port. Unlike
+// the other tests in this file, this one does not resolve the entries
+// between add and remove.
+TYPED_TEST(AgentQueuePerHostTest, RemovePendingNeighborDoesNotCrash) {
+  auto setup = [this]() {
+    this->applyNewState(
+        [this](const std::shared_ptr<SwitchState>& /*in*/) {
+          return this->addNeighbors(this->getProgrammedState());
+        },
+        "inject Pending neighbors");
+
+    this->applyNewState(
+        [this](const std::shared_ptr<SwitchState>& /*in*/) {
+          return this->removeNeighbors(this->getProgrammedState());
+        },
+        "remove Pending neighbors");
+  };
+
+  auto verify = [this]() {
+    for (const auto& ipToMacAndClassID : this->getIpToMacAndClassID()) {
+      EXPECT_EQ(this->getNeighborEntry(ipToMacAndClassID.first), nullptr);
+    }
+  };
+
+  this->verifyAcrossWarmBoots(setup, verify);
 }
 
 } // namespace facebook::fboss

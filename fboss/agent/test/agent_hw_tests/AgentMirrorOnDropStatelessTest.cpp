@@ -11,6 +11,7 @@
 #include "fboss/agent/TxPacket.h"
 #include "fboss/agent/packet/PktUtil.h"
 #include "fboss/agent/test/TestUtils.h"
+#include "fboss/agent/test/agent_hw_tests/AgentMirrorOnDropTajoImpl.h"
 #include "fboss/agent/test/agent_hw_tests/AgentMirrorOnDropXgsImpl.h"
 #include "fboss/agent/test/utils/AclTestUtils.h"
 #include "fboss/agent/test/utils/PacketSnooper.h"
@@ -25,13 +26,13 @@ namespace {
 
 // Pack an ingress-pipeline drop code (default-route, ACL) into the wire
 // format's two-slot drop-reason struct.
-MirrorOnDropDropReasonCodes ingressOnly(uint8_t code) {
+MirrorOnDropDropReasonCodes ingressOnly(uint16_t code) {
   return {.ingressDropReason = code, .egressDropReason = 0};
 }
 
 // Pack an MMU/egress drop code into the wire format's two-slot drop-reason
 // struct.
-MirrorOnDropDropReasonCodes egressOnly(uint8_t code) {
+MirrorOnDropDropReasonCodes egressOnly(uint16_t code) {
   return {.ingressDropReason = 0, .egressDropReason = code};
 }
 
@@ -46,6 +47,9 @@ std::unique_ptr<MirrorOnDropImpl> createMirrorOnDropImpl(cfg::AsicType type) {
     case cfg::AsicType::ASIC_TYPE_TOMAHAWK5:
     case cfg::AsicType::ASIC_TYPE_TOMAHAWK6:
       return std::make_unique<XgsMirrorOnDropImpl>();
+    case cfg::AsicType::ASIC_TYPE_YUBA: // gibraltar
+    case cfg::AsicType::ASIC_TYPE_G202X: // graphene200
+      return std::make_unique<TajoMirrorOnDropImpl>();
     default:
       throw FbossError(
           "createMirrorOnDropImpl: no MirrorOnDropImpl for AsicType ",
@@ -196,7 +200,13 @@ void AgentMirrorOnDropStatelessTest::testDefaultRouteDrop() {
     auto config = getAgentEnsemble()->getCurrentConfig();
     config.mirrorOnDropReports()->push_back(
         makeMirrorOnDropReport("mod-default-route-drop"));
-    utility::addTrapPacketAcl(&config, kCollectorNextHopMac_);
+    auto* asic =
+        checkSameAndGetAsicForTesting(getAgentEnsemble()->getL3Asics());
+    utility::addTrapPacketAcl(
+        asic,
+        &config,
+        folly::CIDRNetwork(folly::IPAddress(kCollectorIp_), 128),
+        cfg::ToCpuAction::TRAP);
     applyNewConfig(config);
     setupEcmpTraffic(collectorPortId, kCollectorIp_, kCollectorNextHopMac_);
     waitForStateUpdates(getSw());
@@ -241,7 +251,13 @@ void AgentMirrorOnDropStatelessTest::testAclDrop() {
     aclEntry.actionType() = cfg::AclActionType::DENY;
     utility::addAclEntry(&config, aclEntry, utility::kDefaultAclTable());
 
-    utility::addTrapPacketAcl(&config, kCollectorNextHopMac_);
+    auto* asic =
+        checkSameAndGetAsicForTesting(getAgentEnsemble()->getL3Asics());
+    utility::addTrapPacketAcl(
+        asic,
+        &config,
+        folly::CIDRNetwork(folly::IPAddress(kCollectorIp_), 128),
+        cfg::ToCpuAction::TRAP);
     applyNewConfig(config);
     setupEcmpTraffic(collectorPortId, kCollectorIp_, kCollectorNextHopMac_);
     waitForStateUpdates(getSw());
@@ -285,7 +301,13 @@ void AgentMirrorOnDropStatelessTest::testMmuDrop() {
     config.mirrorOnDropReports()->push_back(
         makeMirrorOnDropReport("mod-mmu-drop"));
     configureMmuDropBuffers(config, injectionPortId, kPriority);
-    utility::addTrapPacketAcl(&config, kCollectorNextHopMac_);
+    auto* asic =
+        checkSameAndGetAsicForTesting(getAgentEnsemble()->getL3Asics());
+    utility::addTrapPacketAcl(
+        asic,
+        &config,
+        folly::CIDRNetwork(folly::IPAddress(kCollectorIp_), 128),
+        cfg::ToCpuAction::TRAP);
     applyNewConfig(config);
     setupEcmpTraffic(collectorPortId, kCollectorIp_, kCollectorNextHopMac_);
     setupEcmpTraffic(

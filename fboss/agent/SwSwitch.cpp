@@ -628,10 +628,6 @@ void SwSwitch::stop(bool isGracefulStop, bool revertToMinAlpmState) {
     lldpManager_->stop();
   }
 
-  if (lagManager_) {
-    lagManager_.reset();
-  }
-
   if (fabricLinkMonitoringManager_) {
     fabricLinkMonitoringManager_->stop();
   }
@@ -698,6 +694,10 @@ void SwSwitch::stop(bool isGracefulStop, bool revertToMinAlpmState) {
   // as there could be state updates in progress which will
   // access entries in tunnel manager
   tunMgr_.reset();
+
+  // reset lagManager_ only after pkt thread is stopped as
+  // handlePacketImpl() reads lagManager_ on the RX path
+  lagManager_.reset();
 
   // ALPM requires default routes be deleted at last. Thus,
   // blow away all routes except the min required for ALPM,
@@ -2303,6 +2303,9 @@ void SwSwitch::handlePacket(std::unique_ptr<RxPacket> pkt) {
   if (!intfIdOpt) {
     XLOG_EVERY_N(ERR, 10000)
         << "No interface for port " << pkt->getSrcPort() << ", dropping pkt";
+    if (FLAGS_observe_rx_packets_without_interface && isFullyInitialized()) {
+      pktObservers_->packetReceived(pkt.get());
+    }
     portStats(pkt)->pktDropped();
     return;
   }

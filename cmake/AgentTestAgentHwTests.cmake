@@ -117,20 +117,25 @@ add_library(agent_hw_test_src
   fboss/agent/test/agent_hw_tests/AgentJumboFramesTests.cpp
   fboss/agent/test/agent_hw_tests/AgentIngressBufferTests.cpp
   fboss/agent/test/agent_hw_tests/AgentInNullRouteDiscardsTest.cpp
+  fboss/agent/test/agent_hw_tests/AgentInPauseDiscardsTests.cpp
   fboss/agent/test/agent_hw_tests/AgentInTrapDiscardsTest.cpp
   fboss/agent/test/agent_hw_tests/AgentPacketSendTests.cpp
   fboss/agent/test/agent_hw_tests/AgentL3ForwardingTests.cpp
   fboss/agent/test/agent_hw_tests/AgentL4PortBlackholingTests.cpp
   fboss/agent/test/agent_hw_tests/AgentLinkLocalForwardingTests.cpp
+  fboss/agent/test/agent_hw_tests/AgentHwLinkDebounceTests.cpp
   fboss/agent/test/agent_hw_tests/AgentMacLearningTests.cpp
   fboss/agent/test/agent_hw_tests/AgentMacLearningAndNeighborResolutionTests.cpp
   fboss/agent/test/agent_hw_tests/AgentMirrorOnDropDnxTests.cpp
   fboss/agent/test/agent_hw_tests/AgentMirrorOnDropStatelessTest.cpp
   fboss/agent/test/agent_hw_tests/AgentMirrorOnDropStatelessTests.cpp
+  fboss/agent/test/agent_hw_tests/AgentMirrorOnDropTajoImpl.cpp
   fboss/agent/test/agent_hw_tests/AgentMirrorOnDropTestBase.cpp
   fboss/agent/test/agent_hw_tests/AgentMirrorOnDropXgsImpl.cpp
   fboss/agent/test/agent_hw_tests/AgentMirroringTests.cpp
   fboss/agent/test/agent_hw_tests/AgentMirroringScaleTests.cpp
+  fboss/agent/test/agent_hw_tests/AgentMPLSDataplaneTestUtils.cpp
+  fboss/agent/test/agent_hw_tests/AgentMPLSHeadEndTests.cpp
   fboss/agent/test/agent_hw_tests/AgentMPLSMidpointTests.cpp
   fboss/agent/test/agent_hw_tests/AgentMPLSTests.cpp
   fboss/agent/test/agent_hw_tests/AgentNSFScaleTests.cpp
@@ -168,6 +173,7 @@ add_library(agent_hw_test_src
   fboss/agent/test/agent_hw_tests/AgentTrafficPfcTests.cpp
   fboss/agent/test/agent_hw_tests/AgentPfcConfigTest.cpp
   fboss/agent/test/agent_hw_tests/AgentIpInIpTunnelTests.cpp
+  fboss/agent/test/agent_hw_tests/AgentSrv6BindingSidTests.cpp
   fboss/agent/test/agent_hw_tests/AgentSrv6EncapTests.cpp
   fboss/agent/test/agent_hw_tests/AgentSrv6DecapTests.cpp
   fboss/agent/test/agent_hw_tests/AgentSrv6MidpointTest.cpp

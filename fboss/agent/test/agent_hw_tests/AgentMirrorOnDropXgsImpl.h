@@ -27,9 +27,9 @@ class XgsMirrorOnDropImpl : public MirrorOnDropImpl {
 
   void verifyInvariants(const folly::IOBuf* buf) const override;
 
-  uint8_t getDefaultRouteDropReason() const override;
-  uint8_t getAclDropReason() const override;
-  uint8_t getMmuDropReason() const override;
+  uint16_t getDefaultRouteDropReason() const override;
+  uint16_t getAclDropReason() const override;
+  uint16_t getMmuDropReason() const override;
 
   void configureErspanMirror(
       cfg::SwitchConfig& config,

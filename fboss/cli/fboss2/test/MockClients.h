@@ -134,6 +134,9 @@ class MockFbossCtrlAgent : public FbossCtrlSvIf {
       (std::vector<facebook::fboss::EcmpDetails>&));
   MOCK_METHOD(void, getConfigAppliedInfo, (ConfigAppliedInfo&));
   MOCK_METHOD(void, getPlatformMapping, (cfg::PlatformMapping&));
+  using InterfaceDetailMap =
+      std::map<int32_t, facebook::fboss::InterfaceDetail>&;
+  MOCK_METHOD(void, getAllInterfaces, (InterfaceDetailMap));
 };
 
 class MockFbossQsfpService : public QsfpServiceSvIf {

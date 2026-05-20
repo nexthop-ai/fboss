@@ -13,6 +13,7 @@
 
 #include <folly/logging/xlog.h>
 
+#include <atomic>
 #include <functional>
 
 namespace facebook::fboss::fsdb {
@@ -232,6 +233,45 @@ class FsdbSubscriber : public FsdbSubscriberBase {
         getDisconnectReason()};
   }
 
+  // Force a transient disconnect so the FSDB reconnect machinery
+  // re-establishes the stream. When noGR is true and the subscription
+  // was created with grHoldTimeSec > 0, the post-disconnect transition skips
+  // DISCONNECTED_GR_HOLD and lands directly on DISCONNECTED_GR_HOLD_EXPIRED
+  // so consumers gated on isGRHoldExpired() can drop stale state immediately
+  // instead of waiting out grHoldTimeSec_.
+  void reconnect(bool noGR = false) override {
+    if (noGR && subscriptionOptions_.grHoldTimeSec_ > 0) {
+      // Resolve the noGR intent on streamEvb_ so the flag is only set when
+      // there is an imminent CONNECTED -> DISCONNECTED transition queued
+      // behind us (FsdbStreamClient::reconnect() schedules its lambda on the
+      // same EventBase right after this one). Setting forceGRExpired_ in any
+      // other state would leak: no upcoming transition would consume it, and
+      // a later, unrelated CONNECTED -> DISCONNECTED would incorrectly skip
+      // GR hold.
+      this->getStreamEventBase()->runInEventBaseThread([this]() {
+        switch (getSubscriptionState()) {
+          case SubscriptionState::CONNECTED:
+            forceGRExpired_.store(true);
+            break;
+          case SubscriptionState::DISCONNECTED_GR_HOLD:
+            // Already past disconnect; jump straight to GR_HOLD_EXPIRED so
+            // the contract holds even when no fresh stream-state edge
+            // follows.
+            cancelStaleStateTimeout();
+            staleStateTimeoutExpired();
+            break;
+          case SubscriptionState::DISCONNECTED:
+          case SubscriptionState::DISCONNECTED_GR_HOLD_EXPIRED:
+          case SubscriptionState::CANCELLED:
+            // No upcoming CONNECTED -> DISCONNECTED transition for the flag
+            // to be consumed against -- intentionally do nothing.
+            break;
+        }
+      });
+    }
+    FsdbStreamClient::reconnect(noGR);
+  }
+
  protected:
   auto createRequest() const {
     if constexpr (std::is_same_v<Paths, std::vector<std::string>>) {
@@ -284,13 +324,19 @@ class FsdbSubscriber : public FsdbSubscriberBase {
       case State::DISCONNECTED:
         if (getSubscriptionState() == SubscriptionState::CONNECTED) {
           if (subscriptionOptions_.grHoldTimeSec_ == 0) {
-            // no GR hold, so mark subscription as disconnected immediately
             updateSubscriptionState(SubscriptionState::DISCONNECTED);
             return;
           } else {
             grDisconnectEvents_.add(1);
-            scheduleStaleStateTimeout();
-            updateSubscriptionState(SubscriptionState::DISCONNECTED_GR_HOLD);
+            if (forceGRExpired_.exchange(false)) {
+              // noGR=true: skip GR hold entirely so consumers gated
+              // on isGRHoldExpired() can drop stale state immediately.
+              updateSubscriptionState(
+                  SubscriptionState::DISCONNECTED_GR_HOLD_EXPIRED);
+            } else {
+              scheduleStaleStateTimeout();
+              updateSubscriptionState(SubscriptionState::DISCONNECTED_GR_HOLD);
+            }
           }
         }
         break;
@@ -376,5 +422,9 @@ class FsdbSubscriber : public FsdbSubscriberBase {
       getCounterPrefix() + ".disconnectGRHold",
       fb303::SUM,
       fb303::RATE};
+  // Set by reconnect(noGR=true) and consumed by handleConnectionState
+  // on the next CONNECTED -> DISCONNECTED transition (atomic exchange) to
+  // route through DISCONNECTED_GR_HOLD_EXPIRED instead of DISCONNECTED_GR_HOLD.
+  std::atomic<bool> forceGRExpired_{false};
 };
 } // namespace facebook::fboss::fsdb

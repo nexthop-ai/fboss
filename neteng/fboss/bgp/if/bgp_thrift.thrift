@@ -437,6 +437,261 @@ struct TPeerEgressStats {
 }
 
 /**
+ * Thrift representation of UpdateGroupKey — the criteria for grouping
+ * peers into an update group. Mirrors AdjRibStructs.h UpdateGroupKey.
+ */
+struct TUpdateGroupKey {
+  /* Egress policy name applied to peers in this group. */
+  1: string egress_policy_name;
+
+  /* Peer device regex or peer-group name for route filtering. */
+  2: string route_filter_stmt_name;
+
+  /* Outbound delay in seconds before sending updates. */
+  3: i64 out_delay_seconds;
+
+  /* Session type: "EBGP", "IBGP", or "ConfedEBGP". */
+  4: string session_type;
+
+  /* Whether IPv4 AFI is negotiated for this group. */
+  5: bool afi_ipv4_negotiated;
+
+  /* Whether IPv6 AFI is negotiated for this group. */
+  6: bool afi_ipv6_negotiated;
+
+  /* Whether peers in this group are confederation peers. */
+  7: bool is_confed_peer;
+
+  /* Whether peers in this group are route reflector clients. */
+  8: bool is_rr_client;
+
+  /* Link bandwidth advertisement mode. */
+  9: optional bgp_attr.AdvertiseLinkBandwidth advertise_link_bandwidth;
+
+  /* Link bandwidth receive mode. */
+  10: optional bgp_attr.ReceiveLinkBandwidth receive_link_bandwidth;
+
+  /* Static link bandwidth in bps for UCMP. Null = use ECMP, zero = blackhole. */
+  11: optional i64 link_bandwidth_bps;
+
+  /* Whether private AS numbers are stripped before advertising. */
+  12: bool remove_private_asn;
+
+  /* Whether Add-Path send is enabled for this group. */
+  13: bool send_add_path;
+
+  /* Whether 4-byte ASN capability is negotiated. */
+  14: bool as4_byte_capable;
+
+  /* Whether RFC5549 extended nexthop encoding is negotiated. */
+  15: bool ext_nh_encoding_capable;
+
+  /* Peer group name this group belongs to. */
+  16: string peer_group_name;
+
+  /* Whether peer has per-peer egress policy override. */
+  17: bool peer_override;
+}
+
+/**
+ * Update group accumulated statistics reported per AdjRibOutGroup.
+ */
+struct TUpdateGroupStats {
+  /* Number of times a slow peer was detached from the group. */
+  1: i64 slow_peer_detachments;
+
+  /* Number of DFP (Divergence-Free Peer) rejoin events. */
+  2: i64 dfp_rejoin_events;
+
+  /* Number of entries corrected during detached peer rejoin entry collapse. */
+  3: i64 collapse_entries_corrected;
+
+  /* Number of DSP (Diverged-State Peer) rejoin events. */
+  4: i64 dsp_rejoin_events;
+
+  /* Number of times lazy clone was invoked for detached peers. */
+  5: i64 lazy_clone_events;
+
+  /* Cumulative count of IPv4 announcement prefixes sent (monotonic counter). */
+  6: i64 total_sent_announcements_ipv4;
+
+  /* Cumulative count of IPv6 announcement prefixes sent (monotonic counter). */
+  7: i64 total_sent_announcements_ipv6;
+
+  /* Number of IPv4 update messages sent by this group. */
+  8: i64 group_update_messages_ipv4;
+
+  /* Number of IPv6 update messages sent by this group. */
+  9: i64 group_update_messages_ipv6;
+
+  /* Number of withdrawals sent by this group. */
+  10: i64 group_withdrawals;
+
+  /* Total queue wait time (ms) across all sync peers in the group. */
+  11: i64 group_total_queue_wait_ms;
+
+  /* Total number of queue blocks across all sync peers in the group. */
+  12: i64 group_total_queue_blocks;
+
+  /* Last epoch time (ms) that a queue block occurred in this group; unset if never. */
+  13: optional i64 last_group_queue_block_time;
+
+  /* Current point-in-time count of prefixes in post-policy RIB-OUT (gauge). */
+  14: i64 post_out_prefix_count;
+
+  /* Current point-in-time count of IPv4 prefixes in post-policy RIB-OUT. */
+  15: i64 post_out_prefix_count_ipv4;
+
+  /* Current point-in-time count of IPv6 prefixes in post-policy RIB-OUT. */
+  16: i64 post_out_prefix_count_ipv6;
+}
+
+/**
+ * Per-peer info within an update group.
+ */
+struct TUpdateGroupPeerInfo {
+  /* Peer address (IPv4 or IPv6). */
+  1: string peer_addr;
+
+  /* Peer's state in the update-group state machine (e.g., "JOINED_RUNNING"). */
+  2: string peer_state;
+
+  /* Peer's bit position within the group bitmap. */
+  3: i64 bit_position;
+
+  /* Whether peer is in-sync with the group (sharing group updates). */
+  4: bool is_in_sync;
+
+  /* Whether peer is currently TCP-backpressured. */
+  5: bool is_blocked;
+
+  /* Whether peer is detached from the group. */
+  6: bool is_detached;
+
+  /* "DFP" or "DSP" if detached, unset otherwise. */
+  7: optional string detach_type;
+
+  /* RIB version when peer was detached; unset if not detached. */
+  8: optional i64 detached_rib_version;
+
+  /* BGP session state. */
+  9: TBgpPeerState session_state;
+
+  /* Peer description from config. */
+  10: string description;
+
+  /* Peer's remote AS number. */
+  11: i64 remote_as;
+
+  /* Last RIB version seen by this peer. */
+  12: i64 last_seen_rib_version;
+
+  /* Current per-peer adjribOut queue depth. */
+  13: i64 queue_size;
+
+  /* Number of per-peer adjRibEntry keys (prefix count). */
+  14: i64 entry_count;
+
+  /* Epoch time (ms) when EoR was sent to this peer; unset if not sent. */
+  15: optional i64 eor_sent_time_ms;
+}
+
+/**
+ * Complete update-group information for CLI display.
+ * Organized by mutability with reserved field ranges for extensibility:
+ *   1-2:   Identity (immutable)
+ *   3-10:  Per-group configuration (static after group creation)
+ *   11-20: Runtime state (changes frequently)
+ *   21-30: Accumulated stats
+ *   31-40: Per-peer membership
+ *   41-50: Diagnostics
+ *
+ * Note: Slow-peer detection config is global (UpdateGroupConfig in
+ * bgp_config.thrift), not per-group. It is displayed in the summary view.
+ */
+struct TUpdateGroupInfo {
+  /* ---- Group identity (fields 1-2) ---- */
+
+  /* Monotonically increasing group ID assigned by UpdateGroupManager. */
+  1: i64 group_id;
+
+  /* Full grouping criteria that defines this update group. */
+  2: TUpdateGroupKey group_key;
+
+  /* ---- Per-group configuration (fields 3-10) ---- */
+  /* fields 3-10 reserved for future per-group configuration */
+
+  /* ---- Runtime state (fields 11-20, changes frequently) ---- */
+
+  /* Group state: "UNINITIALIZED", "IDLE", "READY", "WAITING". */
+  11: string group_state;
+
+  /* Total number of peers in this group. */
+  12: i64 member_count;
+
+  /* Number of peers currently in-sync with the group. */
+  13: i64 in_sync_peer_count;
+
+  /* Number of peers currently detached from the group. */
+  14: i64 detached_peer_count;
+
+  /* Number of peers currently blocked (TCP backpressure). */
+  15: i64 blocked_peer_count;
+
+  /* Last RIB version seen by this group. */
+  16: i64 last_seen_rib_version;
+
+  /* fields 17-20 reserved for future runtime state */
+
+  /* ---- Accumulated stats (fields 21-30) ---- */
+
+  /* Per-group accumulated counters. */
+  21: TUpdateGroupStats stats;
+
+  /* fields 22-30 reserved for future stats */
+
+  /* ---- Per-peer membership details (fields 31-40) ---- */
+
+  /* List of peers in this group with their individual state. */
+  31: list<TUpdateGroupPeerInfo> peers;
+
+  /* fields 32-40 reserved for future per-peer data */
+
+  /* ---- Diagnostics (fields 41-50) ---- */
+
+  /* Epoch time (ms) when initial RIB dump completed for this group. */
+  41: optional i64 initial_dump_completion_time_ms;
+
+  /* Total number of entry discrepancies detected during rejoin collapse. */
+  42: i64 total_discrepancies;
+
+  /* Per-PeerUpdateState count breakdown (e.g., "JOINED_RUNNING" -> 3). */
+  43: map<string, i64> peer_state_counts;
+  /* fields 44-50 reserved for future diagnostics */
+}
+
+/**
+ * Request parameters for getUpdateGroupInfo().
+ * All fields are optional — omitting them returns all groups.
+ */
+struct TGetUpdateGroupInfoRequest {
+  /* Filter by a specific update group ID. Unset returns all groups. */
+  1: optional i64 group_id;
+}
+
+/**
+ * Response wrapper for getUpdateGroupInfo().
+ * Allows adding response metadata (e.g., pagination, timestamp)
+ * without breaking the API signature.
+ */
+struct TGetUpdateGroupInfoResponse {
+  1: list<TUpdateGroupInfo> update_groups;
+
+  /* Whether the update-group feature is enabled. */
+  2: bool enable_update_group;
+}
+
+/**
  * BGP Stream Session attributes
  */
 struct TBgpStreamSession {
@@ -1057,6 +1312,13 @@ service TBgpService extends fb303.FacebookService {
    * Get detailed info on peer egress backpressure statistics.
    */
   list<TPeerEgressStats> getPeerEgressStats();
+
+  /**
+   * Get detailed information about all active update groups.
+   */
+  TGetUpdateGroupInfoResponse getUpdateGroupInfo(
+    1: TGetUpdateGroupInfoRequest request,
+  );
 
   /**
    * Get local config information

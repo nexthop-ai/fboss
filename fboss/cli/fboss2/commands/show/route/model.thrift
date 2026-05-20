@@ -34,6 +34,7 @@ struct NextHopInfo {
   5: optional i32 interfaceID;
   6: optional common.NetworkTopologyInformation topologyInfo;
   7: optional list<string> srv6SegmentList;
+  8: optional i32 cost;
 }
 
 struct ClientAndNextHops {
