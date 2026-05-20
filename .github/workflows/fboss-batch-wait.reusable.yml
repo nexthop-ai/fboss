@@ -43,7 +43,7 @@ on:
 jobs:
   wait:
     name: Wait & Verify
-    runs-on: cloudstack-ubuntu24-small
+    runs-on: cloudstack-ubuntu24-micro
     timeout-minutes: ${{ inputs.timeout_minutes }}
     permissions:
       id-token: write
