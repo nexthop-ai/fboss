@@ -584,3 +584,106 @@ target_link_libraries(hw_srv6_mysid_scale_benchmark
   Folly::folly
   Folly::follybenchmark
 )
+
+add_library(hw_cpu_latency_benchmark
+  fboss/agent/hw/benchmarks/HwCpuLatencyBenchmark.cpp
+)
+
+target_link_libraries(hw_cpu_latency_benchmark
+  hw_cpu_latency_benchmark_helper
+  mono_agent_ensemble
+  mono_agent_benchmarks
+  Folly::folly
+  Folly::follybenchmark
+)
+
+add_library(hw_system_scale_churn_memory_benchmark
+  fboss/agent/hw/benchmarks/HwSystemScaleChurnMemoryBenchmark.cpp
+)
+
+target_link_libraries(hw_system_scale_churn_memory_benchmark
+  agent_fsdb_integ_bench_helper
+  system_scale_test_utils
+  mono_agent_ensemble
+  Folly::folly
+  Folly::follybenchmark
+)
+
+add_library(hw_tun_manager_probe_benchmark_helper INTERFACE)
+
+target_link_libraries(hw_tun_manager_probe_benchmark_helper INTERFACE
+  mono_agent_ensemble
+  mono_agent_benchmarks
+  config_factory
+  Folly::folly
+  Folly::follybenchmark
+)
+
+add_library(hw_tun_manager_probe_and_cleanup_speed
+  fboss/agent/hw/benchmarks/HwTunManagerProbeBenchmark.cpp
+)
+
+target_link_libraries(hw_tun_manager_probe_and_cleanup_speed
+  hw_tun_manager_probe_benchmark_helper
+  mono_agent_ensemble
+  mono_agent_benchmarks
+  Folly::folly
+  Folly::follybenchmark
+)
+
+add_library(hw_ecmp_backup_group_spillover
+  fboss/agent/hw/benchmarks/HwEcmpBackupGroupSpilloverBenchmark.cpp
+)
+
+target_link_libraries(hw_ecmp_backup_group_spillover
+  config_factory
+  ecmp_helper
+  ecmp_test_utils
+  load_balancer_test_utils
+  scale_test_utils
+  mono_agent_ensemble
+  mono_agent_benchmarks
+  Folly::folly
+  Folly::follybenchmark
+)
+
+add_library(hw_ecmp_group_scale_benchmark
+  fboss/agent/hw/benchmarks/HwEcmpGroupScaleBenchmark.cpp
+)
+
+target_link_libraries(hw_ecmp_group_scale_benchmark
+  config_factory
+  ecmp_helper
+  ecmp_test_utils
+  load_balancer_test_utils
+  scale_test_utils
+  mono_agent_ensemble
+  mono_agent_benchmarks
+  Folly::folly
+  Folly::follybenchmark
+)
+
+add_library(hw_voq_route_competing_remote_neighbor_benchmark_helper INTERFACE)
+
+target_link_libraries(hw_voq_route_competing_remote_neighbor_benchmark_helper INTERFACE
+  hw_route_benchmark_helpers
+  core
+  fib_helpers
+  config_factory
+  agent_ensemble
+  voq_test_utils
+  Folly::folly
+  Folly::follybenchmark
+)
+
+add_library(hw_voq_route_competing_remote_neighbor_benchmark
+  fboss/agent/hw/benchmarks/HwVoqRouteCompetingRemoteNeighborBenchmark.cpp
+)
+
+target_link_libraries(hw_voq_route_competing_remote_neighbor_benchmark
+  hw_voq_route_competing_remote_neighbor_benchmark_helper
+  mono_agent_ensemble
+  mono_agent_benchmarks
+  Folly::folly
+  Folly::follybenchmark
+)

@@ -14,7 +14,9 @@ Debug binaries are larger. Ensure sufficient disk space on the switch:
 
     RUN ON <switch>: df -h /tmp
 
-See [device-access.md](device-access.md) for the actual command in your environment.
+See the resolved device-access reference selected via the Reference
+Routing table in `SKILL.md` for the actual command in your
+environment.
 
 ## Getting Stack Traces
 

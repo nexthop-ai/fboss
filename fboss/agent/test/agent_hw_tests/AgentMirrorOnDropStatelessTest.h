@@ -29,8 +29,8 @@ struct MirrorOnDropPacketFields {
 
   // Drop metadata
   uint16_t ingressPort{0};
-  uint8_t dropReasonIngress{0};
-  uint8_t dropReasonEgress{0};
+  uint16_t dropReasonIngress{0};
+  uint16_t dropReasonEgress{0};
 
   // Inner (sampled) packet
   std::optional<folly::MacAddress> innerSrcMac;
@@ -48,8 +48,8 @@ struct MirrorOnDropPacketFields {
 // (ingress-pipeline drops vs egress/MMU drops). Constructed by the framework
 // from the single ASIC-specific code returned by MirrorOnDropImpl.
 struct MirrorOnDropDropReasonCodes {
-  uint8_t ingressDropReason{0};
-  uint8_t egressDropReason{0};
+  uint16_t ingressDropReason{0};
+  uint16_t egressDropReason{0};
 };
 
 // Strategy interface: each stateless MirrorOnDrop platform provides an impl.
@@ -82,9 +82,9 @@ class MirrorOnDropImpl {
 
   // ASIC-specific raw drop-reason code for each category. The framework
   // packs these into the ingress-vs-egress slot expected by the wire format.
-  virtual uint8_t getDefaultRouteDropReason() const = 0;
-  virtual uint8_t getAclDropReason() const = 0;
-  virtual uint8_t getMmuDropReason() const = 0;
+  virtual uint16_t getDefaultRouteDropReason() const = 0;
+  virtual uint16_t getAclDropReason() const = 0;
+  virtual uint16_t getMmuDropReason() const = 0;
 
   // Configure an ERSPAN (GRE tunnel) mirror used by the sampling test to
   // generate a high drop-rate packet loop.

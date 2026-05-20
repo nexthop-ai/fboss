@@ -2443,7 +2443,8 @@ std::pair<apache::thrift::ident::agingGroupAgingIntervalUsecs, ChildThriftPath<:
 std::pair<apache::thrift::ident::isResolved, Child<bool, ::apache::thrift::type_class::integral, ::apache::thrift::type::bool_t>>,
 std::pair<apache::thrift::ident::resolvedCollectorMac, Child<::std::string, ::apache::thrift::type_class::string, ::apache::thrift::type::string_t>>,
 std::pair<apache::thrift::ident::resolvedEgressPort, ChildThriftPath<::facebook::fboss::cfg::PortDescriptor, ::facebook::fboss::fsdb::FsdbOperStateRoot, Self>>,
-std::pair<apache::thrift::ident::samplingRate, Child<::std::int32_t, ::apache::thrift::type_class::integral, ::apache::thrift::type::i32_t>>>;
+std::pair<apache::thrift::ident::samplingRate, Child<::std::int32_t, ::apache::thrift::type_class::integral, ::apache::thrift::type::i32_t>>,
+std::pair<apache::thrift::ident::dropPacketRateThreshold, Child<::std::int32_t, ::apache::thrift::type_class::integral, ::apache::thrift::type::i32_t>>>;
 
   template <typename Name>
   using TypeFor = typename Children::template type_of<Name>;
@@ -2468,6 +2469,7 @@ std::pair<apache::thrift::ident::samplingRate, Child<::std::int32_t, ::apache::t
     STRUCT_CHILD_GETTERS(resolvedCollectorMac, 17);
     STRUCT_CHILD_GETTERS(resolvedEgressPort, 18);
     STRUCT_CHILD_GETTERS(samplingRate, 19);
+    STRUCT_CHILD_GETTERS(dropPacketRateThreshold, 20);
 
   template <apache::thrift::FieldId __id>
   auto operator()(const std::integral_constant<apache::thrift::FieldId, __id>&) {
@@ -2490,6 +2492,7 @@ std::pair<apache::thrift::ident::samplingRate, Child<::std::int32_t, ::apache::t
     else if constexpr (__id == apache::thrift::FieldId{17}) { return resolvedCollectorMac(); }
     else if constexpr (__id == apache::thrift::FieldId{18}) { return resolvedEgressPort(); }
     else if constexpr (__id == apache::thrift::FieldId{19}) { return samplingRate(); }
+    else if constexpr (__id == apache::thrift::FieldId{20}) { return dropPacketRateThreshold(); }
   }
 };
 
@@ -5856,7 +5859,8 @@ std::pair<apache::thrift::ident::eventIdToDropReasons_DEPRECATED, ChildThriftPat
 std::pair<apache::thrift::ident::modEventToConfigMap, ChildThriftPath<::std::map<::std::int8_t, ::facebook::fboss::cfg::MirrorOnDropEventConfig>, ::facebook::fboss::fsdb::FsdbOperStateRoot, Self>>,
 std::pair<apache::thrift::ident::agingGroupAgingIntervalUsecs, ChildThriftPath<::std::map<::facebook::fboss::cfg::MirrorOnDropAgingGroup, ::std::int32_t>, ::facebook::fboss::fsdb::FsdbOperStateRoot, Self>>,
 std::pair<apache::thrift::ident::mirrorPort, ChildThriftPath<::facebook::fboss::cfg::MirrorDestination, ::facebook::fboss::fsdb::FsdbOperStateRoot, Self>>,
-std::pair<apache::thrift::ident::samplingRate, Child<::std::int32_t, ::apache::thrift::type_class::integral, ::apache::thrift::type::i32_t>>>;
+std::pair<apache::thrift::ident::samplingRate, Child<::std::int32_t, ::apache::thrift::type_class::integral, ::apache::thrift::type::i32_t>>,
+std::pair<apache::thrift::ident::dropPacketRateThreshold, Child<::std::int32_t, ::apache::thrift::type_class::integral, ::apache::thrift::type::i32_t>>>;
 
   template <typename Name>
   using TypeFor = typename Children::template type_of<Name>;
@@ -5876,6 +5880,7 @@ std::pair<apache::thrift::ident::samplingRate, Child<::std::int32_t, ::apache::t
     STRUCT_CHILD_GETTERS(agingGroupAgingIntervalUsecs, 12);
     STRUCT_CHILD_GETTERS(mirrorPort, 13);
     STRUCT_CHILD_GETTERS(samplingRate, 14);
+    STRUCT_CHILD_GETTERS(dropPacketRateThreshold, 15);
 
   template <apache::thrift::FieldId __id>
   auto operator()(const std::integral_constant<apache::thrift::FieldId, __id>&) {
@@ -5893,6 +5898,7 @@ std::pair<apache::thrift::ident::samplingRate, Child<::std::int32_t, ::apache::t
     else if constexpr (__id == apache::thrift::FieldId{12}) { return agingGroupAgingIntervalUsecs(); }
     else if constexpr (__id == apache::thrift::FieldId{13}) { return mirrorPort(); }
     else if constexpr (__id == apache::thrift::FieldId{14}) { return samplingRate(); }
+    else if constexpr (__id == apache::thrift::FieldId{15}) { return dropPacketRateThreshold(); }
   }
 };
 
@@ -6144,7 +6150,8 @@ std::pair<apache::thrift::ident::overrideEcmpSwitchingMode, Child<::facebook::fb
 std::pair<apache::thrift::ident::overrideNextHops, ChildThriftPath<::std::vector<::facebook::fboss::NextHopThrift>, ::facebook::fboss::fsdb::FsdbOperStateRoot, Self>>,
 std::pair<apache::thrift::ident::normalizedResolvedNextHopSetID, Child<::std::int64_t, ::apache::thrift::type_class::integral, ::apache::thrift::type::i64_t>>,
 std::pair<apache::thrift::ident::resolvedNextHopSetID, Child<::std::int64_t, ::apache::thrift::type_class::integral, ::apache::thrift::type::i64_t>>,
-std::pair<apache::thrift::ident::namedNextHopGroup, Child<::std::string, ::apache::thrift::type_class::string, ::apache::thrift::type::string_t>>>;
+std::pair<apache::thrift::ident::namedNextHopGroup, Child<::std::string, ::apache::thrift::type_class::string, ::apache::thrift::type::string_t>>,
+std::pair<apache::thrift::ident::clientNextHopSetID, Child<::std::int64_t, ::apache::thrift::type_class::integral, ::apache::thrift::type::i64_t>>>;
 
   template <typename Name>
   using TypeFor = typename Children::template type_of<Name>;
@@ -6160,6 +6167,7 @@ std::pair<apache::thrift::ident::namedNextHopGroup, Child<::std::string, ::apach
     STRUCT_CHILD_GETTERS(normalizedResolvedNextHopSetID, 8);
     STRUCT_CHILD_GETTERS(resolvedNextHopSetID, 9);
     STRUCT_CHILD_GETTERS(namedNextHopGroup, 10);
+    STRUCT_CHILD_GETTERS(clientNextHopSetID, 11);
 
   template <apache::thrift::FieldId __id>
   auto operator()(const std::integral_constant<apache::thrift::FieldId, __id>&) {
@@ -6173,6 +6181,7 @@ std::pair<apache::thrift::ident::namedNextHopGroup, Child<::std::string, ::apach
     else if constexpr (__id == apache::thrift::FieldId{8}) { return normalizedResolvedNextHopSetID(); }
     else if constexpr (__id == apache::thrift::FieldId{9}) { return resolvedNextHopSetID(); }
     else if constexpr (__id == apache::thrift::FieldId{10}) { return namedNextHopGroup(); }
+    else if constexpr (__id == apache::thrift::FieldId{11}) { return clientNextHopSetID(); }
   }
 };
 
@@ -6829,7 +6838,8 @@ std::pair<apache::thrift::ident::unresolveNextHopsId, Child<::std::int64_t, ::ap
 std::pair<apache::thrift::ident::resolvedNextHopsId, Child<::std::int64_t, ::apache::thrift::type_class::integral, ::apache::thrift::type::i64_t>>,
 std::pair<apache::thrift::ident::adjacencyInterfaceId, Child<::std::int32_t, ::apache::thrift::type_class::integral, ::apache::thrift::type::i32_t>>,
 std::pair<apache::thrift::ident::clientId, Child<::facebook::fboss::ClientID, ::apache::thrift::type_class::enumeration, ::apache::thrift::type::enum_t<::facebook::fboss::ClientID>>>,
-std::pair<apache::thrift::ident::isV6, Child<bool, ::apache::thrift::type_class::integral, ::apache::thrift::type::bool_t>>>;
+std::pair<apache::thrift::ident::isV6, Child<bool, ::apache::thrift::type_class::integral, ::apache::thrift::type::bool_t>>,
+std::pair<apache::thrift::ident::namedNextHopGroup, Child<::std::string, ::apache::thrift::type_class::string, ::apache::thrift::type::string_t>>>;
 
   template <typename Name>
   using TypeFor = typename Children::template type_of<Name>;
@@ -6842,6 +6852,7 @@ std::pair<apache::thrift::ident::isV6, Child<bool, ::apache::thrift::type_class:
     STRUCT_CHILD_GETTERS(adjacencyInterfaceId, 5);
     STRUCT_CHILD_GETTERS(clientId, 6);
     STRUCT_CHILD_GETTERS(isV6, 7);
+    STRUCT_CHILD_GETTERS(namedNextHopGroup, 8);
 
   template <apache::thrift::FieldId __id>
   auto operator()(const std::integral_constant<apache::thrift::FieldId, __id>&) {
@@ -6852,6 +6863,7 @@ std::pair<apache::thrift::ident::isV6, Child<bool, ::apache::thrift::type_class:
     else if constexpr (__id == apache::thrift::FieldId{5}) { return adjacencyInterfaceId(); }
     else if constexpr (__id == apache::thrift::FieldId{6}) { return clientId(); }
     else if constexpr (__id == apache::thrift::FieldId{7}) { return isV6(); }
+    else if constexpr (__id == apache::thrift::FieldId{8}) { return namedNextHopGroup(); }
   }
 };
 
@@ -10874,7 +10886,10 @@ std::pair<apache::thrift::ident::portToFwdState, ChildThriftPath<::std::map<::st
 std::pair<apache::thrift::ident::portToPartnerState, ChildThriftPath<::std::map<::std::int32_t, ::facebook::fboss::state::ParticipantInfo>, ::facebook::fboss::fsdb::FsdbOperStateRoot, Self>>,
 std::pair<apache::thrift::ident::interfaceIDs, ChildThriftPath<::std::vector<::std::int32_t>, ::facebook::fboss::fsdb::FsdbOperStateRoot, Self>>,
 std::pair<apache::thrift::ident::minimumLinkCountToUp, Child<::std::int16_t, ::apache::thrift::type_class::integral, ::apache::thrift::type::i16_t>>,
-std::pair<apache::thrift::ident::aggregatePortType, Child<::facebook::fboss::cfg::AggregatePortType, ::apache::thrift::type_class::enumeration, ::apache::thrift::type::enum_t<::facebook::fboss::cfg::AggregatePortType>>>>;
+std::pair<apache::thrift::ident::aggregatePortType, Child<::facebook::fboss::cfg::AggregatePortType, ::apache::thrift::type_class::enumeration, ::apache::thrift::type::enum_t<::facebook::fboss::cfg::AggregatePortType>>>,
+std::pair<apache::thrift::ident::configuredCapacityMbps, Child<::std::int64_t, ::apache::thrift::type_class::integral, ::apache::thrift::type::i64_t>>,
+std::pair<apache::thrift::ident::activeCapacityMbps, Child<::std::int64_t, ::apache::thrift::type_class::integral, ::apache::thrift::type::i64_t>>,
+std::pair<apache::thrift::ident::status, Child<::facebook::fboss::state::AggregatePortStatus, ::apache::thrift::type_class::enumeration, ::apache::thrift::type::enum_t<::facebook::fboss::state::AggregatePortStatus>>>>;
 
   template <typename Name>
   using TypeFor = typename Children::template type_of<Name>;
@@ -10892,6 +10907,9 @@ std::pair<apache::thrift::ident::aggregatePortType, Child<::facebook::fboss::cfg
     STRUCT_CHILD_GETTERS(interfaceIDs, 10);
     STRUCT_CHILD_GETTERS(minimumLinkCountToUp, 11);
     STRUCT_CHILD_GETTERS(aggregatePortType, 12);
+    STRUCT_CHILD_GETTERS(configuredCapacityMbps, 13);
+    STRUCT_CHILD_GETTERS(activeCapacityMbps, 14);
+    STRUCT_CHILD_GETTERS(status, 15);
 
   template <apache::thrift::FieldId __id>
   auto operator()(const std::integral_constant<apache::thrift::FieldId, __id>&) {
@@ -10907,6 +10925,9 @@ std::pair<apache::thrift::ident::aggregatePortType, Child<::facebook::fboss::cfg
     else if constexpr (__id == apache::thrift::FieldId{10}) { return interfaceIDs(); }
     else if constexpr (__id == apache::thrift::FieldId{11}) { return minimumLinkCountToUp(); }
     else if constexpr (__id == apache::thrift::FieldId{12}) { return aggregatePortType(); }
+    else if constexpr (__id == apache::thrift::FieldId{13}) { return configuredCapacityMbps(); }
+    else if constexpr (__id == apache::thrift::FieldId{14}) { return activeCapacityMbps(); }
+    else if constexpr (__id == apache::thrift::FieldId{15}) { return status(); }
   }
 };
 

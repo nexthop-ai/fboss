@@ -36,17 +36,23 @@ Upload the config file to the switch:
 
     UPLOAD <local-config-path> TO <switch>:/root/<user>/<config-file>
 
-See [device-access.md](device-access.md) for the upload command in your environment.
+See the resolved device-access reference selected via the Reference
+Routing table in `SKILL.md` for the upload command in your
+environment.
 
 > **Note**: In multi-switch mode with `--hw_agent_for_testing`, the hw_agent processes ignore the `--config` flag entirely. They wait for the test binary to provide a config file via a shared file mechanism (`hw_agent_test_*.conf`). The `--config` flag is only consumed by the test binary itself. This means using a mono config in place of a multi config may work in practice, but using the correct `_multi` config is recommended.
 
 ### Config File Location
 
-See [build-environment.md](build-environment.md) for where config files are stored in your environment.
+See the resolved build-environment reference selected via the
+Reference Routing table in `SKILL.md` for where config files are
+stored in your environment.
 
 ## Build
 
-See [build-environment.md](build-environment.md) for build commands, output paths, and SDK locations specific to your environment.
+See the resolved build-environment reference selected via the
+Reference Routing table in `SKILL.md` for build commands, output
+paths, and SDK locations specific to your environment.
 
 ### Mono (sai_agent_hw_test)
 
@@ -67,7 +73,7 @@ Keep the full versioned binary name (e.g., `sai_agent_hw_test-brcm-12.2.0.0_dnx_
 ### Step 1: Strip locally
 
 ```bash
-bash ${CLAUDE_SKILL_DIR}/scripts/strip_and_copy.sh \
+bash scripts/strip_and_copy.sh \
   <source_binary_path> \
   <dest_binary_name>
 ```
@@ -85,7 +91,9 @@ If md5 differs or MISSING:
     UPLOAD /tmp/<dest_binary_name> TO <switch>:/tmp/<dest_binary_name>
     RUN ON <switch>: mv /tmp/<dest_binary_name> /root/<user>/<dest_binary_name> && chmod +x /root/<user>/<dest_binary_name>
 
-See [device-access.md](device-access.md) for the actual commands in your environment.
+See the resolved device-access reference selected via the Reference
+Routing table in `SKILL.md` for the actual commands in your
+environment.
 
 > **Note**: If you need to debug crashes with GDB, see [crash-debug.md](crash-debug.md) — that workflow uses the non-stripped binary instead.
 
@@ -93,7 +101,10 @@ See [device-access.md](device-access.md) for the actual commands in your environ
 
 For Leaba (Cisco) ASIC targets (e.g., gibraltar, pacific), you must also copy the `res` and `lib` directories from the Leaba SDK to the switch. These may be **symlinks** — use `tar -h` to follow them so that real files (not dangling symlinks) end up on the switch.
 
-See [build-environment.md](build-environment.md) for where to find the Leaba SDK `res/` and `lib/` directories and any helper scripts for your environment.
+See the resolved build-environment reference selected via the
+Reference Routing table in `SKILL.md` for where to find the Leaba SDK
+`res/` and `lib/` directories and any helper scripts for your
+environment.
 
 Once you have the paths, create tarballs and upload:
 
@@ -119,7 +130,9 @@ All tests running on Broadcom DNX switches require the firmware `db/` directory 
 FW: /tmp/db/jericho3ai_a0/fi-2.4.11-GA.elf is not accessible error:-1
 ```
 
-See [build-environment.md](build-environment.md) for where to find the firmware `db/` directory and any helper scripts for your environment.
+See the resolved build-environment reference selected via the
+Reference Routing table in `SKILL.md` for where to find the firmware
+`db/` directory and any helper scripts for your environment.
 
 Once you have the path, create a tarball and upload:
 

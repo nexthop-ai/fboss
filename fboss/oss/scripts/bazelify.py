@@ -2338,6 +2338,25 @@ class BuildFileGenerator:
     def _translate_cpp_binary(self, target: BuckTarget) -> str | None:
         """Translate cpp_binary to cc_binary."""
         srcs = self._filter_files(target.srcs, target.buck_path)
+
+        # Add extra sources from annotations (# bazelify: add_src = oss/Foo.cpp)
+        rel_dir = target.buck_path.lstrip("/")
+        pkg_dir = self.repo_root / rel_dir
+        for add_src in target.annotations.get("add_src", []):
+            src_path = add_src.strip()
+            if src_path and src_path not in srcs:
+                if "/" in src_path:
+                    parts = src_path.split("/")
+                    in_subpkg = False
+                    for i in range(1, len(parts)):
+                        ancestor = "/".join(parts[:i])
+                        if (pkg_dir / ancestor / "BUILD.bazel").exists():
+                            in_subpkg = True
+                            break
+                    if in_subpkg:
+                        continue
+                srcs.append(src_path)
+
         if not srcs and target.srcs:
             self.skipped_targets.append(
                 f"{target.buck_path}:{target.name} (all sources are facebook/ internal)"

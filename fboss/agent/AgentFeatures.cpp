@@ -464,6 +464,11 @@ DEFINE_bool(
     true,
     "Strip vlan tag for packet injected with pipeline bypass");
 
+DEFINE_bool(
+    observe_rx_packets_without_interface,
+    false,
+    "Notify packet observers before dropping RX packets with no interface");
+
 DEFINE_string(
     state_delta_log_protocol,
     "COMPACT",

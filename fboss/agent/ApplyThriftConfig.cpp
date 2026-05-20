@@ -593,7 +593,7 @@ class ThriftConfigApplier {
   shared_ptr<QcmCfg> updateQcmCfg(bool* changed);
   shared_ptr<QcmCfg> createQcmCfg(const cfg::QcmConfig& config);
   shared_ptr<MultiControlPlane> updateControlPlane();
-  std::shared_ptr<MirrorMap> updateMirrors();
+  std::shared_ptr<MultiSwitchMirrorMap> updateMirrors();
   std::shared_ptr<Mirror> createMirror(const cfg::Mirror* config);
   std::shared_ptr<Mirror> updateMirror(
       const std::shared_ptr<Mirror>& orig,
@@ -790,8 +790,7 @@ shared_ptr<SwitchState> ThriftConfigApplier::run() {
   {
     auto newMirrors = updateMirrors();
     if (newMirrors) {
-      new_->resetMirrors(
-          toMultiSwitchMap<MultiSwitchMirrorMap>(newMirrors, scopeResolver_));
+      new_->resetMirrors(newMirrors);
       changed = true;
     }
   }
@@ -4040,7 +4039,16 @@ std::shared_ptr<AclMap> ThriftConfigApplier::updateAclsImpl(
           if (aclNexthopHandler_) {
             aclNexthopHandler_->resolveActionNexthops(matchAction);
           }
-          if (!matchAction.getRedirectToNextHop().value().second.size()) {
+          bool hasTunnelRedirect = false;
+          for (const auto& nh : *redirectToNextHop->redirectNextHops()) {
+            if (nh.tunnelType().has_value() &&
+                nh.tunnelType().value() == TunnelType::IP_IN_IP_ENCAP) {
+              hasTunnelRedirect = true;
+              break;
+            }
+          }
+          if (!hasTunnelRedirect &&
+              !matchAction.getRedirectToNextHop().value().second.size()) {
             XLOG(DBG2)
                 << "Setting newly configured ACL as disabled since no nexthops are available";
             enableAcl = false;
@@ -5868,7 +5876,7 @@ Interface::Addresses ThriftConfigApplier::getInterfaceAddresses(
   return addrs;
 }
 
-std::shared_ptr<MirrorMap> ThriftConfigApplier::updateMirrors() {
+std::shared_ptr<MultiSwitchMirrorMap> ThriftConfigApplier::updateMirrors() {
   const auto& origMirrors = orig_->getMirrors();
   auto newMirrors = std::make_shared<MirrorMap>();
 
@@ -5925,7 +5933,7 @@ std::shared_ptr<MirrorMap> ThriftConfigApplier::updateMirrors() {
     return nullptr;
   }
 
-  auto newMirrorWithSwitchIds = std::make_shared<MirrorMap>();
+  auto multiSwitchMirrors = std::make_shared<MultiSwitchMirrorMap>();
   for (auto& switchIdAndSwitchInfo :
        *cfg_->switchSettings()->switchIdToSwitchInfo()) {
     if (switchIdAndSwitchInfo.second.switchType() != cfg::SwitchType::VOQ &&
@@ -5933,17 +5941,23 @@ std::shared_ptr<MirrorMap> ThriftConfigApplier::updateMirrors() {
       continue;
     }
     auto switchId = switchIdAndSwitchInfo.first;
+    auto switchMatcher =
+        HwSwitchMatcher(std::unordered_set<SwitchID>({SwitchID(switchId)}));
     for (auto& mirrorMapEntry : std::as_const(*newMirrors)) {
-      auto newMirror = mirrorMapEntry.second->clone();
+      auto mirror = mirrorMapEntry.second;
+      if (mirror->getEgressPort().has_value()) {
+        auto portScope = scopeResolver_.scope(mirror->getEgressPort().value());
+        if (!portScope.has(SwitchID(switchId))) {
+          continue;
+        }
+      }
+      auto newMirror = mirror->clone();
       newMirror->setSwitchId(SwitchID(switchId));
-      // TODO: Mirror name is unique per switch, so we need
-      // to append the switchId to the mirror name.
-      newMirrorWithSwitchIds->insert(
-          mirrorMapEntry.first, std::move(newMirror));
+      multiSwitchMirrors->addNode(std::move(newMirror), switchMatcher);
     }
   }
 
-  return newMirrorWithSwitchIds;
+  return multiSwitchMirrors;
 }
 
 std::shared_ptr<Mirror> ThriftConfigApplier::createMirror(
@@ -6276,7 +6290,8 @@ ThriftConfigApplier::createMirrorOnDropReport(
       utility::getMacForFirstInterfaceWithPorts(new_, *modSwitchId).toString(),
       *config->modEventToConfigMap(),
       *config->agingGroupAgingIntervalUsecs(),
-      config->samplingRate().to_optional());
+      config->samplingRate().to_optional(),
+      config->dropPacketRateThreshold().to_optional());
 }
 
 std::shared_ptr<MirrorOnDropReport>
@@ -6423,7 +6438,7 @@ shared_ptr<IpTunnel> ThriftConfigApplier::updateIpInIpTunnel(
 shared_ptr<IpTunnel> ThriftConfigApplier::createIpInIpTunnel(
     const cfg::IpInIpTunnel& config) {
   auto tunnel = make_shared<IpTunnel>(*config.ipInIpTunnelId());
-  tunnel->setType(TunnelType::IP_IN_IP);
+  tunnel->setType(TunnelType::IP_IN_IP_DECAP);
   if (config.tunnelType().has_value()) {
     tunnel->setType(*config.tunnelType());
   }

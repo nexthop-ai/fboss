@@ -4,6 +4,7 @@
     "counter_refresh_interval": "0",
     "disable_neighbor_updates": "true",
     "ecmp_width": "320",
+    "enable_1to1_intf_route_table_mapping": "true",
     "enable_nexthop_id_manager": "true",
     "enable_replayer": "true",
     "intf_nbr_tables": "true",
@@ -8324,16 +8325,10 @@
     ],
     "acls": [
       {
-        "dscp": 48,
-        "name": "cpuPolicing-high-NetworkControl-dstLocalIp6",
-        "actionType": 1,
-        "lookupClassNeighbor": 2
-      },
-      {
-        "dscp": 48,
-        "name": "cpuPolicing-high-NetworkControl-dstLocalIp4",
-        "actionType": 1,
-        "lookupClassNeighbor": 1
+        "dstIp": "fe80::/10",
+        "srcPort": 0,
+        "name": "cpuPolicing-CPU-Port-linkLocal-v6",
+        "actionType": 1
       },
       {
         "dstIp": "ff02::/16",
@@ -8478,33 +8473,8 @@
       "trafficPolicy": {
         "matchToAction": [
           {
-            "matcher": "cpuPolicing-high-NetworkControl-dstLocalIp6",
+            "matcher": "cpuPolicing-CPU-Port-linkLocal-v6",
             "action": {
-              "sendToQueue": {
-                "queueId": 9
-              },
-              "toCpuAction": 0,
-              "setTc": {
-                "tcValue": 9
-              },
-              "userDefinedTrap": {
-                "queueId": 9
-              }
-            }
-          },
-          {
-            "matcher": "cpuPolicing-high-NetworkControl-dstLocalIp4",
-            "action": {
-              "sendToQueue": {
-                "queueId": 9
-              },
-              "toCpuAction": 0,
-              "setTc": {
-                "tcValue": 9
-              },
-              "userDefinedTrap": {
-                "queueId": 9
-              }
             }
           },
           {

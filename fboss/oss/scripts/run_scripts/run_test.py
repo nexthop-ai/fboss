@@ -95,6 +95,7 @@ from qsfp_service_utils import cleanup_qsfp_service, setup_and_start_qsfp_servic
 # - QSFP: ./share/qsfp_known_bad_tests/fboss_qsfp_known_bad_tests.materialized_JSON
 #         ./share/qsfp_unsupported_tests/fboss_qsfp_unsupported_tests.materialized_JSON
 # - Link: ./share/link_known_bad_tests/agent_ensemble_link_known_bad_tests.materialized_JSON
+#         ./share/link_known_bad_tests/agent_ensemble_link_unsupported_tests.materialized_JSON
 
 OPT_ARG_COLDBOOT = "--coldboot_only"
 OPT_ARG_FILTER = "--filter"
@@ -662,6 +663,7 @@ class TestRunner(abc.ABC):
             if self._is_known_bad_test(test_name) or self._is_unsupported_test(
                 test_name
             ):
+                print(f"  >> SKIPPING (known bad/unsupported): {test_name}")
                 continue
             test_filter += f"{test_name}:"
         if not test_filter:
@@ -935,18 +937,28 @@ class TestRunner(abc.ABC):
         self._end_run()
         return test_outputs, test_results
 
+    _GTEST_STATUS_MAP: ClassVar[dict[str, str]] = {
+        "OK": "PASSED",
+        "FAILED": "FAILED",
+        "SKIPPED": "SKIPPED",
+        "TIMEOUT": "TIMEOUT",
+    }
+
     def _print_output_summary(self, test_outputs):
         test_summaries = []
-        test_summary_count = {"OK": 0, "FAILED": 0, "SKIPPED": 0, "TIMEOUT": 0}
+        test_summary_count = {"PASSED": 0, "FAILED": 0, "SKIPPED": 0, "TIMEOUT": 0}
         for test_output in test_outputs:
             test_summaries += self._parse_gtest_run_output(test_output)
         # Print test results and update test result counts
         for test_summary in test_summaries:
-            print(test_summary)
-            m = re.search(r"[.*[A-Z]{2,10}", test_summary)
-            if m is not None:
-                test_summary_count[m.group()] += 1
-        # Print test result counts
+            m = re.search(r"\[\s*(OK|FAILED|SKIPPED|TIMEOUT)\s*\]", test_summary)
+            if m is None:
+                print(test_summary)
+                continue
+            mapped_status = self._GTEST_STATUS_MAP[m.group(1)]
+            line = test_summary.replace(m.group(0), f"[ {mapped_status} ]")
+            print(line)
+            test_summary_count[mapped_status] += 1
         print("Summary:")
         for test_result, value in test_summary_count.items():
             print("  ", test_result, ":", value)
@@ -965,7 +977,10 @@ class TestRunner(abc.ABC):
             writer = csv.writer(f)
             writer.writerow(["Test Name", "Result"])
             for line in output:
-                test_result = line.split("]")[0].strip("[ ")
+                raw_result = line.split("]")[0].strip("[ ")
+                # Map gtest tokens so CSV matches the console summary
+                # (OK -> PASSED, etc.).
+                test_result = self._GTEST_STATUS_MAP.get(raw_result, raw_result)
                 test_name = line.split("]")[1].split("(")[0].strip()
                 writer.writerow([test_name, test_result])
 
@@ -1917,27 +1932,53 @@ class Fboss2IntegrationTestRunner(TestRunner):
 
 class BenchmarkTestRunner:
     """
-    Runner for benchmark test binaries.
+    Runner for benchmark tests.
 
-    Unlike gtest-based test runners, benchmark tests are standalone performance
-    measurement binaries that output metrics like throughput, latency, and speed.
+    Uses a benchmark binary (sai_all_benchmarks-sai_impl) that
+    contains all benchmark registrations. Individual benchmarks are selected
+    at runtime via --bm_regex, with each test running as a separate process
+    for full setup/run/teardown isolation.
     """
 
-    # Benchmark test suite configuration file paths
-    BENCHMARK_CONFIG_DIR = "./share/hw_benchmark_tests"
-    T1_BENCHMARKS_CONF = os.path.join(BENCHMARK_CONFIG_DIR, "t1_benchmarks.conf")
-    T2_BENCHMARKS_CONF = os.path.join(BENCHMARK_CONFIG_DIR, "t2_benchmarks.conf")
-    ADDITIONAL_BENCHMARKS_CONF = os.path.join(
-        BENCHMARK_CONFIG_DIR, "additional_benchmarks.conf"
-    )
-    BENCHMARK_BIN_DIR = "/opt/fboss/bin"
+    def _get_benchmark_binary(self):
+        benchmark_binary = "/opt/fboss/bin/sai_all_benchmarks-sai_impl"
+        if os.path.exists(benchmark_binary) and os.path.isfile(benchmark_binary):
+            return benchmark_binary
+        return None
+
+    def _list_benchmarks(self, binary_path):
+        """Discover available benchmarks via --bm_list.
+
+        Returns:
+            List of benchmark name strings, or None on failure.
+        """
+        try:
+            output = subprocess.check_output(
+                [binary_path, "--bm_list"],
+                stderr=subprocess.DEVNULL,
+                text=True,
+                timeout=30,
+            )
+            benchmarks = []
+            for line in output.splitlines():
+                name = line.strip()
+                if name and re.match(r"^[A-Za-z]\w*$", name):
+                    benchmarks.append(name)
+            return benchmarks
+        except (
+            subprocess.CalledProcessError,
+            subprocess.TimeoutExpired,
+            OSError,
+        ) as e:
+            print(f"Warning: Failed to list benchmarks from {binary_path}: {e}")
+            return None
 
     def add_subcommand_arguments(self, sub_parser: ArgumentParser):
         """Add benchmark-specific command line arguments"""
         sub_parser.add_argument(
             OPT_ARG_FILTER_FILE,
             type=str,
-            help=("File containing list of benchmark binaries to run (one per line)."),
+            help="File containing list of benchmark test names to run (one per line).",
             default=None,
         )
         sub_parser.add_argument(
@@ -1948,6 +1989,14 @@ class BenchmarkTestRunner:
             default=None,
         )
 
+    def _build_keys_to_try(self, platform_key):
+        keys_to_try = [platform_key]
+        for suffix in ("/mono", "/multi_switch"):
+            if platform_key.endswith(suffix):
+                keys_to_try.append(platform_key[: -len(suffix)])
+                break
+        return keys_to_try
+
     def _load_known_bad_test_regexes(self, platform_key):
         """Load known bad test regexes from sai_bench config JSON.
         Args:
@@ -1956,19 +2005,26 @@ class BenchmarkTestRunner:
         Returns:
             List of regex pattern strings for known bad tests
         """
-        # Build keys to try: exact key + stripped version if it has a run_mode suffix
-        # Matches TestRunner._initialize_test_lists pattern (always exactly 1 or 2 keys)
-        keys_to_try = [platform_key]
-        for suffix in ("/mono", "/multi_switch"):
-            if platform_key.endswith(suffix):
-                keys_to_try.append(platform_key[: -len(suffix)])
-                break
-
         return TestRunner._get_test_regexes_from_file(
             self,
             file_path=SAI_BENCH_CONFIG,
             test_dict_key="known_bad_tests",
-            keys_to_try=keys_to_try,
+            keys_to_try=self._build_keys_to_try(platform_key),
+        )
+
+    def _load_unsupported_test_regexes(self, platform_key):
+        """Load unsupported test regexes from sai_bench config JSON.
+        Args:
+            platform_key: Platform key string (e.g., 'brcm/10.2.0.0_odp/tomahawk4')
+
+        Returns:
+            List of regex pattern strings for unsupported tests
+        """
+        return TestRunner._get_test_regexes_from_file(
+            self,
+            file_path=SAI_BENCH_CONFIG,
+            test_dict_key="unsupported_tests",
+            keys_to_try=self._build_keys_to_try(platform_key),
         )
 
     def _load_benchmark_thresholds(self):
@@ -2094,7 +2150,7 @@ class BenchmarkTestRunner:
                 idx += 1
         return results
 
-    def _parse_benchmark_output(self, binary_path, stdout):
+    def _parse_benchmark_output(self, binary_name, stdout, benchmark_name=None):
         """Parse benchmark output to extract metrics.
 
         With --json flag, the binary outputs multiple JSON objects:
@@ -2105,19 +2161,16 @@ class BenchmarkTestRunner:
         All JSON key-value pairs are collected into a flat metrics dict
         for threshold comparison.
 
-        Returns a dict with:
-        - benchmark_binary_name: str
-        - benchmark_test_name: str
-        - test_status: str (OK, FAILED, or TIMEOUT)
-        - metrics: dict of all JSON key-value pairs (for threshold comparison)
-        - cpu_time_usec: str (for CSV)
-        - max_rss: str (for CSV)
-        - cpu_rx_pps: str (for CSV)
-        - cpu_tx_pps: str (for CSV)
+        Args:
+            binary_name: Path to the benchmark binary
+            stdout: Captured stdout text
+            benchmark_name: If provided, used to look up benchmark timing
+                directly from metrics instead of guessing by exclusion.
         """
         result = {
-            "benchmark_binary_name": binary_path,
-            "benchmark_test_name": "",
+            "benchmark_binary_name": binary_name,
+            "benchmark_test_name": benchmark_name or "",
+            "benchmark_time_ps": "",
             "test_status": "FAILED",
             "cpu_time_usec": "",
             "max_rss": "",
@@ -2128,49 +2181,27 @@ class BenchmarkTestRunner:
 
         json_dicts = self._find_jsons_in_str(stdout)
 
-        # Merge all JSON dicts into a flat metrics dict
         all_metrics = {}
         for d in json_dicts:
             all_metrics.update(d)
 
         result["metrics"] = all_metrics
 
-        # Identify benchmark test name: the key from folly --json output
-        # It's the key that is NOT a known metric name (cpu_time_usec, max_rss, etc.)
+        if benchmark_name and benchmark_name in all_metrics:
+            result["benchmark_time_ps"] = str(all_metrics[benchmark_name])
+
+        # Populate CSV fields from known metric keys
         known_metric_keys = {
             "cpu_time_usec",
             "max_rss",
             "cpu_rx_pps",
             "cpu_tx_pps",
-            "cpu_rx_bytes_per_sec",
-            "cpu_tx_bytes_per_sec",
-            "worst_case_lookup_msescs",
-            "worst_case_bulk_lookup_msescs",
-            "warm_boot_msecs",
-            "program_routes_msecs",
-            "subscribe_latency_ms",
-            "tx_pps",
-            "tx_bps",
-            "rx_pps",
-            "rx_bps",
         }
-        for key, value in all_metrics.items():
-            if key not in known_metric_keys and isinstance(value, (int, float)):
-                result["benchmark_test_name"] = key
-                break
-
-        # Populate CSV fields from metrics
         for key in known_metric_keys:
             if key in all_metrics:
                 result[key] = str(all_metrics[key])
 
-        # OK if we found both a benchmark name and rusage JSON
-        if result["benchmark_test_name"] and "cpu_time_usec" in all_metrics:
-            result["test_status"] = "OK"
-
         return result
-
-    BENCHMARK_CLEANUP_DELAY_SECONDS = 5
 
     @staticmethod
     def _read_stream(stream, lines_list, prefix=""):
@@ -2179,19 +2210,19 @@ class BenchmarkTestRunner:
             print(f"{prefix}{line}", end="", flush=True)
             lines_list.append(line)
 
-    def _run_single_benchmark(self, binary_path, test_name, args):
-        """Run a single test case within the benchmark binary and return parsed results.
+    def _run_benchmark_binary(self, binary_name, args, benchmark_name=None):
+        """Run a single benchmark and return parsed results.
 
-        Uses Popen to stream output in real-time instead of buffering
-        until process exit, so users can see benchmark progress.
+        When benchmark_name is provided, uses --bm_regex to select exactly
+        one benchmark from the binary. Each invocation is a
+        separate process with full agent init/run/teardown.
         """
-        print(
-            f'########## Running benchmark binary "{binary_path}" for test: {test_name}',
-            flush=True,
-        )
+        display_name = benchmark_name or os.path.basename(binary_name)
+        print(f"########## Running benchmark: {display_name}", flush=True)
 
-        # --json makes folly output {"BenchmarkName": <picoseconds>} instead of table
-        run_cmd = [binary_path, "--json", f"--bm_regex=^{test_name}$"]
+        run_cmd = [binary_name, "--json"]
+        if benchmark_name:
+            run_cmd.extend(["--bm_regex", f"^{re.escape(benchmark_name)}$"])
 
         if args.config:
             run_cmd.extend(["--config", args.config, "--mgmt-if", args.mgmt_if])
@@ -2209,8 +2240,6 @@ class BenchmarkTestRunner:
         run_cmd.extend(["--logging", "WARN"])
 
         print(f"Running command: {' '.join(run_cmd)}", flush=True)
-
-        full_bm_name = f"{binary_path}::{test_name}"
 
         try:
             process = subprocess.Popen(
@@ -2241,12 +2270,13 @@ class BenchmarkTestRunner:
                 stdout_thread.join()
                 stderr_thread.join()
                 print(
-                    f"\n########## Benchmark {full_bm_name} timed out after "
+                    f"\n########## Benchmark {display_name} timed out after "
                     f"{args.test_run_timeout} seconds"
                 )
                 return {
-                    "benchmark_binary_name": binary_path,
-                    "benchmark_test_name": test_name,
+                    "benchmark_binary_name": binary_name,
+                    "benchmark_test_name": benchmark_name or "",
+                    "benchmark_time_ps": "",
                     "test_status": "TIMEOUT",
                     "cpu_time_usec": "",
                     "max_rss": "",
@@ -2262,20 +2292,27 @@ class BenchmarkTestRunner:
 
             if process.returncode != 0:
                 print(
-                    f"\n########## Benchmark {full_bm_name} failed with "
+                    f"\n########## Benchmark {display_name} failed with "
                     f"return code {process.returncode}"
                 )
             else:
-                print(f"\n########## Benchmark {full_bm_name} completed")
+                print(f"\n########## Benchmark {display_name} completed")
 
-            return self._parse_benchmark_output(binary_path, captured_stdout)
+            result = self._parse_benchmark_output(
+                binary_name, captured_stdout, benchmark_name
+            )
+            if process.returncode == 0:
+                result["test_status"] = "OK"
+            else:
+                result["test_status"] = "FAILED"
+            return result
 
         except Exception as e:
-            print(f"########## Error running benchmark {full_bm_name}: {e!s}")
-            # Return failed result with no metrics
+            print(f"########## Error running benchmark {display_name}: {e!s}")
             return {
-                "benchmark_binary_name": binary_path,
-                "benchmark_test_name": test_name,
+                "benchmark_binary_name": binary_name,
+                "benchmark_test_name": benchmark_name or "",
+                "benchmark_time_ps": "",
                 "test_status": "FAILED",
                 "cpu_time_usec": "",
                 "max_rss": "",
@@ -2284,241 +2321,60 @@ class BenchmarkTestRunner:
                 "metrics": {},
             }
 
-    def _get_bm_binaries_to_run(self, filter_file=None):
-        """Get list of benchmark binaries to run based on filter_file or default config.
+    def _load_requested_benchmarks(self, filter_file):
+        """Load benchmark test names from a filter file.
 
         Args:
-            filter_file: Optional path to file containing list of benchmark binaries.
-                        If None, loads from T1, T2, and additional benchmark configs
+            filter_file: Path to file with benchmark names (one per line).
 
         Returns:
-            List of benchmark binary names to run, or None if no benchmark binaries found
+            List of benchmark name strings, or None if not found/empty.
         """
-        bm_binaries_to_run = []
-
-        if filter_file:
-            # User specified a custom filter file
-            if not os.path.exists(filter_file):
-                print(f"Error: Benchmark configuration file not found: {filter_file}")
-                return None
-            bm_binaries_to_run = _load_from_file(filter_file)
-        else:
-            # Default: concatenate T1, T2, and additional benchmarks
-            for conf_file in [
-                self.T1_BENCHMARKS_CONF,
-                self.T2_BENCHMARKS_CONF,
-                self.ADDITIONAL_BENCHMARKS_CONF,
-            ]:
-                if os.path.exists(conf_file):
-                    bm_binaries_from_file = _load_from_file(conf_file)
-                    bm_binaries_to_run.extend(bm_binaries_from_file)
-                else:
-                    print(f"  Warning: Configuration file not found: {conf_file}")
-
-        if not bm_binaries_to_run:
-            print("Error: No benchmark binaries found in configuration files")
+        if not os.path.exists(filter_file):
+            print(f"Error: Configuration file not found: {filter_file}")
             return None
 
-        return bm_binaries_to_run
+        names = _load_from_file(filter_file)
 
-    def _list_tests_in_bm_binary(self, binary_path: str) -> list[str]:
-        """List all test cases in a benchmark binary using --bm_list"""
+        if not names:
+            print(f"Error: No benchmarks found in {filter_file}")
+            return None
 
-        print(
-            f"########## Finding benchmarks within benchmark binary: {binary_path}",
-            flush=True,
-        )
+        return names
 
-        # Build command to list tests in the benchmark binary
-        run_cmd = [binary_path, "--bm_list"]
-        bm_list_timeout_sec = 10
-
-        print(f"Running command: {' '.join(run_cmd)}", flush=True)
-
-        try:
-            # Run the command (does NOT actually run the benchmarks, only lists them)
-            result = subprocess.run(
-                run_cmd,
-                check=False,
-                timeout=bm_list_timeout_sec,
-                capture_output=True,
-                text=True,
+    def _apply_threshold_check(
+        self, result, benchmark_path, platform_key, all_thresholds
+    ):
+        """Apply threshold validation to a benchmark result."""
+        test_name = result.get("benchmark_test_name", "")
+        if result["test_status"] == "OK" and all_thresholds and platform_key:
+            thresholds = self._find_thresholds_for_benchmark(
+                result.get("metrics", {}),
+                False,
+                platform_key,
+                all_thresholds,
             )
-
-            print(f"########## Benchmark discovery output for {binary_path}:")
-            print(result.stdout)
-            if result.stderr:
-                print(f"########## Benchmark discovery stderr for {binary_path}:")
-                print(result.stderr)
-
-            if result.returncode != 0:
-                print(
-                    f"########## Benchmark discovery for {binary_path} failed with return code {result.returncode}"
-                )
-            else:
-                print(f"########## Benchmark discovery for {binary_path} completed")
-
-        except subprocess.TimeoutExpired:
-            print(
-                f"########## Benchmark discovery for {binary_path} timed out after {bm_list_timeout_sec} seconds"
-            )
-            return []
-        except Exception as e:
-            print(f"########## Error discovering benchmarks in {binary_path}: {e!s}")
-            return []
-
-        # Parse the output for test case names
-        tests: list[str] = []
-        for line in result.stdout.splitlines():
-            stripped_line = line.strip()
-            # Skip separators or other decoration lines if any
-            if not stripped_line:
-                continue
-            if stripped_line.startswith("-"):
-                continue
-            # Stop when we reach the JSON trailer (starts with '{')
-            if stripped_line.startswith("{"):
-                break
-            tests.append(stripped_line)
-
-        print(f"Found {len(tests)} benchmarks in {binary_path}:")
-        for test in tests:
-            print(f"  - {test}")
-
-        return tests
-
-    def run_test(self, args):  # noqa: PLR0912, PLR0915
-        """Run benchmark test binaries"""
-        bm_binaries_to_run = self._get_bm_binaries_to_run(args.filter_file)
-
-        if bm_binaries_to_run is None:
-            return
-
-        # If --list_tests is specified, just list the benchmarks and exit
-        if args.list_tests:
-            for bm_binary in bm_binaries_to_run:
-                print(bm_binary)
-            return
-
-        # Initialize known-bad regexes and thresholds
-        known_bad_regexes = []
-        all_thresholds = {}
-        platform_key = getattr(args, "skip_known_bad_tests", None)
-        if platform_key:
-            known_bad_regexes = self._load_known_bad_test_regexes(platform_key)
-            all_thresholds = self._load_benchmark_thresholds()
-            print(
-                f"Loaded {len(known_bad_regexes)} known bad test patterns "
-                f"and {len(all_thresholds)} threshold configs for '{platform_key}'"
-            )
-
-        print(f"Total benchmark binaries to run: {len(bm_binaries_to_run)}")
-
-        # Filter out binaries that don't exist
-        existing_bm_binaries = []
-        missing_bm_binaries = []
-        for bm_binary in bm_binaries_to_run:
-            # Construct full path to binary
-            binary_path = os.path.join(self.BENCHMARK_BIN_DIR, bm_binary)
-            if os.path.exists(binary_path) and os.path.isfile(binary_path):
-                existing_bm_binaries.append(binary_path)
-            else:
-                missing_bm_binaries.append(bm_binary)
-
-        if missing_bm_binaries:
-            print(
-                f"\nWarning: {len(missing_bm_binaries)} benchmark binaries not found in {self.BENCHMARK_BIN_DIR}:"
-            )
-            for bm_binary in missing_bm_binaries:
-                print(f"  - {bm_binary}")
-
-        if not existing_bm_binaries:
-            print(f"\nError: No benchmark binaries found in {self.BENCHMARK_BIN_DIR}.")
-            print(
-                f"Make sure you have built the benchmarks with BENCHMARK_INSTALL=1 and copied them to {self.BENCHMARK_BIN_DIR} directory."
-            )
-            return
-
-        print(f"\nFound {len(existing_bm_binaries)} benchmark binaries to run")
-
-        # Run each benchmark binary and collect detailed results
-        results = []
-        for bm_binary_path in existing_bm_binaries:
-            tests = self._list_tests_in_bm_binary(bm_binary_path)
-            for test in tests:
-                benchmark_result = self._run_single_benchmark(
-                    bm_binary_path, test, args
-                )
-
-                test_name = benchmark_result.get("benchmark_test_name", "")
-
-                # Check if known bad test
-                if (
-                    test_name
-                    and known_bad_regexes
-                    and TestRunner._test_matches_any_regex(
-                        self, test_name, known_bad_regexes
+            if thresholds:
+                violations = self._check_thresholds(result, thresholds)
+                if violations:
+                    result["threshold_status"] = "EXCEEDED"
+                    result["threshold_details"] = "; ".join(violations)
+                    print(
+                        f"  >> THRESHOLD EXCEEDED: {test_name}: "
+                        f"{result['threshold_details']}"
                     )
-                ):
-                    benchmark_result["test_status"] = "SKIPPED"
-                    benchmark_result["threshold_status"] = "N/A"
-                    benchmark_result["threshold_details"] = "Known bad test"
-                    print(f"  >> SKIPPED (known bad): {test_name}")
-                elif (
-                    benchmark_result["test_status"] == "OK"
-                    and all_thresholds
-                    and platform_key
-                ):
-                    # Check thresholds for passing benchmarks
-                    is_multi = "multi_switch" in os.path.basename(bm_binary_path)
-                    thresholds = self._find_thresholds_for_benchmark(
-                        benchmark_result.get("metrics", {}),
-                        is_multi,
-                        platform_key,
-                        all_thresholds,
-                    )
-                    if thresholds:
-                        violations = self._check_thresholds(
-                            benchmark_result, thresholds
-                        )
-                        if violations:
-                            benchmark_result["threshold_status"] = "EXCEEDED"
-                            benchmark_result["threshold_details"] = "; ".join(
-                                violations
-                            )
-                            print(
-                                f"  >> THRESHOLD EXCEEDED: {test_name}: "
-                                f"{benchmark_result['threshold_details']}"
-                            )
-                        else:
-                            benchmark_result["threshold_status"] = "PASS"
-                            benchmark_result["threshold_details"] = ""
-                    else:
-                        benchmark_result["threshold_status"] = "NO_THRESHOLD"
-                        benchmark_result["threshold_details"] = ""
                 else:
-                    benchmark_result["threshold_status"] = "N/A"
-                    benchmark_result["threshold_details"] = ""
+                    result["threshold_status"] = "PASS"
+                    result["threshold_details"] = ""
+            else:
+                result["threshold_status"] = "NO_THRESHOLD"
+                result["threshold_details"] = ""
+        else:
+            result["threshold_status"] = "N/A"
+            result["threshold_details"] = ""
 
-                results.append(benchmark_result)
-
-                # Delay between runs to allow SAI/ASIC cleanup
-                print(
-                    f"Waiting {self.BENCHMARK_CLEANUP_DELAY_SECONDS}s for "
-                    f"hardware cleanup...",
-                    flush=True,
-                )
-                time.sleep(self.BENCHMARK_CLEANUP_DELAY_SECONDS)
-
-            # Delay between runs to allow SAI/ASIC cleanup
-            print(
-                f"Waiting {self.BENCHMARK_CLEANUP_DELAY_SECONDS}s for "
-                f"hardware cleanup...",
-                flush=True,
-            )
-            time.sleep(self.BENCHMARK_CLEANUP_DELAY_SECONDS)
-
-        # Write results to CSV file
+    def _write_results_and_summary(self, results, skipped_count=0):
+        """Write CSV results file and print summary."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         csv_filename = f"benchmark_results_{timestamp}.csv"
 
@@ -2526,6 +2382,7 @@ class BenchmarkTestRunner:
             fieldnames = [
                 "benchmark_binary_name",
                 "benchmark_test_name",
+                "benchmark_time_ps",
                 "test_status",
                 "cpu_time_usec",
                 "max_rss",
@@ -2537,35 +2394,32 @@ class BenchmarkTestRunner:
             writer = csv.DictWriter(
                 csvfile, fieldnames=fieldnames, extrasaction="ignore"
             )
-
             writer.writeheader()
             for result in results:
                 writer.writerow(result)
 
+        # Print summary
+
         print(f"\n########## Benchmark results written to: {csv_filename}")
 
-        # Print summary
         print("\n" + "=" * 80)
         print("BENCHMARK RESULTS SUMMARY")
         print("=" * 80)
         for result in results:
             status = result["test_status"]
             threshold = result.get("threshold_status", "")
+            name = result.get("benchmark_test_name") or result["benchmark_binary_name"]
             suffix = ""
             if threshold == "EXCEEDED":
                 suffix = f" [THRESHOLD EXCEEDED: {result['threshold_details']}]"
             elif threshold == "PASS":
                 suffix = " [THRESHOLD PASS]"
-            print(
-                f"{result['benchmark_binary_name']}::{result['benchmark_test_name']}: {status}{suffix}"
-            )
+            print(f"{name}: {status}{suffix}")
         print("=" * 80)
 
-        # Count results
         ok = sum(1 for r in results if r["test_status"] == "OK")
         failed = sum(1 for r in results if r["test_status"] == "FAILED")
         timed_out = sum(1 for r in results if r["test_status"] == "TIMEOUT")
-        skipped = sum(1 for r in results if r["test_status"] == "SKIPPED")
         threshold_exceeded = sum(
             1 for r in results if r.get("threshold_status") == "EXCEEDED"
         )
@@ -2573,12 +2427,151 @@ class BenchmarkTestRunner:
         print(f"OK: {ok}")
         print(f"Failed: {failed}")
         print(f"Timed Out: {timed_out}")
-        print(f"Skipped (known bad): {skipped}")
+        print(f"Skipped (known bad, pre-filtered): {skipped_count}")
         print(f"Threshold Exceeded: {threshold_exceeded}")
 
-        # Exit with error if any benchmarks failed, timed out, or exceeded thresholds
         if failed > 0 or timed_out > 0 or threshold_exceeded > 0:
             sys.exit(1)
+
+    def _get_benchmarks_to_run(self, all_benchmarks, args):
+        """Apply --filter and --filter_file to narrow the benchmark list.
+
+        Returns:
+            Filtered list of benchmark names, or None on error.
+        """
+        benchmarks = list(all_benchmarks)
+        available_set = set(all_benchmarks)
+
+        if args.filter:
+            try:
+                benchmarks = [
+                    name for name in benchmarks if re.search(args.filter, name)
+                ]
+            except re.error as e:
+                print(f"Error: Invalid --filter regex '{args.filter}': {e}")
+                return None
+            if not benchmarks:
+                print(f"No benchmarks matching --filter '{args.filter}'")
+                return None
+            print(f"--filter '{args.filter}' matched {len(benchmarks)} benchmarks")
+
+        if args.filter_file:
+            requested = self._load_requested_benchmarks(args.filter_file)
+            if requested is None:
+                return None
+            not_found = [name for name in requested if name not in available_set]
+            if not_found:
+                print(
+                    f"\nWarning: {len(not_found)} benchmark names not found in binary:"
+                )
+                for name in not_found:
+                    print(f"  - {name}")
+            requested_set = set(requested)
+            benchmarks = [name for name in benchmarks if name in requested_set]
+
+        return benchmarks
+
+    def _filter_known_bad(self, benchmarks, known_bad_regexes):
+        """Remove known-bad tests from the list before running.
+
+        Returns:
+            Tuple of (filtered list, skipped count).
+        """
+        if not known_bad_regexes:
+            return benchmarks, 0
+
+        filtered = []
+        for name in benchmarks:
+            if TestRunner._test_matches_any_regex(self, name, known_bad_regexes):
+                print(f"  >> SKIPPING (known bad): {name}")
+            else:
+                filtered.append(name)
+        skipped_count = len(benchmarks) - len(filtered)
+        if skipped_count:
+            print(f"Pre-filtered {skipped_count} known bad benchmarks")
+        return filtered, skipped_count
+
+    def _filter_unsupported(self, benchmarks, unsupported_regexes):
+        """Remove unsupported tests from the list before running.
+
+        Returns:
+            Tuple of (filtered list, skipped count).
+        """
+        if not unsupported_regexes:
+            return benchmarks, 0
+
+        filtered = []
+        for name in benchmarks:
+            if TestRunner._test_matches_any_regex(self, name, unsupported_regexes):
+                print(f"  >> SKIPPING (unsupported): {name}")
+            else:
+                filtered.append(name)
+        skipped_count = len(benchmarks) - len(filtered)
+        if skipped_count:
+            print(f"Pre-filtered {skipped_count} unsupported benchmarks")
+        return filtered, skipped_count
+
+    def run_test(self, args):
+        """Run benchmark tests."""
+        known_bad_regexes = []
+        unsupported_regexes = []
+        all_thresholds = {}
+        platform_key = getattr(args, "skip_known_bad_tests", None)
+        if platform_key:
+            known_bad_regexes = self._load_known_bad_test_regexes(platform_key)
+            unsupported_regexes = self._load_unsupported_test_regexes(platform_key)
+            all_thresholds = self._load_benchmark_thresholds()
+            print(
+                f"Loaded {len(known_bad_regexes)} known bad test patterns, "
+                f"{len(unsupported_regexes)} unsupported test patterns, "
+                f"and {len(all_thresholds)} threshold configs for '{platform_key}'"
+            )
+
+        binary_path = self._get_benchmark_binary()
+        if not binary_path:
+            print("Error: Could not find benchmark binary")
+            return
+
+        all_benchmarks = self._list_benchmarks(binary_path)
+        if all_benchmarks is None:
+            print("Error: Could not discover benchmarks from binary.")
+            return
+        print(f"Discovered {len(all_benchmarks)} benchmarks in binary")
+
+        benchmarks_to_run = self._get_benchmarks_to_run(all_benchmarks, args)
+        if not benchmarks_to_run:
+            return
+
+        benchmarks_to_run, unsupported_skipped = self._filter_unsupported(
+            benchmarks_to_run, unsupported_regexes
+        )
+        if not benchmarks_to_run:
+            print("No benchmarks to run after filtering unsupported")
+            return
+
+        benchmarks_to_run, skipped_count = self._filter_known_bad(
+            benchmarks_to_run, known_bad_regexes
+        )
+        if not benchmarks_to_run:
+            print("No benchmarks to run after filtering")
+            return
+
+        if args.list_tests:
+            for name in benchmarks_to_run:
+                print(name)
+            return
+
+        print(f"\nRunning {len(benchmarks_to_run)} benchmarks")
+
+        results = []
+        for name in benchmarks_to_run:
+            result = self._run_benchmark_binary(binary_path, args, benchmark_name=name)
+            self._apply_threshold_check(
+                result, binary_path, platform_key, all_thresholds
+            )
+            results.append(result)
+
+        self._write_results_and_summary(results, skipped_count + unsupported_skipped)
 
 
 if __name__ == "__main__":

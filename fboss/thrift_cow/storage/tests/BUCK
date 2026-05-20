@@ -75,12 +75,14 @@ cpp_library(
     exported_deps = [
         "fbsource//third-party/googletest:gtest",
         ":data_factory",
-        "//common/base:proc",
         "//fboss/thrift_cow/storage:cow_storage",
         "//folly:benchmark",
         "//folly:string",
         "//folly/init:init",
         "//folly/json:dynamic",
+        "//folly/memory:mallctl_helper",
+        "//folly/memory:malloc",
+        "//folly/synchronization:call_once",
     ],
     exported_external_deps = [
         "gflags",

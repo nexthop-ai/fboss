@@ -110,15 +110,15 @@ void XgsMirrorOnDropImpl::verifyInvariants(const folly::IOBuf* buf) const {
       psamp::XGS_PSAMP_VAR_LEN_INDICATOR);
 }
 
-uint8_t XgsMirrorOnDropImpl::getDefaultRouteDropReason() const {
+uint16_t XgsMirrorOnDropImpl::getDefaultRouteDropReason() const {
   return kBcmDropReasonL3DstDiscard;
 }
 
-uint8_t XgsMirrorOnDropImpl::getAclDropReason() const {
+uint16_t XgsMirrorOnDropImpl::getAclDropReason() const {
   return kBcmDropReasonIngressFp;
 }
 
-uint8_t XgsMirrorOnDropImpl::getMmuDropReason() const {
+uint16_t XgsMirrorOnDropImpl::getMmuDropReason() const {
   return kBcmDropReasonEgressPort;
 }
 

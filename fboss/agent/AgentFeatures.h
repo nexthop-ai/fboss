@@ -141,6 +141,7 @@ DECLARE_bool(lldp_port_drain_state);
 DECLARE_bool(enable_agent_drain);
 DECLARE_bool(enable_state_delta_logging);
 DECLARE_bool(strip_vlan_for_pipeline_bypass);
+DECLARE_bool(observe_rx_packets_without_interface);
 DECLARE_string(state_delta_log_file);
 DECLARE_string(state_delta_log_protocol);
 DECLARE_int32(state_delta_log_timeout_ms);

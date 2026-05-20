@@ -787,3 +787,98 @@ TEST(AggregatePort, serializationInverseOfDeserialization) {
           deserializedAggPort->sortedSubports().begin(),
           deserializedAggPort->sortedSubports().end()));
 }
+
+TEST(AggregatePort, capacityAndStatusFieldsDefaultUnset) {
+  std::vector<AggregatePort::Subport> emptySubports;
+  auto aggPort = AggregatePort::fromSubportRange(
+      AggregatePortID(1),
+      "lag1",
+      "lag1 desc",
+      0,
+      folly::MacAddress("00:00:00:00:00:01"),
+      1,
+      folly::range(emptySubports),
+      {});
+
+  EXPECT_EQ(aggPort->getConfiguredCapacityMbps(), std::nullopt);
+  EXPECT_EQ(aggPort->getActiveCapacityMbps(), std::nullopt);
+  EXPECT_EQ(aggPort->getStatus(), std::nullopt);
+}
+
+TEST(AggregatePort, capacityAndStatusSettersAndGetters) {
+  std::vector<AggregatePort::Subport> emptySubports;
+  auto aggPort = AggregatePort::fromSubportRange(
+      AggregatePortID(1),
+      "lag1",
+      "lag1 desc",
+      0,
+      folly::MacAddress("00:00:00:00:00:01"),
+      1,
+      folly::range(emptySubports),
+      {});
+
+  aggPort->setConfiguredCapacityMbps(200000);
+  aggPort->setActiveCapacityMbps(100000);
+  aggPort->setStatus(state::AggregatePortStatus::UP);
+
+  EXPECT_EQ(aggPort->getConfiguredCapacityMbps(), 200000);
+  EXPECT_EQ(aggPort->getActiveCapacityMbps(), 100000);
+  EXPECT_EQ(aggPort->getStatus(), state::AggregatePortStatus::UP);
+
+  aggPort->clearConfiguredCapacityMbps();
+  EXPECT_EQ(aggPort->getConfiguredCapacityMbps(), std::nullopt);
+
+  aggPort->clearActiveCapacityMbps();
+  EXPECT_EQ(aggPort->getActiveCapacityMbps(), std::nullopt);
+
+  aggPort->setStatus(state::AggregatePortStatus::DOWN);
+  EXPECT_EQ(aggPort->getStatus(), state::AggregatePortStatus::DOWN);
+}
+
+TEST(AggregatePort, capacityAndStatusSerializationRoundTrip) {
+  std::vector<AggregatePort::Subport> emptySubports;
+  auto aggPort = AggregatePort::fromSubportRange(
+      AggregatePortID(1),
+      "lag1",
+      "lag1 desc",
+      0,
+      folly::MacAddress("00:00:00:00:00:01"),
+      1,
+      folly::range(emptySubports),
+      {});
+
+  aggPort->setConfiguredCapacityMbps(400000);
+  aggPort->setActiveCapacityMbps(300000);
+  aggPort->setStatus(state::AggregatePortStatus::UP);
+
+  validateThriftStructNodeSerialization(*aggPort);
+
+  auto serialized = aggPort->toThrift();
+  auto deserialized = std::make_shared<AggregatePort>(serialized);
+
+  EXPECT_EQ(deserialized->getConfiguredCapacityMbps(), 400000);
+  EXPECT_EQ(deserialized->getActiveCapacityMbps(), 300000);
+  EXPECT_EQ(deserialized->getStatus(), state::AggregatePortStatus::UP);
+}
+
+TEST(AggregatePort, capacityAndStatusSerializationRoundTripUnset) {
+  std::vector<AggregatePort::Subport> emptySubports;
+  auto aggPort = AggregatePort::fromSubportRange(
+      AggregatePortID(1),
+      "lag1",
+      "lag1 desc",
+      0,
+      folly::MacAddress("00:00:00:00:00:01"),
+      1,
+      folly::range(emptySubports),
+      {});
+
+  validateThriftStructNodeSerialization(*aggPort);
+
+  auto serialized = aggPort->toThrift();
+  auto deserialized = std::make_shared<AggregatePort>(serialized);
+
+  EXPECT_EQ(deserialized->getConfiguredCapacityMbps(), std::nullopt);
+  EXPECT_EQ(deserialized->getActiveCapacityMbps(), std::nullopt);
+  EXPECT_EQ(deserialized->getStatus(), std::nullopt);
+}
