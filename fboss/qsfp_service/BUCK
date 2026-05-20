@@ -10,6 +10,7 @@ oncall("fboss_optics_phy")
 # for each phy SDK version
 # bazelify: extra_dep = :core-default
 # bazelify: extra_dep = //fboss/qsfp_service/platforms/wedge:wedge-platform-default
+# bazelify: extra_dep = //fboss/qsfp_service/diag:pai-diag-shell-stub
 cpp_binary(
     name = "qsfp_service",
     srcs = [
