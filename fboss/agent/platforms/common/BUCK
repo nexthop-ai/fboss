@@ -55,12 +55,8 @@ cpp_library(
         "//fboss/agent/platforms/common/minipack3n:minipack3n_platform_mapping",
         "//fboss/agent/platforms/common/montblanc:montblanc_platform_mapping",
         "//fboss/agent/platforms/common/morgan800cc:morgan800cc_platform_mapping",
-<<<<<<< HEAD
         "//fboss/agent/platforms/common/nova4000:nova4000_platform_mapping",
-||||||| 2ba3cb6d05
-=======
         "//fboss/agent/platforms/common/saintpaul:saintpaul_platform_mapping",
->>>>>>> cd4e0b49f5639d74928171c80395aee23e435cd7
         "//fboss/agent/platforms/common/tahan800bc:tahan800bc_platform_mapping",
         "//fboss/agent/platforms/common/tahansb800bc:tahansb800bc_platform_mapping",
         "//fboss/agent/platforms/common/wedge100:wedge100_platform_mapping",

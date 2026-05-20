@@ -308,14 +308,10 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_BLACKWOLF800BANW;
     } else if (FLAGS_mode == "yangra2") {
       type_ = PlatformType::PLATFORM_YANGRA2;
-<<<<<<< HEAD
     } else if (FLAGS_mode == "nova4000") {
       type_ = PlatformType::PLATFORM_NOVA4000;
-||||||| 2ba3cb6d05
-=======
     } else if (FLAGS_mode == "saintpaul") {
       type_ = PlatformType::PLATFORM_SAINTPAUL;
->>>>>>> cd4e0b49f5639d74928171c80395aee23e435cd7
     } else {
       throw std::runtime_error("invalid mode " + FLAGS_mode);
     }

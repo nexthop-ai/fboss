@@ -35,13 +35,9 @@
 #include "fboss/agent/platforms/common/minipack3n/Minipack3NPlatformMapping.h"
 #include "fboss/agent/platforms/common/montblanc/MontblancPlatformMapping.h"
 #include "fboss/agent/platforms/common/morgan800cc/Morgan800ccPlatformMapping.h"
-<<<<<<< HEAD
 #include "fboss/agent/platforms/common/nh4010f/Nh4010fPlatformMapping.h"
 #include "fboss/agent/platforms/common/nova4000/Nova4000PlatformMapping.h"
-||||||| 2ba3cb6d05
-=======
 #include "fboss/agent/platforms/common/saintpaul/SaintpaulPlatformMapping.h"
->>>>>>> cd4e0b49f5639d74928171c80395aee23e435cd7
 #include "fboss/agent/platforms/common/tahan800bc/Tahan800bcPlatformMapping.h"
 #include "fboss/agent/platforms/common/tahansb800bc/Tahansb800bcPlatformMapping.h"
 #include "fboss/agent/platforms/common/wedge100/Wedge100PlatformMapping.h"

@@ -27,12 +27,8 @@
 #include "fboss/agent/platforms/sai/SaiBcmMinipack3BTAPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmMinipackPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmMontblancPlatform.h"
-<<<<<<< HEAD
 #include "fboss/agent/platforms/sai/SaiBcmNova4000Platform.h"
-||||||| 2ba3cb6d05
-=======
 #include "fboss/agent/platforms/sai/SaiBcmSaintpaulPlatform.h"
->>>>>>> cd4e0b49f5639d74928171c80395aee23e435cd7
 #include "fboss/agent/platforms/sai/SaiBcmTahansb800bcPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmWedge100Platform.h"
 #include "fboss/agent/platforms/sai/SaiBcmWedge400Platform.h"

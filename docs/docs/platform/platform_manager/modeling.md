@@ -138,12 +138,8 @@ PlatformManager can detect whether a PmUnit (FRU) is physically present in a slo
 - Prevents errors caused by attempting to access empty slots.
 - Enables reporting of which slots are populated, supporting hot-plug detection and proper handling of optional components.
 
-<<<<<<< HEAD
-||||||| 2ba3cb6d05
-=======
 Presence Detection information can be found in [platform_manager_presence.thrift](https://github.com/facebook/fboss/blob/main/fboss/platform/platform_manager/platform_manager_presence.thrift) under `PresenceDetection` and `PresenceInfo`.
 
->>>>>>> cd4e0b49f5639d74928171c80395aee23e435cd7
 ## Root PmUnit
 
 This is the PmUnit which is used by Platform Manager as the starting node for

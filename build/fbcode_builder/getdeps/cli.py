@@ -33,7 +33,6 @@ from .fetcher import (
 from .getdeps_platform import HostType
 from .manifest import ManifestParser
 from .runcmd import check_cmd
-from .shared_lib import apply_shared_lib_top_level_cmake_defines
 from .subcmd import add_subcommands, cmd, SubCmd
 
 try:
@@ -42,6 +41,16 @@ except ImportError:
     # we don't ship the facebook specific subdir,
     # so allow that to fail silently
     pass
+
+
+def create_cache(cache_config):
+    if cache_config:
+        return cache_module.create_cache(cache_config)
+    else:
+        # If no cache config was passed, don't pass any argument at all. This is
+        # to accommodate getdeps.facebook above, which might monkey patch
+        # create_cache into a version that takes no arguments.
+        return cache_module.create_cache()
 
 
 @cmd("validate-manifest", "parse a manifest and validate that it is correct")
@@ -166,7 +175,7 @@ class FetchCmd(ProjectCmdBase):
         else:
             projects = [manifest]
 
-        cache = cache_module.create_cache()
+        cache = create_cache(args.cache_config)
         for m in projects:
             fetcher = loader.create_fetcher(m)
             if isinstance(fetcher, SystemPackageFetcher):
@@ -411,7 +420,7 @@ class QueryPathsCmd(ProjectCmdBase):
         else:
             manifests = [manifest]
 
-        cache = cache_module.create_cache()
+        cache = create_cache(args.cache_config)
         for m in manifests:
             fetcher = loader.create_fetcher(m)
             if isinstance(fetcher, SystemPackageFetcher):
@@ -463,10 +472,9 @@ class BuildCmd(ProjectCmdBase):
             clean_dirs(loader.build_opts)
 
         print("Building on %s" % loader.ctx_gen.get_context(args.project))
-        loader.build_opts.top_level_manifest_name = manifest.name
         projects = loader.manifests_in_dependency_order()
 
-        cache = cache_module.create_cache() if args.use_build_cache else None
+        cache = create_cache(args.cache_config) if args.use_build_cache else None
 
         dep_manifests = []
 
@@ -524,10 +532,6 @@ class BuildCmd(ProjectCmdBase):
                     if args.extra_cmake_defines
                     else {}
                 )
-                if m == manifest:
-                    apply_shared_lib_top_level_cmake_defines(
-                        extra_cmake_defines, loader.build_opts
-                    )
 
                 extra_b2_args = args.extra_b2_args or []
                 cmake_targets = args.cmake_target or ["install"]
@@ -771,10 +775,6 @@ class FixupDeps(ProjectCmdBase):
 @cmd("test", "test a given project")
 class TestCmd(ProjectCmdBase):
     def run_project_cmd(self, args, loader, manifest):
-        if not self.check_built(loader, manifest):
-            print("project %s has not been built" % manifest.name)
-            return 1
-        loader.build_opts.top_level_manifest_name = manifest.name
         return self.create_builder(loader, manifest).run_tests(
             schedule_type=args.schedule_type,
             owner=args.test_owner,
@@ -816,7 +816,6 @@ class TestCmd(ProjectCmdBase):
 )
 class DebugCmd(ProjectCmdBase):
     def run_project_cmd(self, args, loader, manifest):
-        loader.build_opts.top_level_manifest_name = manifest.name
         self.create_builder(loader, manifest).debug(reconfigure=False)
 
 
@@ -838,7 +837,6 @@ class EnvCmd(ProjectCmdBase):
     def run_project_cmd(self, args, loader, manifest):
         if args.ostype:
             loader.build_opts.host_type.ostype = args.ostype
-        loader.build_opts.top_level_manifest_name = manifest.name
         self.create_builder(loader, manifest).printenv(reconfigure=False)
 
 
@@ -907,11 +905,8 @@ def parse_args():
         dest="facebook_internal",
     )
     add_common_arg(
-        "--shared-lib",
-        help=(
-            "Build deps as static-PIC archives and the top-level project as a "
-            "shared library that links them in."
-        ),
+        "--shared-libs",
+        help="Build shared libraries if possible",
         action="store_true",
         default=False,
     )
@@ -957,6 +952,14 @@ def parse_args():
             "in cases where the upstream project has uploaded a new "
             "version of the archive with a different hash"
         ),
+    )
+    add_common_arg(
+        "--cache-config",
+        help=(
+            "Path to file describing cache configuration. See getdeps/cache.py "
+            "for the format."
+        ),
+        default=None,
     )
     add_common_arg(
         "--schedule-type",

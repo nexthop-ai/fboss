@@ -36,33 +36,20 @@ list(APPEND SAI_BENCHMARKS rib_sync_fib_speed)
 list(APPEND SAI_BENCHMARKS ucmp_scale_benchmark)
 list(APPEND SAI_BENCHMARKS srv6_scale_benchmark)
 list(APPEND SAI_BENCHMARKS srv6_mysid_scale_benchmark)
-<<<<<<< HEAD
-# Check if building for DNX platform (SAI_SDK_VERSION contains "DNX")
-string(FIND "${SAI_SDK_VERSION}" "DNX" IS_DNX_BUILD)
-||||||| 2ba3cb6d05
-=======
 list(APPEND SAI_BENCHMARKS cpu_latency_benchmark)
 list(APPEND SAI_BENCHMARKS system_scale_churn_memory_benchmark)
 list(APPEND SAI_BENCHMARKS tun_manager_probe_and_cleanup_speed)
 list(APPEND SAI_BENCHMARKS ecmp_backup_group_spillover)
 list(APPEND SAI_BENCHMARKS ecmp_group_scale_benchmark)
->>>>>>> cd4e0b49f5639d74928171c80395aee23e435cd7
 if (SAI_BRCM_IMPL OR BUILD_SAI_FAKE)
   list(APPEND SAI_BENCHMARKS init_and_exit_voq)
   list(APPEND SAI_BENCHMARKS init_and_exit_fabric)
   list(APPEND SAI_BENCHMARKS voq_scale_route_add_speed)
   list(APPEND SAI_BENCHMARKS voq_scale_route_del_speed)
+  list(APPEND SAI_BENCHMARKS switch_reachability_change_speed)
   list(APPEND SAI_BENCHMARKS voq_sys_port_programming)
   list(APPEND SAI_BENCHMARKS voq_remote_entity_programming)
-<<<<<<< HEAD
-  # switch_reachability_change_speed is only supported on DNX platforms
-  if (NOT IS_DNX_BUILD EQUAL -1 OR BUILD_SAI_FAKE)
-    list(APPEND SAI_BENCHMARKS switch_reachability_change_speed)
-  endif()
-||||||| 2ba3cb6d05
-=======
   list(APPEND SAI_BENCHMARKS voq_route_competing_remote_neighbor_benchmark)
->>>>>>> cd4e0b49f5639d74928171c80395aee23e435cd7
 endif()
 
 # Build a single consolidated benchmark binary that contains all benchmark
@@ -103,20 +90,6 @@ find_library(SAI_IMPL sai_impl)
 message(STATUS "SAI_IMPL: ${SAI_IMPL}")
 
 if(SAI_IMPL AND BENCHMARK_INSTALL)
-<<<<<<< HEAD
-  BUILD_SAI_BENCHMARKS("sai_impl" ${SAI_IMPL})
-  add_custom_target(fboss_sai_agent_benchmarks)
-  foreach(SAI_BENCHMARK IN LISTS SAI_BENCHMARKS)
-    add_dependencies(fboss_sai_agent_benchmarks sai_${SAI_BENCHMARK}-sai_impl)
-    install(TARGETS sai_${SAI_BENCHMARK}-sai_impl)
-  endforeach()
-||||||| 2ba3cb6d05
-  BUILD_SAI_BENCHMARKS("sai_impl" ${SAI_IMPL})
-  foreach(SAI_BENCHMARK IN LISTS SAI_BENCHMARKS)
-    install(TARGETS sai_${SAI_BENCHMARK}-sai_impl)
-  endforeach()
-=======
   BUILD_ALL_SAI_BENCHMARKS("sai_impl" ${SAI_IMPL})
   install(TARGETS sai_all_benchmarks-sai_impl)
->>>>>>> cd4e0b49f5639d74928171c80395aee23e435cd7
 endif()
