@@ -10,7 +10,12 @@ ARG USE_CLANG=true
 # Mount point for extra files.
 RUN mkdir -p /var/extras
 
-COPY fboss/oss/docker/local_mirror.repo* /etc/yum.repos.d/
+# Cloudstack CentOS mirror is currently broken (sync issues against multiple
+# upstreams). Disable until the mirror is reliable again — the base image
+# already ships with the upstream centos-stream-9 repos, which dnf will use
+# in the absence of this drop-in.
+# See: https://nexthopai.slack.com/archives/C0990G2G64W/p1779146660536639
+# COPY fboss/oss/docker/local_mirror.repo* /etc/yum.repos.d/
 
 RUN dnf install -y 'dnf-command(config-manager)' && \
     dnf config-manager --set-enabled crb && \
