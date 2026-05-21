@@ -1,11 +1,11 @@
 {
-  "___COMMENT___": "Nova4000 Platform Manager Configuration",
+  "___COMMENT___": "Platform Manager Configuration for Nova4000 with a Black Mamba CPU card",
   "platformName": "NOVA4000",
   "rootPmUnitName": "SCM",
   "rootSlotType": "SCM_SLOT",
   "slotTypeConfigs": {
     "SCM_SLOT": {
-      "numOutgoingI2cBuses": 7,
+      "numOutgoingI2cBuses": 10,
       "pmUnitName": "SCM"
     },
     "SMB_SLOT": {
@@ -20,7 +20,7 @@
         {
           "pmUnitScopedName": "SCM_IOB",
           "vendorId": "0x10ee",
-          "deviceId": "0x7011",
+          "deviceId": "0x7016",
           "subSystemVendorId": "0x20a4",
           "subSystemDeviceId": "0x0001",
           "i2cAdapterBlockConfigs": [
@@ -29,7 +29,7 @@
               "deviceName": "i2c_master",
               "csrOffsetCalc": "0x40000 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 0,
-              "numAdapters": 7
+              "numAdapters": 10
             }
           ]
         }
@@ -166,6 +166,7 @@
       ]
     }
   },
+  "___TODO_NOS_8448___": "TODO(NOS-8448): switch to CPU_BUS@N virtual names to disambiguate the two Synopsys CPU I2C buses on P2 Black Mamba",
   "i2cAdaptersFromCpu": [
     "Synopsys DesignWare I2C adapter",
     "SMBus PIIX4 adapter port 0 at 0b00",
@@ -190,6 +191,9 @@
     "/run/devmap/i2c-busses/SCM_IOB_I2C_4": "/[SCM_IOB_I2C_4]",
     "/run/devmap/i2c-busses/SCM_IOB_I2C_5": "/[SCM_IOB_I2C_5]",
     "/run/devmap/i2c-busses/SCM_IOB_I2C_6": "/[SCM_IOB_I2C_6]",
+    "/run/devmap/i2c-busses/SCM_IOB_I2C_7": "/[SCM_IOB_I2C_7]",
+    "/run/devmap/i2c-busses/SCM_IOB_I2C_8": "/[SCM_IOB_I2C_8]",
+    "/run/devmap/i2c-busses/SCM_IOB_I2C_9": "/[SCM_IOB_I2C_9]",
     "/run/devmap/fpgas/SMB_IOB_0": "/SMB_SLOT@0/[SMB_IOB_0]",
     "/run/devmap/fpgas/SMB_IOB_1": "/SMB_SLOT@0/[SMB_IOB_1]",
     "/run/devmap/i2c-busses/SMB0_IOB_I2C_0": "/SMB_SLOT@0/[SMB0_IOB_I2C_0]",
