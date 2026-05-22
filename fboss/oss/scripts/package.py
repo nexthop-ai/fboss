@@ -84,6 +84,7 @@ FORWARDING_TEST_BINARIES = [
     "sai_multi_link_test-sai_impl",
     "sai_replayer-sai_impl",
     "sai_test-sai_impl",
+    "sai_all_benchmarks-sai_impl",
 ]
 
 FORWARDING_TEST_EXTRA = {

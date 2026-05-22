@@ -241,6 +241,7 @@ perform_build() {
 
   time nice -n 10 ./fboss/oss/scripts/run-getdeps.py \
     "${npu_flags[@]}" \
+    --benchmark-install \
     build \
     --num-jobs "${num_jobs:?}" \
     --no-deps \
