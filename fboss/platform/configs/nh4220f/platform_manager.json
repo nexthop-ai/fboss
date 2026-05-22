@@ -52,12 +52,6 @@
           "address": "0x50",
           "kernelDeviceName": "24c64",
           "pmUnitScopedName": "CHASSIS_EEPROM"
-        },
-        {
-          "busName": "SCM_IOB_I2C_6",
-          "address": "0x48",
-          "kernelDeviceName": "tmp464",
-          "pmUnitScopedName": "SCM_TEMP_SENSOR"
         }
       ],
       "outgoingSlotConfigs": {
@@ -83,6 +77,13 @@
                 "csrOffset": "0x00a0"
               },
               "numFans": 4
+            }
+          ],
+          "miscCtrlConfigs": [
+            {
+              "pmUnitScopedName": "SMB_IOB_TH6_TEMP",
+              "deviceName": "th6_temp",
+              "csrOffset": "0x24"
             }
           ],
           "i2cAdapterBlockConfigs": [
@@ -215,7 +216,6 @@
     "/run/devmap/eeproms/CHASSIS_EEPROM": "/[CHASSIS_EEPROM]",
     "/run/devmap/sensors/DPM": "/[DPM]",
     "/run/devmap/sensors/DPM_2": "/[DPM_2]",
-    "/run/devmap/sensors/SCM_TEMP_SENSOR": "/[SCM_TEMP_SENSOR]",
     "/run/devmap/fpgas/SCM_IOB": "/[SCM_IOB]",
     "/run/devmap/i2c-busses/SCM_IOB_I2C_0": "/[SCM_IOB_I2C_0]",
     "/run/devmap/i2c-busses/SCM_IOB_I2C_1": "/[SCM_IOB_I2C_1]",
@@ -228,6 +228,7 @@
     "/run/devmap/i2c-busses/SCM_IOB_I2C_8": "/[SCM_IOB_I2C_8]",
     "/run/devmap/i2c-busses/SCM_IOB_I2C_9": "/[SCM_IOB_I2C_9]",
     "/run/devmap/fpgas/SMB_IOB": "/SMB_SLOT@0/[SMB_IOB]",
+    "/run/devmap/sensors/ASIC_TEMP": "/SMB_SLOT@0/[SMB_IOB_TH6_TEMP]",
     "/run/devmap/i2c-busses/SMB_IOB_I2C_0": "/SMB_SLOT@0/[SMB_IOB_I2C_0]",
     "/run/devmap/i2c-busses/SMB_IOB_I2C_1": "/SMB_SLOT@0/[SMB_IOB_I2C_1]",
     "/run/devmap/i2c-busses/SMB_IOB_I2C_2": "/SMB_SLOT@0/[SMB_IOB_I2C_2]",
@@ -375,11 +376,11 @@
     "nh_fpga_i2c",
     "nh_fpga_mux",
     "nh_fpga_info",
+    "nh_fpga_th6_temp",
     "nh_fpga_fan",
     "nh_fpga_led",
     "nh_fpga_port_led",
     "nh_xcvr_ctrl",
-    "tmp464",
     "lm90",
     "adm1266",
     "pmbus"
