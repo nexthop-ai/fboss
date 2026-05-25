@@ -25,6 +25,15 @@ from fboss_agent_utils import (
     setup_and_start_hw_agent_service,
 )
 from fsdb_service_utils import cleanup_fsdb_service, setup_and_start_fsdb_service
+from nh_test_xml_utils import (
+    StreamTee,
+    emit_test_boundary,
+    exit_info,
+    find_recent_core_dump,
+    inject_streams_into_xml,
+    pipe_to_tee,
+    write_synthetic_failure_xml,
+)
 from qsfp_service_utils import cleanup_qsfp_service, setup_and_start_qsfp_service
 
 # FBOSS Hardware Test Runner
@@ -397,50 +406,6 @@ class TestRunner(abc.ABC):
     def _filter_tests(self, tests: list[str]) -> list[str]:
         pass
 
-    def _write_synthetic_failure_xml(self, test_to_run: str, reason: str) -> None:
-        """Write a minimal GTest XML marking test_to_run as failed.
-
-        Called when the test binary crashes or times out without producing
-        its own XML, so the result aggregation records a real failure instead
-        of silently producing tests=0 (which nhtest maps to SKIP).
-        """
-        parts = test_to_run.split(".", 1)
-        suite_name = parts[0] if len(parts) == 2 else "Unknown"
-        case_name = parts[1] if len(parts) == 2 else test_to_run
-        timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
-
-        testsuites = ET.Element(
-            "testsuites",
-            tests="1",
-            failures="1",
-            disabled="0",
-            errors="0",
-            time="0.0",
-            timestamp=timestamp,
-        )
-        testsuite = ET.SubElement(
-            testsuites,
-            "testsuite",
-            name=suite_name,
-            tests="1",
-            failures="1",
-            disabled="0",
-            errors="0",
-            time="0.0",
-        )
-        testcase = ET.SubElement(
-            testsuite,
-            "testcase",
-            name=case_name,
-            classname=suite_name,
-            time="0.0",
-        )
-        ET.SubElement(testcase, "failure", message=reason).text = reason
-        ET.indent(testsuites)
-        with open(self.TESTRESULT_CURRENT_RUN_FILE, "w") as f:
-            f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-            f.write(ET.tostring(testsuites, encoding="unicode"))
-
     def _get_sai_replayer_log_path(
         self,
         test_prefix: str,
@@ -686,6 +651,56 @@ class TestRunner(abc.ABC):
         except subprocess.CalledProcessError:
             print("Failed to restart bcmsim service", flush=True)
 
+    def _capture_subprocess(self, cmd, timeout):
+        """Run cmd, tee its stdout/stderr to the parent in real time, and
+        return (returncode, timed_out, stdout_tail, stderr_tail).
+
+        Memory is bounded by `StreamTee` (head + tail window per stream).
+        On timeout the child is killed and reaped so the tee threads can
+        drain the closed pipes and exit cleanly.
+        """
+        stdout_tee = StreamTee(sys.stdout.buffer.write)
+        stderr_tee = StreamTee(sys.stderr.buffer.write)
+        proc = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=self.ENV_VAR,
+            bufsize=65536,
+        )
+        # daemon=True so a tee thread stuck in a slow `sys.stdout.buffer.write`
+        # (e.g. blocked parent pipe) cannot wedge interpreter shutdown.
+        t_out = threading.Thread(
+            target=pipe_to_tee, args=(proc.stdout, stdout_tee), daemon=True
+        )
+        t_err = threading.Thread(
+            target=pipe_to_tee, args=(proc.stderr, stderr_tee), daemon=True
+        )
+        t_out.start()
+        t_err.start()
+
+        timed_out = False
+        try:
+            returncode = proc.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            returncode = proc.wait()
+            timed_out = True
+        # Closed pipes unblock the tee threads; bound the join so a stuck
+        # thread cannot wedge the runner.
+        t_out.join(timeout=10)
+        t_err.join(timeout=10)
+        if t_out.is_alive() or t_err.is_alive():
+            print(
+                f"Warning: tee thread did not exit within 10s "
+                f"(stdout_alive={t_out.is_alive()}, stderr_alive={t_err.is_alive()}); "
+                f"continuing with captured snapshot.",
+                flush=True,
+            )
+        sys.stdout.flush()
+        sys.stderr.flush()
+        return returncode, timed_out, stdout_tee.snapshot(), stderr_tee.snapshot()
+
     def _run_test(
         self,
         conf_file,
@@ -697,71 +712,84 @@ class TestRunner(abc.ABC):
         sai_replayer_logging_path: str | None = None,
         test_run_timeout_in_second: int = DEFAULT_TEST_RUN_TIMEOUT_IN_SECOND,
     ):
-        # Setup flags for the test binary before running the tests
         flags = [self.WARMBOOT_SETUP_OPTION] if setup_warmboot else []
         flags += self._get_sai_replayer_logging_flags(sai_replayer_logging_path)
         flags += self._get_sai_logging_flags(sai_logging)
         flags += ["--logging", fboss_logging]
 
-        try:
-            test_run_cmd = self._get_test_run_cmd(conf_file, test_to_run, flags)
-            print(
-                f"Running command {test_run_cmd}",
-                flush=True,
-            )
+        # Guard against a leftover XML from a prior run being mis-attributed:
+        # callers already unlink before each call, but unlinking here too means
+        # a future caller that forgets won't silently stamp this run's streams
+        # onto the previous test's XML.
+        with suppress(FileNotFoundError):
+            os.unlink(self.TESTRESULT_CURRENT_RUN_FILE)
 
-            start_time = time.time()
-            run_test_output = subprocess.check_output(
-                test_run_cmd,
-                timeout=test_run_timeout_in_second,
-                env=self.ENV_VAR,
-            )
-            elapsed_ms = int((time.time() - start_time) * 1000)
+        test_run_cmd = self._get_test_run_cmd(conf_file, test_to_run, flags)
+        print(f"Running command {test_run_cmd}", flush=True)
+        emit_test_boundary(kind="START", test_name=test_to_run, prefix=test_prefix)
 
-            # Add test prefix to test name in the result
+        # monotonic for durations (immune to NTP step), wall-clock for the
+        # core-dump-finder which compares against filesystem mtime.
+        wall_start = time.time()
+        mono_start = time.monotonic()
+        returncode, timed_out, stdout_tail, stderr_tail = self._capture_subprocess(
+            test_run_cmd, test_run_timeout_in_second
+        )
+        elapsed_sec = time.monotonic() - mono_start
+        elapsed_ms = int(elapsed_sec * 1000)
+        info = exit_info(returncode=returncode, timed_out=timed_out)
+
+        xml_exists = os.path.exists(self.TESTRESULT_CURRENT_RUN_FILE)
+        if info["kind"] == "FAIL" and xml_exists:
+            inject_streams_into_xml(
+                self.TESTRESULT_CURRENT_RUN_FILE, stdout_tail, stderr_tail
+            )
+        if info["kind"] in ("OK", "FAIL") and xml_exists:
             run_test_result = self._add_test_prefix_to_gtest_result(
-                run_test_output, test_prefix
+                stdout_tail, test_prefix
             )
-            # If no gtest result line found (e.g. --setup-for-warmboot
-            # causes early exit), use return code to synthesize result
-            if run_test_result == run_test_output:
+            if run_test_result == stdout_tail:
+                label = "OK" if info["kind"] == "OK" else "FAILED"
                 run_test_result = (
-                    "[       OK ] "
+                    f"[{label:>9} ] "
                     + test_prefix
                     + test_to_run
-                    + " ("
-                    + str(elapsed_ms)
-                    + " ms)"
-                ).encode("utf-8")
-        except subprocess.TimeoutExpired as e:
-            # Test timed out, mark it as TIMEOUT
-            print("Test timeout!", flush=True)
-            output = e.output.decode("utf-8") if e.output else None
-            print(f"Test output {output}", flush=True)
-            stderr = e.stderr.decode("utf-8") if e.stderr else None
-            print(f"Test error {stderr}", flush=True)
-            timeout_reason = f"Test timed out after {test_run_timeout_in_second}s"
-            self._write_synthetic_failure_xml(test_to_run, timeout_reason)
+                    + f" ({elapsed_ms} ms)"
+                ).encode()
+        elif info["kind"] == "OK" and not xml_exists:
             run_test_result = (
-                "[  TIMEOUT ] "
-                + test_prefix
-                + test_to_run
-                + " ("
-                + str(test_run_timeout_in_second * 1000)
-                + " ms)"
-            ).encode("utf-8")
-        except subprocess.CalledProcessError as e:
-            # Test aborted, mark it as FAILED
-            print(f"Test aborted with return code {e.returncode}!", flush=True)
-            output = e.output.decode("utf-8") if e.output else None
-            print(f"Test output {output}", flush=True)
-            stderr = e.stderr.decode("utf-8") if e.stderr else None
-            print(f"Test error {stderr}", flush=True)
-            crash_reason = f"Test binary exited with return code {e.returncode}"
-            self._write_synthetic_failure_xml(test_to_run, crash_reason)
-            run_test_result = (
-                "[   FAILED ] " + test_prefix + test_to_run + " (0 ms)"
-            ).encode("utf-8")
+                f"[       OK ] {test_prefix}{test_to_run} ({elapsed_ms} ms)"
+            ).encode()
+        else:
+            core_dump_path = (
+                find_recent_core_dump(wall_start) if info["kind"] == "CRASH" else None
+            )
+            write_synthetic_failure_xml(
+                xml_path=self.TESTRESULT_CURRENT_RUN_FILE,
+                test_to_run=test_to_run,
+                info=info,
+                stdout_tail=stdout_tail,
+                stderr_tail=stderr_tail,
+                core_dump_path=core_dump_path,
+                duration_sec=elapsed_sec,
+            )
+            if info["kind"] == "TIMEOUT":
+                label_ms = test_run_timeout_in_second * 1000
+                run_test_result = (
+                    f"[  TIMEOUT ] {test_prefix}{test_to_run} ({label_ms} ms)"
+                ).encode()
+            else:
+                run_test_result = (
+                    f"[   FAILED ] {test_prefix}{test_to_run} ({elapsed_ms} ms)"
+                ).encode()
+
+        emit_test_boundary(
+            kind="END",
+            test_name=test_to_run,
+            prefix=test_prefix,
+            info=info,
+            duration_sec=elapsed_sec,
+        )
         return run_test_result
 
     def _string_in_file(self, file_path, string):

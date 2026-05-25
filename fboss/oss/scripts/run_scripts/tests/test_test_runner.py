@@ -91,19 +91,53 @@ class TestLoadFromFile:
             os.unlink(temp_file)
 
 
+def _make_capture_writing(stdout_bytes: bytes, runner, xml_to_write: bytes | None):
+    """Build a fake `_capture_subprocess` that optionally writes a gtest XML
+    to runner.TESTRESULT_CURRENT_RUN_FILE and returns
+    (returncode=0, timed_out=False, stdout_bytes, b"").
+    """
+
+    def fake_capture(cmd, timeout):  # noqa: ARG001 - signature mirrors _capture_subprocess
+        if xml_to_write is not None:
+            with open(runner.TESTRESULT_CURRENT_RUN_FILE, "wb") as f:
+                f.write(xml_to_write)
+        return 0, False, stdout_bytes, b""
+
+    return fake_capture
+
+
+_STUB_GTEST_XML = b"""<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="0" errors="0" time="0.1">
+  <testsuite name="HwFooTest" tests="1" failures="0">
+    <testcase name="Bar" classname="HwFooTest" time="0.1" status="run"/>
+  </testsuite>
+</testsuites>
+"""
+
+
 class TestRunTestGtestFallback:
     """Tests for _run_test gtest output post-processing (prefix injection,
     synthesize-OK fallback for empty output)."""
 
-    @patch("subprocess.check_output")
     def test_preserves_skipped_does_not_synthesize_ok(
-        self, mock_check_output, runner, mock_args
+        self, runner, mock_args, tmp_path
     ):
         """End-to-end: a SKIPPED gtest result must not be rewritten as OK."""
-        mock_check_output.return_value = b"[  SKIPPED ] HwFooTest.Bar (5 ms)\n"
+        runner.TESTRESULT_CURRENT_RUN_FILE = str(tmp_path / "tr_current_run.xml")
         # _get_test_run_cmd reads the module-level `args` global, which is only
         # bound under `if __name__ == "__main__":` — use create=True to inject it.
-        with patch("run_test.args", new=mock_args, create=True):
+        with (
+            patch("run_test.args", new=mock_args, create=True),
+            patch.object(
+                runner,
+                "_capture_subprocess",
+                new=_make_capture_writing(
+                    b"[  SKIPPED ] HwFooTest.Bar (5 ms)\n",
+                    runner,
+                    _STUB_GTEST_XML,
+                ),
+            ),
+        ):
             result = runner._run_test(
                 conf_file="dummy.conf",
                 test_prefix="cold_boot.",
@@ -118,15 +152,19 @@ class TestRunTestGtestFallback:
         # Critical: the fallback must NOT have rewritten this to "[       OK ]".
         assert "[       OK ]" not in decoded
 
-    @patch("subprocess.check_output")
-    def test_synthesize_ok_when_no_gtest_line(
-        self, mock_check_output, runner, mock_args
-    ):
+    def test_synthesize_ok_when_no_gtest_line(self, runner, mock_args, tmp_path):
         """Fallback path still works: empty output (e.g. --setup-for-warmboot early
         exit) should still synthesize an OK result so the test isn't lost from
         the summary."""
-        mock_check_output.return_value = b""
-        with patch("run_test.args", new=mock_args, create=True):
+        runner.TESTRESULT_CURRENT_RUN_FILE = str(tmp_path / "tr_current_run.xml")
+        with (
+            patch("run_test.args", new=mock_args, create=True),
+            patch.object(
+                runner,
+                "_capture_subprocess",
+                new=_make_capture_writing(b"", runner, _STUB_GTEST_XML),
+            ),
+        ):
             result = runner._run_test(
                 conf_file="dummy.conf",
                 test_prefix="warm_boot.",
