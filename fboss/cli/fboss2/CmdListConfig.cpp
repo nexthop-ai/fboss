@@ -81,6 +81,8 @@
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/peer/CmdConfigProtocolBgpPeerV4OverV6Nh.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/peer/CmdConfigProtocolBgpPeerWarningLimit.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/peer/CmdConfigProtocolBgpPeerWarningOnly.h"
+#include "fboss/cli/fboss2/commands/config/ptp/CmdConfigPtp.h"
+#include "fboss/cli/fboss2/commands/config/ptp/transparent_clock/CmdConfigPtpTransparentClock.h"
 #include "fboss/cli/fboss2/commands/config/qos/CmdConfigQos.h"
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPool.h"
 #include "fboss/cli/fboss2/commands/config/qos/policy/CmdConfigQosPolicy.h"
@@ -174,6 +176,20 @@ const CommandTree& kConfigCommandTree() {
               "Set L2 learning mode (hardware, software, or disabled)",
               commandHandler<CmdConfigL2LearningMode>,
               argRegistrar<CmdConfigL2LearningModeTraits>,
+          }},
+      },
+
+      {
+          "config",
+          "mac",
+          "Configure MAC settings",
+          commandHandler<CmdConfigMac>,
+          argRegistrar<CmdConfigMacTraits>,
+          {{
+              "aging-time",
+              "Set MAC address aging time in seconds",
+              commandHandler<CmdConfigMacAgingTime>,
+              argRegistrar<CmdConfigMacAgingTimeTraits>,
           }},
       },
 
@@ -644,6 +660,20 @@ const CommandTree& kConfigCommandTree() {
                   },
               },
           },
+      },
+
+      {
+          "config",
+          "ptp",
+          "Configure PTP settings",
+          commandHandler<CmdConfigPtp>,
+          argRegistrar<CmdConfigPtpTraits>,
+          {{
+              "transparent-clock",
+              "Enable or disable PTP transparent clock mode",
+              commandHandler<CmdConfigPtpTransparentClock>,
+              argRegistrar<CmdConfigPtpTransparentClockTraits>,
+          }},
       },
 
       {
