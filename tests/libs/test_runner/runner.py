@@ -9,7 +9,11 @@ import logging
 import os
 import time
 import shlex
+import re
+import csv
+import xml.etree.ElementTree as ET
 from abc import ABC, abstractmethod
+from datetime import datetime
 
 from tests.libs.device.device_ssh_helper import DeviceSCPClient, DeviceSSHClient
 
@@ -195,7 +199,7 @@ class BaseHwTestRunner(ABC):
             f"' > {self.testlog_filepath} 2>&1"
         )
 
-    def run_test(self, test_context):
+    def run_test(self, test_context, skip_tr_xml=False):
         """Run the hardware test on the DUT."""
         logger.info("Running tests")
         self.setup(test_context)
@@ -247,13 +251,14 @@ class BaseHwTestRunner(ABC):
             logger.error("Failed to fetch test logs: %s", output)
             return False
 
-        exit_status, output = self.scp_client.get_file(
-            self.testresult_filepath, "/tmp/tr.xml"
-        )
-        if exit_status != 0:
-            logger.warning("Failed to fetch test results (tr.xml may not exist if binary crashed): %s", output)
+        if not skip_tr_xml:
+            exit_status, output = self.scp_client.get_file(
+                self.testresult_filepath, "/tmp/tr.xml"
+            )
+            if exit_status != 0:
+                logger.warning("Failed to fetch test results (tr.xml may not exist if binary crashed): %s", output)
 
-        self.normalize_test_results_file()
+            self.normalize_test_results_file()
 
         if self.binary_exit_is_fatal(test_exit_status):
             logger.error("Failed to run tests: %s", test_output)
@@ -493,4 +498,201 @@ class SmokeTestRunner(BaseHwTestRunner):
             logger.error("agent_smoke.py exited %s; see /tmp/tr.xml",
                          smoke_status)
             return False
+        return True
+
+class BenchmarkTestRunner(BaseHwTestRunner):
+    """Runner for benchmark tests."""
+
+    def test_args(self, hwsku: str) -> str:
+        config_name = _HW_TEST_CONFIG_NAME.get(hwsku, hwsku)
+        logger.info("hwsku=%s hw_test_config=%s", hwsku, config_name)
+        return f"benchmark --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON{_sai_skip_known_bad(hwsku)}"
+
+    def _get_result_csv_name(self, local_log_path: str) -> str | None:
+        """Extract CSV filename from benchmark log"""
+        with open(local_log_path, encoding="utf-8") as f:
+            content = f.read()
+
+        match = re.search(
+            r"Benchmark results written to: (benchmark_results_\S+\.csv)",
+            content
+        )
+        if match:
+            return match.group(1)
+
+        logger.warning(f"Could not find benchmark results CSV filename in {local_log_path}")
+        return None
+
+    def _get_skipped_bm_count(self, local_log_path: str) -> int:
+        """Extract num tests skipped from benchmark log"""
+        with open(local_log_path, encoding="utf-8") as f:
+            for line in f:
+                match = re.search(r"Skipped \(known bad, pre-filtered\): (\d+)", line)
+                if match:
+                    return int(match.group(1))
+
+        logger.warning(f"Could not find skipped count in {local_log_path}")
+        return 0
+
+    def _generate_tr_xml_from_csv(self,
+                                  csv_path: str,
+                                  xml_path: str,
+                                  csv_timestamp: str,
+                                  skipped_count: int=0
+                                 ) -> bool:
+        """
+        Convert a benchmark CSV into a minimal JUnit-style tr.xml.
+
+        Args:
+            csv_path: Path to benchmark_results_*.csv
+            xml_path: Output XML path (e.g. /tmp/tr.xml)
+            timestamp: timestamp on the original CSV
+
+        Returns:
+            bool: if tr.xml creation was successful
+        """
+
+        # Convert original CSV timestamp to correct format
+        suite_timestamp = datetime.strptime(csv_timestamp, "%Y%m%d_%H%M%S").strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]
+
+        # Create XML tree
+        testsuites_el = ET.Element("testsuites")
+        testsuite_el = ET.SubElement(
+            testsuites_el,
+            "testsuite",
+            {
+                "tests": "0",                   # filled later
+                "failures": "0",                # filled later
+                "disabled": "0",                # cannot be inferred from CSV
+                "errors": "0",                  # cannot be inferred from CSV
+                "skipped": str(skipped_count),
+                "time": "0.000",                # filled later
+                "timestamp": suite_timestamp,
+                "name": "AllTests",
+            },
+        )
+
+        # Calculate stats that require row-by-row inspection
+        total_failures = 0
+        total_time_sec = 0.0
+
+        with open(csv_path, mode="r") as f:
+            rows = list(csv.DictReader(f))
+
+        logger.info("Parsing CSV file...")
+
+        for row in rows:
+            # Benchmark names aren't structured as ClassName.testName
+            name = row.get("benchmark_test_name")
+            classname = "Benchmarks"
+            # No obvious way to get the actual source file name;
+            # using compiled binary as placeholder
+            filename = row.get("benchmark_binary_name")
+
+            # Benchmark time is in picoseconds; convert to seconds
+            benchmark_time_ps = row.get("benchmark_time_ps", "")
+            try:
+                case_time_sec = max(float(benchmark_time_ps) / 1e12, 0.0) if benchmark_time_ps else 0.0
+            except (TypeError, ValueError):
+                case_time_sec = 0.0
+            total_time_sec += case_time_sec
+
+            # Get benchmark results
+            test_status = (row.get("test_status") or "").upper()
+            threshold_status = (row.get("threshold_status") or "").upper()
+            threshold_details = row.get("threshold_details") or ""
+
+            # Add testcase element
+            testcase_el = ET.SubElement(
+                testsuite_el,
+                "testcase",
+                {
+                    "name": name,
+                    "file": filename,
+                    "line": "",
+                    "status": "run",
+                    "result": "timed-out" if (test_status == "TIMEOUT") else "completed",
+                    "time": f"{case_time_sec:.6f}",
+                    "timestamp": suite_timestamp,   # Per-test timestamp not in CSV
+                    "classname": classname,
+                },
+            )
+
+            # Add failure subelement if appropriate
+            failure_reasons = []
+
+            if test_status == "FAILED":
+                failure_reasons.append("test_status=FAILED")
+            elif test_status == "TIMEOUT":
+                failure_reasons.append("test_status=TIMEOUT")
+
+            if threshold_status == "EXCEEDED":
+                if threshold_details:
+                    failure_reasons.append(f"threshold exceeded: {threshold_details}")
+                else:
+                    failure_reasons.append("threshold exceeded")
+
+            if failure_reasons:
+                total_failures += 1
+                message = "; ".join(failure_reasons)
+
+                failure_el = ET.SubElement(
+                    testcase_el,
+                    "failure",
+                    {"message": message},
+                )
+
+        total_tests = len(rows) + skipped_count
+
+        testsuite_el.set("tests", str(total_tests))
+        testsuite_el.set("failures", str(total_failures))
+        testsuite_el.set("time", f"{total_time_sec:.6f}")
+
+        logger.info("Successfully parsed CSV --> writing results to xml file")
+
+        tree = ET.ElementTree(testsuites_el)
+        ET.indent(tree, space=" ", level=0)
+        tree.write(xml_path, encoding="UTF-8", xml_declaration=True)
+        return True
+
+    def run_test(self, test_context: dict) -> bool:
+        """
+        Run the benchmark test on the DUT.
+        This acts as a wrapper around the base class implementation of
+        run_test and adds additional functionality for generating
+        a tr.xml based on a benchmark_result.csv, as benchmarks
+        do not produce a tr.xml automatically.
+        """
+        success = super().run_test(test_context, skip_tr_xml=True)
+        if not success:
+            return False
+
+        # Benchmarks do not produce tr.xml, only a CSV file
+        csv_filename = self._get_result_csv_name("/tmp/test.log")
+        if csv_filename is None:
+            logger.error("Failed to find benchmark results CSV filename in test log")
+            return False
+
+        self.testresult_filepath = f"/opt/fboss/{csv_filename}"
+        local_csv_path = "/tmp/benchmark_results.csv"
+        exit_status, output = self.scp_client.get_file(
+            self.testresult_filepath, local_csv_path
+        )
+        if exit_status != 0:
+            logger.warning("Failed to fetch test results: %s", output)
+
+        # Use CSV file to create tr.xml locally
+        # CSV filename looks like:
+        # f"benchmark_results_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv"
+        csv_timestamp = csv_filename.replace("benchmark_results_", "").replace(".csv", "")
+        skipped_count = self._get_skipped_bm_count("/tmp/test.log")
+
+        logger.info("Generating /tmp/tr.xml from %s", local_csv_path)
+        success = self._generate_tr_xml_from_csv(local_csv_path, "/tmp/tr.xml", csv_timestamp, skipped_count)
+        if not success:
+            logger.error("Failed to generate /tmp/tr.xml from %s", local_csv_path)
+            return False
+
+        self.normalize_test_results_file()
+
         return True

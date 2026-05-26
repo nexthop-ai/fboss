@@ -9,6 +9,7 @@ from tests.libs.test_runner.runner import (
     SaiAgentTestRunner,
     SaiTestRunner,
     SmokeTestRunner,
+    BenchmarkTestRunner,
 )
 
 
@@ -120,5 +121,13 @@ def bsp_test_runner():
 def smoke_test_runner():
     """Fixture for FBOSS daemon smoke tests."""
     runner = SmokeTestRunner()
+    yield runner
+    runner.close()
+
+
+@pytest.fixture
+def benchmark_test_runner():
+    """Fixture for benchmark tests."""
+    runner = BenchmarkTestRunner()
     yield runner
     runner.close()
