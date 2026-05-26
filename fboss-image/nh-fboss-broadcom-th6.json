@@ -1,0 +1,31 @@
+{
+  "distribution_formats": {
+    "pxe": "nh-fboss-broadcom-th6.tar",
+    "onie": "nh-fboss-broadcom-th6.bin"
+  },
+  "kernel": {
+    "download": "file:.nh-broadcom-th6/distro_kernel_6.11.tar"
+  },
+  "other_dependencies": [
+    { "download": "file:.nh-broadcom-th6/distro_nexthop_product_support.rpm" },
+    { "download": "file:.nh-broadcom-th6/distro_bgp_pp.rpm" },
+    { "execute": ["flashrom/build.sh"], "artifact": "flashrom-1.7.0-1.x86_64.rpm" }
+  ],
+  "fboss-platform-stack": {
+    "download": "file:.nh-broadcom-th6/fboss_platform_stack.tar"
+  },
+  "bsps": [
+    { "download": "file:.nh-broadcom-th6/distro_nexthop_bsp.tar" }
+  ],
+  "npu_sai": {
+    "download": "file:.nh-broadcom-th6/distro_sai.tar"
+  },
+  "phy_sai": {
+  },
+  "fboss-forwarding-stack": {
+    "download": "file:.nh-broadcom-th6/forwarding-stack.tar"
+  },
+  "image_build_hooks": {
+    "after_pkgs_install": "nexthop-extra-pkgs.json"
+  }
+}
