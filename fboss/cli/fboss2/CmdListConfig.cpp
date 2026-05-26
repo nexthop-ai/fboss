@@ -82,6 +82,8 @@
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/peer/CmdConfigProtocolBgpPeerV4OverV6Nh.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/peer/CmdConfigProtocolBgpPeerWarningLimit.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/peer/CmdConfigProtocolBgpPeerWarningOnly.h"
+#include "fboss/cli/fboss2/commands/config/ptp/CmdConfigPtp.h"
+#include "fboss/cli/fboss2/commands/config/ptp/transparent_clock/CmdConfigPtpTransparentClock.h"
 #include "fboss/cli/fboss2/commands/config/qos/CmdConfigQos.h"
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPool.h"
 #include "fboss/cli/fboss2/commands/config/qos/policy/CmdConfigQosPolicy.h"
@@ -654,6 +656,20 @@ const CommandTree& kConfigCommandTree() {
                   },
               },
           },
+      },
+
+      {
+          "config",
+          "ptp",
+          "Configure PTP settings",
+          commandHandler<CmdConfigPtp>,
+          argRegistrar<CmdConfigPtpTraits>,
+          {{
+              "transparent-clock",
+              "Enable or disable PTP transparent clock mode",
+              commandHandler<CmdConfigPtpTransparentClock>,
+              argRegistrar<CmdConfigPtpTransparentClockTraits>,
+          }},
       },
 
       {
