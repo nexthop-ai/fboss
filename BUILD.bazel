@@ -305,6 +305,7 @@ heavy_genrule(
     stamp = True,
     srcs = [
         "//fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm",
+        "//fboss/fboss-image/flashrom:distro_flashrom.rpm",
         "//bazel_lib:ln_or_cp",
         "//fboss_bsps/nexthop_bsp:distro_nexthop_bsp.tar",
         "//fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar",
@@ -334,6 +335,7 @@ heavy_genrule(
         ln -f $(location //fboss_bsps/nexthop_bsp:distro_nexthop_bsp.tar) "${BUILD_DIR}/distro_nexthop_bsp.tar"
         ln -f $(location fboss_platform_stack.tar) "${BUILD_DIR}/fboss_platform_stack.tar"
         ln -f $(location //fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm) "${BUILD_DIR}/distro_bgp_pp.rpm"
+        ln -f $(location //fboss/fboss-image/flashrom:distro_flashrom.rpm) "${BUILD_DIR}/distro_flashrom.rpm"
         ln -f $(location fboss_forwarding_stack_broadcom_xgs.tar) "${BUILD_DIR}/forwarding-stack.tar"
 
         BUILD_INFO="fboss/fboss-image/image_builder/templates/centos-09.0/root_files/etc/nexthop_build_info"
@@ -399,6 +401,7 @@ heavy_genrule(
     stamp = True,
     srcs = [
         "//fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm",
+        "//fboss/fboss-image/flashrom:distro_flashrom.rpm",
         "//bazel_lib:ln_or_cp",
         "//fboss_bsps/nexthop_bsp:distro_nexthop_bsp.tar",
         "//fboss_extras/nexthop_product_support:distro_nexthop_product_support.rpm",
@@ -426,6 +429,7 @@ heavy_genrule(
         ln -f $(location //fboss_bsps/nexthop_bsp:distro_nexthop_bsp.tar) "${BUILD_DIR}/distro_nexthop_bsp.tar"
         ln -f $(location fboss_platform_stack.tar) "${BUILD_DIR}/fboss_platform_stack.tar"
         ln -f $(location //fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm) "${BUILD_DIR}/distro_bgp_pp.rpm"
+        ln -f $(location //fboss/fboss-image/flashrom:distro_flashrom.rpm) "${BUILD_DIR}/distro_flashrom.rpm"
         ln -f $(location fboss_forwarding_stack_broadcom_th6.tar) "${BUILD_DIR}/forwarding-stack.tar"
 
         BUILD_INFO="fboss/fboss-image/image_builder/templates/centos-09.0/root_files/etc/nexthop_build_info"
@@ -492,6 +496,7 @@ heavy_genrule(
     stamp = True,
     srcs = [
         "//fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm",
+        "//fboss/fboss-image/flashrom:distro_flashrom.rpm",
         "//bazel_lib:ln_or_cp",
         "//fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar",
         "//nhciscosai/fboss-s1:distro_sai.tar",
@@ -515,6 +520,7 @@ heavy_genrule(
         ln -f $(location //fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar) "${BUILD_DIR}/distro_fboss_bsp.tar"
         ln -f $(location fboss_platform_stack.tar) "${BUILD_DIR}/fboss_platform_stack.tar"
         ln -f $(location //fboss/fboss-image/bgp_pp:distro_bgp_pp.rpm) "${BUILD_DIR}/distro_bgp_pp.rpm"
+        ln -f $(location //fboss/fboss-image/flashrom:distro_flashrom.rpm) "${BUILD_DIR}/distro_flashrom.rpm"
         ln -f $(location fboss_forwarding_stack_cisco_s1.tar) "${BUILD_DIR}/forwarding-stack.tar"
 
         BUILD_INFO="fboss/fboss-image/image_builder/templates/centos-09.0/root_files/etc/nexthop_build_info"

@@ -1,0 +1,27 @@
+# Bazel package for flashrom.
+# distro_flashrom builds the flashrom RPM once and is shared across the
+# fboss image targets so the same RPM is reused instead of rebuilt per image.
+load("//fboss:fboss_build_types.bzl", "LOAD_FBOSS_BUILDER_CMD")
+
+genrule(
+    name = "distro_flashrom",
+    visibility = ["//fboss:__subpackages__"],
+    srcs = [
+        "//bazel_lib:ln_or_cp",
+        "//fboss/fboss-image/distro_cli:builder",
+        "//fboss:fboss_builder_docker",
+        "//fboss:nh-fboss-manifests",
+        "build.sh",
+        "rpmbuild/SPECS/flashrom.spec",
+    ],
+    outs = ["distro_flashrom.rpm"],
+    cmd = LOAD_FBOSS_BUILDER_CMD + """
+        pushd fboss/fboss-image
+        jq '.["other_dependencies"] = [{"execute": ["flashrom/build.sh"], "artifact": "flashrom-1.7.0-1.x86_64.rpm"}]' nh-fboss-broadcom-xgs.json > flashrom.json
+        ./distro_cli/fboss-image build flashrom.json other_dependencies
+        popd
+
+        $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/flashrom/dist/flashrom-1.7.0-1.x86_64.rpm $(location distro_flashrom.rpm)
+    """,
+    tags = ["no-sandbox"],
+)

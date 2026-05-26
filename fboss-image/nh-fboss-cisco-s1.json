@@ -7,7 +7,7 @@
   },
   "other_dependencies": [
     { "download": "file:.nh-cisco-s1/distro_bgp_pp.rpm" },
-    { "execute": ["flashrom/build.sh"], "artifact": "flashrom-1.7.0-1.x86_64.rpm" }
+    { "download": "file:.nh-cisco-s1/distro_flashrom.rpm" }
   ],
   "fboss-platform-stack": {
     "download": "file:.nh-cisco-s1/fboss_platform_stack.tar"
