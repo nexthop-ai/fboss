@@ -285,10 +285,21 @@ class SaiTestRunner(BaseHwTestRunner):
 class SaiAgentTestRunner(BaseHwTestRunner):
     """Runner for SAI agent tests."""
 
+    @staticmethod
+    def _enable_production_features(hwsku: str) -> str:
+        PROD_FEEATURES_KEY: dict[str, str] = {
+            "minipack3": "tomahawk5",
+            "wedge800bact": "tomahawk5",
+            "wedge800bnhp": "tomahawk5",
+        }
+        key = PROD_FEEATURES_KEY.get(hwsku)
+        return f" --enable-production-features {key}" if key else ""
+
     def test_args(self, hwsku: str) -> str:
         config_name = _HW_TEST_CONFIG_NAME.get(hwsku, hwsku)
         logger.info("hwsku=%s hw_test_config=%s", hwsku, config_name)
-        return f"sai_agent --agent-run-mode mono --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON{_sai_skip_known_bad(hwsku)}"
+        return f"sai_agent --agent-run-mode mono --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON \
+            {_sai_skip_known_bad(hwsku)}{self._enable_production_features(hwsku)}"
 
 
 class QsfpTestRunner(BaseHwTestRunner):
