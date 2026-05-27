@@ -1,0 +1,33 @@
+name: TCS Artifact Job
+
+# Tells testcase-service to (re)scan fboss when test code changes on a
+# TCS-tracked branch. Fire-and-forget — TCS-side problems do not block pushes.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'tests/**'
+      # fboss scanner skips tests/libs/ explicitly; don't trigger on changes there.
+      - '!tests/libs/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tcs-artifact-job-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  trigger:
+    name: POST /v1/artifact-jobs
+    runs-on: cloudstack-ubuntu24-small
+    steps:
+      - name: Trigger TCS (prod + staging)
+        continue-on-error: true
+        uses: nexthop-ai/nh/.github/actions/tcs-trigger-artifact-job@main
+        with:
+          repository: fboss
+          branch: ${{ github.ref_name }}
+          env: both
