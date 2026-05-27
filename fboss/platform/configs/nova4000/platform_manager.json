@@ -91,6 +91,35 @@
               "numAdapters": 64
             }
           ],
+          "ledCtrlConfigs": [
+            {
+              "fpgaIpBlockConfig": {
+                "pmUnitScopedName": "SYSTEM_STATUS_LED",
+                "deviceName": "sys_led",
+                "csrOffset": "0x9c"
+              },
+              "portNumber": -1,
+              "ledId": 1
+            },
+            {
+              "fpgaIpBlockConfig": {
+                "pmUnitScopedName": "FAN_STATUS_LED",
+                "deviceName": "fan_led",
+                "csrOffset": "0x9c"
+              },
+              "portNumber": -1,
+              "ledId": 1
+            },
+            {
+              "fpgaIpBlockConfig": {
+                "pmUnitScopedName": "PSU_STATUS_LED",
+                "deviceName": "psu_led",
+                "csrOffset": "0x9c"
+              },
+              "portNumber": -1,
+              "ledId": 1
+            }
+          ],
           "ledCtrlBlockConfigs": []
         },
         {
@@ -99,6 +128,16 @@
           "deviceId": "0x7019",
           "subSystemVendorId": "0x20a4",
           "subSystemDeviceId": "0x0001",
+          "fanTachoPwmConfigs": [
+            {
+              "fpgaIpBlockConfig": {
+                "pmUnitScopedName": "FAN_CTRL",
+                "deviceName": "fan_ctrl",
+                "csrOffset": "0x00a0"
+              },
+              "numFans": 8
+            }
+          ],
           "i2cAdapterBlockConfigs": [
             {
               "pmUnitScopedNamePrefix": "SMB1_IOB_I2C",
@@ -162,6 +201,30 @@
           "address": "0x50",
           "kernelDeviceName": "24c64",
           "pmUnitScopedName": "PSU4_EEPROM"
+        },
+        {
+          "busName": "SMB0_PSU_MUX@0",
+          "address": "0x58",
+          "kernelDeviceName": "pmbus",
+          "pmUnitScopedName": "PSU1"
+        },
+        {
+          "busName": "SMB0_PSU_MUX@1",
+          "address": "0x58",
+          "kernelDeviceName": "pmbus",
+          "pmUnitScopedName": "PSU2"
+        },
+        {
+          "busName": "SMB0_PSU_MUX@2",
+          "address": "0x58",
+          "kernelDeviceName": "pmbus",
+          "pmUnitScopedName": "PSU3"
+        },
+        {
+          "busName": "SMB0_PSU_MUX@3",
+          "address": "0x58",
+          "kernelDeviceName": "pmbus",
+          "pmUnitScopedName": "PSU4"
         }
       ]
     }
@@ -207,7 +270,12 @@
     "/run/devmap/i2c-busses/SMB1_IOB_I2C_0": "/SMB_SLOT@0/[SMB1_IOB_I2C_0]",
     "/run/devmap/i2c-busses/SMB1_IOB_I2C_1": "/SMB_SLOT@0/[SMB1_IOB_I2C_1]",
     "/run/devmap/i2c-busses/SMB1_IOB_I2C_2": "/SMB_SLOT@0/[SMB1_IOB_I2C_2]",
-    "/run/devmap/i2c-busses/SMB1_IOB_I2C_3": "/SMB_SLOT@0/[SMB1_IOB_I2C_3]"
+    "/run/devmap/i2c-busses/SMB1_IOB_I2C_3": "/SMB_SLOT@0/[SMB1_IOB_I2C_3]",
+    "/run/devmap/sensors/FAN_CTRL": "/SMB_SLOT@0/[FAN_CTRL]",
+    "/run/devmap/sensors/PSU1": "/SMB_SLOT@0/[PSU1]",
+    "/run/devmap/sensors/PSU2": "/SMB_SLOT@0/[PSU2]",
+    "/run/devmap/sensors/PSU3": "/SMB_SLOT@0/[PSU3]",
+    "/run/devmap/sensors/PSU4": "/SMB_SLOT@0/[PSU4]"
   },
   "chassisEepromDevicePath": "/SMB_SLOT@0/[CHASSIS_EEPROM]",
   "numXcvrs": 0,
@@ -220,6 +288,7 @@
     "nh_fpga_i2c",
     "nh_fpga_mux",
     "nh_fpga_info",
+    "nh_fpga_fan",
     "nh_fpga_led",
     "nh_fpga_port_led",
     "tmp464",

@@ -1,0 +1,59 @@
+{
+  "___NOS_8218___": "Status / FAN / PSU LED sysfs colors are yellow/green for P1/P2 hardware. Meta's requirement is yellow/blue; the switch is planned for P3. Update the *:green:* paths below to *:blue:* when the hardware lands. See https://nexthopai.atlassian.net/browse/NOS-8218.",
+  "systemLedConfig": {
+    "presentLedSysfsPath": "/sys/class/leds/sys_led:green:status/brightness",
+    "absentLedSysfsPath": "/sys/class/leds/sys_led:yellow:status/brightness"
+  },
+  "fruTypeLedConfigs": {
+    "FAN": {
+      "presentLedSysfsPath": "/sys/class/leds/fan_led:green:status/brightness",
+      "absentLedSysfsPath": "/sys/class/leds/fan_led:yellow:status/brightness"
+    },
+    "PSU": {
+      "presentLedSysfsPath": "/sys/class/leds/psu_led:green:status/brightness",
+      "absentLedSysfsPath": "/sys/class/leds/psu_led:yellow:status/brightness"
+    }
+  },
+  "fruConfigs": [
+    {
+      "fruName": "FAN1",
+      "fruType": "FAN",
+      "presenceDetection": {
+        "sysfsFileHandle": {
+          "presenceFilePath": "/run/devmap/sensors/FAN_CTRL/fan1_present",
+          "desiredValue": 1
+        }
+      }
+    },
+    {
+      "fruName": "FAN2",
+      "fruType": "FAN",
+      "presenceDetection": {
+        "sysfsFileHandle": {
+          "presenceFilePath": "/run/devmap/sensors/FAN_CTRL/fan2_present",
+          "desiredValue": 1
+        }
+      }
+    },
+    {
+      "fruName": "FAN3",
+      "fruType": "FAN",
+      "presenceDetection": {
+        "sysfsFileHandle": {
+          "presenceFilePath": "/run/devmap/sensors/FAN_CTRL/fan3_present",
+          "desiredValue": 1
+        }
+      }
+    },
+    {
+      "fruName": "FAN4",
+      "fruType": "FAN",
+      "presenceDetection": {
+        "sysfsFileHandle": {
+          "presenceFilePath": "/run/devmap/sensors/FAN_CTRL/fan4_present",
+          "desiredValue": 1
+        }
+      }
+    }
+  ]
+}
