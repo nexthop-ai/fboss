@@ -94,12 +94,39 @@
         },
         {
           "name": "PSU1_PIN",
-          "sysfsPath": "/run/devmap/sensors/DPM/power1_input",
+          "sysfsPath": "/run/devmap/sensors/PSU1/power1_input",
           "type": 0,
           "thresholds": {
             "upperCriticalVal": 1000
           },
           "compute": "@/1000000"
+        },
+        {
+          "name": "PSU1_VIN",
+          "sysfsPath": "/run/devmap/sensors/PSU1/in1_input",
+          "type": 1,
+          "thresholds": {
+            "upperCriticalVal": 300
+          },
+          "compute": "@/1000.0"
+        },
+        {
+          "name": "PSU2_PIN",
+          "sysfsPath": "/run/devmap/sensors/PSU2/power1_input",
+          "type": 0,
+          "thresholds": {
+            "upperCriticalVal": 1000
+          },
+          "compute": "@/1000000"
+        },
+        {
+          "name": "PSU2_VIN",
+          "sysfsPath": "/run/devmap/sensors/PSU2/in1_input",
+          "type": 1,
+          "thresholds": {
+            "upperCriticalVal": 300
+          },
+          "compute": "@/1000.0"
         }
       ]
     }
@@ -118,7 +145,16 @@
         "name": "PSU1",
         "powerSensorName": "PSU1_PIN",
         "slotPath": "/SMB_SLOT@0"
+      },
+      {
+        "name": "PSU2",
+        "powerSensorName": "PSU2_PIN",
+        "slotPath": "/SMB_SLOT@0"
       }
+    ],
+    "inputVoltageSensors": [
+      "PSU1_VIN",
+      "PSU2_VIN"
     ],
     "minAcPsuCount": 1,
     "minDcPsuCount": 1
