@@ -27,6 +27,7 @@
 #include <unordered_set>
 #include <vector>
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
+#include "fboss/cli/fboss2/commands/config/interface/InterfaceIpUtils.h"
 #include "fboss/cli/fboss2/commands/config/interface/ProfileValidation.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/utils/CmdUtilsCommon.h"
@@ -41,6 +42,8 @@ const std::unordered_set<std::string> kKnownAttributes = {
     "description",
     "mtu",
     "profile",
+    "ip-address",
+    "ipv6-address",
 };
 } // namespace
 
@@ -84,7 +87,7 @@ InterfacesConfig::InterfacesConfig(std::vector<std::string> v)
     if (!isKnownAttribute(attr)) {
       throw std::invalid_argument(
           fmt::format(
-              "Unknown attribute '{}'. Valid attributes are: description, mtu, profile",
+              "Unknown attribute '{}'. Valid attributes are: description, mtu, profile, ip-address, ipv6-address",
               attr));
     }
 
@@ -169,7 +172,8 @@ CmdConfigInterfaceTraits::RetType CmdConfigInterface::queryClient(
   // If no attributes provided, this is a pass-through to subcommands
   if (!interfaceConfig.hasAttributes()) {
     throw std::runtime_error(
-        "Incomplete command. Either provide attributes (description, mtu, profile) "
+        "Incomplete command. Either provide attributes "
+        "(description, mtu, profile, ip-address, ipv6-address) "
         "or use a subcommand (switchport)");
   }
 
@@ -186,6 +190,22 @@ CmdConfigInterfaceTraits::RetType CmdConfigInterface::queryClient(
         }
       }
       results.push_back(fmt::format("description=\"{}\"", value));
+    } else if (attr == "ip-address" || attr == "ipv6-address") {
+      validateInterfaceIpAttr(attr, value);
+
+      // Add IP address to all interfaces
+      for (const utils::Intf& intf : interfaces) {
+        cfg::Interface* interface = intf.getInterface();
+        if (interface) {
+          auto& ipAddresses = *interface->ipAddresses();
+          // Only add if not already present
+          if (std::find(ipAddresses.begin(), ipAddresses.end(), value) ==
+              ipAddresses.end()) {
+            ipAddresses.push_back(value);
+          }
+        }
+      }
+      results.push_back(fmt::format("{}={}", attr, value));
     } else if (attr == "mtu") {
       // Validate and set MTU for all interfaces
       int32_t mtu = 0;

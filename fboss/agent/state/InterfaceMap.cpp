@@ -48,7 +48,7 @@ std::shared_ptr<Interface> InterfaceMap::getInterfaceInVlanIf(
     if (intf->getType() != cfg::InterfaceType::VLAN) {
       continue;
     }
-    if (intf->getVlanID() == vlan) {
+    if (intf->getVlanIDHelper() == vlan) {
       return intf;
     }
   }
