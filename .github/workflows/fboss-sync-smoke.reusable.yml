@@ -116,7 +116,7 @@ jobs:
         with:
           build_id: ${{ inputs.build_id }}
           priority: 75
-          target_testbeds: "blkt.*"
+          target_testbeds: "blkt2.*"
           tests: ${{ steps.smoke.outputs.tests }}
 
       - name: Aggregate batch IDs into JSON

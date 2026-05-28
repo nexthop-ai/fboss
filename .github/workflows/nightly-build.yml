@@ -104,7 +104,7 @@ jobs:
             pattern: "fboss.*"
             priority: 75
           - name: "Black Kite Testbeds"
-            pattern: "blkt.*"
+            pattern: "blkt2.*"
             priority: 75
     uses: ./.github/workflows/fboss-itest.reusable.yml
     with:
