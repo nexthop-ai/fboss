@@ -110,6 +110,7 @@ AGENT_BENCHMARK_BINARIES = [
 PLATFORM_BINARIES = [
     "data_corral_service",
     "fan_service",
+    "fixmyfboss",
     "fw_util",
     "led_service",
     "platform_manager",
@@ -132,7 +133,6 @@ PLATFORM_TEST_BINARIES = [
     "data_corral_service_hw_test",
     "fan_service_hw_test",
     "fboss-bspmapping-gen",
-    "fixmyfboss",
     "fw_util_hw_test",
     "mac_address_check_test",
     "platform_config_lib_config_generator",
