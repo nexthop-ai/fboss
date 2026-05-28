@@ -40,32 +40,45 @@ jobs:
         shell: bash
         run: echo "tests=$(paste -sd, .github/fboss-smoke-tests.txt)" >> "$GITHUB_OUTPUT"
 
-  enqueue-ipo:
+  enqueue-tide:
     needs: monobuild
     if: ${{ needs.monobuild.result == 'success' && needs.monobuild.outputs.build_id != '' }}
     runs-on: cloudstack-ubuntu24-small
-    name: Enqueue Image to IPO
-    # IPO enqueue is shadow-path today; never fail the workflow on transport errors.
+    name: Enqueue Image to Tide
+    # Tide enqueue is shadow-path today; never fail the workflow on transport errors.
     continue-on-error: true
     steps:
-      - name: Enqueue image to IPO
+      - name: Enqueue image to Tide
         run: |
           BUILD_ID="${{ needs.monobuild.outputs.build_id }}"
           BRANCH="${{ github.ref_name }}"
+          ORGANIZATION="${{ github.repository_owner }}"
+          # Tide indexes images by the bare GitHub repo name (the build-artifact repo,
+          # e.g. "private-fboss"). `github.repository` is "<org>/<repo>", so strip the
+          # org prefix with basename.
+          REPO="$(basename "${{ github.repository }}")"
 
-          echo "Enqueueing build_id=$BUILD_ID branch=$BRANCH nos=fboss to IPO"
+          echo "Enqueueing build_id=$BUILD_ID branch=$BRANCH organization=$ORGANIZATION repo=$REPO nos=fboss to Tide"
+          # Build the JSON body with jq so values are properly escaped.
+          BODY=$(jq -nc \
+            --argjson build_id "$BUILD_ID" \
+            --arg branch "$BRANCH" \
+            --arg organization "$ORGANIZATION" \
+            --arg repo "$REPO" \
+            '{build_id: $build_id, branch: $branch, organization: $organization, repo: $repo, nos: "fboss"}')
+
           HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" \
             --connect-timeout 10 --max-time 30 \
             -X POST "http://ipo.sw.internal.nexthop.ai/v1/images" \
             -H "Content-Type: application/json" \
-            -d "{\"build_id\": ${BUILD_ID}, \"branch\": \"${BRANCH}\", \"nos\": \"fboss\"}" \
+            -d "$BODY" \
             || echo "000")
 
           echo "Response (HTTP $HTTP_STATUS):"
           cat response.json 2>/dev/null || echo "(no response body)"
 
           if [ "$HTTP_STATUS" != "202" ]; then
-            echo "::warning::IPO enqueue failed with HTTP $HTTP_STATUS"
+            echo "::warning::Tide enqueue failed with HTTP $HTTP_STATUS"
           fi
 
   fboss-smoke-tests:
