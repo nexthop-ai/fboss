@@ -50,13 +50,16 @@ PROFILE_SPEED: dict[int, int] = {
     54: 800000,
     55: 800000,
     56: 800000,
+    63: 1600000,
+    64: 1600000,
 }
 
-OPTICAL_PROFILES = {1, 3, 8, 9, 10, 23, 25, 26, 37, 38, 39, 42, 47, 54, 55, 56}
+OPTICAL_PROFILES = {1, 3, 8, 9, 10, 23, 25, 26, 37, 38, 39, 42, 47, 54, 55, 56, 63, 64}
 
 CORE_TYPE_TO_ASIC: dict[str, int] = {
     "TH5_NIF": 13,
     "J3_NIF": 15,
+    "TH6_NIF": 18,
 }
 
 DEFAULT_ASIC_TYPE = 13

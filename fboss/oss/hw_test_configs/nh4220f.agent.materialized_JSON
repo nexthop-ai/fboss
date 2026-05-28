@@ -19,7 +19,7 @@
     "chip": {
       "asicConfig": {
         "common": {
-          "yamlConfig": "---\ndevice:\n    0:\n        PC_PM_CORE:\n            ?\n                PC_PM_ID: 2\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x35147260\n                TX_LANE_MAP: 0x53714260\n                RX_POLARITY_FLIP: 0xa8\n                TX_POLARITY_FLIP: 0xbe\n            ?\n                PC_PM_ID: 1\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x23016574\n                TX_LANE_MAP: 0x53714260\n                RX_POLARITY_FLIP: 0x7\n                TX_POLARITY_FLIP: 0x1b\n            ?\n                PC_PM_ID: 4\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x61735240\n                TX_LANE_MAP: 0x60427153\n                RX_POLARITY_FLIP: 0xda\n                TX_POLARITY_FLIP: 0x15\n            ?\n                PC_PM_ID: 3\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x1236574\n                TX_LANE_MAP: 0x60427153\n                RX_POLARITY_FLIP: 0xad\n                TX_POLARITY_FLIP: 0x4b\n            ?\n                PC_PM_ID: 7\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x16057342\n                TX_LANE_MAP: 0x62537140\n                RX_POLARITY_FLIP: 0x15\n                TX_POLARITY_FLIP: 0x15\n            ?\n                PC_PM_ID: 8\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x31204675\n                TX_LANE_MAP: 0x62537140\n                RX_POLARITY_FLIP: 0xf4\n                TX_POLARITY_FLIP: 0xb0\n            ?\n                PC_PM_ID: 5\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x50637241\n                TX_LANE_MAP: 0x72416350\n                RX_POLARITY_FLIP: 0x9f\n                TX_POLARITY_FLIP: 0xaf\n            ?\n                PC_PM_ID: 6\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x20314675\n                TX_LANE_MAP: 0x40715362\n                RX_POLARITY_FLIP: 0x5e\n                TX_POLARITY_FLIP: 0xa1\n            ?\n                PC_PM_ID: 10\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x25074361\n                TX_LANE_MAP: 0x52634071\n                RX_POLARITY_FLIP: 0xe0\n                TX_POLARITY_FLIP: 0x41\n            ?\n                PC_PM_ID: 9\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10236457\n                TX_LANE_MAP: 0x63507241\n                RX_POLARITY_FLIP: 0xfc\n                TX_POLARITY_FLIP: 0xa5\n            ?\n                PC_PM_ID: 12\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x60425371\n                TX_LANE_MAP: 0x71406352\n                RX_POLARITY_FLIP: 0xf2\n                TX_POLARITY_FLIP: 0xee\n            ?\n                PC_PM_ID: 11\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10326547\n                TX_LANE_MAP: 0x71406352\n                RX_POLARITY_FLIP: 0xab\n                TX_POLARITY_FLIP: 0xb4\n            ?\n                PC_PM_ID: 15\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x16057342\n                TX_LANE_MAP: 0x62537140\n                RX_POLARITY_FLIP: 0x15\n                TX_POLARITY_FLIP: 0x11\n            ?\n                PC_PM_ID: 16\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x31204675\n                TX_LANE_MAP: 0x62537140\n                RX_POLARITY_FLIP: 0xf4\n                TX_POLARITY_FLIP: 0xb4\n            ?\n                PC_PM_ID: 13\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x40716352\n                TX_LANE_MAP: 0x40715362\n                RX_POLARITY_FLIP: 0xad\n                TX_POLARITY_FLIP: 0xeb\n            ?\n                PC_PM_ID: 14\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x20314675\n                TX_LANE_MAP: 0x40715362\n                RX_POLARITY_FLIP: 0x5e\n                TX_POLARITY_FLIP: 0xb1\n            ?\n                PC_PM_ID: 18\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x25074361\n                TX_LANE_MAP: 0x52634071\n                RX_POLARITY_FLIP: 0xe0\n                TX_POLARITY_FLIP: 0x41\n            ?\n                PC_PM_ID: 17\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x32106547\n                TX_LANE_MAP: 0x52634071\n                RX_POLARITY_FLIP: 0x1\n                TX_POLARITY_FLIP: 0xe4\n            ?\n                PC_PM_ID: 20\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x60425371\n                TX_LANE_MAP: 0x71406352\n                RX_POLARITY_FLIP: 0xf2\n                TX_POLARITY_FLIP: 0xee\n            ?\n                PC_PM_ID: 19\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10326547\n                TX_LANE_MAP: 0x71406352\n                RX_POLARITY_FLIP: 0xab\n                TX_POLARITY_FLIP: 0xb4\n            ?\n                PC_PM_ID: 23\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x16057342\n                TX_LANE_MAP: 0x62537140\n                RX_POLARITY_FLIP: 0x15\n                TX_POLARITY_FLIP: 0x11\n            ?\n                PC_PM_ID: 24\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x31204675\n                TX_LANE_MAP: 0x62537140\n                RX_POLARITY_FLIP: 0xf4\n                TX_POLARITY_FLIP: 0xb4\n            ?\n                PC_PM_ID: 21\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x50637241\n                TX_LANE_MAP: 0x72416350\n                RX_POLARITY_FLIP: 0x9f\n                TX_POLARITY_FLIP: 0xaf\n            ?\n                PC_PM_ID: 22\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x20314675\n                TX_LANE_MAP: 0x40715362\n                RX_POLARITY_FLIP: 0x5e\n                TX_POLARITY_FLIP: 0xb1\n            ?\n                PC_PM_ID: 26\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x25074361\n                TX_LANE_MAP: 0x52634071\n                RX_POLARITY_FLIP: 0xe0\n                TX_POLARITY_FLIP: 0x40\n            ?\n                PC_PM_ID: 25\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10236457\n                TX_LANE_MAP: 0x63507241\n                RX_POLARITY_FLIP: 0xfc\n                TX_POLARITY_FLIP: 0xa5\n            ?\n                PC_PM_ID: 28\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x60425371\n                TX_LANE_MAP: 0x71406352\n                RX_POLARITY_FLIP: 0xf2\n                TX_POLARITY_FLIP: 0xae\n            ?\n                PC_PM_ID: 27\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10326547\n                TX_LANE_MAP: 0x71406352\n                RX_POLARITY_FLIP: 0xab\n                TX_POLARITY_FLIP: 0xf4\n            ?\n                PC_PM_ID: 31\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x14356072\n                TX_LANE_MAP: 0x71536042\n                RX_POLARITY_FLIP: 0xf8\n                TX_POLARITY_FLIP: 0x1e\n            ?\n                PC_PM_ID: 32\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x1237465\n                TX_LANE_MAP: 0x71536042\n                RX_POLARITY_FLIP: 0x2\n                TX_POLARITY_FLIP: 0xfb\n            ?\n                PC_PM_ID: 29\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x73614052\n                TX_LANE_MAP: 0x42605371\n                RX_POLARITY_FLIP: 0xd0\n                TX_POLARITY_FLIP: 0x1b\n            ?\n                PC_PM_ID: 30\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x23017465\n                TX_LANE_MAP: 0x42605371\n                RX_POLARITY_FLIP: 0xa8\n                TX_POLARITY_FLIP: 0x41\n            ?\n                PC_PM_ID: 34\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x35147260\n                TX_LANE_MAP: 0x53714260\n                RX_POLARITY_FLIP: 0xd\n                TX_POLARITY_FLIP: 0xb4\n            ?\n                PC_PM_ID: 33\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x23016574\n                TX_LANE_MAP: 0x53714260\n                RX_POLARITY_FLIP: 0xf7\n                TX_POLARITY_FLIP: 0x11\n            ?\n                PC_PM_ID: 36\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x61735240\n                TX_LANE_MAP: 0x60427153\n                RX_POLARITY_FLIP: 0x8f\n                TX_POLARITY_FLIP: 0xb5\n            ?\n                PC_PM_ID: 35\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x1236574\n                TX_LANE_MAP: 0x60427153\n                RX_POLARITY_FLIP: 0x5d\n                TX_POLARITY_FLIP: 0xeb\n            ?\n                PC_PM_ID: 39\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x7256143\n                TX_LANE_MAP: 0x63527140\n                RX_POLARITY_FLIP: 0x4f\n                TX_POLARITY_FLIP: 0xef\n            ?\n                PC_PM_ID: 40\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10324765\n                TX_LANE_MAP: 0x63527140\n                RX_POLARITY_FLIP: 0xfb\n                TX_POLARITY_FLIP: 0x4a\n            ?\n                PC_PM_ID: 37\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x50637241\n                TX_LANE_MAP: 0x72416350\n                RX_POLARITY_FLIP: 0x78\n                TX_POLARITY_FLIP: 0x50\n            ?\n                PC_PM_ID: 38\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x32104765\n                TX_LANE_MAP: 0x40715263\n                RX_POLARITY_FLIP: 0x51\n                TX_POLARITY_FLIP: 0xe\n            ?\n                PC_PM_ID: 42\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x5164273\n                TX_LANE_MAP: 0x53624071\n                RX_POLARITY_FLIP: 0xba\n                TX_POLARITY_FLIP: 0xbb\n            ?\n                PC_PM_ID: 41\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10236457\n                TX_LANE_MAP: 0x63507241\n                RX_POLARITY_FLIP: 0x12\n                TX_POLARITY_FLIP: 0x5a\n            ?\n                PC_PM_ID: 44\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x71405263\n                TX_LANE_MAP: 0x71406253\n                RX_POLARITY_FLIP: 0x58\n                TX_POLARITY_FLIP: 0x41\n            ?\n                PC_PM_ID: 43\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x31207546\n                TX_LANE_MAP: 0x71406253\n                RX_POLARITY_FLIP: 0xa4\n                TX_POLARITY_FLIP: 0x1b\n            ?\n                PC_PM_ID: 47\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x7256143\n                TX_LANE_MAP: 0x63527140\n                RX_POLARITY_FLIP: 0x4f\n                TX_POLARITY_FLIP: 0xeb\n            ?\n                PC_PM_ID: 48\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10324765\n                TX_LANE_MAP: 0x63527140\n                RX_POLARITY_FLIP: 0xfb\n                TX_POLARITY_FLIP: 0x4e\n            ?\n                PC_PM_ID: 45\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x42607153\n                TX_LANE_MAP: 0x40715263\n                RX_POLARITY_FLIP: 0x7\n                TX_POLARITY_FLIP: 0x44\n            ?\n                PC_PM_ID: 46\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x32104765\n                TX_LANE_MAP: 0x40715263\n                RX_POLARITY_FLIP: 0x51\n                TX_POLARITY_FLIP: 0x1e\n            ?\n                PC_PM_ID: 50\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x5164273\n                TX_LANE_MAP: 0x53624071\n                RX_POLARITY_FLIP: 0xba\n                TX_POLARITY_FLIP: 0xbb\n            ?\n                PC_PM_ID: 49\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x20317546\n                TX_LANE_MAP: 0x53624071\n                RX_POLARITY_FLIP: 0xe\n                TX_POLARITY_FLIP: 0x1e\n            ?\n                PC_PM_ID: 52\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x71405263\n                TX_LANE_MAP: 0x71406253\n                RX_POLARITY_FLIP: 0x58\n                TX_POLARITY_FLIP: 0x41\n            ?\n                PC_PM_ID: 51\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x31207546\n                TX_LANE_MAP: 0x71406253\n                RX_POLARITY_FLIP: 0xa4\n                TX_POLARITY_FLIP: 0x1b\n            ?\n                PC_PM_ID: 55\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x7256143\n                TX_LANE_MAP: 0x63527140\n                RX_POLARITY_FLIP: 0x4f\n                TX_POLARITY_FLIP: 0xeb\n            ?\n                PC_PM_ID: 56\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10324765\n                TX_LANE_MAP: 0x63527140\n                RX_POLARITY_FLIP: 0xfb\n                TX_POLARITY_FLIP: 0x4e\n            ?\n                PC_PM_ID: 53\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x50637241\n                TX_LANE_MAP: 0x72416350\n                RX_POLARITY_FLIP: 0x78\n                TX_POLARITY_FLIP: 0x50\n            ?\n                PC_PM_ID: 54\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x32104765\n                TX_LANE_MAP: 0x40715263\n                RX_POLARITY_FLIP: 0x51\n                TX_POLARITY_FLIP: 0x1e\n            ?\n                PC_PM_ID: 58\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x5164273\n                TX_LANE_MAP: 0x53624071\n                RX_POLARITY_FLIP: 0xba\n                TX_POLARITY_FLIP: 0xba\n            ?\n                PC_PM_ID: 57\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10236457\n                TX_LANE_MAP: 0x63507241\n                RX_POLARITY_FLIP: 0x12\n                TX_POLARITY_FLIP: 0x5a\n            ?\n                PC_PM_ID: 60\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x71405263\n                TX_LANE_MAP: 0x71406253\n                RX_POLARITY_FLIP: 0x58\n                TX_POLARITY_FLIP: 0x1\n            ?\n                PC_PM_ID: 59\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x31207546\n                TX_LANE_MAP: 0x71406253\n                RX_POLARITY_FLIP: 0xa4\n                TX_POLARITY_FLIP: 0x5b\n            ?\n                PC_PM_ID: 63\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x14356072\n                TX_LANE_MAP: 0x71536042\n                RX_POLARITY_FLIP: 0x5d\n                TX_POLARITY_FLIP: 0x14\n            ?\n                PC_PM_ID: 64\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x1237465\n                TX_LANE_MAP: 0x71536042\n                RX_POLARITY_FLIP: 0xf2\n                TX_POLARITY_FLIP: 0xf1\n            ?\n                PC_PM_ID: 61\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x73614052\n                TX_LANE_MAP: 0x42605371\n                RX_POLARITY_FLIP: 0x85\n                TX_POLARITY_FLIP: 0xbb\n            ?\n                PC_PM_ID: 62\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x23017465\n                TX_LANE_MAP: 0x42605371\n                RX_POLARITY_FLIP: 0x58\n                TX_POLARITY_FLIP: 0xe1\n...\n---\ndevice:\n    0:\n        PC_PORT_PHYS_MAP:\n            ?\n                PORT_ID: 0\n            :\n                PC_PHYS_PORT_ID: 0\n            ?\n                PORT_ID: 1\n            :\n                PC_PHYS_PORT_ID: 9\n            ?\n                PORT_ID: 9\n            :\n                PC_PHYS_PORT_ID: 1\n            ?\n                PORT_ID: 18\n            :\n                PC_PHYS_PORT_ID: 25\n            ?\n                PORT_ID: 26\n            :\n                PC_PHYS_PORT_ID: 17\n            ?\n                PORT_ID: 54\n            :\n                PC_PHYS_PORT_ID: 49\n            ?\n                PORT_ID: 62\n            :\n                PC_PHYS_PORT_ID: 57\n            ?\n                PORT_ID: 36\n            :\n                PC_PHYS_PORT_ID: 33\n            ?\n                PORT_ID: 44\n            :\n                PC_PHYS_PORT_ID: 41\n            ?\n                PORT_ID: 72\n            :\n                PC_PHYS_PORT_ID: 73\n            ?\n                PORT_ID: 80\n            :\n                PC_PHYS_PORT_ID: 65\n            ?\n                PORT_ID: 90\n            :\n                PC_PHYS_PORT_ID: 89\n            ?\n                PORT_ID: 98\n            :\n                PC_PHYS_PORT_ID: 81\n            ?\n                PORT_ID: 126\n            :\n                PC_PHYS_PORT_ID: 113\n            ?\n                PORT_ID: 134\n            :\n                PC_PHYS_PORT_ID: 121\n            ?\n                PORT_ID: 108\n            :\n                PC_PHYS_PORT_ID: 97\n            ?\n                PORT_ID: 116\n            :\n                PC_PHYS_PORT_ID: 105\n            ?\n                PORT_ID: 144\n            :\n                PC_PHYS_PORT_ID: 137\n            ?\n                PORT_ID: 152\n            :\n                PC_PHYS_PORT_ID: 129\n            ?\n                PORT_ID: 162\n            :\n                PC_PHYS_PORT_ID: 153\n            ?\n                PORT_ID: 170\n            :\n                PC_PHYS_PORT_ID: 145\n            ?\n                PORT_ID: 198\n            :\n                PC_PHYS_PORT_ID: 177\n            ?\n                PORT_ID: 206\n            :\n                PC_PHYS_PORT_ID: 185\n            ?\n                PORT_ID: 180\n            :\n                PC_PHYS_PORT_ID: 161\n            ?\n                PORT_ID: 188\n            :\n                PC_PHYS_PORT_ID: 169\n            ?\n                PORT_ID: 216\n            :\n                PC_PHYS_PORT_ID: 201\n            ?\n                PORT_ID: 224\n            :\n                PC_PHYS_PORT_ID: 193\n            ?\n                PORT_ID: 234\n            :\n                PC_PHYS_PORT_ID: 217\n            ?\n                PORT_ID: 242\n            :\n                PC_PHYS_PORT_ID: 209\n            ?\n                PORT_ID: 270\n            :\n                PC_PHYS_PORT_ID: 241\n            ?\n                PORT_ID: 278\n            :\n                PC_PHYS_PORT_ID: 249\n            ?\n                PORT_ID: 252\n            :\n                PC_PHYS_PORT_ID: 225\n            ?\n                PORT_ID: 260\n            :\n                PC_PHYS_PORT_ID: 233\n            ?\n                PORT_ID: 288\n            :\n                PC_PHYS_PORT_ID: 265\n            ?\n                PORT_ID: 296\n            :\n                PC_PHYS_PORT_ID: 257\n            ?\n                PORT_ID: 306\n            :\n                PC_PHYS_PORT_ID: 281\n            ?\n                PORT_ID: 314\n            :\n                PC_PHYS_PORT_ID: 273\n            ?\n                PORT_ID: 342\n            :\n                PC_PHYS_PORT_ID: 305\n            ?\n                PORT_ID: 350\n            :\n                PC_PHYS_PORT_ID: 313\n            ?\n                PORT_ID: 324\n            :\n                PC_PHYS_PORT_ID: 289\n            ?\n                PORT_ID: 332\n            :\n                PC_PHYS_PORT_ID: 297\n            ?\n                PORT_ID: 360\n            :\n                PC_PHYS_PORT_ID: 329\n            ?\n                PORT_ID: 368\n            :\n                PC_PHYS_PORT_ID: 321\n            ?\n                PORT_ID: 378\n            :\n                PC_PHYS_PORT_ID: 345\n            ?\n                PORT_ID: 386\n            :\n                PC_PHYS_PORT_ID: 337\n            ?\n                PORT_ID: 414\n            :\n                PC_PHYS_PORT_ID: 369\n            ?\n                PORT_ID: 422\n            :\n                PC_PHYS_PORT_ID: 377\n            ?\n                PORT_ID: 396\n            :\n                PC_PHYS_PORT_ID: 353\n            ?\n                PORT_ID: 404\n            :\n                PC_PHYS_PORT_ID: 361\n            ?\n                PORT_ID: 432\n            :\n                PC_PHYS_PORT_ID: 393\n            ?\n                PORT_ID: 440\n            :\n                PC_PHYS_PORT_ID: 385\n            ?\n                PORT_ID: 450\n            :\n                PC_PHYS_PORT_ID: 409\n            ?\n                PORT_ID: 458\n            :\n                PC_PHYS_PORT_ID: 401\n            ?\n                PORT_ID: 486\n            :\n                PC_PHYS_PORT_ID: 433\n            ?\n                PORT_ID: 494\n            :\n                PC_PHYS_PORT_ID: 441\n            ?\n                PORT_ID: 468\n            :\n                PC_PHYS_PORT_ID: 417\n            ?\n                PORT_ID: 476\n            :\n                PC_PHYS_PORT_ID: 425\n            ?\n                PORT_ID: 504\n            :\n                PC_PHYS_PORT_ID: 457\n            ?\n                PORT_ID: 512\n            :\n                PC_PHYS_PORT_ID: 449\n            ?\n                PORT_ID: 522\n            :\n                PC_PHYS_PORT_ID: 473\n            ?\n                PORT_ID: 530\n            :\n                PC_PHYS_PORT_ID: 465\n            ?\n                PORT_ID: 558\n            :\n                PC_PHYS_PORT_ID: 497\n            ?\n                PORT_ID: 566\n            :\n                PC_PHYS_PORT_ID: 505\n            ?\n                PORT_ID: 540\n            :\n                PC_PHYS_PORT_ID: 481\n            ?\n                PORT_ID: 548\n            :\n                PC_PHYS_PORT_ID: 489\n...\n---\ndevice:\n    0:\n        PC_PORT:\n            ?\n                PORT_ID: 1\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 9\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 18\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 26\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 36\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 44\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 54\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 62\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 72\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 80\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 90\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 98\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 108\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 116\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 126\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 134\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 144\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 152\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 162\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 170\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 180\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 188\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 198\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 206\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 216\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 224\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 234\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 242\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 252\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 260\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 270\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 278\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 288\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 296\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 306\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 314\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 324\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 332\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 342\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 350\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 360\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 368\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 378\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 386\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 396\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 404\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 414\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 422\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 432\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 440\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 450\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 458\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 468\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 476\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 486\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 494\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 504\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 512\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 522\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 530\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 540\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 548\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 558\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 566\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n...\n---\ndevice:\n    0:\n        PC_TX_TAPS:\n...\n---\nbcm_device:\n    0:\n        global:\n            pktio_mode: 1\n            vlan_flooding_l2mc_num_reserved: 0\n            shared_block_mask_section: uc_bc\n            skip_protocol_default_entries: 1\n            # LTSW uses value 1 for ALPM combined mode\n            l3_alpm_template: 1\n            l3_alpm_hit_skip: 1\n            sai_feat_tail_timestamp : 0\n            sai_port_phy_time_sync_en: 1\n            sai_field_group_auto_prioritize: 1\n            #l3_intf_vlan_split_egress for MTU at L3IF\n            l3_intf_vlan_split_egress : 1\n            pfc_deadlock_seq_control : 1\n            bcm_tunnel_term_compatible_mode: 1\n            l3_ecmp_member_first_lkup_mem_size: 32768\n            #enable port queue drop stats\n            sai_stats_support_mask: 0\n            #disable vxlan tunnel stats\n            sai_stats_disable_mask: 0x200\n            #For PPIU Mode, Set resources for counters in global mode counters like ACL, etc\n            global_flexctr_ing_action_num_reserved: 20\n            global_flexctr_ing_pool_num_reserved: 8\n            global_flexctr_ing_op_profile_num_reserved: 20\n            global_flexctr_ing_group_num_reserved: 2\n            global_flexctr_egr_action_num_reserved: 8\n            global_flexctr_egr_pool_num_reserved: 5\n            global_flexctr_egr_op_profile_num_reserved: 10\n            global_flexctr_egr_group_num_reserved: 1\n            l3_alpm_large_vrf_mode: 1\n            l3_ecmp_member_secondary_mem_size: 8192\n            stat_custom_receive0_management_mode: 1\n            sai_ip_counter_cstats: 1\n            default_cpu_tx_queue: 7\n...\n---\ndevice:\n    0:\n        DEVICE_CONFIG:\n            AUTOLOAD_BOARD_SETTINGS: 0\n...\n---\ndevice:\n        '*':\n                TM_SCHEDULER_CONFIG:\n                        NUM_MC_Q: NUM_MC_Q_4\n...\n---\ndevice:\n    0:\n        # Per pipe flex counter configuration. Enable PPIU Mode\n        CTR_EFLEX_CONFIG:\n            CTR_ING_EFLEX_OPERMODE_PIPEUNIQUE: 1\n            CTR_ING_EFLEX_OPERMODE_PIPE_INSTANCE_UNIQUE: 1\n            CTR_EGR_EFLEX_OPERMODE_PIPEUNIQUE: 1\n            CTR_EGR_EFLEX_OPERMODE_PIPE_INSTANCE_UNIQUE: 1\n\n        # IFP mode\n        FP_CONFIG:\n            FP_ING_OPERMODE: GLOBAL_PIPE_AWARE\n\n        #CTR COS_ENABLE\n        CTR_ING_COS_Q_CONFIG:\n            COS_ENABLE: 0\n\n...\n"
+          "yamlConfig": "---\ndevice:\n    0:\n        PC_PM_CORE:\n            ?\n                PC_PM_ID: 2\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x35147260\n                TX_LANE_MAP: 0x53714260\n                RX_POLARITY_FLIP: 0xa8\n                TX_POLARITY_FLIP: 0xbe\n            ?\n                PC_PM_ID: 1\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x23016574\n                TX_LANE_MAP: 0x53714260\n                RX_POLARITY_FLIP: 0x7\n                TX_POLARITY_FLIP: 0x1b\n            ?\n                PC_PM_ID: 4\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x61735240\n                TX_LANE_MAP: 0x60427153\n                RX_POLARITY_FLIP: 0xda\n                TX_POLARITY_FLIP: 0x15\n            ?\n                PC_PM_ID: 3\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x1236574\n                TX_LANE_MAP: 0x60427153\n                RX_POLARITY_FLIP: 0xad\n                TX_POLARITY_FLIP: 0x4b\n            ?\n                PC_PM_ID: 7\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x16057342\n                TX_LANE_MAP: 0x62537140\n                RX_POLARITY_FLIP: 0x15\n                TX_POLARITY_FLIP: 0x15\n            ?\n                PC_PM_ID: 8\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x31204675\n                TX_LANE_MAP: 0x62537140\n                RX_POLARITY_FLIP: 0xf4\n                TX_POLARITY_FLIP: 0xb0\n            ?\n                PC_PM_ID: 5\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x50637241\n                TX_LANE_MAP: 0x72416350\n                RX_POLARITY_FLIP: 0x9f\n                TX_POLARITY_FLIP: 0xaf\n            ?\n                PC_PM_ID: 6\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x20314675\n                TX_LANE_MAP: 0x40715362\n                RX_POLARITY_FLIP: 0x5e\n                TX_POLARITY_FLIP: 0xa1\n            ?\n                PC_PM_ID: 10\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x25074361\n                TX_LANE_MAP: 0x52634071\n                RX_POLARITY_FLIP: 0xe0\n                TX_POLARITY_FLIP: 0x41\n            ?\n                PC_PM_ID: 9\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10236457\n                TX_LANE_MAP: 0x63507241\n                RX_POLARITY_FLIP: 0xfc\n                TX_POLARITY_FLIP: 0xa5\n            ?\n                PC_PM_ID: 12\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x60425371\n                TX_LANE_MAP: 0x71406352\n                RX_POLARITY_FLIP: 0xf2\n                TX_POLARITY_FLIP: 0xee\n            ?\n                PC_PM_ID: 11\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10326547\n                TX_LANE_MAP: 0x71406352\n                RX_POLARITY_FLIP: 0xab\n                TX_POLARITY_FLIP: 0xb4\n            ?\n                PC_PM_ID: 15\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x16057342\n                TX_LANE_MAP: 0x62537140\n                RX_POLARITY_FLIP: 0x15\n                TX_POLARITY_FLIP: 0x11\n            ?\n                PC_PM_ID: 16\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x31204675\n                TX_LANE_MAP: 0x62537140\n                RX_POLARITY_FLIP: 0xf4\n                TX_POLARITY_FLIP: 0xb4\n            ?\n                PC_PM_ID: 13\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x40716352\n                TX_LANE_MAP: 0x40715362\n                RX_POLARITY_FLIP: 0xad\n                TX_POLARITY_FLIP: 0xeb\n            ?\n                PC_PM_ID: 14\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x20314675\n                TX_LANE_MAP: 0x40715362\n                RX_POLARITY_FLIP: 0x5e\n                TX_POLARITY_FLIP: 0xb1\n            ?\n                PC_PM_ID: 18\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x25074361\n                TX_LANE_MAP: 0x52634071\n                RX_POLARITY_FLIP: 0xe0\n                TX_POLARITY_FLIP: 0x41\n            ?\n                PC_PM_ID: 17\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x32106547\n                TX_LANE_MAP: 0x52634071\n                RX_POLARITY_FLIP: 0x1\n                TX_POLARITY_FLIP: 0xe4\n            ?\n                PC_PM_ID: 20\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x60425371\n                TX_LANE_MAP: 0x71406352\n                RX_POLARITY_FLIP: 0xf2\n                TX_POLARITY_FLIP: 0xee\n            ?\n                PC_PM_ID: 19\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10326547\n                TX_LANE_MAP: 0x71406352\n                RX_POLARITY_FLIP: 0xab\n                TX_POLARITY_FLIP: 0xb4\n            ?\n                PC_PM_ID: 23\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x16057342\n                TX_LANE_MAP: 0x62537140\n                RX_POLARITY_FLIP: 0x15\n                TX_POLARITY_FLIP: 0x11\n            ?\n                PC_PM_ID: 24\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x31204675\n                TX_LANE_MAP: 0x62537140\n                RX_POLARITY_FLIP: 0xf4\n                TX_POLARITY_FLIP: 0xb4\n            ?\n                PC_PM_ID: 21\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x50637241\n                TX_LANE_MAP: 0x72416350\n                RX_POLARITY_FLIP: 0x9f\n                TX_POLARITY_FLIP: 0xaf\n            ?\n                PC_PM_ID: 22\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x20314675\n                TX_LANE_MAP: 0x40715362\n                RX_POLARITY_FLIP: 0x5e\n                TX_POLARITY_FLIP: 0xb1\n            ?\n                PC_PM_ID: 26\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x25074361\n                TX_LANE_MAP: 0x52634071\n                RX_POLARITY_FLIP: 0xe0\n                TX_POLARITY_FLIP: 0x40\n            ?\n                PC_PM_ID: 25\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10236457\n                TX_LANE_MAP: 0x63507241\n                RX_POLARITY_FLIP: 0xfc\n                TX_POLARITY_FLIP: 0xa5\n            ?\n                PC_PM_ID: 28\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x60425371\n                TX_LANE_MAP: 0x71406352\n                RX_POLARITY_FLIP: 0xf2\n                TX_POLARITY_FLIP: 0xae\n            ?\n                PC_PM_ID: 27\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10326547\n                TX_LANE_MAP: 0x71406352\n                RX_POLARITY_FLIP: 0xab\n                TX_POLARITY_FLIP: 0xf4\n            ?\n                PC_PM_ID: 31\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x14356072\n                TX_LANE_MAP: 0x71536042\n                RX_POLARITY_FLIP: 0xf8\n                TX_POLARITY_FLIP: 0x1e\n            ?\n                PC_PM_ID: 32\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x1237465\n                TX_LANE_MAP: 0x71536042\n                RX_POLARITY_FLIP: 0x2\n                TX_POLARITY_FLIP: 0xfb\n            ?\n                PC_PM_ID: 29\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x73614052\n                TX_LANE_MAP: 0x42605371\n                RX_POLARITY_FLIP: 0xd0\n                TX_POLARITY_FLIP: 0x1b\n            ?\n                PC_PM_ID: 30\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x23017465\n                TX_LANE_MAP: 0x42605371\n                RX_POLARITY_FLIP: 0xa8\n                TX_POLARITY_FLIP: 0x41\n            ?\n                PC_PM_ID: 34\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x35147260\n                TX_LANE_MAP: 0x53714260\n                RX_POLARITY_FLIP: 0xd\n                TX_POLARITY_FLIP: 0xb4\n            ?\n                PC_PM_ID: 33\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x23016574\n                TX_LANE_MAP: 0x53714260\n                RX_POLARITY_FLIP: 0xf7\n                TX_POLARITY_FLIP: 0x11\n            ?\n                PC_PM_ID: 36\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x61735240\n                TX_LANE_MAP: 0x60427153\n                RX_POLARITY_FLIP: 0x8f\n                TX_POLARITY_FLIP: 0xb5\n            ?\n                PC_PM_ID: 35\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x1236574\n                TX_LANE_MAP: 0x60427153\n                RX_POLARITY_FLIP: 0x5d\n                TX_POLARITY_FLIP: 0xeb\n            ?\n                PC_PM_ID: 39\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x7256143\n                TX_LANE_MAP: 0x63527140\n                RX_POLARITY_FLIP: 0x4f\n                TX_POLARITY_FLIP: 0xef\n            ?\n                PC_PM_ID: 40\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10324765\n                TX_LANE_MAP: 0x63527140\n                RX_POLARITY_FLIP: 0xfb\n                TX_POLARITY_FLIP: 0x4a\n            ?\n                PC_PM_ID: 37\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x50637241\n                TX_LANE_MAP: 0x72416350\n                RX_POLARITY_FLIP: 0x78\n                TX_POLARITY_FLIP: 0x50\n            ?\n                PC_PM_ID: 38\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x32104765\n                TX_LANE_MAP: 0x40715263\n                RX_POLARITY_FLIP: 0x51\n                TX_POLARITY_FLIP: 0xe\n            ?\n                PC_PM_ID: 42\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x5164273\n                TX_LANE_MAP: 0x53624071\n                RX_POLARITY_FLIP: 0xba\n                TX_POLARITY_FLIP: 0xbb\n            ?\n                PC_PM_ID: 41\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10236457\n                TX_LANE_MAP: 0x63507241\n                RX_POLARITY_FLIP: 0x12\n                TX_POLARITY_FLIP: 0x5a\n            ?\n                PC_PM_ID: 44\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x71405263\n                TX_LANE_MAP: 0x71406253\n                RX_POLARITY_FLIP: 0x58\n                TX_POLARITY_FLIP: 0x41\n            ?\n                PC_PM_ID: 43\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x31207546\n                TX_LANE_MAP: 0x71406253\n                RX_POLARITY_FLIP: 0xa4\n                TX_POLARITY_FLIP: 0x1b\n            ?\n                PC_PM_ID: 47\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x7256143\n                TX_LANE_MAP: 0x63527140\n                RX_POLARITY_FLIP: 0x4f\n                TX_POLARITY_FLIP: 0xeb\n            ?\n                PC_PM_ID: 48\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10324765\n                TX_LANE_MAP: 0x63527140\n                RX_POLARITY_FLIP: 0xfb\n                TX_POLARITY_FLIP: 0x4e\n            ?\n                PC_PM_ID: 45\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x42607153\n                TX_LANE_MAP: 0x40715263\n                RX_POLARITY_FLIP: 0x7\n                TX_POLARITY_FLIP: 0x44\n            ?\n                PC_PM_ID: 46\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x32104765\n                TX_LANE_MAP: 0x40715263\n                RX_POLARITY_FLIP: 0x51\n                TX_POLARITY_FLIP: 0x1e\n            ?\n                PC_PM_ID: 50\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x5164273\n                TX_LANE_MAP: 0x53624071\n                RX_POLARITY_FLIP: 0xba\n                TX_POLARITY_FLIP: 0xbb\n            ?\n                PC_PM_ID: 49\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x20317546\n                TX_LANE_MAP: 0x53624071\n                RX_POLARITY_FLIP: 0xe\n                TX_POLARITY_FLIP: 0x1e\n            ?\n                PC_PM_ID: 52\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x71405263\n                TX_LANE_MAP: 0x71406253\n                RX_POLARITY_FLIP: 0x58\n                TX_POLARITY_FLIP: 0x41\n            ?\n                PC_PM_ID: 51\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x31207546\n                TX_LANE_MAP: 0x71406253\n                RX_POLARITY_FLIP: 0xa4\n                TX_POLARITY_FLIP: 0x1b\n            ?\n                PC_PM_ID: 55\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x7256143\n                TX_LANE_MAP: 0x63527140\n                RX_POLARITY_FLIP: 0x4f\n                TX_POLARITY_FLIP: 0xeb\n            ?\n                PC_PM_ID: 56\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10324765\n                TX_LANE_MAP: 0x63527140\n                RX_POLARITY_FLIP: 0xfb\n                TX_POLARITY_FLIP: 0x4e\n            ?\n                PC_PM_ID: 53\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x50637241\n                TX_LANE_MAP: 0x72416350\n                RX_POLARITY_FLIP: 0x78\n                TX_POLARITY_FLIP: 0x50\n            ?\n                PC_PM_ID: 54\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x32104765\n                TX_LANE_MAP: 0x40715263\n                RX_POLARITY_FLIP: 0x51\n                TX_POLARITY_FLIP: 0x1e\n            ?\n                PC_PM_ID: 58\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x5164273\n                TX_LANE_MAP: 0x53624071\n                RX_POLARITY_FLIP: 0xba\n                TX_POLARITY_FLIP: 0xba\n            ?\n                PC_PM_ID: 57\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x10236457\n                TX_LANE_MAP: 0x63507241\n                RX_POLARITY_FLIP: 0x12\n                TX_POLARITY_FLIP: 0x5a\n            ?\n                PC_PM_ID: 60\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x71405263\n                TX_LANE_MAP: 0x71406253\n                RX_POLARITY_FLIP: 0x58\n                TX_POLARITY_FLIP: 0x1\n            ?\n                PC_PM_ID: 59\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x31207546\n                TX_LANE_MAP: 0x71406253\n                RX_POLARITY_FLIP: 0xa4\n                TX_POLARITY_FLIP: 0x5b\n            ?\n                PC_PM_ID: 63\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x14356072\n                TX_LANE_MAP: 0x71536042\n                RX_POLARITY_FLIP: 0x5d\n                TX_POLARITY_FLIP: 0x14\n            ?\n                PC_PM_ID: 64\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x1237465\n                TX_LANE_MAP: 0x71536042\n                RX_POLARITY_FLIP: 0xf2\n                TX_POLARITY_FLIP: 0xf1\n            ?\n                PC_PM_ID: 61\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x73614052\n                TX_LANE_MAP: 0x42605371\n                RX_POLARITY_FLIP: 0x85\n                TX_POLARITY_FLIP: 0xbb\n            ?\n                PC_PM_ID: 62\n                CORE_INDEX: 0\n            :\n                RX_LANE_MAP_AUTO: 0\n                TX_LANE_MAP_AUTO: 0\n                RX_POLARITY_FLIP_AUTO: 0\n                TX_POLARITY_FLIP_AUTO: 0\n                RX_LANE_MAP: 0x23017465\n                TX_LANE_MAP: 0x42605371\n                RX_POLARITY_FLIP: 0x58\n                TX_POLARITY_FLIP: 0xe1\n...\n---\ndevice:\n    0:\n        PC_PORT_PHYS_MAP:\n            ?\n                PORT_ID: 0\n            :\n                PC_PHYS_PORT_ID: 0\n            ?\n                PORT_ID: 1\n            :\n                PC_PHYS_PORT_ID: 9\n            ?\n                PORT_ID: 9\n            :\n                PC_PHYS_PORT_ID: 1\n            ?\n                PORT_ID: 18\n            :\n                PC_PHYS_PORT_ID: 25\n            ?\n                PORT_ID: 26\n            :\n                PC_PHYS_PORT_ID: 17\n            ?\n                PORT_ID: 54\n            :\n                PC_PHYS_PORT_ID: 49\n            ?\n                PORT_ID: 62\n            :\n                PC_PHYS_PORT_ID: 57\n            ?\n                PORT_ID: 36\n            :\n                PC_PHYS_PORT_ID: 33\n            ?\n                PORT_ID: 44\n            :\n                PC_PHYS_PORT_ID: 41\n            ?\n                PORT_ID: 72\n            :\n                PC_PHYS_PORT_ID: 73\n            ?\n                PORT_ID: 80\n            :\n                PC_PHYS_PORT_ID: 65\n            ?\n                PORT_ID: 90\n            :\n                PC_PHYS_PORT_ID: 89\n            ?\n                PORT_ID: 98\n            :\n                PC_PHYS_PORT_ID: 81\n            ?\n                PORT_ID: 126\n            :\n                PC_PHYS_PORT_ID: 113\n            ?\n                PORT_ID: 134\n            :\n                PC_PHYS_PORT_ID: 121\n            ?\n                PORT_ID: 108\n            :\n                PC_PHYS_PORT_ID: 97\n            ?\n                PORT_ID: 116\n            :\n                PC_PHYS_PORT_ID: 105\n            ?\n                PORT_ID: 144\n            :\n                PC_PHYS_PORT_ID: 137\n            ?\n                PORT_ID: 152\n            :\n                PC_PHYS_PORT_ID: 129\n            ?\n                PORT_ID: 162\n            :\n                PC_PHYS_PORT_ID: 153\n            ?\n                PORT_ID: 170\n            :\n                PC_PHYS_PORT_ID: 145\n            ?\n                PORT_ID: 198\n            :\n                PC_PHYS_PORT_ID: 177\n            ?\n                PORT_ID: 206\n            :\n                PC_PHYS_PORT_ID: 185\n            ?\n                PORT_ID: 180\n            :\n                PC_PHYS_PORT_ID: 161\n            ?\n                PORT_ID: 188\n            :\n                PC_PHYS_PORT_ID: 169\n            ?\n                PORT_ID: 216\n            :\n                PC_PHYS_PORT_ID: 201\n            ?\n                PORT_ID: 224\n            :\n                PC_PHYS_PORT_ID: 193\n            ?\n                PORT_ID: 234\n            :\n                PC_PHYS_PORT_ID: 217\n            ?\n                PORT_ID: 242\n            :\n                PC_PHYS_PORT_ID: 209\n            ?\n                PORT_ID: 270\n            :\n                PC_PHYS_PORT_ID: 241\n            ?\n                PORT_ID: 278\n            :\n                PC_PHYS_PORT_ID: 249\n            ?\n                PORT_ID: 252\n            :\n                PC_PHYS_PORT_ID: 225\n            ?\n                PORT_ID: 260\n            :\n                PC_PHYS_PORT_ID: 233\n            ?\n                PORT_ID: 288\n            :\n                PC_PHYS_PORT_ID: 265\n            ?\n                PORT_ID: 296\n            :\n                PC_PHYS_PORT_ID: 257\n            ?\n                PORT_ID: 306\n            :\n                PC_PHYS_PORT_ID: 281\n            ?\n                PORT_ID: 314\n            :\n                PC_PHYS_PORT_ID: 273\n            ?\n                PORT_ID: 342\n            :\n                PC_PHYS_PORT_ID: 305\n            ?\n                PORT_ID: 350\n            :\n                PC_PHYS_PORT_ID: 313\n            ?\n                PORT_ID: 324\n            :\n                PC_PHYS_PORT_ID: 289\n            ?\n                PORT_ID: 332\n            :\n                PC_PHYS_PORT_ID: 297\n            ?\n                PORT_ID: 360\n            :\n                PC_PHYS_PORT_ID: 329\n            ?\n                PORT_ID: 368\n            :\n                PC_PHYS_PORT_ID: 321\n            ?\n                PORT_ID: 378\n            :\n                PC_PHYS_PORT_ID: 345\n            ?\n                PORT_ID: 386\n            :\n                PC_PHYS_PORT_ID: 337\n            ?\n                PORT_ID: 414\n            :\n                PC_PHYS_PORT_ID: 369\n            ?\n                PORT_ID: 422\n            :\n                PC_PHYS_PORT_ID: 377\n            ?\n                PORT_ID: 396\n            :\n                PC_PHYS_PORT_ID: 353\n            ?\n                PORT_ID: 404\n            :\n                PC_PHYS_PORT_ID: 361\n            ?\n                PORT_ID: 432\n            :\n                PC_PHYS_PORT_ID: 393\n            ?\n                PORT_ID: 440\n            :\n                PC_PHYS_PORT_ID: 385\n            ?\n                PORT_ID: 450\n            :\n                PC_PHYS_PORT_ID: 409\n            ?\n                PORT_ID: 458\n            :\n                PC_PHYS_PORT_ID: 401\n            ?\n                PORT_ID: 486\n            :\n                PC_PHYS_PORT_ID: 433\n            ?\n                PORT_ID: 494\n            :\n                PC_PHYS_PORT_ID: 441\n            ?\n                PORT_ID: 468\n            :\n                PC_PHYS_PORT_ID: 417\n            ?\n                PORT_ID: 476\n            :\n                PC_PHYS_PORT_ID: 425\n            ?\n                PORT_ID: 504\n            :\n                PC_PHYS_PORT_ID: 457\n            ?\n                PORT_ID: 512\n            :\n                PC_PHYS_PORT_ID: 449\n            ?\n                PORT_ID: 522\n            :\n                PC_PHYS_PORT_ID: 473\n            ?\n                PORT_ID: 530\n            :\n                PC_PHYS_PORT_ID: 465\n            ?\n                PORT_ID: 558\n            :\n                PC_PHYS_PORT_ID: 497\n            ?\n                PORT_ID: 566\n            :\n                PC_PHYS_PORT_ID: 505\n            ?\n                PORT_ID: 540\n            :\n                PC_PHYS_PORT_ID: 481\n            ?\n                PORT_ID: 548\n            :\n                PC_PHYS_PORT_ID: 489\n            ?\n                PORT_ID: 340\n            :\n                PC_PHYS_PORT_ID: 516\n            ?\n                PORT_ID: 556\n            :\n                PC_PHYS_PORT_ID: 517\n...\n---\ndevice:\n    0:\n        PC_PORT:\n            ?\n                PORT_ID: 1\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 9\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 18\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 26\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 36\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 44\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 54\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 62\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 72\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 80\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 90\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 98\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 108\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 116\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 126\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 134\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 144\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 152\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 162\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 170\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 180\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 188\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 198\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 206\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 216\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 224\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 234\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 242\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 252\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 260\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 270\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 278\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 288\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 296\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 306\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 314\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 324\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 332\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 340\n            :\n                ENABLE: 0\n                SPEED: 25000\n                NUM_LANES: 1\n                FEC_MODE: PC_FEC_RS528\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 342\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 350\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 360\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 368\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 378\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 386\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 396\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 404\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 414\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 422\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 432\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 440\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 450\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 458\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 468\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 476\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 486\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 494\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 504\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 512\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 522\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 530\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 540\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 548\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 556\n            :\n                ENABLE: 0\n                SPEED: 25000\n                NUM_LANES: 1\n                FEC_MODE: PC_FEC_RS528\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 558\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n            ?\n                PORT_ID: 566\n            :\n                ENABLE: 0\n                SPEED: 1600000\n                NUM_LANES: 8\n                FEC_MODE: PC_FEC_RS544_2XN_IEEE\n                MAX_FRAME_SIZE: 9416\n...\n---\ndevice:\n    0:\n        PC_TX_TAPS:\n...\n---\nbcm_device:\n    0:\n        global:\n            pktio_mode: 1\n            vlan_flooding_l2mc_num_reserved: 0\n            shared_block_mask_section: uc_bc\n            skip_protocol_default_entries: 1\n            # LTSW uses value 1 for ALPM combined mode\n            l3_alpm_template: 1\n            l3_alpm_hit_skip: 1\n            sai_feat_tail_timestamp : 0\n            sai_port_phy_time_sync_en: 1\n            sai_field_group_auto_prioritize: 1\n            #l3_intf_vlan_split_egress for MTU at L3IF\n            l3_intf_vlan_split_egress : 1\n            pfc_deadlock_seq_control : 1\n            bcm_tunnel_term_compatible_mode: 1\n            l3_ecmp_member_first_lkup_mem_size: 32768\n            #enable port queue drop stats\n            sai_stats_support_mask: 0\n            #disable vxlan tunnel stats\n            sai_stats_disable_mask: 0x200\n            #For PPIU Mode, Set resources for counters in global mode counters like ACL, etc\n            global_flexctr_ing_action_num_reserved: 20\n            global_flexctr_ing_pool_num_reserved: 8\n            global_flexctr_ing_op_profile_num_reserved: 20\n            global_flexctr_ing_group_num_reserved: 2\n            global_flexctr_egr_action_num_reserved: 8\n            global_flexctr_egr_pool_num_reserved: 5\n            global_flexctr_egr_op_profile_num_reserved: 10\n            global_flexctr_egr_group_num_reserved: 1\n            l3_alpm_large_vrf_mode: 1\n            l3_ecmp_member_secondary_mem_size: 8192\n            stat_custom_receive0_management_mode: 1\n            sai_ip_counter_cstats: 1\n            default_cpu_tx_queue: 7\n...\n---\ndevice:\n    0:\n        DEVICE_CONFIG:\n            AUTOLOAD_BOARD_SETTINGS: 0\n...\n---\ndevice:\n        '*':\n                TM_SCHEDULER_CONFIG:\n                        NUM_MC_Q: NUM_MC_Q_4\n...\n---\ndevice:\n    0:\n        # Per pipe flex counter configuration. Enable PPIU Mode\n        CTR_EFLEX_CONFIG:\n            CTR_ING_EFLEX_OPERMODE_PIPEUNIQUE: 1\n            CTR_ING_EFLEX_OPERMODE_PIPE_INSTANCE_UNIQUE: 1\n            CTR_EGR_EFLEX_OPERMODE_PIPEUNIQUE: 1\n            CTR_EGR_EFLEX_OPERMODE_PIPE_INSTANCE_UNIQUE: 1\n\n        # IFP mode\n        FP_CONFIG:\n            FP_ING_OPERMODE: GLOBAL_PIPE_AWARE\n\n        #CTR COS_ENABLE\n        CTR_ING_COS_Q_CONFIG:\n            COS_ENABLE: 0\n\n...\n"
         }
       }
     }
@@ -920,12 +920,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -943,12 +943,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -966,12 +966,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -989,12 +989,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1012,12 +1012,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1035,12 +1035,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1058,12 +1058,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1081,12 +1081,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1104,12 +1104,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1127,12 +1127,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1150,12 +1150,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1173,12 +1173,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1196,12 +1196,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1219,12 +1219,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1242,12 +1242,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1265,12 +1265,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1288,12 +1288,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1311,12 +1311,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1334,12 +1334,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1357,12 +1357,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1380,12 +1380,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1403,12 +1403,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1426,12 +1426,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1449,12 +1449,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1472,12 +1472,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1495,12 +1495,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1518,12 +1518,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1541,12 +1541,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1564,12 +1564,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1587,12 +1587,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1610,12 +1610,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1633,12 +1633,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1656,12 +1656,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1679,12 +1679,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1702,12 +1702,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1725,12 +1725,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1748,12 +1748,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1771,12 +1771,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1794,12 +1794,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1817,12 +1817,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1840,12 +1840,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1863,12 +1863,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1886,12 +1886,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1909,12 +1909,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1932,12 +1932,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1955,12 +1955,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -1978,12 +1978,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -2001,12 +2001,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -2024,12 +2024,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -2047,12 +2047,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -2070,12 +2070,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -2093,12 +2093,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -2116,12 +2116,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -2139,12 +2139,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -2162,12 +2162,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -2185,12 +2185,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -2208,12 +2208,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -2231,12 +2231,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -2254,12 +2254,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -2277,12 +2277,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -2300,12 +2300,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -2323,12 +2323,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -2346,12 +2346,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       },
       {
@@ -2369,12 +2369,12 @@
           "tx": false
         },
         "portType": 0,
-        "profileID": 63,
+        "profileID": 39,
         "routable": true,
         "sFlowEgressRate": 0,
         "sFlowIngressRate": 0,
         "scope": 0,
-        "speed": 1600000,
+        "speed": 800000,
         "state": 2
       }
     ],
