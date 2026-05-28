@@ -73,8 +73,8 @@
           "pmUnitScopedName": "SMB_IOB_0",
           "vendorId": "0x10ee",
           "deviceId": "0x7018",
-          "subSystemVendorId": "0x20a4",
-          "subSystemDeviceId": "0x0001",
+          "subSystemVendorId": "0x10ee",
+          "subSystemDeviceId": "0x0007",
           "i2cAdapterBlockConfigs": [
             {
               "pmUnitScopedNamePrefix": "SMB0_IOB_I2C",
@@ -126,8 +126,8 @@
           "pmUnitScopedName": "SMB_IOB_1",
           "vendorId": "0x10ee",
           "deviceId": "0x7019",
-          "subSystemVendorId": "0x20a4",
-          "subSystemDeviceId": "0x0001",
+          "subSystemVendorId": "0x10ee",
+          "subSystemDeviceId": "0x0007",
           "fanTachoPwmConfigs": [
             {
               "fpgaIpBlockConfig": {
