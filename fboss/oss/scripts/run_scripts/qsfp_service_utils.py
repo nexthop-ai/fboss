@@ -18,7 +18,7 @@ _QSFP_SERVICE_PROD = "qsfp_service"
 _QSFP_SERVICE_FOR_TESTING = "qsfp_service_for_testing"
 # Introduce an oss version of qsfp_service to run in oss environment.
 _QSFP_SERVICE_OSS = "qsfp_service_oss"
-_QSFP_SERVICE_UNIT_FILE_PATH = f"/tmp/{_QSFP_SERVICE_OSS}.service"
+_QSFP_SERVICE_UNIT_FILE_PATH = f"/etc/systemd/system/{_QSFP_SERVICE_OSS}.service"
 _QSFP_SERVICE_UNIT_FILE_TEMPLATE = rf"""
 [Unit]
 Description=QSFP Service For OSS
@@ -50,6 +50,11 @@ if $programname == "{_QSFP_SERVICE_OSS}" then {_DEFAULT_OSS_LOG_DIR}/{_QSFP_SERV
 def _cleanup_qsfp_service_rsyslog_conf() -> None:
     subprocess.run(f"rm {_QSFP_SERVICE_RSYSLOG_CONF_PATH}", check=False, shell=True)
     subprocess.run("systemctl restart rsyslog", check=False, shell=True)
+
+
+def _cleanup_qsfp_service_unit_file() -> None:
+    subprocess.run(f"rm {_QSFP_SERVICE_UNIT_FILE_PATH}", check=False, shell=True)
+    subprocess.run("systemctl daemon-reload", check=False, shell=True)
 
 
 def _setup_qsfp_service(
@@ -181,3 +186,4 @@ def cleanup_qsfp_service() -> None:
     subprocess.run(f"pkill -f {_QSFP_SERVICE_OSS}", check=False, shell=True)
 
     _cleanup_qsfp_service_rsyslog_conf()
+    _cleanup_qsfp_service_unit_file()

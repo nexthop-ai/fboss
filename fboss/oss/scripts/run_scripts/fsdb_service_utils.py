@@ -18,7 +18,7 @@ _FSDB_SERVICE_FOR_TESTING = "fsdb_service_for_testing"
 _FSDB_SERVICE_OSS = "fsdb_service_oss"
 
 _FSDB_SERVICE_RSYSLOG_CONF_PATH = f"/etc/rsyslog.d/{_FSDB_SERVICE_OSS}.conf"
-_FSDB_SERVICE_UNIT_FILE_PATH = f"/tmp/{_FSDB_SERVICE_OSS}.service"
+_FSDB_SERVICE_UNIT_FILE_PATH = f"/etc/systemd/system/{_FSDB_SERVICE_OSS}.service"
 _FSDB_SERVICE_RSYSLOG_CONF_CONTENT = rf"""
 if $programname == "{_FSDB_SERVICE_OSS}" then {_DEFAULT_OSS_LOG_DIR}/{_FSDB_SERVICE_OSS}.log
 & stop
@@ -48,6 +48,11 @@ WantedBy=multi-user.target
 def _cleanup_fsdb_service_rsyslog_conf() -> None:
     subprocess.run(f"rm {_FSDB_SERVICE_RSYSLOG_CONF_PATH}", check=False, shell=True)
     subprocess.run("systemctl restart rsyslog", check=False, shell=True)
+
+
+def _cleanup_fsdb_service_unit_file() -> None:
+    subprocess.run(f"rm {_FSDB_SERVICE_UNIT_FILE_PATH}", check=False, shell=True)
+    subprocess.run("systemctl daemon-reload", check=False, shell=True)
 
 
 def _setup_fsdb_service(
@@ -151,3 +156,4 @@ def cleanup_fsdb_service() -> None:
     subprocess.run(f"pkill -f {_FSDB_SERVICE_OSS}", check=False, shell=True)
 
     _cleanup_fsdb_service_rsyslog_conf()
+    _cleanup_fsdb_service_unit_file()
