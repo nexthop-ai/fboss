@@ -14,10 +14,12 @@ if [[ -z ${HEAD_SHA} ]]; then
   exit 1
 fi
 
-# Find the PR Validation run ID matching this HEAD_SHA.
+# Find the PR Validation run ID matching this HEAD_SHA. Use `--commit` so the
+# filter is applied server-side; otherwise `gh run list`'s default 20-result
+# page means older runs silently drop off and the lookup fails.
 TMP_RUNS="$(mktemp)"
-if ! gh run list --workflow="PR Validation" --json headSha,databaseId \
-  -q ".[] | select(.headSha == \"${HEAD_SHA}\") | .databaseId" \
+if ! gh run list --workflow="PR Validation" --commit "${HEAD_SHA}" \
+  --json databaseId -q '.[].databaseId' \
   >"${TMP_RUNS}" 2>/dev/null; then
   echo "::error::Failed to list PR Validation runs for commit ${HEAD_SHA}" >&2
   cat "${TMP_RUNS}" || true
