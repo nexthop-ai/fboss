@@ -15,6 +15,7 @@
 #include "fboss/lib/bsp/montblanc/MontblancBspPlatformMapping.h"
 #include "fboss/lib/bsp/morgan800cc/Morgan800ccBspPlatformMapping.h"
 #include "fboss/lib/bsp/nh4010f/Nh4010fBspPlatformMapping.h"
+#include "fboss/lib/bsp/nh4220f/Nh4220fBspPlatformMapping.h"
 #include "fboss/lib/bsp/nova4000/Nova4000BspPlatformMapping.h"
 #include "fboss/lib/bsp/tahan800bc/Tahan800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/tahansb800bc/Tahansb800bcBspPlatformMapping.h"
@@ -130,6 +131,14 @@ folly::Singleton<Nh4010fSystemContainer> _nh4010fSystemContainer;
 template <>
 std::shared_ptr<Nh4010fSystemContainer> Nh4010fSystemContainer::getInstance() {
   return _nh4010fSystemContainer.try_get();
+}
+
+using Nh4220fSystemContainer =
+    BspGenericSystemContainer<Nh4220fBspPlatformMapping>;
+folly::Singleton<Nh4220fSystemContainer> _nh4220fSystemContainer;
+template <>
+std::shared_ptr<Nh4220fSystemContainer> Nh4220fSystemContainer::getInstance() {
+  return _nh4220fSystemContainer.try_get();
 }
 
 using Icecube800bcSystemContainer =
