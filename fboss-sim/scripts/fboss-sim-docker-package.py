@@ -32,9 +32,9 @@ BUILD_CONTAINER_NAME = f"FBOSS_build_{USERNAME}"
 CONTAINER_REPO_PATH = "/var/FBOSS/fboss"  # repo mount point inside the build container
 
 REQUIRED_BINARIES = [
-    "wedge_agent-fake",
+    "wedge_agent-sai_impl",
     "fboss_sw_agent",
-    "fboss_hw_agent-fake",
+    "fboss_hw_agent-sai_impl",
     "fboss2",
     "fboss2-dev",
     "fboss2_integration_test",

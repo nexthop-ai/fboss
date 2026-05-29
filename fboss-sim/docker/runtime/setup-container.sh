@@ -11,18 +11,13 @@ echo "=========================================="
 echo "→ Making scripts executable..."
 chmod +x /usr/local/bin/* /opt/fboss/bin/* 2>/dev/null || true
 
-# 2. Create symlinks for fake binaries to match production service expectations
-echo "→ Creating symlinks for fake SAI binaries..."
-ln -sf /opt/fboss/bin/wedge_agent-fake /opt/fboss/bin/wedge_agent-sai_impl
-ln -sf /opt/fboss/bin/fboss_hw_agent-fake /opt/fboss/bin/fboss_hw_agent-sai_impl
-
-# 3. Set environment (source setup_fboss_env if it exists)
+# 2. Set environment (source setup_fboss_env if it exists)
 echo "→ Configuring environment..."
 if [ -f /opt/fboss/bin/setup_fboss_env ]; then
   echo "source /opt/fboss/bin/setup_fboss_env" >>/etc/profile.d/fboss.sh
 fi
 
-# 4. Initialize git repo in /etc/coop for config management
+# 3. Initialize git repo in /etc/coop for config management
 echo "→ Initializing git repo in /etc/coop..."
 cd /etc/coop
 git init
@@ -47,7 +42,7 @@ echo '{"action":{},"commands":[],"base":""}' >/etc/coop/cli/cli_metadata.json
 git add cli/agent.conf cli/cli_metadata.json agent.conf
 git commit -m "Initial fboss-sim runtime config" --quiet
 
-# 5. Configure services to use jemalloc instead of glibc malloc
+# 4. Configure services to use jemalloc instead of glibc malloc
 # jemalloc is more robust against memory corruption issues in fake SAI
 echo "→ Configuring jemalloc for all agent services..."
 for service in wedge_agent.service fboss_sw_agent.service fboss_hw_agent@.service; do
@@ -58,11 +53,11 @@ for service in wedge_agent.service fboss_sw_agent.service fboss_hw_agent@.servic
   fi
 done
 
-# 6. Reload systemd to pick up service changes
+# 5. Reload systemd to pick up service changes
 echo "→ Reloading systemd daemon..."
 systemctl daemon-reload || true
 
-# 7. Enable split mode (fboss_sw_agent + fboss_hw_agent) by default
+# 6. Enable split mode (fboss_sw_agent + fboss_hw_agent) by default
 echo "→ Enabling split mode (fboss_sw_agent + fboss_hw_agent) by default..."
 mkdir -p /etc/systemd/system/multi-user.target.wants
 ln -sf /usr/lib/systemd/system/fboss_sw_agent.service \
@@ -81,7 +76,7 @@ else
   exit 1
 fi
 
-# 8. Mask monolithic agent service (can be unmasked at runtime with switch-agent-mode.sh)
+# 7. Mask monolithic agent service (can be unmasked at runtime with switch-agent-mode.sh)
 echo "→ Masking monolithic agent service..."
 systemctl mask wedge_agent.service || true
 

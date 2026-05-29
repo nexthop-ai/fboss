@@ -86,9 +86,9 @@ get no non-loopback IPv6 → Thrift servers bind to `0.0.0.0` only → hw_agent'
 
 | Binary | Purpose |
 |--------|---------|
-| `wedge_agent-fake` | Monolithic agent (fake SAI) |
+| `wedge_agent-sai_impl` | Monolithic agent (fake SAI) |
 | `fboss_sw_agent` | Split mode: SW/control plane |
-| `fboss_hw_agent-fake` | Split mode: HW/forwarding plane (fake SAI) |
+| `fboss_hw_agent-sai_impl` | Split mode: HW/forwarding plane (fake SAI) |
 | `fboss2` | FBOSS CLI |
 | `fboss2-dev` | FBOSS dev CLI |
 | `fboss2_integration_test` | CLI integration test suite |

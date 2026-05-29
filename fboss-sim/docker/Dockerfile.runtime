@@ -70,7 +70,7 @@ RUN echo "/opt/fboss/lib" > /etc/ld.so.conf.d/fboss.conf && ldconfig
 COPY tmp_build_dir/share/ /opt/fboss/share/
 
 # Layer 3: All FBOSS binaries (7 required binaries pre-filtered by fboss-sim-docker-package.py)
-# Includes: wedge_agent-fake, fboss_sw_agent, fboss_hw_agent-fake, fboss2, fboss2-dev, fboss2_integration_test, setup_fboss_env
+# Includes: wedge_agent-sai_impl, fboss_sw_agent, fboss_hw_agent-sai_impl, fboss2, fboss2-dev, fboss2_integration_test, setup_fboss_env
 COPY tmp_build_dir/bin/ /opt/fboss/bin/
 
 # Run container setup script

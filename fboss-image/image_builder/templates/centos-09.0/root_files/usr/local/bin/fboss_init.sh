@@ -20,13 +20,23 @@ error() {
 
 get_platform_dir() {
   local platform
-  # convert the platform name to lowercase and delete spaces
-  platform=$(dmidecode -s system-product-name 2>/dev/null | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]-_')
-  if [[ -z $platform ]]; then
-    error "Failed to get system-product-name from dmidecode"
-    return 1
+  # for cFBOSS the platform name is provided via a marker file
+  if [[ -f /etc/fboss/platform ]]; then
+    platform=$(tr -d '[:space:]' </etc/fboss/platform | tr '[:upper:]' '[:lower:]')
+    if [[ -z $platform ]]; then
+      error "Empty /etc/fboss/platform"
+      return 1
+    fi
+    log "Detected platform from /etc/fboss/platform: $platform"
+  else
+    # convert the platform name to lowercase and delete spaces
+    platform=$(dmidecode -s system-product-name 2>/dev/null | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]-_')
+    if [[ -z $platform ]]; then
+      error "Failed to get system-product-name from dmidecode"
+      return 1
+    fi
+    log "Detected platform: $platform"
   fi
-  log "Detected platform: $platform"
 
   # Map DMI platform names to config directory names where they differ.
   # Wedge800B: NHP devices use the same configs as ACT (same ASIC, different vendor).
@@ -142,7 +152,13 @@ main() {
     exit 1
   fi
 
-  create_distro_base_snapshot
+  # skip snapshot for cFBOSS docker image
+  local platform_name
+  platform_name=$(basename "$platform_dir")
+  if [[ $platform_name != "cfboss" ]]; then
+    create_distro_base_snapshot
+  fi
+
   setup_coop_configs "$platform_dir"
   if ! generate_fruid; then
     exit 1
