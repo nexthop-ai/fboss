@@ -8,9 +8,16 @@
 
 # Upstream required
 
-- [ ] Yes
+- [ ] Yes — ensure PR title has no sensitive info; it's used as the upstream branch + commit message unless overridden below. Jira IDs in title are ignored.
+
+  - [ ] Custom commit message
+    ```text
+    <custom commit message>
+    ```
+  - [ ] Custom branch name
+    ```text
+    <custom-branch-name>
+    ```
+  - [ ] Cherry-pick now (runs immediately; later changes must be manual)
+
 - [ ] No
-
-#### Upstream requirements (if PR has "Upstream Required" label)
-
-- [ ] PR title is free of sensitive information (customer names, product codenames, internal references)
