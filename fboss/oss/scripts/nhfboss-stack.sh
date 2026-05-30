@@ -121,7 +121,7 @@ perform_build() {
   if [ "$need_sai" -eq 1 ]; then
     log "Using SAI_SDK_VERSION=${SAI_SDK_VERSION:-N/A} for SAI_VERSION=${SAI_VERSION:-Unknown}"
 
-    npu_flags+=("--npu-libsai-impl-path" "$SAI_DIR/lib/libsai_impl.a")
+    npu_flags+=("--npu-libsai-impl-path" "$SAI_DIR/lib")
     npu_flags+=("--npu-experiments-path" "$SAI_DIR/include")
 
     if [ -n "${BUILD_SAI_FAKE:-}" ]; then
@@ -221,20 +221,6 @@ perform_build() {
     --only-deps $common_options
 
   log "Get deps SUCCESS"
-
-  if [ -n "${SAI_TAJO_IMPL:-}" ] && [ -z "${BUILD_SAI_FAKE:-}" ]; then
-    libsai_dir=$(find "$build_dir/installed" -maxdepth 1 -type d -name "libsai-*" | head -1)
-    log "Injecting Cisco SAI headers into $libsai_dir"
-
-    mkdir -p "$libsai_dir/experimental"
-    tar -xzf "$SAI_DIR/libsai_impl.tar.gz" -C "$libsai_dir/experimental" --strip-components=1 include/
-
-    cisco_sai_tarball=$(ls "$SAI_DIR"/v*.tar.gz | head -1)
-    tar -xzf "$cisco_sai_tarball" -C "$libsai_dir/include" --strip-components=2 "SAI-*/inc/"
-    tar -xzf "$cisco_sai_tarball" -C "$libsai_dir/experimental" --strip-components=2 "SAI-*/experimental/"
-
-    log "Cisco SAI header injection complete"
-  fi
 
   # Build FBOSS stack
   log "Building FBOSS ${stack_label} stack..."

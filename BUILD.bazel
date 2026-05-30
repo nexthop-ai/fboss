@@ -271,8 +271,8 @@ heavy_genrule(
         "//fboss:nh-fboss-manifests",
         "//nhbroadcomsai/fboss-xgs:distro_sai.tar",
         ":fboss_builder_docker", # Prevent concurrent building
-        "CMakeLists.txt",
         "distro_kernel_6.11.tar",
+        "CMakeLists.txt",
         "functions.cmake",
         "sdk_dependencies.txt",
         ":fboss_forwarding_stack_srcs",
@@ -461,8 +461,8 @@ heavy_genrule(
         "//fboss:nh-fboss-manifests",
         "//nhciscosai/fboss-s1:distro_sai.tar",
         ":fboss_builder_docker", # Prevent concurrent building
-        "CMakeLists.txt",
         "distro_kernel_6.11.tar",
+        "CMakeLists.txt",
         ":image_builder",
         "functions.cmake",
         "sdk_dependencies.txt",

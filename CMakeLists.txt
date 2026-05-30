@@ -131,12 +131,6 @@ if (BUILD_SAI_FAKE_LINK_TEST)
   message(STATUS "Configured to build SAI Fake Link Test binaries")
 endif()
 
-if (SAI_BRCM_IMPL)
-  # TODO (skhare) IS_OSS_BRCM_SAI is only a short-term change to unblock.
-  # Refactor/fix the code and then remove this flag.
-  add_definitions (-DIS_OSS_BRCM_SAI=true)
-endif()
-
 if (SAI_BRCM_IMPL OR SAI_TAJO_IMPL)
   # Enforce SAI_SDK_VERSION environment variable when building with SAI_BRCM_IMPL or SAI_TAJO_IMPL
   if (NOT BUILD_SAI_FAKE AND "$ENV{SAI_SDK_VERSION}" STREQUAL "")
@@ -303,14 +297,15 @@ include_directories(${SAI_INCLUDE_DIR})
 message(STATUS "Found SAI Include dir: ${SAI_INCLUDE_DIR}")
 
 if (SAI_BRCM_IMPL)
-  find_path(SAI_EXPERIMENTAL_INCLUDE_DIR NAMES saiswitchextensions.h)
-  include_directories(${SAI_EXPERIMENTAL_INCLUDE_DIR})
-  message(STATUS "Found SAI Experimental dir: ${SAI_EXPERIMENTAL_INCLUDE_DIR}")
-elseif(SAI_TAJO_IMPL)
-  find_path(SAI_EXPERIMENTAL_INCLUDE_DIR NAMES experimental/saiswitchextensions.h)
+  find_path(SAI_EXPERIMENTAL_INCLUDE_DIR NAMES brcm_sai_extensions.h)
   include_directories(${SAI_EXPERIMENTAL_INCLUDE_DIR})
   include_directories(${SAI_EXPERIMENTAL_INCLUDE_DIR}/experimental)
-  message(STATUS "Found SAI Experimental dir: ${SAI_EXPERIMENTAL_INCLUDE_DIR}")
+  message(STATUS "Found SAI Experimental dir: ${SAI_EXPERIMENTAL_INCLUDE_DIR}/experimental")
+elseif(SAI_TAJO_IMPL)
+  find_path(SAI_EXPERIMENTAL_INCLUDE_DIR NAMES experimental/sai_attr_ext.h)
+  include_directories(${SAI_EXPERIMENTAL_INCLUDE_DIR})
+  include_directories(${SAI_EXPERIMENTAL_INCLUDE_DIR}/experimental)
+  message(STATUS "Found SAI Experimental dir: ${SAI_EXPERIMENTAL_INCLUDE_DIR}/experimental")
 elseif(CHENAB_SAI_SDK)
   # Chenab-TODO: set experimental directories appropriately
   set(SAI_EXPERIMENTAL_INCLUDE_DIR "/var/FBOSS/sai_impl_output/include")
