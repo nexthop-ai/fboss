@@ -8,7 +8,6 @@
  */
 
 #include <folly/json/dynamic.h>
-#include <folly/json/json.h>
 #include <folly/logging/xlog.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

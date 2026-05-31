@@ -188,7 +188,7 @@ cpp_library(
         "AgentAclTableTests.cpp",
         "AgentAmIdlesTests.cpp",  # bazelify: exclude
         "AgentAqmTests.cpp",
-        "AgentAsicDefaultProgrammingTests.cpp",
+        "AgentAsicDefaultProgrammingTests.cpp",  # bazelify: exclude
         "AgentConfigSetupTest.cpp",  # bazelify: exclude
         "AgentConfigVerifyQosTests.cpp",  # bazelify: exclude
         "AgentCoppTests.cpp",

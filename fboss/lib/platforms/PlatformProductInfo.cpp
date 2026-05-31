@@ -10,7 +10,6 @@
 #include "fboss/lib/platforms/PlatformProductInfo.h"
 #include "fboss/agent/FbossError.h"
 
-#include <boost/algorithm/string.hpp>
 #include <folly/FileUtil.h>
 #include <folly/MacAddress.h>
 #include <folly/json/dynamic.h>
