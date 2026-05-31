@@ -219,12 +219,7 @@ TEST_F(CmdConfigVlanDefaultTargetExistsFixture, reusesExistingTargetVlan) {
   // Exactly one VLAN with id=300.
   int count = 0;
   for (const auto& v : *swConfig.vlans()) {
-<<<<<<< HEAD
     if (v.id().has_value() && *v.id() == 300) {
-||||||| cd4e0b49f5
-=======
-    if (*v.id() == 300) {
->>>>>>> fa2cbb1024bde6617e7ebcc238ccc8f618ffc5af
       ++count;
     }
   }

@@ -13,11 +13,6 @@
 #include <gtest/gtest.h>
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/test/config/CmdConfigTestBase.h"
-<<<<<<< HEAD
-#include "fboss/cli/fboss2/utils/PortMap.h" // NOLINT(misc-include-cleaner)
-||||||| cd4e0b49f5
-=======
->>>>>>> fa2cbb1024bde6617e7ebcc238ccc8f618ffc5af
 
 using namespace ::testing;
 

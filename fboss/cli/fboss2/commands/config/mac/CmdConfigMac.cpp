@@ -10,12 +10,7 @@
 
 #include "fboss/cli/fboss2/commands/config/mac/CmdConfigMac.h"
 
-<<<<<<< HEAD
-#include "fboss/cli/fboss2/CmdHandler.cpp"
-||||||| cd4e0b49f5
-=======
 #include "fboss/cli/fboss2/CmdHandler.cpp" // NOLINT(facebook-unused-include-check)
->>>>>>> fa2cbb1024bde6617e7ebcc238ccc8f618ffc5af
 
 namespace facebook::fboss {
 
