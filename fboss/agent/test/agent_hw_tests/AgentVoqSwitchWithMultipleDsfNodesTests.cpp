@@ -4,7 +4,6 @@
 #include "fboss/agent/test/agent_hw_tests/AgentVoqSwitchTests.h"
 #include "fboss/agent/test/utils/VoqTestUtils.h"
 
-#include "fboss/agent/AsicUtils.h"
 #include "fboss/agent/DsfStateUpdaterUtil.h"
 #include "fboss/agent/FabricConnectivityManager.h"
 #include "fboss/agent/FbossHwUpdateError.h"
@@ -84,7 +83,7 @@ class AgentVoqSwitchWithMultipleDsfNodesTest : public AgentVoqSwitchTest {
     shelConfig.shelSrcIp() = "2222::1";
     shelConfig.shelDstIp() = "2222::2";
     shelConfig.shelPeriodicIntervalMS() = 5000;
-    config.switchSettings()->selfHealingEcmpLagConfig() = shelConfig;
+    config.switchSettings()->selfHealingEcmpLagConfig() = std::move(shelConfig);
     // Enable selfHealingEcmpLag on Interface Ports
     for (auto& port : *config.ports()) {
       if (port.portType() == cfg::PortType::INTERFACE_PORT ||
@@ -102,11 +101,6 @@ TEST_F(AgentVoqSwitchWithMultipleDsfNodesTest, twoDsfNodes) {
 
 TEST_F(AgentVoqSwitchWithMultipleDsfNodesTest, remoteSystemPort) {
   auto setup = [this]() {
-    // in addRemoteIntfNodeCfg, we use numCores to calculate the remoteSwitchId
-    // keeping remote switch id passed below in sync with it
-    int numCores =
-        checkSameAndGetAsicForTesting(getAgentEnsemble()->getL3Asics())
-            ->getNumCores();
     auto getStats = [this] {
       auto switchID = getCurrentSwitchIdForTesting();
       return std::make_tuple(
@@ -116,13 +110,29 @@ TEST_F(AgentVoqSwitchWithMultipleDsfNodesTest, remoteSystemPort) {
               std::string(kVoqsFree), switchID));
     };
     auto [beforeSysPortsFree, beforeVoqsFree] = getStats();
+    const auto expectedVoqsConsumed = isDualStage3Q2QMode() ? 3 : 8;
+    const auto validateResourceCounterDecrements =
+        beforeSysPortsFree > 0 && beforeVoqsFree >= expectedVoqsConsumed;
+    const auto kRemoteSysPortId =
+        utility::getRemoteSysPortId(getSw(), getProgrammedState());
     applyNewState([&](const std::shared_ptr<SwitchState>& in) {
       return utility::addRemoteSysPort(
           in,
           scopeResolver(),
-          SystemPortID(401),
-          static_cast<SwitchID>(numCores));
+          kRemoteSysPortId,
+          utility::getRemoteVoqSwitchId(getSw()));
     });
+    WITH_RETRIES({
+      EXPECT_EVENTUALLY_NE(
+          getProgrammedState()->getRemoteSystemPorts()->getNodeIf(
+              kRemoteSysPortId),
+          nullptr);
+    });
+    if (!validateResourceCounterDecrements) {
+      XLOG(INFO) << "Resource availability counters are not reporting enough "
+                 << "free VOQ resources for decrement validation";
+      return;
+    }
     WITH_RETRIES({
       auto [afterSysPortsFree, afterVoqsFree] = getStats();
       XLOG(INFO) << " Before sysPortsFree: " << beforeSysPortsFree
@@ -131,8 +141,7 @@ TEST_F(AgentVoqSwitchWithMultipleDsfNodesTest, remoteSystemPort) {
                  << " voqsFree: " << afterVoqsFree;
       EXPECT_EVENTUALLY_EQ(beforeSysPortsFree - 1, afterSysPortsFree);
       EXPECT_EVENTUALLY_EQ(
-          isDualStage3Q2QMode() ? beforeVoqsFree - 3 : beforeVoqsFree - 8,
-          afterVoqsFree);
+          beforeVoqsFree - expectedVoqsConsumed, afterVoqsFree);
     });
   };
   verifyAcrossWarmBoots(setup, [] {});

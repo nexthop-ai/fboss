@@ -1,7 +1,16 @@
-# CMake to build libraries and binaries in fboss/agent/hw/test
+# CMake to build libraries and binaries in fboss/agent/test/agent_hw_tests
 
 # In general, libraries and binaries in fboss/foo/bar are built by
 # cmake/FooBar.cmake
+
+file(READ fboss/agent/test/agent_hw_tests/golden/asic/jericho3-11.csv JERICHO3-11)
+file(READ fboss/agent/test/agent_hw_tests/golden/asic/jericho3-12.csv JERICHO3-12)
+file(READ fboss/agent/test/agent_hw_tests/golden/asic/jericho3-default.csv JERICHO3-DEFAULT)
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/fboss/agent/test/agent_hw_tests/oss/golden_data.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/fboss/agent/test/agent_hw_tests/golden_data.h
+  @ONLY
+)
 
 # QoS test library - tests related to QoS scheduling, DSCP mapping, watermarks
 add_library(agent_qos_test_src
@@ -108,9 +117,11 @@ add_library(agent_hw_test_src
   fboss/agent/test/agent_hw_tests/AgentDot1qMappingTest.cpp
   fboss/agent/test/agent_hw_tests/AgentDscpMarkingTests.cpp
   fboss/agent/test/agent_hw_tests/AgentDeepPacketInspectionTests.cpp
+  fboss/agent/test/agent_hw_tests/AgentAsicDefaultProgrammingTests.cpp
   fboss/agent/test/agent_hw_tests/AgentDiagShellStressTests.cpp
   fboss/agent/test/agent_hw_tests/AgentEcmpTests.cpp
   fboss/agent/test/agent_hw_tests/AgentEmptyTests.cpp
+  fboss/agent/test/agent_hw_tests/AgentFlexPortTests.cpp
   fboss/agent/test/agent_hw_tests/AgentEgressForwardingDiscardCounterTests.cpp
   fboss/agent/test/agent_hw_tests/AgentRouteOverDifferentAddressFamilyNhopTests.cpp
   fboss/agent/test/agent_hw_tests/AgentAclInDiscardCounterTests.cpp
@@ -132,6 +143,7 @@ add_library(agent_hw_test_src
   fboss/agent/test/agent_hw_tests/AgentMirrorOnDropTajoImpl.cpp
   fboss/agent/test/agent_hw_tests/AgentMirrorOnDropTestBase.cpp
   fboss/agent/test/agent_hw_tests/AgentMirrorOnDropXgsImpl.cpp
+  fboss/agent/test/agent_hw_tests/AgentHwMirrorTests.cpp
   fboss/agent/test/agent_hw_tests/AgentMirroringTests.cpp
   fboss/agent/test/agent_hw_tests/AgentMirroringScaleTests.cpp
   fboss/agent/test/agent_hw_tests/AgentMPLSDataplaneTestUtils.cpp
@@ -145,6 +157,7 @@ add_library(agent_hw_test_src
   fboss/agent/test/agent_hw_tests/AgentQueuePerHostRouteTests.cpp
   fboss/agent/test/agent_hw_tests/AgentRouteStatTests.cpp
   fboss/agent/test/agent_hw_tests/AgentRouteTests.cpp
+  fboss/agent/test/agent_hw_tests/AgentSaiPortAdminStateTests.cpp
   fboss/agent/test/agent_hw_tests/AgentPortBandWidthTests.cpp
   fboss/agent/test/agent_hw_tests/AgentPortLedTests.cpp
   fboss/agent/test/agent_hw_tests/AgentPrbsTests.cpp
@@ -180,6 +193,7 @@ add_library(agent_hw_test_src
   fboss/agent/test/agent_hw_tests/AgentSrv6ResourceUsageTests.cpp
   fboss/agent/test/agent_hw_tests/AgentHwPtpTcTests.cpp
   fboss/agent/test/agent_hw_tests/AgentSwitchingModeTests.cpp
+  fboss/agent/test/agent_hw_tests/AgentHwPortStressTests.cpp
   fboss/agent/test/agent_hw_tests/AgentHwUdfTests.cpp
   fboss/agent/test/agent_hw_tests/AgentRouterInterfaceCounterTest.cpp
   fboss/agent/test/agent_hw_tests/AgentHwPtpTcProvisionTests.cpp
@@ -255,6 +269,8 @@ target_link_libraries(agent_hw_test_src
   neighbor_test_utils
   system_scale_test_utils
   hyper_port_test_utils
+  platform_mapping
+  ${RE2}
 )
 
 add_executable(multi_switch_agent_hw_test

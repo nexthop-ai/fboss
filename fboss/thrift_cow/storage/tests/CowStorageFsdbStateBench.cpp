@@ -24,6 +24,24 @@ void ribmap_state_storage(
       factory, counters, iters, selector, enableHybridStorage);
 }
 
+void ribmap_state_storage_gtsw(
+    folly::UserCounters& counters,
+    unsigned iters,
+    int prefixScale,
+    int paths,
+    bool enableHybridStorage) {
+  auto scale =
+      test_data::BgpRibMapDataGenerator::makeGtswScale(prefixScale, paths);
+  auto factory =
+      test_data::BgpRibMapDataGenerator(test_data::RoleSelector::GTSW, scale);
+  bm_storage_metrics_helper<test_data::BgpRibMapDataGenerator::RootT>(
+      factory,
+      counters,
+      iters,
+      test_data::RoleSelector::GTSW,
+      enableHybridStorage);
+}
+
 // FSDB State-based benchmarks using different production scales
 BENCHMARK_COUNTERS_NAME_PARAM(
     fsdb_state_storage,
@@ -107,6 +125,20 @@ BENCHMARK_COUNTERS_NAME_PARAM(
     counters,
     FA_HybridCow,
     test_data::RoleSelector::FA,
+    true);
+
+BENCHMARK_COUNTERS_NAME_PARAM(
+    fsdb_state_storage,
+    counters,
+    RGSW_ThriftCow,
+    test_data::RoleSelector::RGSW,
+    false);
+
+BENCHMARK_COUNTERS_NAME_PARAM(
+    fsdb_state_storage,
+    counters,
+    RGSW_HybridCow,
+    test_data::RoleSelector::RGSW,
     true);
 
 BENCHMARK_COUNTERS_NAME_PARAM(
@@ -248,6 +280,46 @@ BENCHMARK_COUNTERS_NAME_PARAM(
     RibMap_FA_HybridCow,
     test_data::RoleSelector::FA,
     true);
+
+BENCHMARK_COUNTERS_NAME_PARAM(
+    ribmap_state_storage_gtsw,
+    counters,
+    GTSW_10K_36P_ThriftCow,
+    10000,
+    36,
+    false);
+
+BENCHMARK_COUNTERS_NAME_PARAM(
+    ribmap_state_storage_gtsw,
+    counters,
+    GTSW_10K_120P_ThriftCow,
+    10000,
+    120,
+    false);
+
+BENCHMARK_COUNTERS_NAME_PARAM(
+    ribmap_state_storage_gtsw,
+    counters,
+    GTSW_70K_1P_ThriftCow,
+    70000,
+    1,
+    false);
+
+BENCHMARK_COUNTERS_NAME_PARAM(
+    ribmap_state_storage_gtsw,
+    counters,
+    GTSW_70K_120P_ThriftCow,
+    70000,
+    120,
+    false);
+
+BENCHMARK_COUNTERS_NAME_PARAM(
+    ribmap_state_storage_gtsw,
+    counters,
+    GTSW_YOLO_4K_ThriftCow,
+    4096,
+    64,
+    false);
 
 } // namespace facebook::fboss::thrift_cow::test
 

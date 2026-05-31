@@ -40,7 +40,14 @@ class ResourceAccountant {
       const std::shared_ptr<SwitchState>& state) const;
   bool checkEcmpResource(bool intermediateState) const;
   bool checkArsResource(bool intermediateState) const;
-  bool isVirtualArsGroup(const RouteNextHopEntry::NextHopSet& nhSet) const;
+  bool wouldExceedSuperGroupLimit(
+      const RouteNextHopEntry::NextHopSet& nhSet) const;
+  bool isVirtualArsGroup(
+      const RouteNextHopEntry& fwd,
+      const std::shared_ptr<SwitchState>& state) const;
+  bool isVirtualArsGroup(
+      const RouteNextHopEntry& fwd,
+      const RouteNextHopEntry::NextHopSet& nhSet) const;
   void updateArsVirtualGroupConfig(const StateDelta& delta);
   bool routeAndEcmpStateChangedImpl(const StateDelta& delta);
   bool isValidRouteUpdate(const StateDelta& delta);
@@ -122,8 +129,19 @@ class ResourceAccountant {
   template <typename TableT>
   std::unordered_map<SwitchID, uint32_t>& getNeighborEntriesMap();
 
-  std::map<RouteNextHopEntry::NextHopSet, uint32_t> ecmpGroupRefMap_;
+  // Per-nhSet ECMP refmap entry
+  struct EcmpGroupRefEntry {
+    uint32_t refCountVirtual{0};
+    uint32_t refCountNonVirtual{0};
+    uint32_t memberContribution{0};
+  };
+  std::map<RouteNextHopEntry::NextHopSet, EcmpGroupRefEntry> ecmpGroupRefMap_;
   std::map<RouteNextHopEntry::NextHopSet, uint32_t> arsEcmpGroupRefMap_;
+  // Tracks refcount of each unique nexthop contributed to the virtual ARS
+  // supergroup across all active virtual nhSets. Map size = unique member
+  // count.
+  std::map<RouteNextHopEntry::NextHopSet::value_type, uint32_t>
+      virtualArsSuperGroupMemberRefMap_;
 
   const HwAsicTable* asicTable_;
   const SwitchIdScopeResolver* scopeResolver_;
@@ -163,6 +181,12 @@ class ResourceAccountant {
       checkAndUpdateGenericEcmpResourceForUcmpWeights);
   FRIEND_TEST(ResourceAccountantTest, checkAndUpdateArsEcmpResource);
   FRIEND_TEST(ResourceAccountantTest, virtualArsGroups);
+  FRIEND_TEST(ResourceAccountantTest, virtualArsSuperGroupMemberLimit);
+  FRIEND_TEST(ResourceAccountantTest, virtualArsGroupOverrideExcluded);
+  FRIEND_TEST(ResourceAccountantTest, virtualArsGroupOverrideFlipLifecycle);
+  FRIEND_TEST(
+      ResourceAccountantTest,
+      virtualArsGroupOverrideDropPromotesClassification);
   FRIEND_TEST(ResourceAccountantTest, computeWeightedEcmpMemberCount);
   FRIEND_TEST(ResourceAccountantTest, checkNeighborResource);
   FRIEND_TEST(ResourceAccountantTest, routeWithAdjustedWeightZero);

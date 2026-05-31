@@ -22,7 +22,13 @@ from fboss_agent_utils import (
     FBOSS_AGENT_VOLATILE_STATE_DIR,
     agent_can_warm_boot_file_path,
     cleanup_hw_agent_service,
+    cleanup_sw_agent_service,
+    cold_boot_agents,
+    HW_AGENT_SERVICE_PROD,
+    is_agent_running,
     setup_and_start_hw_agent_service,
+    setup_and_start_sw_agent_service,
+    SW_AGENT_SERVICE_PROD,
 )
 from fsdb_service_utils import cleanup_fsdb_service, setup_and_start_fsdb_service
 from nh_test_xml_utils import (
@@ -174,6 +180,7 @@ LINK_KNOWN_BAD_TESTS = (
 SAI_AGENT_TEST_KNOWN_BAD_TESTS = (
     "./share/hw_known_bad_tests/sai_agent_known_bad_tests.materialized_JSON"
 )
+FBOSS2_INTEGRATION_KNOWN_BAD_TESTS = "./share/fboss2_integration_known_bad_tests/fboss2_integration_known_bad_tests.materialized_JSON"
 ASIC_PRODUCTION_FEATURES = (
     "./share/production_features/asic_production_features.materialized_JSON"
 )
@@ -384,6 +391,10 @@ class TestRunner(abc.ABC):
 
     @abc.abstractmethod
     def _get_test_run_args(self, conf_file):
+        pass
+
+    @abc.abstractmethod
+    def _setup_run(self, conf_file: str) -> None:
         pass
 
     @abc.abstractmethod
@@ -758,6 +769,7 @@ class TestRunner(abc.ABC):
                 ).encode()
         elif info["kind"] == "OK" and not xml_exists:
             run_test_result = (
+<<<<<<< HEAD
                 f"[       OK ] {test_prefix}{test_to_run} ({elapsed_ms} ms)"
             ).encode()
         else:
@@ -790,6 +802,49 @@ class TestRunner(abc.ABC):
             info=info,
             duration_sec=elapsed_sec,
         )
+||||||| cd4e0b49f5
+                "[  TIMEOUT ] "
+                + test_prefix
+                + test_to_run
+                + " ("
+                + str(test_run_timeout_in_second * 1000)
+                + " ms)"
+            ).encode("utf-8")
+        except subprocess.CalledProcessError as e:
+            # Test aborted, mark it as FAILED
+            print(f"Test aborted with return code {e.returncode}!", flush=True)
+            output = e.output.decode("utf-8") if e.output else None
+            print(f"Test output {output}", flush=True)
+            stderr = e.stderr.decode("utf-8") if e.stderr else None
+            print(f"Test error {stderr}", flush=True)
+            run_test_result = (
+                "[   FAILED ] " + test_prefix + test_to_run + " (0 ms)"
+            ).encode("utf-8")
+=======
+                "[  TIMEOUT ] "
+                + test_prefix
+                + test_to_run
+                + " ("
+                + str(test_run_timeout_in_second * 1000)
+                + " ms)"
+            ).encode("utf-8")
+        except subprocess.CalledProcessError as e:
+            # Test aborted, mark it as FAILED
+            elapsed_ms = int((time.time() - start_time) * 1000)
+            print(f"Test aborted with return code {e.returncode}!", flush=True)
+            output = e.output.decode("utf-8") if e.output else None
+            print(f"Test output {output}", flush=True)
+            stderr = e.stderr.decode("utf-8") if e.stderr else None
+            print(f"Test error {stderr}", flush=True)
+            run_test_result = (
+                "[   FAILED ] "
+                + test_prefix
+                + test_to_run
+                + " ("
+                + str(elapsed_ms)
+                + " ms)"
+            ).encode("utf-8")
+>>>>>>> fa2cbb1024bde6617e7ebcc238ccc8f618ffc5af
         return run_test_result
 
     def _string_in_file(self, file_path, string):
@@ -887,6 +942,7 @@ class TestRunner(abc.ABC):
             return []
 
         test_outputs = []
+<<<<<<< HEAD
         test_results = []
         num_tests = len(tests_to_run)
 
@@ -894,16 +950,63 @@ class TestRunner(abc.ABC):
         file_name = os.path.basename(test_binary_name)
         disable_services(file_name)
         try:
+||||||| cd4e0b49f5
+        num_tests = len(tests_to_run)
+        for idx, test_to_run in enumerate(tests_to_run):
+            test_prefix = self.COLDBOOT_PREFIX
+            sai_replayer_log_path = self._get_sai_replayer_log_path(
+                test_prefix, test_to_run, args.sai_replayer_logging
+            )
+            # Run the test for coldboot verification
+            self._setup_coldboot_test(sai_replayer_log_path)
+            print("########## Running test: " + test_to_run, flush=True)
+            if args.simulator:
+                self._restart_bcmsim(args.simulator)
+            test_output = self._run_test(
+                conf_file,
+                test_prefix,
+                test_to_run,
+                warmboot,  # setup_warmboot
+                args.sai_logging,
+                args.fboss_logging,
+                sai_replayer_log_path,
+                args.test_run_timeout,
+            )
+            output = test_output.decode("utf-8")
+            print(
+                f"########## Coldboot test results ({idx + 1}/{num_tests}): {output}",
+                flush=True,
+            )
+            test_outputs.append(test_output)
+
+            # Run the test again for warmboot verification if the test supports it
+            if warmboot and os.path.isfile(self._get_warmboot_check_file()):
+                test_prefix = self.WARMBOOT_PREFIX
+=======
+        try:
+            self._setup_run(conf_file)
+            num_tests = len(tests_to_run)
+>>>>>>> fa2cbb1024bde6617e7ebcc238ccc8f618ffc5af
             for idx, test_to_run in enumerate(tests_to_run):
                 test_prefix = self.COLDBOOT_PREFIX
                 sai_replayer_log_path = self._get_sai_replayer_log_path(
                     test_prefix, test_to_run, args.sai_replayer_logging
                 )
                 # Run the test for coldboot verification
+<<<<<<< HEAD
 
                 self._setup_coldboot_test(sai_replayer_log_path)
                 with suppress(FileNotFoundError):
                     os.unlink(self.TESTRESULT_CURRENT_RUN_FILE)
+||||||| cd4e0b49f5
+                self._setup_warmboot_test(sai_replayer_log_path)
+                print(
+                    "########## Verifying test with warmboot: " + test_to_run,
+                    flush=True,
+                )
+=======
+                self._setup_coldboot_test(sai_replayer_log_path)
+>>>>>>> fa2cbb1024bde6617e7ebcc238ccc8f618ffc5af
                 print("########## Running test: " + test_to_run, flush=True)
                 if args.simulator:
                     self._restart_bcmsim(args.simulator)
@@ -923,6 +1026,7 @@ class TestRunner(abc.ABC):
                     flush=True,
                 )
                 test_outputs.append(test_output)
+<<<<<<< HEAD
                 test_results.append(
                     self.get_updated_test_result_with_classname_subscript("cold_boot")
                 )
@@ -964,6 +1068,42 @@ class TestRunner(abc.ABC):
 
         self._end_run()
         return test_outputs, test_results
+||||||| cd4e0b49f5
+        self._end_run()
+        return test_outputs
+=======
+
+                # Run the test again for warmboot verification if the test supports it
+                if warmboot and os.path.isfile(self._get_warmboot_check_file()):
+                    test_prefix = self.WARMBOOT_PREFIX
+                    sai_replayer_log_path = self._get_sai_replayer_log_path(
+                        test_prefix, test_to_run, args.sai_replayer_logging
+                    )
+                    self._setup_warmboot_test(sai_replayer_log_path)
+                    print(
+                        "########## Verifying test with warmboot: " + test_to_run,
+                        flush=True,
+                    )
+                    test_output = self._run_test(
+                        conf_file,
+                        test_prefix,
+                        test_to_run,
+                        False,  # setup_warmboot
+                        args.sai_logging,
+                        args.fboss_logging,
+                        sai_replayer_log_path,
+                        args.test_run_timeout,
+                    )
+                    output = test_output.decode("utf-8")
+                    print(
+                        f"########## Warmboot test results ({idx + 1}/{num_tests}): {output}",
+                        flush=True,
+                    )
+                    test_outputs.append(test_output)
+        finally:
+            self._end_run()
+        return test_outputs
+>>>>>>> fa2cbb1024bde6617e7ebcc238ccc8f618ffc5af
 
     _GTEST_STATUS_MAP: ClassVar[dict[str, str]] = {
         "OK": "PASSED",
@@ -1206,6 +1346,9 @@ class BcmTestRunner(TestRunner):
     def _get_test_run_args(self, conf_file):
         return []
 
+    def _setup_run(self, conf_file: str) -> None:
+        pass
+
     def _setup_coldboot_test(self, sai_replayer_log_path: str | None = None):
         return
 
@@ -1275,6 +1418,9 @@ class SaiTestRunner(TestRunner):
                 ]
             )
         return args_list
+
+    def _setup_run(self, conf_file: str) -> None:
+        pass
 
     def _setup_coldboot_test(self, sai_replayer_log_path: str | None = None):
         if args.setup_for_coldboot:
@@ -1352,6 +1498,9 @@ class QsfpTestRunner(TestRunner):
                 ]
             )
         return arg_list
+
+    def _setup_run(self, conf_file: str) -> None:
+        pass
 
     def _setup_coldboot_test(self, sai_replayer_log_path: str | None = None):
         subprocess.Popen(
@@ -1466,6 +1615,9 @@ class LinkTestRunner(TestRunner):
         arg_list.extend(["--fsdb_client_ssl_preferred=false"])
 
         return arg_list
+
+    def _setup_run(self, conf_file: str) -> None:
+        pass
 
     def _setup_coldboot_test(self, sai_replayer_log_path: str | None = None):
         # Start FSDB service if not disabled
@@ -1644,6 +1796,9 @@ class SaiAgentTestRunner(TestRunner):
             )
         return args_list
 
+    def _setup_run(self, conf_file: str) -> None:
+        pass
+
     def _setup_coldboot_test(self, sai_replayer_log_path: str | None = None):
         if args.setup_for_coldboot:
             run_script(args.setup_for_coldboot)
@@ -1799,6 +1954,9 @@ class PlatformServicesTestRunner(TestRunner):
     def _get_test_run_args(self, conf_file):
         return []
 
+    def _setup_run(self, conf_file: str) -> None:
+        pass
+
     def _setup_coldboot_test(self, sai_replayer_log_path: str | None = None):
         return
 
@@ -1908,19 +2066,53 @@ class Fboss2IntegrationTestRunner(TestRunner):
     fboss2 integration tests are platform/SAI independent - they test the CLI binary which
     communicates with the agent via Thrift, regardless of the underlying
     hardware abstraction layer.
+
+    Agent lifecycle: uses production service names (fboss_sw_agent, fboss_hw_agent@N)
+    because fboss2-dev may restart agents during config commits. Detects whether the
+    device has production multi-switch services running or needs service setup from scratch.
+    Cold boots both agents before each test for isolation.
     """
+
+    _AGENT_CONFIG_PATH = "/etc/coop/agent.conf"
+    _CONFIG_SNAPSHOT_PATH = "/tmp/agent.conf.fboss2_test_snapshot"
+
+    def __init__(self):
+        super().__init__()
+        # Whether fboss_sw_agent and fboss_hw_agent@N are already running
+        self._is_prod_multi_switch: bool = False
+        self._switch_indexes: list[int] = []
+        self._test_config_source: str = self._AGENT_CONFIG_PATH
 
     def add_subcommand_arguments(self, sub_parser: ArgumentParser):
         """Add CLI test-specific command line arguments"""
-        # Override defaults for CLI tests:
-        # - fruid_path: CLI tests don't use fruid files
-        # - coldboot_only: Some CLI tests use warmboot/coldboot but the test binary doesn't support the --setup-for-warmboot flag.
         sub_parser.set_defaults(fruid_path=None, coldboot_only=True)
+        sub_parser.add_argument(
+            "--num-npus",
+            type=int,
+            choices=[1, 2],
+            default=1,
+            help="Number of NPUs (switch indexes). Default is 1.",
+        )
 
     def _get_config_path(self):
-        return "/etc/coop/agent.conf"
+        return self._AGENT_CONFIG_PATH
 
     def _get_known_bad_tests_file(self):
+        if args.known_bad_tests_file:
+            if os.path.exists(args.known_bad_tests_file):
+                print(
+                    f"Using user-specified known bad tests file: {args.known_bad_tests_file}"
+                )
+                return args.known_bad_tests_file
+            print(
+                f"Warning: User-specified known bad tests file not found: {args.known_bad_tests_file}"
+            )
+        if os.path.exists(FBOSS2_INTEGRATION_KNOWN_BAD_TESTS):
+            print(
+                f"Using default known bad tests file: {FBOSS2_INTEGRATION_KNOWN_BAD_TESTS}"
+            )
+            return FBOSS2_INTEGRATION_KNOWN_BAD_TESTS
+        print("No known bad tests file found, skipping known bad test filtering")
         return ""
 
     def _get_unsupported_tests_file(self):
@@ -1935,24 +2127,93 @@ class Fboss2IntegrationTestRunner(TestRunner):
         return []
 
     def _get_sai_logging_flags(self, sai_logging):
-        # CLI tests don't use SAI logging
         return []
 
     def _get_warmboot_check_file(self):
         return ""
 
     def _get_test_run_args(self, conf_file):
-        # CLI tests don't need any additional args
         return []
 
+    def _setup_run(self, conf_file: str) -> None:
+        self._switch_indexes = list(range(args.num_npus))
+        self._is_prod_multi_switch = all(
+            is_agent_running(
+                self._switch_indexes,
+                hw_agent_service_name=HW_AGENT_SERVICE_PROD,
+                sw_agent_service_name=SW_AGENT_SERVICE_PROD,
+            )
+        )
+        self._test_config_source = conf_file
+
+        if self._is_prod_multi_switch:
+            print(
+                "Production multi-switch detected — "
+                f"{SW_AGENT_SERVICE_PROD} and "
+                f"{HW_AGENT_SERVICE_PROD}N already running. "
+                "Snapshotting agent config."
+            )
+            subprocess.run(
+                ["cp", self._AGENT_CONFIG_PATH, self._CONFIG_SNAPSHOT_PATH],
+                check=True,
+            )
+        else:
+            print("No running agents detected — setting up agent services.")
+
+        if conf_file != self._AGENT_CONFIG_PATH:
+            print(f"Copying test config {conf_file} to {self._AGENT_CONFIG_PATH}")
+            subprocess.run(["cp", conf_file, self._AGENT_CONFIG_PATH], check=True)
+
+        if not self._is_prod_multi_switch:
+            setup_and_start_hw_agent_service(
+                switch_indexes=self._switch_indexes,
+                fboss_agent_config_path=self._AGENT_CONFIG_PATH,
+                is_warm_boot=False,
+                hw_agent_service_name=HW_AGENT_SERVICE_PROD,
+                hw_agent_for_testing=False,
+            )
+            setup_and_start_sw_agent_service(
+                fboss_agent_config_path=self._AGENT_CONFIG_PATH,
+                is_warm_boot=False,
+                sw_agent_service_name=SW_AGENT_SERVICE_PROD,
+            )
+
     def _setup_coldboot_test(self, sai_replayer_log_path: str | None = None):
-        pass
+        if self._test_config_source != self._AGENT_CONFIG_PATH:
+            subprocess.run(
+                ["cp", self._test_config_source, self._AGENT_CONFIG_PATH], check=True
+            )
+        cold_boot_agents(
+            self._switch_indexes,
+            hw_agent_service_name=HW_AGENT_SERVICE_PROD,
+            sw_agent_service_name=SW_AGENT_SERVICE_PROD,
+        )
 
     def _setup_warmboot_test(self, sai_replayer_log_path: str | None = None):
         pass
 
     def _end_run(self):
-        pass
+        if self._is_prod_multi_switch:
+            print("Restoring original agent config and restarting agents.")
+            subprocess.run(
+                ["cp", self._CONFIG_SNAPSHOT_PATH, self._AGENT_CONFIG_PATH],
+                check=False,
+            )
+            try:
+                cold_boot_agents(
+                    self._switch_indexes,
+                    hw_agent_service_name=HW_AGENT_SERVICE_PROD,
+                    sw_agent_service_name=SW_AGENT_SERVICE_PROD,
+                )
+            except Exception as e:
+                # Broad catch: cold_boot_agents raises generic Exception;
+                # cleanup must not prevent config restoration below.
+                print(f"Warning: error restarting agents during cleanup: {e}")
+            subprocess.run(["rm", "-f", self._CONFIG_SNAPSHOT_PATH], check=False)
+        else:
+            print("Cleaning up agent services.")
+            cleanup_sw_agent_service(SW_AGENT_SERVICE_PROD)
+            cleanup_hw_agent_service(self._switch_indexes)
 
     def _filter_tests(self, tests: list[str]) -> list[str]:
         return tests
@@ -1968,8 +2229,14 @@ class BenchmarkTestRunner:
     for full setup/run/teardown isolation.
     """
 
-    def _get_benchmark_binary(self):
-        benchmark_binary = "/opt/fboss/bin/sai_all_benchmarks-sai_impl"
+    def _get_benchmark_binary(self, args):
+        if (
+            getattr(args, "agent_run_mode", SUB_ARG_AGENT_RUN_MODE_MONO)
+            == SUB_ARG_AGENT_RUN_MODE_MULTI
+        ):
+            benchmark_binary = "/opt/fboss/bin/sai_multi_switch_all_benchmarks-sai_impl"
+        else:
+            benchmark_binary = "/opt/fboss/bin/sai_all_benchmarks-sai_impl"
         if os.path.exists(benchmark_binary) and os.path.isfile(benchmark_binary):
             return benchmark_binary
         return None
@@ -2004,6 +2271,12 @@ class BenchmarkTestRunner:
     def add_subcommand_arguments(self, sub_parser: ArgumentParser):
         """Add benchmark-specific command line arguments"""
         sub_parser.add_argument(
+            OPT_ARG_FILTER,
+            type=str,
+            help="Regex to filter benchmarks by name (e.g. --filter HwEcmp.*)",
+            default=None,
+        )
+        sub_parser.add_argument(
             OPT_ARG_FILTER_FILE,
             type=str,
             help="File containing list of benchmark test names to run (one per line).",
@@ -2015,6 +2288,22 @@ class BenchmarkTestRunner:
             type=str,
             help="A file path to a platform mapping JSON file to be used.",
             default=None,
+        )
+        sub_parser.add_argument(
+            SUB_ARG_AGENT_RUN_MODE,
+            choices=[
+                SUB_ARG_AGENT_RUN_MODE_MONO,
+                SUB_ARG_AGENT_RUN_MODE_MULTI,
+            ],
+            default=SUB_ARG_AGENT_RUN_MODE_MONO,
+            help="Specify agent run mode. Default is mono mode.",
+        )
+        sub_parser.add_argument(
+            SUB_ARG_NUM_NPUS,
+            choices=[1, 2],
+            default=1,
+            type=int,
+            help="Number of NPUs for multi-switch mode. Default is 1.",
         )
 
     def _build_keys_to_try(self, platform_key):
@@ -2071,40 +2360,39 @@ class BenchmarkTestRunner:
         return config.get("buck_rule_or_test_id_to_benchmark_thres", {})
 
     def _find_thresholds_for_benchmark(
-        self, metrics, is_multi_switch, platform_key, all_thresholds
+        self, benchmark_name, is_multi_switch, platform_key, all_thresholds
     ):
-        """Find matching thresholds for a benchmark using its output metrics.
+        """Find matching thresholds for a benchmark.
 
-        Matches metric keys from the output against threshold entries by
-        comparing against the last dot-segment of each config key.
+        Lookup:
+          1. Collect threshold entries whose key's last dot-segment equals the
+             benchmark name (warmboot keys are skipped).
+          2. Sort so the entry matching the binary's mode comes first; if only
+             the other-mode entry exists we still fall back to it rather than
+             returning nothing.
+          3. Pick the first entry whose test_config_regex matches platform_key
+             and return its `thresholds` list.
 
         Args:
-            metrics: Dict of all metrics from benchmark output
-            is_multi_switch: Whether binary is a multi-switch variant
-            platform_key: Platform key for test_config_regex matching
+            benchmark_name: BENCHMARK() registered name (e.g. HwEcmpGroupShrink)
+            is_multi_switch: True if the binary is the multi-switch variant
+            platform_key: Platform key string for test_config_regex matching
             all_thresholds: Dict from _load_benchmark_thresholds()
 
         Returns:
-            List of MetricThreshold dicts, or empty list
+            List of MetricThreshold dicts (each with metric_key_regex,
+            optional lower_bound/upper_bound), or empty list when no match.
         """
-        metric_keys = set(metrics.keys())
-
         candidates = []
         for key, threshold_configs in all_thresholds.items():
             if ".warmboot" in key:
                 continue
-
-            last_segment = key.rsplit(".", 1)[-1]
-            # Match if any output metric key matches the last segment of the config key
-            if last_segment not in metric_keys:
+            if key.rsplit(".", 1)[-1] != benchmark_name:
                 continue
-
             is_multi_key = ".multi_switch." in key
             candidates.append((key, threshold_configs, is_multi_key))
 
-        if not candidates:
-            return []
-
+        # Matching-mode entries first; fall back to the other mode otherwise.
         candidates.sort(key=lambda c: c[2] != is_multi_switch)
 
         for _key, threshold_configs, _is_multi in candidates:
@@ -2238,6 +2526,43 @@ class BenchmarkTestRunner:
             print(f"{prefix}{line}", end="", flush=True)
             lines_list.append(line)
 
+    def _build_benchmark_cmd(self, binary_name, args, benchmark_name=None):
+        """Build the command line for running a benchmark binary."""
+        is_multi_switch = (
+            getattr(args, "agent_run_mode", SUB_ARG_AGENT_RUN_MODE_MONO)
+            == SUB_ARG_AGENT_RUN_MODE_MULTI
+        )
+
+        run_cmd = [binary_name, "--json"]
+        if benchmark_name:
+            run_cmd.extend(["--bm_regex", f"^{re.escape(benchmark_name)}$"])
+
+        if args.config:
+            run_cmd.extend(["--config", args.config, "--mgmt-if", args.mgmt_if])
+
+        if is_multi_switch:
+            run_cmd.extend(["--multi_switch", "--hw_agent_for_testing"])
+            num_npus = getattr(args, "num_npus", 1)
+            if num_npus > 1:
+                run_cmd.append("--multi_npu_platform_mapping")
+        else:
+            run_cmd.append("--flexports")
+            if args.platform_mapping_override_path is not None:
+                run_cmd.extend(
+                    [
+                        "--platform_mapping_override_path",
+                        args.platform_mapping_override_path,
+                    ]
+                )
+
+        if args.fruid_path is not None:
+            run_cmd.extend(["--fruid_filepath=" + args.fruid_path])
+
+        if not is_multi_switch:
+            run_cmd.extend(["--enable_sai_log", args.sai_logging])
+        run_cmd.extend(["--logging", "WARN"])
+        return run_cmd
+
     def _run_benchmark_binary(self, binary_name, args, benchmark_name=None):
         """Run a single benchmark and return parsed results.
 
@@ -2248,24 +2573,7 @@ class BenchmarkTestRunner:
         display_name = benchmark_name or os.path.basename(binary_name)
         print(f"########## Running benchmark: {display_name}", flush=True)
 
-        run_cmd = [binary_name, "--json"]
-        if benchmark_name:
-            run_cmd.extend(["--bm_regex", f"^{re.escape(benchmark_name)}$"])
-
-        if args.config:
-            run_cmd.extend(["--config", args.config, "--mgmt-if", args.mgmt_if])
-        if args.platform_mapping_override_path is not None:
-            run_cmd.extend(
-                [
-                    "--platform_mapping_override_path",
-                    args.platform_mapping_override_path,
-                ]
-            )
-        if args.fruid_path is not None:
-            run_cmd.extend(["--fruid_filepath=" + args.fruid_path])
-
-        run_cmd.extend(["--enable_sai_log", args.sai_logging])
-        run_cmd.extend(["--logging", "WARN"])
+        run_cmd = self._build_benchmark_cmd(binary_name, args, benchmark_name)
 
         print(f"Running command: {' '.join(run_cmd)}", flush=True)
 
@@ -2371,34 +2679,45 @@ class BenchmarkTestRunner:
         return names
 
     def _apply_threshold_check(
-        self, result, benchmark_path, platform_key, all_thresholds
+        self, result, is_multi_switch, platform_key, all_thresholds
     ):
-        """Apply threshold validation to a benchmark result."""
+        """Apply threshold validation to a benchmark result.
+
+        Looks up thresholds by benchmark name, preferring entries that match
+        the caller-provided mode. When no threshold is found, prints a
+        "WILL ALWAYS PASS" warning so silent regressions are visible.
+        """
         test_name = result.get("benchmark_test_name", "")
-        if result["test_status"] == "OK" and all_thresholds and platform_key:
-            thresholds = self._find_thresholds_for_benchmark(
-                result.get("metrics", {}),
-                False,
-                platform_key,
-                all_thresholds,
-            )
-            if thresholds:
-                violations = self._check_thresholds(result, thresholds)
-                if violations:
-                    result["threshold_status"] = "EXCEEDED"
-                    result["threshold_details"] = "; ".join(violations)
-                    print(
-                        f"  >> THRESHOLD EXCEEDED: {test_name}: "
-                        f"{result['threshold_details']}"
-                    )
-                else:
-                    result["threshold_status"] = "PASS"
-                    result["threshold_details"] = ""
-            else:
-                result["threshold_status"] = "NO_THRESHOLD"
-                result["threshold_details"] = ""
-        else:
+        if not (result["test_status"] == "OK" and all_thresholds and platform_key):
             result["threshold_status"] = "N/A"
+            result["threshold_details"] = ""
+            return
+
+        thresholds = self._find_thresholds_for_benchmark(
+            test_name,
+            is_multi_switch,
+            platform_key,
+            all_thresholds,
+        )
+        if not thresholds:
+            print(
+                f"  >> WARNING: no benchmark threshold defined for "
+                f"{test_name} on {platform_key}; this benchmark WILL "
+                f"ALWAYS PASS until thresholds are added."
+            )
+            result["threshold_status"] = "NO_THRESHOLD"
+            result["threshold_details"] = ""
+            return
+
+        violations = self._check_thresholds(result, thresholds)
+        if violations:
+            result["threshold_status"] = "EXCEEDED"
+            result["threshold_details"] = "; ".join(violations)
+            print(
+                f"  >> THRESHOLD EXCEEDED: {test_name}: {result['threshold_details']}"
+            )
+        else:
+            result["threshold_status"] = "PASS"
             result["threshold_details"] = ""
 
     def _write_results_and_summary(self, results, skipped_count=0):
@@ -2442,21 +2761,29 @@ class BenchmarkTestRunner:
                 suffix = f" [THRESHOLD EXCEEDED: {result['threshold_details']}]"
             elif threshold == "PASS":
                 suffix = " [THRESHOLD PASS]"
+            elif threshold == "NO_THRESHOLD":
+                suffix = " [NO_THRESHOLD]"
             print(f"{name}: {status}{suffix}")
         print("=" * 80)
 
         ok = sum(1 for r in results if r["test_status"] == "OK")
         failed = sum(1 for r in results if r["test_status"] == "FAILED")
         timed_out = sum(1 for r in results if r["test_status"] == "TIMEOUT")
+        threshold_pass = sum(1 for r in results if r.get("threshold_status") == "PASS")
         threshold_exceeded = sum(
             1 for r in results if r.get("threshold_status") == "EXCEEDED"
+        )
+        no_threshold = sum(
+            1 for r in results if r.get("threshold_status") == "NO_THRESHOLD"
         )
         print(f"\nTotal: {len(results)} benchmarks")
         print(f"OK: {ok}")
         print(f"Failed: {failed}")
         print(f"Timed Out: {timed_out}")
         print(f"Skipped (known bad, pre-filtered): {skipped_count}")
-        print(f"Threshold Exceeded: {threshold_exceeded}")
+        print(
+            f"Threshold: {threshold_pass} pass, {threshold_exceeded} exceeded, {no_threshold} not configured"
+        )
 
         if failed > 0 or timed_out > 0 or threshold_exceeded > 0:
             sys.exit(1)
@@ -2539,8 +2866,33 @@ class BenchmarkTestRunner:
             print(f"Pre-filtered {skipped_count} unsupported benchmarks")
         return filtered, skipped_count
 
+    def _start_hw_agent_service(self, args):
+        """Start hw_agent service for multi-switch benchmarks."""
+        num_npus = getattr(args, "num_npus", 1)
+        switch_indexes = list(range(num_npus))
+        additional_args = []
+        if num_npus > 1:
+            additional_args.append("--multi_npu_platform_mapping")
+        setup_and_start_hw_agent_service(
+            switch_indexes=switch_indexes,
+            fboss_agent_config_path=args.config,
+            platform_mapping_override_path=args.platform_mapping_override_path,
+            is_warm_boot=False,
+            additional_args=additional_args or None,
+        )
+
+    def _stop_hw_agent_service(self, args):
+        """Stop hw_agent service after multi-switch benchmarks."""
+        switch_indexes = list(range(getattr(args, "num_npus", 1)))
+        cleanup_hw_agent_service(switch_indexes)
+
     def run_test(self, args):
         """Run benchmark tests."""
+        is_multi_switch = (
+            getattr(args, "agent_run_mode", SUB_ARG_AGENT_RUN_MODE_MONO)
+            == SUB_ARG_AGENT_RUN_MODE_MULTI
+        )
+
         known_bad_regexes = []
         unsupported_regexes = []
         all_thresholds = {}
@@ -2555,7 +2907,7 @@ class BenchmarkTestRunner:
                 f"and {len(all_thresholds)} threshold configs for '{platform_key}'"
             )
 
-        binary_path = self._get_benchmark_binary()
+        binary_path = self._get_benchmark_binary(args)
         if not binary_path:
             print("Error: Could not find benchmark binary")
             return
@@ -2591,15 +2943,25 @@ class BenchmarkTestRunner:
 
         print(f"\nRunning {len(benchmarks_to_run)} benchmarks")
 
-        results = []
-        for name in benchmarks_to_run:
-            result = self._run_benchmark_binary(binary_path, args, benchmark_name=name)
-            self._apply_threshold_check(
-                result, binary_path, platform_key, all_thresholds
-            )
-            results.append(result)
+        try:
+            if is_multi_switch and args.config:
+                self._start_hw_agent_service(args)
+            results = []
+            for name in benchmarks_to_run:
+                result = self._run_benchmark_binary(
+                    binary_path, args, benchmark_name=name
+                )
+                self._apply_threshold_check(
+                    result, is_multi_switch, platform_key, all_thresholds
+                )
+                results.append(result)
 
-        self._write_results_and_summary(results, skipped_count + unsupported_skipped)
+            self._write_results_and_summary(
+                results, skipped_count + unsupported_skipped
+            )
+        finally:
+            if is_multi_switch:
+                self._stop_hw_agent_service(args)
 
 
 if __name__ == "__main__":

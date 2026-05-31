@@ -1,8 +1,17 @@
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace cpp2 facebook.bgp.thrift
@@ -117,6 +126,12 @@ struct PeerGroup {
    * checked for TTL >= (256 - ttl_security_hops).
    */
   38: optional i32 ttl_security_hops;
+
+  /* Enable Enhanced Route Refresh capability advertisement (RFC 7313, cap 70) */
+  39: optional bool enhanced_route_refresh;
+
+  /* Enable Route Refresh capability advertisement (RFC 2918, cap 2) */
+  40: optional bool route_refresh;
 }
 
 /**
@@ -265,6 +280,12 @@ struct BgpPeer {
    * Typical value: 1 for directly connected eBGP peers.
    */
   102: optional i32 ttl_security_hops;
+
+  /* Enable Enhanced Route Refresh capability advertisement (RFC 7313, cap 70) */
+  103: optional bool enhanced_route_refresh;
+
+  /* Enable Route Refresh capability advertisement (RFC 2918, cap 2) */
+  104: optional bool route_refresh;
 }
 
 /**
@@ -539,6 +560,11 @@ struct BgpSettingConfig {
    * Configuration for update group slow peer detection and detachment.
    */
   15: optional UpdateGroupConfig update_group_config;
+
+  /**
+  * Enable BGP++ to use policy default action config
+  */
+  16: optional bool enable_policy_default_action;
 }
 
 /**

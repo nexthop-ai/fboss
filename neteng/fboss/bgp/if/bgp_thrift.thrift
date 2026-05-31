@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 cpp_include "folly/container/F14Map.h"
 
 include "common/fb303/if/fb303.thrift"
@@ -248,6 +264,20 @@ struct TRibEntry {
    * the corresponding active UCMP action is set here
    */
   8: optional rib_policy.TRouteAttributeUcmpAction active_cte_ucmp_action;
+  /*
+   * Convenience copy of the selected best-path entry from `paths`.
+   * Lets FSDB subscribers fetch only the best path (e.g. via
+   * `ribMap/<prefix>/best_path`) without subscribing to the full `paths`
+   * map, which is significantly larger.
+   *
+   * Unset when no path is currently "best" -- e.g. when CPS native criteria
+   * (bgp_native_path_selection_min_nexthop / min_agg_lbw) is violated and
+   * the entry is multipath-only with no bestpath, or when `bestpath` has
+   * not yet been computed for this prefix.
+   *
+   * The `is_best_path` flag on this copy is always set to true.
+   */
+  9: optional TBgpPath best_path;
 }
 
 /**

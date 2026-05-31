@@ -108,8 +108,14 @@ inline std::string toString(PlatformType mode) {
       return "WEDGE800CACT";
     case PlatformType::PLATFORM_LADAKH800BCLS:
       return "LADAKH800BCLS";
+<<<<<<< HEAD
     case PlatformType::PLATFORM_WEDGE800BNHP:
       return "WEDGE800BNHP";
+||||||| cd4e0b49f5
+=======
+    case PlatformType::PLATFORM_LEH800BCLS:
+      return "LEH800BCLS";
+>>>>>>> fa2cbb1024bde6617e7ebcc238ccc8f618ffc5af
     case PlatformType::PLATFORM_ICECUBE800BANW:
       return "ICECUBE800BANW";
     case PlatformType::PLATFORM_J4SIM:

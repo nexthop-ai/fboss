@@ -36,8 +36,14 @@ class ConfigPtpTest : public Fboss2IntegrationTest {
   }
 
   void setPtpTcEnable(bool enable) {
+<<<<<<< HEAD
     std::string state = enable ? "enable" : "disable";
     auto result = runCli({"config", "ptp", "transparent-clock", state});
+||||||| cd4e0b49f5
+=======
+    auto result = runCli(
+        {"config", "ptp", "transparent-clock", enable ? "enable" : "disable"});
+>>>>>>> fa2cbb1024bde6617e7ebcc238ccc8f618ffc5af
     ASSERT_EQ(result.exitCode, 0)
         << "transparent-clock CLI failed: " << result.stderr;
     commitConfig();
