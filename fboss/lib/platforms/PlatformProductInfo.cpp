@@ -304,14 +304,10 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_J4SIM;
     } else if (FLAGS_mode == "ladakh800bcls") {
       type_ = PlatformType::PLATFORM_LADAKH800BCLS;
-<<<<<<< HEAD
     } else if (FLAGS_mode == "wedge800bnhp") {
       type_ = PlatformType::PLATFORM_WEDGE800BNHP;
-||||||| cd4e0b49f5
-=======
     } else if (FLAGS_mode == "leh800bcls") {
       type_ = PlatformType::PLATFORM_LEH800BCLS;
->>>>>>> fa2cbb1024bde6617e7ebcc238ccc8f618ffc5af
     } else if (FLAGS_mode == "icecube800banw") {
       type_ = PlatformType::PLATFORM_ICECUBE800BANW;
     } else if (FLAGS_mode == "blackwolf800banw") {

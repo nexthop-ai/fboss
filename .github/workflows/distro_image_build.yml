@@ -26,7 +26,6 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v6
-<<<<<<< HEAD
 
       - name: Setup NHTools
         uses: nexthop-ai/nh/.github/actions/install-nhtools@main
@@ -40,10 +39,6 @@ jobs:
           aws-region: us-east-2
           role-duration-seconds: 14400 # 4 hours timeout
           output-env-credentials: true
-||||||| cd4e0b49f5
-        uses: actions/checkout@v5
-=======
->>>>>>> fa2cbb1024bde6617e7ebcc238ccc8f618ffc5af
 
       - name: Run fboss-image build
         run: |

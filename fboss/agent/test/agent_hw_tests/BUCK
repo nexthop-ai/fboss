@@ -188,17 +188,9 @@ cpp_library(
         "AgentAclTableTests.cpp",
         "AgentAmIdlesTests.cpp",  # bazelify: exclude
         "AgentAqmTests.cpp",
-<<<<<<< HEAD
+        "AgentAsicDefaultProgrammingTests.cpp",
         "AgentConfigSetupTest.cpp",  # bazelify: exclude
         "AgentConfigVerifyQosTests.cpp",  # bazelify: exclude
-||||||| cd4e0b49f5
-        "AgentConfigSetupTest.cpp",
-        "AgentConfigVerifyQosTests.cpp",
-=======
-        "AgentAsicDefaultProgrammingTests.cpp",
-        "AgentConfigSetupTest.cpp",
-        "AgentConfigVerifyQosTests.cpp",
->>>>>>> fa2cbb1024bde6617e7ebcc238ccc8f618ffc5af
         "AgentCoppTests.cpp",
         "AgentDeepPacketInspectionTests.cpp",
         "AgentDiagShellStressTests.cpp",
@@ -208,14 +200,8 @@ cpp_library(
         "AgentEcmpTrunkTests.cpp",
         "AgentEgressForwardingDiscardCounterTests.cpp",
         "AgentEmptyTests.cpp",
-<<<<<<< HEAD
-        "AgentHighFrequencyStatsTests.cpp",  # bazelify: exclude
-||||||| cd4e0b49f5
-        "AgentHighFrequencyStatsTests.cpp",
-=======
         "AgentFlexPortTests.cpp",
-        "AgentHighFrequencyStatsTests.cpp",
->>>>>>> fa2cbb1024bde6617e7ebcc238ccc8f618ffc5af
+        "AgentHighFrequencyStatsTests.cpp",  # bazelify: exclude
         "AgentHwAclMatchActionsTest.cpp",
         "AgentHwAclQualifierTest.cpp",
         "AgentHwAclStatTests.cpp",

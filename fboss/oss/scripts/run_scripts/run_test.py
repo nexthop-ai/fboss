@@ -19,11 +19,11 @@ from datetime import datetime, timezone
 from typing import ClassVar
 
 from fboss_agent_utils import (
-    FBOSS_AGENT_VOLATILE_STATE_DIR,
     agent_can_warm_boot_file_path,
     cleanup_hw_agent_service,
     cleanup_sw_agent_service,
     cold_boot_agents,
+    FBOSS_AGENT_VOLATILE_STATE_DIR,
     HW_AGENT_SERVICE_PROD,
     is_agent_running,
     setup_and_start_hw_agent_service,
@@ -32,12 +32,12 @@ from fboss_agent_utils import (
 )
 from fsdb_service_utils import cleanup_fsdb_service, setup_and_start_fsdb_service
 from nh_test_xml_utils import (
-    StreamTee,
     emit_test_boundary,
     exit_info,
     find_recent_core_dump,
     inject_streams_into_xml,
     pipe_to_tee,
+    StreamTee,
     write_synthetic_failure_xml,
 )
 from qsfp_service_utils import cleanup_qsfp_service, setup_and_start_qsfp_service
@@ -769,7 +769,6 @@ class TestRunner(abc.ABC):
                 ).encode()
         elif info["kind"] == "OK" and not xml_exists:
             run_test_result = (
-<<<<<<< HEAD
                 f"[       OK ] {test_prefix}{test_to_run} ({elapsed_ms} ms)"
             ).encode()
         else:
@@ -802,49 +801,6 @@ class TestRunner(abc.ABC):
             info=info,
             duration_sec=elapsed_sec,
         )
-||||||| cd4e0b49f5
-                "[  TIMEOUT ] "
-                + test_prefix
-                + test_to_run
-                + " ("
-                + str(test_run_timeout_in_second * 1000)
-                + " ms)"
-            ).encode("utf-8")
-        except subprocess.CalledProcessError as e:
-            # Test aborted, mark it as FAILED
-            print(f"Test aborted with return code {e.returncode}!", flush=True)
-            output = e.output.decode("utf-8") if e.output else None
-            print(f"Test output {output}", flush=True)
-            stderr = e.stderr.decode("utf-8") if e.stderr else None
-            print(f"Test error {stderr}", flush=True)
-            run_test_result = (
-                "[   FAILED ] " + test_prefix + test_to_run + " (0 ms)"
-            ).encode("utf-8")
-=======
-                "[  TIMEOUT ] "
-                + test_prefix
-                + test_to_run
-                + " ("
-                + str(test_run_timeout_in_second * 1000)
-                + " ms)"
-            ).encode("utf-8")
-        except subprocess.CalledProcessError as e:
-            # Test aborted, mark it as FAILED
-            elapsed_ms = int((time.time() - start_time) * 1000)
-            print(f"Test aborted with return code {e.returncode}!", flush=True)
-            output = e.output.decode("utf-8") if e.output else None
-            print(f"Test output {output}", flush=True)
-            stderr = e.stderr.decode("utf-8") if e.stderr else None
-            print(f"Test error {stderr}", flush=True)
-            run_test_result = (
-                "[   FAILED ] "
-                + test_prefix
-                + test_to_run
-                + " ("
-                + str(elapsed_ms)
-                + " ms)"
-            ).encode("utf-8")
->>>>>>> fa2cbb1024bde6617e7ebcc238ccc8f618ffc5af
         return run_test_result
 
     def _string_in_file(self, file_path, string):
@@ -942,7 +898,6 @@ class TestRunner(abc.ABC):
             return []
 
         test_outputs = []
-<<<<<<< HEAD
         test_results = []
         num_tests = len(tests_to_run)
 
@@ -950,63 +905,16 @@ class TestRunner(abc.ABC):
         file_name = os.path.basename(test_binary_name)
         disable_services(file_name)
         try:
-||||||| cd4e0b49f5
-        num_tests = len(tests_to_run)
-        for idx, test_to_run in enumerate(tests_to_run):
-            test_prefix = self.COLDBOOT_PREFIX
-            sai_replayer_log_path = self._get_sai_replayer_log_path(
-                test_prefix, test_to_run, args.sai_replayer_logging
-            )
-            # Run the test for coldboot verification
-            self._setup_coldboot_test(sai_replayer_log_path)
-            print("########## Running test: " + test_to_run, flush=True)
-            if args.simulator:
-                self._restart_bcmsim(args.simulator)
-            test_output = self._run_test(
-                conf_file,
-                test_prefix,
-                test_to_run,
-                warmboot,  # setup_warmboot
-                args.sai_logging,
-                args.fboss_logging,
-                sai_replayer_log_path,
-                args.test_run_timeout,
-            )
-            output = test_output.decode("utf-8")
-            print(
-                f"########## Coldboot test results ({idx + 1}/{num_tests}): {output}",
-                flush=True,
-            )
-            test_outputs.append(test_output)
-
-            # Run the test again for warmboot verification if the test supports it
-            if warmboot and os.path.isfile(self._get_warmboot_check_file()):
-                test_prefix = self.WARMBOOT_PREFIX
-=======
-        try:
-            self._setup_run(conf_file)
-            num_tests = len(tests_to_run)
->>>>>>> fa2cbb1024bde6617e7ebcc238ccc8f618ffc5af
             for idx, test_to_run in enumerate(tests_to_run):
                 test_prefix = self.COLDBOOT_PREFIX
                 sai_replayer_log_path = self._get_sai_replayer_log_path(
                     test_prefix, test_to_run, args.sai_replayer_logging
                 )
                 # Run the test for coldboot verification
-<<<<<<< HEAD
 
                 self._setup_coldboot_test(sai_replayer_log_path)
                 with suppress(FileNotFoundError):
                     os.unlink(self.TESTRESULT_CURRENT_RUN_FILE)
-||||||| cd4e0b49f5
-                self._setup_warmboot_test(sai_replayer_log_path)
-                print(
-                    "########## Verifying test with warmboot: " + test_to_run,
-                    flush=True,
-                )
-=======
-                self._setup_coldboot_test(sai_replayer_log_path)
->>>>>>> fa2cbb1024bde6617e7ebcc238ccc8f618ffc5af
                 print("########## Running test: " + test_to_run, flush=True)
                 if args.simulator:
                     self._restart_bcmsim(args.simulator)
@@ -1026,7 +934,6 @@ class TestRunner(abc.ABC):
                     flush=True,
                 )
                 test_outputs.append(test_output)
-<<<<<<< HEAD
                 test_results.append(
                     self.get_updated_test_result_with_classname_subscript("cold_boot")
                 )
@@ -1068,42 +975,6 @@ class TestRunner(abc.ABC):
 
         self._end_run()
         return test_outputs, test_results
-||||||| cd4e0b49f5
-        self._end_run()
-        return test_outputs
-=======
-
-                # Run the test again for warmboot verification if the test supports it
-                if warmboot and os.path.isfile(self._get_warmboot_check_file()):
-                    test_prefix = self.WARMBOOT_PREFIX
-                    sai_replayer_log_path = self._get_sai_replayer_log_path(
-                        test_prefix, test_to_run, args.sai_replayer_logging
-                    )
-                    self._setup_warmboot_test(sai_replayer_log_path)
-                    print(
-                        "########## Verifying test with warmboot: " + test_to_run,
-                        flush=True,
-                    )
-                    test_output = self._run_test(
-                        conf_file,
-                        test_prefix,
-                        test_to_run,
-                        False,  # setup_warmboot
-                        args.sai_logging,
-                        args.fboss_logging,
-                        sai_replayer_log_path,
-                        args.test_run_timeout,
-                    )
-                    output = test_output.decode("utf-8")
-                    print(
-                        f"########## Warmboot test results ({idx + 1}/{num_tests}): {output}",
-                        flush=True,
-                    )
-                    test_outputs.append(test_output)
-        finally:
-            self._end_run()
-        return test_outputs
->>>>>>> fa2cbb1024bde6617e7ebcc238ccc8f618ffc5af
 
     _GTEST_STATUS_MAP: ClassVar[dict[str, str]] = {
         "OK": "PASSED",
