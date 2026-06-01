@@ -1146,6 +1146,7 @@ add_dependencies(fboss_platform_services
   fw_util
   weutil
   data_corral_service
+  led_service
   # Utilities
   sensor_service_client
   fixmyfboss

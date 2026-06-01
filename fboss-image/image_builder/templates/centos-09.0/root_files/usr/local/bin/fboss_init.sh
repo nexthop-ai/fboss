@@ -103,6 +103,7 @@ setup_coop_configs() {
   mkdir -p "$COOP_DIR"
   copy_config "${platform_dir}/agent.conf" "${COOP_DIR}/agent.conf" "agent.conf"
   copy_config "${platform_dir}/qsfp.conf" "${COOP_DIR}/qsfp.conf" "qsfp.conf"
+  copy_config "${platform_dir}/led.conf" "${COOP_DIR}/led.conf" "led.conf"
 }
 
 enable_hw_agents() {
