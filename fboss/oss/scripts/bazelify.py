@@ -1399,14 +1399,31 @@ cc_library(
     # on sai_impl_headers (not the full sai_impl) so that sai_impl/include/ is
     # on the include path before libsai/experimental/, ensuring BCM-specific
     # extension headers take priority over the generic SAI stubs.
+    #
+    # The SAI implementations ship its experimental/extension headers in an
+    # include/experimental/ subdir (e.g. include/experimental/saiswitchextensions.h).
+    # These are included two different ways: libsai's own saiobject.h uses a bare
+    # <saiexperimentaldashtrustedvni.h>, while FBOSS sources use the prefixed
+    # <experimental/saiswitchextensions.h>.  sai_impl_headers' includes=["include"]
+    # already resolves the prefixed form; sai_impl_experimental_headers adds
+    # include/experimental/ to the include path so the bare form resolves too.
+    # Folding this into sai_impl_headers' deps means every consumer (libsai ->
+    # sai_api, and sai_impl -> sai_switch) picks up the experimental include path.
     if dep.name == "sai_impl":
         deps_list = ", ".join(f'"{d}"' for d in inter_deps) if inter_deps else ""
         full_deps = f'[":sai_impl_headers"{", " + deps_list if deps_list else ""}]'
         return f"""{load_stmt}
 cc_library(
+    name = "sai_impl_experimental_headers",
+    hdrs = glob(["include/experimental/*.h"], allow_empty = True),
+    includes = ["include/experimental"],
+    visibility = ["//visibility:public"],
+)
+cc_library(
     name = "sai_impl_headers",
     hdrs = glob(["include/**"]),
     includes = ["include"],
+    deps = [":sai_impl_experimental_headers"],
     visibility = ["//visibility:public"],
 )
 cc_library(
