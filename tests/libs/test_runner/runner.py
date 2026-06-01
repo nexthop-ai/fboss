@@ -324,6 +324,11 @@ class LinkTestRunner(BaseHwTestRunner):
             args += " --coldboot_only"
         return args
 
+    def post_test(self):
+        # The link gtest stops production qsfp_service / fsdb (via the
+        # internal cleanup_*_service helpers) but never restarts them.
+        self.ssh_client.run_cmd("sudo systemctl start fsdb qsfp_service")
+
 
 class PlatformTestRunner(BaseHwTestRunner):
     """Runner for platform services hardware tests.
