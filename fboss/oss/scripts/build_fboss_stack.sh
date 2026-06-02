@@ -104,6 +104,11 @@ perform_build() {
 
   log "perform_build Command: $0, ARGS: $build_suffix $output_suffix $sai_env_file"
 
+  # This build script always regenerates the final output artifact. Remove the
+  # previous one to prevent silent-failure problems.
+  rm -f "/output/${package_target}${output_suffix}.tar"
+  rm -f "/var/FBOSS/fboss/${package_target}.tar"
+
   # Source SAI build environment if provided
   if [ -n "$sai_env_file" ] && [ -f "$sai_env_file" ]; then
     # shellcheck disable=SC1090
