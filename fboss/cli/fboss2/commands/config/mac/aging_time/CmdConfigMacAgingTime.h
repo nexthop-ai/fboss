@@ -31,7 +31,7 @@ class MacAgingTimeArg : public utils::BaseObjectArgType<std::string> {
 struct CmdConfigMacAgingTimeTraits : public WriteCommandTraits {
   using ParentCmd = CmdConfigMac;
   static void addCliArg(CLI::App& cmd, std::vector<std::string>& args) {
-    cmd.add_option("seconds", args, "MAC aging time in seconds (1-1000000)");
+    cmd.add_option("seconds", args, "MAC aging time in seconds");
   }
   using ObjectArgType = MacAgingTimeArg;
   using RetType = std::string;

@@ -10,7 +10,6 @@
 #include "fboss/lib/platforms/PlatformProductInfo.h"
 #include "fboss/agent/FbossError.h"
 
-#include <boost/algorithm/string.hpp>
 #include <folly/FileUtil.h>
 #include <folly/MacAddress.h>
 #include <folly/json/dynamic.h>
@@ -194,7 +193,9 @@ void PlatformProductInfo::initMode() {
     } else if (
         modelName.find("JANGA800BIC") == 0 || modelName.find("JANGA") == 0) {
       type_ = PlatformType::PLATFORM_JANGA800BIC;
-    } else if (modelName.find("TAHANSB800BC") == 0) {
+    } else if (
+        modelName.find("TAHANSB800BC") == 0 ||
+        modelName.find("TAHANSB800BCM") == 0) {
       type_ = PlatformType::PLATFORM_TAHANSB800BC;
     } else if (
         modelName.find("TAHAN") == 0 || modelName.find("TAHAN800BC") == 0 ||
@@ -210,6 +211,8 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_ICETEA800BC;
     } else if (modelName.find("LADAKH800BCLS") == 0) {
       type_ = PlatformType::PLATFORM_LADAKH800BCLS;
+    } else if (modelName.find("LEH800BCLS") == 0) {
+      type_ = PlatformType::PLATFORM_LEH800BCLS;
     } else if (
         modelName.find("Icecube800banw") == 0 ||
         modelName.find("ICECUBE800BANW") == 0 ||
@@ -292,7 +295,7 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_NH4010F;
     } else if (FLAGS_mode == "wedge800bact") {
       type_ = PlatformType::PLATFORM_WEDGE800BACT;
-    } else if (FLAGS_mode == "tahansb800bc") {
+    } else if (FLAGS_mode == "tahansb800bc" || FLAGS_mode == "tahansb800bcm") {
       type_ = PlatformType::PLATFORM_TAHANSB800BC;
     } else if (FLAGS_mode == "wedge800cact") {
       type_ = PlatformType::PLATFORM_WEDGE800CACT;
@@ -302,6 +305,8 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_LADAKH800BCLS;
     } else if (FLAGS_mode == "wedge800bnhp") {
       type_ = PlatformType::PLATFORM_WEDGE800BNHP;
+    } else if (FLAGS_mode == "leh800bcls") {
+      type_ = PlatformType::PLATFORM_LEH800BCLS;
     } else if (FLAGS_mode == "icecube800banw") {
       type_ = PlatformType::PLATFORM_ICECUBE800BANW;
     } else if (FLAGS_mode == "blackwolf800banw") {

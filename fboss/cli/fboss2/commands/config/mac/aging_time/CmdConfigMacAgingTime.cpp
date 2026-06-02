@@ -67,7 +67,7 @@ CmdConfigMacAgingTimeTraits::RetType CmdConfigMacAgingTime::queryClient(
 }
 
 void CmdConfigMacAgingTime::printOutput(const RetType& output) {
-  std::cout << output << std::endl;
+  std::cout << output << "\n";
 }
 
 // Explicit template instantiation

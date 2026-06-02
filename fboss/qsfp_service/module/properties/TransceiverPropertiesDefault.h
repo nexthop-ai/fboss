@@ -11,6 +11,127 @@ namespace facebook::fboss {
 // Note: hex literals (e.g. 0x77) are supported via JSON5 parsing.
 constexpr auto kDefaultTransceiverPropertiesJson = R"({
   "smfTransceivers": {
+    "4": {
+      "firstApplicationAdvertisement": {
+        "mediaInterfaceCode": {"smfCode": 0x18},
+        "hostStartLanes": [0],
+        "hostInterfaceCode": 0x0F
+      },
+      "numHostLanes": 4,
+      "numMediaLanes": 4,
+      "displayName": "FR4_200G",
+      "diagnosticCapabilitiesExceptions": {
+        "doesNotSupportVdm": true,
+        "doesNotSupportRxOutputControl": true
+      },
+      "supportedSpeedCombinations": [
+        {
+          "combinationName": "1x200G-FR4",
+          "ports": [
+            {"speed": 200000, "hostLanes": {"start": 0, "count": 4}, "mediaLanes": {"start": 0, "count": 4}, "mediaLaneCode": {"smfCode": 0x18}, "mediaInterfaceCode": 4}
+          ]
+        },
+        {
+          "combinationName": "1x100G-CWDM4",
+          "ports": [
+            {"speed": 100000, "hostLanes": {"start": 0, "count": 4}, "mediaLanes": {"start": 0, "count": 4}, "mediaLaneCode": {"smfCode": 0x10}, "mediaInterfaceCode": 1}
+          ]
+        }
+      ],
+      "speedChangeTransitions": [
+        ["1x200G-FR4", "1x100G-CWDM4"]
+      ]
+    },
+    "5": {
+      "firstApplicationAdvertisement": {
+        "mediaInterfaceCode": {"smfCode": 0x1D},
+        "hostStartLanes": [0],
+        "hostInterfaceCode": 0x50
+      },
+      "smfLength": 2000,
+      "numHostLanes": 8,
+      "numMediaLanes": 4,
+      "displayName": "FR4_400G",
+      "supportedSpeedCombinations": [
+        {
+          "combinationName": "1x400G-FR4",
+          "ports": [
+            {"speed": 400000, "hostLanes": {"start": 0, "count": 8}, "mediaLanes": {"start": 0, "count": 4}, "mediaLaneCode": {"smfCode": 0x1D}, "mediaInterfaceCode": 5}
+          ]
+        },
+        {
+          "combinationName": "1x200G-FR4",
+          "ports": [
+            {"speed": 200000, "hostLanes": {"start": 0, "count": 4}, "mediaLanes": {"start": 0, "count": 4}, "mediaLaneCode": {"smfCode": 0x18}, "mediaInterfaceCode": 4}
+          ]
+        },
+        {
+          "combinationName": "1x100G-CWDM4",
+          "ports": [
+            {"speed": 100000, "hostLanes": {"start": 0, "count": 4}, "mediaLanes": {"start": 0, "count": 4}, "mediaLaneCode": {"smfCode": 0x10}, "mediaInterfaceCode": 1}
+          ]
+        }
+      ],
+      "speedChangeTransitions": [
+        ["1x400G-FR4", "1x200G-FR4"]
+      ]
+    },
+    "6": {
+      "firstApplicationAdvertisement": {
+        "mediaInterfaceCode": {"smfCode": 0x1E},
+        "hostStartLanes": [0],
+        "hostInterfaceCode": 0x50
+      },
+      "numHostLanes": 8,
+      "numMediaLanes": 4,
+      "displayName": "LR4_400G_10KM",
+      "supportedSpeedCombinations": [
+        {
+          "combinationName": "1x400G-LR4",
+          "ports": [
+            {"speed": 400000, "hostLanes": {"start": 0, "count": 8}, "mediaLanes": {"start": 0, "count": 4}, "mediaLaneCode": {"smfCode": 0x1E}, "mediaInterfaceCode": 6}
+          ]
+        },
+        {
+          "combinationName": "1x200G-FR4",
+          "ports": [
+            {"speed": 200000, "hostLanes": {"start": 0, "count": 4}, "mediaLanes": {"start": 0, "count": 4}, "mediaLaneCode": {"smfCode": 0x18}, "mediaInterfaceCode": 4}
+          ]
+        },
+        {
+          "combinationName": "1x100G-CWDM4",
+          "ports": [
+            {"speed": 100000, "hostLanes": {"start": 0, "count": 4}, "mediaLanes": {"start": 0, "count": 4}, "mediaLaneCode": {"smfCode": 0x10}, "mediaInterfaceCode": 1}
+          ]
+        }
+      ],
+      "speedChangeTransitions": [
+        ["1x400G-LR4", "1x200G-FR4"]
+      ]
+    },
+    "14": {
+      "firstApplicationAdvertisement": {
+        "mediaInterfaceCode": {"smfCode": 0x1C},
+        "hostStartLanes": [0],
+        "hostInterfaceCode": 0x50
+      },
+      "smfLength": 500,
+      "numHostLanes": 8,
+      "numMediaLanes": 4,
+      "displayName": "DR4_400G",
+      "diagnosticCapabilitiesExceptions": {
+        "doesNotSupportVdm": true,
+        "doesNotSupportRxOutputControl": true
+      },
+      "supportedSpeedCombinations": [
+        {
+          "combinationName": "1x400G-DR4",
+          "ports": [
+            {"speed": 400000, "hostLanes": {"start": 0, "count": 8}, "mediaLanes": {"start": 0, "count": 4}, "mediaLaneCode": {"smfCode": 0x1C}, "mediaInterfaceCode": 14}
+          ]
+        }
+      ]
+    },
     "11": {
       "firstApplicationAdvertisement": {
         "mediaInterfaceCode": {"smfCode": 0x1D},
@@ -266,6 +387,12 @@ constexpr auto kDefaultTransceiverPropertiesJson = R"({
           "ports": [
             {"speed": 100000, "hostLanes": {"start": 0, "count": 4}, "mediaLanes": {"start": 0, "count": 4}, "mediaLaneCode": {"smfCode": 0x10}, "mediaInterfaceCode": 1},
             {"speed": 100000, "hostLanes": {"start": 4, "count": 4}, "mediaLanes": {"start": 4, "count": 4}, "mediaLaneCode": {"smfCode": 0x10}, "mediaInterfaceCode": 1}
+          ]
+        },
+        {
+          "combinationName": "1x800G-2LR4",
+          "ports": [
+            {"speed": 800000, "hostLanes": {"start": 0, "count": 8}, "mediaLanes": {"start": 0, "count": 8}, "mediaLaneCode": {"smfCode": 0xC1}, "mediaInterfaceCode": 15}
           ]
         }
       ],

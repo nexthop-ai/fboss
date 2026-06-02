@@ -15,6 +15,7 @@
 #include <fmt/format.h>
 #include <algorithm>
 #include <iostream>
+#include <stdexcept>
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 
@@ -58,21 +59,22 @@ CmdConfigVlanDefaultTraits::RetType CmdConfigVlanDefault::queryClient(
       });
 
   if (oldVlanUsedAsIngress && !oldVlanHasInterface) {
-    return fmt::format(
-        "Refusing to change default VLAN from {} to {} because VLAN {} is "
-        "used as ingressVlan for one or more ports but has no interface. "
-        "Move those ports to a different VLAN or attach an interface before "
-        "changing the default.",
-        currentDefault,
-        vlanId,
-        currentDefault);
+    throw std::invalid_argument(
+        fmt::format(
+            "Refusing to change default VLAN from {} to {} because VLAN {} is "
+            "used as ingressVlan for one or more ports but has no interface. "
+            "Move those ports to a different VLAN or attach an interface before "
+            "changing the default.",
+            currentDefault,
+            vlanId,
+            currentDefault));
   }
 
   // New default VLAN handling:
   // 3) If the new VLAN already exists in the VLAN table, do not touch it;
   //    just update sw.defaultVlan.
   // 4) If the new VLAN does not exist, create a non-routable placeholder
-  //    entry for it (no interface), consistent with simulator expectations.
+  //    entry for it (no interface).
   auto& vlans = *swConfig.vlans();
   auto findById = [](auto& vlanList, int id) {
     return std::find_if(

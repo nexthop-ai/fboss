@@ -2970,6 +2970,9 @@ void SaiSwitch::linkStateChangedBottomHalf(const PortID& portId) {
 
 void SaiSwitch::linkStateChangedCallbackBottomHalf(
     std::vector<sai_port_oper_status_notification_t> operStatus) {
+  if (getSwitchRunState() == SwitchRunState::EXITING) {
+    return;
+  }
   // Store both link status AND port type from concurrentIndices_ to avoid
   // race condition. The port2PortType_ map in SaiPortManager is not thread-safe
   // (std::unordered_map), while concurrentIndices_->portSaiId2PortInfo is
@@ -3118,6 +3121,9 @@ void SaiSwitch::txReadyStatusChangeCallbackTopHalf(SwitchSaiId switchId) {
 void SaiSwitch::txReadyStatusChangeOrFwIsolateCallbackBottomHalf(
     bool fwIsolated,
     const std::optional<uint32_t>& numActiveFabricPortsAtFwIsolate) {
+  if (getSwitchRunState() == SwitchRunState::EXITING) {
+    return;
+  }
 #if SAI_API_VERSION >= SAI_VERSION(1, 13, 0)
   {
     auto changePending = txReadyStatusChangePending_.wlock();
@@ -3198,6 +3204,9 @@ void SaiSwitch::fwDisabledLinksCallbackBottomHalf(
 void SaiSwitch::linkConnectivityChanged(
     const std::map<PortID, multiswitch::FabricConnectivityDelta>&
         connectivityDelta) {
+  if (getSwitchRunState() == SwitchRunState::EXITING) {
+    return;
+  }
   callback_->linkConnectivityChanged(connectivityDelta);
 }
 
@@ -3319,6 +3328,9 @@ std::map<SwitchID, std::set<PortID>> SaiSwitch::getSwitchReachabilityChange() {
 
 void SaiSwitch::processSwitchReachabilityChange(
     const std::map<SwitchID, std::set<PortID>>& reachabilityInfo) {
+  if (getSwitchRunState() == SwitchRunState::EXITING) {
+    return;
+  }
   callback_->switchReachabilityChanged(
       SwitchID(platform_->getAsic()->getSwitchId().value()), reachabilityInfo);
 }
@@ -4667,6 +4679,9 @@ void SaiSwitch::fdbEventCallback(
 
 void SaiSwitch::fdbEventCallbackLockedBottomHalf(
     std::vector<FdbEventNotificationData> fdbNotifications) {
+  if (getSwitchRunState() == SwitchRunState::EXITING) {
+    return;
+  }
   std::vector<std::pair<L2Entry, L2EntryUpdateType>> l2Entries;
   {
     auto lock = std::lock_guard<std::mutex>(saiSwitchMutex_);
@@ -5452,6 +5467,9 @@ void SaiSwitch::pfcDeadlockNotificationCallbackTopHalf(
 void SaiSwitch::pfcDeadlockNotificationCallbackBottomHalf(
     uint32_t count,
     const sai_queue_deadlock_notification_data_t* data) {
+  if (getSwitchRunState() == SwitchRunState::EXITING) {
+    return;
+  }
   for (int idx = 0; idx < count; ++idx) {
     auto queueSaiId = static_cast<QueueSaiId>(data[idx].queue_id);
     XLOG(DBG2) << "queue_id " << data[idx].queue_id;
@@ -5731,6 +5749,9 @@ void SaiSwitch::switchAsicSdkHealthNotificationTopHalf(
 
 void SaiSwitch::switchAsicSdkHealthNotificationBottomHalf(
     SaiHealthNotification saiHealthNotification) {
+  if (getSwitchRunState() == SwitchRunState::EXITING) {
+    return;
+  }
   if (saiHealthNotification.asicError()) {
     getSwitchStats()->asicError();
   }

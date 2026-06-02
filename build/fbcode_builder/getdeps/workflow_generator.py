@@ -87,7 +87,8 @@ class GenerateGitHubActionsCmd(ProjectCmdBase):
 
         run_tests = args.enable_tests and gh("run_tests") != "off"
         rust_version = gh("rust_version") or "stable"
-        use_sccache = gh("sccache") != "off" and not build_opts.is_windows()
+        use_sccache = gh("sccache") != "off"
+        use_homebrew_llvm = build_opts.is_darwin()
         override_build_type = args.build_type or gh("build_type")
         timeout_minutes = gh("timeout_minutes") or "60"
         if run_tests:
@@ -126,6 +127,7 @@ class GenerateGitHubActionsCmd(ProjectCmdBase):
             run_tests=run_tests,
             rust_version=rust_version,
             use_sccache=use_sccache,
+            use_homebrew_llvm=use_homebrew_llvm,
             override_build_type=override_build_type,
             timeout_minutes=timeout_minutes,
             tests_arg=tests_arg,
@@ -150,6 +152,7 @@ class GenerateGitHubActionsCmd(ProjectCmdBase):
         run_tests: bool,
         rust_version: str,
         use_sccache: bool,
+        use_homebrew_llvm: bool,
         override_build_type,
         timeout_minutes,
         tests_arg: str,
@@ -167,6 +170,9 @@ class GenerateGitHubActionsCmd(ProjectCmdBase):
             env_lines.append(
                 "DEVELOPER_DIR: /Applications/Xcode_16.2.app/Contents/Developer"
             )
+        if use_homebrew_llvm:
+            env_lines.append("CC: /opt/homebrew/opt/llvm/bin/clang")
+            env_lines.append("CXX: /opt/homebrew/opt/llvm/bin/clang++")
         if use_sccache:
             env_lines.append('SCCACHE_GHA_ENABLED: "on"')
 
@@ -193,8 +199,6 @@ class GenerateGitHubActionsCmd(ProjectCmdBase):
             build_type_arg = f"--build-type {override_build_type} "
         if args.shared_lib:
             build_type_arg += "--shared-lib "
-
-        free_up_disk_arg = "--free-up-disk " if build_opts.free_up_disk else ""
 
         allow_sys_arg = ""
         system_deps = None
@@ -248,8 +252,6 @@ class GenerateGitHubActionsCmd(ProjectCmdBase):
 
         projects = loader.manifests_in_dependency_order()
         main_repo_url = manifest.get_repo_url(manifest_ctx)
-        has_same_repo_dep = False
-
         # Rust install detection (rust dep has no manifest entry)
         emit_rust = False
         for m in projects:
@@ -268,47 +270,17 @@ class GenerateGitHubActionsCmd(ProjectCmdBase):
             if m.get_repo_url(mctx) != main_repo_url:
                 same_repo_fetches.append(m.name)
 
-        deps = []
-        for m in projects:
-            if m == manifest or m.name == "rust":
-                continue
-            src_dir_arg = ""
-            mctx = loader.ctx_gen.get_context(m.name)
-            if main_repo_url and m.get_repo_url(mctx) == main_repo_url:
-                src_dir_arg = "--src-dir=. "
-                has_same_repo_dep = True
-            use_cache = bool(args.use_build_cache and not src_dir_arg)
-            if src_dir_arg:
-                if_clause = ""
-            elif args.use_build_cache:
-                if_clause = (
-                    f"steps.paths.outputs.{m.name}_SOURCE && "
-                    f"! steps.restore_{m.name}.outputs.cache-hit"
-                )
-            else:
-                if_clause = f"steps.paths.outputs.{m.name}_SOURCE"
-            build_cmd = (
-                f"{getdepscmd}{allow_sys_arg} build {build_type_arg}{src_dir_arg}"
-                f"{free_up_disk_arg}--no-tests {m.name}{cmake_arg_for(m.name)}"
-            )
-            deps.append(
-                {
-                    "name": m.name,
-                    "use_cache": use_cache,
-                    "if_clause": if_clause,
-                    "build_cmd": build_cmd,
-                }
-            )
-
         project_prefix = ""
         if not build_opts.is_windows():
             prefix = loader.get_project_install_prefix(manifest) or "/usr/local"
             project_prefix = f" --project-install-prefix {manifest.name}:{prefix}"
 
-        no_deps_arg = "--no-deps " if has_same_repo_dep else ""
+        # Build all transitive deps and the project in a single recursive pass.
+        # sccache handles compile-unit caching; per-dep actions/cache
+        # round-trips are net-negative at typical sccache hit rates.
         final_build_cmd = (
             f"{getdepscmd}{allow_sys_arg} build {build_type_arg}{tests_arg}"
-            f"{no_deps_arg}--src-dir=. {manifest.name}{project_prefix}"
+            f"--src-dir=. {manifest.name}{project_prefix}"
             f"{cmake_arg_for(manifest.name)}"
         )
 
@@ -338,6 +310,7 @@ class GenerateGitHubActionsCmd(ProjectCmdBase):
             "is_darwin": build_opts.is_darwin(),
             "is_windows": build_opts.is_windows(),
             "use_sccache": use_sccache,
+            "use_homebrew_llvm": use_homebrew_llvm,
             "free_up_disk": build_opts.free_up_disk,
             "free_up_disk_before_build": args.free_up_disk_before_build,
             "system_deps": system_deps,
@@ -346,7 +319,6 @@ class GenerateGitHubActionsCmd(ProjectCmdBase):
             "rust_version_cap": rust_version.capitalize() if emit_rust else None,
             "fetch_cmd_prefix": f"{getdepscmd}{allow_sys_arg} fetch --no-tests ",
             "same_repo_fetches": same_repo_fetches,
-            "deps": deps,
             "project_name": manifest.name,
             "final_build_cmd": final_build_cmd,
             "copy_artifacts_cmd": copy_artifacts_cmd,
@@ -422,13 +394,6 @@ class GenerateGitHubActionsCmd(ProjectCmdBase):
             default=False,
         )
         parser.add_argument("--build-type", **BUILD_TYPE_ARG)
-        parser.add_argument(
-            "--no-build-cache",
-            action="store_false",
-            default=True,
-            dest="use_build_cache",
-            help="Do not attempt to use the build cache.",
-        )
         parser.add_argument(
             "--package-extra-cmake-defines",
             action="append",
