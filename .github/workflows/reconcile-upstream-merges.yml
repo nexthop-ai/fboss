@@ -1,0 +1,70 @@
+name: Reconcile Upstream Merges
+
+# Detect upstream PRs that meta-codesync closed after Meta landed them, compare
+# what landed against what we submitted, and either open a reconcile PR in
+# private-fboss carrying Meta's amendments or delete the stale source branch on
+# the nexthop-ai/fboss staging fork.
+#
+# All interaction with facebook/fboss is read-only; writes only touch repos we
+# own (nexthop-ai/private-fboss and nexthop-ai/fboss).
+
+on:
+  schedule:
+    # Every 6 hours at :17 — offset from the upstream-sync cron (:42) so they
+    # don't contend. The script bounds each cycle to PRs closed since this
+    # workflow's last successful run, so the cadence only affects latency.
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Report actions without making any changes"
+        type: boolean
+        default: false
+      pr:
+        description: "Process a single upstream PR number (optional)"
+        type: string
+        default: ""
+      lookback_days:
+        description: "Fallback scan window when there is no prior run"
+        type: string
+        default: "30"
+
+# Serialize runs so two cycles can't race on the same reconcile branch.
+concurrency:
+  group: reconcile-upstream-merges
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    name: Reconcile upstream merges
+    runs-on: cloudstack-ubuntu24-small
+    steps:
+      - name: Checkout repository
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "rabbit-nexthop"
+          git config --global user.email "rabbit@nexthop.ai"
+          git config --global diff.algorithm histogram
+
+      - name: Reconcile
+        env:
+          # Needs read on facebook/fboss and write on both nexthop-ai/fboss and
+          # nexthop-ai/private-fboss.
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          args=()
+          if [[ "${{ inputs.dry_run }}" == "true" ]]; then
+            args+=(--dry-run)
+          fi
+          if [[ -n "${{ inputs.pr }}" ]]; then
+            args+=(--pr "${{ inputs.pr }}")
+          fi
+          if [[ -n "${{ inputs.lookback_days }}" ]]; then
+            args+=(--lookback-days "${{ inputs.lookback_days }}")
+          fi
+          .github/scripts/reconcile-upstream-merges.py "${args[@]}"
