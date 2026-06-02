@@ -17,19 +17,39 @@ Features:
 """
 
 import getpass
+import hashlib
 import subprocess
 import sys
 
 USERNAME = getpass.getuser()
 DEFAULT_IMAGE_NAME = f"fboss_sim_runtime_{USERNAME}"
 DEFAULT_CONTAINER_NAME = f"fboss_sim_runtime_{USERNAME}"
+
+
+def user_subnet_v6(username: str) -> str:
+    """Derive a per-user /64 ULA subnet from a stable hash of the username.
+
+    The subnet must be unique per user: Docker rejects a `network create` whose
+    pool overlaps an existing one, so two users sharing a host would otherwise
+    collide on a hardcoded subnet. We keep `fd00:fb05` as the identifying
+    fboss-sim prefix and fill the next two hextets (32 bits, ~4 billion buckets)
+    from a hash, making collisions between users vanishingly unlikely. SHA-256
+    rather than the builtin hash() so the value is stable across processes
+    (hash() is randomized per interpreter run via PYTHONHASHSEED).
+    """
+    digest = hashlib.sha256(username.encode()).digest()
+    hextet1 = (digest[0] << 8) | digest[1]
+    hextet2 = (digest[2] << 8) | digest[3]
+    return f"fd00:fb05:{hextet1:x}:{hextet2:x}::/64"
+
+
 # User-defined network with IPv6 enabled.
 # Docker sets net.ipv6.conf.eth0.disable_ipv6=1 on the default bridge, which
 # causes folly/Thrift (using getaddrinfo+AI_ADDRCONFIG) to bind 0.0.0.0 only.
 # A user-defined network with --ipv6 avoids that and gives the container a real
 # non-loopback IPv6 address, so AI_ADDRCONFIG returns AF_INET6 results.
 NETWORK_NAME = f"fboss_sim_net_{USERNAME}"
-NETWORK_SUBNET_V6 = "fd00:fb05:5::/64"
+NETWORK_SUBNET_V6 = user_subnet_v6(USERNAME)
 
 
 def ensure_network(network_name: str) -> None:
