@@ -21,6 +21,29 @@ python3 fboss-sim/scripts/fboss-sim-docker-run.py
 docker exec fboss_sim_runtime_${USER} /opt/fboss/bin/fboss2_integration_test
 ```
 
+### Worktree
+
+Each worktree gets its own isolated build container with a separate cmake cache.
+
+```bash
+# 1. Enter worktree build container with SAI_IMPL=fake
+./fboss/oss/scripts/nhfboss-docker-enter.py --worktree $PWD --env SAI_IMPL=fake
+# The container name is printed on creation — save it for step 2.
+# Inside container:
+./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss_fake_agent_targets
+./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss2_targets
+
+# 2. Build runtime image (pass the container name from step 1)
+python3 fboss-sim/scripts/fboss-sim-docker-package.py \
+  --container-name FBOSS_build_worktree-<name>-<hash>
+
+# 3. Start the container
+python3 fboss-sim/scripts/fboss-sim-docker-run.py
+
+# 4. Run integration test
+docker exec fboss_sim_runtime_${USER} /opt/fboss/bin/fboss2_integration_test
+```
+
 ## Agent Modes
 
 **Split mode** (default): `fboss_sw_agent` + `fboss_hw_agent@0` run as separate systemd services.

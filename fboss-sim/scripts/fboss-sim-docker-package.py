@@ -285,14 +285,14 @@ def is_container_running(container_name: str) -> bool:
     return result.returncode == 0 and result.stdout.strip() == "true"
 
 
-def ensure_container_running() -> bool:
+def ensure_container_running(container_name: str) -> bool:
     """Ensure the build container is running, using nhfboss-docker-enter.py.
 
     That script handles both cases: create the container if it doesn't exist,
     or start it if it's stopped. When run non-interactively (no TTY) it starts
     the container as a daemon and returns.
     """
-    if is_container_running(BUILD_CONTAINER_NAME):
+    if is_container_running(container_name):
         return True
 
     enter_script = Path(__file__).parent.parent.parent / "fboss" / "oss" / "scripts" / "nhfboss-docker-enter.py"
@@ -310,19 +310,19 @@ def ensure_container_running() -> bool:
         stdout=subprocess.DEVNULL,
         check=False,
     )
-    return is_container_running(BUILD_CONTAINER_NAME)
+    return is_container_running(container_name)
 
 
-def collect_inside_container() -> None:
+def collect_inside_container(container_name: str) -> None:
     """Run --collect-only inside the build container via docker exec.
 
     The build container runs CentOS so ldd resolves system libs correctly
     (libre2.so.9, libnl, libsodium, etc.) rather than Ubuntu host libs.
     """
     container_script = f"{CONTAINER_REPO_PATH}/fboss-sim/scripts/fboss-sim-docker-package.py"
-    print(f"  → Running collect step inside {BUILD_CONTAINER_NAME}...")
+    print(f"  → Running collect step inside {container_name}...")
     result = subprocess.run(
-        ["docker", "exec", BUILD_CONTAINER_NAME, "python3", container_script, "--collect-only"],
+        ["docker", "exec", container_name, "python3", container_script, "--collect-only"],
         check=False,
     )
     if result.returncode != 0:
@@ -337,6 +337,12 @@ def main():
         "--collect-only",
         action="store_true",
         help="Only collect binaries/libs into tmp_build_dir (run inside build container)",
+    )
+    parser.add_argument(
+        "--container-name",
+        default=BUILD_CONTAINER_NAME,
+        help=f"Build container name (default: {BUILD_CONTAINER_NAME}). "
+        "Use when building from a worktree container.",
     )
     args = parser.parse_args()
 
@@ -366,12 +372,13 @@ def main():
 
     # Host path: collect inside build container (correct CentOS libs for ldd),
     # then run docker build here where the Docker daemon is available.
+    container_name = args.container_name
     try:
-        if not ensure_container_running():
-            print(f"\n❌ Error: Could not start build container '{BUILD_CONTAINER_NAME}'.")
+        if not ensure_container_running(container_name):
+            print(f"\n❌ Error: Could not start build container '{container_name}'.")
             print("   Try manually: ./fboss/oss/scripts/nhfboss-docker-enter.py")
             sys.exit(1)
-        collect_inside_container()
+        collect_inside_container(container_name)
         ret = build_runtime_image(repo_path)
     finally:
         shutil.rmtree(dest_dir, ignore_errors=True)

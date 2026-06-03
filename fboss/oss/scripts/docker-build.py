@@ -317,7 +317,8 @@ def run_fboss_build(  # noqa: PLR0912, PLR0915
     dot_files: Optional[list],
     build: bool = True,
     daemon: bool = False,
-    sdk_path: Optional[str] = None,
+    source_path: Optional[str] = None,
+    extra_mounts: Optional[list[str]] = None,
 ):
     use_stable_hashes()
 
@@ -335,8 +336,9 @@ def run_fboss_build(  # noqa: PLR0912, PLR0915
             )
 
     # Mount fboss repository in container
+    repo_source = source_path if source_path else str(get_repo_path())
     cmd_args.append("-v")
-    cmd_args.append(f"{get_repo_path()}:{CONTAINER_WORKDIR}:z")
+    cmd_args.append(f"{repo_source}:{CONTAINER_WORKDIR}:z")
     # Add args for directory mount for build output.
     cmd_args.append("-v")
     cmd_args.append(f"{scratch_path}:{CONTAINER_SCRATCH_PATH}:z")
@@ -355,8 +357,9 @@ def run_fboss_build(  # noqa: PLR0912, PLR0915
         cmd_args.append("-it")
     if extras_dir:
         cmd_args.extend(["-v", f"{extras_dir}:/var/extras:rw"])
-    if sdk_path:
-        cmd_args.extend(["-v", f"{sdk_path}:/opt/sdk:z"])
+    if extra_mounts:
+        for mount in extra_mounts:
+            cmd_args.extend(["-v", mount])
 
     # Mount dotfiles if requested
     home_dir = os.path.expanduser("~")
