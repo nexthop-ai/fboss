@@ -1354,4 +1354,6 @@ if (GITHUB_ACTIONS_BUILD)
 endif()
 
 # FBOSS Image Builder distro_cli tests
+# cFBOSS stubs: defined when BUILD_CFBOSS=ON; CfbossStubs.cmake returns early otherwise.
+include(${CMAKE_CURRENT_SOURCE_DIR}/cfboss/cmake/CfbossStubs.cmake)
 include(cmake/FbossImageDistroCliTests.cmake)

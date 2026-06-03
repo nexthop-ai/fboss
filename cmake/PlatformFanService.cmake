@@ -65,16 +65,22 @@ target_link_libraries(fan_service_lib
   asic_temp_cpp2
 )
 
+if(NOT BUILD_CFBOSS)
 add_executable(fan_service
   fboss/platform/fan_service/Main.cpp
 )
+endif()
 
+if(NOT BUILD_CFBOSS)
 target_link_libraries(fan_service
   fan_service_lib
   fb303::fb303
 )
+endif()
 
+if(NOT BUILD_CFBOSS)
 install(TARGETS fan_service)
+endif()
 
 add_executable(fan_service_sw_test
   fboss/platform/fan_service/tests/ConfigValidatorTest.cpp

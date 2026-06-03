@@ -223,9 +223,11 @@ target_link_libraries(platform_manager_handler
   platform_manager_snapshot_builder
 )
 
+if(NOT BUILD_CFBOSS)
 add_executable(platform_manager
   fboss/platform/platform_manager/Main.cpp
 )
+endif()
 
 add_library(platform_manager_snapshot_builder
   fboss/platform/platform_manager/PlatformSnapshotBuilder.cpp
@@ -237,6 +239,7 @@ target_link_libraries(platform_manager_snapshot_builder
   platform_manager_data_store
 )
 
+if(NOT BUILD_CFBOSS)
 target_link_libraries(platform_manager
   fb303::fb303
   platform_config_lib
@@ -262,5 +265,8 @@ target_link_libraries(platform_manager
   range-v3
   structured_logger
 )
+endif()
 
+if(NOT BUILD_CFBOSS)
 install(TARGETS platform_manager)
+endif()

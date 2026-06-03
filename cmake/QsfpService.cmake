@@ -479,6 +479,7 @@ set(QSFP_SERVICE_DEPS
   qsfp_handler
 )
 
+if(NOT BUILD_CFBOSS)
 if(SAI_BRCM_PAI_IMPL)
   BUILD_AND_INSTALL_WITH_XPHY_SDK_LIBS(
     "qsfp_service" QSFP_SERVICE_SRCS QSFP_SERVICE_DEPS "brcm_pai" XPHY_SDK_LIBS
@@ -510,3 +511,4 @@ target_link_libraries(fboss_pai_diag_shell_client
 )
 
 install(TARGETS fboss_pai_diag_shell_client)
+endif()

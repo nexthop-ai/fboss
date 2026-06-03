@@ -57,13 +57,17 @@ target_link_libraries(data_corral_service_lib
   data_corral_service_config_validator
 )
 
+if(NOT BUILD_CFBOSS)
 add_executable(data_corral_service
   fboss/platform/data_corral_service/Main.cpp
 )
+endif()
 
+if(NOT BUILD_CFBOSS)
 target_link_libraries(data_corral_service
   data_corral_service_lib
 )
+endif()
 
 add_executable(data_corral_service_hw_test
   fboss/platform/data_corral_service/hw_test/DataCorralServiceHwTest.cpp

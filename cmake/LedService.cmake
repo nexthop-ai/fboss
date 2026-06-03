@@ -146,14 +146,20 @@ target_link_libraries(led_core_lib
   led_service_types_cpp2
 )
 
+if(NOT BUILD_CFBOSS)
 add_executable(led_service
   fboss/led_service/Main.cpp
 )
+endif()
 
+if(NOT BUILD_CFBOSS)
 target_link_libraries(led_service
   led_core_lib
   platform_utils
   fb303::fb303
 )
+endif()
 
+if(NOT BUILD_CFBOSS)
 install(TARGETS led_service)
+endif()

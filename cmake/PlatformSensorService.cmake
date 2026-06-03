@@ -92,14 +92,18 @@ target_link_libraries(sensor_service_lib
   fsdb_flags
 )
 
+if(NOT BUILD_CFBOSS)
 add_executable(sensor_service
   fboss/platform/sensor_service/Main.cpp
 )
+endif()
 
+if(NOT BUILD_CFBOSS)
 target_link_libraries(sensor_service
   sensor_service_lib
   fb303::fb303
 )
+endif()
 
 add_executable(sensor_service_client
   fboss/platform/sensor_service/SensorServicePlainTextClient.cpp
@@ -114,7 +118,9 @@ target_link_libraries(sensor_service_client
   CLI11::CLI11
 )
 
+if(NOT BUILD_CFBOSS)
 install(TARGETS sensor_service)
+endif()
 
 # TODO: paulcruz74 for the sake for consistency, this should technically live in `PlatformSensorServiceHwTest.cmake`
 add_executable(sensor_service_hw_test
