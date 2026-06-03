@@ -208,6 +208,7 @@ DEFAULT_TEST_RUN_TIMEOUT_IN_SECOND = 1200
 _SAI_AGENT_DISABLE_SERVICES = [
     "fboss_sw_agent",
     "fboss_hw_agent@0",
+    "bgp_pp",
 ]
 
 # Shared by SAI hw_test and link binaries: prod agents hold port 5909 /
