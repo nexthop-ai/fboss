@@ -84,6 +84,12 @@ _LINK_TEST_CONFIG_NAME: dict[str, str] = {
     "minipack3": "montblanc",
 }
 
+# ACT DUTs use the NHP qsfp_test_config so we don't have to touch the
+# upstream bact config.
+_QSFP_TEST_CONFIG_NAME: dict[str, str] = {
+    "wedge800bact": "wedge800bnhp",
+}
+
 
 class BaseHwTestRunner(ABC):
     """Base class for hardware test runners."""
@@ -325,7 +331,8 @@ class QsfpTestRunner(BaseHwTestRunner):
     """Runner for QSFP hardware tests."""
 
     def test_args(self, hwsku: str) -> str:
-        return f"qsfp --qsfp-config /etc/coop/qsfp.conf"
+        config_name = _QSFP_TEST_CONFIG_NAME.get(hwsku, hwsku)
+        return f"qsfp --qsfp-config ./share/qsfp_test_configs/{config_name}.materialized_JSON"
 
 
 class LinkTestRunner(BaseHwTestRunner):
