@@ -16,7 +16,7 @@ repos:
     rev: v3.11.0-1
     hooks:
       - id: shfmt
-        args: [-w, -s, -i, '2']
+        args: [-w, -s, -i, "2"]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
@@ -37,6 +37,21 @@ repos:
       # Ruff formatter for all Python files in fboss/
       - id: ruff-format
         files: ^fboss/
+  - repo: local
+    hooks:
+      - id: clang-include-cleaner
+        name: clang-include-cleaner
+        entry: |
+          bash -c '
+            cmd="clang-include-cleaner -p /var/FBOSS/tmp_bld_dir/build/fboss --edit"
+            if [ -d /var/FBOSS ]; then
+              $cmd "$@"
+            else
+              docker exec -w /var/FBOSS/fboss FBOSS_build_$USER $cmd "$@"
+            fi
+          ' --
+        language: system
+        types_or: [c++, c]
   - repo: local
     hooks:
       - id: do-not-change-fboss-manifests
