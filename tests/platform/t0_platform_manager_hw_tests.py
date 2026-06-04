@@ -1,6 +1,7 @@
 # Platform manager hardware tests
 # NOTE: run_test.py automatically stops platform_manager, sensor_service,
-# fan_service, data_corral_service, and qsfp_service before running these tests
+# fan_service, data_corral_service, qsfp_service, and led_service before
+# running these tests
 test_context = {
     "filters": [
         "*PlatformManagerHwTest*",

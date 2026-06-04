@@ -226,6 +226,7 @@ TEST_DISABLE_SERVICES = {
         "fan_service",
         "data_corral_service",
         "qsfp_service",
+        "led_service",
     ],
     SUB_CMD_SAI_BINARY: _SAI_DISABLE_SERVICES,
     SUB_CMD_SAI_AGENT_MONO_BINARY: _SAI_AGENT_DISABLE_SERVICES,
