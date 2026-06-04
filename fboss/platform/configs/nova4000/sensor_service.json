@@ -24,15 +24,6 @@
             "lowerCriticalVal": 9
           },
           "compute": "@/1000.0"
-        },
-        {
-          "name": "SCM_TEMP_SENSOR",
-          "sysfsPath": "/run/devmap/sensors/SCM_TEMP_SENSOR/temp1_input",
-          "type": 3,
-          "thresholds": {
-            "upperCriticalVal": 85
-          },
-          "compute": "@/1000.0"
         }
       ]
     },
@@ -40,6 +31,72 @@
       "slotPath": "/SMB_SLOT@0",
       "pmUnitName": "SMB",
       "sensors": [
+        {
+          "name": "ASIC_TEMP_MAX_RAW",
+          "sysfsPath": "/run/devmap/sensors/ASIC_TEMP/th6_temp_max_raw",
+          "type": 3,
+          "thresholds": {
+            "upperCriticalVal": 8191
+          }
+        },
+        {
+          "name": "ASIC_TEMP_MIN_RAW",
+          "sysfsPath": "/run/devmap/sensors/ASIC_TEMP/th6_temp_min_raw",
+          "type": 3,
+          "thresholds": {
+            "upperCriticalVal": 8191
+          }
+        },
+        {
+          "name": "SWITCH_CARD_REAR",
+          "sysfsPath": "/run/devmap/sensors/SWITCH_CARD_TEMP_SENSOR/temp1_input",
+          "type": 3,
+          "thresholds": {
+            "maxAlarmVal": 87,
+            "upperCriticalVal": 125
+          },
+          "compute": "@/1000.0"
+        },
+        {
+          "name": "CHASSIS_INTAKE",
+          "sysfsPath": "/run/devmap/sensors/SWITCH_CARD_TEMP_SENSOR/temp2_input",
+          "type": 3,
+          "thresholds": {
+            "maxAlarmVal": 55,
+            "upperCriticalVal": 125
+          },
+          "compute": "@/1000.0"
+        },
+        {
+          "name": "ASIC_DIODE_0",
+          "sysfsPath": "/run/devmap/sensors/SWITCH_CARD_TEMP_SENSOR/temp3_input",
+          "type": 3,
+          "thresholds": {
+            "maxAlarmVal": 115,
+            "upperCriticalVal": 122
+          },
+          "compute": "@/1000.0"
+        },
+        {
+          "name": "ASIC_DIODE_1",
+          "sysfsPath": "/run/devmap/sensors/SWITCH_CARD_TEMP_SENSOR/temp4_input",
+          "type": 3,
+          "thresholds": {
+            "maxAlarmVal": 115,
+            "upperCriticalVal": 122
+          },
+          "compute": "@/1000.0"
+        },
+        {
+          "name": "ASIC_DIODE_2",
+          "sysfsPath": "/run/devmap/sensors/SWITCH_CARD_TEMP_SENSOR/temp5_input",
+          "type": 3,
+          "thresholds": {
+            "maxAlarmVal": 115,
+            "upperCriticalVal": 122
+          },
+          "compute": "@/1000.0"
+        },
         {
           "name": "FAN1_RPM",
           "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan1_input",
@@ -155,7 +212,7 @@
     {
       "name": "ASIC",
       "temperatureSensorNames": [
-        "SCM_TEMP_SENSOR"
+        "ASIC_TEMP_MAX_RAW"
       ]
     }
   ],
