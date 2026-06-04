@@ -55,6 +55,20 @@ def _sai_skip_known_bad(hwsku: str) -> str:
     return f" --skip-known-bad-tests {key}" if key else ""
 
 
+def _benchmark_skip_known_bad(hwsku: str) -> str:
+    # sai_bench.materialized_JSON keys on vendor/sdk/asic (3-part), unlike the SAI
+    # known-bad files which use vendor/coldboot-sai/warmboot-sai/asic. Collapse the
+    # duplicated SDK segment so the benchmark platform key matches the config;
+    # otherwise the lookup misses and unsupported (VOQ/Fabric/SRv6) benchmarks run.
+    key = _SAI_KNOWN_BAD_KEY.get(hwsku)
+    if not key:
+        return ""
+    parts = key.split("/")
+    if len(parts) == 4 and parts[1] == parts[2]:
+        key = f"{parts[0]}/{parts[1]}/{parts[3]}"
+    return f" --skip-known-bad-tests {key}"
+
+
 # Stale-state cleanup paths — must match AgentDirectoryUtil defaults
 # (fboss/agent/AgentDirectoryUtil.cpp):
 #   getWarmBootDir() = FLAGS_volatile_state_dir + "/warm_boot"
@@ -527,7 +541,51 @@ class BenchmarkTestRunner(BaseHwTestRunner):
     def test_args(self, hwsku: str) -> str:
         config_name = _HW_TEST_CONFIG_NAME.get(hwsku, hwsku)
         logger.info("hwsku=%s hw_test_config=%s", hwsku, config_name)
-        return f"benchmark --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON{_sai_skip_known_bad(hwsku)}"
+        return f"benchmark --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON{_benchmark_skip_known_bad(hwsku)}"
+
+    def set_filters(self, src_filepath, dst_filepath):
+        """Benchmarks run every registered case — no filter file needed.
+
+        run_test.py's benchmark sub-command treats a missing --filter_file as
+        "run all" and prunes known-bad/unsupported cases from sai_bench config;
+        an empty filter file would instead select zero benchmarks.
+        """
+        return True
+
+    def build_test_cmd(self, hwsku: str) -> str:
+        # Omit --filter_file so run_test.py runs all benchmarks (see set_filters).
+        return (
+            f"sudo su -c 'cd /opt/fboss && source ./bin/setup_fboss_env && "
+            f" ./bin/run_test.py {self.test_args(hwsku)} "
+            f"' > {self.testlog_filepath} 2>&1"
+        )
+
+    # Benchmark binaries spin up their own agent (binds thrift port 5909, owns
+    # the ASIC), so the production agents must be down first or the bind aborts
+    # (Address already in use) and the ASIC contends (SIGBUS/SIGSEGV). run_test.py
+    # stops these for the gtest runners but not for the benchmark sub-command.
+    BENCHMARK_DISABLE_SERVICES = ["fboss_sw_agent", "fboss_hw_agent@0"]
+
+    def pre_test(self):
+        services = " ".join(self.BENCHMARK_DISABLE_SERVICES)
+        logger.info("Stopping production agents for benchmark: %s", services)
+        self.ssh_client.run_cmd(f"sudo systemctl mask {services}")
+        self.ssh_client.run_cmd(f"sudo systemctl stop {services}")
+        time.sleep(2)
+        # Agents write can_warm_boot on graceful exit; base wipe forces cold boot.
+        super().pre_test()
+
+    def post_test(self):
+        services = " ".join(self.BENCHMARK_DISABLE_SERVICES)
+        logger.info("Restarting production agents: %s", services)
+        self.ssh_client.run_cmd(f"sudo systemctl unmask {services}")
+        self.ssh_client.run_cmd(f"sudo systemctl start {services}")
+
+    def binary_exit_is_fatal(self, exit_status: int) -> bool:
+        # run_test.py exits non-zero when any individual benchmark fails; that is
+        # a test result (captured per-benchmark in the CSV / tr.xml), not an infra
+        # error. Only treat the run as infra-fatal if no results CSV was written.
+        return self._get_result_csv_name("/tmp/test.log") is None
 
     def _get_result_csv_name(self, local_log_path: str) -> str | None:
         """Extract CSV filename from benchmark log"""
