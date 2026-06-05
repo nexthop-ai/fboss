@@ -51,7 +51,8 @@
           "busName": "SCM_IOB_I2C_6",
           "address": "0x50",
           "kernelDeviceName": "24c64",
-          "pmUnitScopedName": "SCM_EEPROM"
+          "pmUnitScopedName": "CHASSIS_EEPROM",
+          "isEeprom": true
         }
       ],
       "outgoingSlotConfigs": {
@@ -340,19 +341,6 @@
           "numOutgoingChannels": 4
         },
         {
-          "busName": "SMB0_IOB_I2C_3",
-          "address": "0x50",
-          "kernelDeviceName": "24c02",
-          "pmUnitScopedName": "MGMT_QSFP_EEPROM"
-        },
-        {
-          "busName": "SMB0_IOB_I2C_7",
-          "address": "0x50",
-          "kernelDeviceName": "24c64",
-          "pmUnitScopedName": "CHASSIS_EEPROM",
-          "isChassisEeprom": true
-        },
-        {
           "busName": "SMB0_PSU_MUX@0",
           "address": "0x50",
           "kernelDeviceName": "24c64",
@@ -411,8 +399,7 @@
     "SMBus PIIX4 adapter port 1 at 0b20"
   ],
   "symbolicLinkToDevicePath": {
-    "/run/devmap/eeproms/SCM_EEPROM": "/[SCM_EEPROM]",
-    "/run/devmap/eeproms/CHASSIS_EEPROM": "/SMB_SLOT@0/[CHASSIS_EEPROM]",
+    "/run/devmap/eeproms/CHASSIS_EEPROM": "/[CHASSIS_EEPROM]",
     "/run/devmap/eeproms/PSU1_EEPROM": "/SMB_SLOT@0/[PSU1_EEPROM]",
     "/run/devmap/eeproms/PSU2_EEPROM": "/SMB_SLOT@0/[PSU2_EEPROM]",
     "/run/devmap/eeproms/PSU3_EEPROM": "/SMB_SLOT@0/[PSU3_EEPROM]",
@@ -708,7 +695,7 @@
     "/run/devmap/xcvrs/xcvr_io_128": "/SMB_SLOT@0/[SMB1_OSFP_I2C_64]",
     "/run/devmap/xcvrs/xcvr_ctrl_128": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_128]"
   },
-  "chassisEepromDevicePath": "/SMB_SLOT@0/[CHASSIS_EEPROM]",
+  "chassisEepromDevicePath": "/[CHASSIS_EEPROM]",
   "numXcvrs": 128,
   "bspKmodsRpmName": "nexthop_bsp_kmods",
   "bspKmodsRpmVersion": "1.0.0-1",
