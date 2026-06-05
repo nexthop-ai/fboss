@@ -5,3 +5,6 @@ export FBOSS_DATA=${FBOSS}/share
 
 export PATH=${FBOSS_BIN}${PATH:+:${PATH}}
 export LD_LIBRARY_PATH=${FBOSS_LIB}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+
+# Allow SAI vendor to append its runtime lib path
+[ -f /usr/local/lib/sai/extra_fboss_env ] && . /usr/local/lib/sai/extra_fboss_env
