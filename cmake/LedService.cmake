@@ -73,6 +73,7 @@ add_library(led_manager_lib
   fboss/led_service/Minipack3NLedManager.cpp
   fboss/led_service/Janga800bicLedManager.cpp
   fboss/led_service/Nh4010fLedManager.cpp
+  fboss/led_service/Nh4220fLedManager.cpp
   fboss/led_service/Tahan800bcLedManager.cpp
   fboss/led_service/Tahansb800bcLedManager.cpp
   fboss/led_service/Wedge800BACTLedManager.cpp
@@ -101,6 +102,7 @@ target_link_libraries(led_manager_lib
   tahan800bc_bsp
   morgan800cc_bsp
   nh4010f_bsp
+  nh4220f_bsp
   tahansb800bc_bsp
   ladakh800bcls_bsp
   darwin_platform_mapping
@@ -119,6 +121,7 @@ target_link_libraries(led_manager_lib
   meru800bfa_platform_mapping
   morgan_platform_mapping
   nh4010f_platform_mapping
+  nh4220f_platform_mapping
   tahan800bc_platform_mapping
   tahansb800bc_platform_mapping
   ladakh800bcls_platform_mapping
