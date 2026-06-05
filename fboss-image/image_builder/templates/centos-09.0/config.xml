@@ -8,6 +8,7 @@
     </description>
     <profiles>
         <profile name="FBOSS" description="FBOSS"/>
+        <profile name="CFBOSS" description="cFBOSS container build"/>
     </profiles>
     <preferences>
         <version>1.0</version>
@@ -46,6 +47,21 @@
             </oemconfig>
         </type>
         <type image="tbz">
+        </type>
+    </preferences>
+
+    <preferences profiles="CFBOSS">
+        <type image="docker">
+            <containerconfig name="cfboss" tag="latest">
+                <subcommand execute="/sbin/init"/>
+                <environment>
+                    <env name="PATH" value="/opt/fboss/bin:/usr/local/bin:/usr/sbin:/usr/bin"/>
+                    <env name="LD_LIBRARY_PATH" value="/opt/fboss/lib"/>
+                    <env name="MALLOC_ARENA_MAX" value="1"/>
+                    <env name="MALLOC_MMAP_THRESHOLD_" value="0"/>
+                    <env name="MALLOC_CHECK_" value="0"/>
+                </environment>
+            </containerconfig>
         </type>
     </preferences>
     <users>
@@ -154,6 +170,10 @@
         <package name="tcpdump"/>
         <package name="usbutils"/>
         <package name="ndisc6"/>
+    </packages>
+
+    <packages type="image" profiles="CFBOSS">
+        <package name="jemalloc"/>
     </packages>
 
     <packages type="bootstrap">

@@ -22,6 +22,14 @@ update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
 # metadata for the local_rpm_repo now to prevent that.
 createrepo /usr/local/share/local_rpm_repo
 
+# Build-target detection. The image build orchestrator writes /repos/build_target
+# with the literal string "cfboss" for cFBOSS builds; physical-distro builds omit
+# the file and BUILD_TARGET defaults to "physical". config.sh branches on
+# BUILD_TARGET to skip the kernel/SAI/BSP work for cfboss and to write the
+# cFBOSS-only /etc/fboss/platform marker and disable NetworkManager.
+BUILD_TARGET=$(cat /repos/build_target 2>/dev/null || echo physical)
+echo "BUILD_TARGET=$BUILD_TARGET"
+
 # 1. Process component artifacts and install RPMs
 #
 # Component artifacts are copied to /repos/<component_name>/
@@ -141,21 +149,29 @@ for component_dir in /repos/*; do
 
   case "$component_name" in
   kernel)
-    echo "Processing component: $component_name"
+    if [ "$BUILD_TARGET" = "cfboss" ]; then
+      echo "cfboss: skipping kernel processing for $component_name"
+    else
+      echo "Processing component: $component_name"
 
-    # Create temporary directory for this component
-    component_tmp=$(mktemp -d)
+      # Create temporary directory for this component
+      component_tmp=$(mktemp -d)
 
-    process_kernel "$component_dir" "$component_tmp"
-    handler_rc=$?
+      process_kernel "$component_dir" "$component_tmp"
+      handler_rc=$?
 
-    # Clean up temp directory
-    rm -rf "$component_tmp"
+      # Clean up temp directory
+      rm -rf "$component_tmp"
+    fi
     ;;
 
   npu_sai)
-    process_npu_sai_tarball "$component_dir"
-    handler_rc=$?
+    if [ "$BUILD_TARGET" = "cfboss" ]; then
+      echo "cfboss: skipping npu_sai processing"
+    else
+      process_npu_sai_tarball "$component_dir"
+      handler_rc=$?
+    fi
     ;;
 
   other_dependencies)
@@ -200,50 +216,51 @@ for component_dir in /repos/*; do
 done
 shopt -u nullglob
 
-# 2. Define paths
-# Detect the installed kernel version from the boot directory
-# shellcheck disable=SC2012
-VMLINUZ_PATH=$(ls /boot/vmlinuz-* 2>/dev/null | head -n 1)
-if [ -z "$VMLINUZ_PATH" ]; then
-  echo "Error: No vmlinuz found in /boot"
-  exit 1
-fi
+config_boot() {
+  # 2. Define paths
+  # Detect the installed kernel version from the boot directory
+  # shellcheck disable=SC2012
+  VMLINUZ_PATH=$(ls /boot/vmlinuz-* 2>/dev/null | head -n 1)
+  if [ -z "$VMLINUZ_PATH" ]; then
+    echo "Error: No vmlinuz found in /boot"
+    exit 1
+  fi
 
-KERNEL_VERSION=$(basename "$VMLINUZ_PATH" | sed 's/^vmlinuz-//')
-# Detect the initrd path from the boot directory
-# shellcheck disable=SC2012
-INITRD_PATH=$(ls /boot/initramfs-* 2>/dev/null | head -n 1)
-if [ -z "$INITRD_PATH" ]; then
-  echo "Error: No initramfs found in /boot"
-  exit 1
-fi
+  KERNEL_VERSION=$(basename "$VMLINUZ_PATH" | sed 's/^vmlinuz-//')
+  # Detect the initrd path from the boot directory
+  # shellcheck disable=SC2012
+  INITRD_PATH=$(ls /boot/initramfs-* 2>/dev/null | head -n 1)
+  if [ -z "$INITRD_PATH" ]; then
+    echo "Error: No initramfs found in /boot"
+    exit 1
+  fi
 
-echo "Detected kernel version: ${KERNEL_VERSION}"
-echo "Vmlinuz path: ${VMLINUZ_PATH}"
-echo "Initrd path: ${INITRD_PATH}"
+  echo "Detected kernel version: ${KERNEL_VERSION}"
+  echo "Vmlinuz path: ${VMLINUZ_PATH}"
+  echo "Initrd path: ${INITRD_PATH}"
 
-# 3. Manually run dracut to create the initrd
-#    --force is needed to overwrite any existing file
-#    --kver specifies the kernel version to build for
-echo "Running dracut manually..."
-dracut --force --kver "${KERNEL_VERSION}" "${INITRD_PATH}"
+  # 3. Manually run dracut to create the initrd
+  #    --force is needed to overwrite any existing file
+  #    --kver specifies the kernel version to build for
+  echo "Running dracut manually..."
+  dracut --force --kver "${KERNEL_VERSION}" "${INITRD_PATH}"
 
-# 4. Run kernel-install for grub config
-# This wipes ALL interfering variables set by kiwi-ng
-# and runs kernel-install in a "sterile" environment.
-env -i \
-  PATH="/usr/bin:/usr/sbin:/bin:/sbin" \
-  kernel-install add "${KERNEL_VERSION}" "${VMLINUZ_PATH}" --initrd-file "${INITRD_PATH}"
-echo "Custom kernel ${KERNEL_VERSION} install complete."
+  # 4. Run kernel-install for grub config
+  # This wipes ALL interfering variables set by kiwi-ng
+  # and runs kernel-install in a "sterile" environment.
+  env -i \
+    PATH="/usr/bin:/usr/sbin:/bin:/sbin" \
+    kernel-install add "${KERNEL_VERSION}" "${VMLINUZ_PATH}" --initrd-file "${INITRD_PATH}"
+  echo "Custom kernel ${KERNEL_VERSION} install complete."
 
-# 5. Generate a fix-nvme script that "may" need to be run
-# --- Install Custom NVMe Fix Module (Inline Method) ---
+  # 5. Generate a fix-nvme script that "may" need to be run
+  # --- Install Custom NVMe Fix Module (Inline Method) ---
 
-MODULE_DIR="/usr/lib/dracut/modules.d/99nvme-fix"
-mkdir -p "$MODULE_DIR"
+  MODULE_DIR="/usr/lib/dracut/modules.d/99nvme-fix"
+  mkdir -p "$MODULE_DIR"
 
-# 5a. Generate the script directly in the target directory
-cat >"$MODULE_DIR/fix-nvme.sh" <<'EOF'
+  # 5a. Generate the script directly in the target directory
+  cat >"$MODULE_DIR/fix-nvme.sh" <<'EOF'
 #!/bin/bash
 # Force all NVMe drives to 512e mode for KIWI compatibility if they are
 # not already in that size
@@ -288,11 +305,11 @@ if [ -b "$DEV" ]; then
 fi
 EOF
 
-# 5b. Make the hook executable
-chmod +x "$MODULE_DIR/fix-nvme.sh"
+  # 5b. Make the hook executable
+  chmod +x "$MODULE_DIR/fix-nvme.sh"
 
-# 5c. Generate the module-setup.sh
-cat >"$MODULE_DIR/module-setup.sh" <<'EOF'
+  # 5c. Generate the module-setup.sh
+  cat >"$MODULE_DIR/module-setup.sh" <<'EOF'
 #!/bin/bash
 
 check() {
@@ -315,47 +332,52 @@ install() {
 }
 EOF
 
-# 5d. Make the setup script executable
-chmod +x "$MODULE_DIR/module-setup.sh"
+  # 5d. Make the setup script executable
+  chmod +x "$MODULE_DIR/module-setup.sh"
 
-#-------------------------------------------------------
-# 6. Use system GRUB 2.06 from packages
-# The grub2-efi-x64 package already provides grubx64.efi with all necessary modules
-# We just need to make sure the btrfs module is accessible on the EFI partition
-echo "Using system GRUB 2.06 from grub2-efi-x64 package..."
+  #-------------------------------------------------------
+  # 6. Use system GRUB 2.06 from packages
+  # The grub2-efi-x64 package already provides grubx64.efi with all necessary modules
+  # We just need to make sure the btrfs module is accessible on the EFI partition
+  echo "Using system GRUB 2.06 from grub2-efi-x64 package..."
 
-# Clean up any old GRUB module directories from any previous builds
-# (The grub2-efi-x64 package creates /boot/grub2/ and /boot/efi/EFI/ but not the module directories)
-echo "Cleaning up old GRUB module directories..."
-rm -rf /boot/grub/x86_64-efi /boot/grub2/x86_64-efi
-echo "Old GRUB module directories cleaned"
+  # Clean up any old GRUB module directories from any previous builds
+  # (The grub2-efi-x64 package creates /boot/grub2/ and /boot/efi/EFI/ but not the module directories)
+  echo "Cleaning up old GRUB module directories..."
+  rm -rf /boot/grub/x86_64-efi /boot/grub2/x86_64-efi
+  echo "Old GRUB module directories cleaned"
 
-# Copy GRUB modules to multiple locations
-# EFI partition structure: (hd0,gpt2)/efi/centos/x86_64-efi/ and (hd0,gpt2)/efi/boot/x86_64-efi/
-# During build, EFI partition is mounted at /boot/efi/, so:
-#   (hd0,gpt2)/efi/centos/x86_64-efi/ -> /boot/efi/efi/centos/x86_64-efi/
-#   (hd0,gpt2)/efi/boot/x86_64-efi/ -> /boot/efi/efi/boot/x86_64-efi/
-#
-# Essential modules needed for early boot (to find and mount btrfs root) dependency tree:
-#   btrfs -> zstd, lzopio, extcmd, raid6rec, gzio
-#   lzopio -> crypto
-#   raid6rec -> diskfilter
-#   gzio -> gcry_crc, crypto
-ESSENTIAL_MODULES="btrfs.mod zstd.mod lzopio.mod extcmd.mod raid6rec.mod gzio.mod crypto.mod diskfilter.mod gcry_crc.mod"
+  # Copy GRUB modules to multiple locations
+  # EFI partition structure: (hd0,gpt2)/efi/centos/x86_64-efi/ and (hd0,gpt2)/efi/boot/x86_64-efi/
+  # During build, EFI partition is mounted at /boot/efi/, so:
+  #   (hd0,gpt2)/efi/centos/x86_64-efi/ -> /boot/efi/efi/centos/x86_64-efi/
+  #   (hd0,gpt2)/efi/boot/x86_64-efi/ -> /boot/efi/efi/boot/x86_64-efi/
+  #
+  # Essential modules needed for early boot (to find and mount btrfs root) dependency tree:
+  #   btrfs -> zstd, lzopio, extcmd, raid6rec, gzio
+  #   lzopio -> crypto
+  #   raid6rec -> diskfilter
+  #   gzio -> gcry_crc, crypto
+  ESSENTIAL_MODULES="btrfs.mod zstd.mod lzopio.mod extcmd.mod raid6rec.mod gzio.mod crypto.mod diskfilter.mod gcry_crc.mod"
 
-# Copy essential modules to EFI partition locations
-for efi_dir in /boot/efi/efi/centos/x86_64-efi /boot/efi/efi/boot/x86_64-efi; do
-  mkdir -p "$efi_dir"
-  for mod in $ESSENTIAL_MODULES; do
-    cp /usr/lib/grub/x86_64-efi/$mod "$efi_dir/" 2>/dev/null || echo "Warning: $mod not found"
+  # Copy essential modules to EFI partition locations
+  for efi_dir in /boot/efi/efi/centos/x86_64-efi /boot/efi/efi/boot/x86_64-efi; do
+    mkdir -p "$efi_dir"
+    for mod in $ESSENTIAL_MODULES; do
+      cp /usr/lib/grub/x86_64-efi/$mod "$efi_dir/" 2>/dev/null || echo "Warning: $mod not found"
+    done
+    echo "Copied essential GRUB modules to $efi_dir (EFI partition)"
   done
-  echo "Copied essential GRUB modules to $efi_dir (EFI partition)"
-done
 
-# Copy ALL modules to root partition (plenty of space there)
-mkdir -p /boot/grub2/x86_64-efi
-cp -r /usr/lib/grub/x86_64-efi/* /boot/grub2/x86_64-efi/
-echo "Copied all GRUB modules to /boot/grub2/x86_64-efi/ (root partition)"
+  # Copy ALL modules to root partition (plenty of space there)
+  mkdir -p /boot/grub2/x86_64-efi
+  cp -r /usr/lib/grub/x86_64-efi/* /boot/grub2/x86_64-efi/
+  echo "Copied all GRUB modules to /boot/grub2/x86_64-efi/ (root partition)"
+}
+
+if [ "$BUILD_TARGET" != "cfboss" ]; then
+  config_boot
+fi
 
 # 7. Enable systemd services
 echo "Enabling FBOSS systemd services..."
@@ -371,9 +393,18 @@ systemctl enable led_service.service
 systemctl enable fboss_sw_agent.service
 systemctl enable fboss_hw_agents.target
 
-# 8. Fix NetworkManager connection profile permissions
-# NM ignores profiles that are world-readable
-chmod 600 /etc/NetworkManager/system-connections/*.nmconnection
+# 8. NetworkManager: distro fixes profile permissions; cFBOSS disables the service.
+# cFBOSS also writes the /etc/fboss/platform marker so fboss_init.sh picks
+# PLATFORM_FAKE_SAI without consulting dmidecode.
+if [ "$BUILD_TARGET" = "cfboss" ]; then
+  echo "cfboss: writing /etc/fboss/platform=cfboss marker, disabling NetworkManager"
+  mkdir -p /etc/fboss
+  echo "cfboss" >/etc/fboss/platform
+  systemctl disable NetworkManager.service || true
+else
+  # NM ignores profiles that are world-readable
+  chmod 600 /etc/NetworkManager/system-connections/*.nmconnection
+fi
 
 # 9. Done! Cleanup and install additional packages
 echo "Cleaning up /repos directory..."

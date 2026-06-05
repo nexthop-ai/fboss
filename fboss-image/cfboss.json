@@ -1,0 +1,19 @@
+{
+  "distribution_formats": {
+    "container": "cfboss-image.tar"
+  },
+  "kernel": {},
+  "fboss-platform-stack": {
+    "execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "platform"],
+    "artifact": "platform-stack.tar"
+  },
+  "fboss-forwarding-stack": {
+    "execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "forwarding"],
+    "artifact": "forwarding-stack.tar"
+  },
+  "npu_sai": {
+    "download": "file:../fboss/oss/scripts/fake-sai-devel.tar.zstd"
+  },
+  "phy_sai": {},
+  "image_build_hooks": {}
+}
