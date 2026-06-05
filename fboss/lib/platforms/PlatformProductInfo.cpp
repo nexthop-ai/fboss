@@ -203,7 +203,12 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_TAHAN800BC;
     } else if (modelName.find("ICECUBE") == 0) {
       type_ = PlatformType::PLATFORM_ICECUBE800BC;
-    } else if (modelName.find("Nova4000") == 0) {
+    } else if (
+        modelName.find("Nova4000") == 0 ||
+        // M4062NHP is the new product/model name for this platform. Alias it
+        // to PLATFORM_NOVA4000 in-transit until the Nova4000 platform is
+        // renamed to M4062NHP throughout the code.
+        modelName.find("M4062NHP") == 0) {
       type_ = PlatformType::PLATFORM_NOVA4000;
     } else if (modelName.find("NH-4010-F") == 0) {
       type_ = PlatformType::PLATFORM_NH4010F;
