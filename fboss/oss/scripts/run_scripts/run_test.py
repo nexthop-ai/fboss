@@ -149,6 +149,7 @@ SUB_CMD_SAI_BINARY = "sai_test-sai_impl"
 SUB_CMD_LINK_MONO_BINARY = "sai_mono_link_test-sai_impl"
 SUB_CMD_LINK_MULTI_BINARY = "sai_multi_link_test-sai_impl"
 SUB_CMD_PLATFORM = "platform"
+SUB_CMD_BSP = "bsp"
 SUB_CMD_BENCHMARK = "benchmark"
 SUB_CMD_FBOSS2_INTEGRATION = "fboss2_integration"
 SUB_CMD_BENCHMARK = "benchmark"
@@ -164,6 +165,7 @@ SUB_ARG_FW_UTIL_HW_TEST = "fw_util_hw_test"
 SUB_ARG_SENSOR_HW_TEST = "sensor_service_hw_test"
 SUB_ARG_WEUTIL_HW_TEST = "weutil_hw_test"
 SUB_ARG_PLATFORM_MANAGER_HW_TEST = "platform_manager_hw_test"
+SUB_ARG_BSP_HW_TEST = "bsp_tests"
 
 SAI_HW_KNOWN_BAD_TESTS = (
     "./share/hw_known_bad_tests/sai_known_bad_tests.materialized_JSON"
@@ -220,6 +222,11 @@ _SAI_DISABLE_SERVICES = [
 ]
 
 TEST_DISABLE_SERVICES = {
+    SUB_ARG_BSP_HW_TEST: [
+        "fan_service",
+        "qsfp_service",
+        "led_service",
+    ],
     SUB_ARG_PLATFORM_MANAGER_HW_TEST: [
         "platform_manager",
         "sensor_service",
@@ -324,22 +331,46 @@ def disable_services(test_name: str):
         print("Services stopped", flush=True)
 
 
+def _wait_for_devmap(timeout_s: int = 30) -> None:
+    # platform_manager rebuilds /run/devmap/ asynchronously after restart.
+    # Poll until sensors and xcvrs dirs are non-empty so dependent services
+    # (qsfp_service, sensor_service) don't start against missing symlinks.
+    deadline = time.time() + timeout_s
+    while time.time() < deadline:
+        if all(
+            os.path.isdir(d) and os.listdir(d)
+            for d in ("/run/devmap/sensors", "/run/devmap/xcvrs")
+        ):
+            return
+        time.sleep(1)
+    print(
+        "Warning: /run/devmap not fully repopulated after platform_manager restart",
+        flush=True,
+    )
+
+
 def enable_services(test_name: str):
-    if test_name in TEST_DISABLE_SERVICES:
-        services = TEST_DISABLE_SERVICES[test_name]
-        print(f"Restarting services: {', '.join(services)}", flush=True)
-        subprocess.run(
-            ["systemctl", "unmask", *services], check=False, stderr=subprocess.DEVNULL
+    if test_name not in TEST_DISABLE_SERVICES:
+        return
+    services = TEST_DISABLE_SERVICES[test_name]
+    print(f"Restarting services: {', '.join(services)}", flush=True)
+    subprocess.run(
+        ["systemctl", "unmask", *services], check=False, stderr=subprocess.DEVNULL
+    )
+
+    if test_name == SUB_ARG_BSP_HW_TEST:
+        print("Restarting platform_manager to rebuild /run/devmap/", flush=True)
+        subprocess.run(["systemctl", "restart", "platform_manager"], check=False)
+        _wait_for_devmap()
+
+    for service in services:
+        subprocess.Popen(
+            ["systemctl", "restart", service],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
         )
 
-        for service in services:
-            subprocess.Popen(
-                ["systemctl", "restart", service],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
-
-        print("Services restart initiated", flush=True)
+    print("Services restart initiated", flush=True)
 
 
 class TestRunner(abc.ABC):
@@ -1929,6 +1960,34 @@ class PlatformServicesTestRunner(TestRunner):
         self._write_results_to_xml(results)
 
 
+class BspTestRunner(PlatformServicesTestRunner):
+    """
+    Runner for the BSP validation suite (bsp_tests).
+
+    bsp_tests is a standalone gtest binary that exercises the BSP / kernel
+    layer directly - fbiob, the i2c / gpio / hwmon / led / xcvr / watchdog
+    kmods, cdev, and kmod load/unload - rather than the FBOSS platform-service
+    daemons that `run_test.py platform` covers. It needs no agent, SAI, or
+    config file, so it reuses the cold-boot-only PlatformServicesTestRunner
+    flow with a single fixed binary and test type.
+    """
+
+    # Single binary - no family of test types like the platform services runner.
+    TEST_TYPE_CHOICES: ClassVar[list] = [SUB_ARG_BSP_HW_TEST]
+
+    def add_subcommand_arguments(self, sub_parser: ArgumentParser):
+        # bsp_tests has no test-type choice; pin args.type so the inherited
+        # PlatformServicesTestRunner flow (disable_services(), result-classname
+        # subscripting) resolves to "bsp_tests".
+        sub_parser.set_defaults(type=SUB_ARG_BSP_HW_TEST)
+
+    def _get_test_binary_name(self):
+        return "bsp_tests"
+
+    def _get_test_run_args(self, conf_file):
+        return ["--enable_stress_tests"]
+
+
 class Fboss2IntegrationTestRunner(TestRunner):
     """
     Runner for fboss2 integration tests.
@@ -3052,6 +3111,14 @@ if __name__ == "__main__":
     platform_test_runner = PlatformServicesTestRunner()
     platform_test_parser.set_defaults(func=platform_test_runner.run_test)
     platform_test_runner.add_subcommand_arguments(platform_test_parser)
+
+    # Add subparser for BSP (bsp_tests) validation tests
+    bsp_test_parser = subparsers.add_parser(
+        SUB_CMD_BSP, help="run BSP (bsp_tests) validation tests"
+    )
+    bsp_test_runner = BspTestRunner()
+    bsp_test_parser.set_defaults(func=bsp_test_runner.run_test)
+    bsp_test_runner.add_subcommand_arguments(bsp_test_parser)
 
     # Add subparser for fboss2 integration tests
     fboss2_integration_test_parser = subparsers.add_parser(

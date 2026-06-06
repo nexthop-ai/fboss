@@ -373,95 +373,15 @@ class PlatformTestRunner(BaseHwTestRunner):
         return f"platform --type {self.test_type}"
 
 class BspTestRunner(BaseHwTestRunner):
-    """Runner for BSP hardware tests. Invokes bsp_tests binary directly."""
+    """Runner for BSP hardware tests. Delegates to run_test.py bsp.
 
-    BSP_DISABLE_SERVICES = [
-        "fan_service",
-        "qsfp_service",
-    ]
+    All service lifecycle management (fan_service, qsfp_service, led_service
+    stop/start, platform_manager restart, /run/devmap wait) and the
+    --enable_stress_tests flag are handled on-DUT by run_test.py bsp.
+    """
 
     def test_args(self, hwsku: str) -> str:
-        return ""
-
-    def build_test_cmd(self, hwsku: str) -> str:
-        return (
-            f"sudo su -c 'cd /opt/fboss && source ./bin/setup_fboss_env && "
-            f"./bin/bsp_tests --enable_stress_tests "
-            f"--gtest_output=xml:{self.testresult_filepath}' "
-            f"> {self.testlog_filepath} 2>&1"
-        )
-
-    def pre_test(self):
-        """Disable FBOSS services that conflict with BSP tests."""
-        services = " ".join(self.BSP_DISABLE_SERVICES)
-        logger.info("Stopping services for BSP tests: %s", services)
-        self.ssh_client.run_cmd(f"sudo systemctl mask {services}")
-        self.ssh_client.run_cmd(f"sudo systemctl stop {services}")
-        time.sleep(2)
-        logger.info("Services stopped")
-
-    def set_filters(self, src_filepath, dst_filepath):
-        """BSP tests run all cases via the bsp_tests binary — no filter file needed."""
-        return True
-
-    def binary_exit_is_fatal(self, exit_status: int) -> bool:
-        return not os.path.exists("/tmp/tr.xml")
-
-    def normalize_test_results_file(self):
-        super().normalize_test_results_file()
-
-        if not os.path.exists("/tmp/tr.xml"):
-            return
-
-        with open("/tmp/tr.xml", encoding="utf-8") as f:
-            lines = f.readlines()
-
-        if not any(line.lstrip().startswith("<testsuites") for line in lines):
-            return
-
-        logger.info("Collapsing BSP testsuites into a single suite")
-
-        out = []
-        for line in lines:
-            stripped = line.lstrip()
-            indent = line[: len(line) - len(stripped)]
-            if stripped.startswith("<testsuites"):
-                out.append(line)
-                inner = stripped.replace("<testsuites", "<testsuite", 1)
-                if 'skipped="' not in inner:
-                    inner = inner.replace("<testsuite", '<testsuite skipped="0"', 1)
-                out.append(indent + "  " + inner)
-            elif stripped.startswith("</testsuites>"):
-                out.append(indent + "  </testsuite>\n")
-                out.append(line)
-            elif stripped.startswith("<testsuite") or stripped.startswith("</testsuite>"):
-                continue
-            else:
-                out.append(line)
-
-        with open("/tmp/tr.xml", "w", encoding="utf-8") as f:
-            f.writelines(out)
-
-    def post_test(self):
-        """Re-enable FBOSS services after BSP tests.
-
-        platform_manager must restart first so it re-explores and rebuilds
-        /run/devmap/ — BSP stress tests reload kmods which invalidate the
-        symlinks qsfp_service opens (/run/devmap/xcvrs/xcvr_io_N).
-        """
-        services = " ".join(self.BSP_DISABLE_SERVICES)
-        logger.info("Re-enabling services: %s", services)
-        self.ssh_client.run_cmd(f"sudo systemctl unmask {services}")
-
-        self.ssh_client.run_cmd("sudo systemctl restart platform_manager")
-        self.ssh_client.run_cmd(
-            "sudo bash -c 'for i in $(seq 1 30); do "
-            '[ -n "$(ls /run/devmap/xcvrs/ 2>/dev/null)" ] && exit 0; '
-            "sleep 1; done; exit 0'"
-        )
-
-        self.ssh_client.run_cmd(f"sudo systemctl restart {services}")
-        logger.info("Services restart initiated")
+        return "bsp"
 
 class SmokeTestRunner(BaseHwTestRunner):
     """Runner for the FBOSS agent smoke test.
