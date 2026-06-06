@@ -1,17 +1,16 @@
 {
-  "___NOS_8218___": "Status / FAN / PSU LED sysfs colors are yellow/green for P1/P2 hardware. Meta's requirement is yellow/blue; the switch is planned for P3. Update the *:green:* paths below to *:blue:* when the hardware lands. See https://nexthopai.atlassian.net/browse/NOS-8218.",
   "systemLedConfig": {
-    "presentLedSysfsPath": "/sys/class/leds/sys_led:green:status/brightness",
-    "absentLedSysfsPath": "/sys/class/leds/sys_led:yellow:status/brightness"
+    "presentLedSysfsPath": "/sys/class/leds/sys_led:blue:status/brightness",
+    "absentLedSysfsPath": "/sys/class/leds/sys_led:amber:status/brightness"
   },
   "fruTypeLedConfigs": {
     "FAN": {
-      "presentLedSysfsPath": "/sys/class/leds/fan_led:green:status/brightness",
-      "absentLedSysfsPath": "/sys/class/leds/fan_led:yellow:status/brightness"
+      "presentLedSysfsPath": "/sys/class/leds/fan_led:blue:status/brightness",
+      "absentLedSysfsPath": "/sys/class/leds/fan_led:amber:status/brightness"
     },
     "PSU": {
-      "presentLedSysfsPath": "/sys/class/leds/psu_led:green:status/brightness",
-      "absentLedSysfsPath": "/sys/class/leds/psu_led:yellow:status/brightness"
+      "presentLedSysfsPath": "/sys/class/leds/psu_led:blue:status/brightness",
+      "absentLedSysfsPath": "/sys/class/leds/psu_led:amber:status/brightness"
     }
   },
   "fruConfigs": [
