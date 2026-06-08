@@ -37,6 +37,7 @@
 #include "fboss/agent/platforms/common/montblanc/MontblancPlatformMapping.h"
 #include "fboss/agent/platforms/common/morgan800cc/Morgan800ccPlatformMapping.h"
 #include "fboss/agent/platforms/common/nh4010f/Nh4010fPlatformMapping.h"
+#include "fboss/agent/platforms/common/nh4220f/Nh4220fPlatformMapping.h"
 #include "fboss/agent/platforms/common/nova4000/Nova4000PlatformMapping.h"
 #include "fboss/agent/platforms/common/saintpaul/SaintpaulPlatformMapping.h"
 #include "fboss/agent/platforms/common/tahan800bc/Tahan800bcPlatformMapping.h"
@@ -192,6 +193,10 @@ std::unique_ptr<PlatformMapping> initPlatformMapping(PlatformType type) {
       return platformMappingStr.empty()
           ? std::make_unique<Nh4010fPlatformMapping>()
           : std::make_unique<Nh4010fPlatformMapping>(platformMappingStr);
+    case PlatformType::PLATFORM_NH4220F:
+      return platformMappingStr.empty()
+          ? std::make_unique<Nh4220fPlatformMapping>()
+          : std::make_unique<Nh4220fPlatformMapping>(platformMappingStr);
     case PlatformType::PLATFORM_NOVA4000:
       return platformMappingStr.empty()
           ? std::make_unique<Nova4000PlatformMapping>()

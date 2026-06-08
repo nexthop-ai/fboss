@@ -15,6 +15,7 @@ enum PlatformType {
   PLATFORM_NH4010F = 999,
   PLATFORM_WEDGE800BNHP = 998,
   PLATFORM_NOVA4000 = 997,
+  PLATFORM_NH4220F = 996,
   # end of NH specific section, keep here to avoid merge conflicts
 
   PLATFORM_WEDGE = 1,

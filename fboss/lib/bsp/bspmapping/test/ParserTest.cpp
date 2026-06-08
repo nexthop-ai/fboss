@@ -82,6 +82,10 @@ TEST(ParserTest, GetNameForTests) {
       "nh4010f");
   EXPECT_EQ(
       facebook::fboss::Parser::getNameFor(
+          facebook::fboss::PlatformType::PLATFORM_NH4220F),
+      "nh4220f");
+  EXPECT_EQ(
+      facebook::fboss::Parser::getNameFor(
           facebook::fboss::PlatformType::PLATFORM_ICECUBE800BANW),
       "icecube800banw");
 }

@@ -17,6 +17,7 @@
 #include "fboss/led_service/MontblancLedManager.h"
 #include "fboss/led_service/Morgan800ccLedManager.h"
 #include "fboss/led_service/Nh4010fLedManager.h"
+#include "fboss/led_service/Nh4220fLedManager.h"
 #include "fboss/led_service/Nova4000LedManager.h"
 #include "fboss/led_service/Tahan800bcLedManager.h"
 #include "fboss/led_service/Tahansb800bcLedManager.h"
@@ -87,6 +88,8 @@ std::unique_ptr<LedManager> createLedManager() {
     return std::make_unique<Tahansb800bcLedManager>();
   } else if (mode == PlatformType::PLATFORM_NH4010F) {
     return std::make_unique<Nh4010fLedManager>();
+  } else if (mode == PlatformType::PLATFORM_NH4220F) {
+    return std::make_unique<Nh4220fLedManager>();
   } else if (mode == PlatformType::PLATFORM_WEDGE800BACT) {
     return std::make_unique<Wedge800BACTLedManager>();
   } else if (mode == PlatformType::PLATFORM_WEDGE800BNHP) {

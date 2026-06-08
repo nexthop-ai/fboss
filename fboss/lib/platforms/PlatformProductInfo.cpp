@@ -212,6 +212,8 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_NOVA4000;
     } else if (modelName.find("NH-4010-F") == 0) {
       type_ = PlatformType::PLATFORM_NH4010F;
+    } else if (modelName.find("NH-4220-F") == 0) {
+      type_ = PlatformType::PLATFORM_NH4220F;
     } else if (modelName.find("ICETEA") == 0) {
       type_ = PlatformType::PLATFORM_ICETEA800BC;
     } else if (modelName.find("LADAKH800BCLS") == 0) {
@@ -298,6 +300,8 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_MINIPACK3N;
     } else if (FLAGS_mode == "nh4010f") {
       type_ = PlatformType::PLATFORM_NH4010F;
+    } else if (FLAGS_mode == "nh4220f") {
+      type_ = PlatformType::PLATFORM_NH4220F;
     } else if (FLAGS_mode == "wedge800bact") {
       type_ = PlatformType::PLATFORM_WEDGE800BACT;
     } else if (FLAGS_mode == "tahansb800bc" || FLAGS_mode == "tahansb800bcm") {
