@@ -11,9 +11,14 @@ import time
 import shlex
 import re
 import csv
+import copy
+import json
+import tempfile
 import xml.etree.ElementTree as ET
 from abc import ABC, abstractmethod
 from datetime import datetime
+from pathlib import Path
+from typing import NamedTuple
 
 from tests.libs.device.device_ssh_helper import DeviceSCPClient, DeviceSSHClient
 
@@ -67,6 +72,11 @@ def _benchmark_skip_known_bad(hwsku: str) -> str:
     if len(parts) == 4 and parts[1] == parts[2]:
         key = f"{parts[0]}/{parts[1]}/{parts[3]}"
     return f" --skip-known-bad-tests {key}"
+
+
+def _normalize_hwsku(hwsku: str) -> str:
+    """Shorten device-DB model name to FBOSS codename form, e.g. NH-4010-F -> nh4010f."""
+    return hwsku.lower().replace("-", "")
 
 
 # Stale-state cleanup paths — must match AgentDirectoryUtil defaults
@@ -243,9 +253,7 @@ class BaseHwTestRunner(ABC):
         if not status:
             return False
 
-        hwsku = self.tc["hwsku"]
-        # shorten hwsku from NH-4010-F to nh4010f
-        hwsku = hwsku.lower().replace("-", "")
+        hwsku = _normalize_hwsku(self.tc["hwsku"])
 
         logger.info(
             "Clearing remote files: /home/admin/test.log and /home/admin/tr.xml"
@@ -335,14 +343,164 @@ class QsfpTestRunner(BaseHwTestRunner):
         return f"qsfp --qsfp-config ./share/qsfp_test_configs/{config_name}.materialized_JSON"
 
 
+class _PortInfo(NamedTuple):
+    logical_id: int
+    profile_id: int
+    speed: int
+
+
 class LinkTestRunner(BaseHwTestRunner):
     """Runner for link tests."""
 
+    _CABLING_ENV_VAR = "LINK_TEST_CABLING"
+    _BASE_CONFIG_DIR = Path("fboss/oss/link_test_configs")
+    _PLATFORM_MAPPING_DIR = Path(
+        "fboss/lib/platform_mapping_v2/generated_platform_mappings"
+    )
+    _REMOTE_CONFIG_PATH = "/home/netops/link_test_config.materialized_JSON"
+    # JSON map key for LLDPTag.PORT: see fboss/agent/switch_config.thrift.
+    _LLDP_PORT_TAG = "2"
+
+    def __init__(self):
+        super().__init__()
+        self._use_generated_config = False
+
+    @classmethod
+    def _config_name(cls, hwsku: str) -> str:
+        return _LINK_TEST_CONFIG_NAME.get(hwsku, hwsku)
+
+    @staticmethod
+    def _repo_dir(relative: Path) -> Path:
+        for parent in Path(__file__).resolve().parents:
+            if (parent / relative).is_dir():
+                return parent / relative
+        raise FileNotFoundError(f"could not locate {relative} above {__file__}")
+
+    @classmethod
+    def _base_config_path(cls, config_name: str) -> Path:
+        return cls._repo_dir(cls._BASE_CONFIG_DIR) / f"{config_name}.materialized_JSON"
+
+    @classmethod
+    def _load_platform_mapping(cls, config_name: str) -> dict[str, _PortInfo]:
+        path = cls._repo_dir(cls._PLATFORM_MAPPING_DIR) / f"{config_name}_platform_mapping.json"
+        with open(path, encoding="utf-8") as f:
+            mapping = json.load(f)
+        speed_of = {
+            p["factor"]["profileID"]: p["profile"]["speed"]
+            for p in mapping["platformSupportedProfiles"]
+        }
+        index = {}
+        for entry in mapping["ports"].values():
+            profiles = [int(pid) for pid in entry["supportedProfiles"]]
+            profile_id = max(profiles, key=lambda pid: speed_of.get(pid, 0))
+            index[entry["mapping"]["name"]] = _PortInfo(
+                entry["mapping"]["id"], profile_id, speed_of.get(profile_id, 0)
+            )
+        return index
+
+    @classmethod
+    def _synthesize_port(
+        cls, base_json: dict, port_map: dict[str, _PortInfo], name: str, vlan_id: int
+    ) -> dict:
+        info = port_map.get(name)
+        if info is None:
+            raise ValueError(f"netbox port {name} is not in the platform mapping")
+        sw = base_json["sw"]
+        # The agent requires every port to own exactly one interface, so a synthesized
+        # port needs a matching vlan, vlanPort and interface too.
+        template = sw["ports"][0]["ingressVlan"]
+        port = copy.deepcopy(sw["ports"][0])
+        port.update({"logicalID": info.logical_id, "name": name, "state": 2,
+                     "speed": info.speed, "profileID": info.profile_id,
+                     "ingressVlan": vlan_id})
+        vlan = copy.deepcopy(next(v for v in sw["vlans"] if v["id"] == template))
+        vlan.update({"id": vlan_id, "intfID": vlan_id, "name": f"vlan{vlan_id}"})
+        vlan_port = copy.deepcopy(next(p for p in sw["vlanPorts"] if p["vlanID"] == template))
+        vlan_port.update({"vlanID": vlan_id, "logicalPort": info.logical_id})
+        intf = copy.deepcopy(next(i for i in sw["interfaces"] if i.get("vlanID") == template))
+        intf.update({"intfID": vlan_id, "vlanID": vlan_id, "ipAddresses": []})
+        sw["ports"].append(port)
+        sw["vlans"].append(vlan)
+        sw["vlanPorts"].append(vlan_port)
+        sw["interfaces"].append(intf)
+        return port
+
+    @classmethod
+    def _overlay_cabling(
+        cls,
+        base_json: dict,
+        pairs: dict[str, str],
+        port_map: dict[str, _PortInfo],
+    ) -> dict:
+        if not pairs:
+            raise ValueError("refusing to generate link test config: no cabling pairs")
+        sw = base_json["sw"]
+        by_name = {port["name"]: port for port in sw["ports"]}
+        for port in sw["ports"]:
+            port["expectedLLDPValues"] = {}
+        used_vlans = {v["id"] for v in sw["vlans"]}
+        # Allocate from the "type-1" interface band (2000-2251).
+        free_vlans = (v for v in range(2000, 2252) if v not in used_vlans)
+        for name, peer in pairs.items():
+            port = by_name.get(name)
+            if port is None:
+                port = cls._synthesize_port(base_json, port_map, name, next(free_vlans))
+            port["expectedLLDPValues"] = {cls._LLDP_PORT_TAG: peer}
+            # Use the lower speed if there is a speed mismatch. This might not always work.
+            if peer in by_name and port["speed"] > by_name[peer]["speed"]:
+                port["speed"] = by_name[peer]["speed"]
+                port["profileID"] = by_name[peer]["profileID"]
+        return base_json
+
+    def pre_test(self):
+        super().pre_test()
+
+        # Set by the nhtest executor to a {port: peer_port} JSON file when cabling
+        # was generated from netbox; absent for standalone dev runs.
+        cabling_path = os.getenv(self._CABLING_ENV_VAR)
+        if not cabling_path:
+            return
+
+        config_name = self._config_name(_normalize_hwsku(self.tc["hwsku"]))
+
+        with open(self._base_config_path(config_name), encoding="utf-8") as f:
+            base = json.load(f)
+        with open(cabling_path, encoding="utf-8") as f:
+            pairs = json.load(f)
+
+        # Ports netbox reports that the base config doesn't already have are the
+        # only ones we need to synthesize, and the only reason to load the
+        # platform mapping. Skipping the load otherwise.
+        base_names = {port["name"] for port in base["sw"]["ports"]}
+        ports_to_synthesize = pairs.keys() - base_names
+        port_map = (
+            self._load_platform_mapping(config_name) if ports_to_synthesize else {}
+        )
+        config = self._overlay_cabling(base, pairs, port_map)
+
+        with tempfile.NamedTemporaryFile(
+            "w", suffix=".materialized_JSON", delete=False
+        ) as f:
+            json.dump(config, f)
+            local_path = f.name
+        try:
+            exit_status, output = self.scp_client.put_file(
+                local_path, self._REMOTE_CONFIG_PATH
+            )
+        finally:
+            os.unlink(local_path)
+        if exit_status != 0:
+            raise RuntimeError(f"Failed to upload generated link config: {output}")
+        self._use_generated_config = True
+
     def test_args(self, hwsku: str) -> str:
-        config_name = _LINK_TEST_CONFIG_NAME.get(hwsku, hwsku)
+        if self._use_generated_config:
+            config_arg = self._REMOTE_CONFIG_PATH
+        else:
+            config_arg = f"./share/link_test_configs/{self._config_name(hwsku)}.materialized_JSON"
         args = (
             "link --agent-run-mode mono "
-            f"--config ./share/link_test_configs/{config_name}.materialized_JSON "
+            f"--config {config_arg} "
             "--qsfp-config /etc/coop/qsfp.conf"
         )
         if hwsku == "wedge800cact":
