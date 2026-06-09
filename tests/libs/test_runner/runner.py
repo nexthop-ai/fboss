@@ -5,6 +5,7 @@ This module provides a base class and specialized test runners for different FBO
 Each test runner subclass specifies its default configuration directories.
 """
 
+import functools
 import logging
 import os
 import time
@@ -23,6 +24,43 @@ from typing import NamedTuple
 from tests.libs.device.device_ssh_helper import DeviceSCPClient, DeviceSSHClient
 
 logger = logging.getLogger("test_runner")
+
+# Floor (seconds) for how long a *failing* test run must occupy before
+# run_test returns False.
+MIN_FAILURE_DURATION_SECS = 120
+
+
+def _enforce_min_failure_duration(run_test):
+    """Decorator: pad a failing run out to MIN_FAILURE_DURATION_SECS.
+
+    TE batches re-run failing tests back-to-back without re-imaging between
+    them. A binary that aborts early (e.g. crashing in SetUp() in seconds)
+    produces a tight fail-retry loop that hammers the DUT and floods T-Recs
+    with near-instant failures. Padding any failing run to a fixed floor
+    keeps the surrounding retry cadence sane. Successful runs are never
+    delayed.
+
+    Wraps both the base run_test and the SmokeTestRunner/BenchmarkTestRunner
+    overrides. Because the floor is measured from the outermost entry, a
+    subclass that calls super().run_test() is never double-padded.
+    """
+
+    @functools.wraps(run_test)
+    def wrapper(self, *args, **kwargs):
+        start = time.monotonic()
+        success = run_test(self, *args, **kwargs)
+        if not success:
+            remaining = MIN_FAILURE_DURATION_SECS - (time.monotonic() - start)
+            if remaining > 0:
+                logger.info(
+                    "Run failed; padding to %ds floor (sleeping %.1fs)",
+                    MIN_FAILURE_DURATION_SECS,
+                    remaining,
+                )
+                time.sleep(remaining)
+        return success
+
+    return wrapper
 
 # Map normalized HWSKU (from device DB model name) to FBOSS config codename
 # for hw_test_configs (SAI/agent tests). Only applies to SaiTestRunner and
@@ -231,6 +269,7 @@ class BaseHwTestRunner(ABC):
             f"' > {self.testlog_filepath} 2>&1"
         )
 
+    @_enforce_min_failure_duration
     def run_test(self, test_context, skip_tr_xml=False):
         """Run the hardware test on the DUT."""
         logger.info("Running tests")
@@ -625,6 +664,7 @@ class SmokeTestRunner(BaseHwTestRunner):
                 parts += [flag, str(value)]
         return shlex.join(parts)
 
+    @_enforce_min_failure_duration
     def run_test(self, test_context):
         logger.info("Running agent smoke test")
         self.setup(test_context)
@@ -896,6 +936,7 @@ class BenchmarkTestRunner(BaseHwTestRunner):
         tree.write(xml_path, encoding="UTF-8", xml_declaration=True)
         return True
 
+    @_enforce_min_failure_duration
     def run_test(self, test_context: dict) -> bool:
         """
         Run the benchmark test on the DUT.
