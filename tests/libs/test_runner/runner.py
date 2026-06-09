@@ -358,12 +358,15 @@ class LinkTestRunner(BaseHwTestRunner):
         "fboss/lib/platform_mapping_v2/generated_platform_mappings"
     )
     _REMOTE_CONFIG_PATH = "/home/netops/link_test_config.materialized_JSON"
+    _SYSTEM_QSFP_CONFIG_PATH = "/etc/coop/qsfp.conf"
+    _REMOTE_QSFP_CONFIG_PATH = "/home/netops/link_test_qsfp.conf"
     # JSON map key for LLDPTag.PORT: see fboss/agent/switch_config.thrift.
     _LLDP_PORT_TAG = "2"
 
     def __init__(self):
         super().__init__()
         self._use_generated_config = False
+        self._use_generated_qsfp = False
 
     @classmethod
     def _config_name(cls, hwsku: str) -> str:
@@ -452,8 +455,39 @@ class LinkTestRunner(BaseHwTestRunner):
                 port["profileID"] = by_name[peer]["profileID"]
         return base_json
 
+    def _stage_qsfp_config(self):
+        # The agent doesn't publish port status to FSDB in time, so a qsfp_service
+        # that subscribes to FSDB never sees a transceiver reach ACTIVE. Disable
+        # the subscription so qsfp polls getPortStatus() directly.
+        with tempfile.NamedTemporaryFile(suffix=".conf", delete=False) as f:
+            local_path = f.name
+        try:
+            exit_status, output = self.scp_client.get_file(
+                self._SYSTEM_QSFP_CONFIG_PATH, local_path
+            )
+            if exit_status != 0:
+                raise RuntimeError(f"Failed to fetch system qsfp config: {output}")
+            with open(local_path, encoding="utf-8") as f:
+                qsfp = json.load(f)
+            qsfp.setdefault("defaultCommandLineArgs", {})[
+                "subscribe_to_state_from_fsdb"
+            ] = "false"
+            with open(local_path, "w", encoding="utf-8") as f:
+                json.dump(qsfp, f)
+            exit_status, output = self.scp_client.put_file(
+                local_path, self._REMOTE_QSFP_CONFIG_PATH
+            )
+        finally:
+            os.unlink(local_path)
+        if exit_status != 0:
+            raise RuntimeError(f"Failed to upload generated qsfp config: {output}")
+        self._use_generated_qsfp = True
+
     def pre_test(self):
         super().pre_test()
+
+        hwsku = _normalize_hwsku(self.tc["hwsku"])
+        self._stage_qsfp_config()
 
         # Set by the nhtest executor to a {port: peer_port} JSON file when cabling
         # was generated from netbox; absent for standalone dev runs.
@@ -461,7 +495,7 @@ class LinkTestRunner(BaseHwTestRunner):
         if not cabling_path:
             return
 
-        config_name = self._config_name(_normalize_hwsku(self.tc["hwsku"]))
+        config_name = self._config_name(hwsku)
 
         with open(self._base_config_path(config_name), encoding="utf-8") as f:
             base = json.load(f)
@@ -498,10 +532,15 @@ class LinkTestRunner(BaseHwTestRunner):
             config_arg = self._REMOTE_CONFIG_PATH
         else:
             config_arg = f"./share/link_test_configs/{self._config_name(hwsku)}.materialized_JSON"
+        qsfp_arg = (
+            self._REMOTE_QSFP_CONFIG_PATH
+            if self._use_generated_qsfp
+            else self._SYSTEM_QSFP_CONFIG_PATH
+        )
         args = (
             "link --agent-run-mode mono "
             f"--config {config_arg} "
-            "--qsfp-config /etc/coop/qsfp.conf"
+            f"--qsfp-config {qsfp_arg}"
         )
         if hwsku == "wedge800cact":
             # warmboot acting strange, will readd once fixed
