@@ -280,6 +280,7 @@ heavy_genrule(
     outs = [
         "fboss_forwarding_stack_broadcom_xgs.tar",
         "fboss_forwarding_stack_tests_broadcom_xgs.tar",
+        "fboss_forwarding_stack_broadcom_xgs_sdk.tar",
     ],
     cmd = LOAD_FBOSS_BUILDER_CMD + """
         BUILD_DIR="fboss/fboss-image/.nh-broadcom-xgs"
@@ -294,6 +295,7 @@ heavy_genrule(
 
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss/oss/scripts/dist/forwarding-stack.tar $(location fboss_forwarding_stack_broadcom_xgs.tar)
         $(execpath //bazel_lib:ln_or_cp) fboss/forwarding-stack-tests.tar $(location fboss_forwarding_stack_tests_broadcom_xgs.tar)
+        tar -C fboss/.build_dir/forwarding-stack/sai-bcm-*/installed -cf $(location fboss_forwarding_stack_broadcom_xgs_sdk.tar) .
     """,
     tags = [
         "no-sandbox",
