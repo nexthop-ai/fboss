@@ -541,6 +541,18 @@ class BspTestRunner(BaseHwTestRunner):
     def test_args(self, hwsku: str) -> str:
         return "bsp"
 
+    def set_filters(self, src_filepath, dst_filepath):
+        """BSP runs all cases via run_test.py bsp — no filter file needed."""
+        return True
+
+    def build_test_cmd(self, hwsku: str) -> str:
+        # Omit --filter_file so run_test.py bsp runs all cases (see set_filters).
+        return (
+            f"sudo su -c 'cd /opt/fboss && source ./bin/setup_fboss_env && "
+            f" ./bin/run_test.py {self.test_args(hwsku)} "
+            f"' > {self.testlog_filepath} 2>&1"
+        )
+
 class SmokeTestRunner(BaseHwTestRunner):
     """Runner for the FBOSS agent smoke test.
 
