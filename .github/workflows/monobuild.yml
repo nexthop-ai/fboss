@@ -16,6 +16,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      actions: read
     uses: nexthop-ai/nh/.github/workflows/monobuild.reusable.yml@main
     with:
       submodule: fboss
