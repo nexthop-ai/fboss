@@ -48,6 +48,10 @@ std::string sanitizePlatformName(const std::string& platformNameFromBios) {
     return "NH4220F";
   }
 
+  if (platformNameUpper == "NOVA4000" || platformNameUpper == "M4062NHP") {
+    return "M4062NHP";
+  }
+
   if (platformNameUpper == "MINIPACK3BTA") {
     return "MINIPACK3BA";
   }

@@ -3,12 +3,12 @@ load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")
 oncall("fboss_optics_phy")
 
 cpp_library(
-    name = "nova4000_bsp",
+    name = "m4062nhp_bsp",
     srcs = [
-        "Nova4000BspPlatformMapping.cpp",
+        "M4062nhpBspPlatformMapping.cpp",
     ],
     headers = [
-        "Nova4000BspPlatformMapping.h",
+        "M4062nhpBspPlatformMapping.h",
     ],
     exported_deps = [
         "//fboss/lib/bsp:bsp_platform_mapping_lib",

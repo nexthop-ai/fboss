@@ -204,12 +204,12 @@ void PlatformProductInfo::initMode() {
     } else if (modelName.find("ICECUBE") == 0) {
       type_ = PlatformType::PLATFORM_ICECUBE800BC;
     } else if (
-        modelName.find("Nova4000") == 0 ||
-        // M4062NHP is the new product/model name for this platform. Alias it
-        // to PLATFORM_NOVA4000 in-transit until the Nova4000 platform is
-        // renamed to M4062NHP throughout the code.
-        modelName.find("M4062NHP") == 0) {
-      type_ = PlatformType::PLATFORM_NOVA4000;
+        modelName.find("M4062NHP") == 0 ||
+        // "Nova4000" is the legacy model name still burned into the EEPROM of
+        // early units; keep matching it so those boards map to
+        // PLATFORM_M4062NHP.
+        modelName.find("Nova4000") == 0) {
+      type_ = PlatformType::PLATFORM_M4062NHP;
     } else if (modelName.find("NH-4010-F") == 0) {
       type_ = PlatformType::PLATFORM_NH4010F;
     } else if (modelName.find("NH-4220-F") == 0) {
@@ -322,8 +322,8 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_BLACKWOLF800BANW;
     } else if (FLAGS_mode == "yangra2") {
       type_ = PlatformType::PLATFORM_YANGRA2;
-    } else if (FLAGS_mode == "nova4000") {
-      type_ = PlatformType::PLATFORM_NOVA4000;
+    } else if (FLAGS_mode == "m4062nhp") {
+      type_ = PlatformType::PLATFORM_M4062NHP;
     } else if (FLAGS_mode == "saintpaul") {
       type_ = PlatformType::PLATFORM_SAINTPAUL;
     } else {

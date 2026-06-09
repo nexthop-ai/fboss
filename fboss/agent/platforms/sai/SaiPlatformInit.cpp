@@ -25,10 +25,10 @@
 #include "fboss/agent/platforms/sai/SaiBcmJ4SimPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmLadakh800bclsPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmLeh800bclsPlatform.h"
+#include "fboss/agent/platforms/sai/SaiBcmM4062nhpPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmMinipack3BTAPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmMinipackPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmMontblancPlatform.h"
-#include "fboss/agent/platforms/sai/SaiBcmNova4000Platform.h"
 #include "fboss/agent/platforms/sai/SaiBcmSaintpaulPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmTahansb800bcPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmWedge100Platform.h"
@@ -121,8 +121,8 @@ std::unique_ptr<SaiPlatform> chooseSaiPlatform(
   } else if (productInfo->getType() == PlatformType::PLATFORM_ICECUBE800BC) {
     return std::make_unique<SaiBcmIcecube800bcPlatform>(
         std::move(productInfo), localMac, platformMappingStr);
-  } else if (productInfo->getType() == PlatformType::PLATFORM_NOVA4000) {
-    return std::make_unique<SaiBcmNova4000Platform>(
+  } else if (productInfo->getType() == PlatformType::PLATFORM_M4062NHP) {
+    return std::make_unique<SaiBcmM4062nhpPlatform>(
         std::move(productInfo), localMac, platformMappingStr);
   } else if (productInfo->getType() == PlatformType::PLATFORM_NH4010F) {
     return std::make_unique<SaiNh4010fPlatform>(

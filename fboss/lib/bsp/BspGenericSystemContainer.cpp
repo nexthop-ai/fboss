@@ -8,6 +8,7 @@
 #include "fboss/lib/bsp/icetea800bc/Icetea800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/janga800bic/Janga800bicBspPlatformMapping.h"
 #include "fboss/lib/bsp/ladakh800bcls/Ladakh800bclsBspPlatformMapping.h"
+#include "fboss/lib/bsp/m4062nhp/M4062nhpBspPlatformMapping.h"
 #include "fboss/lib/bsp/meru800bfa/Meru800bfaBspPlatformMapping.h"
 #include "fboss/lib/bsp/meru800bia/Meru800biaBspPlatformMapping.h"
 #include "fboss/lib/bsp/minipack3bta/Minipack3BTABspPlatformMapping.h"
@@ -16,7 +17,6 @@
 #include "fboss/lib/bsp/morgan800cc/Morgan800ccBspPlatformMapping.h"
 #include "fboss/lib/bsp/nh4010f/Nh4010fBspPlatformMapping.h"
 #include "fboss/lib/bsp/nh4220f/Nh4220fBspPlatformMapping.h"
-#include "fboss/lib/bsp/nova4000/Nova4000BspPlatformMapping.h"
 #include "fboss/lib/bsp/tahan800bc/Tahan800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/tahansb800bc/Tahansb800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/wedge800bact/Wedge800BACTBspPlatformMapping.h"
@@ -148,25 +148,25 @@ template <>
 std::shared_ptr<Icecube800bcSystemContainer>
 Icecube800bcSystemContainer::getInstance() {
   // Not Nexthop-owned code; suppressing here only because this line falls
-  // inside the diff context of an adjacent Nova4000 addition and trips
-  // reviewdog. See the Nova4000 block below for why instance-form try_get()
+  // inside the diff context of an adjacent M4062nhp addition and trips
+  // reviewdog. See the M4062nhp block below for why instance-form try_get()
   // is the correct idiom for folly::Singleton.
   // NOLINTNEXTLINE(readability-static-accessed-through-instance)
   return _icecube800bcSystemContainer.try_get();
 }
 
-using Nova4000SystemContainer =
-    BspGenericSystemContainer<Nova4000BspPlatformMapping>;
-folly::Singleton<Nova4000SystemContainer> _nova4000SystemContainer;
+using M4062nhpSystemContainer =
+    BspGenericSystemContainer<M4062nhpBspPlatformMapping>;
+folly::Singleton<M4062nhpSystemContainer> _m4062nhpSystemContainer;
 template <>
-std::shared_ptr<Nova4000SystemContainer>
-Nova4000SystemContainer::getInstance() {
+std::shared_ptr<M4062nhpSystemContainer>
+M4062nhpSystemContainer::getInstance() {
   // Calling try_get() via the singleton instance (rather than the static
   // form folly::Singleton<T>::try_get()) is required by folly/Singleton.h:
-  // it ensures _nova4000SystemContainer is used so the linker cannot GC it,
+  // it ensures _m4062nhpSystemContainer is used so the linker cannot GC it,
   // since its ctor is what registers the singleton with the SingletonVault.
   // NOLINTNEXTLINE(readability-static-accessed-through-instance)
-  return _nova4000SystemContainer.try_get();
+  return _m4062nhpSystemContainer.try_get();
 }
 
 using Icetea800bcSystemContainer =

@@ -9,10 +9,10 @@
 
 namespace facebook::fboss {
 
-class Nova4000BspPlatformMapping : public BspPlatformMapping {
+class M4062nhpBspPlatformMapping : public BspPlatformMapping {
  public:
-  Nova4000BspPlatformMapping();
-  explicit Nova4000BspPlatformMapping(const std::string& platformMappingStr);
+  M4062nhpBspPlatformMapping();
+  explicit M4062nhpBspPlatformMapping(const std::string& platformMappingStr);
 };
 
 } // namespace facebook::fboss

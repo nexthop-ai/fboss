@@ -28,6 +28,7 @@
 #include "fboss/agent/platforms/common/janga800bic/Janga800bicPlatformMapping.h"
 #include "fboss/agent/platforms/common/ladakh800bcls/Ladakh800bclsPlatformMapping.h"
 #include "fboss/agent/platforms/common/leh800bcls/Leh800bclsPlatformMapping.h"
+#include "fboss/agent/platforms/common/m4062nhp/M4062nhpPlatformMapping.h"
 #include "fboss/agent/platforms/common/meru800bfa/Meru800bfaP1PlatformMapping.h"
 #include "fboss/agent/platforms/common/meru800bfa/Meru800bfaPlatformMapping.h"
 #include "fboss/agent/platforms/common/meru800bia/Meru800biaPlatformMapping.h"
@@ -38,7 +39,6 @@
 #include "fboss/agent/platforms/common/morgan800cc/Morgan800ccPlatformMapping.h"
 #include "fboss/agent/platforms/common/nh4010f/Nh4010fPlatformMapping.h"
 #include "fboss/agent/platforms/common/nh4220f/Nh4220fPlatformMapping.h"
-#include "fboss/agent/platforms/common/nova4000/Nova4000PlatformMapping.h"
 #include "fboss/agent/platforms/common/saintpaul/SaintpaulPlatformMapping.h"
 #include "fboss/agent/platforms/common/tahan800bc/Tahan800bcPlatformMapping.h"
 #include "fboss/agent/platforms/common/tahansb800bc/Tahansb800bcPlatformMapping.h"
@@ -197,10 +197,10 @@ std::unique_ptr<PlatformMapping> initPlatformMapping(PlatformType type) {
       return platformMappingStr.empty()
           ? std::make_unique<Nh4220fPlatformMapping>()
           : std::make_unique<Nh4220fPlatformMapping>(platformMappingStr);
-    case PlatformType::PLATFORM_NOVA4000:
+    case PlatformType::PLATFORM_M4062NHP:
       return platformMappingStr.empty()
-          ? std::make_unique<Nova4000PlatformMapping>()
-          : std::make_unique<Nova4000PlatformMapping>(platformMappingStr);
+          ? std::make_unique<M4062nhpPlatformMapping>()
+          : std::make_unique<M4062nhpPlatformMapping>(platformMappingStr);
     case PlatformType::PLATFORM_ICECUBE800BANW:
       return platformMappingStr.empty()
           ? std::make_unique<Icecube800banwPlatformMapping>()

@@ -3,12 +3,12 @@ load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")
 oncall("fboss_optics_phy")
 
 cpp_library(
-    name = "nova4000_platform_mapping",
+    name = "m4062nhp_platform_mapping",
     srcs = [
-        "Nova4000PlatformMapping.cpp",
+        "M4062nhpPlatformMapping.cpp",
     ],
     headers = [
-        "Nova4000PlatformMapping.h",
+        "M4062nhpPlatformMapping.h",
     ],
     exported_deps = [
         "//fboss/agent:fboss-types",

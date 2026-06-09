@@ -2,17 +2,17 @@
  *  Copyright (c) 2026 Nexthop Systems Inc.
  *  SPDX-License-Identifier: BSD-3-Clause
  */
-#include "fboss/agent/platforms/sai/SaiBcmNova4000PlatformPort.h"
+#include "fboss/agent/platforms/sai/SaiBcmM4062nhpPlatformPort.h"
 
 namespace facebook::fboss {
 
-void SaiBcmNova4000PlatformPort::linkStatusChanged(
+void SaiBcmM4062nhpPlatformPort::linkStatusChanged(
     bool /*up*/,
     bool /*adminUp*/) {
   // TODO: set led color
 }
 
-void SaiBcmNova4000PlatformPort::externalState(PortLedExternalState /*lfs*/) {
+void SaiBcmM4062nhpPlatformPort::externalState(PortLedExternalState /*lfs*/) {
   // TODO: set led color
 }
 

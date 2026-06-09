@@ -53,7 +53,7 @@ target_link_libraries(platform_mapping_utils
   tahansb800bc_platform_mapping
   nh4010f_platform_mapping
   nh4220f_platform_mapping
-  nova4000_platform_mapping
+  m4062nhp_platform_mapping
   wedge800cact_platform_mapping
   ladakh800bcls_platform_mapping
   leh800bcls_platform_mapping

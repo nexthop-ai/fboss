@@ -142,11 +142,11 @@ target_link_libraries(icecube800bc_bsp
   FBThrift::thriftcpp2
 )
 
-add_library(nova4000_bsp
-  fboss/lib/bsp/nova4000/Nova4000BspPlatformMapping.cpp
+add_library(m4062nhp_bsp
+  fboss/lib/bsp/m4062nhp/M4062nhpBspPlatformMapping.cpp
 )
 
-target_link_libraries(nova4000_bsp
+target_link_libraries(m4062nhp_bsp
   bsp_platform_mapping
   FBThrift::thriftcpp2
 )
@@ -311,7 +311,7 @@ target_link_libraries(qsfp_bsp_core
   montblanc_bsp
   icecube800banw_bsp
   icecube800bc_bsp
-  nova4000_bsp
+  m4062nhp_bsp
   icetea800bc_bsp
   minipack3bta_bsp
   minipack3n_bsp

@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include "fboss/agent/platforms/common/nova4000/Nova4000PlatformMapping.h"
+#include "fboss/agent/platforms/common/m4062nhp/M4062nhpPlatformMapping.h"
 
 namespace {
 constexpr auto kJsonPlatformMappingStr = R"(
@@ -37972,10 +37972,10 @@ constexpr auto kJsonPlatformMappingStr = R"(
 } // namespace
 
 namespace facebook::fboss {
-Nova4000PlatformMapping::Nova4000PlatformMapping()
+M4062nhpPlatformMapping::M4062nhpPlatformMapping()
     : PlatformMapping(kJsonPlatformMappingStr) {}
 
-Nova4000PlatformMapping::Nova4000PlatformMapping(
+M4062nhpPlatformMapping::M4062nhpPlatformMapping(
     const std::string& platformMappingStr)
     : PlatformMapping(platformMappingStr) {}
 

@@ -9,6 +9,7 @@
 #include "fboss/led_service/Icetea800bcLedManager.h"
 #include "fboss/led_service/Janga800bicLedManager.h"
 #include "fboss/led_service/Ladakh800bclsLedManager.h"
+#include "fboss/led_service/M4062nhpLedManager.h"
 #include "fboss/led_service/Meru800bfaLedManager.h"
 #include "fboss/led_service/Meru800biaLedManager.h"
 #include "fboss/led_service/Minipack3BTALedManager.h"
@@ -18,7 +19,6 @@
 #include "fboss/led_service/Morgan800ccLedManager.h"
 #include "fboss/led_service/Nh4010fLedManager.h"
 #include "fboss/led_service/Nh4220fLedManager.h"
-#include "fboss/led_service/Nova4000LedManager.h"
 #include "fboss/led_service/Tahan800bcLedManager.h"
 #include "fboss/led_service/Tahansb800bcLedManager.h"
 #include "fboss/led_service/Wedge400LedManager.h"
@@ -80,8 +80,8 @@ std::unique_ptr<LedManager> createLedManager() {
     return std::make_unique<Icecube800banwLedManager>();
   } else if (mode == PlatformType::PLATFORM_ICECUBE800BC) {
     return std::make_unique<Icecube800bcLedManager>();
-  } else if (mode == PlatformType::PLATFORM_NOVA4000) {
-    return std::make_unique<Nova4000LedManager>();
+  } else if (mode == PlatformType::PLATFORM_M4062NHP) {
+    return std::make_unique<M4062nhpLedManager>();
   } else if (mode == PlatformType::PLATFORM_ICETEA800BC) {
     return std::make_unique<Icetea800bcLedManager>();
   } else if (mode == PlatformType::PLATFORM_TAHANSB800BC) {
