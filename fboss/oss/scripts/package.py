@@ -75,6 +75,7 @@ FORWARDING_LIBS = []
 
 FORWARDING_TEST_BINARIES = [
     "fboss-platform-mapping-gen",
+    "fboss2_integration_test",
     "led_service_hw_test",
     "multi_switch_agent_hw_test",
     "qsfp_hw_test",

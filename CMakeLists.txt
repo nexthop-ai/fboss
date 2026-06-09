@@ -1228,6 +1228,7 @@ if (SAI_IMPL OR BUILD_SAI_FAKE)
     diag_shell_client
     fboss2
     fboss2-dev
+    fboss2_integration_test
     fsdb
     qsfp_service
     wedge_qsfp_util

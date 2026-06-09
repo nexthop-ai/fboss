@@ -3,6 +3,7 @@ import pytest
 
 from tests.libs.test_runner.runner import (
     BspTestRunner,
+    Fboss2IntegrationTestRunner,
     LinkTestRunner,
     PlatformTestRunner,
     QsfpTestRunner,
@@ -129,5 +130,13 @@ def smoke_test_runner():
 def benchmark_test_runner():
     """Fixture for benchmark tests."""
     runner = BenchmarkTestRunner()
+    yield runner
+    runner.close()
+
+
+@pytest.fixture
+def fboss2_integration_test_runner():
+    """Fixture for fboss2 CLI integration tests."""
+    runner = Fboss2IntegrationTestRunner()
     yield runner
     runner.close()

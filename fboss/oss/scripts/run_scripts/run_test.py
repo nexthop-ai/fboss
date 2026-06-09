@@ -937,6 +937,10 @@ class TestRunner(abc.ABC):
         test_binary_name = self._get_test_binary_name()
         file_name = os.path.basename(test_binary_name)
         disable_services(file_name)
+        # Once-per-run setup hook (e.g. Fboss2IntegrationTestRunner detects/starts
+        # prod agents and populates _switch_indexes). Other runners default to a
+        # no-op _setup_run, so this is safe for every suite.
+        self._setup_run(conf_file)
         try:
             for idx, test_to_run in enumerate(tests_to_run):
                 test_prefix = self.COLDBOOT_PREFIX
@@ -2014,6 +2018,10 @@ class Fboss2IntegrationTestRunner(TestRunner):
         self._is_prod_multi_switch: bool = False
         self._switch_indexes: list[int] = []
         self._test_config_source: str = self._AGENT_CONFIG_PATH
+        # Tracks whether the one-time initial cold boot has run, so that
+        # --skip-coldboot can still bootstrap the test config/clean state once
+        # before skipping the per-test cold boots.
+        self._initial_coldboot_done: bool = False
 
     def add_subcommand_arguments(self, sub_parser: ArgumentParser):
         """Add CLI test-specific command line arguments"""
@@ -2024,6 +2032,12 @@ class Fboss2IntegrationTestRunner(TestRunner):
             choices=[1, 2],
             default=1,
             help="Number of NPUs (switch indexes). Default is 1.",
+        )
+        sub_parser.add_argument(
+            "--skip-coldboot",
+            action="store_true",
+            default=False,
+            help="Skip per-test cold boots (one initial cold boot still runs).",
         )
 
     def _get_config_path(self):
@@ -2111,6 +2125,14 @@ class Fboss2IntegrationTestRunner(TestRunner):
             )
 
     def _setup_coldboot_test(self, sai_replayer_log_path: str | None = None):
+        # With --skip-coldboot, cold boot only once (to bootstrap the test
+        # config and a clean state) and skip the per-test cold boots that
+        # follow. Most fboss2 integration tests self-revert their config
+        # changes, so rebooting between every test is largely wasted.
+        if getattr(args, "skip_coldboot", False) and self._initial_coldboot_done:
+            print("########## Skipping per-test cold boot (--skip-coldboot).")
+            return
+
         if self._test_config_source != self._AGENT_CONFIG_PATH:
             subprocess.run(
                 ["cp", self._test_config_source, self._AGENT_CONFIG_PATH], check=True
@@ -2120,6 +2142,7 @@ class Fboss2IntegrationTestRunner(TestRunner):
             hw_agent_service_name=HW_AGENT_SERVICE_PROD,
             sw_agent_service_name=SW_AGENT_SERVICE_PROD,
         )
+        self._initial_coldboot_done = True
 
     def _setup_warmboot_test(self, sai_replayer_log_path: str | None = None):
         pass

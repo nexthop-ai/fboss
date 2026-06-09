@@ -632,6 +632,32 @@ class SmokeTestRunner(BaseHwTestRunner):
             return False
         return True
 
+class Fboss2IntegrationTestRunner(BaseHwTestRunner):
+    """Runner for fboss2 CLI integration tests.
+
+    fboss2_integration_test is a gtest binary that drives fboss2-dev CLI
+    commands against a running FBOSS instance and verifies their output. It
+    is SAI/platform-independent — it talks to the agent over Thrift — so
+    unlike the SAI/agent runners it needs no --config or per-HWSKU
+    known-bad-test key. run_test.py's fboss2_integration subcommand resolves
+    both internally (/etc/coop/agent.conf and the bundled
+    fboss2_integration_known_bad_tests file).
+    """
+
+    def test_args(self, hwsku: str) -> str:
+        return "fboss2_integration"
+
+    def pre_test(self):
+        """No-op: run_test.py fboss2_integration owns the agent lifecycle.
+
+        The fboss2_integration subcommand detects whether production
+        multi-switch agents are already running, snapshots their config, and
+        cold-boots both agents per test (restoring on teardown). The base
+        class warm-boot-state wipe would race with that prod-agent detection,
+        so we deliberately skip it here.
+        """
+
+
 class BenchmarkTestRunner(BaseHwTestRunner):
     """Runner for benchmark tests."""
 
