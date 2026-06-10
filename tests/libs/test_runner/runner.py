@@ -62,7 +62,7 @@ def _enforce_min_failure_duration(run_test):
 
     return wrapper
 
-# Map normalized HWSKU (from device DB model name) to FBOSS config codename
+# Map normalized model (from device DB model name) to FBOSS config codename
 # for hw_test_configs (SAI/agent tests). Only applies to SaiTestRunner and
 # SaiAgentTestRunner.
 #
@@ -93,17 +93,17 @@ _SAI_KNOWN_BAD_KEY: dict[str, str] = {
 }
 
 
-def _sai_skip_known_bad(hwsku: str) -> str:
-    key = _SAI_KNOWN_BAD_KEY.get(hwsku)
+def _sai_skip_known_bad(model: str) -> str:
+    key = _SAI_KNOWN_BAD_KEY.get(model)
     return f" --skip-known-bad-tests {key}" if key else ""
 
 
-def _benchmark_skip_known_bad(hwsku: str) -> str:
+def _benchmark_skip_known_bad(model: str) -> str:
     # sai_bench.materialized_JSON keys on vendor/sdk/asic (3-part), unlike the SAI
     # known-bad files which use vendor/coldboot-sai/warmboot-sai/asic. Collapse the
     # duplicated SDK segment so the benchmark platform key matches the config;
     # otherwise the lookup misses and unsupported (VOQ/Fabric/SRv6) benchmarks run.
-    key = _SAI_KNOWN_BAD_KEY.get(hwsku)
+    key = _SAI_KNOWN_BAD_KEY.get(model)
     if not key:
         return ""
     parts = key.split("/")
@@ -112,9 +112,9 @@ def _benchmark_skip_known_bad(hwsku: str) -> str:
     return f" --skip-known-bad-tests {key}"
 
 
-def _normalize_hwsku(hwsku: str) -> str:
+def _normalize_model(model: str) -> str:
     """Shorten device-DB model name to FBOSS codename form, e.g. NH-4010-F -> nh4010f."""
-    return hwsku.lower().replace("-", "")
+    return model.lower().replace("-", "")
 
 
 # Stale-state cleanup paths — must match AgentDirectoryUtil defaults
@@ -152,11 +152,11 @@ class BaseHwTestRunner(ABC):
         self.tc = None
 
     @abstractmethod
-    def test_args(self, hwsku: str) -> str:
+    def test_args(self, model: str) -> str:
         """Returns run_test.py command arguments for this test type.
 
         Args:
-            hwsku: Hardware SKU (already normalized to lowercase without dashes)
+            model: Product model (already normalized to lowercase without dashes)
 
         Returns:
             Command arguments as string.
@@ -168,7 +168,8 @@ class BaseHwTestRunner(ABC):
         self.tc["dut"] = os.getenv("DUT")
         self.tc["username"] = os.getenv("DUTUSERNAME", "root")
         self.tc["password"] = os.getenv("DUTPASSWORD", "root")
-        self.tc["hwsku"] = os.getenv("HWSKU")
+        # HWSKU environment variable deprecated in favor of PRODUCT_MODEL
+        self.tc["model"] = os.getenv("HWSKU", os.getenv("PRODUCT_MODEL"))
         self.tc["filepath"] = os.getenv("TESTFILE")
         logger.info("dut %s", self.tc['dut'])
         logger.info("filepath %s", self.tc['filepath'])
@@ -261,8 +262,8 @@ class BaseHwTestRunner(ABC):
     def post_test(self):
         pass
 
-    def build_test_cmd(self, hwsku: str) -> str:
-        test_args = self.test_args(hwsku)
+    def build_test_cmd(self, model: str) -> str:
+        test_args = self.test_args(model)
         return (
             f"sudo su -c 'cd /opt/fboss && source ./bin/setup_fboss_env && "
             f" ./bin/run_test.py {test_args} --filter_file=/home/admin/tests.conf "
@@ -292,7 +293,7 @@ class BaseHwTestRunner(ABC):
         if not status:
             return False
 
-        hwsku = _normalize_hwsku(self.tc["hwsku"])
+        model = _normalize_model(self.tc["model"])
 
         logger.info(
             "Clearing remote files: /home/admin/test.log and /home/admin/tr.xml"
@@ -305,7 +306,7 @@ class BaseHwTestRunner(ABC):
 
         self.pre_test()
         try:
-            cmd = self.build_test_cmd(hwsku)
+            cmd = self.build_test_cmd(model)
             logger.info("Running remote command: %s", cmd)
             test_exit_status, test_output = self.ssh_client.run_cmd(cmd)
             logger.debug("exit_status %s output %s", test_exit_status, test_output)
@@ -345,17 +346,17 @@ class BaseHwTestRunner(ABC):
 class SaiTestRunner(BaseHwTestRunner):
     """Runner for SAI hardware tests."""
 
-    def test_args(self, hwsku: str) -> str:
-        config_name = _HW_TEST_CONFIG_NAME.get(hwsku, hwsku)
-        logger.info("hwsku=%s hw_test_config=%s", hwsku, config_name)
-        return f"sai --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON{_sai_skip_known_bad(hwsku)}"
+    def test_args(self, model: str) -> str:
+        config_name = _HW_TEST_CONFIG_NAME.get(model, model)
+        logger.info("model=%s hw_test_config=%s", model, config_name)
+        return f"sai --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON{_sai_skip_known_bad(model)}"
 
 
 class SaiAgentTestRunner(BaseHwTestRunner):
     """Runner for SAI agent tests."""
 
     @staticmethod
-    def _enable_production_features(hwsku: str) -> str:
+    def _enable_production_features(model: str) -> str:
         PROD_FEEATURES_KEY: dict[str, str] = {
             "minipack3": "tomahawk5",
             "wedge800bact": "tomahawk5",
@@ -364,21 +365,21 @@ class SaiAgentTestRunner(BaseHwTestRunner):
             "nh4010f": "tomahawk5",
             "nh4220f": "tomahawk6",
         }
-        key = PROD_FEEATURES_KEY.get(hwsku)
+        key = PROD_FEEATURES_KEY.get(model)
         return f" --enable-production-features {key}" if key else ""
 
-    def test_args(self, hwsku: str) -> str:
-        config_name = _HW_TEST_CONFIG_NAME.get(hwsku, hwsku)
-        logger.info("hwsku=%s hw_test_config=%s", hwsku, config_name)
+    def test_args(self, model: str) -> str:
+        config_name = _HW_TEST_CONFIG_NAME.get(model, model)
+        logger.info("model=%s hw_test_config=%s", model, config_name)
         return f"sai_agent --agent-run-mode mono --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON \
-            {_sai_skip_known_bad(hwsku)}{self._enable_production_features(hwsku)}"
+            {_sai_skip_known_bad(model)}{self._enable_production_features(model)}"
 
 
 class QsfpTestRunner(BaseHwTestRunner):
     """Runner for QSFP hardware tests."""
 
-    def test_args(self, hwsku: str) -> str:
-        config_name = _QSFP_TEST_CONFIG_NAME.get(hwsku, hwsku)
+    def test_args(self, model: str) -> str:
+        config_name = _QSFP_TEST_CONFIG_NAME.get(model, model)
         return f"qsfp --qsfp-config ./share/qsfp_test_configs/{config_name}.materialized_JSON"
 
 
@@ -408,8 +409,8 @@ class LinkTestRunner(BaseHwTestRunner):
         self._use_generated_qsfp = False
 
     @classmethod
-    def _config_name(cls, hwsku: str) -> str:
-        return _LINK_TEST_CONFIG_NAME.get(hwsku, hwsku)
+    def _config_name(cls, model: str) -> str:
+        return _LINK_TEST_CONFIG_NAME.get(model, model)
 
     @staticmethod
     def _repo_dir(relative: Path) -> Path:
@@ -525,7 +526,7 @@ class LinkTestRunner(BaseHwTestRunner):
     def pre_test(self):
         super().pre_test()
 
-        hwsku = _normalize_hwsku(self.tc["hwsku"])
+        model = _normalize_model(self.tc["model"])
         self._stage_qsfp_config()
 
         # Set by the nhtest executor to a {port: peer_port} JSON file when cabling
@@ -534,7 +535,7 @@ class LinkTestRunner(BaseHwTestRunner):
         if not cabling_path:
             return
 
-        config_name = self._config_name(hwsku)
+        config_name = self._config_name(model)
 
         with open(self._base_config_path(config_name), encoding="utf-8") as f:
             base = json.load(f)
@@ -566,11 +567,11 @@ class LinkTestRunner(BaseHwTestRunner):
             raise RuntimeError(f"Failed to upload generated link config: {output}")
         self._use_generated_config = True
 
-    def test_args(self, hwsku: str) -> str:
+    def test_args(self, model: str) -> str:
         if self._use_generated_config:
             config_arg = self._REMOTE_CONFIG_PATH
         else:
-            config_arg = f"./share/link_test_configs/{self._config_name(hwsku)}.materialized_JSON"
+            config_arg = f"./share/link_test_configs/{self._config_name(model)}.materialized_JSON"
         qsfp_arg = (
             self._REMOTE_QSFP_CONFIG_PATH
             if self._use_generated_qsfp
@@ -581,7 +582,7 @@ class LinkTestRunner(BaseHwTestRunner):
             f"--config {config_arg} "
             f"--qsfp-config {qsfp_arg}"
         )
-        if hwsku == "wedge800cact":
+        if model == "wedge800cact":
             # warmboot acting strange, will readd once fixed
             args += " --coldboot_only"
         return args
@@ -605,7 +606,7 @@ class PlatformTestRunner(BaseHwTestRunner):
         super().__init__()
         self.test_type = test_type
 
-    def test_args(self, hwsku: str) -> str:
+    def test_args(self, model: str) -> str:
         return f"platform --type {self.test_type}"
 
 class BspTestRunner(BaseHwTestRunner):
@@ -616,18 +617,18 @@ class BspTestRunner(BaseHwTestRunner):
     --enable_stress_tests flag are handled on-DUT by run_test.py bsp.
     """
 
-    def test_args(self, hwsku: str) -> str:
+    def test_args(self, model: str) -> str:
         return "bsp"
 
     def set_filters(self, src_filepath, dst_filepath):
         """BSP runs all cases via run_test.py bsp — no filter file needed."""
         return True
 
-    def build_test_cmd(self, hwsku: str) -> str:
+    def build_test_cmd(self, model: str) -> str:
         # Omit --filter_file so run_test.py bsp runs all cases (see set_filters).
         return (
             f"sudo su -c 'cd /opt/fboss && source ./bin/setup_fboss_env && "
-            f" ./bin/run_test.py {self.test_args(hwsku)} "
+            f" ./bin/run_test.py {self.test_args(model)} "
             f"' > {self.testlog_filepath} 2>&1"
         )
 
@@ -642,7 +643,7 @@ class SmokeTestRunner(BaseHwTestRunner):
 
     AGENT_SMOKE_PATH = "/opt/fboss/bin/python_tests/agent_smoke.py"
 
-    def test_args(self, hwsku: str) -> str:
+    def test_args(self, model: str) -> str:
         # Unused; SmokeTestRunner overrides run_test entirely.
         return ""
 
@@ -717,13 +718,13 @@ class Fboss2IntegrationTestRunner(BaseHwTestRunner):
     fboss2_integration_test is a gtest binary that drives fboss2-dev CLI
     commands against a running FBOSS instance and verifies their output. It
     is SAI/platform-independent — it talks to the agent over Thrift — so
-    unlike the SAI/agent runners it needs no --config or per-HWSKU
+    unlike the SAI/agent runners it needs no --config or per-model
     known-bad-test key. run_test.py's fboss2_integration subcommand resolves
     both internally (/etc/coop/agent.conf and the bundled
     fboss2_integration_known_bad_tests file).
     """
 
-    def test_args(self, hwsku: str) -> str:
+    def test_args(self, model: str) -> str:
         return "fboss2_integration"
 
     def pre_test(self):
@@ -740,10 +741,10 @@ class Fboss2IntegrationTestRunner(BaseHwTestRunner):
 class BenchmarkTestRunner(BaseHwTestRunner):
     """Runner for benchmark tests."""
 
-    def test_args(self, hwsku: str) -> str:
-        config_name = _HW_TEST_CONFIG_NAME.get(hwsku, hwsku)
-        logger.info("hwsku=%s hw_test_config=%s", hwsku, config_name)
-        return f"benchmark --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON{_benchmark_skip_known_bad(hwsku)}"
+    def test_args(self, model: str) -> str:
+        config_name = _HW_TEST_CONFIG_NAME.get(model, model)
+        logger.info("model=%s hw_test_config=%s", model, config_name)
+        return f"benchmark --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON{_benchmark_skip_known_bad(model)}"
 
     def set_filters(self, src_filepath, dst_filepath):
         """Benchmarks run every registered case — no filter file needed.
@@ -754,11 +755,11 @@ class BenchmarkTestRunner(BaseHwTestRunner):
         """
         return True
 
-    def build_test_cmd(self, hwsku: str) -> str:
+    def build_test_cmd(self, model: str) -> str:
         # Omit --filter_file so run_test.py runs all benchmarks (see set_filters).
         return (
             f"sudo su -c 'cd /opt/fboss && source ./bin/setup_fboss_env && "
-            f" ./bin/run_test.py {self.test_args(hwsku)} "
+            f" ./bin/run_test.py {self.test_args(model)} "
             f"' > {self.testlog_filepath} 2>&1"
         )
 
