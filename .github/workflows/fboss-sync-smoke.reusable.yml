@@ -110,15 +110,6 @@ jobs:
           target_testbeds: "fboss.*"
           tests: ${{ steps.smoke.outputs.tests }}
 
-      - name: Schedule Black Kite
-        id: schedule-black-kite
-        uses: ./.github/actions/fboss-schedule-test
-        with:
-          build_id: ${{ inputs.build_id }}
-          priority: 75
-          target_testbeds: "blkt2.*"
-          tests: ${{ steps.smoke.outputs.tests }}
-
       - name: Aggregate batch IDs into JSON
         id: aggregate
         env:
@@ -126,20 +117,17 @@ jobs:
           W8B_ID: ${{ steps.schedule-wedge800b.outputs.batch_id }}
           W8C_ID: ${{ steps.schedule-wedge800c.outputs.batch_id }}
           MP3_ID: ${{ steps.schedule-minipack3.outputs.batch_id }}
-          BK_ID: ${{ steps.schedule-black-kite.outputs.batch_id }}
         run: |
           batches=$(jq -n \
             --arg ge "$GE_ID" \
             --arg w8b "$W8B_ID" \
             --arg w8c "$W8C_ID" \
             --arg mp3 "$MP3_ID" \
-            --arg bk "$BK_ID" \
             '[
               {"pool_name":"Gold Eagle", "batch_id":$ge},
               {"pool_name":"Wedge800B",  "batch_id":$w8b},
               {"pool_name":"Wedge800C",  "batch_id":$w8c},
-              {"pool_name":"Minipack3",  "batch_id":$mp3},
-              {"pool_name":"Black Kite", "batch_id":$bk}
+              {"pool_name":"Minipack3",  "batch_id":$mp3}
             ]')
 
           echo "All pools scheduled:"
