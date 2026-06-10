@@ -130,6 +130,7 @@ _AGENT_ENSEMBLE_DIR = "/var/facebook/fboss/agent_ensemble"
 # separate from _HW_TEST_CONFIG_NAME.
 _LINK_TEST_CONFIG_NAME: dict[str, str] = {
     "minipack3": "montblanc",
+    "nh4215f": "m4062nhp",
 }
 
 # ACT DUTs use the NHP qsfp_test_config so we don't have to touch the
