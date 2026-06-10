@@ -57,6 +57,11 @@ get_platform_dir() {
 map_platform_to_config() {
   local platform="$1"
   declare -A platform_map=(
+    # Steller Eagle (m4062nhp): early units have "Nova4000" burned into the
+    # BIOS SMBIOS product name, which dmidecode still reports, so map the
+    # legacy name to the renamed config dir (NOS-6469). Units reporting
+    # "M4062NHP" resolve to the same dir via the default below.
+    ["nova4000"]="m4062nhp"
     ["wedge800bnhp"]="wedge800bact"
     ["wedge800cnhp"]="wedge800cact"
   )
