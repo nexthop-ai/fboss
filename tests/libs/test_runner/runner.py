@@ -75,6 +75,7 @@ def _enforce_min_failure_duration(run_test):
 _HW_TEST_CONFIG_NAME: dict[str, str] = {
     "minipack3": "montblanc",
     "wedge800bact": "wedge800bnhp",
+    "nh4215f": "m4062nhp",
 }
 
 # vendor/coldboot-sai/warmboot-sai/asic — key for run_test.py
@@ -89,6 +90,7 @@ _SAI_KNOWN_BAD_KEY: dict[str, str] = {
     "wedge800bnhp": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
     "wedge800cact": "leaba/25.11.4210/25.11.4210/graphene202x",
     "nh4010f": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
+    "nh4215f": "brcm/14.2.0.0_odp/14.2.0.0_odp/tomahawk6",
     "nh4220f": "brcm/14.2.0.0_odp/14.2.0.0_odp/tomahawk6",
 }
 
@@ -364,6 +366,7 @@ class SaiAgentTestRunner(BaseHwTestRunner):
             "wedge800bnhp": "tomahawk5",
             "wedge800cact": "g202x",
             "nh4010f": "tomahawk5",
+            "nh4215f": "tomahawk6",
             "nh4220f": "tomahawk6",
         }
         key = PROD_FEEATURES_KEY.get(model)
