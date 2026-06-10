@@ -348,6 +348,107 @@ grep  -iE 'NOS-[0-9]+|gold[0-9]+|fboss[0-9]{3}|wdg[0-9]+|nexthop\.ai|nexthop-int
 The match count should be `1` (the `From:` line). Read each match to
 confirm.
 
+## 7.5 Comprehensive code review
+
+Run the `fboss-review` skill on the final sanitized diff before pushing
+to the public fork. Findings are appended to the PR body so upstream
+reviewers see pre-vetted concerns up front. This is a transparency
+table — findings don't block the push; they document known concerns for
+reviewer attention.
+
+**Note:** `fboss-review` normally says "Never post to Phabricator
+automatically." That rule is Phabricator-scoped. Appending findings to
+the GitHub PR description here is an intentional, different action and
+does not conflict with that rule.
+
+### 7.5a. Get the diff
+
+```bash
+git diff upstream/main HEAD > /tmp/upstream_diff.txt
+```
+
+### 7.5b. Invoke fboss-review
+
+Invoke the `fboss-review` skill passing `/tmp/upstream_diff.txt` as the
+diff source in place of `sl diff`. The skill dispatches up to 11
+parallel reviewers (5 generic + up to 6 FBOSS-specific based on which
+areas the diff touches), then runs a verifier to deduplicate and
+calibrate confidence scores. Only findings with confidence ≥ 0.7 are
+kept.
+
+The output is a structured table:
+
+```
+| File:Line | Reviewer | Severity | Issue | Confidence |
+|-----------|----------|----------|-------|------------|
+```
+
+### 7.5c. Gate on findings
+
+**If any finding has confidence ≥ 0.7 → STOP. Do not proceed to §8.**
+
+Present the table to the user:
+
+```
+## Review Findings (BLOCKING — address before push)
+
+| File:Line | Reviewer | Severity | Issue | Confidence |
+|-----------|----------|----------|-------|------------|
+<rows with confidence ≥ 0.7>
+```
+
+Ask the user to either:
+1. **Fix** the issues and re-run from §5 (rebuild + retest), or
+2. **Explicitly override** — user must type "push anyway" or similar to
+   acknowledge the findings and proceed.
+
+Do not auto-proceed. Pushing unvetted concerns to `facebook/fboss` is
+hard to retract.
+
+**If no findings ≥ 0.7**, append a clean-pass note to the PR body and
+continue to §7.5d:
+
+```bash
+cat >> /tmp/upstream_pr_body.md << 'EOF'
+
+## Review Findings
+
+No issues found above confidence threshold (fboss-review, 11 reviewers).
+EOF
+```
+
+**If the user explicitly overrides**, append the findings table to the
+body so upstream reviewers see the known concerns:
+
+```bash
+cat >> /tmp/upstream_pr_body.md << 'EOF'
+
+## Review Findings
+
+Pre-publication review by fboss-review (confidence ≥ 0.7). Findings
+acknowledged; pushed at author's discretion.
+
+| File:Line | Reviewer | Severity | Issue | Confidence |
+|-----------|----------|----------|-------|------------|
+<rows>
+EOF
+```
+
+### 7.5d. Re-run sanitization tripwire on PR body
+
+The findings table is agent-generated text that may inadvertently
+reintroduce internal references (ticket numbers, device names, internal
+hostnames) from context it read. **Run the §7 tripwire against the
+final body before proceeding to §8**:
+
+```bash
+grep -iE 'NOS-[0-9]+|gold[0-9]+|fboss[0-9]{3}|wdg[0-9]+|nexthop\.ai|nexthop-internal|internal\.nexthop|k8s\.us-west|jira' \
+    /tmp/upstream_pr_body.md
+```
+
+Zero matches required. Scrub any hits manually using the §7 substitution
+table before continuing.
+
 ## 8. Push + open upstream PR
 
 Push to `nexthop-ai` (the public fork). **Not** `origin` (the private
