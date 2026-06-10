@@ -15,6 +15,7 @@ cpp_unittest(
         "CmdConfigIpRouteTest.cpp",
         "CmdConfigL2LearningModeTest.cpp",
         "CmdConfigMacAgingTimeTest.cpp",
+        "CmdConfigNeedL2EntryForNeighborTest.cpp",
         "CmdConfigPtpTransparentClockTest.cpp",
         "CmdConfigQosBufferPoolTest.cpp",
         "CmdConfigReloadTest.cpp",
