@@ -1,6 +1,6 @@
 {
   "distribution_formats": {
-    "container": "cfboss-image.tar"
+    "container": "cfboss-image.tar.xz"
   },
   "kernel": {},
   "fboss-platform-stack": {
