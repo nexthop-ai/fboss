@@ -250,6 +250,7 @@ perform_build() {
 
   time nice -n 10 ./fboss/oss/scripts/run-getdeps.py \
     "${npu_flags[@]}" \
+    --benchmark-install \
     build \
     --num-jobs "${num_jobs}" \
     --build-type "${BUILD_TYPE}" \
@@ -303,3 +304,25 @@ else
     perform_build "" "" ""
   )
 fi
+
+#
+# Nexthop-only
+# Print sccache statistics to debug cache performance
+#
+
+log "sccache statistics for ${stack_label} stack"
+if command -v sccache &>/dev/null; then
+  sccache -s || echo "Failed to get sccache statistics"
+  if [ -f /tmp/sccache.log ]; then
+    echo "sccache error log:"
+    cat /tmp/sccache.log
+  fi
+else
+  echo "sccache command not found"
+fi
+
+#
+# End Nexthop-only
+#
+
+log "build_fboss_stack.sh END"

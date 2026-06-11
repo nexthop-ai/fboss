@@ -198,7 +198,7 @@ heavy_genrule(
     ],
     cmd = LOAD_FBOSS_BUILDER_CMD + """
         pushd fboss/fboss-image
-        jq '.["fboss-platform-stack"] = {"execute": ["../fboss/oss/scripts/nhfboss-stack.sh", "platform"]}' nh-fboss-broadcom-xgs.json > platform-stack.json
+        jq '.["fboss-platform-stack"] = {"execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "platform"]}' nh-fboss-broadcom-xgs.json > platform-stack.json
         ./distro_cli/fboss-image build platform-stack.json fboss-platform-stack
         popd
 
@@ -289,7 +289,7 @@ heavy_genrule(
         ln -f $(location //nhbroadcomsai/fboss-xgs:distro_sai.tar) "${BUILD_DIR}/distro_sai.tar"
 
         pushd fboss/fboss-image
-        jq '. ["fboss-forwarding-stack"] = {"execute": ["../fboss/oss/scripts/nhfboss-stack.sh", "forwarding"]}' nh-fboss-broadcom-xgs.json > forwarding-stack-broadcom-xgs.json
+        jq '. ["fboss-forwarding-stack"] = {"execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "forwarding"]}' nh-fboss-broadcom-xgs.json > forwarding-stack-broadcom-xgs.json
         ./distro_cli/fboss-image build forwarding-stack-broadcom-xgs.json fboss-forwarding-stack
         popd
 
@@ -386,7 +386,7 @@ heavy_genrule(
         ln -f $(location //nhbroadcomsai/fboss-th6:distro_sai.tar) "${BUILD_DIR}/distro_sai.tar"
 
         pushd fboss/fboss-image
-        jq '. ["fboss-forwarding-stack"] = {"execute": ["../fboss/oss/scripts/nhfboss-stack.sh", "forwarding"]}' nh-fboss-broadcom-th6.json > forwarding-stack-broadcom-th6.json
+        jq '. ["fboss-forwarding-stack"] = {"execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "forwarding"]}' nh-fboss-broadcom-th6.json > forwarding-stack-broadcom-th6.json
         ./distro_cli/fboss-image build forwarding-stack-broadcom-th6.json fboss-forwarding-stack
         popd
 
@@ -481,7 +481,7 @@ heavy_genrule(
         ln -f $(location //nhciscosai/fboss-s1:distro_sai.tar) "${BUILD_DIR}/distro_sai.tar"
 
         pushd fboss/fboss-image
-        jq '. ["fboss-forwarding-stack"] = {"execute": ["../fboss/oss/scripts/nhfboss-stack.sh", "forwarding"]}' nh-fboss-cisco-s1.json > forwarding-stack-cisco-s1.json
+        jq '. ["fboss-forwarding-stack"] = {"execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "forwarding"]}' nh-fboss-cisco-s1.json > forwarding-stack-cisco-s1.json
         ./distro_cli/fboss-image build forwarding-stack-cisco-s1.json fboss-forwarding-stack
         popd
 
