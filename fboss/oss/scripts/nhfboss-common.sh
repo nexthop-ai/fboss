@@ -179,6 +179,10 @@ common_options+=',"CMAKE_JOB_POOL_COMPILE":"compile"'
 common_options+=',"CMAKE_JOB_POOL_LINK":"link"'
 common_options+=',"RANGE_V3_TESTS":"OFF"'
 common_options+=',"RANGE_V3_PERF":"OFF"'
-common_options+=',"CMAKE_EXPORT_COMPILE_COMMANDS":"ON"}'
+common_options+=',"CMAKE_EXPORT_COMPILE_COMMANDS":"ON"'
+if [ -n "${BUILD_CFBOSS:-}" ]; then
+  common_options+=',"BUILD_CFBOSS":"ON"'
+fi
+common_options+='}'
 common_options+=' --num-jobs '$num_jobs
 common_options+=' fboss'

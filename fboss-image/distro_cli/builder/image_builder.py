@@ -219,9 +219,17 @@ class ImageBuilder:
 
         dist_formats = self.manifest.data.get("distribution_formats")
         if not dist_formats or not any(
-            k in dist_formats for k in ["usb", "pxe", "onie"]
+            k in dist_formats for k in ["usb", "pxe", "onie", "container"]
         ):
             raise ManifestError("No distribution formats specified in manifest")
+
+        if "container" in dist_formats and any(
+            k in dist_formats for k in ["usb", "pxe", "onie"]
+        ):
+            raise ManifestError(
+                "'container' distribution format is mutually exclusive with "
+                "usb/pxe/onie (cfboss rootfs cannot run on a physical DUT)"
+            )
 
         logger.info(f"Using image builder: {self.image_builder_dir}")
 
@@ -245,6 +253,10 @@ class ImageBuilder:
         # Add flag for ONIE if requested
         if "onie" in dist_formats:
             command.append("--build-onie")
+
+        # cFBOSS: produce a docker-loadable container image via kiwi --type docker
+        if "container" in dist_formats:
+            command.append("--container-build")
 
         if self.kiwi_ng_debug:
             command.append("--debug")
@@ -305,6 +317,7 @@ class ImageBuilder:
             self._move_distro_file("usb", "iso")
             self._move_distro_file("pxe", "tar")
             self._move_distro_file("onie", "bin")
+            self._move_distro_file("container", "tar")
 
             logger.info("Finished base OS image build")
         finally:

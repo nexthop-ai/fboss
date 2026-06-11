@@ -28,6 +28,7 @@ DESCRIPTION_DIR="${WSROOT}/templates/centos-09.0"
 TARGET_DIR="${WSROOT}/output"
 BUILD_PXE=""
 BUILD_ONIE=""
+BUILD_CONTAINER=""
 KIWI_DEBUG=""
 AFTER_PKGS_INSTALL_FILE=""
 AFTER_PKGS_EXECUTE_FILE=""
@@ -48,6 +49,7 @@ help() {
   echo "  -e|--after-pkgs-execute     JSON File (in templates/centos-09.0 directory) containing list of commands to execute after packages are installed"
   echo "  -p|--build-pxe-usb          Build PXE and USB installers image (default: no)"
   echo "  -o|--build-onie             Build ONIE installer image (default: no)"
+  echo "     --container-build        Build cFBOSS docker container image (default: no)"
   echo ""
   echo "  -d|--debug                  Enable kiwi-ng debug"
   echo "  -h|--help                   Print this help message"
@@ -166,6 +168,11 @@ while [[ $# -gt 0 ]]; do
     shift 1
     ;;
 
+  --container-build)
+    BUILD_CONTAINER="yes"
+    shift 1
+    ;;
+
   -d | --debug)
     KIWI_DEBUG=" --debug "
     shift 1
@@ -192,6 +199,11 @@ while [[ $# -gt 0 ]]; do
     ;;
   esac
 done
+
+if [ -n "${BUILD_CONTAINER}" ] && { [ -n "${BUILD_PXE}" ] || [ -n "${BUILD_ONIE}" ]; }; then
+  echo "ERROR: --container-build is mutually exclusive with --build-pxe-usb and --build-onie" >&2
+  exit 1
+fi
 
 # Log everything for posterity ;-)
 true >"${LOG_FILE}" # Truncate log file
@@ -242,6 +254,17 @@ echo "Built on: $(date -u)" >"$DESCRIPTION_DIR/root/etc/build-info"
 dprint "Copying rootfs files to overlay..."
 cp -R ${DESCRIPTION_DIR}/root_files/* ${DESCRIPTION_DIR}/root/
 
+# cFBOSS: layer the root_files_cfboss overlay (carries the pre-baked fruid.json
+# and any other cFBOSS-only static files) and write the build_target marker
+if [ -n "${BUILD_CONTAINER}" ]; then
+  if [ -d "${DESCRIPTION_DIR}/root_files_cfboss" ]; then
+    dprint "Copying root_files_cfboss overlay..."
+    cp -R ${DESCRIPTION_DIR}/root_files_cfboss/* ${DESCRIPTION_DIR}/root/
+  fi
+  mkdir -p ${DESCRIPTION_DIR}/root/repos
+  echo cfboss >${DESCRIPTION_DIR}/root/repos/build_target
+fi
+
 # Remove any existing after_pkgs files from previous runs
 rm -f ${DESCRIPTION_DIR}/root/var/tmp/after_pkgs_install_file.json
 rm -f ${DESCRIPTION_DIR}/root/var/tmp/after_pkgs_execute_file.json
@@ -283,6 +306,30 @@ if [ -n "${BUILD_PXE}" ]; then
   PXE_PID=$!
 fi
 
+if [ -n "${BUILD_CONTAINER}" ]; then
+  dprint "Generating cFBOSS docker container image, this will take a few minutes..."
+  rm -rf ${TARGET_DIR}/cfboss
+  (
+    set -e -o pipefail
+    kiwi-ng-3 \
+      --profile FBOSS \
+      --profile CFBOSS \
+      --type docker \
+      ${KIWI_DEBUG} system build \
+      --description ${DESCRIPTION_DIR} \
+      --target-dir ${TARGET_DIR}/cfboss |&
+      stdbuf -oL tee -a ${LOG_FILE} | stdbuf -oL awk '{print "cFBOSS container| " $0}'
+    DOCKER_OUT=$(ls ${TARGET_DIR}/cfboss/FBOSS-Distro-Image*.docker.tar* 2>/dev/null | head -1)
+    if [ -z "${DOCKER_OUT}" ]; then
+      echo "ERROR: kiwi did not produce a *.docker.tar* artifact in ${TARGET_DIR}/cfboss" >&2
+      ls -la ${TARGET_DIR}/cfboss >&2
+      exit 1
+    fi
+    mv "${DOCKER_OUT}" ${TARGET_DIR}/FBOSS-Distro-Image.x86_64-1.0.install.tar
+  ) &
+  CONTAINER_PID=$!
+fi
+
 if [ -n "${BUILD_ONIE}" ]; then
   dprint "Generating ONIE installer, this will take few minutes..."
   rm -rf ${TARGET_DIR}/onie
@@ -322,6 +369,12 @@ if [ -n "${BUILD_ONIE}" ]; then
   ONIE_RC=$?
 fi
 
+CONTAINER_RC=0
+if [ -n "${BUILD_CONTAINER}" ]; then
+  wait ${CONTAINER_PID}
+  CONTAINER_RC=$?
+fi
+
 if [ ${PXE_RC} -ne 0 ]; then
   dprint "ERROR: PXE/USB image build failed"
 fi
@@ -331,6 +384,6 @@ fi
 
 rm -rf ${TARGET_DIR}/btrfs ${TARGET_DIR}/onie
 
-RC=$((PXE_RC + ONIE_RC))
+RC=$((PXE_RC + ONIE_RC + CONTAINER_RC))
 dprint "Image generation completed with exit code ${RC}"
 exit "${RC}"

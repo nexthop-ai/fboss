@@ -17,12 +17,17 @@
 #
 set -euxo pipefail
 
+if [ "${1:-}" = "--cfboss" ]; then
+  export BUILD_CFBOSS=1
+  shift
+fi
+
 log() {
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
 }
 
 if [ "$#" -lt 1 ]; then
-  echo "Usage: $0 forwarding|platform" >&2
+  echo "Usage: $0 [--cfboss] forwarding|platform" >&2
   exit 1
 fi
 
@@ -167,7 +172,8 @@ perform_build() {
   common_options+='"CMAKE_BUILD_TYPE":"MinSizeRel"'
   common_options+=',"CMAKE_CXX_STANDARD":"20"'
   common_options+=',"RANGE_V3_TESTS":"OFF"'
-  common_options+=',"RANGE_V3_PERF":"OFF"}'
+  common_options+=',"RANGE_V3_PERF":"OFF"'
+  common_options+='}'
   common_options+=' --src-dir .'
   common_options+=' fboss'
 

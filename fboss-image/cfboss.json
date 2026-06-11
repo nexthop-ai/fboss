@@ -4,11 +4,11 @@
   },
   "kernel": {},
   "fboss-platform-stack": {
-    "execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "platform"],
+    "execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "--cfboss", "platform"],
     "artifact": "platform-stack.tar"
   },
   "fboss-forwarding-stack": {
-    "execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "forwarding"],
+    "execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "--cfboss", "forwarding"],
     "artifact": "forwarding-stack.tar"
   },
   "npu_sai": {
