@@ -1,6 +1,6 @@
 {
   "defaultCommandLineArgs": {
-    "mode": "nh4010"
+    "mode": "nh4010f"
   },
   "transceiverConfigOverrides": [],
   "qsfpTestConfig": {
