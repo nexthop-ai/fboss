@@ -154,18 +154,9 @@ heavy_genrule(
     tags = ["no-sandbox"],
 )
 
-heavy_genrule(
-    name = "fboss_platform_stack",
-    visibility = ["//visibility:public"],
-    srcs = [
-        "//bazel_lib:ln_or_cp",
-        "//fboss/fboss-image/distro_cli:builder",
-        "//fboss:nh-fboss-manifests",
-        ":fboss_builder_docker", # Prevent concurrent building
-        "CMakeLists.txt",
-        "functions.cmake",
-        "sdk_dependencies.txt",
-    ] + glob([
+filegroup(
+    name = "fboss_platform_stack_srcs",
+    srcs = glob([
         "build/**",
         "cmake/**",
         "common/**",
@@ -192,6 +183,21 @@ heavy_genrule(
         "**/__pycache__/**",
         "**/*.pyc",
     ]),
+)
+
+heavy_genrule(
+    name = "fboss_platform_stack",
+    visibility = ["//visibility:public"],
+    srcs = [
+        "//bazel_lib:ln_or_cp",
+        "//fboss/fboss-image/distro_cli:builder",
+        "//fboss:nh-fboss-manifests",
+        ":fboss_builder_docker", # Prevent concurrent building
+        ":fboss_platform_stack_srcs",
+        "CMakeLists.txt",
+        "functions.cmake",
+        "sdk_dependencies.txt",
+    ],
     outs = [
         "fboss_platform_stack.tar",
         "fboss_platform_stack_tests.tar",
@@ -564,6 +570,87 @@ heavy_genrule(
     """,
 )
 
+heavy_genrule(
+    name = "cfboss-platform",
+    visibility = ["//visibility:public"],
+    srcs = [
+        "//bazel_lib:ln_or_cp",
+        "//fboss/fboss-image/distro_cli:builder",
+        ":fboss_builder_docker", # Prevent concurrent building
+        ":fboss_platform_stack_srcs",
+        "CMakeLists.txt",
+        "functions.cmake",
+        "sdk_dependencies.txt",
+        "fboss-image/cfboss.json",
+    ] + glob(["cfboss/**"]),
+    outs = ["cfboss-platform-stack.tar"],
+    cmd = LOAD_FBOSS_BUILDER_CMD + """
+        pushd fboss/fboss-image
+        ./distro_cli/fboss-image build cfboss.json fboss-platform-stack
+        popd
+
+        $(execpath //bazel_lib:ln_or_cp) fboss/fboss/oss/scripts/dist/platform-stack.tar $(location cfboss-platform-stack.tar)
+    """,
+    tags = ["no-sandbox"],
+)
+
+heavy_genrule(
+    name = "cfboss-forwarding",
+    visibility = ["//visibility:public"],
+    srcs = [
+        "//bazel_lib:ln_or_cp",
+        "//fboss/fboss-image/distro_cli:builder",
+        ":fboss_builder_docker", # Prevent concurrent building
+        ":fboss_forwarding_stack_srcs",
+        ":fboss_platform_stack_srcs",
+        "CMakeLists.txt",
+        "functions.cmake",
+        "sdk_dependencies.txt",
+        "fboss-image/cfboss.json",
+    ] + glob(["cfboss/**"]),
+    outs = ["cfboss-forwarding-stack.tar"],
+    cmd = LOAD_FBOSS_BUILDER_CMD + """
+        pushd fboss/fboss-image
+        ./distro_cli/fboss-image build cfboss.json fboss-forwarding-stack
+        popd
+
+        $(execpath //bazel_lib:ln_or_cp) fboss/fboss/oss/scripts/dist/forwarding-stack.tar $(location cfboss-forwarding-stack.tar)
+    """,
+    tags = ["no-sandbox"],
+)
+
+heavy_genrule(
+    name = "cfboss-image-composition",
+    visibility = ["//visibility:public"],
+    srcs = [
+        "//bazel_lib:ln_or_cp",
+        "//fboss/fboss-image/distro_cli:builder",
+        ":fboss_builder_docker", # Prevent concurrent building
+        ":image_builder",
+        ":cfboss-platform",
+        ":cfboss-forwarding",
+        "fboss-image/cfboss.json",
+    ],
+    outs = ["cfboss-image.tar.xz"],
+    cmd = LOAD_FBOSS_BUILDER_CMD + """
+        BUILD_DIR="fboss/fboss-image/.cfboss"
+        mkdir -p "${BUILD_DIR}"
+        ln -f $(location :cfboss-platform) "${BUILD_DIR}/platform-stack.tar"
+        ln -f $(location :cfboss-forwarding) "${BUILD_DIR}/forwarding-stack.tar"
+
+        pushd fboss/fboss-image
+        jq '
+            ."fboss-platform-stack" = {"download": "file:.cfboss/platform-stack.tar"} |
+            ."fboss-forwarding-stack" = {"download": "file:.cfboss/forwarding-stack.tar"}
+        ' cfboss.json > cfboss-composition.json
+        ./distro_cli/fboss-image build cfboss-composition.json
+        popd
+
+        $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/cfboss-image.tar.xz $(location cfboss-image.tar.xz)
+    """,
+    tags = ["no-sandbox"],
+)
+
 upload_build_artifact("nh-fboss-broadcom-xgs.bin")
 upload_build_artifact("nh-fboss-broadcom-xgs.tar")
 upload_build_artifact("fboss_forwarding_stack_tests_broadcom_xgs.tar.zst")
@@ -573,3 +660,4 @@ upload_build_artifact("fboss_forwarding_stack_tests_broadcom_th6.tar.zst")
 upload_build_artifact("nh-fboss-cisco-s1.tar")
 upload_build_artifact("fboss_forwarding_stack_tests_cisco_s1.tar.zst")
 upload_build_artifact("fboss_platform_stack_tests.tar.zst")
+upload_build_artifact("cfboss-image.tar.xz")
