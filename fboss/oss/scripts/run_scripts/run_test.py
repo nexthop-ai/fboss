@@ -378,8 +378,8 @@ class TestRunner(abc.ABC):
     WARMBOOT_SETUP_OPTION = "--setup-for-warmboot"
     COLDBOOT_PREFIX = "cold_boot."
     WARMBOOT_PREFIX = "warm_boot."
-    TESTRESULT_FILE = "/home/admin/tr.xml"
-    TESTRESULT_CURRENT_RUN_FILE = "/home/admin/tr_current_run.xml"
+    TESTRESULT_FILE = "/home/netops/tr.xml"
+    TESTRESULT_CURRENT_RUN_FILE = "/home/netops/tr_current_run.xml"
 
     _GTEST_RESULT_PATTERN = re.compile(
         r"""\[\s+(?P<status>(OK)|(FAILED)|(SKIPPED)|(TIMEOUT))\s+\]\s+

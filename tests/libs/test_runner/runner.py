@@ -62,6 +62,7 @@ def _enforce_min_failure_duration(run_test):
 
     return wrapper
 
+
 # Map normalized model (from device DB model name) to FBOSS config codename
 # for hw_test_configs (SAI/agent tests). Only applies to SaiTestRunner and
 # SaiAgentTestRunner.
@@ -149,9 +150,9 @@ class BaseHwTestRunner(ABC):
         self.connected = False
         self.ssh_client = None
         self.scp_client = None
-        self.filter_filepath = "/home/admin/tests.conf"
-        self.testlog_filepath = "/home/admin/test.log"
-        self.testresult_filepath = "/home/admin/tr.xml"
+        self.filter_filepath = "/home/netops/tests.conf"
+        self.testlog_filepath = "/home/netops/test.log"
+        self.testresult_filepath = "/home/netops/tr.xml"
         self.tc = None
 
     @abstractmethod
@@ -174,8 +175,8 @@ class BaseHwTestRunner(ABC):
         # HWSKU environment variable deprecated in favor of PRODUCT_MODEL
         self.tc["model"] = os.getenv("HWSKU", os.getenv("PRODUCT_MODEL"))
         self.tc["filepath"] = os.getenv("TESTFILE")
-        logger.info("dut %s", self.tc['dut'])
-        logger.info("filepath %s", self.tc['filepath'])
+        logger.info("dut %s", self.tc["dut"])
+        logger.info("filepath %s", self.tc["filepath"])
 
     def setup(self, test_context):
         """Set up SSH/SCP connections to the DUT."""
@@ -224,7 +225,7 @@ class BaseHwTestRunner(ABC):
             for line in lines:
                 if line.strip().startswith("<testsuite"):
                     line = line.replace(
-                        'name="AllTests"', f"name=\"{self.tc['filepath']}\""
+                        'name="AllTests"', f'name="{self.tc["filepath"]}"'
                     )
                 elif line.strip().startswith("<testcase"):
                     classname = line.split('classname="')[1].split('"')[0]
@@ -269,7 +270,7 @@ class BaseHwTestRunner(ABC):
         test_args = self.test_args(model)
         return (
             f"sudo su -c 'cd /opt/fboss && source ./bin/setup_fboss_env && "
-            f" ./bin/run_test.py {test_args} --filter_file=/home/admin/tests.conf "
+            f" ./bin/run_test.py {test_args} --filter_file={self.filter_filepath} "
             f"' > {self.testlog_filepath} 2>&1"
         )
 
@@ -283,15 +284,6 @@ class BaseHwTestRunner(ABC):
             if os.path.exists(local_path):
                 os.unlink(local_path)
 
-        # Ensure /home/admin exists on the DUT — prepare creates it during
-        # _post_image_actions, but it may be missing if the DUT was reimaged
-        # without a full prepare cycle or if the directory was cleaned up.
-        exit_status, output = self.ssh_client.run_cmd(
-            "sudo mkdir -p /home/admin && sudo chmod 755 /home/admin"
-        )
-        if exit_status != 0:
-            logger.warning("Failed to ensure /home/admin exists: %s", output)
-
         status = self.set_filters("/tmp/tests.conf", self.filter_filepath)
         if not status:
             return False
@@ -299,9 +291,11 @@ class BaseHwTestRunner(ABC):
         model = _normalize_model(self.tc["model"])
 
         logger.info(
-            "Clearing remote files: /home/admin/test.log and /home/admin/tr.xml"
+            "Clearing remote files: %s and %s",
+            self.testlog_filepath,
+            self.testresult_filepath,
         )
-        cmd = f"rm -f {self.testlog_filepath} {self.testresult_filepath}"
+        cmd = f"sudo rm -f {self.testlog_filepath} {self.testresult_filepath}"
         exit_status, output = self.ssh_client.run_cmd(cmd)
         if exit_status != 0:
             logger.error("Failed to run command: %s %s", cmd, output)
@@ -329,7 +323,10 @@ class BaseHwTestRunner(ABC):
                 self.testresult_filepath, "/tmp/tr.xml"
             )
             if exit_status != 0:
-                logger.warning("Failed to fetch test results (tr.xml may not exist if binary crashed): %s", output)
+                logger.warning(
+                    "Failed to fetch test results (tr.xml may not exist if binary crashed): %s",
+                    output,
+                )
 
             self.normalize_test_results_file()
 
@@ -345,6 +342,7 @@ class BaseHwTestRunner(ABC):
 
 
 # Concrete test runner implementations
+
 
 class SaiTestRunner(BaseHwTestRunner):
     """Runner for SAI hardware tests."""
@@ -429,7 +427,10 @@ class LinkTestRunner(BaseHwTestRunner):
 
     @classmethod
     def _load_platform_mapping(cls, config_name: str) -> dict[str, _PortInfo]:
-        path = cls._repo_dir(cls._PLATFORM_MAPPING_DIR) / f"{config_name}_platform_mapping.json"
+        path = (
+            cls._repo_dir(cls._PLATFORM_MAPPING_DIR)
+            / f"{config_name}_platform_mapping.json"
+        )
         with open(path, encoding="utf-8") as f:
             mapping = json.load(f)
         speed_of = {
@@ -457,14 +458,25 @@ class LinkTestRunner(BaseHwTestRunner):
         # port needs a matching vlan, vlanPort and interface too.
         template = sw["ports"][0]["ingressVlan"]
         port = copy.deepcopy(sw["ports"][0])
-        port.update({"logicalID": info.logical_id, "name": name, "state": 2,
-                     "speed": info.speed, "profileID": info.profile_id,
-                     "ingressVlan": vlan_id})
+        port.update(
+            {
+                "logicalID": info.logical_id,
+                "name": name,
+                "state": 2,
+                "speed": info.speed,
+                "profileID": info.profile_id,
+                "ingressVlan": vlan_id,
+            }
+        )
         vlan = copy.deepcopy(next(v for v in sw["vlans"] if v["id"] == template))
         vlan.update({"id": vlan_id, "intfID": vlan_id, "name": f"vlan{vlan_id}"})
-        vlan_port = copy.deepcopy(next(p for p in sw["vlanPorts"] if p["vlanID"] == template))
+        vlan_port = copy.deepcopy(
+            next(p for p in sw["vlanPorts"] if p["vlanID"] == template)
+        )
         vlan_port.update({"vlanID": vlan_id, "logicalPort": info.logical_id})
-        intf = copy.deepcopy(next(i for i in sw["interfaces"] if i.get("vlanID") == template))
+        intf = copy.deepcopy(
+            next(i for i in sw["interfaces"] if i.get("vlanID") == template)
+        )
         intf.update({"intfID": vlan_id, "vlanID": vlan_id, "ipAddresses": []})
         sw["ports"].append(port)
         sw["vlans"].append(vlan)
@@ -582,9 +594,7 @@ class LinkTestRunner(BaseHwTestRunner):
             else self._SYSTEM_QSFP_CONFIG_PATH
         )
         args = (
-            "link --agent-run-mode mono "
-            f"--config {config_arg} "
-            f"--qsfp-config {qsfp_arg}"
+            f"link --agent-run-mode mono --config {config_arg} --qsfp-config {qsfp_arg}"
         )
         if model == "wedge800cact":
             # warmboot acting strange, will readd once fixed
@@ -613,6 +623,7 @@ class PlatformTestRunner(BaseHwTestRunner):
     def test_args(self, model: str) -> str:
         return f"platform --type {self.test_type}"
 
+
 class BspTestRunner(BaseHwTestRunner):
     """Runner for BSP hardware tests. Delegates to run_test.py bsp.
 
@@ -635,6 +646,7 @@ class BspTestRunner(BaseHwTestRunner):
             f" ./bin/run_test.py {self.test_args(model)} "
             f"' > {self.testlog_filepath} 2>&1"
         )
+
 
 class SmokeTestRunner(BaseHwTestRunner):
     """Runner for the FBOSS agent smoke test.
@@ -674,18 +686,7 @@ class SmokeTestRunner(BaseHwTestRunner):
         logger.info("Running agent smoke test")
         self.setup(test_context)
 
-        # Ensure /home/admin exists; the redirect below runs as the SSH user
-        # (sudo applies only to the script body), so a missing dir would
-        # break test.log / tr.xml capture.
-        exit_status, output = self.ssh_client.run_cmd(
-            "sudo mkdir -p /home/admin && sudo chmod 755 /home/admin"
-        )
-        if exit_status != 0:
-            logger.warning("Failed to ensure /home/admin exists: %s", output)
-
-        cmd = (
-            f"sudo rm -f {self.testlog_filepath} {self.testresult_filepath}"
-        )
+        cmd = f"sudo rm -f {self.testlog_filepath} {self.testresult_filepath}"
         exit_status, output = self.ssh_client.run_cmd(cmd)
         if exit_status != 0:
             logger.error("Failed to clear remote files: %s %s", cmd, output)
@@ -701,20 +702,16 @@ class SmokeTestRunner(BaseHwTestRunner):
             (self.testlog_filepath, "/tmp/test.log"),
             (self.testresult_filepath, "/tmp/tr.xml"),
         ):
-            exit_status, output = self.scp_client.get_file(
-                remote_path, local_path
-            )
+            exit_status, output = self.scp_client.get_file(remote_path, local_path)
             if exit_status != 0:
-                logger.error(
-                    "Failed to fetch %s: %s", remote_path, output
-                )
+                logger.error("Failed to fetch %s: %s", remote_path, output)
                 return False
 
         if smoke_status != 0:
-            logger.error("agent_smoke.py exited %s; see /tmp/tr.xml",
-                         smoke_status)
+            logger.error("agent_smoke.py exited %s; see /tmp/tr.xml", smoke_status)
             return False
         return True
+
 
 class Fboss2IntegrationTestRunner(BaseHwTestRunner):
     """Runner for fboss2 CLI integration tests.
@@ -800,13 +797,14 @@ class BenchmarkTestRunner(BaseHwTestRunner):
             content = f.read()
 
         match = re.search(
-            r"Benchmark results written to: (benchmark_results_\S+\.csv)",
-            content
+            r"Benchmark results written to: (benchmark_results_\S+\.csv)", content
         )
         if match:
             return match.group(1)
 
-        logger.warning(f"Could not find benchmark results CSV filename in {local_log_path}")
+        logger.warning(
+            f"Could not find benchmark results CSV filename in {local_log_path}"
+        )
         return None
 
     def _get_skipped_bm_count(self, local_log_path: str) -> int:
@@ -820,12 +818,9 @@ class BenchmarkTestRunner(BaseHwTestRunner):
         logger.warning(f"Could not find skipped count in {local_log_path}")
         return 0
 
-    def _generate_tr_xml_from_csv(self,
-                                  csv_path: str,
-                                  xml_path: str,
-                                  csv_timestamp: str,
-                                  skipped_count: int=0
-                                 ) -> bool:
+    def _generate_tr_xml_from_csv(
+        self, csv_path: str, xml_path: str, csv_timestamp: str, skipped_count: int = 0
+    ) -> bool:
         """
         Convert a benchmark CSV into a minimal JUnit-style tr.xml.
 
@@ -839,7 +834,9 @@ class BenchmarkTestRunner(BaseHwTestRunner):
         """
 
         # Convert original CSV timestamp to correct format
-        suite_timestamp = datetime.strptime(csv_timestamp, "%Y%m%d_%H%M%S").strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]
+        suite_timestamp = datetime.strptime(csv_timestamp, "%Y%m%d_%H%M%S").strftime(
+            "%Y-%m-%dT%H:%M:%S.%f"
+        )[:-3]
 
         # Create XML tree
         testsuites_el = ET.Element("testsuites")
@@ -847,12 +844,12 @@ class BenchmarkTestRunner(BaseHwTestRunner):
             testsuites_el,
             "testsuite",
             {
-                "tests": "0",                   # filled later
-                "failures": "0",                # filled later
-                "disabled": "0",                # cannot be inferred from CSV
-                "errors": "0",                  # cannot be inferred from CSV
+                "tests": "0",  # filled later
+                "failures": "0",  # filled later
+                "disabled": "0",  # cannot be inferred from CSV
+                "errors": "0",  # cannot be inferred from CSV
                 "skipped": str(skipped_count),
-                "time": "0.000",                # filled later
+                "time": "0.000",  # filled later
                 "timestamp": suite_timestamp,
                 "name": "AllTests",
             },
@@ -878,7 +875,11 @@ class BenchmarkTestRunner(BaseHwTestRunner):
             # Benchmark time is in picoseconds; convert to seconds
             benchmark_time_ps = row.get("benchmark_time_ps", "")
             try:
-                case_time_sec = max(float(benchmark_time_ps) / 1e12, 0.0) if benchmark_time_ps else 0.0
+                case_time_sec = (
+                    max(float(benchmark_time_ps) / 1e12, 0.0)
+                    if benchmark_time_ps
+                    else 0.0
+                )
             except (TypeError, ValueError):
                 case_time_sec = 0.0
             total_time_sec += case_time_sec
@@ -897,9 +898,11 @@ class BenchmarkTestRunner(BaseHwTestRunner):
                     "file": filename,
                     "line": "",
                     "status": "run",
-                    "result": "timed-out" if (test_status == "TIMEOUT") else "completed",
+                    "result": "timed-out"
+                    if (test_status == "TIMEOUT")
+                    else "completed",
                     "time": f"{case_time_sec:.6f}",
-                    "timestamp": suite_timestamp,   # Per-test timestamp not in CSV
+                    "timestamp": suite_timestamp,  # Per-test timestamp not in CSV
                     "classname": classname,
                 },
             )
@@ -971,11 +974,15 @@ class BenchmarkTestRunner(BaseHwTestRunner):
         # Use CSV file to create tr.xml locally
         # CSV filename looks like:
         # f"benchmark_results_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv"
-        csv_timestamp = csv_filename.replace("benchmark_results_", "").replace(".csv", "")
+        csv_timestamp = csv_filename.replace("benchmark_results_", "").replace(
+            ".csv", ""
+        )
         skipped_count = self._get_skipped_bm_count("/tmp/test.log")
 
         logger.info("Generating /tmp/tr.xml from %s", local_csv_path)
-        success = self._generate_tr_xml_from_csv(local_csv_path, "/tmp/tr.xml", csv_timestamp, skipped_count)
+        success = self._generate_tr_xml_from_csv(
+            local_csv_path, "/tmp/tr.xml", csv_timestamp, skipped_count
+        )
         if not success:
             logger.error("Failed to generate /tmp/tr.xml from %s", local_csv_path)
             return False
