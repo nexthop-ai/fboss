@@ -433,22 +433,28 @@ class LinkTestRunner(BaseHwTestRunner):
         )
         with open(path, encoding="utf-8") as f:
             mapping = json.load(f)
-        speed_of = {
+        prof = {
             p["factor"]["profileID"]: p["profile"]["speed"]
             for p in mapping["platformSupportedProfiles"]
         }
         index = {}
         for entry in mapping["ports"].values():
-            profiles = [int(pid) for pid in entry["supportedProfiles"]]
-            profile_id = max(profiles, key=lambda pid: speed_of.get(pid, 0))
-            index[entry["mapping"]["name"]] = _PortInfo(
-                entry["mapping"]["id"], profile_id, speed_of.get(profile_id, 0)
-            )
+            name = entry["mapping"]["name"]
+            supported = [v for pid in entry["supportedProfiles"] if (v := int(pid)) in prof]
+            if not supported:
+                continue
+            gmax = max(supported, key=lambda pid: prof[pid])
+            index[name] = _PortInfo(entry["mapping"]["id"], gmax, prof[gmax])
         return index
 
     @classmethod
     def _synthesize_port(
-        cls, base_json: dict, port_map: dict[str, _PortInfo], name: str, vlan_id: int
+        cls,
+        base_json: dict,
+        port_map: dict[str, _PortInfo],
+        name: str,
+        vlan_id: int,
+        ip_addresses: list | None = None,
     ) -> dict:
         info = port_map.get(name)
         if info is None:
@@ -477,7 +483,7 @@ class LinkTestRunner(BaseHwTestRunner):
         intf = copy.deepcopy(
             next(i for i in sw["interfaces"] if i.get("vlanID") == template)
         )
-        intf.update({"intfID": vlan_id, "vlanID": vlan_id, "ipAddresses": []})
+        intf.update({"intfID": vlan_id, "vlanID": vlan_id, "ipAddresses": ip_addresses or []})
         sw["ports"].append(port)
         sw["vlans"].append(vlan)
         sw["vlanPorts"].append(vlan_port)
@@ -494,21 +500,24 @@ class LinkTestRunner(BaseHwTestRunner):
         if not pairs:
             raise ValueError("refusing to generate link test config: no cabling pairs")
         sw = base_json["sw"]
-        by_name = {port["name"]: port for port in sw["ports"]}
+        vlan_of = {p["name"]: p["ingressVlan"] for p in sw["ports"]}
+        ips_of = {i.get("vlanID"): i.get("ipAddresses", []) for i in sw["interfaces"]}
+        cabled_vlans = {vlan_of[n] for n in pairs if n in vlan_of}
+        sw["ports"] = [p for p in sw["ports"] if p["name"] not in pairs]
+        sw["vlans"] = [v for v in sw["vlans"] if v["id"] not in cabled_vlans]
+        sw["vlanPorts"] = [vp for vp in sw["vlanPorts"] if vp["vlanID"] not in cabled_vlans]
+        sw["interfaces"] = [i for i in sw["interfaces"] if i.get("vlanID") not in cabled_vlans]
         for port in sw["ports"]:
             port["expectedLLDPValues"] = {}
         used_vlans = {v["id"] for v in sw["vlans"]}
         # Allocate from the "type-1" interface band (2000-2251).
         free_vlans = (v for v in range(2000, 2252) if v not in used_vlans)
         for name, peer in pairs.items():
-            port = by_name.get(name)
-            if port is None:
-                port = cls._synthesize_port(base_json, port_map, name, next(free_vlans))
+            port = cls._synthesize_port(
+                base_json, port_map, name, next(free_vlans),
+                ip_addresses=ips_of.get(vlan_of.get(name)),
+            )
             port["expectedLLDPValues"] = {cls._LLDP_PORT_TAG: peer}
-            # Use the lower speed if there is a speed mismatch. This might not always work.
-            if peer in by_name and port["speed"] > by_name[peer]["speed"]:
-                port["speed"] = by_name[peer]["speed"]
-                port["profileID"] = by_name[peer]["profileID"]
         return base_json
 
     def _stage_qsfp_config(self):
@@ -558,14 +567,7 @@ class LinkTestRunner(BaseHwTestRunner):
         with open(cabling_path, encoding="utf-8") as f:
             pairs = json.load(f)
 
-        # Ports netbox reports that the base config doesn't already have are the
-        # only ones we need to synthesize, and the only reason to load the
-        # platform mapping. Skipping the load otherwise.
-        base_names = {port["name"] for port in base["sw"]["ports"]}
-        ports_to_synthesize = pairs.keys() - base_names
-        port_map = (
-            self._load_platform_mapping(config_name) if ports_to_synthesize else {}
-        )
+        port_map = self._load_platform_mapping(config_name)
         config = self._overlay_cabling(base, pairs, port_map)
 
         with tempfile.NamedTemporaryFile(
