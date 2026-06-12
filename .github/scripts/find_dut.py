@@ -1,33 +1,38 @@
 #!/usr/bin/env python3
-"""Find a suitable DUT from `nh tb show available` output.
+"""Find a suitable DUT from `ng tb show available --output json` output.
 
-- Run `nh tb show available`
-- Look for rows where:
-  * name ($2) matches a supported FBOSS platform prefix (gold)
-  * in_service ($5) contains "True"
-  * healthy ($6) contains "True"
-  * and the name is not in INCOMPATIBLE_DUTS
+- Run `ng tb show available --output json`
+- Look for entries where:
+  * name matches a supported FBOSS platform prefix (gold)
+  * in_service is true
+  * healthy is true
+  * and the name is not one of the incompatible devices
 
-Example `nh tb show available` output (truncated):
+Example `ng tb show available --output json` output (truncated):
 
-    +---------------+------------------------+---------+------------+---------+-----------+
-    | name          | topology               | owner   | in_service | healthy | remaining |
-    +---------------+------------------------+---------+------------+---------+-----------+
-    | blkt156       | t1-8                   | testbot | True       | True    | N/A       |
-    | blkt162       | t1-8                   | testbot | True       | True    | N/A       |
-    | fboss101      | standalone             |         | False      | True    | N/A       |
-    | fboss102      | t1-8                   |         | False      | True    | N/A       |
-    | gold207       | t1-8                   | testbot | True       | True    | N/A       |
-    | gold210       | t1-8                   | testbot | True       | True    | N/A       |
-    | gold211_ix101 | MINT                   |         | True       | True    | N/A       |
-    | gold404       | t1-8                   | testbot | True       | True    | N/A       |
-    | gold405       | t0-8                   | testbot | True       | True    | N/A       |
-    | wdg154        | t1-8                   |         | True       | True    | N/A       |
+    [
+      {
+        "id": 34,
+        "name": "gold405",
+        "type": "FANOUT",
+        "topology": "t0-8",
+        "owner": null,
+        "department": "software",
+        "claim_time": null,
+        "release_time": null,
+        "long_running": false,
+        "in_service": true,
+        "healthy": true,
+        "prototype": false,
+        "extra_config": {}
+      },
+      ...
+    ]
 
 Usage:
   find_dut.py [prefix]
 
-  Prints n randomly chosen DUT names to stdout and exits 0/
+  Prints n randomly chosen DUT names to stdout and exits 0.
   Searches all FBOSS platforms if no prefix is given.
 
 On success, prints ONLY the DUT name to stdout and exits 0.
@@ -37,6 +42,7 @@ On failure (no suitable DUT or command error), prints an ::error:: or
 
 from __future__ import annotations
 
+import json
 import random
 import subprocess
 import sys
@@ -45,41 +51,43 @@ from typing import Iterator, List
 # Supported FBOSS platform prefixes: Golden Eagle, Wedge, Minipack
 FBOSS_PLATFORMS = ("gold",)
 
-# Known devices that are incompatible with the CLI integration tests
-INCOMPATIBLE_DUTS = {"gold208"}
+# Known devices that have Secure Boot enforced and will fail to load the FBOSS image
+SECURE_BOOT_DUTS= {"gold101", "gold208", "gold210"}
 
 
 def log(msg: str) -> None:
     print(msg, file=sys.stderr, flush=True)
 
 
-def _iter_matching_duts(lines: List[str], dut_prefix: str) -> Iterator[str]:
-    """Yield DUT names matching the prefix that are healthy, in-service, and not blocked.
+def _is_incompatible_dut(name: str) -> bool:
+    """Return True if the DUT should be excluded from selection.
 
-    Replicates the awk logic:
-      $2 ~ /prefix/ && $5 ~ /True/ && $6 ~ /True/ and not in INCOMPATIBLE_DUTS.
-    Columns: $2=name | $3=topology | $4=owner | $5=in_service | $6=healthy.
+    Blocks:
+    - Exact matches in SECURE_BOOT_DUTS
+    - gold1xx P1 units: differ enough from P2 that major changes are
+    required before FBOSS works.
     """
-    for line in lines:
-        if "| True" not in line:
-            # The original pipeline had a `grep '| True'` before awk.
-            continue
-
-        parts = [p.strip() for p in line.split("|")]
-        if len(parts) < 6:
-            # Need at least: index, name, topology, owner, in_service, healthy
-            continue
-
-        name = parts[1]
-        in_service = parts[4]
-        healthy = parts[5]
-
-        if dut_prefix in name and "True" in in_service and "True" in healthy:
-            if name not in INCOMPATIBLE_DUTS:
-                yield name
+    if name in SECURE_BOOT_DUTS:
+        return True
+    if name.startswith("gold1"):
+        return True
+    return False
 
 
-def parse_all_duts_from_output(lines: List[str], dut_prefix: str | None = None) -> List[str]:
+def _iter_matching_duts(duts: List[dict], dut_prefix: str) -> Iterator[str]:
+    """Yield DUT names matching the prefix that are healthy, in-service, and not blocked."""
+    for dut in duts:
+        name = dut.get("name", "")
+        if (
+            name.startswith(dut_prefix)
+            and dut.get("in_service") is True
+            and dut.get("healthy") is True
+            and not _is_incompatible_dut(name)
+        ):
+            yield name
+
+
+def parse_all_duts_from_output(duts: List[dict], dut_prefix: str | None = None) -> List[str]:
     """Return all matching DUT names, shuffled.
 
     If dut_prefix is None, searches across all FBOSS_PLATFORMS.
@@ -88,7 +96,7 @@ def parse_all_duts_from_output(lines: List[str], dut_prefix: str | None = None) 
     seen: set[str] = set()
     results: List[str] = []
     for prefix in prefixes:
-        for name in _iter_matching_duts(lines, prefix):
+        for name in _iter_matching_duts(duts, prefix):
             if name not in seen:
                 seen.add(name)
                 results.append(name)
@@ -105,22 +113,22 @@ def main() -> None:
         args = args[:idx] + args[idx + 2:]
     dut_prefix: str | None = args[0] if args else None
 
-    log("Running 'nh tb show available' to find DUT(s)...")
+    log("Running 'ng tb show available --output json' to find DUT(s)...")
 
     try:
         proc = subprocess.run(
-            ["nh", "tb", "show", "available"],
+            ["ng", "tb", "show", "available", "--output", "json"],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
             check=False,
         )
     except Exception as e:  # noqa: BLE001
-        log(f"::error::Failed to run 'nh tb show available': {e}")
+        log(f"::error::Failed to run 'ng tb show available --output json': {e}")
         sys.exit(1)
 
     output = proc.stdout or ""
-    log("nh tb show available output:")
+    log("ng tb show available output:")
     if output:
         if not output.endswith("\n"):
             output += "\n"
@@ -128,12 +136,16 @@ def main() -> None:
         sys.stderr.flush()
 
     if proc.returncode != 0:
-        log("::error::'nh tb show available' exited with non-zero status")
+        log("::error::'ng tb show available --output json' exited with non-zero status")
         sys.exit(proc.returncode or 1)
 
-    lines = output.splitlines()
+    try:
+        dut_list = json.loads(output)
+    except json.JSONDecodeError as e:
+        log(f"::error::Failed to parse JSON from 'ng tb show available --output json': {e}")
+        sys.exit(1)
 
-    duts = parse_all_duts_from_output(lines, dut_prefix)
+    duts = parse_all_duts_from_output(dut_list, dut_prefix)
     if not duts:
         log(
             "::warning::No healthy and in_service FBOSS DUT available. Skipping integration tests."
