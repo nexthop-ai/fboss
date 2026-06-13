@@ -18,7 +18,14 @@ def build_command(args):
     """Build FBOSS image or components"""
     manifest_path = Path(args.manifest)
     manifest_obj = ImageManifest(manifest_path)
+<<<<<<< HEAD
     builder = ImageBuilder(manifest_obj, args.kiwi_ng_debug)
+||||||| fa2cbb1024
+    builder = ImageBuilder(manifest_obj)
+=======
+    output_dir = getattr(args, "output_dir", None)
+    builder = ImageBuilder(manifest_obj, output_dir=output_dir)
+>>>>>>> e6332d29c3484deac8007be2a2b3d6ecd1dc3936
 
     if args.components:
         builder.build_components(list(args.components))
@@ -45,10 +52,20 @@ def setup_build_command(cli):
                 {"nargs": "*", "help": "Specific components to build (default: all)"},
             ),
             (
+<<<<<<< HEAD
                 "--kiwi-ng-debug",
                 {
                     "action": "store_true",
                     "help": "Enable debug flag to see kiwi-ng build output (default: no)",
+||||||| fa2cbb1024
+=======
+                "--output-dir",
+                {
+                    "type": str,
+                    "default": None,
+                    "help": "Output directory on a real filesystem (not FUSE/EdenFS). "
+                    "Required on devservers where the source tree is on EdenFS.",
+>>>>>>> e6332d29c3484deac8007be2a2b3d6ecd1dc3936
                 },
             ),
         ],

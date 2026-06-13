@@ -9,6 +9,7 @@
  */
 #include "fboss/lib/platforms/PlatformProductInfo.h"
 #include "fboss/agent/FbossError.h"
+#include "fboss/lib/platforms/PlatformDescriptor.h"
 
 #include <folly/FileUtil.h>
 #include <folly/MacAddress.h>
@@ -55,6 +56,10 @@ std::string PlatformProductInfo::getFabricLocation() {
   return *productInfo_.fabricLocation();
 }
 
+std::string PlatformProductInfo::getOem() const {
+  return *productInfo_.oem();
+}
+
 std::string PlatformProductInfo::getProductName() {
   return *productInfo_.product();
 }
@@ -64,6 +69,15 @@ int PlatformProductInfo::getProductVersion() const {
 }
 
 void PlatformProductInfo::initMode() {
+  if (!FLAGS_platform_descriptor_config_path.empty()) {
+    auto descriptorPlatformType =
+        PlatformDescriptorRegistry::get().findPlatformType(
+            getProductName(), FLAGS_mode);
+    if (descriptorPlatformType.has_value()) {
+      type_ = *descriptorPlatformType;
+      return;
+    }
+  }
   if (FLAGS_mode.empty()) {
     auto modelName = getProductName();
     if (modelName.find("MINIPACK2") == 0) {
@@ -234,6 +248,9 @@ void PlatformProductInfo::initMode() {
     } else if (
         modelName.find("Saintpaul") == 0 || modelName.find("SAINTPAUL") == 0) {
       type_ = PlatformType::PLATFORM_SAINTPAUL;
+    } else if (
+        modelName.find("M4062nhp") == 0 || modelName.find("M4062NHP") == 0) {
+      type_ = PlatformType::PLATFORM_M4062NHP;
     } else {
       throw FbossError("invalid model name " + modelName);
     }
@@ -326,6 +343,8 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_M4062NHP;
     } else if (FLAGS_mode == "saintpaul") {
       type_ = PlatformType::PLATFORM_SAINTPAUL;
+    } else if (FLAGS_mode == "m4062nhp") {
+      type_ = PlatformType::PLATFORM_M4062NHP;
     } else {
       throw std::runtime_error("invalid mode " + FLAGS_mode);
     }

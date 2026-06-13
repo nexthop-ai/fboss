@@ -1915,6 +1915,7 @@ std::set<cfg::AclTableQualifier> SaiAclTableManager::getSupportedQualifierSet(
     // ETHER_TYPE required for Aifm controller packets using 0x88B6
     if (isTomahawk6) {
       bcmQualifiers.insert(cfg::AclTableQualifier::ETHER_TYPE);
+      bcmQualifiers.erase(cfg::AclTableQualifier::OUT_PORT);
     }
     if (isFake) {
       bcmQualifiers.insert(cfg::AclTableQualifier::L4_DST_PORT_RANGE);

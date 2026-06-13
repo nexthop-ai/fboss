@@ -83,6 +83,9 @@
 #include "fboss/cli/fboss2/commands/show/ndp/CmdShowNdp.h"
 #include "fboss/cli/fboss2/commands/show/port/CmdShowPort.h"
 #include "fboss/cli/fboss2/commands/show/port/CmdShowPortQueue.h"
+#ifndef IS_OSS
+#include "fboss/cli/fboss2/commands/show/port/facebook/cablelength/CmdShowPortCableLength.h"
+#endif
 #include "fboss/cli/fboss2/commands/show/product/CmdShowProduct.h"
 #include "fboss/cli/fboss2/commands/show/product/CmdShowProductDetails.h"
 #include "fboss/cli/fboss2/commands/show/rif/CmdShowRif.h"
@@ -259,7 +262,14 @@ const CommandTree& kCommandTree() {
            {"queue",
             "Show Port queue information",
             commandHandler<CmdShowPortQueue>,
-            argTypeHandler<CmdShowPortQueueTraits>}}},
+            argTypeHandler<CmdShowPortQueueTraits>},
+#ifndef IS_OSS
+           {"cable-length",
+            "Show Port cable length information",
+            commandHandler<CmdShowPortCableLength>,
+            argTypeHandler<CmdShowPortCableLengthTraits>},
+#endif
+       }},
 
       {"show",
        "rif",

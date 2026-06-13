@@ -6,6 +6,16 @@ ARG USER_UID=0
 ARG USER_GID=0
 ARG USER_SHELL=/bin/bash
 ARG USE_CLANG=true
+ARG FBOSS_META_ENV=0
+ARG GITHUB_ROOT=.
+ARG FBCODE_BUILDER_PATH=build/fbcode_builder
+ARG http_proxy=
+ARG https_proxy=
+ENV http_proxy=${http_proxy} \
+    https_proxy=${https_proxy}
+RUN if [ -n "$http_proxy" ]; then \
+      echo "proxy=$http_proxy" >> /etc/dnf/dnf.conf; \
+    fi
 
 # Mount point for extra files.
 RUN mkdir -p /var/extras
@@ -31,6 +41,11 @@ RUN dnf install -y 'dnf-command(config-manager)' && \
     libxml2-devel expat-devel wget git sudo lsof `basename "$USER_SHELL"` \
     libcap-devel libmount-devel libpciaccess-devel \
     umoci skopeo
+
+RUN if [ "$FBOSS_META_ENV" = "1" ]; then \
+      dnf install -y podman-docker fuse-overlayfs && \
+      sed -i 's|#mount_program = "/usr/bin/fuse-overlayfs"|mount_program = "/usr/bin/fuse-overlayfs"|' /etc/containers/storage.conf; \
+    fi
 
 # Set up Python 3.12 as the system default.
 # Python 3.12 is chosen to match the getdeps python manifest which installs
@@ -68,13 +83,13 @@ RUN dnf install -y --allowerasing gcc-toolset-12 gcc-toolset-12-libasan-devel gc
 
 RUN python3 -m pip install setuptools 'Cython>=3.0,<3.2' wheel auditwheel patchelf boto3 botocore gitpython meson jinja2 pyyaml filelock pytest
 
-COPY .pre-commit-config.yaml /tmp/.pre-commit-config.yaml
+COPY ${GITHUB_ROOT}/.pre-commit-config.yaml /tmp/.pre-commit-config.yaml
 COPY ./fboss/oss/docker/setup_clang.sh /tmp/setup_clang.sh
 RUN bash -xe /tmp/setup_clang.sh && rm /tmp/setup_clang.sh
 
 # Use /var/FBOSS as the set location to clone the git repository and store the outputs of the build.
 WORKDIR /var/FBOSS/fboss
-COPY build/fbcode_builder /var/FBOSS/fboss/build/fbcode_builder
+COPY ${FBCODE_BUILDER_PATH} /var/FBOSS/fboss/build/fbcode_builder
 RUN if [ "$USE_CLANG" = "true" ]; then \
     find build/fbcode_builder/manifests -maxdepth 1 -type f -exec sed -i 's/^binutils/#binutils/' {} +; \
     fi && \
@@ -99,7 +114,7 @@ RUN dnf install -y perl-diagnostics perl-sort perl-English perl-Clone perl-Data-
     perl-Math-BigInt perl-YAML-LibYAML perl-Sys-Hostname perl-Time
 RUN ln -s /usr/bin/python3 /usr/bin/python
 # ============================================================
-COPY requirements-dev.txt /tmp/requirements-dev.txt
+COPY ${GITHUB_ROOT}/requirements-dev.txt /tmp/requirements-dev.txt
 RUN python3 -m pip install -r /tmp/requirements-dev.txt && rm /tmp/requirements-dev.txt
 
 # Configure sudoers to allow wheel group passwordless sudo
@@ -115,6 +130,7 @@ RUN if [ "$USERNAME" != "root" ] && [ "$USER_UID" != "0" ]; then \
 # Support sudo in a privileged container
 RUN chmod 600 /etc/shadow
 
+<<<<<<< HEAD
 # Download and install our own patched sccache
 RUN curl -L https://github.com/nexthop-ai/sccache/releases/download/v7-outer-retry/sccache-0.12.0-x86_64-unknown-linux-musl.zst | \
     zstdmt -d > /usr/local/bin/sccache && \
@@ -124,5 +140,12 @@ RUN curl -L https://github.com/nexthop-ai/sccache/releases/download/v7-outer-ret
 RUN dnf install -y java-11-openjdk-devel && \
     curl -L https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64 -o /usr/local/bin/bazel && \
     chmod +x /usr/local/bin/bazel
+||||||| fa2cbb1024
+=======
+COPY fboss/oss/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["bash"]
+>>>>>>> e6332d29c3484deac8007be2a2b3d6ecd1dc3936
 
 USER ${USERNAME}

@@ -3,6 +3,11 @@
 #include <folly/MacAddress.h>
 
 #include <string>
+<<<<<<< HEAD
+||||||| fa2cbb1024
+=======
+#include <unordered_map>
+>>>>>>> e6332d29c3484deac8007be2a2b3d6ecd1dc3936
 #include <utility>
 
 #include "fboss/platform/platform_checks/PlatformCheck.h"

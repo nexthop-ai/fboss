@@ -9,7 +9,12 @@
 #include "fboss/led_service/Icetea800bcLedManager.h"
 #include "fboss/led_service/Janga800bicLedManager.h"
 #include "fboss/led_service/Ladakh800bclsLedManager.h"
+<<<<<<< HEAD
 #include "fboss/led_service/M4062nhpLedManager.h"
+||||||| fa2cbb1024
+=======
+#include "fboss/led_service/Leh800bclsLedManager.h"
+>>>>>>> e6332d29c3484deac8007be2a2b3d6ecd1dc3936
 #include "fboss/led_service/Meru800bfaLedManager.h"
 #include "fboss/led_service/Meru800biaLedManager.h"
 #include "fboss/led_service/Minipack3BTALedManager.h"
@@ -98,6 +103,8 @@ std::unique_ptr<LedManager> createLedManager() {
     return std::make_unique<Wedge800CACTLedManager>();
   } else if (mode == PlatformType::PLATFORM_LADAKH800BCLS) {
     return std::make_unique<Ladakh800bclsLedManager>();
+  } else if (mode == PlatformType::PLATFORM_LEH800BCLS) {
+    return std::make_unique<Leh800bclsLedManager>();
   }
   return nullptr;
 }
