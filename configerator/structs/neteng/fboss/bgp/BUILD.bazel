@@ -1,0 +1,26 @@
+# Hand-written BUILD file for the BGP++ bgp_config thrift types.
+#
+# This package lives under configerator/, outside bazelify.py's BUCK scan
+# (fboss/, build/, common/), so its BUILD.bazel is hand-written -- same as
+# configerator/structs/neteng/fboss/thrift/BUILD.bazel.
+#
+# fsdb_model.thrift includes bgp_config.thrift through the shipit public_tld
+# path, so fsdb_model depends on this target via the
+# //neteng/fboss/bgp/public_tld/... label (which resolves here through the
+# build-time symlink that bazel.sh creates). Building it under that label
+# places the generated gen-cpp2/bgp_config_types.h at the public_tld-prefixed
+# path the generated fsdb_model code #includes. See cmake/fsdb/FsdbIf.cmake
+# (add_fbthrift_cpp_library bgp_config_cpp2) for the equivalent wiring.
+
+load("//fboss/build_defs:thrift_library.bzl", "fboss_thrift_library")
+
+fboss_thrift_library(
+    name = "bgp_config_oss",
+    thrift_srcs = ["bgp_config.thrift"],
+    thrift_cpp2_options = "json,reflection",
+    deps = [
+        "//configerator/structs/neteng/bgp_policy/thrift:bgp_policy",
+        "//configerator/structs/neteng/fboss/bgp/if:bgp_attr",
+    ],
+    visibility = ["//visibility:public"],
+)

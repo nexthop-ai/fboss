@@ -1,0 +1,47 @@
+# Hand-written BUILD file for the BGP++ bgp_policy thrift types.
+#
+# These thrift packages live under configerator/ and neteng/, which are
+# outside bazelify.py's BUCK scan (fboss/, build/, common/), so their
+# BUILD.bazel files are hand-written -- same as
+# configerator/structs/neteng/fboss/thrift/BUILD.bazel. fsdb_model.thrift
+# pulls these types in transitively; see cmake/fsdb/FsdbIf.cmake for the
+# equivalent add_fbthrift_cpp_library wiring (deps mirror its DEPENDS).
+
+load("//fboss/build_defs:thrift_library.bzl", "fboss_thrift_library")
+
+fboss_thrift_library(
+    name = "nsf_policy",
+    thrift_srcs = ["nsf_policy.thrift"],
+    thrift_cpp2_options = "json,reflection",
+    visibility = ["//visibility:public"],
+)
+
+fboss_thrift_library(
+    name = "routing_policy",
+    thrift_srcs = ["routing_policy.thrift"],
+    thrift_cpp2_options = "json,reflection",
+    visibility = ["//visibility:public"],
+)
+
+fboss_thrift_library(
+    name = "bgp_policy",
+    thrift_srcs = ["bgp_policy.thrift"],
+    thrift_cpp2_options = "json,reflection",
+    deps = [
+        ":nsf_policy",
+        ":routing_policy",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+fboss_thrift_library(
+    name = "rib_policy",
+    thrift_srcs = ["rib_policy.thrift"],
+    thrift_cpp2_options = "json,reflection",
+    deps = [
+        ":bgp_policy",
+        ":routing_policy",
+        "//configerator/structs/neteng/fboss/bgp/if:bgp_attr",
+    ],
+    visibility = ["//visibility:public"],
+)

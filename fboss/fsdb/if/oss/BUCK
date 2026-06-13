@@ -7,6 +7,16 @@ load("//fboss/thriftpath_plugin/facebook:thriftpath_plugin.bzl", "thrift_plugin_
 
 oncall("fboss_agent_push")
 
+# The Bazel build drops the //neteng/... and //configerator/... thrift deps
+# below (bazelify only scans fboss/, build/, common/), but fsdb_model.thrift's
+# generated C++ #includes their gen-cpp2 headers. Re-add them as Bazel deps so
+# the hand-written BUILD.bazel targets get built and their headers land in
+# GENDIR. bgp_config is referenced via the public_tld path so its header is
+# generated at the path the thriftpath/model code expects (see the symlink in
+# fboss/oss/scripts/bazel.sh and CMakeLists.txt).
+# bazelify: extra_dep = //neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp:bgp_config_oss
+# bazelify: extra_dep = //configerator/structs/neteng/bgp_policy/thrift:rib_policy
+# bazelify: extra_dep = //neteng/fboss/bgp/if:bgp_route_types
 thrift_library(
     name = "fsdb_model",
     cpp2_deps = [],

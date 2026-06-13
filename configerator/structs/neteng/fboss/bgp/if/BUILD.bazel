@@ -1,0 +1,17 @@
+# Hand-written BUILD file for the BGP++ bgp_attr thrift types.
+#
+# These thrift packages live under configerator/ and neteng/, which are
+# outside bazelify.py's BUCK scan (fboss/, build/, common/), so their
+# BUILD.bazel files are hand-written -- same as
+# configerator/structs/neteng/fboss/thrift/BUILD.bazel. fsdb_model.thrift
+# pulls these types in transitively; see cmake/fsdb/FsdbIf.cmake for the
+# equivalent add_fbthrift_cpp_library wiring.
+
+load("//fboss/build_defs:thrift_library.bzl", "fboss_thrift_library")
+
+fboss_thrift_library(
+    name = "bgp_attr",
+    thrift_srcs = ["bgp_attr.thrift"],
+    thrift_cpp2_options = "json,reflection",
+    visibility = ["//visibility:public"],
+)
