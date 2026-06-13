@@ -10,7 +10,15 @@ def sai_diag_impl():
 
     cc_library(
         name = "diag_lib",
-        srcs = native.glob(["*.cpp"]) + native.glob(["oss/*.cpp"]),
+        # DiagShellClient.cpp defines main() -- in cmake it is the standalone
+        # diag_shell_client executable (AgentHwSaiDiag.cmake), never part of a
+        # library. Exclude it so its main() does not leak into every target
+        # that links diag_lib (e.g. fboss2 tests link gtest_main + diag_lib ->
+        # duplicate symbol: main).
+        srcs = native.glob(
+            ["*.cpp", "oss/*.cpp"],
+            exclude = ["DiagShellClient.cpp", "oss/DiagShellClient.cpp"],
+        ),
         hdrs = native.glob(["*.h"]),
         copts = [
             "-isystem/usr/include/python3.12",
