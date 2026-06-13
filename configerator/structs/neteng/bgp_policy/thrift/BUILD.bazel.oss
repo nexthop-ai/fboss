@@ -1,5 +1,12 @@
 # Hand-written BUILD file for the BGP++ bgp_policy thrift types.
 #
+# NOTE: committed as BUILD.bazel.oss and copied to BUILD.bazel by
+# fboss/oss/scripts/bazel.sh at build time. It is NOT committed as BUILD.bazel
+# because the Monobuild (nh.git, this repo is a submodule there) would discover
+# it during //... expansion and fail on its load("//fboss/build_defs:...")
+# label, which does not resolve in that workspace. BUILD.bazel.oss is not a
+# Bazel package marker, so the Monobuild ignores it.
+#
 # These thrift packages live under configerator/ and neteng/, which are
 # outside bazelify.py's BUCK scan (fboss/, build/, common/), so their
 # BUILD.bazel files are hand-written -- same as
