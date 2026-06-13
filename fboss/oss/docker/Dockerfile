@@ -130,7 +130,6 @@ RUN if [ "$USERNAME" != "root" ] && [ "$USER_UID" != "0" ]; then \
 # Support sudo in a privileged container
 RUN chmod 600 /etc/shadow
 
-<<<<<<< HEAD
 # Download and install our own patched sccache
 RUN curl -L https://github.com/nexthop-ai/sccache/releases/download/v7-outer-retry/sccache-0.12.0-x86_64-unknown-linux-musl.zst | \
     zstdmt -d > /usr/local/bin/sccache && \
@@ -140,12 +139,10 @@ RUN curl -L https://github.com/nexthop-ai/sccache/releases/download/v7-outer-ret
 RUN dnf install -y java-11-openjdk-devel && \
     curl -L https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64 -o /usr/local/bin/bazel && \
     chmod +x /usr/local/bin/bazel
-||||||| fa2cbb1024
-=======
+
 COPY fboss/oss/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["bash"]
->>>>>>> e6332d29c3484deac8007be2a2b3d6ecd1dc3936
 
 USER ${USERNAME}

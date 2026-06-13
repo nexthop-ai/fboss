@@ -798,14 +798,8 @@ def get_pin_data_from_connections(
     profile: PortProfileID,
     lane_speed: PortSpeed,
     port_id: int,
-<<<<<<< HEAD
-) -> tuple[PortPinConfig, list[PlatformPortConfigOverride]]:
-||||||| fa2cbb1024
-) -> tuple[PortPinConfig, List[PlatformPortConfigOverride]]:
-=======
     integrated_tcvr_mapping: Optional[Any] = None,
-) -> tuple[PortPinConfig, List[PlatformPortConfigOverride]]:
->>>>>>> e6332d29c3484deac8007be2a2b3d6ecd1dc3936
+) -> tuple[PortPinConfig, list[PlatformPortConfigOverride]]:
     port_pin_config_iphy = []
     port_pin_config_tcvr = []
     port_pin_config_xphy_sys = []

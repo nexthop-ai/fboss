@@ -217,13 +217,6 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_TAHAN800BC;
     } else if (modelName.find("ICECUBE") == 0) {
       type_ = PlatformType::PLATFORM_ICECUBE800BC;
-    } else if (
-        modelName.find("M4062NHP") == 0 ||
-        // "Nova4000" is the legacy model name still burned into the EEPROM of
-        // early units; keep matching it so those boards map to
-        // PLATFORM_M4062NHP.
-        modelName.find("Nova4000") == 0) {
-      type_ = PlatformType::PLATFORM_M4062NHP;
     } else if (modelName.find("NH-4010-F") == 0) {
       type_ = PlatformType::PLATFORM_NH4010F;
     } else if (modelName.find("NH-4220-F") == 0) {
@@ -249,7 +242,11 @@ void PlatformProductInfo::initMode() {
         modelName.find("Saintpaul") == 0 || modelName.find("SAINTPAUL") == 0) {
       type_ = PlatformType::PLATFORM_SAINTPAUL;
     } else if (
-        modelName.find("M4062nhp") == 0 || modelName.find("M4062NHP") == 0) {
+        modelName.find("M4062nhp") == 0 || modelName.find("M4062NHP") == 0 ||
+        // "Nova4000" is the legacy model name still burned into the EEPROM of
+        // early units; keep matching it so those boards map to
+        // PLATFORM_M4062NHP.
+        modelName.find("Nova4000") == 0) {
       type_ = PlatformType::PLATFORM_M4062NHP;
     } else {
       throw FbossError("invalid model name " + modelName);
@@ -339,8 +336,6 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_BLACKWOLF800BANW;
     } else if (FLAGS_mode == "yangra2") {
       type_ = PlatformType::PLATFORM_YANGRA2;
-    } else if (FLAGS_mode == "m4062nhp") {
-      type_ = PlatformType::PLATFORM_M4062NHP;
     } else if (FLAGS_mode == "saintpaul") {
       type_ = PlatformType::PLATFORM_SAINTPAUL;
     } else if (FLAGS_mode == "m4062nhp") {

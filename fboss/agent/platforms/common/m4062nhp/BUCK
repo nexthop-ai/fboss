@@ -1,6 +1,5 @@
 load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")
 
-<<<<<<< HEAD
 oncall("fboss_optics_phy")
 
 cpp_library(
@@ -14,20 +13,6 @@ cpp_library(
     exported_deps = [
         "//fboss/agent:fboss-types",
         "//fboss/agent:platform_config-cpp2-types",
-||||||| fa2cbb1024
-=======
-oncall("fboss_agent_push")
-
-cpp_library(
-    name = "m4062nhp_platform_mapping",
-    srcs = [
-        "M4062nhpPlatformMapping.cpp",
-    ],
-    headers = [
-        "M4062nhpPlatformMapping.h",
-    ],
-    exported_deps = [
->>>>>>> e6332d29c3484deac8007be2a2b3d6ecd1dc3936
         "//fboss/agent/platforms/common:platform_mapping",
     ],
 )

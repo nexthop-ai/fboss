@@ -16,12 +16,8 @@
 #include "fboss/lib/bsp/icetea800bc/Icetea800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/janga800bic/Janga800bicBspPlatformMapping.h"
 #include "fboss/lib/bsp/ladakh800bcls/Ladakh800bclsBspPlatformMapping.h"
-<<<<<<< HEAD
-#include "fboss/lib/bsp/m4062nhp/M4062nhpBspPlatformMapping.h"
-||||||| fa2cbb1024
-=======
 #include "fboss/lib/bsp/leh800bcls/Leh800bclsBspPlatformMapping.h"
->>>>>>> e6332d29c3484deac8007be2a2b3d6ecd1dc3936
+#include "fboss/lib/bsp/m4062nhp/M4062nhpBspPlatformMapping.h"
 #include "fboss/lib/bsp/meru800bfa/Meru800bfaBspPlatformMapping.h"
 #include "fboss/lib/bsp/meru800bia/Meru800biaBspPlatformMapping.h"
 #include "fboss/lib/bsp/minipack3bta/Minipack3BTABspPlatformMapping.h"

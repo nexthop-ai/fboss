@@ -132,7 +132,6 @@ if (BUILD_SAI_FAKE_LINK_TEST)
 endif()
 
 if (SAI_BRCM_IMPL OR SAI_TAJO_IMPL)
-<<<<<<< HEAD
   # Enforce SAI_SDK_VERSION environment variable when building with SAI_BRCM_IMPL or SAI_TAJO_IMPL
   if (NOT BUILD_SAI_FAKE AND "$ENV{SAI_SDK_VERSION}" STREQUAL "")
     if (SAI_BRCM_IMPL)
@@ -147,28 +146,6 @@ if (SAI_BRCM_IMPL OR SAI_TAJO_IMPL)
         "Please set SAI_SDK_VERSION to the appropriate SDK version, for example:\n"
         "  export SAI_SDK_VERSION=TAJO_SDK_VERSION_25_11_4210")
     endif()
-||||||| fa2cbb1024
-if (SAI_BRCM_IMPL)
-  # TODO (skhare) IS_OSS_BRCM_SAI is only a short-term change to unblock.
-  # Refactor/fix the code and then remove this flag.
-  add_definitions (-DIS_OSS_BRCM_SAI=true)
-
-  # Enforce SAI_SDK_VERSION environment variable when building with SAI_BRCM_IMPL
-  if ("$ENV{SAI_SDK_VERSION}" STREQUAL "")
-    message(FATAL_ERROR
-      "SAI_SDK_VERSION environment variable is required when SAI_BRCM_IMPL is enabled.\n"
-      "Please set SAI_SDK_VERSION to the appropriate SDK version, for example:\n"
-      "  export SAI_SDK_VERSION=SAI_VERSION_13_3_0_0_ODP  # For BCM XGS\n"
-      "  export SAI_SDK_VERSION=SAI_VERSION_14_0_EA_DNX_ODP  # For BCM DNX")
-=======
-    # Enforce SAI_SDK_VERSION environment variable when building with SAI_BRCM_IMPL or SAI_TAJO_IMPL
-  if ("$ENV{SAI_SDK_VERSION}" STREQUAL "")
-    message(FATAL_ERROR
-      "SAI_SDK_VERSION environment variable is required when SAI_BRCM_IMPL is enabled.\n"
-      "Please set SAI_SDK_VERSION to the appropriate SDK version, for example:\n"
-      "  export SAI_SDK_VERSION=SAI_VERSION_13_3_0_0_ODP  # For BCM XGS\n"
-      "  export SAI_SDK_VERSION=SAI_VERSION_14_0_EA_DNX_ODP  # For BCM DNX")
->>>>>>> e6332d29c3484deac8007be2a2b3d6ecd1dc3936
   endif()
 
   set(SAI_SDK_VERSION "$ENV{SAI_SDK_VERSION}")
@@ -320,23 +297,13 @@ include_directories(${SAI_INCLUDE_DIR})
 message(STATUS "Found SAI Include dir: ${SAI_INCLUDE_DIR}")
 
 if (SAI_BRCM_IMPL)
-<<<<<<< HEAD
   find_path(SAI_IMPL_DIR NAMES lib/libsai_impl.a)
-||||||| fa2cbb1024
-  find_path(SAI_EXPERIMENTAL_INCLUDE_DIR NAMES saiswitchextensions.h)
-=======
->>>>>>> e6332d29c3484deac8007be2a2b3d6ecd1dc3936
   find_path(SAI_EXPERIMENTAL_INCLUDE_DIR NAMES brcm_sai_extensions.h)
   include_directories(${SAI_EXPERIMENTAL_INCLUDE_DIR})
   include_directories(${SAI_EXPERIMENTAL_INCLUDE_DIR}/experimental)
   message(STATUS "Found SAI Experimental dir: ${SAI_EXPERIMENTAL_INCLUDE_DIR}/experimental")
 elseif(SAI_TAJO_IMPL)
-<<<<<<< HEAD
   find_path(SAI_IMPL_DIR NAMES lib/libsai_impl.a)
-||||||| fa2cbb1024
-  message(STATUS "Found SAI Experimental dir: ${SAI_EXPERIMENTAL_INCLUDE_DIR}")
-=======
->>>>>>> e6332d29c3484deac8007be2a2b3d6ecd1dc3936
   find_path(SAI_EXPERIMENTAL_INCLUDE_DIR NAMES experimental/sai_attr_ext.h)
   include_directories(${SAI_EXPERIMENTAL_INCLUDE_DIR})
   include_directories(${SAI_EXPERIMENTAL_INCLUDE_DIR}/experimental)

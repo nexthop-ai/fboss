@@ -39,16 +39,7 @@ CheckResult MacAddressCheck::run() {
     for (const auto& [eepromName, eepromMac] : eepromMacList) {
       if (ifaceMac != eepromMac) {
         std::string errorMsg = "MAC address mismatch: " + interfaceName_ + "=" +
-<<<<<<< HEAD
-            ifaceMac.toString() + " EEPROM=" + eepromMac.toString();
-||||||| fa2cbb1024
-      if (eth0Mac != eepromMac) {
-        std::string errorMsg =
-            "MAC address mismatch: eth0=" + eth0Mac.toString() + " " +
-            eepromName + "=" + eepromMac.toString();
-=======
             ifaceMac.toString() + " " + eepromName + "=" + eepromMac.toString();
->>>>>>> e6332d29c3484deac8007be2a2b3d6ecd1dc3936
         std::string remediationMsg = "RMA device to correct MAC address";
         return makeProblem(
             errorMsg, RemediationType::RMA_REQUIRED, remediationMsg);

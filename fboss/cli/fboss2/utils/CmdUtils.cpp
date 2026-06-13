@@ -9,16 +9,8 @@
  */
 #include "fboss/cli/fboss2/utils/CmdUtils.h"
 #include <fboss/agent/if/gen-cpp2/ctrl_types.h>
-<<<<<<< HEAD
 #include <fboss/fsdb/oper/instantiations/FsdbPathConverter.h> // NOLINT(misc-include-cleaner)
-||||||| fa2cbb1024
-#include <fboss/fsdb/oper/instantiations/FsdbPathConverter.h>
-#include <folly/logging/LogConfig.h>
-=======
-#include <fboss/fsdb/oper/instantiations/FsdbPathConverter.h>
-#include <folly/logging/LogConfig.h>
 #include <folly/logging/xlog.h>
->>>>>>> e6332d29c3484deac8007be2a2b3d6ecd1dc3936
 #include "folly/Conv.h"
 #ifndef IS_OSS
 #include "neteng/netwhoami/lib/cpp/Recover.h"

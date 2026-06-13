@@ -233,17 +233,9 @@ cpp_library(
         "AgentMPLSTests.cpp",
         "AgentMacLearningAndNeighborResolutionTests.cpp",
         "AgentMacLearningTests.cpp",
-<<<<<<< HEAD
         "AgentMemoryUsageTests.cpp",  # bazelify: exclude
         "AgentMirrorOnDropDnxTests.cpp",  # bazelify: exclude
-||||||| fa2cbb1024
-        "AgentMemoryUsageTests.cpp",
-        "AgentMirrorOnDropDnxTests.cpp",
-=======
-        "AgentMemoryUsageTests.cpp",
-        "AgentMirrorOnDropDnxTests.cpp",
         "AgentMirrorOnDropSrv6Tests.cpp",
->>>>>>> e6332d29c3484deac8007be2a2b3d6ecd1dc3936
         "AgentMirrorOnDropStatelessTest.cpp",
         "AgentMirrorOnDropStatelessTests.cpp",
         "AgentMirrorOnDropTajoImpl.cpp",

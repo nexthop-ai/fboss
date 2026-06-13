@@ -24,6 +24,7 @@ permissions:
 
 jobs:
   Run-Scripts-Unit-Tests:
+    if: github.repository_owner == 'facebook'
     runs-on: ubuntu-latest
     # Pure-Python pytest suite finishes in seconds; 10 min is a generous
     # upper bound that catches genuine hangs without sitting on the GHA

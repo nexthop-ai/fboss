@@ -6,7 +6,6 @@
 #include "fboss/agent/platforms/common/m4062nhp/M4062nhpPlatformMapping.h"
 
 namespace {
-<<<<<<< HEAD
 constexpr auto kJsonPlatformMappingStr = R"(
 {
   "ports": {
@@ -37973,14 +37972,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
 } // namespace
 
 namespace facebook::fboss {
-||||||| fa2cbb1024
-=======
-constexpr auto kJsonPlatformMappingStr = R"({})";
-} // namespace
 
-namespace facebook::fboss {
-
->>>>>>> e6332d29c3484deac8007be2a2b3d6ecd1dc3936
 M4062nhpPlatformMapping::M4062nhpPlatformMapping()
     : PlatformMapping(kJsonPlatformMappingStr) {}
 
