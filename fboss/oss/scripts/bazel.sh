@@ -23,6 +23,53 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 BAZEL_D="$REPO_ROOT/.bazel.d"
 BAZELRC_D="$REPO_ROOT/.bazelrc.d"
 
+# Bridge the BGP++ shipit path for the thrift compiler.
+#
+# Shipit maps fbcode/neteng/fboss/bgp/public_tld/configerator/structs/neteng/
+# to configerator/structs/neteng/ in the OSS repo, but fsdb_model.thrift's
+# `include` still references the original internal path under public_tld. The
+# thrift genrule resolves includes against the repo root (-I REPO_ROOT), so
+# that path has to exist on disk. Create a symlink to bridge the two, mirroring
+# the file(CREATE_LINK ...) logic in CMakeLists.txt.
+#
+# The symlink is deliberately NOT committed to git: committing it makes Bazel's
+# //... target globbing follow it into
+# configerator/structs/neteng/fboss/thrift/BUILD.bazel and fail (that file
+# loads //fboss/build_defs:thrift_library.bzl, an unresolvable label in the
+# monorepo workspace). It lives under neteng/ rather than fboss/, so the
+# //fboss/... patterns this build targets never traverse it.
+BGP_SHIPIT_LINK="$REPO_ROOT/neteng/fboss/bgp/public_tld/configerator/structs/neteng"
+if [ ! -L "$BGP_SHIPIT_LINK" ] && [ ! -e "$BGP_SHIPIT_LINK" ]; then
+  mkdir -p "$(dirname "$BGP_SHIPIT_LINK")"
+  ln -s "$REPO_ROOT/configerator/structs/neteng" "$BGP_SHIPIT_LINK"
+fi
+
+# Materialize the hand-written BUILD.bazel files for the BGP++/configerator
+# thrift closure that fsdb_model depends on. These packages live under
+# configerator/ and neteng/, outside bazelify.py's scan (fboss/, build/,
+# common/), so their BUILD.bazel files are not auto-generated.
+#
+# They are committed as BUILD.bazel.oss and copied into place here rather than
+# committed as BUILD.bazel directly: a committed BUILD.bazel would be discovered
+# by the Monobuild (nh.git, which has this repo as a submodule) during //...
+# expansion, where its `load("//fboss/build_defs:...")` is an unresolvable label
+# ('fboss/build_defs' is not a package in that workspace) and aborts the build.
+# BUILD.bazel.oss is not a Bazel package marker, so the Monobuild ignores it,
+# while the self-contained build here gets a real BUILD.bazel at build time.
+# The generated BUILD.bazel files are gitignored.
+while IFS= read -r oss_build; do
+  [ -f "$oss_build" ] || continue
+  dst="${oss_build%.oss}"
+  if ! cmp -s "$oss_build" "$dst" 2>/dev/null; then
+    cp "$oss_build" "$dst"
+  fi
+done <<EOF
+$REPO_ROOT/configerator/structs/neteng/fboss/bgp/if/BUILD.bazel.oss
+$REPO_ROOT/configerator/structs/neteng/bgp_policy/thrift/BUILD.bazel.oss
+$REPO_ROOT/configerator/structs/neteng/fboss/bgp/BUILD.bazel.oss
+$REPO_ROOT/neteng/fboss/bgp/if/BUILD.bazel.oss
+EOF
+
 # Source site-specific configuration if present.
 ENV_FILE="$SCRIPT_DIR/fboss-build.env"
 if [ -f "$ENV_FILE" ]; then

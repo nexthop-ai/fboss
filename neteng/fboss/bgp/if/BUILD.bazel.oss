@@ -1,0 +1,31 @@
+# Hand-written BUILD file for the BGP++ bgp_route_types thrift types.
+#
+# NOTE: committed as BUILD.bazel.oss and copied to BUILD.bazel by
+# fboss/oss/scripts/bazel.sh at build time. It is NOT committed as BUILD.bazel
+# because the Monobuild (nh.git, this repo is a submodule there) would discover
+# it during //... expansion and fail on its load("//fboss/build_defs:...")
+# label, which does not resolve in that workspace. BUILD.bazel.oss is not a
+# Bazel package marker, so the Monobuild ignores it.
+#
+# This package lives under neteng/, outside bazelify.py's BUCK scan (fboss/,
+# build/, common/), so its BUILD.bazel is hand-written -- same as
+# configerator/structs/neteng/fboss/thrift/BUILD.bazel. fsdb_model.thrift
+# includes bgp_route_types.thrift directly; see cmake/fsdb/FsdbIf.cmake
+# (add_fbthrift_cpp_library bgp_route_types_cpp2) for the equivalent wiring.
+#
+# Only the bgp_route_types target is defined here -- the rest of the BGP++
+# neteng/fboss/bgp/if BUCK (bgp_thrift, bgp_stream, ...) is not needed by the
+# OSS build and is annotated # bazelify: exclude-all in the BUCK.
+
+load("//fboss/build_defs:thrift_library.bzl", "fboss_thrift_library")
+
+fboss_thrift_library(
+    name = "bgp_route_types",
+    thrift_srcs = ["bgp_route_types.thrift"],
+    thrift_cpp2_options = "json,reflection",
+    deps = [
+        "//configerator/structs/neteng/bgp_policy/thrift:rib_policy",
+        "//configerator/structs/neteng/fboss/bgp/if:bgp_attr",
+    ],
+    visibility = ["//visibility:public"],
+)

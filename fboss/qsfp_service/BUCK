@@ -66,6 +66,13 @@ cpp_library(
     ],
 )
 
+cpp_library(
+    name = "transceiver-delay-constants",
+    headers = [
+        "facebook/TransceiverDelayConstants.h",
+    ],
+)
+
 # bazelify: add_src = QsfpServer.cpp
 # bazelify: add_src = QsfpServiceSignalHandler.cpp
 # bazelify: add_src = oss/QsfpServer.cpp

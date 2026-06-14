@@ -27,8 +27,7 @@ cpp_binary(
         "facebook/mdio_helper.cpp",
         "mdio_util.cpp",
     ],
-    headers = [
-    ],
+    headers = [],
     deps = [
         ":mdio",
         "//fboss/lib/fpga/facebook/yamp:yamp_fpga",

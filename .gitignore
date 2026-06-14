@@ -36,5 +36,10 @@ bazel-testlogs
 BUILD.bazel
 # Hand-written package marker — kept in fboss/build_defs/ only.
 !fboss/build_defs/BUILD.bazel
+# BGP++ shipit symlink — created at build time by CMakeLists.txt (configure)
+# and bazel.sh. Must never be committed: a committed symlink makes Bazel's
+# //... globbing follow it into configerator/structs/neteng/fboss/thrift and
+# fail target-pattern parsing in the monorepo workspace.
+neteng/fboss/bgp/public_tld/configerator/structs/neteng
 # Site-specific build configuration (contains infrastructure URLs/credentials)
 fboss/oss/scripts/fboss-build.env

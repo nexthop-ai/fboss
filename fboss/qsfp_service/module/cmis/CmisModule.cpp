@@ -1078,6 +1078,11 @@ bool CmisModule::getHostLaneSettings(
   getQsfpFieldAddress(CmisField::RX_OUT_MAIN, dataAddress, offset, length);
   dataMain = getQsfpValuePtr(dataAddress, offset, length);
 
+  const uint8_t* dataActiveCtrl;
+  getQsfpFieldAddress(
+      CmisField::ACTIVE_CTRL_ALL_LANES, dataAddress, offset, length);
+  dataActiveCtrl = getQsfpValuePtr(dataAddress, offset, length);
+
   for (int lane = 0; lane < laneSettings.size(); lane++) {
     auto laneMask = (1 << lane);
     laneSettings[lane].lane() = lane;
@@ -1096,6 +1101,9 @@ bool CmisModule::getHostLaneSettings(
     QSFP_LOG(DBG3, this) << fmt::format(
         "Lane = {:d}, Main = {:d}", lane, mainVal);
     laneSettings[lane].rxOutputAmplitude() = mainVal;
+
+    uint8_t appSel = (dataActiveCtrl[lane] & APP_SEL_MASK) >> APP_SEL_BITSHIFT;
+    laneSettings[lane].currentAppSel() = appSel;
   }
   return true;
 }
@@ -3917,18 +3925,23 @@ void CmisModule::configureModule(uint8_t startHostLane) {
 }
 
 bool CmisModule::isTunableOptics() const {
+  return isCBandTunable() || isLBandTunable();
+}
+
+bool CmisModule::isCBandTunable() const {
   auto info = QsfpFieldInfo<CmisField, CmisPages>::getQsfpFieldAddress(
       cmisFields, CmisField::MEDIA_INTERFACE_TECHNOLOGY);
   const uint8_t* data =
       getQsfpValuePtr(info.dataAddress, info.offset, info.length);
+  return *data == DeviceTechnologyCmis::C_BAND_TUNABLE_LASER_CMIS;
+}
 
-  uint8_t transTech = *data;
-  if ((transTech == DeviceTechnologyCmis::C_BAND_TUNABLE_LASER_CMIS) ||
-      (transTech == DeviceTechnologyCmis::L_BAND_TUNABLE_LASER_CMIS)) {
-    return true;
-  } else {
-    return false;
-  }
+bool CmisModule::isLBandTunable() const {
+  auto info = QsfpFieldInfo<CmisField, CmisPages>::getQsfpFieldAddress(
+      cmisFields, CmisField::MEDIA_INTERFACE_TECHNOLOGY);
+  const uint8_t* data =
+      getQsfpValuePtr(info.dataAddress, info.offset, info.length);
+  return *data == DeviceTechnologyCmis::L_BAND_TUNABLE_LASER_CMIS;
 }
 
 bool CmisModule::isLpoModule() const {
@@ -4815,7 +4828,7 @@ uint64_t CmisModule::getExpectedDatapathDelayUsec(bool init) {
   return kUsecDatapathStateUpdateTime;
 }
 
-uint64_t CmisModule::maxRetriesWith500msDelay(bool init) {
+uint64_t CmisModule::maxDatapathStatePolls(bool init) {
   return getExpectedDatapathDelayUsec(init) / kUsecDatapathStatePollTime;
 }
 
@@ -5019,7 +5032,7 @@ void CmisModule::resetDataPathWithFunc(
     writeCmisField(CmisField::DATA_PATH_DEINIT, &dataPathDeInit);
 
     // Wait for all datapath state machines to get Deactivated
-    const auto maxRetriesDeInit = maxRetriesWith500msDelay(/*init=*/false);
+    const auto maxRetriesDeInit = maxDatapathStatePolls(/*init=*/false);
 
     auto retries = 0;
     while (retries++ < maxRetriesDeInit) {
@@ -5045,7 +5058,7 @@ void CmisModule::resetDataPathWithFunc(
     writeCmisField(CmisField::DATA_PATH_DEINIT, &dataPathDeInit);
 
     // Wait for the datapath to come out of deactivated state
-    const auto maxRetriesInit = maxRetriesWith500msDelay(/*init=*/true);
+    const auto maxRetriesInit = maxDatapathStatePolls(/*init=*/true);
     retries = 0;
     while (retries++ < maxRetriesInit) {
       /* sleep override */

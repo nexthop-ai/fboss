@@ -1,27 +1,37 @@
 # pyre-strict
+import contextlib
 import sys
-from typing import Any, Callable, Dict, List, Mapping, Optional, Sequence, Tuple
+from collections.abc import Mapping, Sequence
+from typing import Any, Callable, Optional
 
 from fboss.lib.platform_mapping_v2.asic_vendor_config import AsicVendorConfig
 from fboss.lib.platform_mapping_v2.helpers import (
     get_backplane_chip,
     get_connection_pairs_for_profile,
+    get_laser_source_chip,
     get_mapping_pins,
     get_npu_chip,
+    get_optical_engine_chip,
     get_pin_data_from_connections,
     get_platform_config_entry,
     get_transceiver_chip,
     get_unique_connection_pairs,
     get_xphy_chip,
     is_backplane,
+    is_laser_source,
     is_npu,
+    is_optical_engine,
     is_transceiver,
     is_xphy,
+)
+from fboss.lib.platform_mapping_v2.integrated_transceiver_mapping import (
+    IntegratedTransceiverMapping,
 )
 from fboss.lib.platform_mapping_v2.port_profile_mapping import PortProfileMapping
 from fboss.lib.platform_mapping_v2.profile_settings import ProfileSettings
 from fboss.lib.platform_mapping_v2.read_files_utils import (
     read_asic_vendor_config,
+    read_integrated_transceiver_mapping,
     read_port_profile_mapping,
     read_profile_settings,
     read_si_settings,
@@ -50,7 +60,7 @@ from neteng.fboss.switch_config.thrift_types import PortProfileID, PortType
 # If you want to generate multiple platform mapping variants for a single platform,
 # define a base platform that includes common files (e.g. si_settings.csv) and
 # create variant folders with specialized files (e.g. port_profile_mapping.csv).
-_PLATFORM_VARIANTS_MAP: Dict[str, List[str]] = {
+_PLATFORM_VARIANTS_MAP: dict[str, list[str]] = {
     "janga800bic": [
         "janga800bic_dctype1_prod",
         "janga800bic_dctype1_test_fixture",
@@ -80,6 +90,7 @@ _PLATFORM_VARIANTS_MAP: Dict[str, List[str]] = {
         "ladakh800bcls_test_fixture",
     ],
     "leh800bcls": [
+        "leh800bcls_rack",
         "leh800bcls_test_fixture",
     ],
     "montblanc": [
@@ -89,9 +100,12 @@ _PLATFORM_VARIANTS_MAP: Dict[str, List[str]] = {
     "wedge800bact": [
         "wedge800bnhp",
     ],
+    "minipack3bta": [
+        "minipack3bta_16rifs",
+    ],
 }
 
-_PLATFORM_TO_BASE_PLATFORM: Dict[str, str] = {
+_PLATFORM_TO_BASE_PLATFORM: dict[str, str] = {
     variant: base
     for base, variants in _PLATFORM_VARIANTS_MAP.items()
     for variant in variants
@@ -101,7 +115,7 @@ _PLATFORM_TO_BASE_PLATFORM: Dict[str, str] = {
 class PlatformMappingParser:
     def __init__(
         self,
-        directory_map: Dict[str, Dict[str, str]],
+        directory_map: dict[str, dict[str, str]],
         platform: str,
         multi_npu: bool = False,
         version: Optional[str] = None,
@@ -115,9 +129,10 @@ class PlatformMappingParser:
         self._profile_settings: Optional[ProfileSettings] = None
         self._si_settings: Optional[SiSettings] = None
         self._asic_vendor_config: Optional[AsicVendorConfig] = None
+        self._integrated_tcvr_mapping: Optional[IntegratedTransceiverMapping] = None
         self._read_csvs()
 
-    def get_directory(self, use_base_platform: bool = False) -> Dict[str, str]:
+    def get_directory(self, use_base_platform: bool = False) -> dict[str, str]:
         return (
             self._directory_map[_PLATFORM_TO_BASE_PLATFORM[self.platform]]
             if use_base_platform
@@ -125,11 +140,7 @@ class PlatformMappingParser:
         )
 
     def get_mapping_prefix(self) -> str:
-        return (
-            _PLATFORM_TO_BASE_PLATFORM[self.platform]
-            if self.platform in _PLATFORM_TO_BASE_PLATFORM
-            else self.platform
-        )
+        return _PLATFORM_TO_BASE_PLATFORM.get(self.platform, self.platform)
 
     def _read_csvs_with_base_platform_fallback(
         self, reader_func: Callable[..., Any], *args: Any, **kwargs: Any
@@ -151,7 +162,7 @@ class PlatformMappingParser:
             )
 
     def _read_csvs(self) -> None:
-        if self.platform == "yangra" or self.platform == "yangra2":
+        if self.platform in {"yangra", "yangra2"}:
             # TODO(pshaikh): add processing for yangra platform csv processing
             self._static_mapping = StaticMapping(az_connections=[])
             self._port_profile_mapping = PortProfileMapping(ports={})
@@ -181,6 +192,15 @@ class PlatformMappingParser:
         except FileNotFoundError:
             print("No asic vendor config found...", file=sys.stderr)
 
+        # Integrated transceiver mapping is optional — only CPO platforms have this CSV
+        try:
+            self._integrated_tcvr_mapping = read_integrated_transceiver_mapping(
+                self.get_directory(),
+                self.get_mapping_prefix(),
+            )
+        except (FileNotFoundError, KeyError):
+            print("No integrated transceiver mapping found...", file=sys.stderr)
+
     def get_static_mapping(self) -> StaticMapping:
         if not self._static_mapping:
             raise TypeError(f"Static mapping file not defined for {self.platform}")
@@ -206,11 +226,16 @@ class PlatformMappingParser:
     def get_asic_vendor_config(self) -> Optional[AsicVendorConfig]:
         return self._asic_vendor_config
 
+    def get_integrated_transceiver_mapping(
+        self,
+    ) -> Optional[IntegratedTransceiverMapping]:
+        return self._integrated_tcvr_mapping
+
 
 class PlatformMappingV2:
     def __init__(
         self,
-        directory_map: Dict[str, Dict[str, str]],
+        directory_map: dict[str, dict[str, str]],
         platform: str,
         multi_npu: bool = False,
         version: Optional[str] = None,
@@ -220,7 +245,7 @@ class PlatformMappingV2:
         self.pm_parser = PlatformMappingParser(
             directory_map, platform, multi_npu, version
         )
-        self._name2entry: Dict[str, PlatformPortEntry] = {}
+        self._name2entry: dict[str, PlatformPortEntry] = {}
         self.platform_mapping: PlatformMapping = self._generate_platform_mapping()
 
     def _uses_root_port_controlling(self) -> bool:
@@ -234,9 +259,7 @@ class PlatformMappingV2:
                 core_type_name = chip.core_type.name
                 if not core_type_name.startswith("TH"):
                     return False
-                if chip.core_type == CoreType.TH5_NIF:
-                    return False
-                return True
+                return chip.core_type != CoreType.TH5_NIF
         return False
 
     def get_platform_mapping(self) -> PlatformMapping:
@@ -258,7 +281,7 @@ class PlatformMappingV2:
     # ports[0], then profiles[0], then vendor.name then vendor.partNumber
     def _sort_key(
         self,
-        factor_in: Tuple[PlatformPortConfigOverrideFactor, Tuple[Tuple[int, int], ...]],
+        factor_in: tuple[PlatformPortConfigOverrideFactor, tuple[tuple[int, int], ...]],
     ) -> tuple[str, int, str, str]:
         # Use empty string or 0 if list is empty or attribute is missing
         factor = factor_in[0]
@@ -292,15 +315,15 @@ class PlatformMappingV2:
             part_number = factor.vendor.partNumber or ""
         return (profile, port, vendor_name, part_number)
 
-    def _sort_and_merge_port_config_overrides(
-        self, port_config_overrides: List[PlatformPortConfigOverride]
-    ) -> List[PlatformPortConfigOverride]:
+    def _sort_and_merge_port_config_overrides(  # noqa: PLR0912
+        self, port_config_overrides: list[PlatformPortConfigOverride]
+    ) -> list[PlatformPortConfigOverride]:
         # merge lists
-        merged_factors: List[
-            Tuple[
+        merged_factors: list[
+            tuple[
                 PlatformPortConfigOverrideFactor,
-                List[PortPinConfig],
-                Dict[int, int],
+                list[PortPinConfig],
+                dict[int, int],
             ]
         ] = []
         for port_config_override in port_config_overrides:
@@ -314,7 +337,7 @@ class PlatformMappingV2:
                         driver_peakings.update(port_config_override.driverPeaking)
 
             if not found:
-                driver_peaking: Dict[int, int] = {}
+                driver_peaking: dict[int, int] = {}
                 if port_config_override.driverPeaking is not None:
                     driver_peaking.update(port_config_override.driverPeaking)
                 if port_config_override.pins is not None:
@@ -327,9 +350,9 @@ class PlatformMappingV2:
                     )
 
         # generate output
-        retval: List[PlatformPortConfigOverride] = []
+        retval: list[PlatformPortConfigOverride] = []
         unique_factors: set[
-            Tuple[PlatformPortConfigOverrideFactor, Tuple[Tuple[int, int], ...]]
+            tuple[PlatformPortConfigOverrideFactor, tuple[tuple[int, int], ...]]
         ] = set()
 
         for factor, _, driver_peaking in merged_factors:
@@ -339,7 +362,7 @@ class PlatformMappingV2:
 
         # pyrefly: ignore [bad-assignment]
         for unique_factor, driver_peaking in unique_factors_list:
-            port_pin_config_list: List[PortPinConfig] = []
+            port_pin_config_list: list[PortPinConfig] = []
             for merged_factor, merged_port_pin_config_list, _ in merged_factors:
                 if merged_factor == unique_factor:
                     port_pin_config_list.extend(merged_port_pin_config_list or [])
@@ -368,12 +391,16 @@ class PlatformMappingV2:
             platformSupportedProfiles=self._generate_platform_supported_profiles(),
         )
 
-    def _generate_chips(self) -> List[DataPlanePhyChip]:
+    def _generate_chips(self) -> list[DataPlanePhyChip]:  # noqa: PLR0912
         parsed_chips = self.pm_parser.get_static_mapping().get_chips()
         chips = []
-        if self.platform == "yangra" or self.platform == "yangra2":
+        if self.platform in {"yangra", "yangra2"}:
             # TODO(pshaikh): add logic to generate chips for yangra
             return chips
+
+        reverse_tcvr_map = (
+            self.pm_parser.get_static_mapping().get_reverse_transceiver_map()
+        )
 
         for chip in parsed_chips:
             if is_npu(chip.chip_type):
@@ -382,21 +409,36 @@ class PlatformMappingV2:
                     continue
                 chips.append(get_npu_chip(chip))
             elif is_transceiver(chip.chip_type):
-                chips.append(get_transceiver_chip(chip))
+                key = (chip.chip_id, chip.core_id)
+                if key not in reverse_tcvr_map:
+                    raise Exception(
+                        f"Transceiver chip_id={chip.chip_id}, core_id={chip.core_id} "
+                        f"not found in reverse transceiver map"
+                    )
+                virtual_id = reverse_tcvr_map[key]
+                chips.append(get_transceiver_chip(chip, physical_id=virtual_id - 1))
             elif is_backplane(chip.chip_type):
                 chips.append(get_backplane_chip(chip))
             elif is_xphy(chip.chip_type):
                 chips.append(get_xphy_chip(chip))
             else:
                 raise Exception("Unhandled chip_type ", chip.chip_type)
-        chips = sorted(chips, key=lambda chip: (chip.type, chip.physicalID, chip.name))
-        return chips
+
+        integrated_mapping = self.pm_parser.get_integrated_transceiver_mapping()
+        if integrated_mapping is not None:
+            for chip in integrated_mapping.get_chips():
+                if is_optical_engine(chip.chip_type):
+                    chips.append(get_optical_engine_chip(chip))
+                elif is_laser_source(chip.chip_type):
+                    chips.append(get_laser_source_chip(chip))
+
+        return sorted(chips, key=lambda chip: (chip.type, chip.physicalID, chip.name))
 
     def _generate_platform_supported_profiles(
         self,
-    ) -> List[PlatformPortProfileConfigEntry]:
+    ) -> list[PlatformPortProfileConfigEntry]:
         platform_config_entry = []
-        if self.platform == "yangra" or self.platform == "yangra2":
+        if self.platform in {"yangra", "yangra2"}:
             # TODO(pshaikh): add logic to generate platform supported profiles for yangra
             return platform_config_entry
 
@@ -411,7 +453,8 @@ class PlatformMappingV2:
 
             # Get XPHY line speed setting
             xphy_line_speed_setting = None
-            try:
+            # XPHY line speed setting doesn't exist for every profile, which is okay
+            with contextlib.suppress(Exception):
                 xphy_line_speed_setting = (
                     self.pm_parser.get_profile_settings().get_speed_setting(
                         profile,
@@ -419,13 +462,11 @@ class PlatformMappingV2:
                         Side.LINE,
                     )
                 )
-            except Exception:
-                # XPHY line speed setting doesn't exist for this profile, which is okay
-                pass
 
             # Get XPHY system speed setting
             xphy_system_speed_setting = None
-            try:
+            # XPHY system speed setting doesn't exist for every profile, which is okay
+            with contextlib.suppress(Exception):
                 xphy_system_speed_setting = (
                     self.pm_parser.get_profile_settings().get_speed_setting(
                         profile,
@@ -433,9 +474,6 @@ class PlatformMappingV2:
                         Side.SYSTEM,
                     )
                 )
-            except Exception:
-                # XPHY system speed setting doesn't exist for this profile, which is okay
-                pass
 
             entry = get_platform_config_entry(
                 profile=profile,
@@ -448,14 +486,14 @@ class PlatformMappingV2:
 
         return platform_config_entry
 
-    def _generate_ports(
+    def _generate_ports(  # noqa: PLR0912, PLR0915
         self,
     ) -> tuple[
-        Dict[int, PlatformPortEntry], Optional[List[PlatformPortConfigOverride]]
+        dict[int, PlatformPortEntry], Optional[list[PlatformPortConfigOverride]]
     ]:
         ports = {}
-        port_config_overrides: List[PlatformPortConfigOverride] = []
-        if self.platform == "yangra" or self.platform == "yangra2":
+        port_config_overrides: list[PlatformPortConfigOverride] = []
+        if self.platform in {"yangra", "yangra2"}:
             # TODO(pshaikh): add logic to generate ports for yangra
             return (ports, port_config_overrides)
 
@@ -492,6 +530,7 @@ class PlatformMappingV2:
                         else speed_setting.speed / speed_setting.num_lanes
                     ),
                     port_id=port_detail.global_port_id,
+                    integrated_tcvr_mapping=self.pm_parser.get_integrated_transceiver_mapping(),
                 )
                 if len(platform_port_config_override) > 0:
                     port_config_overrides.extend(platform_port_config_override)
@@ -548,11 +587,11 @@ class PlatformMappingV2:
 
         # First pass: collect subsumedPorts and controllingPort updates
         # Key: (port_id, profile) -> list of subsumed port ids
-        subsumed_ports_map: Dict[int, Dict[int, List[int]]] = {}
+        subsumed_ports_map: dict[int, dict[int, list[int]]] = {}
         # Key: port_id -> new controlling port id
-        controlling_port_updates: Dict[int, int] = {}
+        controlling_port_updates: dict[int, int] = {}
         # Key: port_id -> list of subsumed port ids for HYPER_PORT
-        hyper_port_subsumed: Dict[int, List[int]] = {}
+        hyper_port_subsumed: dict[int, list[int]] = {}
 
         uses_root_port_controlling = self._uses_root_port_controlling()
 
@@ -608,10 +647,10 @@ class PlatformMappingV2:
                                 if uses_root_port_controlling:
                                     # For TH6+ platforms, all subsumed ports
                                     # use ethx/x/1 as the controlling port
-                                    rootPortName = port_entry.mapping.name[:-1] + "1"
-                                    rootPortEntry = self._name2entry[rootPortName]
+                                    root_port_name = port_entry.mapping.name[:-1] + "1"
+                                    root_port_entry = self._name2entry[root_port_name]
                                     controlling_port_updates[port_id] = (
-                                        rootPortEntry.mapping.controllingPort
+                                        root_port_entry.mapping.controllingPort
                                     )
 
                 elif port_entry.mapping.portType == PortType.HYPER_PORT:

@@ -80,6 +80,7 @@ add_library(led_manager_lib
   fboss/led_service/Wedge800BNHPLedManager.cpp
   fboss/led_service/Wedge800CACTLedManager.cpp
   fboss/led_service/Ladakh800bclsLedManager.cpp
+  fboss/led_service/Leh800bclsLedManager.cpp
 )
 
 target_link_libraries(led_manager_lib
@@ -105,6 +106,8 @@ target_link_libraries(led_manager_lib
   nh4220f_bsp
   tahansb800bc_bsp
   ladakh800bcls_bsp
+  leh800bcls_bsp
+  saintpaul_bsp
   darwin_platform_mapping
   elbert_platform_mapping
   fuji_platform_mapping
@@ -125,6 +128,7 @@ target_link_libraries(led_manager_lib
   tahan800bc_platform_mapping
   tahansb800bc_platform_mapping
   ladakh800bcls_platform_mapping
+  leh800bcls_platform_mapping
   wedge400_fpga
   wedge400_platform_mapping
   wedge800bact_platform_mapping

@@ -37972,6 +37972,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
 } // namespace
 
 namespace facebook::fboss {
+
 M4062nhpPlatformMapping::M4062nhpPlatformMapping()
     : PlatformMapping(kJsonPlatformMappingStr) {}
 

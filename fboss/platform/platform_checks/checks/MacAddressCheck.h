@@ -3,6 +3,7 @@
 #include <folly/MacAddress.h>
 
 #include <string>
+#include <unordered_map>
 #include <utility>
 
 #include "fboss/platform/platform_checks/PlatformCheck.h"
