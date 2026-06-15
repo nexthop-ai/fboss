@@ -353,7 +353,7 @@ if [ -n "${BUILD_ONIE}" ]; then
     xzcat --threads=0 ${TARGET_DIR}/onie/FBOSS-Distro-Image.x86_64-1.0.tar.xz | tar -x
     rm ${TARGET_DIR}/onie/FBOSS-Distro-Image.x86_64-1.0.tar.xz
     tar --format=gnu -cf ${TARGET_DIR}/onie/FBOSS-Distro-Image.x86_64-1.0.tar *
-    zstd --threads=0 -19 ${TARGET_DIR}/onie/FBOSS-Distro-Image.x86_64-1.0.tar
+    zstd --threads=0 -12 ${TARGET_DIR}/onie/FBOSS-Distro-Image.x86_64-1.0.tar
     popd >/dev/null
 
     build_onie_installer | awk '{print "ONIE installer| " $0}'

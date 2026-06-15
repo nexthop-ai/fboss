@@ -563,10 +563,10 @@ heavy_genrule(
         "fboss_platform_stack_tests.tar.zst",
     ],
     cmd = """
-        zstd -T0 -19 -f -o $(location fboss_forwarding_stack_tests_broadcom_xgs.tar.zst) $(location fboss_forwarding_stack_tests_broadcom_xgs.tar)
-        zstd -T0 -19 -f -o $(location fboss_forwarding_stack_tests_broadcom_th6.tar.zst) $(location fboss_forwarding_stack_tests_broadcom_th6.tar)
-        zstd -T0 -19 -f -o $(location fboss_forwarding_stack_tests_cisco_s1.tar.zst) $(location fboss_forwarding_stack_tests_cisco_s1.tar)
-        zstd -T0 -19 -f -o $(location fboss_platform_stack_tests.tar.zst) $(location fboss_platform_stack_tests.tar)
+        zstd -T0 -12 -f -o $(location fboss_forwarding_stack_tests_broadcom_xgs.tar.zst) $(location fboss_forwarding_stack_tests_broadcom_xgs.tar)
+        zstd -T0 -12 -f -o $(location fboss_forwarding_stack_tests_broadcom_th6.tar.zst) $(location fboss_forwarding_stack_tests_broadcom_th6.tar)
+        zstd -T0 -12 -f -o $(location fboss_forwarding_stack_tests_cisco_s1.tar.zst) $(location fboss_forwarding_stack_tests_cisco_s1.tar)
+        zstd -T0 -12 -f -o $(location fboss_platform_stack_tests.tar.zst) $(location fboss_platform_stack_tests.tar)
     """,
 )
 
