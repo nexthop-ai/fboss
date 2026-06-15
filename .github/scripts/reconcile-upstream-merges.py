@@ -321,17 +321,17 @@ def build_range_diff(base: str, head: str, landed: str) -> str:
 def apply_amendment(worktree: str, head: str, landed: str,
                     files: list[str]) -> tuple[bool, list[str]]:
     """
-    In `worktree` (checked out at origin/main on the reconcile branch), apply the
-    delta `git diff <head> <landed> -- <files>` via 3-way merge.
+    In `worktree` (checked out at origin/main on the reconcile branch), apply
+    Meta's amendments via 3-way merge.
 
-    Because the diff's "old" side is our submitted version, the 3-way base is our
-    code: upstream drift already present on origin/main merges cleanly, and only
-    Meta's genuine amendments remain — with native conflict markers wherever our
-    internal tree has diverged.
+    The delta is `git diff <landed>^ <landed> -- <files>` — exactly what Meta's
+    landed commit changed, and nothing else.  Using `git diff head landed` would
+    also include changes from other commits that landed on upstream/main between
+    our PR's base and the landing point, incorrectly pulling in unrelated diffs.
 
     Returns (clean, conflicted_files).
     """
-    delta = git(["diff", head, landed, "--", *files]).stdout
+    delta = git(["diff", f"{landed}^", landed, "--", *files]).stdout
     patch_path = os.path.join(worktree, ".reconcile-amend.patch")
     with open(patch_path, "w") as fh:
         fh.write(delta)
