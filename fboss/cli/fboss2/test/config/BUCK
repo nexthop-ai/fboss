@@ -6,6 +6,7 @@ cpp_unittest(
     name = "cmd_config_test",
     srcs = [
         "BgpConfigSessionTest.cpp",  # bazelify: exclude
+        "CmdConfigAdminDistanceTest.cpp",
         "CmdConfigAppliedInfoTest.cpp",
         "CmdConfigArpTest.cpp",
         "CmdConfigHistoryTest.cpp",
