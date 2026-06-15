@@ -15,11 +15,13 @@
 #include <fmt/format.h>
 #include <folly/Conv.h>
 #include <folly/String.h>
+#include <algorithm>
+#include <array>
 #include <cstdint>
 #include <iostream>
-#include <set>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 #include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
@@ -33,17 +35,26 @@ constexpr std::string_view kAttrTimeout = "timeout";
 constexpr std::string_view kAttrAgeInterval = "age-interval";
 constexpr std::string_view kAttrMaxProbes = "max-probes";
 constexpr std::string_view kAttrStaleInterval = "stale-interval";
+constexpr std::string_view kAttrProactive = "proactive";
 /* arpRefreshSeconds is defined in switch_config.thrift yet not implemented
 constexpr std::string_view kAttrRefresh = "refresh";
 */
 
+// Accepted values for the boolean `proactive` toggle.
+constexpr std::string_view kProactiveEnabled = "enabled";
+constexpr std::string_view kProactiveDisabled = "disabled";
+
 // Valid ARP/NDP attribute names accepted by `fboss2-dev config arp <attr>`.
-const std::set<std::string_view> kArpValidAttrs = {
-    kAttrTimeout,
+// Boolean attrs (kAttrProactive) must be handled before the int32 parse branch
+// in ArpConfigArgs(); add any new boolean attr there as well.
+// Alphabetical order so folly::join produces a stable, sorted error message.
+constexpr auto kArpValidAttrs = std::to_array<std::string_view>({
     kAttrAgeInterval,
     kAttrMaxProbes,
+    kAttrProactive,
     kAttrStaleInterval,
-};
+    kAttrTimeout,
+});
 } // namespace
 
 ArpConfigArgs::ArpConfigArgs(std::vector<std::string> v) {
@@ -55,7 +66,8 @@ ArpConfigArgs::ArpConfigArgs(std::vector<std::string> v) {
             folly::join(", ", kArpValidAttrs)));
   }
 
-  if (kArpValidAttrs.find(v[0]) == kArpValidAttrs.end()) {
+  if (std::find(kArpValidAttrs.begin(), kArpValidAttrs.end(), v[0]) ==
+      kArpValidAttrs.end()) {
     throw std::invalid_argument(
         fmt::format(
             "Unknown ARP attribute '{}'. Valid attrs: {}",
@@ -63,22 +75,36 @@ ArpConfigArgs::ArpConfigArgs(std::vector<std::string> v) {
             folly::join(", ", kArpValidAttrs)));
   }
 
-  int32_t parsed = 0;
-  try {
-    parsed = folly::to<int32_t>(v[1]);
-  } catch (const folly::ConversionError&) {
-    throw std::invalid_argument(
-        fmt::format("Value for '{}' must be an integer, got '{}'", v[0], v[1]));
-  }
-
-  if (parsed < 0) {
-    throw std::invalid_argument(
-        fmt::format(
-            "Value for '{}' must be non-negative, got {}", v[0], parsed));
+  if (v[0] == kAttrProactive) {
+    if (v[1] != kProactiveEnabled && v[1] != kProactiveDisabled) {
+      throw std::invalid_argument(
+          fmt::format(
+              "Value for '{}' must be '{}' or '{}', got '{}'",
+              v[0],
+              kProactiveEnabled,
+              kProactiveDisabled,
+              v[1]));
+    }
+    attrKind_ = AttrKind::kBoolean;
+    boolValue_ = (v[1] == kProactiveEnabled);
+  } else {
+    int32_t parsed = 0;
+    try {
+      parsed = folly::to<int32_t>(v[1]);
+    } catch (const folly::ConversionError&) {
+      throw std::invalid_argument(
+          fmt::format(
+              "Value for '{}' must be an integer, got '{}'", v[0], v[1]));
+    }
+    if (parsed < 0) {
+      throw std::invalid_argument(
+          fmt::format(
+              "Value for '{}' must be non-negative, got {}", v[0], parsed));
+    }
+    value_ = parsed;
   }
 
   attribute_ = v[0];
-  value_ = parsed;
   data_ = std::move(v);
 }
 
@@ -90,27 +116,45 @@ CmdConfigArpTraits::RetType CmdConfigArp::queryClient(
   auto& swConfig = *config.sw();
 
   const auto& attr = args.getAttribute();
-  int32_t value = args.getValue();
 
+  // Integer attrs share a common result string formatted after the if-chain;
+  // proactive builds its own string inside its branch.
+  std::string result;
   if (attr == kAttrTimeout) {
-    swConfig.arpTimeoutSeconds() = value;
+    swConfig.arpTimeoutSeconds() = args.getValue();
   } else if (attr == kAttrAgeInterval) {
-    swConfig.arpAgerInterval() = value;
+    swConfig.arpAgerInterval() = args.getValue();
   } else if (attr == kAttrMaxProbes) {
-    swConfig.maxNeighborProbes() = value;
+    swConfig.maxNeighborProbes() = args.getValue();
   } else if (attr == kAttrStaleInterval) {
-    swConfig.staleEntryInterval() = value;
+    swConfig.staleEntryInterval() = args.getValue();
+  } else if (attr == kAttrProactive) {
+    // NOTE: proactiveArp is declared in switch_config.thrift but is not yet
+    // consumed by the agent (no read in ApplyThriftConfig.cpp, no field in
+    // switch_state.thrift). Writing it produces a valid config delta but has
+    // no runtime effect today; the CLI is wired ahead of the agent support.
+    // TODO: when agent support lands, verify HITLESS is still appropriate or
+    // change to WARMBOOT if the agent requires a restart to apply the field.
+    swConfig.proactiveArp() = args.getBoolValue();
+    result = fmt::format(
+        "Set arp {} to {} (stored in config; no runtime effect until agent support lands)",
+        attr,
+        args.getBoolValue() ? kProactiveEnabled : kProactiveDisabled);
   } else {
     // ArpConfigArgs validates this; defensive guard in case kArpValidAttrs
     // drifts from the dispatch switch here.
     throw std::runtime_error(fmt::format("Unhandled ARP attribute '{}'", attr));
   }
+  if (result.empty()) {
+    result = fmt::format("Set arp {} to {}", attr, args.getValue());
+  }
 
-  // All ARP/NDP timer attributes are applied hitlessly by
+  // The ARP/NDP timer attributes are applied hitlessly by
   // ThriftConfigApplier::updateSwitchSettings (no SAI ChangeProhibited guard).
+  // proactiveArp is currently a no-op in the agent, so persisting it is also
+  // hitless.
   session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
-
-  return fmt::format("Set arp {} to {}", attr, value);
+  return result;
 }
 
 void CmdConfigArp::printOutput(const RetType& logMsg) {
