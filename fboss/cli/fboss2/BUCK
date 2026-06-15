@@ -1031,6 +1031,7 @@ cpp_library(
         "CmdListConfig.cpp",
         "commands/config/CmdConfigAppliedInfo.cpp",
         "commands/config/CmdConfigReload.cpp",
+        "commands/config/admin_distance/CmdConfigAdminDistance.cpp",
         "commands/config/arp/CmdConfigArp.cpp",
         "commands/config/history/CmdConfigHistory.cpp",
         "commands/config/interface/CmdConfigInterface.cpp",
@@ -1135,6 +1136,7 @@ cpp_library(
     headers = [
         "commands/config/CmdConfigAppliedInfo.h",
         "commands/config/CmdConfigReload.h",
+        "commands/config/admin_distance/CmdConfigAdminDistance.h",
         "commands/config/arp/CmdConfigArp.h",
         "commands/config/history/CmdConfigHistory.h",
         "commands/config/interface/CmdConfigInterface.h",

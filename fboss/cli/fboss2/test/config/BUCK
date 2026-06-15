@@ -5,7 +5,12 @@ oncall("fboss_oss")
 cpp_unittest(
     name = "cmd_config_test",
     srcs = [
+<<<<<<< HEAD
         "BgpConfigSessionTest.cpp",
+=======
+        "BgpConfigSessionTest.cpp",  # bazelify: exclude
+        "CmdConfigAdminDistanceTest.cpp",
+>>>>>>> 5f30ccff6c (NOS-7166: Add config admin-distance CLI command (#1005))
         "CmdConfigAppliedInfoTest.cpp",
         "CmdConfigArpTest.cpp",
         "CmdConfigHistoryTest.cpp",
