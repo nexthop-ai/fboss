@@ -88,7 +88,7 @@ WORKFLOW_FILE = "reconcile-upstream-merges.yml"
 PROTECTED_BRANCHES = {"main", "master", "bazel-build", "benoit.blaze"}
 PROTECTED_PREFIXES = ("sync-fboss-",)
 
-RECONCILE_BRANCH_PREFIX = "reconcile/upstream-"
+RECONCILE_BRANCH_PREFIX = "sync-reconcile-upstream-pr-"
 
 # Cap the range-diff embedded in the PR body so we don't post a wall of text.
 MAX_RANGEDIFF_LINES = 300
