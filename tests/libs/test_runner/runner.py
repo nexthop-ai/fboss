@@ -76,6 +76,7 @@ def _enforce_min_failure_duration(run_test):
 _HW_TEST_CONFIG_NAME: dict[str, str] = {
     "minipack3": "montblanc",
     "wedge800bact": "wedge800bnhp",
+    "nhbw800f": "wedge800bnhp",
     "nh4215f": "m4062nhp",
 }
 
@@ -89,6 +90,7 @@ _SAI_KNOWN_BAD_KEY: dict[str, str] = {
     "minipack3": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
     "wedge800bact": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
     "wedge800bnhp": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
+    "nhbw800f": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
     "wedge800cact": "leaba/25.11.4210/25.11.4210/graphene202x",
     "nh4010f": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
     "nh4215f": "brcm/14.2.0.0_odp/14.2.0.0_odp/tomahawk6",
@@ -362,6 +364,7 @@ class SaiAgentTestRunner(BaseHwTestRunner):
             "minipack3": "tomahawk5",
             "wedge800bact": "tomahawk5",
             "wedge800bnhp": "tomahawk5",
+            "nhbw800f": "tomahawk5",
             "wedge800cact": "g202x",
             "nh4010f": "tomahawk5",
             "nh4215f": "tomahawk6",
