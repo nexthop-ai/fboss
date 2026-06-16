@@ -257,8 +257,12 @@ jobs:
           docker exec -e SAI_IMPL=fake FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss_fake_agent_targets
           docker exec -e SAI_IMPL=fake FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss2_targets
 
-      - name: Build fboss-sim runtime image
-        run: python3 fboss-sim/scripts/fboss-sim-docker-package.py
+      - name: Collect fboss-sim artifacts (inside CentOS build container)
+        # ldd must resolve CentOS libs, so collect inside the build container.
+        run: docker exec FBOSS_build_${USER} python3 fboss-sim/scripts/fboss-sim-docker-package.py --collect-only
+
+      - name: Build fboss-sim runtime image (host has the Docker daemon)
+        run: python3 fboss-sim/scripts/fboss-sim-docker-package.py --build-only
 
       - name: Start fboss-sim runtime container
         run: python3 fboss-sim/scripts/fboss-sim-docker-run.py
