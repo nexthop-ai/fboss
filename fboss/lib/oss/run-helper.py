@@ -88,7 +88,13 @@ Current run path: {run_path}"""
     print(f"Starting build for {target}")
     subprocess.run(
         f"""{get_deps_path} build """
+<<<<<<< HEAD
         + f"--allow-system-packages --num-jobs 32 --extra-cmake-defines='{cmake_defines_json}' --src-dir {expected_path} --cmake-target"
+||||||| e6332d29c3
+        + '--allow-system-packages --num-jobs 32 --extra-cmake-defines=\'{"CMAKE_BUILD_TYPE": "MinSizeRel", "CMAKE_CXX_STANDARD": "20"}\' --cmake-target'
+=======
+        + f"--allow-system-packages --num-jobs 32 --extra-cmake-defines='{cmake_defines_json}' --cmake-target"
+>>>>>>> b514bd210a12edf43caa33d828a31cef9d6eb908
         + f" {target} fboss",
         check=False,
         shell=True,

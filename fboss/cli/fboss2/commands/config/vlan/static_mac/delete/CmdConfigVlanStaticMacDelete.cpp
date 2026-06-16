@@ -17,7 +17,11 @@
 #include <algorithm>
 #include <cstdint>
 #include <iostream>
+<<<<<<< HEAD
 #include <ostream>
+||||||| e6332d29c3
+=======
+>>>>>>> b514bd210a12edf43caa33d828a31cef9d6eb908
 #include <string>
 #include "fboss/cli/fboss2/commands/config/vlan/CmdConfigVlan.h"
 #include "fboss/cli/fboss2/commands/config/vlan/VlanManager.h"
