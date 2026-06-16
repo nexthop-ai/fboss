@@ -107,6 +107,9 @@ jobs:
           - name: "Black Kite Testbeds"
             pattern: "blkt2.*"
             priority: 75
+          - name: "Crowned Eagle Testbeds"
+            pattern: "crow.*"
+            priority: 75
     uses: ./.github/workflows/fboss-itest.reusable.yml
     with:
       build_id: ${{ needs.monobuild.outputs.build_id }}
