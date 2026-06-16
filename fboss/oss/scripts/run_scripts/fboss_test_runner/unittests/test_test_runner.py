@@ -129,7 +129,6 @@ class TestRunTestGtestFallback:
         runner.TESTRESULT_CURRENT_RUN_FILE = str(tmp_path / "tr_current_run.xml")
         # _get_test_run_cmd reads the module-level `args` global, which is only
         # bound under `if __name__ == "__main__":` — use create=True to inject it.
-<<<<<<< HEAD:fboss/oss/scripts/run_scripts/unittests/test_test_runner.py
         with (
             patch("run_test.args", new=mock_args, create=True),
             patch.object(
@@ -142,14 +141,7 @@ class TestRunTestGtestFallback:
                 ),
             ),
         ):
-            result = runner._run_test(
-||||||| e6332d29c3:fboss/oss/scripts/run_scripts/unittests/test_test_runner.py
-        with patch("run_test.args", new=mock_args, create=True):
-            result = runner._run_test(
-=======
-        with patch("run_test.args", new=mock_args, create=True):
             outcome = runner._run_test(
->>>>>>> b514bd210a12edf43caa33d828a31cef9d6eb908:fboss/oss/scripts/run_scripts/fboss_test_runner/unittests/test_test_runner.py
                 conf_file="dummy.conf",
                 test_prefix="cold_boot.",
                 test_to_run="HwFooTest.Bar",
@@ -166,7 +158,6 @@ class TestRunTestGtestFallback:
         """Fallback path still works: empty output (e.g. --setup-for-warmboot early
         exit) should still synthesize an OK result so the test isn't lost from
         the summary."""
-<<<<<<< HEAD:fboss/oss/scripts/run_scripts/unittests/test_test_runner.py
         runner.TESTRESULT_CURRENT_RUN_FILE = str(tmp_path / "tr_current_run.xml")
         with (
             patch("run_test.args", new=mock_args, create=True),
@@ -176,16 +167,7 @@ class TestRunTestGtestFallback:
                 new=_make_capture_writing(b"", runner, _STUB_GTEST_XML),
             ),
         ):
-            result = runner._run_test(
-||||||| e6332d29c3:fboss/oss/scripts/run_scripts/unittests/test_test_runner.py
-        mock_check_output.return_value = b""
-        with patch("run_test.args", new=mock_args, create=True):
-            result = runner._run_test(
-=======
-        mock_check_output.return_value = b""
-        with patch("run_test.args", new=mock_args, create=True):
             outcome = runner._run_test(
->>>>>>> b514bd210a12edf43caa33d828a31cef9d6eb908:fboss/oss/scripts/run_scripts/fboss_test_runner/unittests/test_test_runner.py
                 conf_file="dummy.conf",
                 test_prefix="warm_boot.",
                 test_to_run="HwFooTest.Bar",

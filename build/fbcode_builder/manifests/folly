@@ -34,10 +34,6 @@ zlib
 [dependencies.os=linux]
 libaio
 libiberty
-<<<<<<< HEAD
-||||||| e6332d29c3
-libunwind
-=======
 libunwind
 # folly uses OpenSSL on every platform (SSL contexts, hashing, etc.).
 # On Linux, openssl's manifest uses builder=nop and resolves via the
@@ -46,7 +42,6 @@ libunwind
 # this, downstream consumers that don't otherwise pull in fizz/wangle/
 # fbthrift have to discover this transitive system dep themselves.
 openssl
->>>>>>> b514bd210a12edf43caa33d828a31cef9d6eb908
 
 # xz depends on autoconf which does not build on
 # Windows

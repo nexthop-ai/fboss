@@ -75,6 +75,7 @@ SUPPORTED_SAI_SDK_VERSIONS = {
     "SAI_VERSION_14_0_EA_ODP",
     "SAI_VERSION_14_2_0_0_ODP",
     "SAI_VERSION_15_0_EA_ODP",
+    "SAI_VERSION_15_4_EA_ODP",
     # BRCM DNX
     "SAI_VERSION_11_7_0_0_DNX_ODP",
     "SAI_VERSION_12_2_0_0_DNX_ODP",
@@ -87,9 +88,11 @@ SUPPORTED_SAI_SDK_VERSIONS = {
     "TAJO_SDK_VERSION_24_8_3001",
     "TAJO_SDK_VERSION_25_5_4210",
     "TAJO_SDK_VERSION_25_11_4210",
+    "TAJO_SDK_VERSION_26_2_5210",
     # Chenab
     "CHENAB_SAI_SDK_VERSION_2505_34_0_38",
     "CHENAB_SAI_SDK_VERSION_2511_35_0_19",
+    "CHENAB_SAI_SDK_VERSION_2511_6_0_8_ea",
 }
 
 
@@ -342,86 +345,7 @@ def _patch_manifests_disable_binutils():
             print_info(f"Patching manifest {manifest} to disable binutils")
 
 
-<<<<<<< HEAD
 def setup_clang_environment(toolchain_info, repo_root=None):
-||||||| e6332d29c3
-def _patch_boost_fpic():
-    """Fix -fPIC flags in boost and boost-python manifests.
-
-    The upstream boost-python manifest has cxxflags="-fPIC" with quotes and
-    is missing cflags=-fPIC. The quotes are passed literally to b2 (the
-    manifest parser does not strip them), so the compiler never receives
-    -fPIC. This causes linker failures when folly-python links the static
-    boost archives into a shared library (BUILD_SHARED_LIBS=ON +
-    BOOST_LINK_STATIC=ON).
-
-    Both boost and boost-python are patched because fboss pulls in both
-    (fb303 -> folly -> boost, and folly-python -> boost-python) and cmake
-    finds whichever appears first in CMAKE_PREFIX_PATH.
-    """
-    manifests_dir = path_to("build", "fbcode_builder", "manifests")
-
-    # The correct replacement for [b2.args.os=linux] -fPIC lines.
-    # Both manifests need unquoted cxxflags and cflags.
-    fpic_correct = "cxxflags=-fPIC\ncflags=-fPIC"
-
-    for manifest_name in ("boost-python", "boost"):
-        manifest_path = os.path.join(manifests_dir, manifest_name)
-        if not os.path.isfile(manifest_path):
-            continue
-        with open(manifest_path) as f:
-            content = f.read()
-        patched = content
-
-        # Fix quoted cxxflags (boost-python has this bug)
-        patched = patched.replace('cxxflags="-fPIC"', fpic_correct)
-
-        # Ensure cflags=-fPIC is present if cxxflags=-fPIC already is
-        if "cxxflags=-fPIC" in patched and "cflags=-fPIC" not in patched:
-            patched = patched.replace("cxxflags=-fPIC", fpic_correct)
-
-        if patched != content:
-            with open(manifest_path, "w") as f:
-                f.write(patched)
-            print_info(f"Patched {manifest_name} manifest: ensured -fPIC flags")
-
-
-def _create_fpic_compiler_wrappers():
-    """Ensure -fPIC is used for all compilations via compiler wrappers.
-
-    Boost's b2 build system does not reliably apply cxxflags=-fPIC from
-    its manifest on CentOS Stream 9 (both with gcc-toolset-12 and clang).
-    Since folly-python links boost static archives into a shared library
-    (BUILD_SHARED_LIBS=ON + BOOST_LINK_STATIC=ON), all objects must be PIC.
-
-    We create thin wrapper scripts for common compiler names that prepend
-    -fPIC, then put them first on PATH. This guarantees -fPIC regardless
-    of build system (cmake, b2, make).
-    """
-    wrapper_dir = "/tmp/fpic_wrappers"
-    os.makedirs(wrapper_dir, exist_ok=True)
-    created = []
-    for name in ("gcc", "g++", "cc", "c++", "clang", "clang++"):
-        real = subprocess.run(
-            ["which", name], capture_output=True, text=True, check=False
-        ).stdout.strip()
-        if not real:
-            continue
-        wrapper = os.path.join(wrapper_dir, name)
-        with open(wrapper, "w") as f:
-            f.write(f'#!/bin/bash\nexec {real} -fPIC "$@"\n')
-        os.chmod(wrapper, 0o755)
-        created.append(name)
-
-    if created:
-        os.environ["PATH"] = wrapper_dir + ":" + os.environ.get("PATH", "")
-        print_info(f"Created -fPIC compiler wrappers for {created} in {wrapper_dir}")
-
-
-def setup_clang_environment(toolchain_info):
-=======
-def setup_clang_environment(toolchain_info):
->>>>>>> b514bd210a12edf43caa33d828a31cef9d6eb908
     """
     Set up the environment for building with clang.
     This reads the clang-specific flags from CMakeLists.txt to avoid duplication.
@@ -444,6 +368,7 @@ def setup_clang_environment(toolchain_info):
         print_info("Warning: Could not determine target triple")
         return
 
+    # Read clang-specific CXXFLAGS from CMakeLists.txt using regex
     cxxflags = _extract_clang_cxxflags(repo_root)
     if cxxflags is None:
         return

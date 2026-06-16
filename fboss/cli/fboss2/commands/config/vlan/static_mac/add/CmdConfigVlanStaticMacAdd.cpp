@@ -17,12 +17,6 @@
 #include <fmt/format.h>
 #include <cstdint>
 #include <iostream>
-<<<<<<< HEAD
-#include <ostream>
-||||||| e6332d29c3
-#include <algorithm>
-=======
->>>>>>> b514bd210a12edf43caa33d828a31cef9d6eb908
 #include <stdexcept>
 #include <string>
 #include <vector>

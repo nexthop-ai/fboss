@@ -339,32 +339,6 @@ Fboss2IntegrationTest::Interface Fboss2IntegrationTest::findFirstEthInterface()
         upCandidates.push_back(intf);
       }
     }
-<<<<<<< HEAD
-
-    const auto& pool = !upCandidates.empty() ? upCandidates : allCandidates;
-    if (!pool.empty()) {
-      thread_local std::mt19937 rng{std::random_device{}()};
-      std::uniform_int_distribution<size_t> dist(0, pool.size() - 1);
-      const auto& chosen = pool[dist(rng)];
-      XLOG(INFO) << "Selected test interface " << chosen.name
-                 << " (status=" << chosen.status
-                 << ", pool=" << (!upCandidates.empty() ? "up" : "all")
-                 << ", size=" << pool.size() << ")";
-      return chosen;
-    }
-
-    if (attempt + 1 < kMaxRetries) {
-      XLOG(WARN) << "findFirstEthInterface: no suitable interface found "
-                    "(attempt "
-                 << (attempt + 1) << "/" << kMaxRetries
-                 << "), retrying in 1s...";
-||||||| e6332d29c3
-    allCandidates.push_back(intf);
-    std::string status = intf.status;
-    std::transform(status.begin(), status.end(), status.begin(), ::tolower);
-    if (status == "up") {
-      upCandidates.push_back(intf);
-=======
     const auto& pool = !upCandidates.empty() ? upCandidates : allCandidates;
     if (!pool.empty()) {
       thread_local std::mt19937 rng{std::random_device{}()};
@@ -385,30 +359,9 @@ Fboss2IntegrationTest::Interface Fboss2IntegrationTest::findFirstEthInterface()
       // agent, with no event/future to await, so a short delay between retries
       // is the appropriate pattern here.
       // NOLINTNEXTLINE(facebook-hte-BadCall-sleep_for)
->>>>>>> b514bd210a12edf43caa33d828a31cef9d6eb908
       std::this_thread::sleep_for(kRetryDelay);
     }
   }
-<<<<<<< HEAD
-
-||||||| e6332d29c3
-
-  const auto& pool = !upCandidates.empty() ? upCandidates : allCandidates;
-  if (pool.empty()) {
-    throw std::runtime_error(
-        "No suitable ethernet interface found with VLAN > 1");
-  }
-
-  thread_local std::mt19937 rng{std::random_device{}()};
-  std::uniform_int_distribution<size_t> dist(0, pool.size() - 1);
-  const auto& chosen = pool[dist(rng)];
-  XLOG(INFO) << "Selected test interface " << chosen.name
-             << " (status=" << chosen.status
-             << ", pool=" << (!upCandidates.empty() ? "up" : "all")
-             << ", size=" << pool.size() << ")";
-  return chosen;
-=======
->>>>>>> b514bd210a12edf43caa33d828a31cef9d6eb908
   throw std::runtime_error(
       "No suitable ethernet interface found with VLAN > 1");
 }
