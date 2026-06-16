@@ -607,14 +607,8 @@ cpp_library(
         "facebook/CmdStreamHandler.cpp",
         "utils/CmdClientUtils.cpp",
         "utils/CmdUtils.cpp",
-<<<<<<< HEAD
-        "utils/NetwhoamiUtils.cpp",  # bazelify: exclude
-||||||| e6332d29c3
-        "utils/NetwhoamiUtils.cpp",
-=======
         "utils/LoopbackUtils.cpp",
-        "utils/NetwhoamiUtils.cpp",
->>>>>>> b514bd210a12edf43caa33d828a31cef9d6eb908
+        "utils/NetwhoamiUtils.cpp",  # bazelify: exclude
         "utils/PortMap.cpp",
         "utils/PrbsUtils.cpp",
         "utils/TeFlowUtils.cpp",  # bazelify: exclude
@@ -811,14 +805,8 @@ cpp_library(
         "commands/stream/fsdb/CmdStreamSubFsdbOperState.h",
         "commands/stream/fsdb/CmdStreamSubFsdbOperStats.h",
         "utils/CmdUtils.h",
-<<<<<<< HEAD
-        "utils/clients/BmcClient.h",  # bazelify: exclude
-||||||| e6332d29c3
-        "utils/clients/BmcClient.h",
-=======
         "utils/LoopbackUtils.h",
-        "utils/clients/BmcClient.h",
->>>>>>> b514bd210a12edf43caa33d828a31cef9d6eb908
+        "utils/clients/BmcClient.h",  # bazelify: exclude
     ],
     exported_deps = [
         "fbsource//third-party/fmt:fmt",

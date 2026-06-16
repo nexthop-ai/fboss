@@ -49,7 +49,7 @@ Both will be resolved to (union, sorted, only existing files).
 """
 
 from pathlib import Path
-from typing import List, Set, Tuple, Optional
+from typing import Dict, List, Set, Tuple, Optional
 from enum import Enum
 import subprocess
 
@@ -59,6 +59,42 @@ class FileFormat(Enum):
     CMAKE = "cmake"
     BUCK = "buck"
     CPP_INCLUDE = "cpp_include"
+
+
+def strip_buck_inline_comment(stripped: str) -> str:
+    """Strip a trailing inline comment from a BUCK file path line.
+
+    Handles lines like '"path/to/file.cpp",  # bazelify: exclude'
+    by returning '"path/to/file.cpp",' with the comment removed.
+    """
+    if '#' not in stripped:
+        return stripped
+    hash_idx = stripped.rfind('#')
+    before_hash = stripped[:hash_idx].rstrip()
+    # Only strip if what remains still looks like a quoted path entry
+    if before_hash.endswith('",') or before_hash.endswith('"'):
+        return before_hash
+    return stripped
+
+
+def extract_buck_path_annotations(lines: List[str]) -> Dict[str, str]:
+    """Return a mapping of file path -> inline annotation for BUCK file lines.
+
+    For example, '"utils/NetwhoamiUtils.cpp",  # bazelify: exclude' yields
+    {'utils/NetwhoamiUtils.cpp': '  # bazelify: exclude'}.
+    """
+    annotations: Dict[str, str] = {}
+    for line in lines:
+        stripped = line.strip()
+        if not stripped.startswith('"') or '#' not in stripped:
+            continue
+        without_comment = strip_buck_inline_comment(stripped)
+        if without_comment == stripped:
+            continue  # no comment was stripped
+        path = without_comment.strip('",').strip('"')
+        hash_idx = stripped.rfind('#')
+        annotations[path] = '  ' + stripped[hash_idx:]
+    return annotations
 
 
 def is_file_path_line(line: str, file_format: FileFormat) -> bool:
@@ -94,6 +130,8 @@ def is_file_path_line(line: str, file_format: FileFormat) -> bool:
         # Should not contain BUCK keywords or other syntax (except quotes and commas)
         if any(keyword in stripped for keyword in ['load(', 'name =', 'srcs =', 'headers =', 'deps =', 'visibility =', 'cpp_library(', 'cpp_binary(']):
             return False
+        # Strip inline annotations (e.g. # bazelify: exclude) before checking
+        stripped = strip_buck_inline_comment(stripped)
         # Should be a quoted string, possibly with a trailing comma
         if stripped.startswith('"') and (stripped.endswith('",') or stripped.endswith('"')):
             # Extract the path from quotes
@@ -118,9 +156,9 @@ def extract_file_paths(lines: List[str], file_format: FileFormat) -> Set[str]:
             continue
 
         if file_format == FileFormat.BUCK:
-            # Extract path from quoted string, removing quotes and trailing comma
+            # Extract path from quoted string, removing quotes, trailing comma, and inline comment
             if stripped.startswith('"'):
-                path = stripped.strip('",').strip('"')
+                path = strip_buck_inline_comment(stripped).strip('",').strip('"')
                 paths.add(path)
         elif file_format == FileFormat.CPP_INCLUDE:
             # Extract path from #include "..." or #include <...>
@@ -206,6 +244,12 @@ def resolve_conflict(ours_lines: List[str], theirs_lines: List[str], repo_root: 
     ours_paths = extract_file_paths(ours_lines, file_format)
     theirs_paths = extract_file_paths(theirs_lines, file_format)
 
+    # For BUCK files, collect inline annotations (e.g. # bazelify: exclude) from our side
+    # so they can be preserved in the output.
+    ours_annotations: Dict[str, str] = {}
+    if file_format == FileFormat.BUCK:
+        ours_annotations = extract_buck_path_annotations(ours_lines)
+
     # Take the union
     all_paths = ours_paths | theirs_paths
 
@@ -224,7 +268,8 @@ def resolve_conflict(ours_lines: List[str], theirs_lines: List[str], repo_root: 
         resolved_lines = [f'#include "{path}"\n' for path in sorted_paths]
     else:  # BUCK format
         # BUCK format: 8-space indentation, quoted strings with trailing commas
-        resolved_lines = [f'        "{path}",\n' for path in sorted_paths]
+        # Preserve any inline annotations (e.g. # bazelify: exclude) from our side
+        resolved_lines = [f'        "{path}",{ours_annotations.get(path, "")}\n' for path in sorted_paths]
 
     return resolved_lines
 
