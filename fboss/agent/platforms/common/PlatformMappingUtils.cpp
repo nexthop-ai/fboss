@@ -51,7 +51,6 @@
 #include "fboss/agent/platforms/common/wedge400c/Wedge400CPlatformMapping.h"
 #include "fboss/agent/platforms/common/wedge400c/Wedge400CPlatformUtil.h"
 #include "fboss/agent/platforms/common/wedge800bact/Wedge800BACTPlatformMapping.h"
-#include "fboss/agent/platforms/common/wedge800bnhp/Wedge800BNHPPlatformMapping.h"
 #include "fboss/agent/platforms/common/wedge800cact/Wedge800CACTPlatformMapping.h"
 #include "fboss/agent/platforms/common/yamp/YampPlatformMapping.h"
 #include "fboss/agent/platforms/common/yangra/YangraPlatformMapping.h"
@@ -221,10 +220,6 @@ std::unique_ptr<PlatformMapping> initPlatformMapping(PlatformType type) {
       return platformMappingStr.empty()
           ? std::make_unique<Ladakh800bclsPlatformMapping>()
           : std::make_unique<Ladakh800bclsPlatformMapping>(platformMappingStr);
-    case PlatformType::PLATFORM_WEDGE800BNHP:
-      return platformMappingStr.empty()
-          ? std::make_unique<Wedge800BNHPPlatformMapping>()
-          : std::make_unique<Wedge800BNHPPlatformMapping>(platformMappingStr);
     case PlatformType::PLATFORM_LEH800BCLS:
       return platformMappingStr.empty()
           ? std::make_unique<Leh800bclsPlatformMapping>()

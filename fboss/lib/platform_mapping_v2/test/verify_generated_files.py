@@ -5,11 +5,11 @@ import filecmp
 import os
 import sys
 import unittest
-from typing import Dict, List
+from typing import ClassVar
 
 from fboss.lib.platform_mapping_v2.gen import (
     generate_platform_mappings,
-    INPUT_DIR as input_dir,
+    INPUT_DIR,
 )
 
 
@@ -22,7 +22,7 @@ class TestVerifyPlatformMappingGeneratedFiles(unittest.TestCase):
     This test will be run in OSS for all open-sourced platforms.
     """
 
-    _OSS_MULTI_NPU_SUPPORTED_PLATFORMS: Dict[bool, List[str]] = {
+    _OSS_MULTI_NPU_SUPPORTED_PLATFORMS: ClassVar[dict[bool, list[str]]] = {
         False: [
             "montblanc",
             "montblanc_odd_ports_8x100G",
@@ -48,7 +48,6 @@ class TestVerifyPlatformMappingGeneratedFiles(unittest.TestCase):
             "tahansb800bc",
             "tahansb800bc_test_fixture",
             "wedge800bact",
-            "wedge800bnhp",
             "wedge800cact",
             "blackwolf800banw",
             "j4sim",
@@ -102,13 +101,13 @@ class TestVerifyPlatformMappingGeneratedFiles(unittest.TestCase):
         for is_multi_npu, platforms in self._OSS_MULTI_NPU_SUPPORTED_PLATFORMS.items():
             for platform in platforms:
                 generate_platform_mappings(
-                    input_dir + platform,
+                    INPUT_DIR + platform,
                     self._TMP_GENERATED_DIR,
                     platform,
                     is_multi_npu,
                 )
 
-    def _get_relative_files(self, directory: str) -> List[str]:
+    def _get_relative_files(self, directory: str) -> list[str]:
         relative_files = []
         for root, _, filenames in os.walk(directory):
             for filename in filenames:

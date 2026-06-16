@@ -97,9 +97,6 @@ _PLATFORM_VARIANTS_MAP: dict[str, list[str]] = {
         "montblanc_odd_ports_8x100G",
         "montblanc",
     ],
-    "wedge800bact": [
-        "wedge800bnhp",
-    ],
     "minipack3bta": [
         "minipack3bta_16rifs",
     ],

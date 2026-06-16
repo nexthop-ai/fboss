@@ -100,8 +100,6 @@ void PlatformProductInfo::initMode() {
         modelName.find("Wedge800CACT") == 0 ||
         modelName.find("WEDGE800CACT") == 0) {
       type_ = PlatformType::PLATFORM_WEDGE800CACT;
-    } else if (modelName.find("WEDGE800BNHP") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800BNHP;
     } else if (modelName.find("DARWIN48V") == 0) {
       type_ = PlatformType::PLATFORM_DARWIN48V;
     } else if (
@@ -326,8 +324,6 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_J4SIM;
     } else if (FLAGS_mode == "ladakh800bcls") {
       type_ = PlatformType::PLATFORM_LADAKH800BCLS;
-    } else if (FLAGS_mode == "wedge800bnhp") {
-      type_ = PlatformType::PLATFORM_WEDGE800BNHP;
     } else if (FLAGS_mode == "leh800bcls") {
       type_ = PlatformType::PLATFORM_LEH800BCLS;
     } else if (FLAGS_mode == "icecube800banw") {
