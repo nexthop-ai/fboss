@@ -122,6 +122,13 @@ def _normalize_model(model: str) -> str:
     return model.lower().replace("-", "")
 
 
+def _repo_dir(relative: Path) -> Path:
+    for parent in Path(__file__).resolve().parents:
+        if (parent / relative).is_dir():
+            return parent / relative
+    raise FileNotFoundError(f"could not locate {relative} above {__file__}")
+
+
 # Stale-state cleanup paths — must match AgentDirectoryUtil defaults
 # (fboss/agent/AgentDirectoryUtil.cpp):
 #   getWarmBootDir() = FLAGS_volatile_state_dir + "/warm_boot"
@@ -138,15 +145,50 @@ _LINK_TEST_CONFIG_NAME: dict[str, str] = {
     "nh4215f": "m4062nhp",
 }
 
-# ACT DUTs use the NHP qsfp_test_config so we don't have to touch the
-# upstream bact config.
+# Maps model name to qsfp test config when the config name differs from the model name.
 _QSFP_TEST_CONFIG_NAME: dict[str, str] = {
+    "minipack3": "montblanc",
     "wedge800bact": "wedge800bnhp",
 }
+
+_PLATFORM_MAPPING_DIR = Path(
+    "fboss/lib/platform_mapping_v2/generated_platform_mappings"
+)
+
+# Link and QSFP hw test binaries have no support for profiles above 800G just yet.
+_MAX_PROFILE_SPEED_MBPS = 800_000
+
+
+class _PortInfo(NamedTuple):
+    logical_id: int
+    profile_id: int
+    speed: int
+
+
+def _load_platform_mapping(config_name: str) -> dict[str, _PortInfo]:
+    path = _repo_dir(_PLATFORM_MAPPING_DIR) / f"{config_name}_platform_mapping.json"
+    with open(path, encoding="utf-8") as f:
+        mapping = json.load(f)
+    prof = {
+        int(p["factor"]["profileID"]): p["profile"]["speed"]
+        for p in mapping["platformSupportedProfiles"]
+        if p["profile"]["speed"] <= _MAX_PROFILE_SPEED_MBPS
+    }
+    index = {}
+    for entry in mapping["ports"].values():
+        name = entry["mapping"]["name"]
+        supported = [int(pid) for pid in entry["supportedProfiles"] if int(pid) in prof]
+        if not supported:
+            continue
+        gmax = max(supported, key=lambda pid: prof[pid])
+        index[name] = _PortInfo(entry["mapping"]["id"], gmax, prof[gmax])
+    return index
 
 
 class BaseHwTestRunner(ABC):
     """Base class for hardware test runners."""
+
+    _REMOTE_CONFIG_PATH: str
 
     def __init__(self):
         self.connected = False
@@ -156,6 +198,19 @@ class BaseHwTestRunner(ABC):
         self.testlog_filepath = "/home/netops/test.log"
         self.testresult_filepath = "/home/netops/tr.xml"
         self.tc = None
+        self._use_generated_config = False
+
+    def _upload_generated_config(self, config: dict) -> None:
+        with tempfile.NamedTemporaryFile("w", suffix=".materialized_JSON", delete=False) as f:
+            json.dump(config, f)
+            local_path = f.name
+        try:
+            exit_status, output = self.scp_client.put_file(local_path, self._REMOTE_CONFIG_PATH)
+        finally:
+            os.unlink(local_path)
+        if exit_status != 0:
+            raise RuntimeError(f"Failed to upload generated config: {output}")
+        self._use_generated_config = True
 
     @abstractmethod
     def test_args(self, model: str) -> str:
@@ -383,15 +438,41 @@ class SaiAgentTestRunner(BaseHwTestRunner):
 class QsfpTestRunner(BaseHwTestRunner):
     """Runner for QSFP hardware tests."""
 
+    _CABLING_ENV_VAR = "QSFP_TEST_CABLING"
+    _BASE_CONFIG_DIR = Path("fboss/oss/qsfp_test_configs")
+    _REMOTE_CONFIG_PATH = "/home/netops/qsfp_test.materialized_JSON"
+    _FALLBACK_PROFILE_ID = 38
+
+    def pre_test(self):
+        super().pre_test()
+        cabling_path = os.getenv(self._CABLING_ENV_VAR)
+        if not cabling_path:
+            return
+
+        model = _normalize_model(self.tc["model"])
+        config_name = _QSFP_TEST_CONFIG_NAME.get(model, model)
+        base_path = _repo_dir(self._BASE_CONFIG_DIR) / f"{config_name}.materialized_JSON"
+
+        with open(base_path, encoding="utf-8") as f:
+            config = json.load(f)
+        with open(cabling_path, encoding="utf-8") as f:
+            pairs = json.load(f)
+
+        port_map = _load_platform_mapping(config_name)
+        cabled = []
+        for a_port, z_port in pairs.items():
+            info = port_map.get(a_port) or port_map.get(z_port)
+            profile_id = info.profile_id if info else self._FALLBACK_PROFILE_ID
+            cabled.append({"aPortName": a_port, "zPortName": z_port, "profileID": profile_id})
+
+        config["qsfpTestConfig"]["cabledPortPairs"] = cabled
+        self._upload_generated_config(config)
+
     def test_args(self, model: str) -> str:
+        if self._use_generated_config:
+            return f"qsfp --qsfp-config {self._REMOTE_CONFIG_PATH}"
         config_name = _QSFP_TEST_CONFIG_NAME.get(model, model)
         return f"qsfp --qsfp-config ./share/qsfp_test_configs/{config_name}.materialized_JSON"
-
-
-class _PortInfo(NamedTuple):
-    logical_id: int
-    profile_id: int
-    speed: int
 
 
 class LinkTestRunner(BaseHwTestRunner):
@@ -399,9 +480,6 @@ class LinkTestRunner(BaseHwTestRunner):
 
     _CABLING_ENV_VAR = "LINK_TEST_CABLING"
     _BASE_CONFIG_DIR = Path("fboss/oss/link_test_configs")
-    _PLATFORM_MAPPING_DIR = Path(
-        "fboss/lib/platform_mapping_v2/generated_platform_mappings"
-    )
     _REMOTE_CONFIG_PATH = "/home/netops/link_test_config.materialized_JSON"
     _SYSTEM_QSFP_CONFIG_PATH = "/etc/coop/qsfp.conf"
     _REMOTE_QSFP_CONFIG_PATH = "/home/netops/link_test_qsfp.conf"
@@ -410,45 +488,15 @@ class LinkTestRunner(BaseHwTestRunner):
 
     def __init__(self):
         super().__init__()
-        self._use_generated_config = False
         self._use_generated_qsfp = False
 
     @classmethod
     def _config_name(cls, model: str) -> str:
         return _LINK_TEST_CONFIG_NAME.get(model, model)
 
-    @staticmethod
-    def _repo_dir(relative: Path) -> Path:
-        for parent in Path(__file__).resolve().parents:
-            if (parent / relative).is_dir():
-                return parent / relative
-        raise FileNotFoundError(f"could not locate {relative} above {__file__}")
-
     @classmethod
     def _base_config_path(cls, config_name: str) -> Path:
-        return cls._repo_dir(cls._BASE_CONFIG_DIR) / f"{config_name}.materialized_JSON"
-
-    @classmethod
-    def _load_platform_mapping(cls, config_name: str) -> dict[str, _PortInfo]:
-        path = (
-            cls._repo_dir(cls._PLATFORM_MAPPING_DIR)
-            / f"{config_name}_platform_mapping.json"
-        )
-        with open(path, encoding="utf-8") as f:
-            mapping = json.load(f)
-        prof = {
-            p["factor"]["profileID"]: p["profile"]["speed"]
-            for p in mapping["platformSupportedProfiles"]
-        }
-        index = {}
-        for entry in mapping["ports"].values():
-            name = entry["mapping"]["name"]
-            supported = [v for pid in entry["supportedProfiles"] if (v := int(pid)) in prof]
-            if not supported:
-                continue
-            gmax = max(supported, key=lambda pid: prof[pid])
-            index[name] = _PortInfo(entry["mapping"]["id"], gmax, prof[gmax])
-        return index
+        return _repo_dir(cls._BASE_CONFIG_DIR) / f"{config_name}.materialized_JSON"
 
     @classmethod
     def _synthesize_port(
@@ -570,23 +618,9 @@ class LinkTestRunner(BaseHwTestRunner):
         with open(cabling_path, encoding="utf-8") as f:
             pairs = json.load(f)
 
-        port_map = self._load_platform_mapping(config_name)
+        port_map = _load_platform_mapping(config_name)
         config = self._overlay_cabling(base, pairs, port_map)
-
-        with tempfile.NamedTemporaryFile(
-            "w", suffix=".materialized_JSON", delete=False
-        ) as f:
-            json.dump(config, f)
-            local_path = f.name
-        try:
-            exit_status, output = self.scp_client.put_file(
-                local_path, self._REMOTE_CONFIG_PATH
-            )
-        finally:
-            os.unlink(local_path)
-        if exit_status != 0:
-            raise RuntimeError(f"Failed to upload generated link config: {output}")
-        self._use_generated_config = True
+        self._upload_generated_config(config)
 
     def test_args(self, model: str) -> str:
         if self._use_generated_config:
