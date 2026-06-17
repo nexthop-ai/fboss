@@ -13,9 +13,16 @@
 # includes bgp_route_types.thrift directly; see cmake/fsdb/FsdbIf.cmake
 # (add_fbthrift_cpp_library bgp_route_types_cpp2) for the equivalent wiring.
 #
-# Only the bgp_route_types target is defined here -- the rest of the BGP++
-# neteng/fboss/bgp/if BUCK (bgp_thrift, bgp_stream, ...) is not needed by the
-# OSS build and is annotated # bazelify: exclude-all in the BUCK.
+# bgp_route_types is pulled in transitively by fsdb_model; bgp_thrift (and its
+# TBgpService) is needed by the fboss2 BGP CLI show commands. The fboss2 BUCK
+# targets reference //neteng/fboss/bgp/if:bgp_thrift-cpp2-{types,services}, but
+# bazelify.py strips //neteng/ deps, so those targets re-add this dep via
+# `# bazelify: extra_dep = //neteng/fboss/bgp/if:bgp_thrift` annotations. The
+# deps below mirror cmake/fsdb/FsdbIf.cmake (bgp_thrift_cpp2 / policy_thrift_cpp2).
+#
+# The remaining BGP++ neteng/fboss/bgp/if BUCK targets (bgp-structs, bgp_stream,
+# ...) are not needed by the OSS build and are annotated # bazelify: exclude-all
+# in the BUCK.
 
 load("//fboss/build_defs:thrift_library.bzl", "fboss_thrift_library")
 
@@ -25,6 +32,29 @@ fboss_thrift_library(
     thrift_cpp2_options = "json,reflection",
     deps = [
         "//configerator/structs/neteng/bgp_policy/thrift:rib_policy",
+        "//configerator/structs/neteng/fboss/bgp/if:bgp_attr",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+fboss_thrift_library(
+    name = "policy_thrift",
+    thrift_srcs = ["policy_thrift.thrift"],
+    thrift_cpp2_options = "json,reflection",
+    visibility = ["//visibility:public"],
+)
+
+fboss_thrift_library(
+    name = "bgp_thrift",
+    thrift_srcs = {"bgp_thrift.thrift": ["TBgpService"]},
+    thrift_cpp2_options = "json,reflection",
+    deps = [
+        ":bgp_route_types",
+        ":policy_thrift",
+        "//common/fb303/if:fb303",
+        "//configerator/structs/neteng/bgp_policy/thrift:bgp_policy",
+        "//configerator/structs/neteng/bgp_policy/thrift:rib_policy",
+        "//neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp:bgp_config_oss",
         "//configerator/structs/neteng/fboss/bgp/if:bgp_attr",
     ],
     visibility = ["//visibility:public"],

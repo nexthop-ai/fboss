@@ -4,6 +4,11 @@ load("@fbcode_macros//build_defs:cpp_unittest.bzl", "cpp_unittest")
 
 oncall("fboss_agent_push")
 
+# These test targets pull in neteng/fboss/bgp/if/gen-cpp2 headers
+# (bgp_thrift_types.h, TBgpService.h, ...) transitively. bazelify.py strips the
+# //neteng/ bgp deps, so re-add the hand-written OSS bgp_thrift target (it
+# transitively provides the full bgp/configerator thrift header closure).
+# bazelify: extra_dep = //neteng/fboss/bgp/if:bgp_thrift
 cpp_library(
     name = "cmd_test_utils",
     headers = [
@@ -34,6 +39,7 @@ cpp_library(
     ],
 )
 
+# bazelify: extra_dep = //neteng/fboss/bgp/if:bgp_thrift
 cpp_library(
     name = "bgp_test_utils",
     srcs = ["CmdBgpTestUtils.cpp"],
@@ -51,6 +57,7 @@ cpp_library(
     ],
 )
 
+# bazelify: extra_dep = //neteng/fboss/bgp/if:bgp_thrift
 cpp_library(
     name = "bgp_mock_client",
     headers = [
@@ -108,6 +115,7 @@ cpp_unittest(
     ],
 )
 
+# bazelify: extra_dep = //neteng/fboss/bgp/if:bgp_thrift
 cpp_unittest(
     name = "cmd_test",
     srcs = [

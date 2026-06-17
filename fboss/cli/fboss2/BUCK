@@ -293,6 +293,11 @@ cpp_library(
     ],
 )
 
+# BGP show command headers include neteng/fboss/bgp/if/gen-cpp2 headers
+# (bgp_thrift_types.h, TBgpService.h). bazelify.py strips the //neteng/ deps
+# below, so re-add the hand-written OSS bgp_thrift target (it transitively
+# provides the full bgp/configerator thrift header closure).
+# bazelify: extra_dep = //neteng/fboss/bgp/if:bgp_thrift
 cpp_library(
     name = "commands-show-bgp",
     headers = [
@@ -387,6 +392,11 @@ cpp_library(
 # bazelify: add_src = oss/CmdListImpl.cpp
 # bazelify: add_src = utils/oss/CmdClientUtils.cpp
 # bazelify: add_src = utils/oss/CmdUtils.cpp
+# fboss2-lib compiles utils/CmdClientUtils.cpp (#includes TBgpService.h) and
+# commands/show/bgp/CmdShowUtils.cpp (#includes bgp_thrift_types.h). bazelify.py
+# strips the //neteng/ bgp deps below, so re-add the hand-written OSS bgp_thrift
+# target (it transitively provides the full bgp/configerator thrift closure).
+# bazelify: extra_dep = //neteng/fboss/bgp/if:bgp_thrift
 cpp_library(
     name = "fboss2-lib",
     srcs = [
