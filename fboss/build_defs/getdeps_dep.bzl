@@ -36,7 +36,11 @@ def _getdeps_repository_impl(ctx):
     project_hash = hash_result.stdout.strip()
 
     # Determine expected install directory.
-    if ctx.attr.first_party:
+    # Only fboss itself keeps a bare (non-hashed) install path so CI scripts
+    # and Bazel rules that hardcode installed/fboss continue to work.
+    # All other first-party packages get a content-addressed path to prevent
+    # stale shared-dir reuse across pinned-rev bumps.
+    if ctx.attr.first_party and name == "fboss":
         expected_dir = scratch + "/installed/" + name
     else:
         expected_dir = scratch + "/installed/" + name + "-" + project_hash

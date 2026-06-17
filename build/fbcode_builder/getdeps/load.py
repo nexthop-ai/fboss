@@ -481,11 +481,15 @@ class ManifestLoader:
         return h
 
     def _get_project_dir_name(self, manifest: ManifestParser) -> str:
-        if manifest.is_first_party_project():
+        # Keep a stable bare path for the root fboss project so CI scripts and
+        # Bazel rules that hardcode build/fboss and installed/fboss keep working,
+        # and so incremental ninja builds on the main tree aren't invalidated on
+        # every commit.  All other first-party packages (folly, fbthrift, etc.)
+        # get a content-addressed hash so stale shared dirs are never reused.
+        if manifest.is_first_party_project() and manifest.name == "fboss":
             return manifest.name
-        else:
-            project_hash: str = self.get_project_hash(manifest)
-            return "%s-%s" % (manifest.name, project_hash)
+        project_hash: str = self.get_project_hash(manifest)
+        return "%s-%s" % (manifest.name, project_hash)
 
     def get_project_install_dir(self, manifest: ManifestParser) -> str:
         override = self._install_dir_overrides.get(manifest.name)
