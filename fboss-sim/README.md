@@ -5,13 +5,16 @@ Minimal Docker runtime (~1.2 GB) for FBOSS with fake SAI — no hardware require
 ## Quick Start
 
 ```bash
-# 1. Build FBOSS with fake SAI (inside build container)
-docker exec -e SAI_IMPL=fake FBOSS_build_${USER} \
-  ./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss_fake_agent_targets
-docker exec -e SAI_IMPL=fake FBOSS_build_${USER} \
-  ./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss2_targets
+# 1. Build FBOSS with fake SAI (binaries land in .build_dir/build/fboss/).
+#    Use the standard getdeps OSS build with the fake-SAI target.
+sudo ./build/fbcode_builder/getdeps.py build --allow-system-packages fboss
 
-# 2. Build runtime image (collects deps via ldd, builds Docker image)
+# 2. Build the runtime image.
+#    The packager has two phases:
+#      --collect-only : resolve binaries+libs into tmp_build_dir/ (ldd must run
+#                       in an OS matching the image base — CentOS Stream 9)
+#      --build-only   : docker build the image from tmp_build_dir/
+#    If you built on a CentOS Stream 9 host, run both at once with no flag:
 python3 fboss-sim/scripts/fboss-sim-docker-package.py
 
 # 3. Start the container
@@ -21,27 +24,19 @@ python3 fboss-sim/scripts/fboss-sim-docker-run.py
 docker exec fboss_sim_runtime_${USER} /opt/fboss/bin/fboss2_integration_test
 ```
 
-### Worktree
+### Split build/host environments
 
-Each worktree gets its own isolated build container with a separate cmake cache.
+When FBOSS is built inside a CentOS build container on a different-distro host
+(e.g. Ubuntu), `ldd` must resolve libraries inside the container, but
+`docker build` needs the host's Docker daemon. Run the two phases separately:
 
 ```bash
-# 1. Enter worktree build container with SAI_IMPL=fake
-./fboss/oss/scripts/nhfboss-docker-enter.py --worktree $PWD --env SAI_IMPL=fake
-# The container name is printed on creation — save it for step 2.
-# Inside container:
-./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss_fake_agent_targets
-./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss2_targets
+# collect inside the build container (CentOS libs resolve correctly)
+docker exec <build-container> python3 \
+  fboss-sim/scripts/fboss-sim-docker-package.py --collect-only
 
-# 2. Build runtime image (pass the container name from step 1)
-python3 fboss-sim/scripts/fboss-sim-docker-package.py \
-  --container-name FBOSS_build_worktree-<name>-<hash>
-
-# 3. Start the container
-python3 fboss-sim/scripts/fboss-sim-docker-run.py
-
-# 4. Run integration test
-docker exec fboss_sim_runtime_${USER} /opt/fboss/bin/fboss2_integration_test
+# build the image on the host
+python3 fboss-sim/scripts/fboss-sim-docker-package.py --build-only
 ```
 
 ## Agent Modes
@@ -89,13 +84,23 @@ fboss-sim/
     └── fboss-sim-docker-run.py        # Create IPv6 network, start runtime container
 ```
 
+`Dockerfile.runtime` copies the FBOSS `centos-09.0` rootfs overlay
+(`fboss-image/image_builder/templates/centos-09.0/root_files/`) for the systemd
+layout — the agent units the simulator runs (`fboss_sw_agent`,
+`fboss_hw_agent@`, the hw-agents target), the login-shell env hook, and the
+eth0 IPv6 sysctl. That rootfs is part of the FBOSS tree, so this directory
+builds identically inside or outside the Nexthop fork.
+
 ### How `fboss-sim-docker-package.py` works
 
 1. Verifies required binaries exist in `.build_dir/build/fboss/`
-2. Runs `--collect-only` inside the build container (CentOS) so `ldd` resolves the right system libs
-3. Copies binaries, resolved shared libraries, and config files into `tmp_build_dir/`
-4. Builds the Docker image from `Dockerfile.runtime` using `tmp_build_dir/` as context
-5. Cleans up `tmp_build_dir/` on completion
+2. **Collect phase** (`--collect-only`, or the first half of a flagless run):
+   resolves each binary's shared libraries via `ldd` and copies binaries,
+   libraries, and config files into `tmp_build_dir/`. This must run where the
+   resolved libs match the image base OS (CentOS Stream 9).
+3. **Build phase** (`--build-only`, or the second half of a flagless run):
+   builds the Docker image from `Dockerfile.runtime` using `tmp_build_dir/` as
+   context, then cleans up `tmp_build_dir/`.
 
 ### Why IPv6 matters for split mode
 

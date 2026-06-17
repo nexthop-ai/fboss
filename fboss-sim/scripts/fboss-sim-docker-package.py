@@ -9,7 +9,12 @@ This script collects FBOSS binaries directly from the build output directory
 and copies everything into a Docker build context for the runtime image.
 
 Prerequisites:
-- Build FBOSS with SAI_IMPL=fake (binaries will be in .build_dir/build/fboss/)
+- Build FBOSS with fake SAI (binaries will be in .build_dir/build/fboss/)
+
+This script is environment-agnostic: it does not assume any particular build
+container or repo mount. The only requirement is that the `--collect-only`
+phase runs where the resolved shared libraries match the runtime image base OS
+(CentOS Stream 9). See `--help` for the collect/build phase split.
 
 The runtime image:
 - Contains only essential runtime dependencies (systemd, iproute, jemalloc)
@@ -28,8 +33,6 @@ from pathlib import Path
 
 USERNAME = getpass.getuser()
 DEFAULT_IMAGE_NAME = f"fboss_sim_runtime_{USERNAME}"
-BUILD_CONTAINER_NAME = f"FBOSS_build_{USERNAME}"
-CONTAINER_REPO_PATH = "/var/FBOSS/fboss"  # repo mount point inside the build container
 
 REQUIRED_BINARIES = [
     "wedge_agent-sai_impl",
@@ -277,72 +280,41 @@ def build_runtime_image(repo_path: Path) -> int:
     return result.returncode
 
 
-def is_container_running(container_name: str) -> bool:
-    result = subprocess.run(
-        ["docker", "inspect", "--format", "{{.State.Running}}", container_name],
-        capture_output=True, text=True, check=False,
-    )
-    return result.returncode == 0 and result.stdout.strip() == "true"
-
-
-def ensure_container_running(container_name: str) -> bool:
-    """Ensure the build container is running, using nhfboss-docker-enter.py.
-
-    That script handles both cases: create the container if it doesn't exist,
-    or start it if it's stopped. When run non-interactively (no TTY) it starts
-    the container as a daemon and returns.
-    """
-    if is_container_running(container_name):
-        return True
-
-    enter_script = Path(__file__).parent.parent.parent / "fboss" / "oss" / "scripts" / "nhfboss-docker-enter.py"
-    if not enter_script.exists():
-        return False
-
-    print(f"  → Starting build container via {enter_script.name}...")
-    # Run non-interactively: nhfboss-docker-enter.py checks sys.stdout.isatty() to
-    # decide whether to run as a daemon and whether to exec into a shell.
-    # Redirect both stdin and stdout so isatty()==False in both checks, which causes
-    # it to start the container as a daemon and return instead of blocking.
-    subprocess.run(
-        ["python3", str(enter_script)],
-        stdin=subprocess.DEVNULL,
-        stdout=subprocess.DEVNULL,
-        check=False,
-    )
-    return is_container_running(container_name)
-
-
-def collect_inside_container(container_name: str) -> None:
-    """Run --collect-only inside the build container via docker exec.
-
-    The build container runs CentOS so ldd resolves system libs correctly
-    (libre2.so.9, libnl, libsodium, etc.) rather than Ubuntu host libs.
-    """
-    container_script = f"{CONTAINER_REPO_PATH}/fboss-sim/scripts/fboss-sim-docker-package.py"
-    print(f"  → Running collect step inside {container_name}...")
-    result = subprocess.run(
-        ["docker", "exec", container_name, "python3", container_script, "--collect-only"],
-        check=False,
-    )
-    if result.returncode != 0:
-        print(f"  ✗ Collection failed (exit {result.returncode})")
-        sys.exit(1)
-
-
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description="Build fboss-sim runtime Docker image")
-    parser.add_argument(
+
+    parser = argparse.ArgumentParser(
+        description="Build fboss-sim runtime Docker image",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "Phases:\n"
+            "  --collect-only  Resolve binaries+libs+configs into tmp_build_dir/.\n"
+            "                  MUST run in an environment whose libc/system libs\n"
+            "                  match the runtime image base (CentOS Stream 9), so\n"
+            "                  ldd resolves the right .so files. On a host that\n"
+            "                  built FBOSS in a CentOS build container, run this\n"
+            "                  step inside that container.\n"
+            "  --build-only    docker build the runtime image from tmp_build_dir/.\n"
+            "                  Run wherever the Docker daemon lives (the host).\n"
+            "  (no flag)       Run both phases in the current environment. Use this\n"
+            "                  when you built FBOSS natively on a CentOS-9 host.\n"
+            "\n"
+            "Split-environment example (Ubuntu host + CentOS build container):\n"
+            "  docker exec <build-container> python3 \\\n"
+            "      fboss-sim/scripts/fboss-sim-docker-package.py --collect-only\n"
+            "  python3 fboss-sim/scripts/fboss-sim-docker-package.py --build-only\n"
+        ),
+    )
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
         "--collect-only",
         action="store_true",
-        help="Only collect binaries/libs into tmp_build_dir (run inside build container)",
+        help="Only collect binaries/libs/configs into tmp_build_dir/ (no docker build)",
     )
-    parser.add_argument(
-        "--container-name",
-        default=BUILD_CONTAINER_NAME,
-        help=f"Build container name (default: {BUILD_CONTAINER_NAME}). "
-        "Use when building from a worktree container.",
+    group.add_argument(
+        "--build-only",
+        action="store_true",
+        help="Only docker build the image from an existing tmp_build_dir/ (no collect)",
     )
     args = parser.parse_args()
 
@@ -359,26 +331,26 @@ def main():
     print(f"Build dir:   {build_dir}")
     print(f"Installed:   {installed_dir}")
 
-    if not build_dir.exists():
-        print(f"\n❌ Error: Build directory not found: {build_dir}")
-        print("   Please build FBOSS first with SAI_IMPL=fake")
+    # --- Collect phase ---
+    if args.collect_only or not args.build_only:
+        if not build_dir.exists():
+            print(f"\n❌ Error: Build directory not found: {build_dir}")
+            print("   Please build FBOSS first with SAI_IMPL=fake")
+            sys.exit(1)
+        verify_binaries(build_dir)
+        copy_artifacts(repo_path, build_dir, installed_dir, dest_dir)
+        if args.collect_only:
+            print(f"\n✅ Collected artifacts into {dest_dir}")
+            print("   Next: run `--build-only` where the Docker daemon is available.")
+            return
+
+    # --- Build phase ---
+    if not dest_dir.exists():
+        print(f"\n❌ Error: {dest_dir} not found.")
+        print("   Run the `--collect-only` phase first (in a CentOS-9 environment).")
         sys.exit(1)
 
-    verify_binaries(build_dir)
-
-    if args.collect_only:
-        copy_artifacts(repo_path, build_dir, installed_dir, dest_dir)
-        return
-
-    # Host path: collect inside build container (correct CentOS libs for ldd),
-    # then run docker build here where the Docker daemon is available.
-    container_name = args.container_name
     try:
-        if not ensure_container_running(container_name):
-            print(f"\n❌ Error: Could not start build container '{container_name}'.")
-            print("   Try manually: ./fboss/oss/scripts/nhfboss-docker-enter.py")
-            sys.exit(1)
-        collect_inside_container(container_name)
         ret = build_runtime_image(repo_path)
     finally:
         shutil.rmtree(dest_dir, ignore_errors=True)
