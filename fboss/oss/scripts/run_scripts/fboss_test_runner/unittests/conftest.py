@@ -13,6 +13,7 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 import run_test
+
 from fboss_test_runner.runners.test_runner import TestRunner
 
 # `run_test.args` is populated at runtime by argparse inside main(), so the
@@ -55,6 +56,7 @@ def mock_args():
     args.sai_logging = "WARN"
     args.fboss_logging = "WARN"
     args.test_run_timeout = 300
+    args.num_warmboot_iterations = 1
     args.skip_known_bad_tests = None
     args.extra_gflags = None
     return args

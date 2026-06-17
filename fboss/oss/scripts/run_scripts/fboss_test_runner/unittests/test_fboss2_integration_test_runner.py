@@ -29,6 +29,7 @@ def _make_mock_args(**overrides):
     mock_args.sai_logging = "WARN"
     mock_args.fboss_logging = "WARN"
     mock_args.test_run_timeout = 300
+    mock_args.num_warmboot_iterations = 1
     mock_args.skip_known_bad_tests = None
     mock_args.sai_replayer_logging = None
     mock_args.simulator = None

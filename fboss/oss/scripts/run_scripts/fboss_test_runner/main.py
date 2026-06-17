@@ -7,12 +7,15 @@ import sys
 from argparse import ArgumentParser
 
 import run_test
+from setup import setup_fboss_env
+
 from fboss_test_runner.constants import (
     OPT_ARG_FILTER,
     OPT_ARG_FILTER_FILE,
     OPT_ARG_PROFILE,
     SUB_CMD_BCM,
     SUB_CMD_BENCHMARK,
+    SUB_CMD_BSP,
     SUB_CMD_FBOSS2_INTEGRATION,
     SUB_CMD_LINK,
     SUB_CMD_PLATFORM,
@@ -24,6 +27,7 @@ from fboss_test_runner.constants import (
 )
 from fboss_test_runner.runners.bcm_test_runner import BcmTestRunner
 from fboss_test_runner.runners.benchmark_test_runner import BenchmarkTestRunner
+from fboss_test_runner.runners.bsp_test_runner import BspTestRunner
 from fboss_test_runner.runners.fboss2_integration_test_runner import (
     Fboss2IntegrationTestRunner,
 )
@@ -41,7 +45,6 @@ from fboss_test_runner.runners.sai_invariant_agent_test_runner import (
 )
 from fboss_test_runner.runners.sai_test_runner import SaiTestRunner
 from fboss_test_runner.runners.test_runner import TestRunner
-from setup import setup_fboss_env
 
 
 def main() -> None:
@@ -62,6 +65,7 @@ def main() -> None:
         runner.add_subcommand_arguments(parser)
 
     _register_runner(SUB_CMD_BCM, "run bcm tests", BcmTestRunner)
+    _register_runner(SUB_CMD_BSP, "run BSP (bsp_tests) validation tests", BspTestRunner)
     _register_runner(SUB_CMD_SAI, "run sai tests", SaiTestRunner)
     _register_runner(SUB_CMD_QSFP, "run qsfp tests", QsfpTestRunner)
     _register_runner(SUB_CMD_LINK, "run link tests", LinkTestRunner)

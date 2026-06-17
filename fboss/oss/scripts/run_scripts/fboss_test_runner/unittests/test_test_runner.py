@@ -7,7 +7,6 @@ backup, filter merging), plus the load_from_file helper consumed
 by _get_tests_to_run via args.filter_file."""
 
 import os
-import subprocess
 import tempfile
 from unittest.mock import MagicMock, patch
 
@@ -180,18 +179,23 @@ class TestRunTestGtestFallback:
 
 
 class TestRunTestTimeout:
-    """Test that subprocess.TimeoutExpired is converted to a [ TIMEOUT ]
-    result line so the test surfaces in the summary."""
+    """Test that a timed-out capture is converted to a TIMEOUT result so the
+    test surfaces in the summary."""
 
-    @patch("subprocess.check_output")
-    def test_timeout_synthesizes_timeout_line(
-        self, mock_check_output, runner, mock_args
-    ):
-        mock_check_output.side_effect = subprocess.TimeoutExpired(
-            cmd=["dummy"], timeout=300
-        )
+    def test_timeout_synthesizes_timeout_line(self, runner, mock_args, tmp_path):
+        # The TIMEOUT branch writes a synthetic-failure XML, so point the
+        # result file at a writable tmp location.
+        runner.TESTRESULT_CURRENT_RUN_FILE = str(tmp_path / "tr_current_run.xml")
         mock_args.test_run_timeout = 300
-        with patch("run_test.args", new=mock_args, create=True):
+
+        def fake_capture(cmd, timeout):  # noqa: ARG001 - mirrors _capture_subprocess
+            # returncode is ignored once timed_out is True (see exit_info).
+            return -9, True, b"", b""
+
+        with (
+            patch("run_test.args", new=mock_args, create=True),
+            patch.object(runner, "_capture_subprocess", new=fake_capture),
+        ):
             outcome = runner._run_test(
                 conf_file="dummy.conf",
                 test_prefix="cold_boot.",
@@ -247,11 +251,11 @@ class TestRunTestsWarmboot:
             patch.object(runner, "_setup_warmboot_test"),
             patch.object(runner, "_end_run"),
         ):
-            outputs = runner._run_tests(["HwT.t"], conf, args)
+            all_results, _ = runner._run_tests(["HwT.t"], conf, args)
 
-        # 1 cold + 1 warm = 2 invocations, 2 outputs.
+        # 1 cold + 1 warm = 2 invocations, 2 results.
         assert mock_run.call_count == 2
-        assert len(outputs) == 2
+        assert len(all_results) == 2
         prefixes = [call.args[1] for call in mock_run.call_args_list]
         assert prefixes == [runner.COLDBOOT_PREFIX, runner.WARMBOOT_PREFIX]
 
@@ -275,10 +279,10 @@ class TestRunTestsWarmboot:
             patch.object(runner, "_setup_warmboot_test") as mock_warm_setup,
             patch.object(runner, "_end_run"),
         ):
-            outputs = runner._run_tests(["HwT.t"], conf, args)
+            all_results, _ = runner._run_tests(["HwT.t"], conf, args)
 
         assert mock_run.call_count == 1
-        assert len(outputs) == 1
+        assert len(all_results) == 1
         mock_warm_setup.assert_not_called()
 
     def test_warmboot_skipped_when_check_file_missing(
@@ -305,12 +309,12 @@ class TestRunTestsWarmboot:
             patch.object(runner, "_setup_warmboot_test") as mock_warm_setup,
             patch.object(runner, "_end_run"),
         ):
-            outputs = runner._run_tests(["HwT.t"], conf, args)
+            all_results, _ = runner._run_tests(["HwT.t"], conf, args)
 
         # Warmboot was requested (coldboot_only=False) but check file is
         # missing → only the coldboot pass runs.
         assert mock_run.call_count == 1
-        assert len(outputs) == 1
+        assert len(all_results) == 1
         mock_warm_setup.assert_not_called()
 
 

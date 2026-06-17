@@ -30,11 +30,18 @@ OPT_ARG_FSDB_CONFIG_FILE = "--fsdb-config"
 
 # Subcommand names
 SUB_CMD_BCM = "bcm"
+SUB_CMD_BENCHMARK = "benchmark"
+SUB_CMD_BSP = "bsp"
 SUB_CMD_SAI = "sai"
 SUB_CMD_QSFP = "qsfp"
 SUB_CMD_LINK = "link"
+SUB_CMD_LINK_MONO_BINARY = "sai_mono_link_test-sai_impl"
+SUB_CMD_LINK_MULTI_BINARY = "sai_multi_link_test-sai_impl"
 SUB_CMD_SAI_AGENT = "sai_agent"
+SUB_CMD_SAI_AGENT_MONO_BINARY = "sai_agent_hw_test-sai_impl"
+SUB_CMD_SAI_AGENT_MULTI_BINARY = "multi_switch_agent_hw_test"
 SUB_CMD_SAI_AGENT_SCALE = "sai_agent_scale"
+SUB_CMD_SAI_BINARY = "sai_test-sai_impl"
 SUB_CMD_SAI_INVARIANT_AGENT = "sai_invariant_agent"
 SUB_CMD_PLATFORM = "platform"
 SUB_CMD_FBOSS2_INTEGRATION = "fboss2_integration"
@@ -45,6 +52,12 @@ SUB_ARG_AGENT_RUN_MODE = "--agent-run-mode"
 SUB_ARG_AGENT_RUN_MODE_MONO = "mono"
 SUB_ARG_AGENT_RUN_MODE_MULTI = "multi_switch"
 SUB_ARG_NUM_NPUS = "--num-npus"
+
+# Platform-service test-type names shared between the platform-services runners
+# and TEST_DISABLE_SERVICES below. The remaining platform test-type names live
+# in platform_services_test_runner.py since they are only used there.
+SUB_ARG_PLATFORM_MANAGER_HW_TEST = "platform_manager_hw_test"
+SUB_ARG_BSP_HW_TEST = "bsp_tests"
 
 XGS_SIMULATOR_ASICS = ["th3", "th4", "th4_b0", "th5"]
 DNX_SIMULATOR_ASICS = ["j3"]
@@ -88,3 +101,38 @@ SAI_AGENT_TEST_KNOWN_BAD_TESTS = (
 SAI_AGENT_UNSUPPORTED_TESTS = (
     "./share/sai_hw_unsupported_tests/sai_agent_hw_unsupported_tests.materialized_JSON"
 )
+
+_SAI_AGENT_DISABLE_SERVICES = [
+    "fboss_sw_agent",
+    "fboss_hw_agent@0",
+    "bgp_pp",
+]
+
+# Shared by SAI hw_test and link binaries: prod agents hold port 5909 /
+# the SAI device; qsfp_service holds the transceivers.
+_SAI_DISABLE_SERVICES = [
+    "fboss_sw_agent",
+    "fboss_hw_agent@0",
+    "qsfp_service",
+]
+
+TEST_DISABLE_SERVICES = {
+    SUB_ARG_BSP_HW_TEST: [
+        "fan_service",
+        "qsfp_service",
+        "led_service",
+    ],
+    SUB_ARG_PLATFORM_MANAGER_HW_TEST: [
+        "platform_manager",
+        "sensor_service",
+        "fan_service",
+        "data_corral_service",
+        "qsfp_service",
+        "led_service",
+    ],
+    SUB_CMD_SAI_BINARY: _SAI_DISABLE_SERVICES,
+    SUB_CMD_SAI_AGENT_MONO_BINARY: _SAI_AGENT_DISABLE_SERVICES,
+    SUB_CMD_SAI_AGENT_MULTI_BINARY: _SAI_AGENT_DISABLE_SERVICES,
+    SUB_CMD_LINK_MONO_BINARY: _SAI_AGENT_DISABLE_SERVICES,
+    SUB_CMD_LINK_MULTI_BINARY: _SAI_AGENT_DISABLE_SERVICES,
+}
