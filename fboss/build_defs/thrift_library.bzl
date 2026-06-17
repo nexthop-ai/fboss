@@ -10,11 +10,8 @@ load("@rules_cc//cc:defs.bzl", "cc_library")
 # genrules properly depend on the fbthrift repository rule).
 _THRIFT_COMPILER_LABEL = "@fbthrift//:bin/thrift1"
 
-# Include paths for the thrift compiler
-_THRIFT_INCLUDES = [
-    "/var/FBOSS/fboss",
-    "/var/FBOSS/tmp_bld_dir/installed/fbthrift/include",
-]
+# Static include path for the fboss source tree
+_FBOSS_INCLUDE = "/var/FBOSS/fboss"
 
 def _thrift_gen_type_files(name):
     """Return the type-related files generated for a .thrift file."""
@@ -99,12 +96,12 @@ def fboss_thrift_library(
             outputs.extend(_thrift_gen_service_files(svc))
 
         gen_options = thrift_cpp2_options if thrift_cpp2_options else "json"
-        include_flags = " ".join(["-I " + p for p in _THRIFT_INCLUDES])
 
         cmd = (
             "$(location " + _THRIFT_COMPILER_LABEL + ")" +
             " --gen mstch_cpp2:" + gen_options +
-            " " + include_flags +
+            " -I " + _FBOSS_INCLUDE +
+            " -I $$(dirname $(location " + _THRIFT_COMPILER_LABEL + "))/../include" +
             " -o $(RULEDIR)" +
             " $(location " + thrift_file + ")"
         )
