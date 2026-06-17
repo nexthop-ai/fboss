@@ -387,9 +387,11 @@ cpp_library(
     ],
 )
 
+# bazelify: add_src = commands/show/bgp/config/CmdShowConfigRunningBgp.cpp
 # bazelify: add_src = oss/CmdGlobalOptions.cpp
 # bazelify: add_src = oss/CmdList.cpp
 # bazelify: add_src = oss/CmdListImpl.cpp
+# bazelify: add_src = oss/CmdShowUtils.cpp
 # bazelify: add_src = utils/oss/CmdClientUtils.cpp
 # bazelify: add_src = utils/oss/CmdUtils.cpp
 # fboss2-lib compiles utils/CmdClientUtils.cpp (#includes TBgpService.h) and
