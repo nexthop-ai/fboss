@@ -17,7 +17,6 @@
 #include <algorithm>
 #include <cstdint>
 #include <iostream>
-#include <ostream>
 #include <string>
 #include "fboss/cli/fboss2/commands/config/vlan/CmdConfigVlan.h"
 #include "fboss/cli/fboss2/commands/config/vlan/VlanManager.h"

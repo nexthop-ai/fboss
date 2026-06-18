@@ -1,0 +1,19 @@
+load("@fbcode_macros//build_defs:thrift_library.bzl", "thrift_library")
+
+oncall("fboss_agent_push")
+
+# bgp_summary.thrift includes neteng/fboss/bgp/if/bgp_thrift.thrift, so the
+# generated bgp_summary_types.h #includes bgp_thrift_types.h. bazelify.py strips
+# the //neteng/ dep below, so re-add the hand-written OSS bgp_thrift target.
+# bazelify: extra_dep = //neteng/fboss/bgp/if:bgp_thrift
+thrift_library(
+    name = "bgp_summary",
+    languages = [
+        "cpp2",
+    ],
+    thrift_cpp2_options = "json",
+    thrift_srcs = {"bgp_summary.thrift": []},
+    deps = [
+        "//neteng/fboss/bgp/if:bgp_thrift",
+    ],
+)

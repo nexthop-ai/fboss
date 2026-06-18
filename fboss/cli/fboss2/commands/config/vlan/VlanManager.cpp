@@ -21,9 +21,35 @@
 
 namespace facebook::fboss {
 
+namespace {
+
+// Returns the iterator at which an entry with the given id should be inserted
+// to keep `list` sorted in ascending order by getId().
+//
+// The list is treated as ascending, with one tolerated exception: a single
+// leading entry that is out of order (e.g. VLAN 4094, which by convention is
+// often kept first). That entry is left pinned at the front and the remainder
+// of the list is treated as the sorted run; the new entry is placed within that
+// run. This avoids inserting a mid-range id ahead of the pinned sentinel.
+template <typename List, typename GetId>
+auto sortedInsertPos(List& list, int32_t id, const GetId& getId) {
+  auto searchBegin = list.begin();
+  // If the first entry is greater than the second, treat it as a pinned
+  // out-of-order sentinel and start the sorted search after it.
+  if (searchBegin != list.end() && std::next(searchBegin) != list.end() &&
+      getId(*searchBegin) > getId(*std::next(searchBegin))) {
+    ++searchBegin;
+  }
+  return std::find_if(searchBegin, list.end(), [id, &getId](const auto& entry) {
+    return getId(entry) > id;
+  });
+}
+
+} // namespace
+
 const cfg::Vlan* VlanManager::findVlan(
     const cfg::SwitchConfig& swConfig,
-    VlanID vlanId) {
+    const VlanID& vlanId) {
   auto it = std::find_if(
       swConfig.vlans()->cbegin(),
       swConfig.vlans()->cend(),
@@ -35,7 +61,7 @@ const cfg::Vlan* VlanManager::findVlan(
 
 std::pair<bool, cfg::Vlan*> VlanManager::createVlan(
     cfg::SwitchConfig& swConfig,
-    VlanID vlanId) {
+    const VlanID& vlanId) {
   // Check if VLAN already exists
   const cfg::Vlan* existingVlan = findVlan(swConfig, vlanId);
   if (existingVlan != nullptr) {
@@ -47,25 +73,12 @@ std::pair<bool, cfg::Vlan*> VlanManager::createVlan(
   newVlan.name() = fmt::format("Vlan{}", static_cast<uint16_t>(vlanId));
   newVlan.routable() = false;
 
-  // Find the right place to insert the new VLAN to maintain sorted order
-  // (with the common exception that VLAN 4094 often appears first).
-  // Insert the VLAN where the previous VLAN has a smaller ID and the next
-  // VLAN has a greater ID. If no such spot is found, append at the end.
-  auto insertPos = swConfig.vlans()->end();
-  for (auto it = swConfig.vlans()->begin(); it != swConfig.vlans()->end();
-       ++it) {
-    // Check if we found the right insertion point:
-    // The current VLAN has an ID greater than the one we're inserting
-    if (*it->id() > static_cast<int32_t>(vlanId)) {
-      // Check if the previous VLAN (if exists) has a smaller ID
-      if (it == swConfig.vlans()->begin() ||
-          *(std::prev(it)->id()) < static_cast<int32_t>(vlanId)) {
-        insertPos = it;
-        break;
-      }
-    }
-  }
-
+  // Insert the new VLAN keeping the list sorted by ID (tolerating a pinned
+  // leading sentinel such as VLAN 4094).
+  auto insertPos = sortedInsertPos(
+      *swConfig.vlans(),
+      static_cast<int32_t>(vlanId),
+      [](const cfg::Vlan& vlan) { return *vlan.id(); });
   auto insertedIt = swConfig.vlans()->insert(insertPos, newVlan);
 
   // Create a corresponding barebone interface — the agent requires every
@@ -115,24 +128,12 @@ std::pair<bool, cfg::Vlan*> VlanManager::createVlan(
     newIntf.vlanID() = static_cast<int32_t>(vlanId);
     newIntf.name() = fmt::format("fboss{}", static_cast<uint16_t>(vlanId));
 
-    // Find the right place to insert the new interface to maintain sorted order
-    // by intfID, similar to how we insert VLANs.
-    auto intfInsertPos = swConfig.interfaces()->end();
-    for (auto it = swConfig.interfaces()->begin();
-         it != swConfig.interfaces()->end();
-         ++it) {
-      // Check if we found the right insertion point:
-      // The current interface has an ID greater than the one we're inserting
-      if (*it->intfID() > intfId) {
-        // Check if the previous interface (if exists) has a smaller ID
-        if (it == swConfig.interfaces()->begin() ||
-            *(std::prev(it)->intfID()) < intfId) {
-          intfInsertPos = it;
-          break;
-        }
-      }
-    }
-
+    // Insert the new interface keeping the list sorted by intfID, the same way
+    // we insert VLANs.
+    auto intfInsertPos = sortedInsertPos(
+        *swConfig.interfaces(), intfId, [](const cfg::Interface& intf) {
+          return *intf.intfID();
+        });
     swConfig.interfaces()->insert(intfInsertPos, newIntf);
   }
 

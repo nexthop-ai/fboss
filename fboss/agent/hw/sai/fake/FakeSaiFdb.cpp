@@ -58,6 +58,9 @@ sai_status_t set_fdb_entry_attribute_fn(
   auto fs = FakeSai::getInstance();
   auto mac = facebook::fboss::fromSaiMacAddress(fdb_entry->mac_address);
   auto fdbKey = std::make_tuple(fdb_entry->switch_id, fdb_entry->bv_id, mac);
+  // The entry may be temporarily orphaned when a VLAN object is recreated with
+  // a new SAI ID during reconciliation, leaving this key stale.  Return
+  // ITEM_NOT_FOUND rather than throwing so FBOSS can re-create the entry.
   if (!fs->fdbManager.exists(fdbKey)) {
     return SAI_STATUS_ITEM_NOT_FOUND;
   }
@@ -82,6 +85,9 @@ sai_status_t get_fdb_entry_attribute_fn(
   auto fs = FakeSai::getInstance();
   auto mac = facebook::fboss::fromSaiMacAddress(fdb_entry->mac_address);
   auto fdbKey = std::make_tuple(fdb_entry->switch_id, fdb_entry->bv_id, mac);
+  // The entry may be temporarily orphaned when a VLAN object is recreated with
+  // a new SAI ID during reconciliation, leaving this key stale.  Return
+  // ITEM_NOT_FOUND rather than throwing so FBOSS can re-create the entry.
   if (!fs->fdbManager.exists(fdbKey)) {
     return SAI_STATUS_ITEM_NOT_FOUND;
   }

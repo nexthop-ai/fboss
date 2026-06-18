@@ -11,6 +11,9 @@
 #include <gtest/gtest.h>
 #include <algorithm>
 #include <cstddef>
+#include <cstdint>
+#include <string>
+#include <vector>
 
 #include "fboss/agent/FbossError.h"
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
@@ -168,6 +171,13 @@ TEST_F(VlanManagerTestFixture, createVlanReturnsExistingVlan) {
   EXPECT_NE(vlan, nullptr);
   EXPECT_EQ(*vlan->id(), 100);
   EXPECT_EQ(*vlan->name(), "default");
+
+  // The existing VLAN must be returned as-is, not duplicated.
+  auto count = std::count_if(
+      swConfig.vlans()->cbegin(), swConfig.vlans()->cend(), [](const auto& v) {
+        return *v.id() == 100;
+      });
+  EXPECT_EQ(count, 1);
 }
 
 TEST_F(VlanManagerTestFixture, createVlanCreatesNewVlan) {
@@ -251,6 +261,35 @@ TEST_F(VlanManagerTestFixture, createVlanInsertsInMiddle) {
   EXPECT_EQ(*swConfig.vlans()->at(0).id(), 50);
   EXPECT_EQ(*swConfig.vlans()->at(1).id(), 100);
   EXPECT_EQ(*swConfig.vlans()->at(2).id(), 200);
+}
+
+TEST_F(VlanManagerTestFixture, createVlanInsertsAfterLeadingSentinelVlan) {
+  setupTestableConfigSession();
+  auto& swConfig = *ConfigSession::getInstance().getAgentConfig().sw();
+
+  // Rebuild the VLAN list so that VLAN 4094 is pinned first, out of ascending
+  // order, followed by a sorted run [100, 200] — the common exception the
+  // insertion logic documents and must preserve.
+  swConfig.vlans()->clear();
+  for (int32_t id : {4094, 100, 200}) {
+    cfg::Vlan vlan;
+    vlan.id() = id;
+    vlan.name() = "Vlan" + std::to_string(id);
+    vlan.routable() = false;
+    swConfig.vlans()->push_back(vlan);
+  }
+
+  // Inserting a mid-range VLAN must place it between 100 and 200 while leaving
+  // VLAN 4094 pinned at the front.
+  auto [created, vlan] = VlanManager::createVlan(swConfig, VlanID(150));
+  EXPECT_TRUE(created);
+
+  std::vector<int32_t> actualOrder;
+  for (const auto& v : *swConfig.vlans()) {
+    actualOrder.push_back(*v.id());
+  }
+  const std::vector<int32_t> expectedOrder{4094, 100, 150, 200};
+  EXPECT_EQ(actualOrder, expectedOrder);
 }
 
 TEST_F(

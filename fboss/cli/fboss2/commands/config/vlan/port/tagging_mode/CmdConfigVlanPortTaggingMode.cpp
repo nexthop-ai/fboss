@@ -16,7 +16,6 @@
 #include <fmt/format.h>
 #include <cstdint>
 #include <iostream>
-#include <ostream>
 #include <stdexcept>
 #include <string>
 #include <utility>

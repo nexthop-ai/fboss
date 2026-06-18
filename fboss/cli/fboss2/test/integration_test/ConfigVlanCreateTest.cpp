@@ -49,7 +49,7 @@ namespace fs = std::filesystem;
 
 using namespace facebook::fboss;
 
-class ConfigVlanStaticMacTest : public Fboss2IntegrationTest {
+class ConfigVlanCreateTest : public Fboss2IntegrationTest {
  public:
   // Find and cache an eth interface name once before any test in this suite
   // runs. This avoids calling show interface during the agent reload window
@@ -209,9 +209,9 @@ class ConfigVlanStaticMacTest : public Fboss2IntegrationTest {
   }
 };
 
-std::string ConfigVlanStaticMacTest::s_testInterfaceName_;
+std::string ConfigVlanCreateTest::s_testInterfaceName_;
 
-TEST_F(ConfigVlanStaticMacTest, StaticMacAddDeleteOnExistingVlan) {
+TEST_F(ConfigVlanCreateTest, StaticMacAddDeleteOnExistingVlan) {
   XLOG(INFO) << "[Step 1] Using pre-cached interface: " << s_testInterfaceName_
              << " (VLAN: " << kExistingVlanId << ")";
 
@@ -244,7 +244,7 @@ TEST_F(ConfigVlanStaticMacTest, StaticMacAddDeleteOnExistingVlan) {
   XLOG(INFO) << "  Cleanup complete. TEST PASSED";
 }
 
-TEST_F(ConfigVlanStaticMacTest, AutoCreateVlanInSession) {
+TEST_F(ConfigVlanCreateTest, AutoCreateVlanInSession) {
   XLOG(INFO) << "[Step 1] Using pre-cached interface: " << s_testInterfaceName_;
 
   // Step 0: Ensure VLAN kNewVlanId is absent (idempotency across test runs).
@@ -300,7 +300,7 @@ TEST_F(ConfigVlanStaticMacTest, AutoCreateVlanInSession) {
   XLOG(INFO) << "  Cleanup complete. TEST PASSED";
 }
 
-TEST_F(ConfigVlanStaticMacTest, DeleteOnNonExistentVlanIsIdempotent) {
+TEST_F(ConfigVlanCreateTest, DeleteOnNonExistentVlanIsIdempotent) {
   XLOG(INFO) << "Testing idempotent delete on non-existent VLAN...";
   auto result = runCli(
       {"config",

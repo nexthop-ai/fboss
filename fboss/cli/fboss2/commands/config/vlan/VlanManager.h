@@ -42,13 +42,13 @@ class VlanManager {
   // this function.
   static std::pair<bool, cfg::Vlan*> createVlan(
       cfg::SwitchConfig& swConfig,
-      VlanID vlanId);
+      const VlanID& vlanId);
 
   // Returns a pointer to the VLAN with the given ID, or nullptr if not found.
   // Use this for read-only lookups where you don't want auto-creation.
   static const cfg::Vlan* findVlan(
       const cfg::SwitchConfig& swConfig,
-      VlanID vlanId);
+      const VlanID& vlanId);
 };
 
 } // namespace facebook::fboss

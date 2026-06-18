@@ -339,7 +339,6 @@ Fboss2IntegrationTest::Interface Fboss2IntegrationTest::findFirstEthInterface()
         upCandidates.push_back(intf);
       }
     }
-
     const auto& pool = !upCandidates.empty() ? upCandidates : allCandidates;
     if (!pool.empty()) {
       thread_local std::mt19937 rng{std::random_device{}()};
@@ -351,16 +350,18 @@ Fboss2IntegrationTest::Interface Fboss2IntegrationTest::findFirstEthInterface()
                  << ", size=" << pool.size() << ")";
       return chosen;
     }
-
     if (attempt + 1 < kMaxRetries) {
       XLOG(WARN) << "findFirstEthInterface: no suitable interface found "
                     "(attempt "
                  << (attempt + 1) << "/" << kMaxRetries
                  << "), retrying in 1s...";
+      // Polling backoff: the interface list is populated asynchronously by the
+      // agent, with no event/future to await, so a short delay between retries
+      // is the appropriate pattern here.
+      // NOLINTNEXTLINE(facebook-hte-BadCall-sleep_for)
       std::this_thread::sleep_for(kRetryDelay);
     }
   }
-
   throw std::runtime_error(
       "No suitable ethernet interface found with VLAN > 1");
 }

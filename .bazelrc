@@ -67,6 +67,15 @@ build --conlyopt=-isystem.
 # Add gendir as system include path (for angle-bracket includes of thrift-generated files)
 build --cxxopt=-isystembazel-out/k8-opt/bin
 build --conlyopt=-isystembazel-out/k8-opt/bin
+# bgp_thrift.thrift includes bgp_config.thrift as "configerator/structs/neteng/fboss/bgp/bgp_config.thrift".
+# The thrift compiler finds it via the neteng/fboss/bgp/public_tld symlink (include root), so the
+# generated bgp_thrift_types.h has #include "configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h".
+# The bgp_config_oss Bazel target lives at //neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp
+# (to avoid ODR with fsdb_model which also uses the public_tld target), so its gendir output is under
+# neteng/fboss/bgp/public_tld/. This extra -isystem prefix lets the C++ compiler find bgp_config_types.h
+# via the public_tld gendir path when the include uses the bare "configerator/..." form.
+build --cxxopt=-isystembazel-out/k8-opt/bin/neteng/fboss/bgp/public_tld
+build --conlyopt=-isystembazel-out/k8-opt/bin/neteng/fboss/bgp/public_tld
 
 # OSS build flag (enables OSS code paths in #ifndef IS_OSS blocks)
 build --cxxopt=-DIS_OSS=true
