@@ -8,6 +8,7 @@ filegroup(
     visibility = ["//visibility:public"],
     srcs = [
     "fboss-image/nh-fboss-broadcom-xgs.json",
+    "fboss-image/nh-fboss-broadcom-th6.json",
     "fboss-image/nh-fboss-cisco-s1.json",
     ]
 )
@@ -139,6 +140,7 @@ heavy_genrule(
     ] + glob([
         "fboss-image/kernel/configs/**",
         "fboss-image/kernel/env/**",
+        "fboss-image/kernel/patches/**",
         "fboss-image/kernel/scripts/**",
         "fboss-image/kernel/specs/**",
     ]),
@@ -161,7 +163,6 @@ filegroup(
         "cmake/**",
         "common/**",
         # fboss code needed for platform stack
-        "fboss/docs/**",
         "fboss/fsdb/**",
         "fboss/lib/**",
         "fboss/oss/**",
@@ -182,6 +183,10 @@ filegroup(
         "**/*~",
         "**/__pycache__/**",
         "**/*.pyc",
+        # docs are not build inputs; don't invalidate the stack cache on doc edits
+        "**/*.md",
+        "**/*.rst",
+        "**/README*",
     ]),
 )
 
@@ -225,7 +230,6 @@ filegroup(
         # fboss code needed for forwarding stack
         "fboss/agent/**",
         "fboss/cli/**",
-        "fboss/docs/**",
         "fboss/fsdb/**",
         "fboss/led_service/**",
         "fboss/lib/**",
@@ -248,6 +252,10 @@ filegroup(
         "**/*~",
         "**/__pycache__/**",
         "**/*.pyc",
+        # docs are not build inputs; don't invalidate the stack cache on doc edits
+        "**/*.md",
+        "**/*.rst",
+        "**/README*",
     ]),
 )
 
@@ -317,6 +325,7 @@ heavy_genrule(
         "//fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar",
         "//fboss_extras/nexthop_product_support:distro_nexthop_product_support.rpm",
         "//nhbroadcomsai/fboss-xgs:distro_sai.tar",
+        "fboss-image/nh-fboss-broadcom-xgs.json",
         ":fboss_builder_docker", # Prevent concurrent building
         "distro_kernel_6.11.tar",
         "fboss_platform_stack.tar",
@@ -412,6 +421,7 @@ heavy_genrule(
         "//fboss_bsps/nexthop_fboss_bsp_kmods:distro_nexthop_bsp.tar",
         "//fboss_extras/nexthop_product_support:distro_nexthop_product_support.rpm",
         "//nhbroadcomsai/fboss-th6:distro_sai.tar",
+        "fboss-image/nh-fboss-broadcom-th6.json",
         ":fboss_builder_docker", # Prevent concurrent building
         "distro_kernel_6.11.tar",
         "fboss_platform_stack.tar",
@@ -506,6 +516,7 @@ heavy_genrule(
         "//bazel_lib:ln_or_cp",
         "//fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar",
         "//nhciscosai/fboss-s1:distro_sai.tar",
+        "fboss-image/nh-fboss-cisco-s1.json",
         ":fboss_builder_docker", # Prevent concurrent building
         "distro_kernel_6.11.tar",
         "fboss_platform_stack.tar",
