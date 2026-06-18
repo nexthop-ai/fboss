@@ -13,7 +13,7 @@ test_context = {
         "*AgentEmpty*",
         # Exclusion Criteria
         "-*AgentCoppTest/0*",
-        "-*AgentCoppTest/1*",
+        "*AgentCoppTest/1*",
     ],
 }
 

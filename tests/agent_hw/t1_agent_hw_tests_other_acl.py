@@ -6,7 +6,7 @@ test_context = {
         "*HwUdfTest*",
         # Exclusion Criteria
         "-*AgentAcl*",
-        "-*AgentHwAcl*",
+        "*AgentHwAcl*",
     ],
 }
 
