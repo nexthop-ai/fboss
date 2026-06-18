@@ -6,7 +6,7 @@
 
 - To build the code, don't invoke cmake directly, use this script: ./fboss/oss/scripts/nhfboss-build.sh
 - To build a specific target use ./fboss/oss/scripts/nhfboss-build.sh --cmake-target <name>
-- If the build fails with SAI_EXPERIMENTAL_INCLUDE_DIR-NOTFOUND you need a one-time initialization step for this workspace: ./fboss/oss/scripts/build-helper.py /var/extras/sai/1.16.1 /var/extras/sai/1.16.1 /var/extras/sai/1.16.1 1.16.1 --skip-archive-creation
+- If the build fails with SAI_EXPERIMENTAL_INCLUDE_DIR-NOTFOUND the SAI tarball at /var/extras/sai/$SAI_VERSION/libsai_impl.tar.gz was not found or is inaccessible; nhfboss-build.sh passes it automatically via --npu-libsai-impl-tarball so just ensure the file exists
 - If there are issues with missing dependencies, you need to run ./fboss/oss/scripts/nhfboss-get-deps.sh and then retry running ./fboss/oss/scripts/nhfboss-build.sh
 - You never need to manually build or delete anything under /var/FBOSS/tmp_bld_dir/
 - To run the tests, use this script: ./fboss/oss/scripts/nhfboss-test.sh --timeout 30 --retry 0

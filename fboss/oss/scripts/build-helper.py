@@ -94,11 +94,6 @@ def parse_args():
         default="1.16.3",
         help="sai SDK Version eg: 1.16.3",
     )
-    parser.add_argument(
-        "--skip-archive-creation",
-        action="store_true",
-        help="Skip cleanup, copy, and archive creation steps. Assumes libsai_impl.tar.gz already exists in output_path.",
-    )
     return parser.parse_args()
 
 
@@ -130,7 +125,6 @@ class BuildHelper:
         self._experiments_path = args.experiments_path
         self._output_path = args.output_path
         self._sai_info = SaiSdkInfo(args.sai_version)
-        self._skip_archive_creation = args.skip_archive_creation
         self._server_only = args.server_only
 
     def _kill_http_server(self):
@@ -178,7 +172,8 @@ class BuildHelper:
                 self._output_path,
                 "lib",
                 "include",
-            ]
+            ],
+            check=False,
         )
 
     def _get_csum(self):
@@ -262,21 +257,10 @@ class BuildHelper:
         os.chdir(self._script_dir)
 
     def run(self):
-        if self._skip_archive_creation:
-            # Verify that the tarball exists
-            tarball_path = os.path.join(
-                self._output_path, BuildHelper.LIBSAI_IMPL_COMPRESSED_TAR
-            )
-            if not os.path.isfile(tarball_path):
-                raise FileNotFoundError(
-                    f"ERROR: {tarball_path} not found. Cannot skip archive creation."
-                )
-            print(f"Using existing tarball at {tarball_path}")
-        elif not self._server_only:
+        if not self._server_only:
             self._cleanup()
             self._copy_input_files()
             self._create_archive()
-        if not self._server_only:
             self._edit_sai_manifest()
             self._edit_sai_impl_manifest()
             self._edit_fboss_manifest()

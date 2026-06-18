@@ -79,12 +79,11 @@ fi
 
 # Check that the SAI implementation dependency is configured.  The Bazel build
 # currently only supports building with a real SAI implementation.
-# build-helper.py adds sai_impl to the fboss manifest when preparing a SAI build.
+# fboss-build.env writes the sai_impl manifest when preparing a SAI build.
 FBOSS_MANIFEST="$REPO_ROOT/build/fbcode_builder/manifests/fboss"
 if [ -f "$FBOSS_MANIFEST" ] && ! grep -q '^sai_impl$' "$FBOSS_MANIFEST"; then
   echo "ERROR: Bazel build requires a SAI implementation (sai_impl not found in fboss manifest)." >&2
-  echo "  Run build-helper.py first to configure the SAI implementation:" >&2
-  echo "    ./fboss/oss/scripts/build-helper.py <libsai_impl_path> <experiments_path> <output_path> <version>" >&2
+  echo "  Add a valid fboss-build.env to configure the SAI implementation automatically." >&2
   exit 1
 fi
 

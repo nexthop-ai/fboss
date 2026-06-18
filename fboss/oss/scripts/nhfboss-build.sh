@@ -43,7 +43,12 @@ brcm)
     echo "Using SAI_SDK_VERSION=$SAI_SDK_VERSION for SAI_VERSION=$SAI_VERSION"
     export SAI_SDK_VERSION
   fi
-  npu_sai_impl_flag="--npu-sai-impl SAI_BRCM_IMPL --npu-sai-sdk-version $SAI_SDK_VERSION"
+  tarball="/var/extras/sai/$SAI_VERSION/libsai_impl.tar.gz"
+  if [ ! -f "$tarball" ]; then
+    echo "SAI tarball not found at $tarball, fetching it..." >&2
+    SAI_VERSION="$SAI_VERSION" bash "$SCRIPT_DIR/ensure-sai.sh"
+  fi
+  npu_sai_impl_flag="--npu-sai-impl SAI_BRCM_IMPL --npu-sai-sdk-version $SAI_SDK_VERSION --npu-libsai-impl-tarball $tarball"
   ;;
 
 csco)

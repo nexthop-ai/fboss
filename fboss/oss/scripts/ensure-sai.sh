@@ -41,7 +41,7 @@ elif [ -n "$s3_etag" ] &&
   need_download=true
 fi
 
-# Initialize if the download is fresh or build-helper.py hasn't run yet.
+# Initialize if the download is fresh or the sai_impl manifest is absent/stale.
 need_init=false
 if $need_download ||
   [ ! -f "$sai_impl_manifest" ] ||
@@ -68,7 +68,28 @@ if $need_download; then
   [ -n "$download_etag" ] && printf '%s\n' "$download_etag" >"$etag_file"
 fi
 
-echo "Initializing SAI ${sai_version}..." >&2
-python3 "${script_dir}/build-helper.py" \
-  "$cache_dir" "$cache_dir" "$cache_dir" "$sai_version" \
-  --skip-archive-creation
+if $need_init; then
+  echo "Initializing SAI ${sai_version}..." >&2
+  csum=$(sha256sum "$tarball" | awk '{print $1}')
+  # Write the sai_impl manifest pointing directly to S3.  getdeps downloads
+  # from there when the install dir is absent, bypassing the old HTTP server
+  # approach that build-helper.py used to manage.
+  cat >"$sai_impl_manifest" <<EOF
+[manifest]
+name = sai_impl
+
+[download]
+url = ${s3_url}
+sha256 = ${csum}
+[build]
+builder = nop
+
+[install.files]
+lib = lib
+include = include
+EOF
+  # Ensure sai_impl is listed as a dependency in the fboss manifest.
+  if [ -f "$fboss_manifest" ] && ! grep -q '^sai_impl$' "$fboss_manifest"; then
+    sed -i '/^\[dependencies\]$/a sai_impl' "$fboss_manifest"
+  fi
+fi
