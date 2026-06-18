@@ -22,11 +22,16 @@ SCCACHE_RC="$BAZEL_D/sccache.bazelrc"
 # Clean up legacy .bazelrc.sccache if it exists
 rm -f "$REPO_ROOT/.bazelrc.sccache"
 
-# Source site-specific configuration if present.
+# Source site-specific configuration if present.  Guard with `|| true`: the env
+# file ends with a best-effort SAI-tarball download helper that can legitimately
+# fail (e.g. transient S3 / cache issues), and under `set -e` that failure would
+# otherwise abort sccache setup entirely -- leaving the build on a stale
+# sccache.bazelrc and skipping the server start/poll below.  Variable
+# assignments that run before any failure still take effect.
 ENV_FILE="$SCRIPT_DIR/fboss-build.env"
 if [ -f "$ENV_FILE" ]; then
   # shellcheck source=/dev/null
-  source "$ENV_FILE"
+  source "$ENV_FILE" || true
 fi
 
 # Make sure if OOM that the build gets the short end of the stick.
@@ -58,9 +63,21 @@ TOML
 export SCCACHE_CONF
 export SCCACHE_ERROR_LOG="/tmp/sccache.log"
 export SCCACHE_LOG=info
+# Keep the local sccache server alive. In remote_only mode the local server
+# only dispatches jobs to the remote farm, so during long remote compiles and
+# Bazel's analysis / dep-fetch / thrift-gen phases it sees no new activity and,
+# with sccache's 600s default, shuts itself down. The next wave of --jobs
+# clients then stampedes to restart it, racing on the server port (thousands of
+# "Address in use" errors) and failing compile actions. 0 = never auto-shutdown.
+# (The cmake build bumps this to 2700 for the same reason; see nhfboss-common.sh.)
+export SCCACHE_IDLE_TIMEOUT=0
 
-# If sccache is already running in distributed mode with the right config, skip restart.
-if [ -f "$SCCACHE_RC" ] && SCCACHE_CONF="$SCCACHE_CONF" sccache --dist-status 2>/dev/null | grep -q scheduler_url; then
+# If sccache is already running in distributed mode with the right config, skip
+# restart.  --dist-status reports {"SchedulerStatus":[...]} when the server is
+# up and connected to the scheduler (and {"...":"Disabled"} otherwise), so grep
+# for SchedulerStatus.  Getting this wrong means we tear down and restart a
+# perfectly good warm server on every build, reopening the cold-start race.
+if [ -f "$SCCACHE_RC" ] && SCCACHE_CONF="$SCCACHE_CONF" sccache --dist-status 2>/dev/null | grep -q SchedulerStatus; then
   echo "sccache distributed compilation already active"
   exit 0
 fi
@@ -70,14 +87,29 @@ echo "Using distributed sccache: $SCCACHE_SCHEDULER_HOST"
 # Stop any existing sccache server before reconfiguring.
 sccache --stop-server >/dev/null 2>&1 || true
 
-# Verify distributed sccache works
+# Explicitly start the local sccache server and wait until it is actually
+# reachable and connected to the distributed scheduler before handing off to
+# Bazel.  --start-server returns before the server has finished bootstrapping
+# its dist client (it requests an mTLS cert from each remote server first), so
+# without this poll Bazel can fire its first wave of --jobs compiler wrappers
+# against a not-yet-ready server.  They then stampede to start their own
+# servers, collide on the server port ("Address in use"), and -- since
+# remote_only has no local fallback -- fail those compile actions outright.
 sccache --start-server >/dev/null 2>&1 || true
-if sccache --dist-status 2>/dev/null | grep -q Disabled; then
-  echo "ERROR: distributed sccache not working" >&2
-  sccache --stop-server >/dev/null 2>&1 || true
-  rm -f "$SCCACHE_RC"
-  exit 1
-fi
+
+# Poll --dist-status until it reports SchedulerStatus (server up and distributed
+# compilation enabled).  Bail after ~30s rather than handing Bazel a server that
+# is down or stuck in local-only ("Disabled") mode.
+deadline=$((SECONDS + 30))
+until SCCACHE_CONF="$SCCACHE_CONF" sccache --dist-status 2>/dev/null | grep -q SchedulerStatus; do
+  if [ "$SECONDS" -ge "$deadline" ]; then
+    echo "ERROR: sccache server not reachable / distributed sccache not working" >&2
+    sccache --stop-server >/dev/null 2>&1 || true
+    rm -f "$SCCACHE_RC"
+    exit 1
+  fi
+  sleep 0.2
+done
 
 # Calculate parallelism. With distributed sccache, compilation runs on
 # remote servers so local RAM is mainly used for preprocessing and linking.
@@ -102,6 +134,9 @@ build --repo_env=CXX=$SCRIPT_DIR/sccache-clang++
 build --action_env=SCCACHE_CONF=$SCCACHE_CONF
 build --action_env=SCCACHE_ERROR_LOG=/tmp/sccache.log
 build --action_env=SCCACHE_LOG=info
+# Never let the local sccache server auto-shut-down (see export above): a client
+# that has to restart it should bring up a long-lived server, not a 600s one.
+build --action_env=SCCACHE_IDLE_TIMEOUT=0
 build --jobs=$JOBS
 # Tell Bazel we have many more CPUs than physically present, since sccache
 # dispatches compilation to remote servers. Without this, Bazel caps
