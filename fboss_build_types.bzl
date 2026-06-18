@@ -10,6 +10,33 @@ LOAD_FBOSS_BUILDER_CMD = """
         fi
 """
 
+def delete_build_products_in_ci(paths):
+    """Snippet that deletes `paths` from the build scratch during a CI build.
+
+    Args:
+        paths: Non-empty list of paths passed to `rm -rf` (shell globs allowed).
+            genrule cmds run at the execroot, so pass execroot-relative paths;
+            this keeps the snippet reusable from packages outside //fboss.
+
+    Returns:
+        A shell snippet string. ($$ escapes to a shell $; ${{var}} passes a
+        literal ${var} through bazel and .format().)
+    """
+    if not paths:
+        fail("delete_build_products_in_ci: paths must be a non-empty list")
+    return """
+        if [ -f bazel-out/volatile-status.txt ]; then
+            build_id="$$(sed -n 's/^BUILD_ID //p' bazel-out/volatile-status.txt)"
+            case "${{build_id}}" in
+                ''|*[!0-9]*) ;;
+                *)
+                    echo "CI build ${{build_id}}: clearing intermediates from {paths}"
+                    rm -rf {paths}
+                    ;;
+            esac
+        fi
+""".format(paths = " ".join(paths))
+
 def fboss_unit_test(name, tags=None):
     sh_test(
         name = "unittest-" + name,

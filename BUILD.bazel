@@ -1,5 +1,5 @@
 load("@rules_shell//shell:sh_library.bzl", "sh_library")
-load("//fboss:fboss_build_types.bzl", "LOAD_FBOSS_BUILDER_CMD", "fboss_unit_test")
+load("//fboss:fboss_build_types.bzl", "LOAD_FBOSS_BUILDER_CMD", "delete_build_products_in_ci", "fboss_unit_test")
 load("//bazel_lib:heavy_genrule.bzl", "heavy_genrule")
 load("//bazel_lib:upload_artifact.bzl", "upload_build_artifact")
 
@@ -192,6 +192,7 @@ filegroup(
 
 heavy_genrule(
     name = "fboss_platform_stack",
+    stamp = True,
     visibility = ["//visibility:public"],
     srcs = [
         "//bazel_lib:ln_or_cp",
@@ -215,7 +216,10 @@ heavy_genrule(
 
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss/oss/scripts/dist/platform-stack.tar $(location fboss_platform_stack.tar)
         $(execpath //bazel_lib:ln_or_cp) fboss/platform-stack-tests.tar $(location fboss_platform_stack_tests.tar)
-    """,
+    """ + delete_build_products_in_ci([
+        "fboss/fboss/oss/scripts/.build/platform-stack",
+        "fboss/fboss-image/distro_cli/.artifacts",
+    ]),
     tags = [
         "no-sandbox",
     ]
@@ -278,6 +282,7 @@ filegroup(
 
 heavy_genrule(
     name = "fboss_forwarding_stack_broadcom_xgs",
+    stamp = True,
     visibility = ["//visibility:public"],
     srcs = [
         "//bazel_lib:ln_or_cp",
@@ -308,7 +313,10 @@ heavy_genrule(
 
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss/oss/scripts/dist/forwarding-stack.tar $(location fboss_forwarding_stack_broadcom_xgs.tar)
         $(execpath //bazel_lib:ln_or_cp) fboss/forwarding-stack-tests.tar $(location fboss_forwarding_stack_tests_broadcom_xgs.tar)
-    """,
+    """ + delete_build_products_in_ci([
+        "fboss/fboss/oss/scripts/.build/forwarding-stack",
+        "fboss/fboss-image/distro_cli/.artifacts",
+    ]),
     tags = [
         "no-sandbox",
     ],
@@ -369,12 +377,16 @@ heavy_genrule(
 
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.tar $(location nh-fboss-broadcom-xgs.tar)
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.bin $(location nh-fboss-broadcom-xgs.bin)
-    """,
+    """ + delete_build_products_in_ci([
+        "fboss/fboss-image/.nh-broadcom-xgs",
+        "fboss/fboss-image/distro_cli/.artifacts",
+    ]),
     tags = ["no-sandbox"],
 )
 
 heavy_genrule(
     name = "fboss_forwarding_stack_broadcom_th6",
+    stamp = True,
     visibility = ["//visibility:public"],
     srcs = [
         "//bazel_lib:ln_or_cp",
@@ -405,7 +417,10 @@ heavy_genrule(
 
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss/oss/scripts/dist/forwarding-stack.tar $(location fboss_forwarding_stack_broadcom_th6.tar)
         $(execpath //bazel_lib:ln_or_cp) fboss/forwarding-stack-tests.tar $(location fboss_forwarding_stack_tests_broadcom_th6.tar)
-    """,
+    """ + delete_build_products_in_ci([
+        "fboss/fboss/oss/scripts/.build/forwarding-stack",
+        "fboss/fboss-image/distro_cli/.artifacts",
+    ]),
     tags = [
         "no-sandbox",
     ],
@@ -464,12 +479,16 @@ heavy_genrule(
 
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-th6.bin $(location nh-fboss-broadcom-th6.bin)
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-th6.tar $(location nh-fboss-broadcom-th6.tar)
-    """,
+    """ + delete_build_products_in_ci([
+        "fboss/fboss-image/.nh-broadcom-th6",
+        "fboss/fboss-image/distro_cli/.artifacts",
+    ]),
     tags = ["no-sandbox"],
 )
 
 heavy_genrule(
     name = "fboss_forwarding_stack_cisco_s1",
+    stamp = True,
     visibility = ["//visibility:public"],
     srcs = [
         "//bazel_lib:ln_or_cp",
@@ -501,7 +520,10 @@ heavy_genrule(
 
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss/oss/scripts/dist/forwarding-stack.tar $(location fboss_forwarding_stack_cisco_s1.tar)
         $(execpath //bazel_lib:ln_or_cp) fboss/forwarding-stack-tests.tar $(location fboss_forwarding_stack_tests_cisco_s1.tar)
-    """,
+    """ + delete_build_products_in_ci([
+        "fboss/fboss/oss/scripts/.build/forwarding-stack",
+        "fboss/fboss-image/distro_cli/.artifacts",
+    ]),
     tags = [
         "no-sandbox",
     ],
@@ -554,7 +576,10 @@ heavy_genrule(
         popd
 
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-cisco-s1.tar $(location nh-fboss-cisco-s1.tar)
-    """,
+    """ + delete_build_products_in_ci([
+        "fboss/fboss-image/.nh-cisco-s1",
+        "fboss/fboss-image/distro_cli/.artifacts",
+    ]),
     tags = ["no-sandbox"],
 )
 
@@ -583,6 +608,7 @@ heavy_genrule(
 
 heavy_genrule(
     name = "cfboss-platform",
+    stamp = True,
     visibility = ["//visibility:public"],
     srcs = [
         "//bazel_lib:ln_or_cp",
@@ -601,12 +627,16 @@ heavy_genrule(
         popd
 
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss/oss/scripts/dist/platform-stack.tar $(location cfboss-platform-stack.tar)
-    """,
+    """ + delete_build_products_in_ci([
+        "fboss/fboss/oss/scripts/.build/platform-stack",
+        "fboss/fboss-image/distro_cli/.artifacts",
+    ]),
     tags = ["no-sandbox"],
 )
 
 heavy_genrule(
     name = "cfboss-forwarding",
+    stamp = True,
     visibility = ["//visibility:public"],
     srcs = [
         "//bazel_lib:ln_or_cp",
@@ -626,12 +656,16 @@ heavy_genrule(
         popd
 
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss/oss/scripts/dist/forwarding-stack.tar $(location cfboss-forwarding-stack.tar)
-    """,
+    """ + delete_build_products_in_ci([
+        "fboss/fboss/oss/scripts/.build/forwarding-stack",
+        "fboss/fboss-image/distro_cli/.artifacts",
+    ]),
     tags = ["no-sandbox"],
 )
 
 heavy_genrule(
     name = "cfboss-image-composition",
+    stamp = True,
     visibility = ["//visibility:public"],
     srcs = [
         "//bazel_lib:ln_or_cp",
@@ -658,7 +692,10 @@ heavy_genrule(
         popd
 
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/cfboss-image.tar.xz $(location cfboss-image.tar.xz)
-    """,
+    """ + delete_build_products_in_ci([
+        "fboss/fboss-image/.cfboss",
+        "fboss/fboss-image/distro_cli/.artifacts",
+    ]),
     tags = ["no-sandbox"],
 )
 
