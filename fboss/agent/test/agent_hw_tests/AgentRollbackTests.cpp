@@ -14,6 +14,7 @@
 #include "fboss/agent/state/Port.h"
 #include "fboss/agent/state/SwitchState.h"
 #include "fboss/agent/test/EcmpSetupHelper.h"
+#include "fboss/agent/test/TestUtils.h"
 #include "fboss/agent/test/utils/ConfigUtils.h"
 #include "fboss/agent/test/utils/QueuePerHostTestUtils.h"
 
@@ -74,7 +75,10 @@ std::shared_ptr<SwitchState> setPortAdminState(
 TEST_F(AgentRollbackTest, rollbackNeighborResolution) {
   auto verify = [this] {
     auto needL2Entry = getSw()->needL2EntryForNeighbor();
-    auto origState = getProgrammedState();
+    // Drain pending state updates (e.g. the async switch run state write
+    // triggered on transition to CONFIGURED) before snapshotting, so the
+    // snapshot matches the state the rollback updates operate on.
+    auto origState = waitForStateUpdates(getSw());
 
     // Rollback neighbor resolution
     EXPECT_THROW(
