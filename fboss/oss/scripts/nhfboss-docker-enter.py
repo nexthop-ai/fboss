@@ -41,6 +41,9 @@ DOT_FILES = [
     ".vimrc",
     ".vscode-server",
     "bin",
+    # Not a dot-file but easier to keep this here as a Nexthop
+    # customization for our Bazel build.
+    ".cache/bazel",
 ]
 
 EXTRA_CMAKE_DEFINES = (
