@@ -240,14 +240,51 @@ def copy_artifacts(
 
 
 def build_runtime_image(repo_path: Path) -> int:
-    """Build the runtime Docker image."""
+    """Build the runtime Docker image.
+
+    When FBOSS_SIM_CACHE_REF is set (e.g. in CI), uses docker buildx with a
+    registry cache so stable layers (dnf install, rootfs, configs) are cache
+    hits on fresh GARM runners.  Falls back to plain docker build for dev
+    environments without registry access.
+    """
     image_tag = f"{DEFAULT_IMAGE_NAME}:latest"
     dockerfile = repo_path / "fboss-sim" / "docker" / "Dockerfile.runtime"
+    cache_ref = os.environ.get("FBOSS_SIM_CACHE_REF", "")
+
     print(f"\n🔨 Building {image_tag}...")
-    result = subprocess.run(
-        ["docker", "build", "-f", str(dockerfile), "-t", image_tag, str(repo_path)],
-        check=False,
-    )
+
+    if cache_ref:
+        # Ensure a buildx builder with the docker-container driver exists so
+        # registry cache export works (the default "docker" driver cannot export).
+        subprocess.run(
+            [
+                "docker", "buildx", "create",
+                "--name", "fboss-sim-cache",
+                "--driver", "docker-container",
+                "--use",
+                "--bootstrap",
+            ],
+            check=False,
+            capture_output=True,
+        )
+        cmd = [
+            "docker", "buildx", "build",
+            "--load",  # load the result into the local docker daemon
+            "--cache-from", f"type=registry,ref={cache_ref}",
+            "--cache-to", f"type=registry,ref={cache_ref},mode=max",
+            "-f", str(dockerfile),
+            "-t", image_tag,
+            str(repo_path),
+        ]
+    else:
+        cmd = [
+            "docker", "build",
+            "-f", str(dockerfile),
+            "-t", image_tag,
+            str(repo_path),
+        ]
+
+    result = subprocess.run(cmd, check=False)
     if result.returncode == 0:
         print("  ✓ Image built successfully")
     else:

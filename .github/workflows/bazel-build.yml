@@ -33,26 +33,7 @@ jobs:
         uses: nexthop-ai/nh/.github/actions/http-proxy@main
 
       - name: Build FBOSS Docker image (with registry cache)
-        env:
-          USE_CLANG: true
-          REGISTRY: container-registry.sw.internal.nexthop.ai
-        run: |
-          CACHE_IMAGE="${REGISTRY}/fboss-builder:cache"
-          # Compute cache key from Dockerfile + build scripts
-          CACHE_KEY=$(cat fboss/oss/docker/Dockerfile fboss/oss/docker/setup_clang.sh requirements-dev.txt .pre-commit-config.yaml 2>/dev/null | sha256sum | cut -c1-12)
-          CACHE_TAG="${CACHE_IMAGE}-${CACHE_KEY}"
-
-          # Try to pull cached image
-          if docker pull "${CACHE_TAG}" 2>/dev/null; then
-            echo "Cache hit: ${CACHE_TAG}"
-            docker tag "${CACHE_TAG}" "fboss_image_${USER}:latest"
-          else
-            echo "Cache miss, building image..."
-            ./fboss/oss/scripts/nhfboss-docker-build.py
-            # Push to registry for next run
-            docker tag "fboss_image_${USER}:latest" "${CACHE_TAG}"
-            docker push "${CACHE_TAG}" || echo "Warning: failed to push cache image"
-          fi
+        uses: ./.github/actions/fboss-builder-image
 
       - name: Start FBOSS build container
         run: ./fboss/oss/scripts/nhfboss-docker-enter.py

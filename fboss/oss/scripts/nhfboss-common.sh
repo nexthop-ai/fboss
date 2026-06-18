@@ -104,7 +104,10 @@ export SCCACHE_CONF="$COMMON_SCRIPT_DIR/sccache-dist.toml"
 # our RAM, which is important because we need a lot of it for linking.
 nproc_jobs=$(($(nproc) * 20))
 ram_jobs=$((SERVER_RAM_GB * 5))
-COMPILE_JOBS=$((nproc_jobs < ram_jobs ? nproc_jobs : ram_jobs))
+_computed_compile_jobs=$((nproc_jobs < ram_jobs ? nproc_jobs : ram_jobs))
+# Allow CI to pin job counts so cache keys stay stable across fresh VMs of the
+# same flavor (free -g truncation can otherwise flicker the key).
+COMPILE_JOBS=${NHFBOSS_COMPILE_JOBS:-$_computed_compile_jobs}
 
 if [[ ${BUILD_TYPE:-} == "Debug" ]]; then
   # PathValidator.cpp takes at least 32 minutes to build in debug mode
@@ -135,11 +138,12 @@ if [[ ${BUILD_TYPE:-} == "Debug" ]]; then
   # 2 link jobs works with 64GB of RAM, with 7.5GB available at the low point
   # 1 link job on 64GB VM peaks at 48GB of RAM
   # 2 link jobs on 64GB VM peak at 56GB of RAM
-  LINK_JOBS=$(jobs_for_ram 48 8)
+  _computed_link_jobs=$(jobs_for_ram 48 8)
 else
   # 2 works well on 24GB and 32GB VMs.
-  LINK_JOBS=$(jobs_for_ram 11)
+  _computed_link_jobs=$(jobs_for_ram 11)
 fi
+LINK_JOBS=${NHFBOSS_LINK_JOBS:-$_computed_link_jobs}
 if [ $LINK_JOBS -eq 0 ]; then
   echo "Not enough memory to link"
   exit 1
@@ -168,21 +172,25 @@ BUILD_TYPE=${BUILD_TYPE:-MinSizeRel}
 
 build_dir=${build_dir:-/var/FBOSS/tmp_bld_dir}
 
-# Build common_options for getdeps.py
+# Build common_options for getdeps.py.
+# extra_cmake_defines is exported separately so cached-get-deps.py can receive
+# the identical byte string — getdeps hashes it verbatim into every dep's cache
+# key, so any difference would cause dep install-dir lookups to fail.
+# NOTE: Because COMPILE_JOBS and LINK_JOBS are embedded here, you must keep
+# NHFBOSS_COMPILE_JOBS/NHFBOSS_LINK_JOBS pinned to the same values in CI
+# across get-deps and build steps, or the hashes will diverge.
+export extra_cmake_defines='{"CMAKE_C_COMPILER_LAUNCHER":"sccache","CMAKE_CXX_COMPILER_LAUNCHER":"sccache","CMAKE_JOB_POOLS":"compile='$COMPILE_JOBS';link='$LINK_JOBS'","CMAKE_JOB_POOL_COMPILE":"compile","CMAKE_JOB_POOL_LINK":"link","RANGE_V3_TESTS":"OFF","RANGE_V3_PERF":"OFF","CMAKE_EXPORT_COMPILE_COMMANDS":"ON","Python3_EXECUTABLE":"/usr/bin/python3.12"'
+# cfboss builds flip cmake gates (swap in stub binaries for platform services).
+# Keep this conditional inside extra_cmake_defines so the same byte string flows
+# to both common_options and cached-get-deps.py.  When BUILD_CFBOSS is unset the
+# string is unchanged, so existing dep cache keys are unaffected.
+if [ -n "${BUILD_CFBOSS:-}" ]; then
+  extra_cmake_defines+=',"BUILD_CFBOSS":"ON"'
+fi
+extra_cmake_defines+='}'
 common_options='--allow-system-packages'
 common_options+=' --scratch-path '$build_dir
 common_options+=' --src-dir .'
-common_options+=' --extra-cmake-defines {"CMAKE_C_COMPILER_LAUNCHER":"sccache"'
-common_options+=',"CMAKE_CXX_COMPILER_LAUNCHER":"sccache"'
-common_options+=',"CMAKE_JOB_POOLS":"compile='$COMPILE_JOBS';link='$LINK_JOBS'"'
-common_options+=',"CMAKE_JOB_POOL_COMPILE":"compile"'
-common_options+=',"CMAKE_JOB_POOL_LINK":"link"'
-common_options+=',"RANGE_V3_TESTS":"OFF"'
-common_options+=',"RANGE_V3_PERF":"OFF"'
-common_options+=',"CMAKE_EXPORT_COMPILE_COMMANDS":"ON"'
-if [ -n "${BUILD_CFBOSS:-}" ]; then
-  common_options+=',"BUILD_CFBOSS":"ON"'
-fi
-common_options+='}'
+common_options+=" --extra-cmake-defines $extra_cmake_defines"
 common_options+=' --num-jobs '$num_jobs
 common_options+=' fboss'

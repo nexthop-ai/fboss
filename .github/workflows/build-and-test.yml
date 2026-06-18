@@ -26,21 +26,47 @@ on:
       failed_test_count:
         description: "Total number of failed tests"
         value: ${{ jobs.Build-and-Test.outputs.failed_test_count }}
+  # Allow manual dispatch for branch-level A/B testing during GARM rollout.
+  workflow_dispatch:
+    inputs:
+      sai_version:
+        description: "SAI version to build against"
+        required: false
+        default: "1.16.1"
+        type: string
+      use_clang:
+        description: "Use Clang instead of GCC"
+        required: false
+        default: true
+        type: boolean
+
+# Pin job counts for cloudstack-ubuntu24-large so the getdeps cmake-defines
+# string is byte-identical across fresh VMs of the same flavor, giving stable
+# per-dep cache keys.  Adjust if/when the flavor specs change.
+# Derivation: large runner has ~64 GB RAM.
+#   LINK_JOBS  = floor(64 / 11) = 5  (each link job peaks at ~11 GB)
+#   COMPILE_JOBS = nproc(32) * 20 = 640, capped by RAM: 64*5=320
+env:
+  NHFBOSS_LINK_JOBS: "5"
+  NHFBOSS_COMPILE_JOBS: "320"
+  GETDEPS_CACHE_URL: "http://bucket.internal.nexthop.ai:7480/image-stash/getdeps-cache"
+  GETDEPS_CACHE_UPLOAD: "1"
+  FBOSS_SIM_CACHE_REF: "container-registry.sw.internal.nexthop.ai/fboss-sim-runtime:buildcache"
 
 jobs:
   Build-and-Test:
     if: github.repository_owner == 'nexthop-ai'
-    runs-on: [self-hosted, fboss-gha]
+    runs-on: cloudstack-ubuntu24-large
     outputs:
       failed_tests: ${{ steps.parse-test-results.outputs.failed_tests }}
       failed_test_count: ${{ steps.parse-test-results.outputs.failed_test_count }}
     steps:
+      - name: Set up HTTP proxy
+        uses: nexthop-ai/nh/.github/actions/http-proxy@main
+
       - name: Check out repository code
         uses: actions/checkout@v6
         with:
-          # We'll clean the workspace ourselves to preserve most of .build_dir
-          # so keep vendored dependencies across builds.
-          clean: false
           # For PRs, checkout the actual PR head (not the synthetic merge commit)
           ref: ${{ inputs.ref || (github.event_name == 'pull_request' && github.event.pull_request.head.sha) || github.ref }}
           # Most PRs will be fewer than 20 commits
@@ -58,46 +84,38 @@ jobs:
             git fetch --deepen=$DEPTH --no-tags origin ${{ github.base_ref }} ${{ github.head_ref }}
           done
 
-      - name: Clean workspace
-        run: |
-          sudo git clean -ffdxe .build_dir
-          sudo rm -rf .build_dir/build/fboss .build_dir/installed/fboss
-
-      - name: Cleanup any existing container
-        run: |
-          docker stop FBOSS_build_${USER} 2>/dev/null || true
-          docker rm FBOSS_build_${USER} 2>/dev/null || true
-
-      - name: Build FBOSS Docker image
-        env:
-          USE_CLANG: ${{ inputs.use_clang }}
-        run: ./fboss/oss/scripts/nhfboss-docker-build.py
-
-      - name: Prune dangling images
-        run: docker image prune -f
+      - name: Build FBOSS Docker image (with registry cache)
+        uses: ./.github/actions/fboss-builder-image
 
       - name: Start FBOSS build container
         run: ./fboss/oss/scripts/nhfboss-docker-enter.py
 
       - name: Prepare SAI
         run: |
-          docker exec FBOSS_build_${USER} ./fboss/oss/scripts/build-helper.py \
-            /var/extras/sai/${{ inputs.sai_version }} \
-            /var/extras/sai/${{ inputs.sai_version }} \
-            /var/extras/sai/${{ inputs.sai_version }} \
-            ${{ inputs.sai_version }} \
-            --skip-archive-creation
+          docker exec \
+            -e SAI_VERSION=${{ inputs.sai_version || '1.16.1' }} \
+            FBOSS_build_${USER} \
+            bash fboss/oss/scripts/ensure-sai.sh
 
       - name: Fetch dependencies
         run: |
-          docker exec FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-get-deps.sh
+          docker exec \
+            -e GETDEPS_CACHE_URL=${{ env.GETDEPS_CACHE_URL }} \
+            -e GETDEPS_CACHE_UPLOAD=${{ env.GETDEPS_CACHE_UPLOAD }} \
+            -e NHFBOSS_COMPILE_JOBS=${{ env.NHFBOSS_COMPILE_JOBS }} \
+            -e NHFBOSS_LINK_JOBS=${{ env.NHFBOSS_LINK_JOBS }} \
+            FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-get-deps.sh
 
       - name: Build FBOSS
         run: |
           # Only install the final binaries for scheduled events (nightly builds).
           # Other workflows don't need them and they're expensive to install.
           target=${{ github.event_name == 'schedule' && 'install' || 'all' }}
-          docker exec -e SAI_VERSION=${{ inputs.sai_version }} FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh --cmake-target $target
+          docker exec \
+            -e SAI_VERSION=${{ inputs.sai_version || '1.16.1' }} \
+            -e NHFBOSS_COMPILE_JOBS=${{ env.NHFBOSS_COMPILE_JOBS }} \
+            -e NHFBOSS_LINK_JOBS=${{ env.NHFBOSS_LINK_JOBS }} \
+            FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh --cmake-target $target
           docker cp FBOSS_build_${USER}:/var/FBOSS/tmp_bld_dir/build/fboss/fboss2-dev ./fboss2-dev
           docker cp FBOSS_build_${USER}:/var/FBOSS/tmp_bld_dir/build/fboss/fboss2_integration_test ./fboss2_integration_test
 
@@ -202,7 +220,10 @@ jobs:
       - name: Run unit tests
         id: run-tests
         run: |
-          docker exec FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-test.sh 2>&1 | tee /tmp/test_output.log
+          docker exec \
+            -e NHFBOSS_COMPILE_JOBS=${{ env.NHFBOSS_COMPILE_JOBS }} \
+            -e NHFBOSS_LINK_JOBS=${{ env.NHFBOSS_LINK_JOBS }} \
+            FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-test.sh 2>&1 | tee /tmp/test_output.log
           exit ${PIPESTATUS[0]}
 
       - name: Parse test results
@@ -245,17 +266,30 @@ jobs:
           git checkout build/fbcode_builder/manifests/libsai build/fbcode_builder/manifests/fboss
           rm -f build/fbcode_builder/manifests/sai_impl
 
-      - name: Fetch dependencies
+      - name: Fetch dependencies (fake SAI)
         run: |
           # We have checked out manifests/libsai. Now either we run get-deps.sh or make sure the libs remains here
           # from a previous run. The later is unpredictable. For any reason if the libs gets deleted, the build
           # step will fail, so lets run the get-deps.sh
-          docker exec FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-get-deps.sh
+          docker exec \
+            -e GETDEPS_CACHE_URL=${{ env.GETDEPS_CACHE_URL }} \
+            -e GETDEPS_CACHE_UPLOAD=${{ env.GETDEPS_CACHE_UPLOAD }} \
+            -e NHFBOSS_COMPILE_JOBS=${{ env.NHFBOSS_COMPILE_JOBS }} \
+            -e NHFBOSS_LINK_JOBS=${{ env.NHFBOSS_LINK_JOBS }} \
+            FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-get-deps.sh
 
       - name: Build FBOSS with Fake SAI
         run: |
-          docker exec -e SAI_IMPL=fake FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss_fake_agent_targets
-          docker exec -e SAI_IMPL=fake FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss2_targets
+          docker exec \
+            -e SAI_IMPL=fake \
+            -e NHFBOSS_COMPILE_JOBS=${{ env.NHFBOSS_COMPILE_JOBS }} \
+            -e NHFBOSS_LINK_JOBS=${{ env.NHFBOSS_LINK_JOBS }} \
+            FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss_fake_agent_targets
+          docker exec \
+            -e SAI_IMPL=fake \
+            -e NHFBOSS_COMPILE_JOBS=${{ env.NHFBOSS_COMPILE_JOBS }} \
+            -e NHFBOSS_LINK_JOBS=${{ env.NHFBOSS_LINK_JOBS }} \
+            FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss2_targets
 
       - name: Collect fboss-sim artifacts (inside CentOS build container)
         # ldd must resolve CentOS libs, so collect inside the build container.

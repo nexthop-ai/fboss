@@ -26,30 +26,30 @@ _spec.loader.exec_module(cgd)
 
 
 # ---------------------------------------------------------------------------
-# _EXTRA_CMAKE_DEFINES consistency
+# _DEFAULT_CMAKE_DEFINES consistency
 # ---------------------------------------------------------------------------
 
 
-class TestExtraCmakeDefines(unittest.TestCase):
-    """The _EXTRA_CMAKE_DEFINES dict must contain the right keys and be
+class TestDefaultCmakeDefines(unittest.TestCase):
+    """The _DEFAULT_CMAKE_DEFINES dict must contain the right keys and be
     serialised identically wherever it is used, so that getdeps computes the
     same hash whether called from create_loader() or from the subprocess."""
 
     def test_build_shared_libs_is_off(self):
         """BUILD_SHARED_LIBS=OFF is required to override glog's manifest which
         sets BUILD_SHARED_LIBS=ON, so all deps produce static archives."""
-        self.assertEqual(cgd._EXTRA_CMAKE_DEFINES.get("BUILD_SHARED_LIBS"), "OFF")
+        self.assertEqual(cgd._DEFAULT_CMAKE_DEFINES.get("BUILD_SHARED_LIBS"), "OFF")
 
     def test_range_v3_tests_disabled(self):
-        self.assertEqual(cgd._EXTRA_CMAKE_DEFINES.get("RANGE_V3_TESTS"), "OFF")
-        self.assertEqual(cgd._EXTRA_CMAKE_DEFINES.get("RANGE_V3_PERF"), "OFF")
+        self.assertEqual(cgd._DEFAULT_CMAKE_DEFINES.get("RANGE_V3_TESTS"), "OFF")
+        self.assertEqual(cgd._DEFAULT_CMAKE_DEFINES.get("RANGE_V3_PERF"), "OFF")
 
     def test_json_roundtrip_is_stable(self):
-        """_EXTRA_CMAKE_DEFINES_JSON must be exactly json.dumps(_EXTRA_CMAKE_DEFINES),
+        """_DEFAULT_CMAKE_DEFINES_JSON must be exactly json.dumps(_DEFAULT_CMAKE_DEFINES),
         so create_loader() and the subprocess both set GETDEPS_CMAKE_DEFINES to
         the identical string and compute matching project hashes."""
-        expected = json.dumps(cgd._EXTRA_CMAKE_DEFINES)
-        self.assertEqual(cgd._EXTRA_CMAKE_DEFINES_JSON, expected)
+        expected = json.dumps(cgd._DEFAULT_CMAKE_DEFINES)
+        self.assertEqual(cgd._DEFAULT_CMAKE_DEFINES_JSON, expected)
 
     def test_build_single_dep_passes_defines_to_subprocess(self):
         """build_single_dep() must pass --extra-cmake-defines=<JSON> to the
@@ -64,25 +64,107 @@ class TestExtraCmakeDefines(unittest.TestCase):
             "/tmp/scratch/installed/gflags-abc"
         )
         mock_loader.get_project_hash.return_value = "abc123"
+        defines = cgd._DEFAULT_CMAKE_DEFINES_JSON
 
         with (
             patch.object(cgd.subprocess, "run") as mock_run,
             patch.object(cgd.os.path, "exists", return_value=False),
         ):
             mock_run.return_value = MagicMock(returncode=0)
-            cgd.build_single_dep(mock_opts, mock_loader, "gflags")
+            cgd.build_single_dep(
+                mock_opts, mock_loader, "gflags", defines, "MinSizeRel", None
+            )
 
         self.assertEqual(mock_run.call_count, 1)
         cmd = mock_run.call_args[0][0]
-        defines_arg = f"--extra-cmake-defines={cgd._EXTRA_CMAKE_DEFINES_JSON}"
+        defines_arg = f"--extra-cmake-defines={defines}"
         self.assertIn(
             defines_arg, cmd, f"subprocess cmd must include {defines_arg!r}; got {cmd}"
         )
 
+    def test_build_single_dep_passes_build_type_to_subprocess(self):
+        """build_single_dep() must forward --build-type to getdeps subprocess."""
+        mock_opts = MagicMock()
+        mock_opts.scratch_dir = "/tmp/scratch"
+        mock_loader = MagicMock()
+        mock_loader.get_project_install_dir.return_value = "/tmp/inst/gflags"
+        mock_loader.get_project_hash.return_value = "abc123"
+
+        with (
+            patch.object(cgd.subprocess, "run") as mock_run,
+            patch.object(cgd.os.path, "exists", return_value=False),
+        ):
+            mock_run.return_value = MagicMock(returncode=0)
+            cgd.build_single_dep(
+                mock_opts,
+                mock_loader,
+                "gflags",
+                cgd._DEFAULT_CMAKE_DEFINES_JSON,
+                "Debug",
+                None,
+            )
+
+        cmd = mock_run.call_args[0][0]
+        self.assertIn("--build-type", cmd)
+        build_type_idx = cmd.index("--build-type")
+        self.assertEqual(cmd[build_type_idx + 1], "Debug")
+
+    def test_build_single_dep_passes_num_jobs_to_subprocess(self):
+        """build_single_dep() must forward --num-jobs when provided."""
+        mock_opts = MagicMock()
+        mock_opts.scratch_dir = "/tmp/scratch"
+        mock_loader = MagicMock()
+        mock_loader.get_project_install_dir.return_value = "/tmp/inst/gflags"
+        mock_loader.get_project_hash.return_value = "abc123"
+
+        with (
+            patch.object(cgd.subprocess, "run") as mock_run,
+            patch.object(cgd.os.path, "exists", return_value=False),
+        ):
+            mock_run.return_value = MagicMock(returncode=0)
+            cgd.build_single_dep(
+                mock_opts,
+                mock_loader,
+                "gflags",
+                cgd._DEFAULT_CMAKE_DEFINES_JSON,
+                "MinSizeRel",
+                8,
+            )
+
+        cmd = mock_run.call_args[0][0]
+        self.assertIn("--num-jobs", cmd)
+        idx = cmd.index("--num-jobs")
+        self.assertEqual(cmd[idx + 1], "8")
+
     def test_create_loader_passes_defines_to_setup_build_options(self):
-        """create_loader() must set extra_cmake_defines=_EXTRA_CMAKE_DEFINES_JSON
+        """create_loader() must set extra_cmake_defines to the provided string
         in the Namespace it passes to setup_build_options, so that
         GETDEPS_CMAKE_DEFINES matches the subprocess call."""
+        captured_args = []
+        custom_defines = '{"MY_VAR":"1"}'
+
+        def fake_setup(args):
+            captured_args.append(args)
+            mock_opts = MagicMock()
+            mock_opts.get_context_generator.return_value = MagicMock()
+            return mock_opts
+
+        with (
+            patch.object(cgd, "setup_build_options", side_effect=fake_setup),
+            patch.object(cgd, "ManifestLoader", return_value=MagicMock()),
+        ):
+            cgd.create_loader("/tmp/scratch", custom_defines)
+
+        self.assertEqual(len(captured_args), 1)
+        args = captured_args[0]
+        # Must be byte-identical — no json round-trip
+        self.assertEqual(args.extra_cmake_defines, custom_defines)
+        # allow_system_packages defaults to False
+        self.assertFalse(args.allow_system_packages)
+        self.assertFalse(args.shared_libs)
+
+    def test_create_loader_allow_system_packages(self):
+        """create_loader() must propagate allow_system_packages=True."""
         captured_args = []
 
         def fake_setup(args):
@@ -95,15 +177,99 @@ class TestExtraCmakeDefines(unittest.TestCase):
             patch.object(cgd, "setup_build_options", side_effect=fake_setup),
             patch.object(cgd, "ManifestLoader", return_value=MagicMock()),
         ):
-            cgd.create_loader("/tmp/scratch")
+            cgd.create_loader(
+                "/tmp/scratch",
+                cgd._DEFAULT_CMAKE_DEFINES_JSON,
+                allow_system_packages=True,
+            )
 
-        self.assertEqual(len(captured_args), 1)
-        args = captured_args[0]
-        self.assertEqual(args.extra_cmake_defines, cgd._EXTRA_CMAKE_DEFINES_JSON)
-        # allow_system_packages must be False to match the subprocess default
-        self.assertFalse(args.allow_system_packages)
-        # shared_libs must be False so getdeps passes -DBUILD_SHARED_LIBS=OFF
-        self.assertFalse(args.shared_libs)
+        self.assertTrue(captured_args[0].allow_system_packages)
+
+
+# ---------------------------------------------------------------------------
+# Raw-string passthrough: the defines string must not be JSON-parsed/re-serialized
+# ---------------------------------------------------------------------------
+
+
+class TestDefinesRawStringPassthrough(unittest.TestCase):
+    """The --extra-cmake-defines value must be used verbatim throughout the
+    pipeline.  JSON round-tripping would reorder keys and change the byte
+    string, invalidating getdeps's hash."""
+
+    def test_non_canonical_json_preserved_in_create_loader(self):
+        """A non-canonically-ordered JSON string must survive into create_loader
+        unchanged (i.e. it must NOT be parsed and re-dumped)."""
+        # Intentionally non-canonical: Z before A, extra spaces
+        weird_defines = '{"Z_VAR": "2",  "A_VAR": "1"}'
+        captured_args = []
+
+        def fake_setup(args):
+            captured_args.append(args)
+            mock_opts = MagicMock()
+            mock_opts.get_context_generator.return_value = MagicMock()
+            return mock_opts
+
+        with (
+            patch.object(cgd, "setup_build_options", side_effect=fake_setup),
+            patch.object(cgd, "ManifestLoader", return_value=MagicMock()),
+        ):
+            cgd.create_loader("/tmp/scratch", weird_defines)
+
+        self.assertEqual(captured_args[0].extra_cmake_defines, weird_defines)
+
+    def test_non_canonical_json_preserved_in_build_single_dep(self):
+        """A non-canonical JSON string must appear in the subprocess command
+        verbatim — not json.loads()'d and re-json.dumps()'d."""
+        weird_defines = '{"Z_VAR": "2",  "A_VAR": "1"}'
+
+        mock_opts = MagicMock()
+        mock_opts.scratch_dir = "/tmp/scratch"
+        mock_loader = MagicMock()
+        mock_loader.get_project_install_dir.return_value = "/tmp/inst/gflags"
+        mock_loader.get_project_hash.return_value = "abc123"
+
+        with (
+            patch.object(cgd.subprocess, "run") as mock_run,
+            patch.object(cgd.os.path, "exists", return_value=False),
+        ):
+            mock_run.return_value = MagicMock(returncode=0)
+            cgd.build_single_dep(
+                mock_opts, mock_loader, "gflags", weird_defines, "MinSizeRel", None
+            )
+
+        cmd = mock_run.call_args[0][0]
+        defines_arg = f"--extra-cmake-defines={weird_defines}"
+        self.assertIn(defines_arg, cmd)
+
+
+# ---------------------------------------------------------------------------
+# cache_key: build type is included in the key
+# ---------------------------------------------------------------------------
+
+
+class TestCacheKey(unittest.TestCase):
+    def test_format_with_build_type(self):
+        key = cgd.cache_key("folly", "abc123", "MinSizeRel")
+        self.assertEqual(key, "fboss-getdeps-v2-folly-MinSizeRel-abc123")
+
+    def test_includes_project_name(self):
+        self.assertIn("gflags", cgd.cache_key("gflags", "xyz", "MinSizeRel"))
+
+    def test_debug_and_minsizerel_keys_differ(self):
+        """MinSizeRel and Debug builds must produce different cache keys even
+        when the getdeps hash (manifest-based) is identical."""
+        key_rel = cgd.cache_key("folly", "same-hash", "MinSizeRel")
+        key_dbg = cgd.cache_key("folly", "same-hash", "Debug")
+        self.assertNotEqual(key_rel, key_dbg)
+
+    def test_cache_object_url(self):
+        url = cgd._cache_object_url(
+            "http://cache.example.com", "fboss-getdeps-v2-folly-MinSizeRel-abc"
+        )
+        self.assertEqual(
+            url,
+            "http://cache.example.com/fboss-getdeps-v2-folly-MinSizeRel-abc.tar.zst",
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -138,28 +304,6 @@ class TestMaybeSymlink(unittest.TestCase):
             os.symlink("/old/path", dest)
             cgd._maybe_symlink(src_new, dest)
             self.assertEqual(os.readlink(dest), src_new)
-
-
-# ---------------------------------------------------------------------------
-# cache_key and _cache_object_url
-# ---------------------------------------------------------------------------
-
-
-class TestCacheKey(unittest.TestCase):
-    def test_format(self):
-        key = cgd.cache_key("folly", "abc123")
-        self.assertEqual(key, "fboss-getdeps-folly-abc123")
-
-    def test_includes_project_name(self):
-        self.assertIn("gflags", cgd.cache_key("gflags", "xyz"))
-
-    def test_cache_object_url(self):
-        url = cgd._cache_object_url(
-            "http://cache.example.com", "fboss-getdeps-folly-abc"
-        )
-        self.assertEqual(
-            url, "http://cache.example.com/fboss-getdeps-folly-abc.tar.zst"
-        )
 
 
 # ---------------------------------------------------------------------------
@@ -368,14 +512,19 @@ class TestBuildSingleDepAlreadyBuilt(unittest.TestCase):
 
             mock_opts = MagicMock()
             mock_opts.scratch_dir = tmpdir
-            mock_manifest = MagicMock()
             mock_loader = MagicMock()
-            mock_loader.load_manifest.return_value = mock_manifest
             mock_loader.get_project_install_dir.return_value = inst_dir
             mock_loader.get_project_hash.return_value = "abc123"
 
             with patch.object(cgd.subprocess, "run") as mock_run:
-                result = cgd.build_single_dep(mock_opts, mock_loader, "gflags")
+                result = cgd.build_single_dep(
+                    mock_opts,
+                    mock_loader,
+                    "gflags",
+                    cgd._DEFAULT_CMAKE_DEFINES_JSON,
+                    "MinSizeRel",
+                    None,
+                )
 
             # subprocess.run must NOT be called — dep is already built
             mock_run.assert_not_called()
@@ -392,9 +541,7 @@ class TestBuildSingleDepAlreadyBuilt(unittest.TestCase):
 
             mock_opts = MagicMock()
             mock_opts.scratch_dir = tmpdir
-            mock_manifest = MagicMock()
             mock_loader = MagicMock()
-            mock_loader.load_manifest.return_value = mock_manifest
             mock_loader.get_project_install_dir.return_value = inst_dir
             mock_loader.get_project_hash.return_value = "new-hash"
 
@@ -402,9 +549,224 @@ class TestBuildSingleDepAlreadyBuilt(unittest.TestCase):
             with patch.object(
                 cgd.subprocess, "run", return_value=mock_run_result
             ) as mock_run:
-                cgd.build_single_dep(mock_opts, mock_loader, "gflags")
+                cgd.build_single_dep(
+                    mock_opts,
+                    mock_loader,
+                    "gflags",
+                    cgd._DEFAULT_CMAKE_DEFINES_JSON,
+                    "MinSizeRel",
+                    None,
+                )
 
             mock_run.assert_called_once()
+
+
+# ---------------------------------------------------------------------------
+# _dep_names_in_order: recursive dep ordering
+# ---------------------------------------------------------------------------
+
+
+class TestDepNamesInOrder(unittest.TestCase):
+    def _make_manifest(self, name):
+        m = MagicMock()
+        m.name = name
+        return m
+
+    def test_excludes_root_project(self):
+        """The root project (fboss) must not appear in the returned list."""
+        m_gflags = self._make_manifest("gflags")
+        m_folly = self._make_manifest("folly")
+        m_fboss = self._make_manifest("fboss")
+        mock_loader = MagicMock()
+        mock_loader.load_manifest.return_value = m_fboss
+        mock_loader.manifests_in_dependency_order.return_value = [
+            m_gflags,
+            m_folly,
+            m_fboss,
+        ]
+
+        names = cgd._dep_names_in_order(mock_loader, "fboss")
+
+        self.assertNotIn("fboss", names)
+        self.assertIn("gflags", names)
+        self.assertIn("folly", names)
+
+    def test_preserves_dependency_order(self):
+        """Deps must appear in the same order as manifests_in_dependency_order returns."""
+        deps = ["gflags", "glog", "boost", "fmt", "folly"]
+        manifests = [self._make_manifest(n) for n in [*deps, "fboss"]]
+        mock_loader = MagicMock()
+        mock_loader.load_manifest.return_value = manifests[-1]
+        mock_loader.manifests_in_dependency_order.return_value = manifests
+
+        names = cgd._dep_names_in_order(mock_loader, "fboss")
+
+        self.assertEqual(names, deps)
+
+
+# ---------------------------------------------------------------------------
+# _build_or_fetch_dep: caching flow
+# ---------------------------------------------------------------------------
+
+
+class TestBuildOrFetchDep(unittest.TestCase):
+    """Verify the cache-check → download → build → upload flow."""
+
+    def _make_loader(self, inst_dir, project_hash):
+        loader = MagicMock()
+        manifest = MagicMock()
+        loader.load_manifest.return_value = manifest
+        loader.get_project_install_dir.return_value = inst_dir
+        loader.get_project_hash.return_value = project_hash
+        return loader
+
+    def test_cache_hit_downloads_and_skips_build(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            inst_dir = os.path.join(tmpdir, "folly-abc")
+            opts = MagicMock()
+            opts.scratch_dir = tmpdir
+            loader = self._make_loader(inst_dir, "abc123")
+
+            with (
+                patch.object(cgd, "check_cache", return_value=True),
+                patch.object(cgd, "download_from_cache", return_value=True) as mock_dl,
+                patch.object(cgd, "build_single_dep") as mock_build,
+                patch.object(cgd, "upload_to_cache") as mock_upload,
+            ):
+                # Ensure the marker write doesn't fail
+                os.makedirs(inst_dir, exist_ok=True)
+                cgd._build_or_fetch_dep(
+                    opts,
+                    loader,
+                    "folly",
+                    cgd._DEFAULT_CMAKE_DEFINES_JSON,
+                    "MinSizeRel",
+                    None,
+                    "http://cache",
+                    upload=False,
+                )
+
+            mock_dl.assert_called_once()
+            mock_build.assert_not_called()
+            mock_upload.assert_not_called()
+
+    def test_cache_miss_builds_and_uploads_when_flag_set(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            inst_dir = os.path.join(tmpdir, "folly-abc")
+            os.makedirs(inst_dir)
+            opts = MagicMock()
+            opts.scratch_dir = tmpdir
+            loader = self._make_loader(inst_dir, "abc123")
+
+            with (
+                patch.object(cgd, "check_cache", return_value=False),
+                patch.object(cgd, "download_from_cache") as mock_dl,
+                patch.object(
+                    cgd, "build_single_dep", return_value=inst_dir
+                ) as mock_build,
+                patch.object(cgd, "upload_to_cache") as mock_upload,
+                patch.object(cgd.os.path, "isdir", return_value=True),
+            ):
+                cgd._build_or_fetch_dep(
+                    opts,
+                    loader,
+                    "folly",
+                    cgd._DEFAULT_CMAKE_DEFINES_JSON,
+                    "MinSizeRel",
+                    None,
+                    "http://cache",
+                    upload=True,
+                )
+
+            mock_dl.assert_not_called()
+            mock_build.assert_called_once()
+            mock_upload.assert_called_once()
+
+    def test_cache_miss_does_not_upload_when_flag_not_set(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            inst_dir = os.path.join(tmpdir, "folly-abc")
+            os.makedirs(inst_dir)
+            opts = MagicMock()
+            opts.scratch_dir = tmpdir
+            loader = self._make_loader(inst_dir, "abc123")
+
+            with (
+                patch.object(cgd, "check_cache", return_value=False),
+                patch.object(cgd, "build_single_dep", return_value=inst_dir),
+                patch.object(cgd, "upload_to_cache") as mock_upload,
+                patch.object(cgd.os.path, "isdir", return_value=True),
+            ):
+                cgd._build_or_fetch_dep(
+                    opts,
+                    loader,
+                    "folly",
+                    cgd._DEFAULT_CMAKE_DEFINES_JSON,
+                    "MinSizeRel",
+                    None,
+                    "http://cache",
+                    upload=False,
+                )
+
+            mock_upload.assert_not_called()
+
+    def test_already_built_locally_skips_cache_and_build(self):
+        """If the .built-by-getdeps marker matches, skip cache lookup entirely."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            inst_dir = os.path.join(tmpdir, "folly-abc")
+            os.makedirs(inst_dir)
+            with open(os.path.join(inst_dir, ".built-by-getdeps"), "w") as f:
+                f.write("abc123")
+            opts = MagicMock()
+            loader = self._make_loader(inst_dir, "abc123")
+
+            with (
+                patch.object(cgd, "check_cache") as mock_check,
+                patch.object(cgd, "build_single_dep") as mock_build,
+            ):
+                cgd._build_or_fetch_dep(
+                    opts,
+                    loader,
+                    "folly",
+                    cgd._DEFAULT_CMAKE_DEFINES_JSON,
+                    "MinSizeRel",
+                    None,
+                    "http://cache",
+                    upload=False,
+                )
+
+            mock_check.assert_not_called()
+            mock_build.assert_not_called()
+
+    def test_system_package_dep_is_skipped(self):
+        """System-package deps (e.g. snappy, re2) are OS-provided and have no
+        install dir, so getdeps build is a no-op and the upload was silently
+        skipped — a permanent cache miss.  They must be skipped outright: no
+        cache lookup, no build, no upload."""
+        opts = MagicMock()
+        loader = self._make_loader("/tmp/inst/snappy-abc", "abc123")
+        # MagicMock(spec=...) makes isinstance(m, SystemPackageFetcher) True.
+        loader.create_fetcher.return_value = MagicMock(spec=cgd.SystemPackageFetcher)
+
+        with (
+            patch.object(cgd, "check_cache") as mock_check,
+            patch.object(cgd, "build_single_dep") as mock_build,
+            patch.object(cgd, "upload_to_cache") as mock_upload,
+        ):
+            result = cgd._build_or_fetch_dep(
+                opts,
+                loader,
+                "snappy",
+                cgd._DEFAULT_CMAKE_DEFINES_JSON,
+                "MinSizeRel",
+                None,
+                "http://cache",
+                upload=True,
+            )
+
+        self.assertEqual(result, "")
+        mock_check.assert_not_called()
+        mock_build.assert_not_called()
+        mock_upload.assert_not_called()
 
 
 # ---------------------------------------------------------------------------
