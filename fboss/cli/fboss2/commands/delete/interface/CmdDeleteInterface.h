@@ -11,51 +11,19 @@
 #pragma once
 
 #include "fboss/cli/fboss2/CmdHandler.h"
+#include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
 
 namespace facebook::fboss {
 
-// Argument type for interface configuration deletion
-// Parses: <interface> <attribute> <value>
-// where attribute is: ip-address or ipv6-address
-//
-// Note: Unlike config interface, this only accepts ONE interface name.
-// This is because an IP address can only be configured on one interface
-// within a VRF, so deleting from multiple interfaces doesn't make sense.
-class InterfaceDeleteConfig : public utils::BaseObjectArgType<std::string> {
- public:
-  /* implicit */ InterfaceDeleteConfig( // NOLINT(google-explicit-constructor)
-      std::vector<std::string> v);
-
-  const std::string& getInterfaceName() const {
-    return interfaceName_;
-  }
-
-  const std::string& getAttribute() const {
-    return attribute_;
-  }
-
-  const std::string& getValue() const {
-    return value_;
-  }
-
- private:
-  std::string interfaceName_;
-  std::string attribute_;
-  std::string value_;
-
-  static bool isKnownAttribute(const std::string& s);
-};
-
-// Delete interface traits
 struct CmdDeleteInterfaceTraits : public WriteCommandTraits {
   using ParentCmd = void;
   static void addCliArg(CLI::App& cmd, std::vector<std::string>& args) {
     cmd.add_option(
         "interface_delete_config",
         args,
-        "<interface> <ip-address|ipv6-address> <value>");
+        "<interface> [<interface> ...] <ip-address|ipv6-address> <value>");
   }
-  using ObjectArgType = InterfaceDeleteConfig;
+  using ObjectArgType = InterfacesConfig;
   using RetType = std::string;
 };
 
@@ -67,7 +35,7 @@ class CmdDeleteInterface
 
   RetType queryClient(
       const HostInfo& hostInfo,
-      const ObjectArgType& deleteConfig);
+      const ObjectArgType& interfacesConfig);
 
   void printOutput(const RetType& logMsg);
 };

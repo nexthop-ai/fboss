@@ -22,6 +22,8 @@ cpp_binary(
         "ConfigConcurrentSessionsTest.cpp",
         "ConfigIcmpV4UnavailableSrcAddrTest.cpp",
         "ConfigInterfaceDescriptionTest.cpp",
+        "ConfigInterfaceIpv6NdpTest.cpp",
+        "DeleteInterfaceIpv6NdpTest.cpp",
         "ConfigInterfaceMtuTest.cpp",
         "ConfigInterfaceProfileTest.cpp",
         "ConfigL2LearningModeTest.cpp",
