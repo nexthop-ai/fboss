@@ -1,0 +1,9 @@
+{
+  "defaultCommandLineArgs": {
+    "mode": "nh4220f"
+  },
+  "transceiverConfigOverrides": [],
+  "qsfpTestConfig": {
+    "cabledPortPairs": []
+  }
+}

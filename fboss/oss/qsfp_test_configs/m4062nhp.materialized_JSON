@@ -1,0 +1,9 @@
+{
+  "defaultCommandLineArgs": {
+    "mode": "m4062nhp"
+  },
+  "transceiverConfigOverrides": [],
+  "qsfpTestConfig": {
+    "cabledPortPairs": []
+  }
+}

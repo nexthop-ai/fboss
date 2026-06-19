@@ -80,6 +80,13 @@ _HW_TEST_CONFIG_NAME: dict[str, str] = {
     "nh4215f": "m4062nhp",
 }
 
+# Model → config name override for link/QSFP tests (omit when they match).
+_LINK_QSFP_TEST_CONFIG_NAME: dict[str, str] = {
+    "minipack3": "montblanc",
+    "nh4215f": "m4062nhp",
+    "nhbw800f": "wedge800bact",
+}
+
 # vendor/coldboot-sai/warmboot-sai/asic — key for run_test.py
 # --skip-known-bad-tests against ./share/hw_known_bad_tests/sai*_known_bad_tests.
 # Without this, ~128 known-broken tests for tomahawk5 (and the unsupported list)
@@ -138,18 +145,6 @@ def _repo_dir(relative: Path) -> Path:
 _WARM_BOOT_DIR = "/dev/shm/fboss/warm_boot"
 _AGENT_ENSEMBLE_DIR = "/var/facebook/fboss/agent_ensemble"
 
-# Link test configs use non-standard naming (no .agent. infix), so kept
-# separate from _HW_TEST_CONFIG_NAME.
-_LINK_TEST_CONFIG_NAME: dict[str, str] = {
-    "minipack3": "montblanc",
-    "nh4215f": "m4062nhp",
-}
-
-# Maps model name to qsfp test config when the config name differs from the model name.
-_QSFP_TEST_CONFIG_NAME: dict[str, str] = {
-    "minipack3": "montblanc",
-    "wedge800bact": "wedge800bnhp",
-}
 
 _PLATFORM_MAPPING_DIR = Path(
     "fboss/lib/platform_mapping_v2/generated_platform_mappings"
@@ -450,7 +445,7 @@ class QsfpTestRunner(BaseHwTestRunner):
             return
 
         model = _normalize_model(self.tc["model"])
-        config_name = _QSFP_TEST_CONFIG_NAME.get(model, model)
+        config_name = _LINK_QSFP_TEST_CONFIG_NAME.get(model, model)
         base_path = _repo_dir(self._BASE_CONFIG_DIR) / f"{config_name}.materialized_JSON"
 
         with open(base_path, encoding="utf-8") as f:
@@ -471,7 +466,7 @@ class QsfpTestRunner(BaseHwTestRunner):
     def test_args(self, model: str) -> str:
         if self._use_generated_config:
             return f"qsfp --qsfp-config {self._REMOTE_CONFIG_PATH}"
-        config_name = _QSFP_TEST_CONFIG_NAME.get(model, model)
+        config_name = _LINK_QSFP_TEST_CONFIG_NAME.get(model, model)
         return f"qsfp --qsfp-config ./share/qsfp_test_configs/{config_name}.materialized_JSON"
 
 
@@ -492,7 +487,7 @@ class LinkTestRunner(BaseHwTestRunner):
 
     @classmethod
     def _config_name(cls, model: str) -> str:
-        return _LINK_TEST_CONFIG_NAME.get(model, model)
+        return _LINK_QSFP_TEST_CONFIG_NAME.get(model, model)
 
     @classmethod
     def _base_config_path(cls, config_name: str) -> Path:
