@@ -1183,6 +1183,7 @@ cpp_library(
         "commands/config/icmpv4_unavailable_src_addr/CmdConfigIcmpV4UnavailableSrcAddr.h",
         "commands/config/interface/CmdConfigInterface.h",
         "commands/config/interface/CmdConfigInterfaceQueuingPolicy.h",
+        "commands/config/interface/InterfaceAttrArgsBase.h",
         "commands/config/interface/InterfaceIpUtils.h",
         "commands/config/interface/ProfileValidation.h",
         "commands/config/interface/ipv6/CmdConfigInterfaceIpv6.h",

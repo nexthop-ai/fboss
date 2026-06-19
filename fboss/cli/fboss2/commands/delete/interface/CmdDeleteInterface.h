@@ -10,10 +10,35 @@
 
 #pragma once
 
+#include <string>
+#include <vector>
 #include "fboss/cli/fboss2/CmdHandler.h"
-#include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
+#include "fboss/cli/fboss2/commands/config/interface/InterfaceAttrArgsBase.h"
 
 namespace facebook::fboss {
+
+/*
+ * InterfaceDeleteConfig captures interface/port names plus the attributes to
+ * delete (reset to default) for the `delete interface` command.
+ *
+ * Usage: delete interface <port-list> [<attr> [<value>] ...]
+ *
+ * Tokens before the first known attribute name are interface/port names; the
+ * rest are attribute names. Most attributes are valueless (delete resets to
+ * default); ip-address / ipv6-address take the specific address to remove.
+ *
+ * Supported delete attributes (reset to default):
+ *   loopback-mode, lldp-expected-value, lldp-expected-chassis,
+ *   lldp-expected-ttl, lldp-expected-port-desc, lldp-expected-system-name,
+ *   lldp-expected-system-desc
+ * Supported delete attributes (with value):
+ *   ip-address <cidr>, ipv6-address <cidr>
+ */
+class InterfaceDeleteConfig : public InterfaceAttrArgsBase {
+ public:
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  /* implicit */ InterfaceDeleteConfig(const std::vector<std::string>& v);
+};
 
 struct CmdDeleteInterfaceTraits : public WriteCommandTraits {
   using ParentCmd = void;
@@ -21,9 +46,9 @@ struct CmdDeleteInterfaceTraits : public WriteCommandTraits {
     cmd.add_option(
         "interface_delete_config",
         args,
-        "<interface> [<interface> ...] <ip-address|ipv6-address> <value>");
+        "<port-list> [loopback-mode|lldp-expected-*|ip-address <cidr>|ipv6-address <cidr>]");
   }
-  using ObjectArgType = InterfacesConfig;
+  using ObjectArgType = InterfaceDeleteConfig;
   using RetType = std::string;
 };
 
@@ -35,7 +60,7 @@ class CmdDeleteInterface
 
   RetType queryClient(
       const HostInfo& hostInfo,
-      const ObjectArgType& interfacesConfig);
+      const ObjectArgType& deleteConfig);
 
   void printOutput(const RetType& logMsg);
 };

@@ -35,7 +35,7 @@ class CmdDeleteConfigInterfaceTestFixture : public CmdConfigTestBase {
 };
 
 // CmdDeleteInterface::queryClient tests
-// (Parse-time validation is covered by InterfacesConfig — see
+// (Parse-time validation is covered by InterfaceDeleteConfig — see
 // CmdConfigInterfaceTest.cpp. The tests below cover the delete-specific
 // invariants enforced inside queryClient.)
 
@@ -57,7 +57,7 @@ TEST_F(CmdDeleteConfigInterfaceTestFixture, deleteExistingIpv4Address) {
 
   // Now delete it
   auto cmd = CmdDeleteInterface();
-  InterfacesConfig deleteConfig({"eth1/1/1", "ip-address", "10.0.0.1/24"});
+  InterfaceDeleteConfig deleteConfig({"eth1/1/1", "ip-address", "10.0.0.1/24"});
   auto result = cmd.queryClient(localhost(), deleteConfig);
 
   EXPECT_THAT(result, HasSubstr("Successfully deleted"));
@@ -79,7 +79,7 @@ TEST_F(CmdDeleteConfigInterfaceTestFixture, deleteNonExistentIpAddress) {
   setupTestableConfigSession(cmdPrefix_, "eth1/1/1 ip-address 10.0.0.1/24");
 
   auto cmd = CmdDeleteInterface();
-  InterfacesConfig deleteConfig({"eth1/1/1", "ip-address", "10.0.0.1/24"});
+  InterfaceDeleteConfig deleteConfig({"eth1/1/1", "ip-address", "10.0.0.1/24"});
   auto result = cmd.queryClient(localhost(), deleteConfig);
 
   EXPECT_THAT(result, HasSubstr("not configured"));
@@ -89,18 +89,19 @@ TEST_F(CmdDeleteConfigInterfaceTestFixture, deleteNonExistentIpAddress) {
 TEST_F(CmdDeleteConfigInterfaceTestFixture, ipVersionMismatchThrows) {
   setupTestableConfigSession(cmdPrefix_, "eth1/1/1 ip-address 2001:db8::1/64");
   auto cmd = CmdDeleteInterface();
-  InterfacesConfig deleteConfig({"eth1/1/1", "ip-address", "2001:db8::1/64"});
+  InterfaceDeleteConfig deleteConfig(
+      {"eth1/1/1", "ip-address", "2001:db8::1/64"});
   EXPECT_THROW(
       cmd.queryClient(localhost(), deleteConfig), std::invalid_argument);
 }
 
-// Non-IP attributes (e.g., description) are rejected by queryClient
+// Non-delete attributes (e.g., description) are not valid delete attributes,
+// so they are treated as interface names and rejected at parse time.
 TEST_F(CmdDeleteConfigInterfaceTestFixture, nonIpAttributeRejected) {
   setupTestableConfigSession(cmdPrefix_, "eth1/1/1 description foo");
-  auto cmd = CmdDeleteInterface();
-  InterfacesConfig deleteConfig({"eth1/1/1", "description", "foo"});
   EXPECT_THROW(
-      cmd.queryClient(localhost(), deleteConfig), std::invalid_argument);
+      InterfaceDeleteConfig({"eth1/1/1", "description", "foo"}),
+      std::invalid_argument);
 }
 
 } // namespace facebook::fboss
