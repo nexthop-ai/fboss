@@ -253,6 +253,21 @@ cp /etc/resolv.conf "${DESCRIPTION_DIR}/root/etc/"
 # Add build timestamp to the image
 echo "Built on: $(date -u)" >"$DESCRIPTION_DIR/root/etc/build-info"
 
+# Strip any cFBOSS-only overlay files left in the persistent staging tree by a
+# previous container build, so they never leak into a hardware image. The file
+# list is derived from root_files_cfboss itself, so newly added overlay files
+# are picked up automatically. Running this before the root_files copy means
+# any path that also exists in root_files is repopulated below, and the
+# conditional cFBOSS re-add further down restores cFBOSS content for container
+# builds.
+if [ -d "${DESCRIPTION_DIR}/root_files_cfboss" ]; then
+  dprint "Stripping any stale root_files_cfboss overlay files from staging..."
+  (cd "${DESCRIPTION_DIR}/root_files_cfboss" && find . -type f -print0) |
+    while IFS= read -r -d '' f; do
+      rm -f "${DESCRIPTION_DIR}/root/${f#./}"
+    done
+fi
+
 # Copy rootfs template files to overlay
 dprint "Copying rootfs files to overlay..."
 cp -R ${DESCRIPTION_DIR}/root_files/* ${DESCRIPTION_DIR}/root/
