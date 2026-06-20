@@ -41,9 +41,13 @@ if [[ -n ${GETDEPS_CACHE_URL:-} ]]; then
     --allow-system-packages \
     --num-jobs "$num_jobs" \
     ${GETDEPS_CACHE_UPLOAD:+--upload}
+  # cached-get-deps.py exits 0 only when every dep is either already-built,
+  # successfully downloaded from cache, or successfully built from source —
+  # so the belt-and-braces run-getdeps build pass below is redundant here.
+  echo "Get deps SUCCESS"
+  exit 0
 fi
 
-# Belt-and-braces: no-op when all .built-by-getdeps markers already match;
-# builds anything the cache loop may have missed (e.g. on first cold run).
+# No remote cache: build all deps from scratch.
 time nice -n 10 ./fboss/oss/scripts/run-getdeps.py build --num-jobs $num_jobs --build-type $BUILD_TYPE --only-deps $common_options &&
   echo "Get deps SUCCESS"

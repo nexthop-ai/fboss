@@ -30,6 +30,7 @@ import sys
 import tempfile
 import urllib.error
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 # Import getdeps modules without modifying them.
@@ -328,6 +329,133 @@ def _dep_names_in_order(loader: ManifestLoader, root_project: str) -> list[str]:
     return [m.name for m in ordered if m.name != root_project]
 
 
+# Disposition tags used in the parallel recursive flow.
+_SKIP = "skip"  # system package or already-built locally
+_HIT = "hit"  # tarball available in S3 cache
+_MISS = "miss"  # must build from source
+
+
+def _precompute_dep_metadata(
+    loader: ManifestLoader,
+    dep_names: list[str],
+    build_type: str,
+) -> list[tuple[str, str, str, str, str]]:
+    """Return (dep_name, disposition, inst_dir, project_hash, cache_key) for each dep.
+
+    ManifestLoader has internal mutable caches (_project_hashes, manifest dict), so
+    all hash computation happens here sequentially before any threads are spawned.
+    Disposition is _SKIP for system packages and already-built-locally deps, _MISS
+    for everything else (will be promoted to _HIT after parallel cache checks).
+    """
+    result = []
+    for dep_name in dep_names:
+        manifest = loader.load_manifest(dep_name)
+        if isinstance(loader.create_fetcher(manifest), SystemPackageFetcher):
+            print(f"[{dep_name}] system package (OS-provided) — skipping")
+            result.append((dep_name, _SKIP, "", "", ""))
+            continue
+
+        inst_dir = loader.get_project_install_dir(manifest)
+        project_hash = loader.get_project_hash(manifest)
+        key = cache_key(dep_name, project_hash, build_type)
+        print(f"[{dep_name}] hash={project_hash[:30]}... key={key[:55]}...")
+
+        built_marker = os.path.join(inst_dir, ".built-by-getdeps")
+        if os.path.exists(built_marker):
+            with open(built_marker) as f:
+                if f.read().strip() == project_hash:
+                    print("  Already built (hash matches)")
+                    result.append((dep_name, _SKIP, inst_dir, project_hash, key))
+                    continue
+
+        result.append((dep_name, _MISS, inst_dir, project_hash, key))
+    return result
+
+
+def _parallel_check_and_download(
+    meta: list[tuple[str, str, str, str, str]],
+    cache_url: str,
+) -> list[tuple[str, str, str, str, str]]:
+    """Promote _MISS entries to _HIT via parallel HEAD checks, then download hits in parallel.
+
+    Returns updated meta list with final dispositions:
+      _SKIP  — nothing to do
+      _HIT   — tarball downloaded and extracted successfully
+      _MISS  — no cached tarball; caller must build from source in dep order
+    """
+    if not cache_url:
+        return meta
+
+    # ---- Phase A: parallel HEAD checks ----------------------------------------
+    miss_indices = [i for i, (_, disp, _, _, _) in enumerate(meta) if disp == _MISS]
+
+    def _check(idx: int) -> tuple[int, bool]:
+        _, _, _, _, key = meta[idx]
+        return idx, check_cache(cache_url, key)
+
+    updated = list(meta)
+    with ThreadPoolExecutor(max_workers=16) as ex:
+        for idx, is_hit in ex.map(_check, miss_indices):
+            if is_hit:
+                dep_name, _, inst_dir, project_hash, key = updated[idx]
+                updated[idx] = (dep_name, _HIT, inst_dir, project_hash, key)
+
+    # ---- Phase B: parallel downloads ------------------------------------------
+    hit_indices = [i for i, (_, disp, _, _, _) in enumerate(updated) if disp == _HIT]
+
+    def _download(idx: int) -> tuple[int, bool]:
+        dep_name, _, inst_dir, project_hash, key = updated[idx]
+        print(f"[{dep_name}] Cache HIT — downloading...")
+        if download_from_cache(cache_url, key, inst_dir):
+            with open(os.path.join(inst_dir, ".built-by-getdeps"), "w") as f:
+                f.write(project_hash)
+            print(f"  [{dep_name}] Installed to {inst_dir}")
+            return idx, True
+        print(f"  [{dep_name}] Download/extract failed, falling back to build...")
+        return idx, False
+
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        for idx, ok in ex.map(_download, hit_indices):
+            if not ok:
+                dep_name, _, inst_dir, project_hash, key = updated[idx]
+                updated[idx] = (dep_name, _MISS, inst_dir, project_hash, key)
+
+    return updated
+
+
+def _run_recursive(opts, loader: ManifestLoader, args, extra_cmake_defines: str) -> int:
+    """Execute the --recursive flow: precompute → parallel fetch → sequential build."""
+    dep_names = _dep_names_in_order(loader, args.project)
+    print(f"Building {len(dep_names)} deps for {args.project} in dependency order...")
+
+    # Phase 1 (sequential): compute hashes and check local markers.
+    # ManifestLoader has mutable internal caches so this must stay single-threaded.
+    meta = _precompute_dep_metadata(loader, dep_names, args.build_type)
+
+    # Phase 2 (parallel): HEAD-check S3 for remaining deps, then download hits.
+    # Pre-built tarballs are independent artifacts — no dep-ordering constraint
+    # on downloads, so all 72 can fly in parallel.
+    meta = _parallel_check_and_download(meta, args.cache_url)
+
+    # Phase 3 (sequential): build any cache misses in dep order.
+    # Builds ARE order-dependent: a dep must be installed before its dependents.
+    for dep_name, disp, _inst_dir, _project_hash, key in meta:
+        if disp != _MISS:
+            continue
+        print(f"[{dep_name}] Cache MISS — building...")
+        result_dir = build_single_dep(
+            opts, loader, dep_name, extra_cmake_defines, args.build_type, args.num_jobs
+        )
+        if args.upload and args.cache_url and os.path.isdir(result_dir):
+            upload_to_cache(args.cache_url, key, result_dir)
+
+    n_skip = sum(1 for _, d, _, _, _ in meta if d == _SKIP)
+    n_hit = sum(1 for _, d, _, _, _ in meta if d == _HIT)
+    n_miss = sum(1 for _, d, _, _, _ in meta if d == _MISS)
+    print(f"All deps done: {n_skip} skipped, {n_hit} cache hits, {n_miss} built.")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Build or fetch a cached third-party dependency"
@@ -412,24 +540,7 @@ def main() -> int:
         return 0
 
     if args.recursive:
-        # Build all transitive deps of --project in dependency order.
-        dep_names = _dep_names_in_order(loader, args.project)
-        print(
-            f"Building {len(dep_names)} deps for {args.project} in dependency order..."
-        )
-        for dep_name in dep_names:
-            _build_or_fetch_dep(
-                opts,
-                loader,
-                dep_name,
-                extra_cmake_defines,
-                args.build_type,
-                args.num_jobs,
-                args.cache_url,
-                args.upload,
-            )
-        print("All deps done.")
-        return 0
+        return _run_recursive(opts, loader, args, extra_cmake_defines)
 
     # Single-project mode (original Bazel repo-rule path).
     manifest = loader.load_manifest(args.project)

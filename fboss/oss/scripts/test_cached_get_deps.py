@@ -770,6 +770,228 @@ class TestBuildOrFetchDep(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
+# _precompute_dep_metadata: sequential metadata collection
+# ---------------------------------------------------------------------------
+
+
+class TestPrecomputeDepMetadata(unittest.TestCase):
+    """_precompute_dep_metadata classifies deps as _SKIP or _MISS before
+    any threads are spawned."""
+
+    def _make_loader(self, deps):
+        """deps: list of (name, inst_dir, project_hash, is_system_package)."""
+        loader = MagicMock()
+
+        def load_manifest(name):
+            m = MagicMock()
+            m.name = name
+            return m
+
+        loader.load_manifest.side_effect = load_manifest
+
+        def get_install_dir(manifest):
+            for n, inst, _, _ in deps:
+                if n == manifest.name:
+                    return inst
+            raise KeyError(manifest.name)
+
+        def get_hash(manifest):
+            for n, _, h, _ in deps:
+                if n == manifest.name:
+                    return h
+            raise KeyError(manifest.name)
+
+        def create_fetcher(manifest):
+            for n, _, _, sys_pkg in deps:
+                if n == manifest.name:
+                    if sys_pkg:
+                        return MagicMock(spec=cgd.SystemPackageFetcher)
+                    return MagicMock()
+            raise KeyError(manifest.name)
+
+        loader.get_project_install_dir.side_effect = get_install_dir
+        loader.get_project_hash.side_effect = get_hash
+        loader.create_fetcher.side_effect = create_fetcher
+        return loader
+
+    def test_system_package_dep_gets_skip(self):
+        loader = self._make_loader([("snappy", "/inst/snappy", "h1", True)])
+        meta = cgd._precompute_dep_metadata(loader, ["snappy"], "MinSizeRel")
+        self.assertEqual(len(meta), 1)
+        self.assertEqual(meta[0][1], cgd._SKIP)
+
+    def test_already_built_dep_gets_skip(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            inst_dir = os.path.join(tmpdir, "folly-abc")
+            os.makedirs(inst_dir)
+            with open(os.path.join(inst_dir, ".built-by-getdeps"), "w") as f:
+                f.write("abc123")
+            loader = self._make_loader([("folly", inst_dir, "abc123", False)])
+            meta = cgd._precompute_dep_metadata(loader, ["folly"], "MinSizeRel")
+        self.assertEqual(meta[0][1], cgd._SKIP)
+
+    def test_unbuilt_dep_gets_miss(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            inst_dir = os.path.join(tmpdir, "gflags-abc")
+            loader = self._make_loader([("gflags", inst_dir, "abc123", False)])
+            meta = cgd._precompute_dep_metadata(loader, ["gflags"], "MinSizeRel")
+        self.assertEqual(meta[0][1], cgd._MISS)
+
+    def test_marker_hash_mismatch_gives_miss(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            inst_dir = os.path.join(tmpdir, "gflags-abc")
+            os.makedirs(inst_dir)
+            with open(os.path.join(inst_dir, ".built-by-getdeps"), "w") as f:
+                f.write("stale_hash")
+            loader = self._make_loader([("gflags", inst_dir, "new_hash", False)])
+            meta = cgd._precompute_dep_metadata(loader, ["gflags"], "MinSizeRel")
+        self.assertEqual(meta[0][1], cgd._MISS)
+
+    def test_metadata_fields_are_populated(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            inst_dir = os.path.join(tmpdir, "glog-xyz")
+            loader = self._make_loader([("glog", inst_dir, "xyz999", False)])
+            meta = cgd._precompute_dep_metadata(loader, ["glog"], "Debug")
+        name, disp, meta_inst, meta_hash, meta_key = meta[0]
+        self.assertEqual(name, "glog")
+        self.assertEqual(meta_inst, inst_dir)
+        self.assertEqual(meta_hash, "xyz999")
+        self.assertIn("glog", meta_key)
+        self.assertIn("Debug", meta_key)
+
+    def test_mixed_deps_preserve_order(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            inst_built = os.path.join(tmpdir, "built")
+            os.makedirs(inst_built)
+            with open(os.path.join(inst_built, ".built-by-getdeps"), "w") as f:
+                f.write("h1")
+            inst_new = os.path.join(tmpdir, "new")
+            deps = [
+                ("snappy", "/inst/snappy", "h0", True),  # system pkg → SKIP
+                ("gflags", inst_built, "h1", False),  # already built → SKIP
+                ("glog", inst_new, "h2", False),  # needs fetch → MISS
+            ]
+            loader = self._make_loader(deps)
+            meta = cgd._precompute_dep_metadata(
+                loader, ["snappy", "gflags", "glog"], "MinSizeRel"
+            )
+        self.assertEqual([m[0] for m in meta], ["snappy", "gflags", "glog"])
+        self.assertEqual([m[1] for m in meta], [cgd._SKIP, cgd._SKIP, cgd._MISS])
+
+
+# ---------------------------------------------------------------------------
+# _parallel_check_and_download: parallel S3 check + download phase
+# ---------------------------------------------------------------------------
+
+
+class TestParallelCheckAndDownload(unittest.TestCase):
+    """_parallel_check_and_download promotes _MISS→_HIT via HEAD, downloads hits."""
+
+    def _miss(self, name, inst_dir, h="h1"):
+        return (name, cgd._MISS, inst_dir, h, cgd.cache_key(name, h, "MinSizeRel"))
+
+    def _skip(self, name):
+        return (name, cgd._SKIP, "", "", "")
+
+    def test_no_cache_url_returns_unchanged(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            meta = [self._miss("gflags", os.path.join(tmpdir, "gflags"))]
+            result = cgd._parallel_check_and_download(meta, "")
+        self.assertEqual(result[0][1], cgd._MISS)
+
+    def test_cache_hit_becomes_hit_and_is_downloaded(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            inst_dir = os.path.join(tmpdir, "gflags")
+            os.makedirs(inst_dir)
+            meta = [self._miss("gflags", inst_dir)]
+            with (
+                patch.object(cgd, "check_cache", return_value=True),
+                patch.object(cgd, "download_from_cache", return_value=True),
+            ):
+                result = cgd._parallel_check_and_download(meta, "http://cache")
+            self.assertEqual(result[0][1], cgd._HIT)
+            # marker must be written while tmpdir still exists
+            marker = os.path.join(inst_dir, ".built-by-getdeps")
+            self.assertTrue(os.path.exists(marker))
+
+    def test_cache_miss_stays_miss(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            meta = [self._miss("gflags", os.path.join(tmpdir, "gflags"))]
+            with patch.object(cgd, "check_cache", return_value=False):
+                result = cgd._parallel_check_and_download(meta, "http://cache")
+        self.assertEqual(result[0][1], cgd._MISS)
+
+    def test_download_failure_demotes_to_miss(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            inst_dir = os.path.join(tmpdir, "gflags")
+            os.makedirs(inst_dir)
+            meta = [self._miss("gflags", inst_dir)]
+            with (
+                patch.object(cgd, "check_cache", return_value=True),
+                patch.object(cgd, "download_from_cache", return_value=False),
+            ):
+                result = cgd._parallel_check_and_download(meta, "http://cache")
+        self.assertEqual(result[0][1], cgd._MISS)
+
+    def test_skip_entries_are_untouched(self):
+        meta = [self._skip("snappy"), self._skip("re2")]
+        with patch.object(cgd, "check_cache", return_value=True) as mock_check:
+            result = cgd._parallel_check_and_download(meta, "http://cache")
+            mock_check.assert_not_called()
+        self.assertEqual(result[0][1], cgd._SKIP)
+        self.assertEqual(result[1][1], cgd._SKIP)
+
+    def test_all_deps_downloaded_in_parallel(self):
+        """All cache hits must be downloaded regardless of order."""
+        call_order = []
+        with tempfile.TemporaryDirectory() as tmpdir:
+            deps = ["gflags", "glog", "boost", "folly", "fmt"]
+            meta = []
+            for name in deps:
+                d = os.path.join(tmpdir, name)
+                os.makedirs(d)
+                meta.append(self._miss(name, d))
+
+            def fake_check(_url, _key):
+                return True
+
+            def fake_download(_url, key, _dest):
+                call_order.append(key)
+                return True
+
+            with (
+                patch.object(cgd, "check_cache", side_effect=fake_check),
+                patch.object(cgd, "download_from_cache", side_effect=fake_download),
+            ):
+                result = cgd._parallel_check_and_download(meta, "http://cache")
+
+        self.assertTrue(all(r[1] == cgd._HIT for r in result))
+        self.assertEqual(len(call_order), len(deps))
+
+    def test_mixed_hits_and_misses(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            hit_dir = os.path.join(tmpdir, "gflags")
+            os.makedirs(hit_dir)
+            miss_dir = os.path.join(tmpdir, "glog")
+            meta = [
+                self._miss("gflags", hit_dir),
+                self._miss("glog", miss_dir),
+            ]
+
+            def fake_check(_url, key):
+                return "gflags" in key
+
+            with (
+                patch.object(cgd, "check_cache", side_effect=fake_check),
+                patch.object(cgd, "download_from_cache", return_value=True),
+            ):
+                result = cgd._parallel_check_and_download(meta, "http://cache")
+
+        self.assertEqual(result[0][1], cgd._HIT)
+        self.assertEqual(result[1][1], cgd._MISS)
+
+
+# ---------------------------------------------------------------------------
 # run-getdeps.py: print_info and print_error must go to stderr
 # ---------------------------------------------------------------------------
 
