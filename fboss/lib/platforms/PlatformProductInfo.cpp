@@ -94,11 +94,15 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_WEDGE400;
     } else if (
         modelName.find("Wedge800BACT") == 0 ||
-        modelName.find("WEDGE800BACT") == 0) {
+        modelName.find("WEDGE800BACT") == 0 ||
+        modelName.find("Wedge800BNHP") == 0 ||
+        modelName.find("WEDGE800BNHP") == 0) {
       type_ = PlatformType::PLATFORM_WEDGE800BACT;
     } else if (
         modelName.find("Wedge800CACT") == 0 ||
-        modelName.find("WEDGE800CACT") == 0) {
+        modelName.find("WEDGE800CACT") == 0 ||
+        modelName.find("Wedge800CNHP") == 0 ||
+        modelName.find("WEDGE800CNHP") == 0) {
       type_ = PlatformType::PLATFORM_WEDGE800CACT;
     } else if (modelName.find("DARWIN48V") == 0) {
       type_ = PlatformType::PLATFORM_DARWIN48V;
