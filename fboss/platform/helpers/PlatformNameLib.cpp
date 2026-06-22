@@ -51,6 +51,10 @@ std::string sanitizePlatformName(const std::string& platformNameFromBios) {
     return "NH4220F";
   }
 
+  if (platformNameUpper == "NH-5010-F") {
+    return "NH5010F";
+  }
+
   if (platformNameUpper == "NOVA4000" || platformNameUpper == "M4062NHP") {
     return "M4062NHP";
   }

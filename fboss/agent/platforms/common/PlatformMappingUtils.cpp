@@ -39,6 +39,7 @@
 #include "fboss/agent/platforms/common/morgan800cc/Morgan800ccPlatformMapping.h"
 #include "fboss/agent/platforms/common/nh4010f/Nh4010fPlatformMapping.h"
 #include "fboss/agent/platforms/common/nh4220f/Nh4220fPlatformMapping.h"
+#include "fboss/agent/platforms/common/nh5010f/Nh5010fPlatformMapping.h"
 #include "fboss/agent/platforms/common/saintpaul/SaintpaulPlatformMapping.h"
 #include "fboss/agent/platforms/common/tahan800bc/Tahan800bcPlatformMapping.h"
 #include "fboss/agent/platforms/common/tahansb800bc/Tahansb800bcPlatformMapping.h"
@@ -196,6 +197,10 @@ std::unique_ptr<PlatformMapping> initPlatformMapping(PlatformType type) {
       return platformMappingStr.empty()
           ? std::make_unique<Nh4220fPlatformMapping>()
           : std::make_unique<Nh4220fPlatformMapping>(platformMappingStr);
+    case PlatformType::PLATFORM_NH5010F:
+      return platformMappingStr.empty()
+          ? std::make_unique<Nh5010fPlatformMapping>()
+          : std::make_unique<Nh5010fPlatformMapping>(platformMappingStr);
     case PlatformType::PLATFORM_ICECUBE800BANW:
       return platformMappingStr.empty()
           ? std::make_unique<Icecube800banwPlatformMapping>()

@@ -37,6 +37,8 @@ set(SAI_PLATFORM_SRC
   fboss/agent/platforms/sai/SaiNh4010fPlatformPort.cpp
   fboss/agent/platforms/sai/SaiNh4220fPlatform.cpp
   fboss/agent/platforms/sai/SaiNh4220fPlatformPort.cpp
+  fboss/agent/platforms/sai/SaiNh5010fPlatform.cpp
+  fboss/agent/platforms/sai/SaiNh5010fPlatformPort.cpp
   fboss/agent/platforms/sai/SaiBcmIcecube800banwPlatform.cpp
   fboss/agent/platforms/sai/SaiBcmIcecube800bcPlatform.cpp
   fboss/agent/platforms/sai/SaiBcmM4062nhpPlatform.cpp
@@ -138,6 +140,7 @@ target_link_libraries(sai_platform
   icecube800bc_platform_mapping
   nh4010f_platform_mapping
   nh4220f_platform_mapping
+  nh5010f_platform_mapping
   m4062nhp_platform_mapping
   icetea800bc_platform_mapping
   j4sim_platform_mapping

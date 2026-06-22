@@ -234,6 +234,16 @@ target_link_libraries(nh4220f_bsp
   FBThrift::thriftcpp2
 )
 
+add_library(nh5010f_bsp
+  fboss/lib/bsp/nh5010f/Nh5010fBspPlatformMapping.cpp
+)
+
+target_link_libraries(nh5010f_bsp
+  bsp_platform_mapping
+  bsp_platform_mapping_cpp2
+  FBThrift::thriftcpp2
+)
+
 add_library(wedge800bact_bsp
   fboss/lib/bsp/wedge800bact/Wedge800BACTBspPlatformMapping.cpp
 )
@@ -323,6 +333,7 @@ target_link_libraries(qsfp_bsp_core
   tahansb800bc_bsp
   nh4010f_bsp
   nh4220f_bsp
+  nh5010f_bsp
   wedge800bact_bsp
   wedge800cact_bsp
   ladakh800bcls_bsp
