@@ -119,6 +119,15 @@ jobs:
           target_testbeds: "crow.*"
           tests: ${{ steps.smoke.outputs.tests }}
 
+      - name: Schedule Steller Eagle
+        id: schedule-steller-eagle
+        uses: ./.github/actions/fboss-schedule-test
+        with:
+          build_id: ${{ inputs.build_id }}
+          priority: 75
+          target_testbeds: "stlr.*"
+          tests: ${{ steps.smoke.outputs.tests }}
+
       - name: Aggregate batch IDs into JSON
         id: aggregate
         env:
@@ -127,6 +136,7 @@ jobs:
           W8C_ID: ${{ steps.schedule-wedge800c.outputs.batch_id }}
           MP3_ID: ${{ steps.schedule-minipack3.outputs.batch_id }}
           CE_ID: ${{ steps.schedule-crowned-eagle.outputs.batch_id }}
+          STLR_ID: ${{ steps.schedule-steller-eagle.outputs.batch_id }}
         run: |
           batches=$(jq -n \
             --arg ge "$GE_ID" \
@@ -134,12 +144,14 @@ jobs:
             --arg w8c "$W8C_ID" \
             --arg mp3 "$MP3_ID" \
             --arg ce "$CE_ID" \
+            --arg stlr "$STLR_ID" \
             '[
               {"pool_name":"Gold Eagle",    "batch_id":$ge},
               {"pool_name":"Wedge800B",     "batch_id":$w8b},
               {"pool_name":"Wedge800C",     "batch_id":$w8c},
               {"pool_name":"Minipack3",     "batch_id":$mp3},
-              {"pool_name":"Crowned Eagle", "batch_id":$ce}
+              {"pool_name":"Crowned Eagle", "batch_id":$ce},
+              {"pool_name":"Steller Eagle", "batch_id":$stlr}
             ]')
 
           echo "All pools scheduled:"

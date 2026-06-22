@@ -110,6 +110,9 @@ jobs:
           - name: "Crowned Eagle Testbeds"
             pattern: "crow.*"
             priority: 75
+          - name: "Steller Eagle Testbeds"
+            pattern: "stlr.*"
+            priority: 75
     uses: ./.github/workflows/fboss-itest.reusable.yml
     with:
       build_id: ${{ needs.monobuild.outputs.build_id }}
