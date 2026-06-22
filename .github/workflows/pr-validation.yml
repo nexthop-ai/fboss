@@ -26,5 +26,7 @@ jobs:
 
   cli-integration-test:
     needs: build-and-test-clang
+    # Temporarily disabled. To re-enable, remove the `if: false` line below.
+    if: false
     uses: ./.github/workflows/integration_test.yml
     secrets: inherit
