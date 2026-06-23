@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 #include <thrift/lib/cpp2/protocol/Serializer.h>
 
+#include "fboss/platform/config_lib/ConfigLib.h"
 #include "fboss/platform/platform_manager/ConfigValidator.h"
 
 using namespace ::testing;
@@ -145,6 +146,19 @@ TEST(ConfigValidatorTest, I2cAdaptersFromCpuValidation) {
 TEST(ConfigValidatorTest, ValidConfig) {
   auto config = getBasicConfig();
   EXPECT_TRUE(ConfigValidator().isValid(config));
+}
+
+TEST(ConfigValidatorTest, RealConfigsValid) {
+  // Regression coverage: committed platform_manager.json configs must pass
+  // full validation. Loads each baked config via ConfigLib so a malformed
+  // committed config is caught in CI.
+  for (const auto& platform : {"m4062nhp"}) {
+    XLOG(INFO) << "Validating platform_manager config for " << platform;
+    PlatformConfig config;
+    SimpleJSONSerializer::deserialize<PlatformConfig>(
+        ConfigLib().getPlatformManagerConfig(platform), config);
+    EXPECT_TRUE(ConfigValidator().isValid(config));
+  }
 }
 
 TEST(ConfigValidatorTest, IdpromBusDirectlyConnected) {

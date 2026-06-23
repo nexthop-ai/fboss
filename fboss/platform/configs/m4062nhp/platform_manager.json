@@ -83,7 +83,7 @@
               "deviceName": "i2c_master",
               "csrOffsetCalc": "0x40000 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 0,
-              "numAdapters": 8
+              "numAdapters": 4
             },
             {
               "pmUnitScopedNamePrefix": "SMB0_OSFP_I2C",
@@ -425,10 +425,6 @@
     "/run/devmap/i2c-busses/SMB0_IOB_I2C_1": "/SMB_SLOT@0/[SMB0_IOB_I2C_1]",
     "/run/devmap/i2c-busses/SMB0_IOB_I2C_2": "/SMB_SLOT@0/[SMB0_IOB_I2C_2]",
     "/run/devmap/i2c-busses/SMB0_IOB_I2C_3": "/SMB_SLOT@0/[SMB0_IOB_I2C_3]",
-    "/run/devmap/i2c-busses/SMB0_IOB_I2C_4": "/SMB_SLOT@0/[SMB0_IOB_I2C_4]",
-    "/run/devmap/i2c-busses/SMB0_IOB_I2C_5": "/SMB_SLOT@0/[SMB0_IOB_I2C_5]",
-    "/run/devmap/i2c-busses/SMB0_IOB_I2C_6": "/SMB_SLOT@0/[SMB0_IOB_I2C_6]",
-    "/run/devmap/i2c-busses/SMB0_IOB_I2C_7": "/SMB_SLOT@0/[SMB0_IOB_I2C_7]",
     "/run/devmap/i2c-busses/SMB1_IOB_I2C_0": "/SMB_SLOT@0/[SMB1_IOB_I2C_0]",
     "/run/devmap/i2c-busses/SMB1_IOB_I2C_1": "/SMB_SLOT@0/[SMB1_IOB_I2C_1]",
     "/run/devmap/i2c-busses/SMB1_IOB_I2C_2": "/SMB_SLOT@0/[SMB1_IOB_I2C_2]",
