@@ -518,6 +518,7 @@ class LinkTestRunner(BaseHwTestRunner):
                 "speed": info.speed,
                 "profileID": info.profile_id,
                 "ingressVlan": vlan_id,
+                "portType": 0,
             }
         )
         vlan = copy.deepcopy(next(v for v in sw["vlans"] if v["id"] == template))
@@ -548,10 +549,22 @@ class LinkTestRunner(BaseHwTestRunner):
         sw = base_json["sw"]
         vlan_of = {p["name"]: p["ingressVlan"] for p in sw["ports"]}
         ips_of = {i.get("vlanID"): i.get("ipAddresses", []) for i in sw["interfaces"]}
+        # Strip all ports sharing an xcvr slot with a cabled port (breakout siblings).
+        cabled_xcvr_prefixes = {
+            "/".join(n.split("/")[:2]) + "/"
+            for n in pairs
+        }
+        removed_names = {
+            p["name"]
+            for p in sw["ports"]
+            if p["name"] in pairs
+            or any(p["name"].startswith(pfx) for pfx in cabled_xcvr_prefixes)
+        }
+        removed_vlans = {vlan_of[n] for n in removed_names if n in vlan_of}
         cabled_vlans = {vlan_of[n] for n in pairs if n in vlan_of}
-        sw["ports"] = [p for p in sw["ports"] if p["name"] not in pairs]
+        sw["ports"] = [p for p in sw["ports"] if p["name"] not in removed_names]
         sw["vlans"] = [v for v in sw["vlans"] if v["id"] not in cabled_vlans]
-        sw["vlanPorts"] = [vp for vp in sw["vlanPorts"] if vp["vlanID"] not in cabled_vlans]
+        sw["vlanPorts"] = [vp for vp in sw["vlanPorts"] if vp["vlanID"] not in removed_vlans]
         sw["interfaces"] = [i for i in sw["interfaces"] if i.get("vlanID") not in cabled_vlans]
         for port in sw["ports"]:
             port["expectedLLDPValues"] = {}
