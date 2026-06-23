@@ -61,6 +61,18 @@ argument-hint: [JIRA] [branch] [DUT] [sample-config]
     to an invented fixture — production shapes surface edge cases (union
     fields, ordered lists, optional wrappers) that synthetic fixtures
     miss.
+- **Note**: if `acli` is not installed, it can be installed as follows:
+  ```bash
+  sudo dnf install -y 'dnf-command(config-manager)'
+  sudo dnf config-manager --add-repo https://acli.atlassian.com/linux/rpm/acli.repo
+  sudo dnf install -y acli
+  ```
+  Then check that `acli jira auth status` returns `✓ Authenticated`, otherwise
+  the user needs to authenticate with: `acli jira auth login` and use:
+  - Site: nexthopai.atlassian.net
+  - Email: $USER@nexthop.ai
+  - Authentication Type: api_token
+  Procure an API token from https://id.atlassian.com/manage-profile/security/api-tokens
 
 Mirror the JIRA transition in the shared FBOSS CLI tracking spreadsheet
 (see §0a) — set STATUS to `In Progress` for every row for these tickets,
