@@ -54,5 +54,5 @@ def _build_test_context():
     return {"filters": filters}
 
 
-def untiered_agent_hw_tests(sai_agent_test_runner):
+def test_untiered_agent_hw_tests(sai_agent_test_runner):
     assert sai_agent_test_runner.run_test(_build_test_context())
