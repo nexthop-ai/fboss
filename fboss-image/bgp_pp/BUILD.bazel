@@ -1,30 +1,34 @@
-# Bazel package for bgp_pp (bgp++ routing daemon).
-# - deps.bzl is referenced as //fboss/fboss-image/bgp_pp:deps.bzl from MODULE.bazel.
-# - distro_bgp_pp builds the bgp-pp RPM from the S3 tarball for use in image builds.
+# Bazel package for bgpd (bgp++ routing daemon).
+# NOTE: The directory is still named "bgp_pp" because MODULE.bazel (outside
+# this repo) references //fboss/fboss-image/bgp_pp:deps.bzl. The systemd
+# service and RPM have been renamed to "bgpd".
 load("//fboss:fboss_build_types.bzl", "LOAD_FBOSS_BUILDER_CMD")
 
 genrule(
-    name = "distro_bgp_pp",
+    name = "distro_bgpd",
     visibility = ["//fboss:__subpackages__"],
     srcs = [
+        # NOTE: @bgp_pp_tarball still uses the old name because the S3 artifact
+        # and MODULE.bazel repo rule have not been renamed yet.
         "@bgp_pp_tarball//file",
         "//bazel_lib:ln_or_cp",
         "//fboss/fboss-image/distro_cli:builder",
         "//fboss:fboss_builder_docker",
         "//fboss:nh-fboss-manifests",
         "build.sh",
-        "rpmbuild/SPECS/bgp_pp.spec",
-        "rpmbuild/SOURCES/bgp_pp.service",
+        "rpmbuild/SPECS/bgpd.spec",
+        "rpmbuild/SOURCES/bgpd.service",
     ],
-    outs = ["distro_bgp_pp.rpm"],
+    outs = ["distro_bgpd.rpm"],
     cmd = LOAD_FBOSS_BUILDER_CMD + """
+        # NOTE: tarball filename is still bgp_pp-1.0.tar.gz — the S3 artifact has not been renamed yet.
         ln -f $(location @bgp_pp_tarball//file) fboss/fboss-image/bgp_pp/rpmbuild/SOURCES/bgp_pp-1.0.tar.gz
         pushd fboss/fboss-image
-        jq '.["other_dependencies"] = [{"execute": ["bgp_pp/build.sh"], "artifact": "bgp-pp-1.0-1.x86_64.rpm"}]' nh-fboss-broadcom-xgs.json > bgp_pp.json
-        ./distro_cli/fboss-image build bgp_pp.json other_dependencies
+        jq '.["other_dependencies"] = [{"execute": ["bgp_pp/build.sh"], "artifact": "bgpd-1.0-1.x86_64.rpm"}]' nh-fboss-broadcom-xgs.json > bgpd.json
+        ./distro_cli/fboss-image build bgpd.json other_dependencies
         popd
 
-        $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/bgp_pp/rpmbuild/RPMS/x86_64/bgp-pp-*.x86_64.rpm $(location distro_bgp_pp.rpm)
+        $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/bgp_pp/rpmbuild/RPMS/x86_64/bgpd-*.x86_64.rpm $(location distro_bgpd.rpm)
     """,
     tags = ["no-sandbox"],
 )

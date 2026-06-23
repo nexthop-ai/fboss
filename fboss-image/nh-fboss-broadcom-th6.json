@@ -8,7 +8,7 @@
   },
   "other_dependencies": [
     { "download": "file:.nh-broadcom-th6/distro_nexthop_product_support.rpm" },
-    { "download": "file:.nh-broadcom-th6/distro_bgp_pp.rpm" },
+    { "download": "file:.nh-broadcom-th6/distro_bgpd.rpm" },
     { "download": "file:.nh-broadcom-th6/distro_flashrom.rpm" }
   ],
   "fboss-platform-stack": {

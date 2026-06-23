@@ -6,7 +6,7 @@
     "download": "file:.nh-cisco-s1/distro_kernel_6.11.tar"
   },
   "other_dependencies": [
-    { "download": "file:.nh-cisco-s1/distro_bgp_pp.rpm" },
+    { "download": "file:.nh-cisco-s1/distro_bgpd.rpm" },
     { "download": "file:.nh-cisco-s1/distro_flashrom.rpm" }
   ],
   "fboss-platform-stack": {

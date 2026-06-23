@@ -1,0 +1,3 @@
+# Temporary Bazel package marker so that nh/MODULE.bazel can reference
+# //fboss/fboss-image/bgpd:deps.bzl. Remove together with this directory
+# once fboss-image/bgp_pp/ is deleted as part of renaming to bgpd.

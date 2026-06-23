@@ -1,9 +1,11 @@
 #!/bin/bash
-# Build the bgp_pp (bgp++) RPM package.
+# Build the bgpd (bgp++) RPM package.
 #
 # This script runs INSIDE the distro build container. It expects the bgp++
 # binary tarball to already be present at rpmbuild/SOURCES/bgp_pp-1.0.tar.gz
 # (placed by Bazel via the @bgp_pp_tarball repo rule before the container starts).
+# NOTE: The tarball filename and repo rule still use the old "bgp_pp" naming
+# because the S3 artifact has not been renamed yet.
 
 set -euo pipefail
 
@@ -15,11 +17,11 @@ if [[ ! -f $TARBALL ]]; then
   exit 1
 fi
 
-dnf builddep -y --spec rpmbuild/SPECS/bgp_pp.spec
+dnf builddep -y --spec rpmbuild/SPECS/bgpd.spec
 
 rm -rf rpmbuild/RPMS/*
 mkdir -p rpmbuild/{RPMS,SRPMS,BUILD,BUILDROOT}
 
-rpmbuild -bb --define "_topdir $(pwd)/rpmbuild" rpmbuild/SPECS/bgp_pp.spec
+rpmbuild -bb --define "_topdir $(pwd)/rpmbuild" rpmbuild/SPECS/bgpd.spec
 
-cp rpmbuild/RPMS/x86_64/bgp-pp-*.x86_64.rpm /output/
+cp rpmbuild/RPMS/x86_64/bgpd-*.x86_64.rpm /output/

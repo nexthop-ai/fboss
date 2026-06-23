@@ -1,8 +1,10 @@
-Name: bgp-pp
+Name: bgpd
 Version: 1.0
 Release: 1
 Summary: Meta bgp++ routing daemon
 License: Meta
+# NOTE: Source tarball still uses the old "bgp_pp" naming because the S3
+# artifact has not been renamed yet.
 Source0: bgp_pp-%{version}.tar.gz
 BuildRequires: systemd-rpm-macros rpm cpio
 AutoReqProv: no
@@ -12,17 +14,18 @@ Meta bgp++ routing daemon for FBOSS-based network switches.
 Bundles the fb-platform010 compat runtime libraries required by bgpd_cpp.
 
 %prep
+# NOTE: tarball extracts to bgp_pp-%{version}/ — matches the S3 artifact layout.
 %setup -q -c -n bgp_pp-%{version}
 
 %install
 mkdir -p %{buildroot}/usr/sbin
 install -m 755 bgpd_cpp %{buildroot}/usr/sbin/bgpd_cpp
 
-mkdir -p %{buildroot}/etc/bgp_pp
-install -m 644 bgpcpp.conf %{buildroot}/etc/bgp_pp/bgpcpp.conf
+mkdir -p %{buildroot}/etc/bgpd
+install -m 644 bgpcpp.conf %{buildroot}/etc/bgpd/bgpcpp.conf
 
 mkdir -p %{buildroot}%{_unitdir}
-install -m 644 %{_sourcedir}/bgp_pp.service %{buildroot}%{_unitdir}/bgp_pp.service
+install -m 644 %{_sourcedir}/bgpd.service %{buildroot}%{_unitdir}/bgpd.service
 
 # Embed the compat-runtime libs (bgpd_cpp is dynamically linked against these)
 rpm2cpio fb-platform010-compat-runtime-*.x86_64.rpm | (cd %{buildroot} && cpio -idm)
@@ -35,16 +38,16 @@ ln -s /usr/local/fbcode/platform010-compat/lib %{buildroot}/usr/local/fbcode/pla
 %files
 %defattr(-,root,root,-)
 /usr/sbin/bgpd_cpp
-%config(noreplace) /etc/bgp_pp/bgpcpp.conf
-%{_unitdir}/bgp_pp.service
+%config(noreplace) /etc/bgpd/bgpcpp.conf
+%{_unitdir}/bgpd.service
 /usr/local/fbcode/platform010-compat/
 /usr/local/fbcode/platform010/
 
 %post
-systemctl enable bgp_pp.service
+systemctl enable bgpd.service
 
 %preun
-%systemd_preun bgp_pp.service
+%systemd_preun bgpd.service
 
 %postun
-%systemd_postun_with_restart bgp_pp.service
+%systemd_postun_with_restart bgpd.service
