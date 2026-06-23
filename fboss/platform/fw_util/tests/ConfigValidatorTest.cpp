@@ -1,7 +1,10 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
+#include <folly/logging/xlog.h>
 #include <gtest/gtest.h>
+#include <thrift/lib/cpp2/protocol/Serializer.h>
 
+#include "fboss/platform/config_lib/ConfigLib.h"
 #include "fboss/platform/fw_util/ConfigValidator.h"
 
 using namespace ::testing;
@@ -821,4 +824,18 @@ TEST(ConfigValidatorTest, ValidVersionTypeNotApplicable) {
   config.fwConfigs() = fwConfigs;
 
   EXPECT_TRUE(ConfigValidator().isValid(config));
+}
+
+TEST(ConfigValidatorTest, RealConfigsValid) {
+  // Regression coverage: committed fw_util configs must pass full validation.
+  // Loads each baked config via ConfigLib so a malformed committed config is
+  // caught in CI.
+  for (const auto& platform : {"m4062nhp"}) {
+    XLOG(INFO) << "Validating fw_util config for " << platform;
+    FwUtilConfig config;
+    apache::thrift::SimpleJSONSerializer::deserialize<FwUtilConfig>(
+        facebook::fboss::platform::ConfigLib().getFwUtilConfig(platform),
+        config);
+    EXPECT_TRUE(ConfigValidator().isValid(config));
+  }
 }

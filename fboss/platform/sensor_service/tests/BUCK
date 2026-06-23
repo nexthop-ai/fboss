@@ -50,8 +50,11 @@ cpp_unittest(
         "ConfigValidatorTest.cpp",
     ],
     deps = [
+        "//fboss/platform/config_lib:config_lib",
         "//fboss/platform/sensor_service:config_validator",
         "//fboss/platform/sensor_service/utilities:power_config_utils",
+        "//folly/logging:logging",
+        "//thrift/lib/cpp2/protocol:protocol",
     ],
 )
 

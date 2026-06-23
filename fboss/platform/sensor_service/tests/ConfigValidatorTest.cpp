@@ -1,7 +1,10 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
+#include <folly/logging/xlog.h>
 #include <gtest/gtest.h>
+#include <thrift/lib/cpp2/protocol/Serializer.h>
 
+#include "fboss/platform/config_lib/ConfigLib.h"
 #include "fboss/platform/sensor_service/ConfigValidator.h"
 #include "fboss/platform/sensor_service/utilities/PowerConfigUtils.h"
 
@@ -1304,4 +1307,18 @@ TEST(ConfigValidatorTest, VersionedTemperatureSensorWithoutThresholds) {
   pmUnitSensors.versionedSensors() = {versionedPmSensor};
 
   EXPECT_FALSE(ConfigValidator().isValid(config));
+}
+
+TEST(ConfigValidatorTest, RealConfigsValid) {
+  // Regression coverage: committed sensor_service configs must pass full
+  // validation. Loads each baked config via ConfigLib so a malformed
+  // committed config is caught in CI.
+  for (const auto& platform : {"m4062nhp"}) {
+    XLOG(INFO) << "Validating sensor_service config for " << platform;
+    SensorConfig config;
+    apache::thrift::SimpleJSONSerializer::deserialize<SensorConfig>(
+        facebook::fboss::platform::ConfigLib().getSensorServiceConfig(platform),
+        config);
+    EXPECT_TRUE(ConfigValidator().isValid(config));
+  }
 }

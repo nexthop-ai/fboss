@@ -1,7 +1,10 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
+#include <folly/logging/xlog.h>
 #include <gtest/gtest.h>
+#include <thrift/lib/cpp2/protocol/Serializer.h>
 
+#include "fboss/platform/config_lib/ConfigLib.h"
 #include "fboss/platform/fan_service/ConfigValidator.h"
 #include "fboss/platform/fan_service/if/gen-cpp2/fan_service_config_constants.h"
 #include "fboss/platform/fan_service/if/gen-cpp2/fan_service_config_types.h"
@@ -106,4 +109,18 @@ TEST(ConfigValidatorTest, ZoneConfig) {
   optic.opticName() = "OPTIC_0";
   EXPECT_TRUE(
       ConfigValidator().isValidZoneConfig(zone, {fan}, {sensor}, {optic}));
+}
+
+TEST(ConfigValidatorTest, RealConfigsValid) {
+  // Regression coverage: committed fan_service configs must pass full
+  // validation. Loads each baked config via ConfigLib so a malformed
+  // committed config is caught in CI.
+  for (const auto& platform : {"m4062nhp"}) {
+    XLOG(INFO) << "Validating fan_service config for " << platform;
+    FanServiceConfig config;
+    apache::thrift::SimpleJSONSerializer::deserialize<FanServiceConfig>(
+        facebook::fboss::platform::ConfigLib().getFanServiceConfig(platform),
+        config);
+    EXPECT_TRUE(ConfigValidator().isValid(config));
+  }
 }

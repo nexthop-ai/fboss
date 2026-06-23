@@ -14,7 +14,10 @@ cpp_unittest(
     # See: https://fburl.com/parameterized-test-not-supported
     supports_static_listing = False,
     deps = [
+        "//fboss/platform/config_lib:config_lib",
         "//fboss/platform/fw_util:core",
+        "//folly/logging:logging",
+        "//thrift/lib/cpp2/protocol:protocol",
     ],
 )
 
