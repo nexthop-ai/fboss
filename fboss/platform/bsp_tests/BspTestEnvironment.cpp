@@ -68,7 +68,12 @@ void BspTestEnvironment::SetUp() {
   }
 }
 
-void BspTestEnvironment::TearDown() {}
+void BspTestEnvironment::TearDown() {
+  // Must run here, not in main() after RUN_ALL_TESTS(): gtest owns and deletes
+  // this global environment during RUN_ALL_TESTS(), so reading recordedErrors_
+  // afterwards via the singleton is a use-after-free.
+  printAllRecordedErrors();
+}
 
 const platform_manager::PlatformConfig&
 BspTestEnvironment::getPlatformManagerConfig() const {
