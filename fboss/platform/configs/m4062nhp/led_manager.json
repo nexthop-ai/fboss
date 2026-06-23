@@ -7,10 +7,6 @@
     "FAN": {
       "presentLedSysfsPath": "/sys/class/leds/fan_led:blue:status/brightness",
       "absentLedSysfsPath": "/sys/class/leds/fan_led:amber:status/brightness"
-    },
-    "PSU": {
-      "presentLedSysfsPath": "/sys/class/leds/psu_led:blue:status/brightness",
-      "absentLedSysfsPath": "/sys/class/leds/psu_led:amber:status/brightness"
     }
   },
   "fruConfigs": [
