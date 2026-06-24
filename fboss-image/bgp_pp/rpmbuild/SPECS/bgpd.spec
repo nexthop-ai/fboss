@@ -21,8 +21,8 @@ Bundles the fb-platform010 compat runtime libraries required by bgpd_cpp.
 mkdir -p %{buildroot}/usr/sbin
 install -m 755 bgpd_cpp %{buildroot}/usr/sbin/bgpd_cpp
 
-mkdir -p %{buildroot}/etc/bgpd
-install -m 644 bgpcpp.conf %{buildroot}/etc/bgpd/bgpcpp.conf
+mkdir -p %{buildroot}/etc/coop
+install -m 644 bgpcpp.conf %{buildroot}/etc/coop/bgpcpp.conf
 
 mkdir -p %{buildroot}%{_unitdir}
 install -m 644 %{_sourcedir}/bgpd.service %{buildroot}%{_unitdir}/bgpd.service
@@ -38,7 +38,7 @@ ln -s /usr/local/fbcode/platform010-compat/lib %{buildroot}/usr/local/fbcode/pla
 %files
 %defattr(-,root,root,-)
 /usr/sbin/bgpd_cpp
-%config(noreplace) /etc/bgpd/bgpcpp.conf
+%config(noreplace) /etc/coop/bgpcpp.conf
 %{_unitdir}/bgpd.service
 /usr/local/fbcode/platform010-compat/
 /usr/local/fbcode/platform010/
