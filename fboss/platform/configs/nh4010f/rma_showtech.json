@@ -1,0 +1,18 @@
+{
+  "i2cBusIgnore": [
+    "Synopsys DesignWare I2C adapter",
+    "SMBus PIIX4 adapter port 0 at 0b00",
+    "SMBus PIIX4 adapter port 1 at 0b20",
+    "SMBus PIIX4 adapter port 2 at 0b00"
+  ],
+  "psus": [
+    "/run/devmap/sensors/PSU1",
+    "/run/devmap/sensors/PSU2"
+  ],
+  "i2cDumpDevices": [
+    "/run/devmap/sensors/DPM",
+    "/run/devmap/sensors/DPM_2",
+    "/run/devmap/sensors/SCM_TEMP_SENSOR",
+    "/run/devmap/sensors/MGMT_TEMP_SENSOR"
+  ]
+}

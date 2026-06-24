@@ -1,0 +1,10 @@
+{
+  "i2cBusIgnore": [],
+  "psus": [],
+  "i2cDumpDevices": [
+    "/run/devmap/cplds/MCB_CPLD",
+    "/run/devmap/cplds/SCM_CPLD",
+    "/run/devmap/cplds/SMB_CPLD",
+    "/run/devmap/sensors/MCB_PWRBRK_MONITOR"
+  ]
+}
