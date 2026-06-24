@@ -1,5 +1,6 @@
 {
   "distribution_formats": {
+    "usb": "nh-fboss-cisco-s1.iso",
     "pxe": "nh-fboss-cisco-s1.tar"
   },
   "kernel": {

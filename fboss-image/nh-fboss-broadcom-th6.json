@@ -1,5 +1,6 @@
 {
   "distribution_formats": {
+    "usb": "nh-fboss-broadcom-th6.iso",
     "pxe": "nh-fboss-broadcom-th6.tar",
     "onie": "nh-fboss-broadcom-th6.bin"
   },

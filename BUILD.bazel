@@ -346,6 +346,7 @@ heavy_genrule(
         "sdk_dependencies.txt",
     ],
     outs = [
+        "nh-fboss-broadcom-xgs.iso",
         "nh-fboss-broadcom-xgs.bin",
         "nh-fboss-broadcom-xgs.tar",
     ],
@@ -377,6 +378,7 @@ heavy_genrule(
         ./distro_cli/fboss-image build nh-fboss-broadcom-xgs.json 2>&1
         popd
 
+        $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.iso $(location nh-fboss-broadcom-xgs.iso)
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.tar $(location nh-fboss-broadcom-xgs.tar)
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.bin $(location nh-fboss-broadcom-xgs.bin)
     """ + delete_build_products_in_ci([
@@ -451,6 +453,7 @@ heavy_genrule(
         "sdk_dependencies.txt",
     ],
     outs = [
+        "nh-fboss-broadcom-th6.iso",
         "nh-fboss-broadcom-th6.bin",
         "nh-fboss-broadcom-th6.tar",
     ],
@@ -481,6 +484,7 @@ heavy_genrule(
         ./distro_cli/fboss-image build nh-fboss-broadcom-th6.json 2>&1
         popd
 
+        $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-th6.iso $(location nh-fboss-broadcom-th6.iso)
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-th6.bin $(location nh-fboss-broadcom-th6.bin)
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-th6.tar $(location nh-fboss-broadcom-th6.tar)
     """ + delete_build_products_in_ci([
@@ -554,6 +558,7 @@ heavy_genrule(
         "sdk_dependencies.txt",
     ],
     outs = [
+        "nh-fboss-cisco-s1.iso",
         "nh-fboss-cisco-s1.tar",
     ],
     cmd = LOAD_FBOSS_BUILDER_CMD + """
@@ -581,6 +586,7 @@ heavy_genrule(
         ./distro_cli/fboss-image build nh-fboss-cisco-s1.json 2>&1
         popd
 
+        $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-cisco-s1.iso $(location nh-fboss-cisco-s1.iso)
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-cisco-s1.tar $(location nh-fboss-cisco-s1.tar)
     """ + delete_build_products_in_ci([
         "fboss/fboss-image/.nh-cisco-s1",
@@ -705,12 +711,15 @@ heavy_genrule(
     tags = ["no-sandbox"],
 )
 
+upload_build_artifact("nh-fboss-broadcom-xgs.iso")
 upload_build_artifact("nh-fboss-broadcom-xgs.bin")
 upload_build_artifact("nh-fboss-broadcom-xgs.tar")
 upload_build_artifact("fboss_forwarding_stack_tests_broadcom_xgs.tar.zst")
+upload_build_artifact("nh-fboss-broadcom-th6.iso")
 upload_build_artifact("nh-fboss-broadcom-th6.bin")
 upload_build_artifact("nh-fboss-broadcom-th6.tar")
 upload_build_artifact("fboss_forwarding_stack_tests_broadcom_th6.tar.zst")
+upload_build_artifact("nh-fboss-cisco-s1.iso")
 upload_build_artifact("nh-fboss-cisco-s1.tar")
 upload_build_artifact("fboss_forwarding_stack_tests_cisco_s1.tar.zst")
 upload_build_artifact("fboss_platform_stack_tests.tar.zst")

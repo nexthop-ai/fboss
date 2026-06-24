@@ -1,5 +1,6 @@
 {
   "distribution_formats": {
+    "usb": "nh-fboss-broadcom-xgs.iso",
     "pxe": "nh-fboss-broadcom-xgs.tar",
     "onie": "nh-fboss-broadcom-xgs.bin"
   },
