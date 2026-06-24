@@ -181,7 +181,10 @@ TEST_F(AgentQphRollbackTest, rollbackWithQPHConfig) {
   };
 
   auto verify = [this] {
-    auto origState = getProgrammedState();
+    // Drain pending state updates (e.g. the async switch run state write
+    // triggered on transition to CONFIGURED) before snapshotting, so the
+    // snapshot matches the state the rollback updates operate on.
+    auto origState = waitForStateUpdates(getSw());
 
     // Perform a no-op rollback with QPH config present
     EXPECT_NO_THROW(
