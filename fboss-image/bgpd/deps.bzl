@@ -1,10 +1,7 @@
-# Temporary shim — allows nh/MODULE.bazel to migrate from
-# //fboss/fboss-image/bgp_pp:deps.bzl to //fboss/fboss-image/bgpd:deps.bzl
-# without a chicken-and-egg CI breakage. Remove this directory once
-# fboss-image/bgp_pp/ is deleted as part of renaming to bgpd.
-
 load("//bazel_lib:s3_file.bzl", "s3_file")
 
+# NOTE: The repo rule name ("bgp_pp_tarball") and S3 path still use the old
+# "bgp_pp" naming because the S3 artifact has not been renamed yet.
 def _bgpd_deps_impl(_):
     s3_file(
         name = "bgp_pp_tarball",
