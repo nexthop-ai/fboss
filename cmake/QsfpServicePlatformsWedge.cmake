@@ -56,6 +56,7 @@ target_link_libraries(qsfp_platforms_wedge
   nh4220f_platform_mapping
   nh5010f_platform_mapping
   wedge800bact_platform_mapping
+  wedge800bnhp_platform_mapping
   wedge800cact_platform_mapping
   ladakh800bcls_platform_mapping
   leh800bcls_platform_mapping

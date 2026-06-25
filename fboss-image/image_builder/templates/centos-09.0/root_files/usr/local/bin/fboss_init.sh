@@ -39,7 +39,7 @@ get_platform_dir() {
   fi
 
   # Map DMI platform names to config directory names where they differ.
-  # Wedge800B: NHP devices use the same configs as ACT (same ASIC, different vendor).
+  # Wedge800C: NHP devices use the same configs as ACT (same ASIC, different vendor).
   local config_name
   config_name=$(map_platform_to_config "$platform")
   log "Config name: $config_name"
@@ -62,7 +62,6 @@ map_platform_to_config() {
     # legacy name to the renamed config dir (NOS-6469). Units reporting
     # "M4062NHP" resolve to the same dir via the default below.
     ["nova4000"]="m4062nhp"
-    ["wedge800bnhp"]="wedge800bact"
     ["wedge800cnhp"]="wedge800cact"
   )
   echo "${platform_map[$platform]:-$platform}"
