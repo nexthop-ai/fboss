@@ -125,12 +125,9 @@
 #include "fboss/cli/fboss2/commands/delete/interface/CmdDeleteInterface.h"
 #include "fboss/cli/fboss2/commands/delete/interface/ipv6/CmdDeleteInterfaceIpv6.h"
 #include "fboss/cli/fboss2/commands/delete/interface/ipv6/ndp/CmdDeleteInterfaceIpv6Ndp.h"
-<<<<<<<
-=======
 #include "fboss/cli/fboss2/commands/delete/protocol/CmdDeleteProtocol.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/static/CmdDeleteProtocolStatic.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.h"
->>>>>>>
 #include "fboss/cli/fboss2/commands/delete/tunnel/CmdDeleteTunnel.h"
 #include "fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/CmdDeleteTunnelIpInIp.h"
 #include "fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/decap/CmdDeleteTunnelIpInIpDecap.h"
