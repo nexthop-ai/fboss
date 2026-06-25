@@ -537,6 +537,11 @@ class BuckParser:
             k = item_match.group(1)
             if k not in result:  # don't overwrite list matches
                 result[k] = [item_match.group(2)]
+        # Match "key": None (no services), e.g. thrift_srcs = {"foo.thrift": None}
+        for item_match in re.finditer(r'"([^"]+)"\s*:\s*None\b', dict_content):
+            k = item_match.group(1)
+            if k not in result:  # don't overwrite list/string matches
+                result[k] = []
         return result
 
     def _extract_external_deps(self, block: str, key: str) -> list[str]:
@@ -1111,7 +1116,6 @@ def generate_module_bazel_getdeps(
 SYSTEM_LINKOPTS = {
     "folly": [
         "-levent",
-        "-ldouble-conversion",
         "-lz",
         "-lssl",
         "-lcrypto",

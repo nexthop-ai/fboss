@@ -19,16 +19,16 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 import bazelify as b2b
 from bazelify import (
-    DEFAULT_INSTALL_DIR,
-    THIRD_PARTY_MAP,
+    _make_build_file_content,
+    _synthetic_prebuilt_dep,
     BuckParser,
     BuckTarget,
     BuildFileGenerator,
+    DEFAULT_INSTALL_DIR,
     DepResolver,
-    PrebuiltDep,
-    _make_build_file_content,
-    _synthetic_prebuilt_dep,
     discover_prebuilt_deps,
+    PrebuiltDep,
+    THIRD_PARTY_MAP,
 )
 
 # ---------------------------------------------------------------------------
@@ -184,6 +184,44 @@ class TestExtractStringList(unittest.TestCase):
         exported = self.parser._extract_string_list(block, "exported_deps")
         self.assertEqual(deps, ["//impl:dep"])
         self.assertEqual(exported, ["//pub:dep"])
+
+
+class TestExtractDict(unittest.TestCase):
+    """Tests for BuckParser._extract_dict (e.g. thrift_srcs)."""
+
+    def setUp(self):
+        self.parser = _make_parser()
+
+    def test_list_value_form(self):
+        block = '(thrift_srcs = {"foo.thrift": []},)'
+        self.assertEqual(
+            self.parser._extract_dict(block, "thrift_srcs"), {"foo.thrift": []}
+        )
+
+    def test_service_list_value_form(self):
+        block = '(thrift_srcs = {"foo.thrift": ["MyService"]},)'
+        self.assertEqual(
+            self.parser._extract_dict(block, "thrift_srcs"),
+            {"foo.thrift": ["MyService"]},
+        )
+
+    def test_none_value_form(self):
+        """thrift_srcs = {"foo.thrift": None} must still register the file.
+
+        FBOSS BUCK files commonly use None (no services) as the dict value;
+        without handling it the thrift target was silently dropped.
+        """
+        block = '(thrift_srcs = {"foo.thrift": None},)'
+        self.assertEqual(
+            self.parser._extract_dict(block, "thrift_srcs"), {"foo.thrift": []}
+        )
+
+    def test_none_value_form_multiline(self):
+        block = '(\n    thrift_srcs = {"bgp_update_group.thrift": None},\n)'
+        self.assertEqual(
+            self.parser._extract_dict(block, "thrift_srcs"),
+            {"bgp_update_group.thrift": []},
+        )
 
 
 # ---------------------------------------------------------------------------

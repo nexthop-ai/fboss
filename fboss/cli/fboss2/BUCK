@@ -393,6 +393,13 @@ cpp_library(
 # bazelify: add_src = oss/CmdShowUtils.cpp
 # bazelify: add_src = utils/oss/CmdClientUtils.cpp
 # bazelify: add_src = utils/oss/CmdUtils.cpp
+# The bgp policy/profiler show commands have no BUCK file of their own; their
+# .cpp files (which carry the CmdHandler::run() explicit instantiations) are
+# only listed in the Meta-internal fboss2-routing-protocol binary, which
+# bazelify excludes. cmake compiles them into fboss2_lib (see
+# cmake/CliFboss2.cmake), so add them here to match.
+# bazelify: add_src = commands/show/bgp/policy/CmdShowBgpPolicy.cpp
+# bazelify: add_src = commands/show/bgp/profiler/CmdShowBgpProfiler.cpp
 # fboss2-lib compiles utils/CmdClientUtils.cpp (#includes TBgpService.h) and
 # commands/show/bgp/CmdShowUtils.cpp (#includes bgp_thrift_types.h). bazelify.py
 # strips the //neteng/ bgp deps below, so re-add the hand-written OSS bgp_thrift
