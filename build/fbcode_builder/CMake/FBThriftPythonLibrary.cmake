@@ -51,7 +51,7 @@ macro(fb_find_thrift_python_runtime)
     if(NOT _thrift_result EQUAL 0 OR NOT THRIFT_PYTHON_SITE_PACKAGES)
       # Not pip-installed yet — auto-install from getdeps build output
       file(GLOB _fbthrift_wheels
-        "${_getdeps_root}/fbthrift-python/share/thrift/wheels/*.whl"
+        "${_getdeps_root}/fbthrift-python*/share/thrift/wheels/*.whl"
       )
       if(_fbthrift_wheels)
         list(GET _fbthrift_wheels 0 _fbthrift_whl)
@@ -97,8 +97,8 @@ macro(fb_find_thrift_python_runtime)
     if(NOT _folly_result EQUAL 0)
       # Search the getdeps install prefix for folly-python site-packages
       file(GLOB _folly_sp_dirs
-        "${_getdeps_root}/folly-python/lib64/python*/site-packages"
-        "${_getdeps_root}/folly-python/lib/python*/site-packages"
+        "${_getdeps_root}/folly-python*/lib64/python*/site-packages"
+        "${_getdeps_root}/folly-python*/lib/python*/site-packages"
       )
       foreach(_sp IN LISTS _folly_sp_dirs)
         if(EXISTS "${_sp}/folly/__init__.py")
