@@ -49,6 +49,46 @@
           "desiredValue": 1
         }
       }
+    },
+    {
+      "fruName": "FAN5",
+      "fruType": "FAN",
+      "presenceDetection": {
+        "sysfsFileHandle": {
+          "presenceFilePath": "/run/devmap/sensors/FAN_CTRL/fan5_present",
+          "desiredValue": 1
+        }
+      }
+    },
+    {
+      "fruName": "FAN6",
+      "fruType": "FAN",
+      "presenceDetection": {
+        "sysfsFileHandle": {
+          "presenceFilePath": "/run/devmap/sensors/FAN_CTRL/fan6_present",
+          "desiredValue": 1
+        }
+      }
+    },
+    {
+      "fruName": "FAN7",
+      "fruType": "FAN",
+      "presenceDetection": {
+        "sysfsFileHandle": {
+          "presenceFilePath": "/run/devmap/sensors/FAN_CTRL/fan7_present",
+          "desiredValue": 1
+        }
+      }
+    },
+    {
+      "fruName": "FAN8",
+      "fruType": "FAN",
+      "presenceDetection": {
+        "sysfsFileHandle": {
+          "presenceFilePath": "/run/devmap/sensors/FAN_CTRL/fan8_present",
+          "desiredValue": 1
+        }
+      }
     }
   ]
 }
