@@ -286,6 +286,34 @@ perform_build() {
   fi
 }
 
+#
+# Nexthop-only
+# Print sccache statistics and the sccache error log to help debug cache
+# performance and build failures.
+#
+# This is wired to an EXIT trap (below) so it runs on BOTH success and
+# failure. perform_build() runs in a `set -e` subshell, so a failed build
+# (e.g. sccache failing to start) aborts the script before it reaches the end
+# of the file -- printing this inline would only ever show it on success,
+# which is exactly when we don't need it.
+#
+print_sccache_diagnostics() {
+  log "sccache statistics for ${stack_label} stack"
+  if command -v sccache &>/dev/null; then
+    sccache -s || echo "Failed to get sccache statistics"
+    if [ -f /tmp/sccache.log ]; then
+      echo "sccache error log:"
+      cat /tmp/sccache.log
+    fi
+  else
+    echo "sccache command not found"
+  fi
+}
+trap print_sccache_diagnostics EXIT
+#
+# End Nexthop-only
+#
+
 # First build: standard build with current settings
 if [ "$need_sai" -eq 1 ]; then
   (
@@ -304,25 +332,5 @@ else
     perform_build "" "" ""
   )
 fi
-
-#
-# Nexthop-only
-# Print sccache statistics to debug cache performance
-#
-
-log "sccache statistics for ${stack_label} stack"
-if command -v sccache &>/dev/null; then
-  sccache -s || echo "Failed to get sccache statistics"
-  if [ -f /tmp/sccache.log ]; then
-    echo "sccache error log:"
-    cat /tmp/sccache.log
-  fi
-else
-  echo "sccache command not found"
-fi
-
-#
-# End Nexthop-only
-#
 
 log "build_fboss_stack.sh END"
