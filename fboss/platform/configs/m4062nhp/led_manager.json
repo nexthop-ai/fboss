@@ -7,6 +7,10 @@
     "FAN": {
       "presentLedSysfsPath": "/sys/class/leds/fan_led:blue:status/brightness",
       "absentLedSysfsPath": "/sys/class/leds/fan_led:amber:status/brightness"
+    },
+    "PSU": {
+      "presentLedSysfsPath": "/sys/class/leds/psu_led:blue:status/brightness",
+      "absentLedSysfsPath": "/sys/class/leds/psu_led:amber:status/brightness"
     }
   },
   "fruConfigs": [
@@ -86,6 +90,46 @@
       "presenceDetection": {
         "sysfsFileHandle": {
           "presenceFilePath": "/run/devmap/sensors/FAN_CTRL/fan8_present",
+          "desiredValue": 1
+        }
+      }
+    },
+    {
+      "fruName": "PSU1",
+      "fruType": "PSU",
+      "presenceDetection": {
+        "sysfsFileHandle": {
+          "presenceFilePath": "/run/devmap/sensors/PSU_PRESENT/psu1_present",
+          "desiredValue": 1
+        }
+      }
+    },
+    {
+      "fruName": "PSU2",
+      "fruType": "PSU",
+      "presenceDetection": {
+        "sysfsFileHandle": {
+          "presenceFilePath": "/run/devmap/sensors/PSU_PRESENT/psu2_present",
+          "desiredValue": 1
+        }
+      }
+    },
+    {
+      "fruName": "PSU3",
+      "fruType": "PSU",
+      "presenceDetection": {
+        "sysfsFileHandle": {
+          "presenceFilePath": "/run/devmap/sensors/PSU_PRESENT/psu3_present",
+          "desiredValue": 1
+        }
+      }
+    },
+    {
+      "fruName": "PSU4",
+      "fruType": "PSU",
+      "presenceDetection": {
+        "sysfsFileHandle": {
+          "presenceFilePath": "/run/devmap/sensors/PSU_PRESENT/psu4_present",
           "desiredValue": 1
         }
       }

@@ -75,6 +75,11 @@
               "pmUnitScopedName": "SMB_IOB_ASIC_TEMP",
               "deviceName": "asic_temp",
               "csrOffset": "0x24"
+            },
+            {
+              "pmUnitScopedName": "SMB_IOB_PSU_PRESENT",
+              "deviceName": "psu_present",
+              "csrOffset": "0x2c"
             }
           ],
           "i2cAdapterBlockConfigs": [
@@ -421,6 +426,7 @@
     "/run/devmap/fpgas/SMB_IOB_0": "/SMB_SLOT@0/[SMB_IOB_0]",
     "/run/devmap/fpgas/SMB_IOB_1": "/SMB_SLOT@0/[SMB_IOB_1]",
     "/run/devmap/sensors/ASIC_TEMP": "/SMB_SLOT@0/[SMB_IOB_ASIC_TEMP]",
+    "/run/devmap/sensors/PSU_PRESENT": "/SMB_SLOT@0/[SMB_IOB_PSU_PRESENT]",
     "/run/devmap/i2c-busses/SMB0_IOB_I2C_0": "/SMB_SLOT@0/[SMB0_IOB_I2C_0]",
     "/run/devmap/i2c-busses/SMB0_IOB_I2C_1": "/SMB_SLOT@0/[SMB0_IOB_I2C_1]",
     "/run/devmap/i2c-busses/SMB0_IOB_I2C_2": "/SMB_SLOT@0/[SMB0_IOB_I2C_2]",
@@ -706,6 +712,7 @@
     "nh_fpga_fan",
     "nh_fpga_led",
     "nh_fpga_port_led",
+    "nh_fpga_psu",
     "tmp464",
     "adm1266",
     "pmbus",
