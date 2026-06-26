@@ -24,6 +24,10 @@ TARGET_NAMES = ("agent-benchmarks", "forwarding-stack", "platform-stack")
 # Maps getdeps package name to library name when they differ.
 LIB_NAME_OVERRIDES = {
     "fmt-python": "fmt",
+    "folly-python":  "folly",
+    "wangle-python": "wangle",
+    "fizz-python": "fizz",
+    "mvfst-python": "mvfst",
 }
 
 # Global definitions describing what we package for each target.
@@ -31,11 +35,11 @@ LIB_NAME_OVERRIDES = {
 COMMON_LIBS = [
     "gflags",
     "glog",
-    "folly",
+    "folly-python",
     "fmt-python",
-    "wangle",
-    "fizz",
-    "mvfst",
+    "wangle-python",
+    "fizz-python",
+    "mvfst-python",
 ]
 
 FORWARDING_BINARIES = [
