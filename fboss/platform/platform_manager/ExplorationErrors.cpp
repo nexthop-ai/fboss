@@ -34,6 +34,17 @@ bool isExpectedError(
     }
   }
 
+  // TODO (NOS-10597): the m4062nhp SCM IDPROM is currently held by a leftover
+  // ACPI PRP0001 node and will report busy when platform_manager tries to own
+  // it.
+  if (*platformConfig.platformName() == "M4062NHP" &&
+      (errorType == ExplorationErrorType::I2C_DEVICE_CREATE ||
+       errorType == ExplorationErrorType::IDPROM_READ ||
+       errorType == ExplorationErrorType::RUN_DEVMAP_SYMLINK) &&
+      devicePath == "/[IDPROM]") {
+    return true;
+  }
+
   // RTM outlet tsensor may not be present on EVT1A hardware for ladakh800bcls
   if (*platformConfig.platformName() == "LADAKH800BCLS" &&
       (errorType == ExplorationErrorType::I2C_DEVICE_CREATE ||

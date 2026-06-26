@@ -6,6 +6,11 @@
   "slotTypeConfigs": {
     "SCM_SLOT": {
       "numOutgoingI2cBuses": 10,
+      "idpromConfig": {
+        "busName": "CPU_BUS@3",
+        "address": "0x50",
+        "kernelDeviceName": "24c64"
+      },
       "pmUnitName": "SCM"
     },
     "SMB_SLOT": {
@@ -396,15 +401,12 @@
       ]
     }
   },
-  "___TODO_NOS_8448___": "TODO(NOS-8448): switch to CPU_BUS@N virtual names to disambiguate the two Synopsys CPU I2C buses on P2 Black Mamba",
   "i2cAdaptersFromCpu": [
-    "Synopsys DesignWare I2C adapter",
-    "SMBus PIIX4 adapter port 0 at 0b00",
-    "SMBus PIIX4 adapter port 2 at 0b00",
-    "SMBus PIIX4 adapter port 1 at 0b20"
+    "CPU_BUS@3"
   ],
   "symbolicLinkToDevicePath": {
     "/run/devmap/eeproms/CHASSIS_EEPROM": "/[CHASSIS_EEPROM]",
+    "/run/devmap/eeproms/SCM_EEPROM": "/[IDPROM]",
     "/run/devmap/eeproms/PSU1_EEPROM": "/SMB_SLOT@0/[PSU1_EEPROM]",
     "/run/devmap/eeproms/PSU2_EEPROM": "/SMB_SLOT@0/[PSU2_EEPROM]",
     "/run/devmap/eeproms/PSU3_EEPROM": "/SMB_SLOT@0/[PSU3_EEPROM]",
