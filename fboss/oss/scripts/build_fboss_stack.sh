@@ -198,7 +198,16 @@ perform_build() {
 
   # Save the manifests because we must modify them
   tar -cf manifests_snapshot.tar build
-  tar -xf fboss/oss/stable_commits/latest_stable_hashes.tar.gz
+
+  #
+  # Nexthop-only
+  #
+  # Don't extract the stable hashes because we commit them directly. These stable hashes will be one-sync behind and may
+  # not work.
+  #
+  #tar -xf fboss/oss/stable_commits/latest_stable_hashes.tar.gz
+  #
+
   chmod -R a+r build/fbcode_builder/manifests
 
   if [ "$stack_type" = "platform" ]; then
