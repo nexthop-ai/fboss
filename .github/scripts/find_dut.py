@@ -51,30 +51,51 @@ from typing import Iterator, List
 # Supported FBOSS platform prefixes: Golden Eagle, Wedge, Minipack
 FBOSS_PLATFORMS = ("gold",)
 
-# Known devices that have Secure Boot enforced and will fail to load the FBOSS image
-SECURE_BOOT_DUTS= {"gold101", "gold208", "gold210"}
-
 
 def log(msg: str) -> None:
     print(msg, file=sys.stderr, flush=True)
 
 
-def _is_incompatible_dut(name: str) -> bool:
+def _parse_secure_boot_duts(returncode: int, stdout: str, stderr: str) -> set[str]:
+    """Parse the output of 'nh attributes device filter secure_boot_enforced=true --json'.
+
+    On any failure the error is logged as a warning and an empty set is returned"""
+    if returncode != 0:
+        log(
+            f"::warning::Failed to query secure-boot DUTs from attributes service "
+            f"(exit {returncode}): {stderr.strip()}"
+        )
+        return set()
+
+    try:
+        records = json.loads(stdout)
+        duts = {r["device_name"] for r in records if r.get("device_name")}
+    except (json.JSONDecodeError, KeyError) as e:
+        log(f"::warning::Failed to parse secure-boot DUTs from attributes service: {e}")
+        return set()
+
+    log(f"Secure-boot DUTs from attributes service: {sorted(duts) or '(none)'}")
+    return duts
+
+
+def _is_incompatible_dut(name: str, secure_boot_duts: set[str]) -> bool:
     """Return True if the DUT should be excluded from selection.
 
     Blocks:
-    - Exact matches in SECURE_BOOT_DUTS
+    - Devices with secure boot enforced (from the attributes service)
     - gold1xx P1 units: differ enough from P2 that major changes are
     required before FBOSS works.
     """
-    if name in SECURE_BOOT_DUTS:
+    if name in secure_boot_duts:
         return True
     if name.startswith("gold1"):
         return True
     return False
 
 
-def _iter_matching_duts(duts: List[dict], dut_prefix: str) -> Iterator[str]:
+def _iter_matching_duts(
+    duts: List[dict], dut_prefix: str, secure_boot_duts: set[str]
+) -> Iterator[str]:
     """Yield DUT names matching the prefix that are healthy, in-service, and not blocked."""
     for dut in duts:
         name = dut.get("name", "")
@@ -82,21 +103,27 @@ def _iter_matching_duts(duts: List[dict], dut_prefix: str) -> Iterator[str]:
             name.startswith(dut_prefix)
             and dut.get("in_service") is True
             and dut.get("healthy") is True
-            and not _is_incompatible_dut(name)
+            and not _is_incompatible_dut(name, secure_boot_duts)
         ):
             yield name
 
 
-def parse_all_duts_from_output(duts: List[dict], dut_prefix: str | None = None) -> List[str]:
+def parse_all_duts_from_output(
+    duts: List[dict],
+    dut_prefix: str | None = None,
+    secure_boot_duts: set[str] | None = None,
+) -> List[str]:
     """Return all matching DUT names, shuffled.
 
     If dut_prefix is None, searches across all FBOSS_PLATFORMS.
     """
+    if secure_boot_duts is None:
+        secure_boot_duts = set()
     prefixes = (dut_prefix,) if dut_prefix else FBOSS_PLATFORMS
     seen: set[str] = set()
     results: List[str] = []
     for prefix in prefixes:
-        for name in _iter_matching_duts(duts, prefix):
+        for name in _iter_matching_duts(duts, prefix, secure_boot_duts):
             if name not in seen:
                 seen.add(name)
                 results.append(name)
@@ -113,21 +140,39 @@ def main() -> None:
         args = args[:idx] + args[idx + 2:]
     dut_prefix: str | None = args[0] if args else None
 
-    log("Running 'ng tb show available --output json' to find DUT(s)...")
+    log("Running 'ng tb show available' and querying attributes service in parallel...")
 
     try:
-        proc = subprocess.run(
+        tb_proc = subprocess.Popen(
             ["ng", "tb", "show", "available", "--output", "json"],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
-            check=False,
         )
     except Exception as e:  # noqa: BLE001
-        log(f"::error::Failed to run 'ng tb show available --output json': {e}")
+        log(f"::error::Failed to launch 'ng tb show available': {e}")
         sys.exit(1)
 
-    output = proc.stdout or ""
+    try:
+        attr_proc = subprocess.Popen(
+            ["nh", "attributes", "device", "filter", "secure_boot_enforced=true", "--json"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        attr_stdout, attr_stderr = None, None
+    except Exception as e:  # noqa: BLE001
+        log(f"::warning::Failed to launch 'nh attributes device filter': {e}")
+        attr_proc = None
+        attr_stdout, attr_stderr = "", ""
+        attr_returncode = 0
+
+    tb_stdout, _ = tb_proc.communicate()
+    if attr_proc is not None:
+        attr_stdout, attr_stderr = attr_proc.communicate()
+        attr_returncode = attr_proc.returncode
+
+    output = tb_stdout or ""
     log("ng tb show available output:")
     if output:
         if not output.endswith("\n"):
@@ -135,9 +180,9 @@ def main() -> None:
         sys.stderr.write(output)
         sys.stderr.flush()
 
-    if proc.returncode != 0:
+    if tb_proc.returncode != 0:
         log("::error::'ng tb show available --output json' exited with non-zero status")
-        sys.exit(proc.returncode or 1)
+        sys.exit(tb_proc.returncode or 1)
 
     try:
         dut_list = json.loads(output)
@@ -145,7 +190,8 @@ def main() -> None:
         log(f"::error::Failed to parse JSON from 'ng tb show available --output json': {e}")
         sys.exit(1)
 
-    duts = parse_all_duts_from_output(dut_list, dut_prefix)
+    secure_boot_duts = _parse_secure_boot_duts(attr_returncode, attr_stdout, attr_stderr)
+    duts = parse_all_duts_from_output(dut_list, dut_prefix, secure_boot_duts)
     if not duts:
         log(
             "::warning::No healthy and in_service FBOSS DUT available. Skipping integration tests."
