@@ -10,6 +10,7 @@ cpp_unittest(
         "CmdConfigAppliedInfoTest.cpp",
         "CmdConfigArpTest.cpp",
         "CmdConfigHistoryTest.cpp",
+        "CmdConfigHostnameTest.cpp",
         "CmdConfigIcmpV4UnavailableSrcAddrTest.cpp",
         "CmdConfigInterfaceIpv6NdpTest.cpp",
         "CmdConfigInterfaceSwitchportAccessVlanTest.cpp",

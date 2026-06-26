@@ -19,6 +19,7 @@ cpp_binary(
     srcs = [
         "ConfigAdminDistanceTest.cpp",
         "ConfigArpTest.cpp",
+        "ConfigHostnameTest.cpp",
         "ConfigConcurrentSessionsTest.cpp",
         "ConfigIcmpV4UnavailableSrcAddrTest.cpp",
         "ConfigInterfaceDescriptionTest.cpp",

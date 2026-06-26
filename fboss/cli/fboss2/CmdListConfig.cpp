@@ -15,6 +15,7 @@
 #include "fboss/cli/fboss2/commands/config/admin_distance/CmdConfigAdminDistance.h"
 #include "fboss/cli/fboss2/commands/config/arp/CmdConfigArp.h"
 #include "fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h"
+#include "fboss/cli/fboss2/commands/config/hostname/CmdConfigHostname.h"
 #include "fboss/cli/fboss2/commands/config/icmpv4_unavailable_src_addr/CmdConfigIcmpV4UnavailableSrcAddr.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceQueuingPolicy.h"
@@ -157,6 +158,12 @@ const CommandTree& kConfigCommandTree() {
        "Show history of committed config revisions",
        commandHandler<CmdConfigHistory>,
        argRegistrar<CmdConfigHistoryTraits>},
+
+      {"config",
+       "hostname",
+       "Set switch hostname",
+       commandHandler<CmdConfigHostname>,
+       argRegistrar<CmdConfigHostnameTraits>},
 
       {"config",
        "icmpv4-unavailable-src-addr",
