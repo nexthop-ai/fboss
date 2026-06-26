@@ -846,9 +846,7 @@ def _synthetic_prebuilt_dep(name: str, manifest_info: dict) -> PrebuiltDep:
     )
 
 
-def _discover_getdeps_graph(
-    scratch_path: str,
-) -> list[dict]:
+def _discover_getdeps_graph(scratch_path: str) -> list[dict]:
     """Discover the getdeps dependency graph by importing getdeps internals.
 
     Returns a list of dicts (in topological build order), each containing:
@@ -1234,9 +1232,7 @@ SYSTEM_LIB_STUBS: dict[str, str] = {
 
 
 def _make_build_file_content(  # noqa: PLR0911, PLR0912, PLR0915
-    dep: PrebuiltDep,
-    bazel_name: str,
-    inter_deps: list[str] | None = None,
+    dep: PrebuiltDep, bazel_name: str, inter_deps: list[str] | None = None
 ) -> str | None:
     """Generate build_file_content for a pre-built dep.
 
@@ -2639,10 +2635,7 @@ def _detect_folly_f14_mode(folly_dep: PrebuiltDep) -> int | None:
         return None
     try:
         result = subprocess.run(
-            ["nm", str(libfolly)],
-            capture_output=True,
-            text=True,
-            check=False,
+            ["nm", str(libfolly)], capture_output=True, text=True, check=False
         )
         # Look for the defined (T) F14LinkCheck symbol.
         # The mangled name encodes the mode as E0, E1, or E2.
@@ -2848,14 +2841,10 @@ Examples:
         help="Show what would be generated without writing files",
     )
     parser.add_argument(
-        "--verbose",
-        "-v",
-        action="store_true",
-        help="Show detailed output",
+        "--verbose", "-v", action="store_true", help="Show detailed output"
     )
     parser.add_argument(
-        "--target",
-        help="Only convert a specific target (e.g., //fboss/agent:core)",
+        "--target", help="Only convert a specific target (e.g., //fboss/agent:core)"
     )
     parser.add_argument(
         "--generate-excludes",
@@ -2876,9 +2865,7 @@ Examples:
         help="Scratch directory for getdeps builds",
     )
     parser.add_argument(
-        "--cache-url",
-        default="",
-        help="HTTP cache URL for dep tarballs",
+        "--cache-url", default="", help="HTTP cache URL for dep tarballs"
     )
     parser.add_argument(
         "--if-needed",
@@ -2971,10 +2958,7 @@ def main():  # noqa: PLR0912, PLR0915
     print("Generating MODULE.bazel...")
     if args.use_getdeps_rules:
         module_content = generate_module_bazel_getdeps(
-            prebuilt_deps,
-            getdeps_graph,
-            args.scratch_path,
-            args.cache_url,
+            prebuilt_deps, getdeps_graph, args.scratch_path, args.cache_url
         )
     else:
         module_content = generate_module_bazel(prebuilt_deps)

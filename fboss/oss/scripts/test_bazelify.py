@@ -154,9 +154,7 @@ class TestExtractStringList(unittest.TestCase):
         block = '(name = "foo", exported_deps = ["//exported:only"],)'
         result = self.parser._extract_string_list(block, "deps")
         self.assertEqual(
-            result,
-            [],
-            "exported_deps must not be returned when searching for 'deps'",
+            result, [], "exported_deps must not be returned when searching for 'deps'"
         )
 
     def test_deps_after_comma(self):
@@ -403,9 +401,7 @@ class TestThriftLibraryTranslation(unittest.TestCase):
         with TemporaryDirectory() as d:
             gen = self._make_generator(Path(d))
             # A thrift file with no service definitions
-            target = self._make_thrift_target(
-                thrift_srcs={"types.thrift": []},
-            )
+            target = self._make_thrift_target(thrift_srcs={"types.thrift": []})
             result = gen._translate_thrift_library(target)
             self.assertIsNotNone(result)
 
@@ -413,9 +409,7 @@ class TestThriftLibraryTranslation(unittest.TestCase):
         """When thrift file contains services, the translator should note it."""
         with TemporaryDirectory() as d:
             gen = self._make_generator(Path(d))
-            target = self._make_thrift_target(
-                thrift_srcs={"ctrl.thrift": []},
-            )
+            target = self._make_thrift_target(thrift_srcs={"ctrl.thrift": []})
             result = gen._translate_thrift_library(target)
             self.assertIsNotNone(result)
 
@@ -523,9 +517,7 @@ class TestResolveAcceptsBuckTarget(unittest.TestCase):
 
     def test_resolve_with_buck_target(self):
         target = BuckTarget(
-            name="mylib",
-            rule_type="cpp_library",
-            buck_path="//fboss/agent",
+            name="mylib", rule_type="cpp_library", buck_path="//fboss/agent"
         )
         resolver = DepResolver(prebuilt_deps={}, all_targets={})
         # Should not raise — from_target must be BuckTarget, not str
@@ -596,9 +588,7 @@ class TestCcTestGetsMain(unittest.TestCase):
 
             # Verify gtest_main is NOT used (we use test_main instead)
             self.assertNotIn(
-                "gtest_main",
-                content,
-                "cc_test should use test_main, not gtest_main",
+                "gtest_main", content, "cc_test should use test_main, not gtest_main"
             )
 
 
@@ -661,8 +651,7 @@ class TestBoostAndFollyLink(unittest.TestCase):
         Uses a committed fixture target so this test is self-contained.
         """
         result = self._bazel_run(
-            "test",
-            "//fboss/oss/scripts/bazel_test_fixtures:boost_test",
+            "test", "//fboss/oss/scripts/bazel_test_fixtures:boost_test"
         )
         self.assertEqual(
             result.returncode, 0, f"bazel test failed:\n{result.stderr[-500:]}"
@@ -678,8 +667,7 @@ class TestBoostAndFollyLink(unittest.TestCase):
         unless the F14 detail archive is force-linked via cc_import(alwayslink).
         """
         result = self._bazel_run(
-            "test",
-            "//fboss/oss/scripts/bazel_test_fixtures:f14_test",
+            "test", "//fboss/oss/scripts/bazel_test_fixtures:f14_test"
         )
         self.assertEqual(
             result.returncode, 0, f"bazel test failed:\n{result.stderr[-500:]}"
@@ -694,8 +682,7 @@ class TestBoostAndFollyLink(unittest.TestCase):
         Runs via `bazel test` to verify the binary not only links but executes.
         """
         result = self._bazel_run(
-            "test",
-            "//fboss/oss/scripts/bazel_test_fixtures:gtest_main_test",
+            "test", "//fboss/oss/scripts/bazel_test_fixtures:gtest_main_test"
         )
         self.assertEqual(
             result.returncode, 0, f"bazel test failed:\n{result.stderr[-500:]}"
