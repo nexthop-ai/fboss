@@ -15,7 +15,11 @@ import csv
 import copy
 import json
 import tempfile
+import hashlib
+import shutil
+import tarfile
 import xml.etree.ElementTree as ET
+import subprocess
 from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
@@ -64,6 +68,72 @@ def _enforce_min_failure_duration(run_test):
 
 
 # Map normalized model (from device DB model name) to FBOSS config codename
+# Env the orchestrator (TestInstanceFboss._resolve_artifact_urls) sets.  The
+# orchestrator owns *what* to use — it resolves the Nexis tarball URLs (from a
+# build_id) or discovers the locally-built CMake build dir(s) — and the runner
+# just consumes what it's handed for its STACK: a tarball URL (fetch + extract)
+# or a local build/fboss dir (pack from binaries + repo configs).
+_ENV_BUILD_ID = "FBOSS_BUILD_ID"
+_STACK_FORWARDING = "forwarding"
+_STACK_PLATFORM = "platform"
+# Per-stack env: a Nexis CloudStack tarball URL, or a local build/fboss dir.
+_ENV_TARBALL_URL = {
+    _STACK_FORWARDING: "FBOSS_FORWARDING_TARBALL_URL",
+    _STACK_PLATFORM: "FBOSS_PLATFORM_TARBALL_URL",
+}
+_ENV_LOCAL_DIR = {
+    _STACK_FORWARDING: "FBOSS_FORWARDING_LOCAL_DIR",
+    _STACK_PLATFORM: "FBOSS_PLATFORM_LOCAL_DIR",
+}
+
+# Per-stack share/ shipped to every runner on that stack. Forwarding tests read
+# these configs (--config, --skip-known-bad-tests, --enable-production-features);
+# they all live in the forwarding test tarball (package.py FORWARDING_TEST_EXTRA)
+# and in the repo, so they resolve on both the Nexis and local paths. Platform
+# tests read no share/ configs (run_test.py drives them by --type), so that set
+# is empty. The forwarding tree is ~19 MB vs ~1 GB per test binary, so we ship
+# all of it rather than a per-runner subset that can silently miss a file — only
+# the binaries are worth slicing per runner (see each runner's BINARIES).
+_STACK_SHARE: dict[str, tuple[str, ...]] = {
+    _STACK_FORWARDING: (
+        "share/hw_test_configs/",
+        "share/hw_known_bad_tests/",
+        "share/sai_hw_unsupported_tests/",
+        "share/production_features/",
+        "share/qsfp_test_configs/",
+        "share/qsfp_known_bad_tests/",
+        "share/qsfp_unsupported_tests/",
+        "share/link_test_configs/",
+        "share/link_known_bad_tests/",
+        "share/hw_benchmark_tests/",
+        "share/fboss2_integration_known_bad_tests/",
+    ),
+    _STACK_PLATFORM: (),
+}
+
+_FBOSS_ROOT_ON_DUT = "/opt/fboss"
+
+# Two caches amortize two different costs (see _deploy_artifacts).
+# <namespace> is the Nexis build_id, or "local-<fingerprint>" for a locally-built
+# CMake tree.  The local fingerprint digests the (size, mtime_ns) of just this
+# runner's uploaded sources (see _local_build_fingerprint), so a rebuilt binary
+# bumps it while an in-place relink (which leaves the dir mtime untouched) is
+# never masked.
+#   - host extract cache (Nexis only):
+#       /tmp/fboss-test-cache/<namespace>/<tarball>/extracted/
+#       the downloaded+extracted tarball, shared by every runner on that build_id.
+#       Amortizes the expensive Nexis download+extract.  Local builds need no such
+#       cache — _pack_slice reads the binaries + repo configs straight from disk.
+#   - DUT marker (content-addressed):
+#       /opt/fboss/.deployed/<RunnerName>.sha  holds the sha256 of the slice
+#       last deployed for that runner.  If it matches the slice we're about to
+#       deploy, the exact same bytes are already on the DUT — skip the SCP +
+#       on-DUT extract.  No build_id; one file per runner (overwritten), so it
+#       never accumulates.
+_HOST_CACHE_ROOT = "/tmp/fboss-test-cache"
+_DUT_MARKER_DIR = f"{_FBOSS_ROOT_ON_DUT}/.deployed"
+
+# Map normalized HWSKU (from device DB model name) to FBOSS config codename
 # for hw_test_configs (SAI/agent tests). Only applies to SaiTestRunner and
 # SaiAgentTestRunner.
 #
@@ -186,6 +256,18 @@ class BaseHwTestRunner(ABC):
 
     _REMOTE_CONFIG_PATH: str
 
+    # Which FBOSS stack this runner's binaries come from.  Subclasses set this
+    # to _STACK_FORWARDING or _STACK_PLATFORM; it selects the Nexis artifact
+    # name and the local CMake build subdir.
+    STACK: str = ""
+
+    # Paths inside the extracted tarball that this runner needs on the DUT.
+    # Trailing "/" requests a directory; everything else is treated as a single
+    # file.  These are resolved against the extracted tarball root on the
+    # runner host and SCP'd to the matching location under /opt/fboss/ on
+    # the DUT.
+    REQUIRED_PATHS: tuple[str, ...] = ()
+
     def __init__(self):
         self.connected = False
         self.ssh_client = None
@@ -232,7 +314,7 @@ class BaseHwTestRunner(ABC):
         logger.info("filepath %s", self.tc["filepath"])
 
     def setup(self, test_context):
-        """Set up SSH/SCP connections to the DUT."""
+        """Set up SSH/SCP connections to the DUT and deploy this runner's test artifacts."""
         logger.debug("Setting up test")
         self.tc = test_context.copy()
         self.getenvvars()
@@ -250,6 +332,287 @@ class BaseHwTestRunner(ABC):
             debug=True,
         )
         self.connected = True
+
+        self._deploy_artifacts()
+
+    def _deploy_artifacts(self) -> None:
+        """Deploy this runner's test binary slice onto the DUT. """
+        runner_name = type(self).__name__
+
+        # The orchestrator hands us, for this runner's STACK, either a local
+        # build/fboss dir (preferred when present) or a Nexis tarball URL.
+        local_dir = os.environ.get(_ENV_LOCAL_DIR[self.STACK])
+        url = os.environ.get(_ENV_TARBALL_URL[self.STACK])
+        if local_dir:
+            namespace = f"local-{self._local_build_fingerprint(local_dir)}"
+        elif url:
+            # Nexis build: FBOSS_BUILD_ID is the cache/marker namespace.
+            namespace = os.environ.get(_ENV_BUILD_ID)
+            if not namespace:
+                raise RuntimeError(
+                    f"{runner_name}: {_ENV_TARBALL_URL[self.STACK]} is set but "
+                    f"{_ENV_BUILD_ID} is not — the Nexis cache namespace is required."
+                )
+        else:
+            raise RuntimeError(
+                f"{runner_name} requires {_ENV_LOCAL_DIR[self.STACK]} (local build) "
+                f"or {_ENV_TARBALL_URL[self.STACK]} (Nexis tarball URL).  The "
+                "orchestrator (nhtests-run) sets these; pass --test-build-id or "
+                "build the FBOSS stack locally."
+            )
+
+        # Bound the host cache to this single namespace — drop any other
+        # build's cached contents so it can't accumulate over time.
+        self._prune_stale_cache(namespace)
+
+        # Resolve this runner's REQUIRED_PATHS to (source, archive-path) pairs.
+        # Local sources are read straight from the build dir + repo; a Nexis build
+        # is downloaded+extracted (and cached) first, then sliced out of that tree.
+        if local_dir:
+            members = self._slice_members(
+                lambda rel: self._local_source_path(rel, local_dir)
+            )
+        else:
+            extract_dir = self._ensure_extract_cached(url, namespace)
+            members = self._slice_members(lambda rel: os.path.join(extract_dir, rel))
+
+        slice_tar = self._pack_slice(runner_name, members, namespace)
+        try:
+            slice_sha = self._sha256(slice_tar)
+            if self._is_slice_on_dut(runner_name, slice_sha):
+                logger.info(
+                    "%s slice already on DUT (sha %s); skipping deploy",
+                    runner_name, slice_sha[:12],
+                )
+                return
+            self._deploy_slice_to_dut(slice_tar, runner_name, slice_sha)
+        finally:
+            Path(slice_tar).unlink(missing_ok=True)
+
+    @staticmethod
+    def _fboss_repo_root() -> Path:
+        """The fboss repo root (this file is at <root>/tests/libs/test_runner/)."""
+        return Path(__file__).resolve().parents[3]
+
+    def _local_build_fingerprint(self, build_fboss_dir: str) -> str:
+        """Stable per-build id for this runner's local CMake slice. """
+        h = hashlib.sha256()
+        for rel in self.REQUIRED_PATHS:
+            rel_clean = rel.rstrip("/")
+            src = self._local_source_path(rel_clean, build_fboss_dir)
+            if not os.path.isfile(src):  # not built yet, or a share/ dir
+                continue
+            st = os.stat(src)
+            h.update(f"{rel_clean}\0{st.st_size}\0{st.st_mtime_ns}\0".encode())
+        return h.hexdigest()[:16]
+
+    @staticmethod
+    def _sha256(path: str) -> str:
+        """sha256 hex digest of a file, read in chunks (slices can be large)."""
+        h = hashlib.sha256()
+        with open(path, "rb") as f:
+            for chunk in iter(lambda: f.read(1024 * 1024), b""):
+                h.update(chunk)
+        return h.hexdigest()
+
+    def _slice_members(self, resolve) -> list[tuple[str, str]]:
+        """Resolve REQUIRED_PATHS to (source_path, archive_name) pairs to pack.
+
+        ``resolve(rel)`` maps a REQUIRED_PATHS entry (trailing "/" stripped) to its
+        source on the runner host — the local build dir / repo for a local build,
+        or the extracted tarball tree for a Nexis build.  The archive name is the
+        relative path itself, i.e. its on-DUT location under /opt/fboss.  Packing
+        straight from these sources means no staging copy is needed to line the
+        archive paths up (see _pack_slice).
+
+        Also catches drift between this runner's manifest and the build packager
+        (fboss/oss/scripts/package.py): a missing source means the build
+        moved/renamed something or the manifest is stale, so fail loud here rather
+        than partway through running the test.
+        """
+        members: list[tuple[str, str]] = []
+        missing: list[str] = []
+        for rel in self.REQUIRED_PATHS:
+            rel_clean = rel.rstrip("/")
+            src = resolve(rel_clean)
+            if os.path.exists(src):
+                members.append((src, rel_clean))
+            else:
+                missing.append(rel)
+        if missing:
+            raise RuntimeError(
+                f"{type(self).__name__} REQUIRED_PATHS not found: {missing}.  Either "
+                f"fboss/oss/scripts/package.py changed what it produces, or the "
+                f"runner's manifest is stale."
+            )
+        return members
+
+    def _local_source_path(self, rel_dest: str, build_fboss_dir: str) -> str:
+        """Map a REQUIRED_PATHS dest back to its local source.
+
+        Mirrors fboss/oss/scripts/package.py's test_files mapping:
+          - ``share/<x>``                  -> ``<repo>/fboss/oss/<x>``
+          - ``bin/python_tests/<x>``       -> ``<repo>/fboss/oss/python_tests/<x>``
+          - ``bin/<x>.py`` | setup_fboss_env -> ``<repo>/fboss/oss/scripts/run_scripts/<x>``
+          - ``bin/<binary>``               -> ``<build_dir>/build/fboss/<binary>``
+        """
+        oss = self._fboss_repo_root() / "fboss" / "oss"
+        if rel_dest.startswith("share/"):
+            return str(oss / rel_dest[len("share/"):])
+        if rel_dest.startswith("bin/python_tests/"):
+            return str(oss / "python_tests" / rel_dest[len("bin/python_tests/"):])
+        if rel_dest.startswith("bin/"):
+            name = rel_dest[len("bin/"):]
+            if name.endswith(".py") or name == "setup_fboss_env":
+                return str(oss / "scripts" / "run_scripts" / name)
+            return os.path.join(build_fboss_dir, name)
+        raise RuntimeError(
+            f"{type(self).__name__}: don't know the local source for REQUIRED_PATH "
+            f"{rel_dest!r}; extend _local_source_path to match package.py."
+        )
+
+    @staticmethod
+    def _prune_stale_cache(namespace: str) -> None:
+        """Bound the host cache to a single namespace.
+
+        Deletes every cache namespace other than ``namespace`` so
+        can't accumulate builds over time
+        """
+        root = _HOST_CACHE_ROOT
+        if not os.path.isdir(root):
+            return
+        for name in os.listdir(root):
+            if name != namespace:
+                logger.info("Pruning stale host cache namespace: %s", name)
+                shutil.rmtree(os.path.join(root, name), ignore_errors=True)
+
+    def _is_slice_on_dut(self, runner_name: str, slice_sha: str) -> bool:
+        """True if the DUT already holds this runner's slice with the same content."""
+        marker = f"{_DUT_MARKER_DIR}/{runner_name}.sha"
+        exit_status, output = self.ssh_client.run_cmd(f"cat {marker} 2>/dev/null")
+        return exit_status == 0 and output.strip() == slice_sha
+
+    def _ensure_extract_cached(self, url: str, build_id: str) -> str:
+        """Ensure the tarball is extracted in the host cache; return the path.
+
+        Cache layout: the extracted contents live under
+        `<cache_root>/<build_id>/<tarball-basename>/extracted/`.  Download +
+        extract into a staging dir, then rename it into place.  Any leftover
+        staging from a failed run is cleared on the next attempt.
+        """
+        tarball_name = os.path.basename(url.split("?")[0])
+        cache_dir = f"{_HOST_CACHE_ROOT}/{build_id}/{tarball_name}"
+        extracted_dir = f"{cache_dir}/extracted"
+
+        if os.path.isdir(extracted_dir):
+            logger.info(
+                "Test artifact cache hit: build=%s tarball=%s",
+                build_id, tarball_name,
+            )
+            return extracted_dir
+
+        logger.info(
+            "Test artifact cache miss; downloading: build=%s tarball=%s",
+            build_id, tarball_name,
+        )
+        os.makedirs(cache_dir, exist_ok=True)
+        staging = f"{cache_dir}/staging"
+        shutil.rmtree(staging, ignore_errors=True)  # clear any partial leftover
+        os.makedirs(staging)
+
+        tarball_path = os.path.join(staging, "_tarball.tar.zst")
+        self._fetch(url, tarball_path)
+        subprocess.run(["tar", "-C", staging, "-xf", tarball_path], check=True)
+        Path(tarball_path).unlink(missing_ok=True)
+        os.rename(staging, extracted_dir)
+        return extracted_dir
+
+    def _pack_slice(
+        self,
+        runner_name: str,
+        members: list[tuple[str, str]],
+        namespace: str,
+    ) -> str:
+        """Pack this runner's slice into a tar to ship to the DUT.
+
+        Adds each (source, archive_name) pair straight into the archive, reading
+        the files in place from the local build dir / repo (or the extracted Nexis
+        tree) — no staging copy is needed to line the on-DUT paths up.  Directories
+        (share/) are added recursively, and tarfile carries each file's mode, so
+        the exec bit on binaries survives.
+        """
+        slice_tar = f"{_HOST_CACHE_ROOT}/{namespace}/{runner_name}-slice.tar"
+        os.makedirs(os.path.dirname(slice_tar), exist_ok=True)
+        logger.info(
+            "Packing slice tar: runner=%s members=%d", runner_name, len(members)
+        )
+        # "w" truncates, so a leftover from a previous failed run is harmless.
+        with tarfile.open(slice_tar, "w") as tar:
+            for src, arcname in members:
+                tar.add(src, arcname=arcname)
+        return slice_tar
+
+    def _deploy_slice_to_dut(
+        self, slice_tar: str, runner_name: str, slice_sha: str
+    ) -> None:
+        """SCP the slice tar, extract into /opt/fboss, then record its sha.
+
+        Extract + sha-write are chained with `&&` so the marker can only hold a
+        sha once the extract succeeded.  Cleanup of the slice tar on the DUT
+        runs in `finally` regardless of outcome.
+        """
+        remote_slice = f"/tmp/fboss-{runner_name}-slice.tar"
+        marker = f"{_DUT_MARKER_DIR}/{runner_name}.sha"
+        try:
+            logger.info("Copying slice tar to DUT at %s", remote_slice)
+            exit_status, output = self.scp_client.put_file(slice_tar, remote_slice)
+            if exit_status != 0:
+                raise RuntimeError(
+                    f"Failed to copy slice tar for {runner_name} to DUT: {output}"
+                )
+
+            logger.info(
+                "Extracting slice tar on DUT into %s and recording sha %s",
+                _FBOSS_ROOT_ON_DUT, slice_sha[:12],
+            )
+            exit_status, output = self.ssh_client.run_cmd(
+                f"sudo mkdir -p {_DUT_MARKER_DIR} && "
+                f"sudo tar -C {_FBOSS_ROOT_ON_DUT} -xf {remote_slice} && "
+                f"echo {slice_sha} | sudo tee {marker} > /dev/null"
+            )
+            if exit_status != 0:
+                raise RuntimeError(
+                    f"Failed to extract slice tar for {runner_name} on DUT: {output}"
+                )
+        finally:
+            cleanup_status, cleanup_output = self.ssh_client.run_cmd(
+                f"sudo rm -f {remote_slice}"
+            )
+            if cleanup_status != 0:
+                logger.warning(
+                    "Failed to clean up slice tar on DUT: %s", cleanup_output
+                )
+
+        logger.info("Deployed %s test artifacts to DUT", runner_name)
+
+    def _fetch(self, url: str, dest_path: str) -> None:
+        """Fetch a Nexis tarball to dest_path on the runner host.
+
+        Always a CloudStack HTTP(S) URL (the orchestrator only ever resolves
+        *_TARBALL_URL to one); fetched with wget for parity with the prepare-side
+        artifact fetch — same retry / redirect semantics, same CloudStack-friendly
+        defaults.  Local builds never reach here: they're handed a *_LOCAL_DIR and
+        packed straight from disk (see _deploy_artifacts / _pack_slice).
+        """
+        result = subprocess.run(
+            ["wget", "--quiet", "--timeout=300", "--tries=3", "-O", dest_path, url],
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        if result.returncode != 0:
+            raise RuntimeError(
+                f"wget of {url} failed (exit={result.returncode}): {result.stderr.strip()}"
+            )
 
     def set_filters(self, src_filepath, dst_filepath):
         """Create and upload test filter file to DUT."""
@@ -404,10 +767,18 @@ class SaiTestRunner(BaseHwTestRunner):
         config_name = _HW_TEST_CONFIG_NAME.get(model, model)
         logger.info("model=%s hw_test_config=%s", model, config_name)
         return f"sai --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON{_sai_skip_known_bad(model)}"
+    STACK = _STACK_FORWARDING
+    BINARIES = ("bin/sai_test-sai_impl",)
+    REQUIRED_PATHS = (*BINARIES, *_STACK_SHARE[STACK])
 
 
 class SaiAgentTestRunner(BaseHwTestRunner):
     """Runner for SAI agent tests."""
+
+    STACK = _STACK_FORWARDING
+    # Both binaries ship: --agent-run-mode picks mono vs multi at run time.
+    BINARIES = ("bin/sai_agent_hw_test-sai_impl", "bin/multi_switch_agent_hw_test")
+    REQUIRED_PATHS = (*BINARIES, *_STACK_SHARE[STACK])
 
     @staticmethod
     def _enable_production_features(model: str) -> str:
@@ -433,6 +804,10 @@ class SaiAgentTestRunner(BaseHwTestRunner):
 
 class QsfpTestRunner(BaseHwTestRunner):
     """Runner for QSFP hardware tests."""
+
+    STACK = _STACK_FORWARDING
+    BINARIES = ("bin/qsfp_hw_test",)
+    REQUIRED_PATHS = (*BINARIES, *_STACK_SHARE[STACK])
 
     _CABLING_ENV_VAR = "QSFP_TEST_CABLING"
     _BASE_CONFIG_DIR = Path("fboss/oss/qsfp_test_configs")
@@ -481,6 +856,11 @@ class LinkTestRunner(BaseHwTestRunner):
     _REMOTE_QSFP_CONFIG_PATH = "/home/netops/link_test_qsfp.conf"
     # JSON map key for LLDPTag.PORT: see fboss/agent/switch_config.thrift.
     _LLDP_PORT_TAG = "2"
+
+    STACK = _STACK_FORWARDING
+    # Both binaries ship: --agent-run-mode picks mono vs multi at run time.
+    BINARIES = ("bin/sai_mono_link_test-sai_impl", "bin/sai_multi_link_test-sai_impl")
+    REQUIRED_PATHS = (*BINARIES, *_STACK_SHARE[STACK])
 
     def __init__(self):
         super().__init__()
@@ -664,6 +1044,22 @@ class PlatformTestRunner(BaseHwTestRunner):
     platform_manager_hw_test.
     """
 
+    STACK = _STACK_PLATFORM
+    BINARIES = (
+        "bin/platform_hw_test",
+        "bin/fan_service_hw_test",
+        "bin/sensor_service_hw_test",
+        "bin/fw_util_hw_test",
+        "bin/weutil_hw_test",
+        "bin/data_corral_service_hw_test",
+        "bin/platform_manager_hw_test",
+    )
+    # run_test.py and setup_fboss_env come from the production image already on
+    # the DUT (same as the forwarding runners and BspTestRunner), so only the
+    # test binaries ship. Platform tests read no share/ configs
+    # (_STACK_SHARE[platform] is empty).
+    REQUIRED_PATHS = (*BINARIES, *_STACK_SHARE[STACK])
+
     def __init__(self, test_type="platform_hw_test"):
         super().__init__()
         self.test_type = test_type
@@ -679,6 +1075,16 @@ class BspTestRunner(BaseHwTestRunner):
     stop/start, platform_manager restart, /run/devmap wait) and the
     --enable_stress_tests flag are handled on-DUT by run_test.py bsp.
     """
+    STACK = _STACK_PLATFORM
+    BINARIES = ("bin/bsp_tests",)
+    # bsp_sanity_tests.conf ships from the prod/platform stack (package.py
+    # PLATFORM_EXTRA), not the platform test tar, so it's listed explicitly here
+    # rather than via _STACK_SHARE (which is empty for the platform stack).
+    REQUIRED_PATHS = (
+        *BINARIES,
+        "share/hw_sanity_tests/bsp_sanity_tests.conf",
+        *_STACK_SHARE[STACK],
+    )
 
     def test_args(self, model: str) -> str:
         return "bsp"
@@ -704,6 +1110,18 @@ class SmokeTestRunner(BaseHwTestRunner):
     ``run_test.py`` indirection — and consumes the JUnit XML it produces
     at ``self.testresult_filepath``.
     """
+
+    # agent_smoke.py and junit.py live in the forwarding test tarball under
+    # bin/python_tests/ — see FORWARDING_TEST_EXTRA in
+    # fboss/oss/scripts/package.py.
+    STACK = _STACK_FORWARDING
+    # Smoke drives agent_smoke.py directly (no run_test.py, no share configs),
+    # so it ships only its scripts — not the forwarding share tree.
+    BINARIES = (
+        "bin/python_tests/agent_smoke.py",
+        "bin/python_tests/junit.py",
+    )
+    REQUIRED_PATHS = BINARIES
 
     AGENT_SMOKE_PATH = "/opt/fboss/bin/python_tests/agent_smoke.py"
 
@@ -773,6 +1191,16 @@ class Fboss2IntegrationTestRunner(BaseHwTestRunner):
     fboss2_integration_known_bad_tests file).
     """
 
+    # fboss2_integration_test ships in the forwarding test tarball
+    # (FORWARDING_TEST_BINARIES) alongside its known-bad-tests file
+    # (FORWARDING_TEST_EXTRA) — see fboss/oss/scripts/package.py. run_test.py,
+    # fboss2-dev and setup_fboss_env come from the production forwarding image
+    # already on the DUT, so (like the other forwarding runners) they're not
+    # listed here.
+    STACK = _STACK_FORWARDING
+    BINARIES = ("bin/fboss2_integration_test",)
+    REQUIRED_PATHS = (*BINARIES, *_STACK_SHARE[STACK])
+
     def test_args(self, model: str) -> str:
         return "fboss2_integration"
 
@@ -788,7 +1216,11 @@ class Fboss2IntegrationTestRunner(BaseHwTestRunner):
 
 
 class BenchmarkTestRunner(BaseHwTestRunner):
-    """Runner for benchmark tests."""
+    """Runner for benchmark tests. """
+
+    STACK = _STACK_FORWARDING
+    BINARIES = ("bin/sai_all_benchmarks-sai_impl",)
+    REQUIRED_PATHS = (*BINARIES, *_STACK_SHARE[STACK])
 
     def test_args(self, model: str) -> str:
         config_name = _HW_TEST_CONFIG_NAME.get(model, model)
