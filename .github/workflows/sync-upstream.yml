@@ -73,6 +73,8 @@ jobs:
       submodule_commit: ${{ needs.sync-upstream.outputs.submodule_commit }}
     secrets:
       GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+      VAULT_ROLE_ID: ${{ secrets.VAULT_ROLE_ID }}
+      VAULT_SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
 
   # Schedule smoke tests against the candidate image and block until results
   # are available (or timeout_minutes elapses, which fails the job).
