@@ -124,17 +124,33 @@ jobs:
         run: |
           docker exec FBOSS_build_${USER} sccache -s
 
-      - name: Upload CLI artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: fboss2_integration_test
-          path: ./fboss2_integration_test
+      - name: Package FBOSS binaries and library dependencies
+        run: |
+          # package-fboss.py produces a ~3 GB tarball (all fboss binaries + ldd deps).
+          # We only need fboss2_integration_test and fboss2-dev, so run ldd on those
+          # two, collect only their .so deps, and tar the result (~50-200 MB).
+          docker exec FBOSS_build_${USER} bash -c '
+            set -euo pipefail
+            BUILD=/var/FBOSS/tmp_bld_dir/build/fboss
+            PKG=$(mktemp -d -p /var/FBOSS/tmp_bld_dir)
+            trap "rm -rf \"$PKG\"" EXIT
+            mkdir -p $PKG/bin $PKG/lib
+            cp -a $BUILD/fboss2_integration_test $BUILD/fboss2-dev $PKG/bin/
+            for bin in $PKG/bin/*; do
+              ldd "$bin" 2>/dev/null | awk "/=>/ { print \$3 }" | grep -v "^$"
+            done | sort -u | while read lib; do
+              [ -f "$lib" ] && cp -a "$lib" $PKG/lib/ || true
+            done
+            ZSTD_NBTHREADS=0 tar -cf /var/FBOSS/tmp_bld_dir/fboss_cli_bins.tar.zst --zstd -C $PKG .
+            echo "Size: $(du -sh /var/FBOSS/tmp_bld_dir/fboss_cli_bins.tar.zst)"
+          '
+          docker cp FBOSS_build_${USER}:/var/FBOSS/tmp_bld_dir/fboss_cli_bins.tar.zst ./fboss_cli_bins.tar.zst
 
-      - name: Upload fboss2-dev artifact
+      - name: Upload FBOSS package artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fboss2-dev
-          path: ./fboss2-dev
+          name: fboss_cli_bins
+          path: ./fboss_cli_bins.tar.zst
 
       - name: Parse NHCI annotations
         id: nhci

@@ -53,6 +53,10 @@ jobs:
   Integration-Test:
     needs: detect-cli-changes
     if: needs.detect-cli-changes.outputs.cli_changed == 'true'
+    # Informational only: DUT flakiness/availability must not block the PR.
+    # continue-on-error lives here (not on the reusable-workflow caller in
+    # pr-validation.yml, where GHA rejects it).
+    continue-on-error: true
     runs-on: cloudstack-ubuntu24-small
     # Concurrency control: only one integration test at a time to avoid DUT conflicts
     concurrency:
@@ -87,14 +91,18 @@ jobs:
 
           bash .github/scripts/download_fboss_artifacts.sh "${HEAD_SHA}"
 
-      - name: Find successful build
-        id: latest_nexis_build
+      - name: Extract FBOSS package
+        run: |
+          mkdir -p fboss_pkg
+          tar --zstd -xf ./fboss_cli_bins.tar.zst -C fboss_pkg
+
+      - name: Find stable image builds
+        id: stable_builds
         run: |
           set -e
-          LATEST_BUILD_ID=$(python3 .github/scripts/find_latest_nexis_build.py)
-
-          echo "Latest successful private-fboss build id: $LATEST_BUILD_ID"
-          echo "latest_build_id=$LATEST_BUILD_ID" >> "$GITHUB_OUTPUT"
+          BUILDS_JSON=$(python3 .github/scripts/find_stable_image.py)
+          echo "Stable image builds: $BUILDS_JSON"
+          echo "builds_json=$BUILDS_JSON" >> "$GITHUB_OUTPUT"
 
       - name: Find DUT candidates
         id: find_duts
@@ -111,7 +119,7 @@ jobs:
       - name: Prepare DUT
         id: prepare_dut
         run: |
-          BUILD_ID="${{ steps.latest_nexis_build.outputs.latest_build_id }}"
+          BUILDS_JSON='${{ steps.stable_builds.outputs.builds_json }}'
 
           for DUT in ${{ steps.find_duts.outputs.candidates }}; do
 
@@ -121,6 +129,22 @@ jobs:
               echo "::endgroup::"
               continue
             fi
+            echo "::endgroup::"
+
+            echo "::group::[$DUT] Resolve build_id"
+            # Strip trailing digits from DUT name (gold411 -> gold), then
+            # find the stage key starting with that base (gold_fboss).
+            dut_base=$(echo "${DUT,,}" | sed 's/[0-9]*$//')
+            BUILD_ID=$(echo "$BUILDS_JSON" | jq -r --arg base "$dut_base" \
+              '[to_entries[] | select(.key | startswith($base)) | .value][0] // empty' \
+              2>/dev/null || echo "")
+            if [ -z "$BUILD_ID" ]; then
+              echo "::warning::No stable build found for $DUT, skipping"
+              nh tb release "$DUT" || true
+              echo "::endgroup::"
+              continue
+            fi
+            echo "Resolved build_id=$BUILD_ID for $DUT"
             echo "::endgroup::"
 
             echo "::group::[$DUT] Prepare"
@@ -168,19 +192,19 @@ jobs:
             echo "::endgroup::"
 
             echo "::group::[$DUT] Copy integration test binary and libraries"
-            if ! nh dvc scp ./fboss2_integration_test "$DUT":~/; then
+            if ! nh dvc scp fboss_pkg/bin/fboss2_integration_test "$DUT":~/; then
               echo "::warning::Failed to copy fboss2_integration_test, trying next DUT"
               nh tb release "$DUT" || true
               echo "::endgroup::"
               continue
             fi
-            if ! nh dvc scp ./fboss2-dev "$DUT":/opt/fboss/bin/; then
+            if ! nh dvc scp fboss_pkg/bin/fboss2-dev "$DUT":/opt/fboss/bin/; then
               echo "::warning::Failed to copy fboss2-dev, trying next DUT"
               nh tb release "$DUT" || true
               echo "::endgroup::"
               continue
             fi
-            for lib in ./*.so*; do
+            for lib in fboss_pkg/lib/*; do
               [ -f "$lib" ] && nh dvc scp "$lib" "$DUT":~/ || true
             done
             echo "::endgroup::"
@@ -197,14 +221,15 @@ jobs:
       - name: Run integration tests
         id: run_tests
         if: steps.prepare_dut.outputs.dut_ready == 'true'
-        run: |
-          DUT="${{ steps.prepare_dut.outputs.dut_name }}"
-          if ! nh dvc ssh "$DUT" -c "./fboss2_integration_test"; then
-            echo "::error::Integration tests failed on DUT $DUT."
-            echo "tests_passed=false" >> "$GITHUB_OUTPUT"
-            exit 1
-          fi
-          echo "tests_passed=true" >> "$GITHUB_OUTPUT"
+        run: .github/scripts/run_integration_test.sh "${{ steps.prepare_dut.outputs.dut_name }}"
+
+      - name: Publish test log and timing summary
+        if: always() && steps.prepare_dut.outputs.dut_ready == 'true'
+        run: .github/scripts/publish_test_summary.sh "${{ steps.prepare_dut.outputs.dut_name }}"
+
+      - name: Collect wedge agent logs
+        if: always() && steps.prepare_dut.outputs.dut_ready == 'true'
+        run: .github/scripts/collect_agent_logs.sh "${{ steps.prepare_dut.outputs.dut_name }}"
 
       - name: Release DUT
         if: always() && steps.prepare_dut.outputs.dut_ready == 'true'

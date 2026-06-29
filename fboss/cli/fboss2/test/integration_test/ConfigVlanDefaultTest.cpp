@@ -2,9 +2,14 @@
  * End-to-end tests for 'fboss2-dev config vlan default <vlan-id>'.
  *
  * Covers the happy-path workflow (move ports, set default, commit, verify via
- * thrift), the no-op case when the target equals the current default, a safety
- * guard that refuses the command when the precondition is unsafe, and the case
- * where ports have already been moved off the current default VLAN.
+ * thrift), the no-op case when the target equals the current default, and a
+ * safety guard that refuses the command when the precondition is unsafe.
+ *
+ * Branch-level coverage of CmdConfigVlanDefault (target VLAN exists vs.
+ * created, old VLAN removal, missing defaultVlan field) lives in the fast unit
+ * test CmdConfigVlanDefaultTest; the e2e tests here only verify that a
+ * committed change survives the agent warmboot, so we keep just one happy-path
+ * e2e rather than one per branch.
  */
 
 #include <folly/json/dynamic.h>
@@ -36,40 +41,62 @@ TEST_F(ConfigVlanDefaultTest, SetDefaultVlanTo300) {
   XLOG(INFO) << "[Test] currentDefault=" << currentDefault
              << " targetVlan=" << targetVlan;
 
-  // Step 1: Move all eth ports whose ingressVlan matches the current default
-  // VLAN to an existing non-default VLAN. This is required because the
-  // command refuses to change when ports use the old default but it has no
-  // interface (safety guard against agent crash).
-  int64_t sideVlan = -1;
-  for (const auto& vlan : initialConfig["sw"]["vlans"]) {
-    int64_t vid = vlan.getDefault("id", -1).asInt();
-    if (vid > 0 && vid != currentDefault) {
-      sideVlan = vid;
-      break;
+  // Step 0: Create the target VLAN if it doesn't already exist.
+  // VlanManager auto-creates the VLAN entry and a barebone cfg::Interface so
+  // the agent accepts the commit. The dummy MAC is removed in restore below.
+  const std::string kDummyMac = "02:00:00:00:01:2c";
+  {
+    bool exists = false;
+    for (const auto& vlan : initialConfig["sw"]["vlans"]) {
+      if (vlan.getDefault("id", -1).asInt() == std::stoi(targetVlan)) {
+        exists = true;
+        break;
+      }
+    }
+    if (!exists) {
+      auto firstEthPort = findFirstEthInterface().name;
+      ASSERT_FALSE(firstEthPort.empty())
+          << "No eth port found for VLAN creation";
+      auto createResult = runCli(
+          {"config",
+           "vlan",
+           targetVlan,
+           "static-mac",
+           "add",
+           kDummyMac,
+           firstEthPort});
+      ASSERT_EQ(createResult.exitCode, 0)
+          << "Failed to create VLAN " << targetVlan << ": "
+          << createResult.stderr;
+      XLOG(INFO) << "[Step 0] " << createResult.stdout;
     }
   }
 
+  // Step 1: Move every eth port whose ingressVlan is the current default VLAN
+  // onto targetVlan (created in Step 0). targetVlan is intentionally the move
+  // target — it always exists by now, so we don't need to hunt for some other
+  // side VLAN. This is required because the command refuses to change the
+  // default while ports still use the old default VLAN and it has no interface
+  // (safety guard against an agent crash), so we vacate the old default first.
   std::vector<std::string> movedPorts;
-  if (sideVlan > 0) {
-    for (const auto& port : initialConfig["sw"]["ports"]) {
-      auto name = port.getDefault("name", "").asString();
-      if (name.rfind("eth", 0) != 0) {
-        continue;
-      }
-      if (port.getDefault("ingressVlan", -1).asInt() != currentDefault) {
-        continue;
-      }
-      auto result = runCli(
-          {"config",
-           "interface",
-           name,
-           "switchport",
-           "access",
-           "vlan",
-           std::to_string(sideVlan)});
-      if (result.exitCode == 0) {
-        movedPorts.push_back(name);
-      }
+  for (const auto& port : initialConfig["sw"]["ports"]) {
+    auto name = port.getDefault("name", "").asString();
+    if (name.rfind("eth", 0) != 0) {
+      continue;
+    }
+    if (port.getDefault("ingressVlan", -1).asInt() != currentDefault) {
+      continue;
+    }
+    auto result = runCli(
+        {"config",
+         "interface",
+         name,
+         "switchport",
+         "access",
+         "vlan",
+         targetVlan});
+    if (result.exitCode == 0) {
+      movedPorts.push_back(name);
     }
   }
   XLOG(INFO) << "[Step 1] Moved " << movedPorts.size()
@@ -93,6 +120,41 @@ TEST_F(ConfigVlanDefaultTest, SetDefaultVlanTo300) {
   // Restore: move ports back, reset defaultVlan
   XLOG(INFO) << "[Restore] Reverting ports and defaultVlan to "
              << currentDefault;
+
+  // currentDefault VLAN may have been deleted by 'config vlan default' above
+  // (it erases old default VLAN when it has no interface). Recreate it as an
+  // empty VLAN entry so 'switchport access vlan' doesn't throw.
+  {
+    auto postCommitCfg = getRunningConfig();
+    bool cdExists = false;
+    for (const auto& vlan : postCommitCfg["sw"]["vlans"]) {
+      if (vlan.getDefault("id", -1).asInt() == currentDefault) {
+        cdExists = true;
+        break;
+      }
+    }
+    if (!cdExists) {
+      auto firstEthPort = findFirstEthInterface().name;
+      runCli(
+          {"config",
+           "vlan",
+           std::to_string(currentDefault),
+           "static-mac",
+           "add",
+           kDummyMac,
+           firstEthPort});
+      runCli(
+          {"config",
+           "vlan",
+           std::to_string(currentDefault),
+           "static-mac",
+           "delete",
+           kDummyMac});
+      XLOG(INFO) << "[Restore] Re-created VLAN " << currentDefault
+                 << " (had been removed as it had no interface)";
+    }
+  }
+
   for (const auto& name : movedPorts) {
     runCli(
         {"config",

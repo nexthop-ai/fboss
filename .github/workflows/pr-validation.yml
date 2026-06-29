@@ -24,9 +24,10 @@ jobs:
       sai_version: "1.16.1"
       use_clang: true
 
+  # Runs on real hardware after the build (sim CLI test runs inline in the
+  # build job). Informational only: continue-on-error so DUT flakiness/
+  # availability does not block the PR.
   cli-integration-test:
     needs: build-and-test-clang
-    # Temporarily disabled. To re-enable, remove the `if: false` line below.
-    if: false
     uses: ./.github/workflows/integration_test.yml
     secrets: inherit

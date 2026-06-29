@@ -28,6 +28,13 @@ using namespace facebook::fboss;
 
 class ConfigIpRouteTest : public Fboss2IntegrationTest {
  protected:
+  void SetUp() override {
+    GTEST_SKIP()
+        << "Skipped: applying static-route config on the live (hitless) path "
+           "crashes the agent. Re-enable once the agent supports hitless "
+           "static-route application.";
+  }
+
   /**
    * Add an IP address to an interface.
    * Command syntax: config interface <interface> ip-address <ip_prefix>

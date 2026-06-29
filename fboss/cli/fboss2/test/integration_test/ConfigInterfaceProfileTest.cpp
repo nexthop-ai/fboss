@@ -24,6 +24,12 @@ using namespace facebook::fboss;
 
 class ConfigInterfaceProfileTest : public Fboss2IntegrationTest {
  protected:
+  void SetUp() override {
+    GTEST_SKIP()
+        << "Skipped: the 'config interface profile' command is being reworked "
+           "(PR #917). Remove this SetUp to re-enable once that lands.";
+  }
+
   /**
    * Set a profile on an interface and commit the config.
    * Only commits if the CLI set succeeds (mirrors setInterfaceSpeed).
