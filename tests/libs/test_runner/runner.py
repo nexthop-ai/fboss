@@ -798,7 +798,7 @@ class SaiAgentTestRunner(BaseHwTestRunner):
     def test_args(self, model: str) -> str:
         config_name = _HW_TEST_CONFIG_NAME.get(model, model)
         logger.info("model=%s hw_test_config=%s", model, config_name)
-        return f"sai_agent --agent-run-mode mono --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON \
+        return f"sai_agent --agent-run-mode multi_switch --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON \
             {_sai_skip_known_bad(model)}{self._enable_production_features(model)}"
 
 

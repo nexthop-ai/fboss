@@ -924,8 +924,8 @@ class TestRunner(abc.ABC):
                     if any(r.status != GtestStatus.OK for r in run_outcome.results):
                         break
         finally:
-            enable_services(file_name)
             self._end_run()
+            enable_services(file_name)
         return all_results, test_results
 
     def _print_output_summary(self, results: list[GtestResult]) -> None:
