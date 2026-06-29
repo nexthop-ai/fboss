@@ -743,6 +743,26 @@ void validateAndDefaultSrv6NextHops(
   }
 }
 
+void validateLinkLocalNextHopInterfaces(
+    const std::vector<NextHopThrift>& nextHops,
+    const std::shared_ptr<SwitchState>& state) {
+  for (const auto& nhop : nextHops) {
+    const auto& address = toIPAddress(*nhop.address());
+    auto ifName = apache::thrift::get_pointer(nhop.address()->ifName());
+    if (!ifName || !address.isV6() || !address.isLinkLocal()) {
+      continue;
+    }
+    auto intfID = utility::getIDFromTunIntfName(*ifName);
+    if (!state->getInterfaces()->getNodeIf(intfID)) {
+      throw FbossError(
+          "Interface ",
+          intfID,
+          " does not exist for link-local next hop ",
+          address.str());
+    }
+  }
+}
+
 std::optional<std::string> getDefaultSrv6TunnelId(
     const facebook::fboss::cfg::SwitchConfig& config) {
   if (config.srv6Tunnels().has_value()) {
@@ -947,6 +967,7 @@ void ThriftHandler::updateUnicastRoutesImpl(
   auto routerID = RouterID(vrf);
   auto clientID = ClientID(client);
   auto defaultSrv6TunnelId = getDefaultSrv6TunnelId(sw_->getConfig());
+  auto state = sw_->getState();
   for (auto& route : *routes) {
     if (route.overrideEcmpSwitchingMode().has_value() ||
         route.overrideNextHops().has_value()) {
@@ -954,6 +975,7 @@ void ThriftHandler::updateUnicastRoutesImpl(
           "Override nhops or switching mode cannot be set by clients");
     }
     validateAndDefaultSrv6NextHops(*route.nextHops(), defaultSrv6TunnelId);
+    validateLinkLocalNextHopInterfaces(*route.nextHops(), state);
     if (FLAGS_enable_route_counters_for_named_nhg &&
         route.namedRouteDestination()->getType() ==
             NamedRouteDestination::Type::nextHopGroup) {
@@ -2082,12 +2104,14 @@ void ThriftHandler::getRouteTableByClient(
   ensureConfigured(__func__);
   auto state = sw_->getState();
   forAllRoutes(
-      state, [&routes, client](const RouterID& /*rid*/, const auto& route) {
+      state,
+      [&routes, &state, client](const RouterID& /*rid*/, const auto& route) {
         auto entry = route->getEntryForClient(ClientID(client));
         if (!entry) {
           return;
         }
-        auto nextHops = util::fromRouteNextHopSet(entry->getNextHopSet());
+        auto nextHops =
+            util::fromRouteNextHopSet(getClientNextHops(state, *entry));
         std::vector<network::thrift::BinaryAddress> nextHopAddrs;
         for (const auto& nh : nextHops) {
           nextHopAddrs.emplace_back(*nh.address());
@@ -3298,6 +3322,7 @@ void ThriftHandler::addOrUpdateNamedNextHopGroups(
    */
   static constexpr size_t kMaxGroupNameLen = 31;
   auto defaultSrv6TunnelId = getDefaultSrv6TunnelId(sw_->getConfig());
+  auto state = sw_->getState();
   std::vector<std::pair<std::string, RouteNextHopSet>> groups;
   for (auto& group : *nextHopGroups) {
     if (!group.name().has_value() || group.name()->empty()) {
@@ -3311,6 +3336,7 @@ void ThriftHandler::addOrUpdateNamedNextHopGroups(
           *group.name());
     }
     validateAndDefaultSrv6NextHops(*group.nexthops(), defaultSrv6TunnelId);
+    validateLinkLocalNextHopInterfaces(*group.nexthops(), state);
     groups.emplace_back(
         *group.name(),
         util::toRouteNextHopSet(

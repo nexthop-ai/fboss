@@ -12,6 +12,7 @@
 
 #include <folly/String.h>
 
+#include "fboss/agent/AgentFeatures.h"
 #include "fboss/agent/DsfNodeUtils.h"
 #include "fboss/agent/hw/HwSwitchWarmBootHelper.h"
 #include "fboss/agent/hw/sai/switch/SaiSwitch.h"
@@ -640,6 +641,13 @@ SaiSwitchTraits::CreateAttributes SaiPlatform::getSwitchAttributes(
           *agentCfg->thrift.sw()->switchSettings()->measureCableLengths();
     }
   }
+  std::optional<SaiSwitchTraits::Attributes::PortCl72RetryEnable>
+      portCl72RetryEnable{std::nullopt};
+#if defined(BRCM_SAI_SDK_XGS_GTE_14_2)
+  if (FLAGS_enable_port_cl72_retry) {
+    portCl72RetryEnable = true;
+  }
+#endif
   std::optional<SaiSwitchTraits::Attributes::DllPath> dllPath;
 #if defined(BRCM_SAI_SDK_XGS)
   auto platformMode = getType();
@@ -1105,6 +1113,7 @@ SaiSwitchTraits::CreateAttributes SaiPlatform::getSwitchAttributes(
 #endif
       std::nullopt, // enable PFC monitoring for the switch
       measureCableLengths, // enable cable propagation delay measurement
+      portCl72RetryEnable, // enable CL72 link training retry
       std::nullopt, // switching mode (store-and-forward / cut-through)
   };
 }

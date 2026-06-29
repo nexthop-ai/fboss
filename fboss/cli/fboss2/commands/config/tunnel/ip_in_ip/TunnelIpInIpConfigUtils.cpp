@@ -52,9 +52,8 @@ std::string prefixLenToMaskStr(int prefixLen) {
       .str();
 }
 
-const cfg::IpInIpTunnel* findTunnel(
-    const cfg::SwitchConfig& cfg,
-    const std::string& id) {
+const cfg::IpInIpTunnel* FOLLY_NULLABLE
+findTunnel(const cfg::SwitchConfig& cfg, const std::string& id) {
   if (!cfg.ipInIpTunnels().has_value()) {
     return nullptr;
   }

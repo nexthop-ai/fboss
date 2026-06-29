@@ -14,6 +14,7 @@
 #include "fboss/cli/fboss2/commands/config/CmdConfigReload.h"
 #include "fboss/cli/fboss2/commands/config/admin_distance/CmdConfigAdminDistance.h"
 #include "fboss/cli/fboss2/commands/config/arp/CmdConfigArp.h"
+#include "fboss/cli/fboss2/commands/config/copp/CmdConfigCopp.h"
 #include "fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h"
 #include "fboss/cli/fboss2/commands/config/hostname/CmdConfigHostname.h"
 #include "fboss/cli/fboss2/commands/config/icmpv4_unavailable_src_addr/CmdConfigIcmpV4UnavailableSrcAddr.h"
@@ -30,6 +31,7 @@
 #include "fboss/cli/fboss2/commands/config/interface/switchport/trunk/allowed/vlan/CmdConfigInterfaceSwitchportTrunkAllowedVlan.h"
 #include "fboss/cli/fboss2/commands/config/l2/CmdConfigL2.h"
 #include "fboss/cli/fboss2/commands/config/l2/learning_mode/CmdConfigL2LearningMode.h"
+#include "fboss/cli/fboss2/commands/config/load_balancing/CmdConfigLoadBalancing.h"
 #include "fboss/cli/fboss2/commands/config/mac/CmdConfigMac.h"
 #include "fboss/cli/fboss2/commands/config/mac/aging_time/CmdConfigMacAgingTime.h"
 #include "fboss/cli/fboss2/commands/config/need_l2_entry_for_neighbor/CmdConfigNeedL2EntryForNeighbor.h"
@@ -123,9 +125,12 @@
 #include "fboss/cli/fboss2/commands/delete/interface/CmdDeleteInterface.h"
 #include "fboss/cli/fboss2/commands/delete/interface/ipv6/CmdDeleteInterfaceIpv6.h"
 #include "fboss/cli/fboss2/commands/delete/interface/ipv6/ndp/CmdDeleteInterfaceIpv6Ndp.h"
+<<<<<<<
+=======
 #include "fboss/cli/fboss2/commands/delete/protocol/CmdDeleteProtocol.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/static/CmdDeleteProtocolStatic.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.h"
+>>>>>>>
 #include "fboss/cli/fboss2/commands/delete/tunnel/CmdDeleteTunnel.h"
 #include "fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/CmdDeleteTunnelIpInIp.h"
 #include "fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/decap/CmdDeleteTunnelIpInIpDecap.h"
@@ -146,6 +151,26 @@ const CommandTree& kConfigCommandTree() {
        "Show config applied information",
        commandHandler<CmdConfigAppliedInfo>,
        argRegistrar<CmdConfigAppliedInfoTraits>},
+
+      {
+          "config",
+          "copp",
+          "Configure CoPP (control-plane policing) settings",
+          commandHandler<CmdConfigCopp>,
+          argRegistrar<CmdConfigCoppTraits>,
+          {{
+               "cpu-queue",
+               "Configure a CPU queue (bandwidth shaping)",
+               commandHandler<CmdConfigCoppCpuQueue>,
+               argRegistrar<CmdConfigCoppCpuQueueTraits>,
+           },
+           {
+               "reason",
+               "Map a packet-rx reason to a CPU queue",
+               commandHandler<CmdConfigCoppReason>,
+               argRegistrar<CmdConfigCoppReasonTraits>,
+           }},
+      },
 
       {"config",
        "arp",
@@ -277,6 +302,24 @@ const CommandTree& kConfigCommandTree() {
        "Enable or disable requirement for L2 entry before neighbor installation",
        commandHandler<CmdConfigNeedL2EntryForNeighbor>,
        argRegistrar<CmdConfigNeedL2EntryForNeighborTraits>},
+
+      {
+          "config",
+          "load-balancing",
+          "Configure load-balancing (ECMP/LAG) settings",
+          {{
+               "ecmp",
+               "Configure ECMP hash fields, algorithm, and seed",
+               commandHandler<CmdConfigLoadBalancingEcmp>,
+               argRegistrar<CmdConfigLoadBalancingEcmpTraits>,
+           },
+           {
+               "lag",
+               "Configure LAG hash fields, algorithm, and seed",
+               commandHandler<CmdConfigLoadBalancingLag>,
+               argRegistrar<CmdConfigLoadBalancingLagTraits>,
+           }},
+      },
 
       {
           "config",
