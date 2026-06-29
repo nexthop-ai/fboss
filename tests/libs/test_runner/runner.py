@@ -166,9 +166,9 @@ _LINK_QSFP_TEST_CONFIG_NAME: dict[str, str] = {
 # SaiTestRunner and SaiAgentTestRunner.
 _SAI_KNOWN_BAD_KEY: dict[str, str] = {
     "minipack3": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
-    "wedge800bact": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
-    "wedge800bnhp": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
-    "nhbw800f": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
+    "wedge800bact": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5t",
+    "wedge800bnhp": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5t",
+    "nhbw800f": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5t",
     "wedge800cact": "leaba/25.11.4210/25.11.4210/graphene202x",
     "nh4010f": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
     "nh4215f": "brcm/14.2.0.0_odp/14.2.0.0_odp/tomahawk6",
