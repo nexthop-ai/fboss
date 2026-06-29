@@ -2,6 +2,7 @@
 # @noautodeps
 # Copyright Meta Platforms, Inc. and affiliates.
 
+import os
 import subprocess
 
 from fboss_test_runner.services import service_utils
@@ -49,20 +50,20 @@ def cleanup_hw_agent_service(switch_indexes: list[int]) -> None:
 
 def _manage_hw_agent_service(
     switch_indexes: list[int],
-    isStart: bool,
+    is_start: bool,
     service_name: str = _HW_AGENT_SERVICE_OSS,
 ) -> list[int]:
     return_codes = []
-    op_ing = "Starting" if isStart else "Stopping"
+    op_ing = "Starting" if is_start else "Stopping"
     manage_fn = (
-        service_utils.systemctl_start if isStart else service_utils.systemctl_stop
+        service_utils.systemctl_start if is_start else service_utils.systemctl_stop
     )
     for switch_index in switch_indexes:
         print(f"{op_ing} FBOSS HW Agent Service for index={switch_index}...")
         ret = manage_fn(f"{service_name}{switch_index}")
         return_codes.append(ret)
         if ret != 0:
-            op = "start" if isStart else "stop"
+            op = "start" if is_start else "stop"
             print(
                 f"Failed to {op} FBOSS HW Agent Service for index={switch_index} with return code {ret}"
             )
@@ -71,10 +72,10 @@ def _manage_hw_agent_service(
 
 def warm_boot_hw_agent(
     switch_indexes: list[int],
-    skipStopping: bool = False,
+    skip_stopping: bool = False,
     service_name: str = _HW_AGENT_SERVICE_OSS,
 ) -> list[int]:
-    if not skipStopping:
+    if not skip_stopping:
         return_codes = _manage_hw_agent_service(switch_indexes, False, service_name)
         if any(return_codes):
             print("Error while stopping HW Agent service")
@@ -83,7 +84,9 @@ def warm_boot_hw_agent(
     return_codes = []
     for switch_index in switch_indexes:
         ret = subprocess.run(
-            f"stat {agent_can_warm_boot_file_path(switch_index)}", shell=True
+            f"stat {agent_can_warm_boot_file_path(switch_index)}",
+            check=False,
+            shell=True,
         ).returncode
         if ret != 0:
             print(f"Error while checking warmboot flag for index={switch_index}")
@@ -99,10 +102,10 @@ def warm_boot_hw_agent(
 
 def cold_boot_hw_agent(
     switch_indexes: list[int],
-    skipStopping: bool = False,
+    skip_stopping: bool = False,
     service_name: str = _HW_AGENT_SERVICE_OSS,
 ) -> list[int]:
-    if not skipStopping:
+    if not skip_stopping:
         return_codes = _manage_hw_agent_service(switch_indexes, False, service_name)
         if any(return_codes):
             print("Error while stopping HW Agent service")
@@ -111,7 +114,9 @@ def cold_boot_hw_agent(
     return_codes = []
     for switch_index in switch_indexes:
         ret = subprocess.run(
-            f"rm -f {agent_can_warm_boot_file_path(switch_index)}", shell=True
+            f"rm -f {agent_can_warm_boot_file_path(switch_index)}",
+            check=False,
+            shell=True,
         ).returncode
         if ret != 0:
             print(f"Error while removing warmboot flag for index={switch_index}")
@@ -141,6 +146,7 @@ def _setup_hw_agent_service(
     service_utils.validate_path(
         hw_agent_service_bin_path, "HW Agent Service binary path"
     )
+    fboss_agent_config_path = os.path.abspath(fboss_agent_config_path)
     service_utils.validate_path(fboss_agent_config_path, "FBOSS Agent config path")
 
     cleanup_hw_agent_service(switch_indexes)
@@ -170,21 +176,22 @@ def _setup_hw_agent_service(
             extra_args += " " + " ".join(additional_args)
 
         hw_agent_service_cmd = f"{hw_agent_service_bin_path} --config {fboss_agent_config_path} --switchIndex {switch_index} {extra_args}"
-        unit_file_path = f"/tmp/{service_full_name}.service"
+        exec_start_cmd = f"/bin/bash -c 'source /opt/fboss/bin/setup_fboss_env && exec {hw_agent_service_cmd}'"
+        unit_file_path = f"/run/systemd/system/{service_full_name}.service"
         service_utils.write_unit_file(
             unit_file_path,
             service_utils.build_unit_file_content(
                 description="FBOSS HW Agent Service",
-                exec_start_cmd=hw_agent_service_cmd,
+                exec_start_cmd=exec_start_cmd,
                 syslog_identifier=f"{hw_agent_service_name}{switch_index}",
             ),
         )
         service_utils.write_rsyslog_conf(service_full_name)
 
-    subprocess.run("systemctl restart rsyslog; sleep 5", shell=True)
+    subprocess.run("systemctl restart rsyslog; sleep 5", check=False, shell=True)
     for switch_index in switch_indexes:
-        unit_file = f"/tmp/{hw_agent_service_name}{switch_index}.service"
-        subprocess.run(f"systemctl enable {unit_file}", shell=True)
+        unit_file = f"/run/systemd/system/{hw_agent_service_name}{switch_index}.service"
+        subprocess.run(f"systemctl enable {unit_file}", check=False, shell=True)
     service_utils.systemctl_daemon_reload()
 
 
@@ -268,7 +275,7 @@ def cold_boot_sw_agent(
         return ret
 
     ret = subprocess.run(
-        f"rm -f {agent_can_warm_boot_file_path()}", shell=True
+        f"rm -f {agent_can_warm_boot_file_path()}", check=False, shell=True
     ).returncode
     if ret != 0:
         print("Error while removing SW Agent warmboot flag")
@@ -289,7 +296,7 @@ def warm_boot_sw_agent(
         return ret
 
     ret = subprocess.run(
-        f"stat {FBOSS_WARMBOOT_DIR}/can_warm_boot", shell=True
+        f"stat {FBOSS_WARMBOOT_DIR}/can_warm_boot", check=False, shell=True
     ).returncode
     if ret != 0:
         print("Error while checking SW Agent warmboot flag")
@@ -311,6 +318,7 @@ def _setup_sw_agent_service(
     service_utils.validate_path(
         sw_agent_service_bin_path, "SW Agent Service binary path"
     )
+    fboss_agent_config_path = os.path.abspath(fboss_agent_config_path)
     service_utils.validate_path(fboss_agent_config_path, "FBOSS Agent config path")
 
     cleanup_sw_agent_service(sw_agent_service_name)
@@ -320,18 +328,19 @@ def _setup_sw_agent_service(
         f"{sw_agent_service_bin_path} --config {fboss_agent_config_path}"
         " --multi_switch --fsdb_client_ssl_preferred=false"
     )
-    unit_file_path = f"/tmp/{sw_agent_service_name}.service"
+    exec_start_cmd = f"/bin/bash -c 'source /opt/fboss/bin/setup_fboss_env && exec {sw_agent_service_cmd}'"
+    unit_file_path = f"/run/systemd/system/{sw_agent_service_name}.service"
 
     service_utils.setup_service(
         service_name=sw_agent_service_name,
         unit_file_path=unit_file_path,
         unit_file_content=service_utils.build_unit_file_content(
             description="FBOSS SW Agent Service",
-            exec_start_cmd=sw_agent_service_cmd,
+            exec_start_cmd=exec_start_cmd,
             syslog_identifier=sw_agent_service_name,
         ),
     )
-    subprocess.run(f"systemctl enable {unit_file_path}", shell=True)
+    subprocess.run(f"systemctl enable {unit_file_path}", check=False, shell=True)
     service_utils.systemctl_daemon_reload()
 
 
@@ -409,18 +418,23 @@ def cold_boot_agents(
 
     # Step 2: Clean warmboot state
     print(f"Cleaning warm boot state: rm -rf {FBOSS_WARMBOOT_DIR}")
-    ret = subprocess.run(f"rm -rf {FBOSS_WARMBOOT_DIR}", shell=True).returncode
+    ret = subprocess.run(
+        f"rm -rf {FBOSS_WARMBOOT_DIR}", check=False, shell=True
+    ).returncode
     if ret != 0:
         raise Exception("Error during cold boot agents: cleaning warm boot state")
 
     # Step 3: Set cold boot flags
     print("Setting cold boot flags for hw and sw agents")
-    ret = subprocess.run(f"mkdir -p {FBOSS_WARMBOOT_DIR}", shell=True).returncode
+    ret = subprocess.run(
+        f"mkdir -p {FBOSS_WARMBOOT_DIR}", check=False, shell=True
+    ).returncode
     if ret != 0:
         raise Exception("Error during cold boot agents: creating warm boot dir")
     for switch_index in switch_indexes:
         ret = subprocess.run(
             f"touch {FBOSS_WARMBOOT_DIR}/hw_cold_boot_once_{switch_index}",
+            check=False,
             shell=True,
         ).returncode
         if ret != 0:
@@ -428,7 +442,7 @@ def cold_boot_agents(
                 f"Error during cold boot agents: setting hw cold boot flag for index={switch_index}"
             )
     ret = subprocess.run(
-        f"touch {FBOSS_WARMBOOT_DIR}/sw_cold_boot_once", shell=True
+        f"touch {FBOSS_WARMBOOT_DIR}/sw_cold_boot_once", check=False, shell=True
     ).returncode
     if ret != 0:
         raise Exception("Error during cold boot agents: setting sw cold boot flag")

@@ -1021,13 +1021,9 @@ class LinkTestRunner(BaseHwTestRunner):
             if self._use_generated_qsfp
             else self._SYSTEM_QSFP_CONFIG_PATH
         )
-        args = (
-            f"link --agent-run-mode mono --config {config_arg} --qsfp-config {qsfp_arg}"
+        return (
+            f"link --agent-run-mode multi_switch --config {config_arg} --qsfp-config {qsfp_arg}"
         )
-        if model == "wedge800cact":
-            # warmboot acting strange, will readd once fixed
-            args += " --coldboot_only"
-        return args
 
     def post_test(self):
         # The link gtest stops production qsfp_service / fsdb (via the
