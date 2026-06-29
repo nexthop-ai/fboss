@@ -134,6 +134,42 @@
           }
         },
         {
+          "name": "FAN5_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan5_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
+          "name": "FAN6_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan6_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
+          "name": "FAN7_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan7_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
+          "name": "FAN8_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan8_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
           "name": "PSU1_PIN",
           "sysfsPath": "/run/devmap/sensors/PSU1/power1_input",
           "type": 0,
