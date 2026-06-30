@@ -206,6 +206,7 @@ std::unique_ptr<PlatformMapping> initPlatformMapping(PlatformType type) {
           ? std::make_unique<Icecube800banwPlatformMapping>()
           : std::make_unique<Icecube800banwPlatformMapping>(platformMappingStr);
     case PlatformType::PLATFORM_WEDGE800BACT:
+    case PlatformType::PLATFORM_WEDGE800BNHP:
       return platformMappingStr.empty()
           ? std::make_unique<Wedge800BACTPlatformMapping>()
           : std::make_unique<Wedge800BACTPlatformMapping>(platformMappingStr);
@@ -250,10 +251,6 @@ std::unique_ptr<PlatformMapping> initPlatformMapping(PlatformType type) {
       return platformMappingStr.empty()
           ? std::make_unique<M4062nhpPlatformMapping>()
           : std::make_unique<M4062nhpPlatformMapping>(platformMappingStr);
-    case PlatformType::PLATFORM_WEDGE800BNHP:
-      return platformMappingStr.empty()
-          ? std::make_unique<Wedge800BACTPlatformMapping>()
-          : std::make_unique<Wedge800BACTPlatformMapping>(platformMappingStr);
     case PlatformType::PLATFORM_FAKE_SAI: {
       std::vector<int> controllingPorts = getFakeSaiControllingPortIDs();
       return std::make_unique<FakeTestPlatformMapping>(controllingPorts);
