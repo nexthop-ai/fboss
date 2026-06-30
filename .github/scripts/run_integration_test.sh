@@ -33,7 +33,7 @@ nh dvc ssh "$DUT" -c '
   # failed assertion so the collected agent/wedge logs stay relevant to that
   # failure (no later tests scribble over the failure state).
   (
-    stdbuf -oL -eL ./fboss2_integration_test \
+    stdbuf -oL -eL env LD_LIBRARY_PATH="$HOME:${LD_LIBRARY_PATH:-}" ./fboss2_integration_test \
       --gtest_break_on_failure \
       > /tmp/fboss2_itest.log 2>&1
     echo $? > /tmp/fboss2_itest.rc
