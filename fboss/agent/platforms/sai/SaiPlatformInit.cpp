@@ -40,7 +40,6 @@
 #include "fboss/agent/platforms/sai/SaiBcmWedge100Platform.h"
 #include "fboss/agent/platforms/sai/SaiBcmWedge400Platform.h"
 #include "fboss/agent/platforms/sai/SaiBcmWedge800BACTPlatform.h"
-#include "fboss/agent/platforms/sai/SaiBcmWedge800BNHPPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmYampPlatform.h"
 #include "fboss/agent/platforms/sai/SaiFakePlatform.h"
 #include "fboss/agent/platforms/sai/SaiJanga800bicPlatform.h"
@@ -260,11 +259,10 @@ std::unique_ptr<SaiPlatform> chooseSaiPlatform(
   } else if (productInfo->getType() == PlatformType::PLATFORM_LEH800BCLS) {
     return std::make_unique<SaiBcmLeh800bclsPlatform>(
         std::move(productInfo), localMac, platformMappingStr);
-  } else if (productInfo->getType() == PlatformType::PLATFORM_WEDGE800BACT) {
+  } else if (
+      productInfo->getType() == PlatformType::PLATFORM_WEDGE800BACT ||
+      productInfo->getType() == PlatformType::PLATFORM_WEDGE800BNHP) {
     return std::make_unique<SaiBcmWedge800BACTPlatform>(
-        std::move(productInfo), localMac, platformMappingStr);
-  } else if (productInfo->getType() == PlatformType::PLATFORM_WEDGE800BNHP) {
-    return std::make_unique<SaiBcmWedge800BNHPPlatform>(
         std::move(productInfo), localMac, platformMappingStr);
   } else if (productInfo->getType() == PlatformType::PLATFORM_WEDGE800CACT) {
     return std::make_unique<SaiWedge800CACTPlatform>(

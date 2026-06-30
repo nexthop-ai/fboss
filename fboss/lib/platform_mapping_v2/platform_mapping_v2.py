@@ -100,9 +100,6 @@ _PLATFORM_VARIANTS_MAP: dict[str, list[str]] = {
     "minipack3bta": [
         "minipack3bta_16rifs",
     ],
-    "wedge800bact": [
-        "wedge800bnhp",
-    ],
 }
 
 _PLATFORM_TO_BASE_PLATFORM: dict[str, str] = {
