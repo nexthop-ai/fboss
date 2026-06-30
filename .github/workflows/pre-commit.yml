@@ -9,7 +9,7 @@ jobs:
   pre-commit:
     runs-on: cloudstack-ubuntu24-small
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           # For PRs, checkout the actual PR head (not the synthetic merge commit)
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || '' }}

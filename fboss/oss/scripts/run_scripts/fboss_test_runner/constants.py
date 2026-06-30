@@ -102,26 +102,14 @@ SAI_AGENT_UNSUPPORTED_TESTS = (
     "./share/sai_hw_unsupported_tests/sai_agent_hw_unsupported_tests.materialized_JSON"
 )
 
-_SAI_AGENT_DISABLE_SERVICES = [
-    "fboss_sw_agent",
-    "fboss_hw_agent@0",
-    "bgpd",
-]
+_SAI_AGENT_DISABLE_SERVICES = ["fboss_sw_agent", "fboss_hw_agent@0", "bgpd"]
 
 # Shared by SAI hw_test and link binaries: prod agents hold port 5909 /
 # the SAI device; qsfp_service holds the transceivers.
-_SAI_DISABLE_SERVICES = [
-    "fboss_sw_agent",
-    "fboss_hw_agent@0",
-    "qsfp_service",
-]
+_SAI_DISABLE_SERVICES = ["fboss_sw_agent", "fboss_hw_agent@0", "qsfp_service"]
 
 TEST_DISABLE_SERVICES = {
-    SUB_ARG_BSP_HW_TEST: [
-        "fan_service",
-        "qsfp_service",
-        "led_service",
-    ],
+    SUB_ARG_BSP_HW_TEST: ["fan_service", "qsfp_service", "led_service"],
     SUB_ARG_PLATFORM_MANAGER_HW_TEST: [
         "platform_manager",
         "sensor_service",
@@ -136,3 +124,8 @@ TEST_DISABLE_SERVICES = {
     SUB_CMD_LINK_MONO_BINARY: _SAI_AGENT_DISABLE_SERVICES,
     SUB_CMD_LINK_MULTI_BINARY: _SAI_AGENT_DISABLE_SERVICES,
 }
+
+# Scale-specific known-bad list (scale test names differ from functional ones).
+SAI_AGENT_SCALE_KNOWN_BAD_TESTS = (
+    "./share/hw_known_bad_tests/sai_agent_scale_known_bad_tests.materialized_JSON"
+)

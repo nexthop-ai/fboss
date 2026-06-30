@@ -19,16 +19,16 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 import bazelify as b2b
 from bazelify import (
-    DEFAULT_INSTALL_DIR,
-    THIRD_PARTY_MAP,
+    _make_build_file_content,
+    _synthetic_prebuilt_dep,
     BuckParser,
     BuckTarget,
     BuildFileGenerator,
+    DEFAULT_INSTALL_DIR,
     DepResolver,
-    PrebuiltDep,
-    _make_build_file_content,
-    _synthetic_prebuilt_dep,
     discover_prebuilt_deps,
+    PrebuiltDep,
+    THIRD_PARTY_MAP,
 )
 
 # ---------------------------------------------------------------------------
@@ -154,9 +154,7 @@ class TestExtractStringList(unittest.TestCase):
         block = '(name = "foo", exported_deps = ["//exported:only"],)'
         result = self.parser._extract_string_list(block, "deps")
         self.assertEqual(
-            result,
-            [],
-            "exported_deps must not be returned when searching for 'deps'",
+            result, [], "exported_deps must not be returned when searching for 'deps'"
         )
 
     def test_deps_after_comma(self):
@@ -184,6 +182,44 @@ class TestExtractStringList(unittest.TestCase):
         exported = self.parser._extract_string_list(block, "exported_deps")
         self.assertEqual(deps, ["//impl:dep"])
         self.assertEqual(exported, ["//pub:dep"])
+
+
+class TestExtractDict(unittest.TestCase):
+    """Tests for BuckParser._extract_dict (e.g. thrift_srcs)."""
+
+    def setUp(self):
+        self.parser = _make_parser()
+
+    def test_list_value_form(self):
+        block = '(thrift_srcs = {"foo.thrift": []},)'
+        self.assertEqual(
+            self.parser._extract_dict(block, "thrift_srcs"), {"foo.thrift": []}
+        )
+
+    def test_service_list_value_form(self):
+        block = '(thrift_srcs = {"foo.thrift": ["MyService"]},)'
+        self.assertEqual(
+            self.parser._extract_dict(block, "thrift_srcs"),
+            {"foo.thrift": ["MyService"]},
+        )
+
+    def test_none_value_form(self):
+        """thrift_srcs = {"foo.thrift": None} must still register the file.
+
+        FBOSS BUCK files commonly use None (no services) as the dict value;
+        without handling it the thrift target was silently dropped.
+        """
+        block = '(thrift_srcs = {"foo.thrift": None},)'
+        self.assertEqual(
+            self.parser._extract_dict(block, "thrift_srcs"), {"foo.thrift": []}
+        )
+
+    def test_none_value_form_multiline(self):
+        block = '(\n    thrift_srcs = {"bgp_update_group.thrift": None},\n)'
+        self.assertEqual(
+            self.parser._extract_dict(block, "thrift_srcs"),
+            {"bgp_update_group.thrift": []},
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -365,9 +401,7 @@ class TestThriftLibraryTranslation(unittest.TestCase):
         with TemporaryDirectory() as d:
             gen = self._make_generator(Path(d))
             # A thrift file with no service definitions
-            target = self._make_thrift_target(
-                thrift_srcs={"types.thrift": []},
-            )
+            target = self._make_thrift_target(thrift_srcs={"types.thrift": []})
             result = gen._translate_thrift_library(target)
             self.assertIsNotNone(result)
 
@@ -375,9 +409,7 @@ class TestThriftLibraryTranslation(unittest.TestCase):
         """When thrift file contains services, the translator should note it."""
         with TemporaryDirectory() as d:
             gen = self._make_generator(Path(d))
-            target = self._make_thrift_target(
-                thrift_srcs={"ctrl.thrift": []},
-            )
+            target = self._make_thrift_target(thrift_srcs={"ctrl.thrift": []})
             result = gen._translate_thrift_library(target)
             self.assertIsNotNone(result)
 
@@ -485,9 +517,7 @@ class TestResolveAcceptsBuckTarget(unittest.TestCase):
 
     def test_resolve_with_buck_target(self):
         target = BuckTarget(
-            name="mylib",
-            rule_type="cpp_library",
-            buck_path="//fboss/agent",
+            name="mylib", rule_type="cpp_library", buck_path="//fboss/agent"
         )
         resolver = DepResolver(prebuilt_deps={}, all_targets={})
         # Should not raise — from_target must be BuckTarget, not str
@@ -558,9 +588,7 @@ class TestCcTestGetsMain(unittest.TestCase):
 
             # Verify gtest_main is NOT used (we use test_main instead)
             self.assertNotIn(
-                "gtest_main",
-                content,
-                "cc_test should use test_main, not gtest_main",
+                "gtest_main", content, "cc_test should use test_main, not gtest_main"
             )
 
 
@@ -623,8 +651,7 @@ class TestBoostAndFollyLink(unittest.TestCase):
         Uses a committed fixture target so this test is self-contained.
         """
         result = self._bazel_run(
-            "test",
-            "//fboss/oss/scripts/bazel_test_fixtures:boost_test",
+            "test", "//fboss/oss/scripts/bazel_test_fixtures:boost_test"
         )
         self.assertEqual(
             result.returncode, 0, f"bazel test failed:\n{result.stderr[-500:]}"
@@ -640,8 +667,7 @@ class TestBoostAndFollyLink(unittest.TestCase):
         unless the F14 detail archive is force-linked via cc_import(alwayslink).
         """
         result = self._bazel_run(
-            "test",
-            "//fboss/oss/scripts/bazel_test_fixtures:f14_test",
+            "test", "//fboss/oss/scripts/bazel_test_fixtures:f14_test"
         )
         self.assertEqual(
             result.returncode, 0, f"bazel test failed:\n{result.stderr[-500:]}"
@@ -656,8 +682,7 @@ class TestBoostAndFollyLink(unittest.TestCase):
         Runs via `bazel test` to verify the binary not only links but executes.
         """
         result = self._bazel_run(
-            "test",
-            "//fboss/oss/scripts/bazel_test_fixtures:gtest_main_test",
+            "test", "//fboss/oss/scripts/bazel_test_fixtures:gtest_main_test"
         )
         self.assertEqual(
             result.returncode, 0, f"bazel test failed:\n{result.stderr[-500:]}"

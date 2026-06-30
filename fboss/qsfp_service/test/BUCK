@@ -1,6 +1,7 @@
 load("@fbcode_macros//build_defs:cpp_binary.bzl", "cpp_binary")
 load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")
 load("@fbcode_macros//build_defs:cpp_unittest.bzl", "cpp_unittest")
+load("@fbsource//tools/build_defs/testinfra:network_access_utils.bzl", "network_access_utils")
 load("//fboss/qsfp_service:qsfp_service.bzl", "QSFP_COMMON_COMPILER_FLAGS")
 
 oncall("fboss_optics_phy")
@@ -62,6 +63,7 @@ cpp_unittest(
         "TransceiverManagerTest.cpp",
     ],
     compiler_flags = QSFP_COMMON_COMPILER_FLAGS,
+    network_access = network_access_utils.none(),
     deps = [
         ":transceiver_manager_test_helper",
         "//fboss/lib:common_file_utils",
@@ -71,11 +73,25 @@ cpp_unittest(
 
 # bazelify: exclude
 cpp_unittest(
+    name = "sdk_dump_path_test",
+    srcs = [
+        "facebook/SdkDumpPathTest.cpp",
+    ],
+    # Pure in-process string sanitizer test; no network access needed.
+    network_access = network_access_utils.none(),
+    deps = [
+        "//fboss/agent:fboss-error",
+        "//fboss/qsfp_service:sdk_dump_path",
+    ],
+)
+
+cpp_unittest(
     name = "bsp_platform_map_test",
     srcs = [
         "BspPlatformMapTest.cpp",
     ],
     compiler_flags = QSFP_COMMON_COMPILER_FLAGS,
+    network_access = network_access_utils.none(),
     deps = [
         "//fboss/lib/bsp/icecube800bc:icecube800bc_bsp",
         "//fboss/lib/bsp/janga800bic:janga800bic_bsp",
@@ -105,6 +121,7 @@ cpp_unittest(
         "MockTransceivers.h",
     ],
     compiler_flags = QSFP_COMMON_COMPILER_FLAGS,
+    network_access = network_access_utils.none(),
     deps = [
         ":transceiver_manager_test_helper",
         "//fboss/qsfp_service:transceiver-manager",
@@ -140,6 +157,7 @@ cpp_unittest(
         "TypedStateMachineUpdateTest.cpp",
     ],
     compiler_flags = QSFP_COMMON_COMPILER_FLAGS,
+    network_access = network_access_utils.none(),
     deps = [
         "//fboss/qsfp_service:typed-state-machine-update",
     ],
@@ -150,6 +168,7 @@ cpp_unittest(
     name = "state_machine_controller_test",
     srcs = ["StateMachineControllerTest.cpp"],
     compiler_flags = QSFP_COMMON_COMPILER_FLAGS,
+    network_access = network_access_utils.none(),
     deps = [
         "fbsource//third-party/googletest:gmock",
         ":mock-state-machine",
@@ -214,6 +233,7 @@ cpp_unittest(
     name = "port_manager_test",
     srcs = ["PortManagerTest.cpp"],
     compiler_flags = QSFP_COMMON_COMPILER_FLAGS,
+    network_access = network_access_utils.none(),
     deps = [
         "fbsource//third-party/googletest:gmock",
         ":fake-configs-helper",
@@ -239,6 +259,7 @@ cpp_unittest(
         "MockTransceivers.h",
     ],
     compiler_flags = QSFP_COMMON_COMPILER_FLAGS,
+    network_access = network_access_utils.none(),
     deps = [
         ":mock_phy_manager",
         ":mock_port_manager",

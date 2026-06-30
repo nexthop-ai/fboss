@@ -1,4 +1,5 @@
 load("@fbcode_macros//build_defs:cpp_unittest.bzl", "cpp_unittest")
+load("@fbsource//tools/build_defs/testinfra:network_access_utils.bzl", "network_access_utils")
 
 oncall("fboss_oss")
 
@@ -9,6 +10,7 @@ cpp_unittest(
         "CmdConfigAdminDistanceTest.cpp",
         "CmdConfigAppliedInfoTest.cpp",
         "CmdConfigArpTest.cpp",
+        "CmdConfigCoppTest.cpp",
         "CmdConfigHistoryTest.cpp",
         "CmdConfigHostnameTest.cpp",
         "CmdConfigIcmpV4UnavailableSrcAddrTest.cpp",
@@ -18,6 +20,7 @@ cpp_unittest(
         "CmdConfigInterfaceTest.cpp",
         "CmdConfigIpRouteTest.cpp",
         "CmdConfigL2LearningModeTest.cpp",
+        "CmdConfigLoadBalancingTest.cpp",
         "CmdConfigMacAgingTimeTest.cpp",
         "CmdConfigNeedL2EntryForNeighborTest.cpp",
         "CmdConfigPtpTransparentClockTest.cpp",
@@ -27,14 +30,15 @@ cpp_unittest(
         "CmdConfigSessionDiffTest.cpp",
         "CmdConfigSessionTest.cpp",
         "CmdConfigTestBase.cpp",
+        "CmdConfigTunnelIpInIpTest.cpp",
         "CmdConfigVlanDefaultTest.cpp",
         "CmdConfigTunnelIpInIpTest.cpp",
         "CmdConfigVlanManagerTest.cpp",
         "CmdConfigVlanPortTaggingModeTest.cpp",
         "CmdConfigVlanStaticMacTest.cpp",
-        "CmdDeleteTunnelIpInIpTest.cpp",
         "CmdDeleteInterfaceIpv6NdpTest.cpp",
         "CmdDeleteInterfaceTest.cpp",
+        "CmdDeleteTunnelIpInIpTest.cpp",
         "ConfigSessionSystemdTest.cpp",
         "CmdConfigIpRouteTest.cpp",
         "CmdDeleteConfigInterfaceTest.cpp",
@@ -43,6 +47,7 @@ cpp_unittest(
         "MockFbossServiceUtil.h",
         "MockSystemdInterface.h",
     ],
+    network_access = network_access_utils.all(),
     deps = [
         "fbsource//third-party/fmt:fmt",
         "fbsource//third-party/googletest:gmock",

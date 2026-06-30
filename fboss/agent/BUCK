@@ -452,6 +452,21 @@ cpp_library(
 )
 
 cpp_library(
+    name = "pfc_utils",
+    srcs = [
+        "PfcUtils.cpp",
+    ],
+    headers = [
+        "PfcUtils.h",
+    ],
+    exported_deps = [
+        ":buffer_utils",
+        ":fboss-types",
+        "//fboss/agent/state:state",
+    ],
+)
+
+cpp_library(
     name = "dsfnode_utils",
     srcs = [
         "DsfNodeUtils.cpp",
@@ -532,6 +547,9 @@ cpp_library(
         ":voq_utils",
         "//fboss/agent/state:state",
         "//folly/logging:logging",
+    ],
+    exported_external_deps = [
+        ("boost", None, "boost_container"),
     ],
 )
 
@@ -760,6 +778,7 @@ cpp_library(
         ":hw_asic_table",
         ":lacp_types",
         ":loadbalancer_utils",
+        ":pfc_utils",
         ":route_update_wrapper",
         ":switch_config-cpp2-types",
         ":switchid_scope_resolver",
@@ -1061,6 +1080,7 @@ cpp_library(
         ":monolithic_hw_switch_handler",
         ":packet",
         ":packet_observer",
+        ":pfc_utils",
         ":phy_snapshot_lib",
         ":route_update_wrapper",
         ":shel_manager",

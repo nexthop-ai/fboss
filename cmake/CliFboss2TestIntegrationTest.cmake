@@ -12,6 +12,7 @@ add_executable(fboss2_integration_test
   fboss/cli/fboss2/test/integration_test/ConfigArpTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigHostnameTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigConcurrentSessionsTest.cpp
+  fboss/cli/fboss2/test/integration_test/ConfigCoppTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigIcmpV4UnavailableSrcAddrTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigInterfaceDescriptionTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigInterfaceIpv6NdpTest.cpp
@@ -19,6 +20,7 @@ add_executable(fboss2_integration_test
   fboss/cli/fboss2/test/integration_test/ConfigInterfaceMtuTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigInterfaceProfileTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigL2LearningModeTest.cpp
+  fboss/cli/fboss2/test/integration_test/ConfigLoadBalancingTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigMacTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigNeedL2EntryForNeighborTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigPfcTest.cpp

@@ -5,10 +5,7 @@ import json
 import os
 import sys
 
-from fboss.lib.asic_config_v3.base_generator import (
-    BaseAsicConfigGenerator,
-    MODULE_DIR,
-)
+from fboss.lib.asic_config_v3.base_generator import BaseAsicConfigGenerator, MODULE_DIR
 from fboss.lib.asic_config_v3.generators.broadcom_xgs_generator import (
     BroadcomXgsGenerator,
 )

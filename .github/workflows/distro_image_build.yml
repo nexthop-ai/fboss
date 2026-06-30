@@ -25,7 +25,7 @@ jobs:
     runs-on: cloudstack-ubuntu24-large
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup NHTools
         uses: nexthop-ai/nh/.github/actions/install-nhtools@main

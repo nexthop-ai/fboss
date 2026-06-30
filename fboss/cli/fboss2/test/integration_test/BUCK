@@ -21,6 +21,7 @@ cpp_binary(
         "ConfigArpTest.cpp",
         "ConfigHostnameTest.cpp",
         "ConfigConcurrentSessionsTest.cpp",
+        "ConfigCoppTest.cpp",
         "ConfigIcmpV4UnavailableSrcAddrTest.cpp",
         "ConfigInterfaceDescriptionTest.cpp",
         "ConfigInterfaceFlowControlTest.cpp",
@@ -32,6 +33,7 @@ cpp_binary(
         "ConfigInterfaceSwitchportTrunkAllowedVlanTest.cpp",
         "ConfigInterfaceTypeTest.cpp",
         "ConfigL2LearningModeTest.cpp",
+        "ConfigLoadBalancingTest.cpp",
         "ConfigMacTest.cpp",
         "ConfigNeedL2EntryForNeighborTest.cpp",
         "ConfigPfcTest.cpp",
@@ -56,6 +58,8 @@ cpp_binary(
         "fbsource//third-party/fmt:fmt",
         "fbsource//third-party/googletest:gmock",
         "fbsource//third-party/googletest:gtest",
+        "//fboss/agent:fboss-types",
+        "//fboss/agent:switch_config-cpp2-types",
         "//fboss/agent/if:ctrl-cpp2-clients",
         "//fboss/agent/if:ctrl-cpp2-services",
         "//fboss/agent/if:ctrl-cpp2-types",
@@ -65,6 +69,7 @@ cpp_binary(
         "//fboss/cli/fboss2:fboss2-config-lib",  # @manual
         "//fboss/cli/fboss2:fboss2-lib",  # @manual
         "//folly:dynamic",
+        "//folly:network_address",
         "//folly:string",
         "//folly:subprocess",
         "//folly/init:init",

@@ -1,0 +1,157 @@
+name: NH PR Resync Command
+
+# Implements the `/resync` slash-command for upstream-sync PRs. When a comment
+# containing `/resync` is posted on a sync PR, this "rebases" the sync branch by
+# recreating its merge commit on top of the latest origin/main (replaying the
+# fix commits on top) via .github/scripts/resync-sync-branch.sh, then
+# force-pushes the result back to the PR head branch.
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  resync-pr:
+    name: Resync sync PR
+    # Only run on PR comments containing /resync
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/resync')
+    runs-on: cloudstack-ubuntu24-micro
+    steps:
+      - name: Get PR details
+        id: pr-details
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          PR_NUMBER=${{ github.event.issue.number }}
+
+          pr_data=$(gh api repos/${{ github.repository }}/pulls/${PR_NUMBER})
+
+          echo "pr_number=${PR_NUMBER}" >> "$GITHUB_OUTPUT"
+          echo "pr_title=$(echo "$pr_data" | jq -r '.title')" >> "$GITHUB_OUTPUT"
+          echo "pr_state=$(echo "$pr_data" | jq -r '.state')" >> "$GITHUB_OUTPUT"
+          echo "head_ref=$(echo "$pr_data" | jq -r '.head.ref')" >> "$GITHUB_OUTPUT"
+
+      - name: Validate this is a sync PR
+        run: |
+          PR_TITLE="${{ steps.pr-details.outputs.pr_title }}"
+          HEAD_REF="${{ steps.pr-details.outputs.head_ref }}"
+
+          if [[ ! "$PR_TITLE" =~ ^\[sync\]\ Sync\ with\ upstream ]]; then
+            REASON="This workflow only works for sync PRs."
+            echo "::error::$REASON. PR title must start with '[sync] Sync with upstream'""
+            echo "FAILURE_REASON=$REASON" >> "$GITHUB_ENV"
+            exit 1
+          fi
+
+          if [[ "$HEAD_REF" != sync-fboss-upstream-* ]]; then
+            REASON="This workflow only works for sync PRs."
+            echo "::error::$REASON. Branch must start with 'sync-fboss-upstream-'"
+            echo "FAILURE_REASON=$REASON" >> "$GITHUB_ENV"
+            exit 1
+          fi
+
+          echo "✅ Validated this is a sync PR"
+
+      - name: Check PR is open
+        if: steps.pr-details.outputs.pr_state != 'open'
+        run: |
+          REASON="PR is not open (state: ${{ steps.pr-details.outputs.pr_state }})"
+          echo "::error::$REASON"
+          echo "FAILURE_REASON=$REASON" >> "$GITHUB_ENV"
+          exit 1
+
+      - name: Checkout sync branch
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          # Full history is required: the resync script walks back from HEAD to
+          # find the merge commit and replays every fix commit above it.
+          fetch-depth: 0
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          ref: ${{ steps.pr-details.outputs.head_ref }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "rabbit-nexthop"
+          git config --global user.email "rabbit@nexthop.ai"
+          git config --global merge.conflictstyle zdiff3
+          git config --global diff.algorithm histogram
+          git config --global merge.ignoreWhitespace change
+
+      - name: Resync sync branch
+        id: resync
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          set -o pipefail
+          # Capture combined output so the comment steps can quote a reason back
+          # to the PR. The script force-pushes the rebased branch itself.
+          rc=0
+          .github/scripts/resync-sync-branch.sh 2>&1 | tee /tmp/resync.log || rc=$?
+
+          # origin/main was fetched by the script; record what we rebased onto.
+          NEW_BASE=$(git rev-parse origin/main 2>/dev/null || echo "")
+          echo "new_base=${NEW_BASE}" >> "$GITHUB_OUTPUT"
+          echo "rc=${rc}" >> "$GITHUB_OUTPUT"
+
+          # Exit 2 is not a failure: the branch WAS force-pushed, but unresolved
+          # conflicts were committed with markers and need manual resolution. We
+          # let the step succeed and flag it in a dedicated comment. Any other
+          # non-zero code is a genuine failure (nothing reliably pushed).
+          if [[ $rc -ne 0 && $rc -ne 2 ]]; then
+            exit $rc
+          fi
+
+      - name: Comment on PR (success)
+        if: success() && steps.resync.outputs.rc == '0'
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          PR_NUMBER=${{ steps.pr-details.outputs.pr_number }}
+          NEW_BASE=${{ steps.resync.outputs.new_base }}
+
+          gh pr comment ${PR_NUMBER} --body "✅ The sync PR was rebased on top of commit \`${NEW_BASE}\` (origin/main)."
+
+      - name: Comment on PR (rebased with conflicts)
+        if: success() && steps.resync.outputs.rc == '2'
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          PR_NUMBER=${{ steps.pr-details.outputs.pr_number }}
+          NEW_BASE=${{ steps.resync.outputs.new_base }}
+          WORKFLOW_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          # Quote the script's warnings (conflicted files committed with markers).
+          DETAILS=$(grep -E '^⚠️  WARN' /tmp/resync.log | tail -n 5 || true)
+
+          gh pr comment ${PR_NUMBER} --body "⚠️ The sync PR was rebased on top of commit \`${NEW_BASE}\` (origin/main) and force-pushed, **but unresolved conflicts were committed with markers** — manual resolution is needed:
+
+          \`\`\`
+          ${DETAILS}
+          \`\`\`
+
+          See [workflow run](${WORKFLOW_URL}) for the full list of conflicted files."
+
+      - name: Comment on PR (failure)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          PR_NUMBER=${{ steps.pr-details.outputs.pr_number }}
+          WORKFLOW_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          # Prefer a reason set by a validation step; otherwise quote the tail of
+          # the resync script output (which carries 💥/⚠️ diagnostics).
+          REASON="${{ env.FAILURE_REASON }}"
+          if [[ -z "$REASON" && -f /tmp/resync.log ]]; then
+            REASON=$(grep -E '^(💥 ERROR|⚠️  WARN)' /tmp/resync.log | tail -n 5 || true)
+          fi
+          if [[ -z "$REASON" ]]; then
+            REASON="Resync failed. Please check the workflow run for details."
+          fi
+
+          gh pr comment ${PR_NUMBER} --body "❌ Failed to resync the sync PR:
+
+          \`\`\`
+          ${REASON}
+          \`\`\`
+
+          See [workflow run](${WORKFLOW_URL}) for details."

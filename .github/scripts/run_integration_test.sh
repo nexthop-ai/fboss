@@ -33,7 +33,7 @@ nh dvc ssh "$DUT" -c '
   # failed assertion so the collected agent/wedge logs stay relevant to that
   # failure (no later tests scribble over the failure state).
   (
-    stdbuf -oL -eL ./fboss2_integration_test \
+    stdbuf -oL -eL env LD_LIBRARY_PATH="$HOME:${LD_LIBRARY_PATH:-}" ./fboss2_integration_test \
       --gtest_break_on_failure \
       > /tmp/fboss2_itest.log 2>&1
     echo $? > /tmp/fboss2_itest.rc
@@ -113,7 +113,7 @@ if [[ ${TEST_RC} -ne 0 ]]; then
   # gtest exits non-zero when tests are skipped in some configurations. Only
   # treat it as an error if a test actually FAILED.
   ACTUAL_FAILURES="$(nh dvc ssh "$DUT" -c \
-    'grep -c "^\[  FAILED  \]" /tmp/fboss2_itest.log 2>/dev/null || echo 0' \
+    'count=$(grep -c "^\[  FAILED  \]" /tmp/fboss2_itest.log 2>/dev/null) || count=0; echo "$count"' \
     2>/dev/null || echo 0)"
   if [[ ${ACTUAL_FAILURES} -eq 0 ]]; then
     echo "::warning::Test binary exited rc=${TEST_RC} but no FAILED tests found (all skipped?) — treating as pass"

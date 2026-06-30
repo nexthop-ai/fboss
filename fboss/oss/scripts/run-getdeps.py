@@ -47,14 +47,8 @@ ARG_GETDEPS_HELP = "--getdeps-help"
 ARG_GETDEPS = "getdeps_args"
 ARG_USE_GCC = "--use-gcc"
 
-SUPPORTED_SAI_IMPLS = {
-    "SAI_BRCM_IMPL",
-    "CHENAB_SAI_SDK",
-    "SAI_TAJO_IMPL",
-}
-SUPPORTED_PHY_IMPLS = {
-    "SAI_BRCM_PAI_IMPL",
-}
+SUPPORTED_SAI_IMPLS = {"SAI_BRCM_IMPL", "CHENAB_SAI_SDK", "SAI_TAJO_IMPL"}
+SUPPORTED_PHY_IMPLS = {"SAI_BRCM_PAI_IMPL"}
 SAI_VERSION_SHAS = {
     "1.13.2": "d60935ba1e5cc7e4ebf2ae7d04f9e937d445e3f875822e27a359c775cb203bae",
     "1.14.0": "4e3a1d010bda0c589db46e077725a2cd9624a5cc255c89d1caa79deb408d1fa7",
@@ -66,6 +60,7 @@ SAI_VERSION_SHAS = {
     "1.17.1": "05411b13b32abcc50f2f2b78e491e503b2b05e5a1503699abd4cc1b81f90d1ae",
     "1.17.4": "362640d5398c53e7257daf67ff7044591937a8443bf037748527bb2cd185f660",
     "1.18.0": "606e35da083056e60e818964bcc0737f229a78f1a150e8aa398bc76b3a360509",
+    "1.18.1": "84f2fbd6bf672abaefddfd78a28fec794e37477bf9702fbb56d7bd53ff930ba3",
 }
 SUPPORTED_SAI_SDK_VERSIONS = {
     # BRCM XGS
@@ -76,7 +71,6 @@ SUPPORTED_SAI_SDK_VERSIONS = {
     "SAI_VERSION_13_3_0_0_ODP",
     "SAI_VERSION_14_0_EA_ODP",
     "SAI_VERSION_14_2_0_0_ODP",
-    "SAI_VERSION_15_0_EA_ODP",
     "SAI_VERSION_15_4_EA_ODP",
     # BRCM DNX
     "SAI_VERSION_11_7_0_0_DNX_ODP",
@@ -85,16 +79,19 @@ SUPPORTED_SAI_SDK_VERSIONS = {
     "SAI_VERSION_14_0_EA_DNX_ODP",
     "SAI_VERSION_14_2_0_0_DNX_ODP",
     "SAI_VERSION_15_0_EA_DNX_ODP",
+    "SAI_VERSION_16_0_EA_DNX_ODP",
     # Tajo
     "TAJO_SDK_VERSION_1_42_8",
     "TAJO_SDK_VERSION_24_8_3001",
     "TAJO_SDK_VERSION_25_5_4210",
     "TAJO_SDK_VERSION_25_11_4210",
+    "TAJO_SDK_VERSION_26_2_4210",
     "TAJO_SDK_VERSION_26_2_5210",
+    "TAJO_SDK_VERSION_26_5_5211",
     # Chenab
     "CHENAB_SAI_SDK_VERSION_2505_34_0_38",
-    "CHENAB_SAI_SDK_VERSION_2511_35_0_19",
-    "CHENAB_SAI_SDK_VERSION_2511_6_0_8_ea",
+    "CHENAB_SAI_SDK_VERSION_2511_36_0_20",
+    "CHENAB_SAI_SDK_VERSION_2511_6_0_21_ea",
 }
 
 
@@ -213,11 +210,7 @@ def detect_toolchain():
     """
     try:
         gxx_version = subprocess.run(
-            ["g++", "--version"],
-            capture_output=True,
-            text=True,
-            timeout=5,
-            check=False,
+            ["g++", "--version"], capture_output=True, text=True, timeout=5, check=False
         )
     except (subprocess.TimeoutExpired, FileNotFoundError, OSError) as e:
         print(f"Warning: Could not detect compiler: {e}", file=sys.stderr)
@@ -377,7 +370,6 @@ def setup_clang_environment(toolchain_info, repo_root=None):
         print_info("Warning: Could not determine target triple")
         return
 
-    # Read clang-specific CXXFLAGS from CMakeLists.txt using regex
     cxxflags = _extract_clang_cxxflags(repo_root)
     if cxxflags is None:
         return
@@ -571,10 +563,7 @@ def _prepare_sdk_from_tarball(tarball_path, scratch_path):
     if os.path.exists(extract_dir):
         shutil.rmtree(extract_dir)
     os.makedirs(extract_dir)
-    subprocess.run(
-        ["tar", "xzf", tarball_path, "-C", extract_dir],
-        check=True,
-    )
+    subprocess.run(["tar", "xzf", tarball_path, "-C", extract_dir], check=True)
     print_info(f"Extracted SDK tarball {tarball_path} to {extract_dir}")
 
     existing = os.environ.get("CMAKE_PREFIX_PATH", "")
@@ -689,12 +678,7 @@ def main():
     # Detect which toolchain is active and set up environment accordingly
     toolchain_info = detect_toolchain()
 
-    set_clang_cmd = [
-        "update-alternatives",
-        "--set",
-        "gcc",
-        "/usr/local/llvm/bin/clang",
-    ]
+    set_clang_cmd = ["update-alternatives", "--set", "gcc", "/usr/local/llvm/bin/clang"]
     set_gcc_cmd = [
         "update-alternatives",
         "--set",
