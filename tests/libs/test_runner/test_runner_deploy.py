@@ -424,9 +424,6 @@ class TestRunnerManifests:
         # (like the forwarding runners and BspTestRunner), so they aren't shipped.
         assert "bin/run_test.py" not in PlatformTestRunner.REQUIRED_PATHS
 
-    def test_bsp_runner_ships_its_sanity_config(self):
-        assert "share/hw_sanity_tests/bsp_sanity_tests.conf" in BspTestRunner.REQUIRED_PATHS
-
     def test_bsp_runner_does_not_need_run_test_py(self):
         assert "bin/run_test.py" not in BspTestRunner.REQUIRED_PATHS
 

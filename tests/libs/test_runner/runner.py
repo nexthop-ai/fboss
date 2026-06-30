@@ -1073,14 +1073,7 @@ class BspTestRunner(BaseHwTestRunner):
     """
     STACK = _STACK_PLATFORM
     BINARIES = ("bin/bsp_tests",)
-    # bsp_sanity_tests.conf ships from the prod/platform stack (package.py
-    # PLATFORM_EXTRA), not the platform test tar, so it's listed explicitly here
-    # rather than via _STACK_SHARE (which is empty for the platform stack).
-    REQUIRED_PATHS = (
-        *BINARIES,
-        "share/hw_sanity_tests/bsp_sanity_tests.conf",
-        *_STACK_SHARE[STACK],
-    )
+    REQUIRED_PATHS = (*BINARIES, *_STACK_SHARE[STACK])
 
     def test_args(self, model: str) -> str:
         return "bsp"

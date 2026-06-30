@@ -64,7 +64,7 @@ the production image already on the DUT (`/opt/fboss/bin/`).
 | `QsfpTestRunner` | forwarding | `bin/qsfp_hw_test` | — |
 | `LinkTestRunner` | forwarding | `bin/sai_mono_link_test-sai_impl`, `bin/sai_multi_link_test-sai_impl` | — |
 | `PlatformTestRunner` | platform | the 7 platform `*_hw_test` binaries | no `share/`; `run_test.py` from image |
-| `BspTestRunner` | platform | `bin/bsp_tests` | `share/hw_sanity_tests/bsp_sanity_tests.conf` (prod-tar config, listed explicitly) |
+| `BspTestRunner` | platform | `bin/bsp_tests` | — |
 | `SmokeTestRunner` | forwarding | `bin/python_tests/agent_smoke.py`, `bin/python_tests/junit.py` | runs the script directly — no `run_test.py`, no `share/` |
 | `BenchmarkTestRunner` | forwarding | `bin/sai_all_benchmarks-sai_impl` | — |
 
