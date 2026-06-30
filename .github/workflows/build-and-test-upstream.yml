@@ -77,7 +77,7 @@ jobs:
           # Start from the upstream tree, then fully replace our harness dirs with
           # origin/main's versions (rm first so upstream-only files don't linger).
           git checkout -B "$TEST_BRANCH" FETCH_HEAD
-          for p in .github fboss/oss/scripts fboss-sim fboss/oss/stable_commits; do
+          for p in .github fboss/oss/docker fboss/oss/scripts fboss-sim fboss/oss/stable_commits; do
             rm -rf "$p"
             git checkout origin/main -- "$p"
           done
