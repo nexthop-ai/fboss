@@ -1,0 +1,189 @@
+name: Rebase Upstream PR
+
+# Rebase a stale facebook/fboss PR (whose branch lives on our public fork
+# nexthop-ai/fboss) onto the latest stable commit (default) or a chosen target,
+# auto-resolving the usual cmake/BUCK/include conflicts, then build-and-test it with
+# our internal cmake harness. On green, the validated rebase is force-pushed back to
+# the PR branch (updating the live upstream PR). On unresolved conflicts or a
+# build/test failure, we hand off to the @mabel Slack bot in #sw-fboss-automation.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "facebook/fboss PR number to rebase"
+        required: true
+        type: string
+      rebase_onto:
+        description: "Rebase target: empty = latest stable commit; a branch name (e.g. main) = upstream branch; or a SHA"
+        required: false
+        default: ""
+        type: string
+
+concurrency:
+  group: rebase-upstream-${{ inputs.pr_number }}
+  cancel-in-progress: true
+
+# @mabel's Slack member id (not sensitive) — inlined into the handoff prompts.
+env:
+  MABEL: "U0AKL814NKB"
+
+jobs:
+  rebase:
+    name: Rebase PR
+    if: github.repository_owner == 'nexthop-ai'
+    runs-on: cloudstack-ubuntu24-micro
+    outputs:
+      pr_branch: ${{ steps.rebase.outputs.pr_branch }}
+      author_user: ${{ steps.rebase.outputs.author_user }}
+      test_branch: ${{ steps.rebase.outputs.test_branch }}
+      expected_oid: ${{ steps.rebase.outputs.expected_oid }}
+      rebased_sha: ${{ steps.rebase.outputs.rebased_sha }}
+      fork_test_ref: ${{ steps.rebase.outputs.fork_test_ref }}
+      target: ${{ steps.rebase.outputs.target }}
+      has_conflicts: ${{ steps.rebase.outputs.has_conflicts }}
+      conflicting_files: ${{ steps.rebase.outputs.conflicting_files }}
+      wip_branch: ${{ steps.rebase.outputs.wip_branch }}
+      dropped_commits: ${{ steps.rebase.outputs.dropped_commits }}
+      orig_commit_count: ${{ steps.rebase.outputs.orig_commit_count }}
+      new_commit_count: ${{ steps.rebase.outputs.new_commit_count }}
+    steps:
+      - name: Checkout private-fboss
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "rabbit-nexthop"
+          git config --global user.email "rabbit@nexthop.ai"
+          git config --global merge.conflictstyle zdiff3
+          git config --global diff.algorithm histogram
+
+      - name: Rebase upstream PR
+        id: rebase
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          .github/scripts/rebase_upstream_pr.sh "${{ inputs.pr_number }}" "${{ inputs.rebase_onto }}"
+
+  # Build-and-test the clean rebased branch (only when the rebase was conflict-free).
+  build-and-test:
+    name: Build and Test
+    needs: rebase
+    if: needs.rebase.outputs.has_conflicts == 'false'
+    uses: ./.github/workflows/build-and-test-upstream.yml
+    with:
+      fork_ref: ${{ needs.rebase.outputs.fork_test_ref }}
+      test_branch: ${{ needs.rebase.outputs.test_branch }}
+    secrets: inherit
+
+  # On green, force-push the validated rebase to the real PR branch (updates the
+  # live upstream PR). --force-with-lease pins the PR head OID captured at rebase
+  # start, so a concurrent update aborts rather than getting clobbered.
+  update-pr:
+    name: Update PR branch
+    needs: [rebase, build-and-test]
+    if: needs.build-and-test.result == 'success'
+    runs-on: cloudstack-ubuntu24-micro
+    steps:
+      - name: Checkout
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          ref: main
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+      - name: Force-push rebased commit to PR branch
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          PR_BRANCH: ${{ needs.rebase.outputs.pr_branch }}
+          EXPECTED_OID: ${{ needs.rebase.outputs.expected_oid }}
+          REBASED_SHA: ${{ needs.rebase.outputs.rebased_sha }}
+          FORK_TEST_REF: ${{ needs.rebase.outputs.fork_test_ref }}
+        run: |
+          set -euo pipefail
+          git remote add nexthop-ai "https://x-access-token:${GH_TOKEN}@github.com/nexthop-ai/fboss.git" 2>/dev/null || \
+            git remote set-url nexthop-ai "https://x-access-token:${GH_TOKEN}@github.com/nexthop-ai/fboss.git"
+          git fetch --no-tags nexthop-ai "$FORK_TEST_REF"
+          git push --force-with-lease="$PR_BRANCH:$EXPECTED_OID" \
+            nexthop-ai "$REBASED_SHA:refs/heads/$PR_BRANCH"
+          echo "✅ Updated nexthop-ai/fboss:$PR_BRANCH to $REBASED_SHA"
+
+  # Always clean up the public-fork temp branch holding the clean rebased commit.
+  cleanup:
+    name: Cleanup temp branch
+    needs: [rebase, update-pr]
+    if: always() && needs.rebase.outputs.fork_test_ref != ''
+    runs-on: cloudstack-ubuntu24-micro
+    steps:
+      - name: Delete temp branch
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          FORK_TEST_REF: ${{ needs.rebase.outputs.fork_test_ref }}
+        run: |
+          gh api --method DELETE "repos/nexthop-ai/fboss/git/refs/heads/$FORK_TEST_REF" || true
+
+  # ─── @mabel handoffs ──────────────────────────────────────────────────────
+  notify-conflicts:
+    name: Notify @mabel (conflicts)
+    needs: rebase
+    if: needs.rebase.outputs.has_conflicts == 'true'
+    runs-on: cloudstack-ubuntu24-micro
+    steps:
+      - name: Prompt @mabel to resolve conflicts
+        env:
+          WEBHOOK: ${{ secrets.SW_FBOSS_AUTOMATION_SLACK_WEBHOOK_URL }}
+          PR: ${{ inputs.pr_number }}
+          TARGET: ${{ needs.rebase.outputs.target }}
+          WIP_BRANCH: ${{ needs.rebase.outputs.wip_branch }}
+          CONFLICTS: ${{ needs.rebase.outputs.conflicting_files }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          msg=$(printf '<@%s> the rebase of upstream PR #%s onto `%s` still has conflicts after nh-fix-merge-conflicts.py. Please resolve the merge conflicts on branch `%s` in nexthop-ai/fboss and push the corrected rebase.\nConflicting files:\n%s\nRun: %s' \
+            "$MABEL" "$PR" "$TARGET" "$WIP_BRANCH" "$CONFLICTS" "$RUN_URL")
+          jq -n --arg text "$msg" '{text:$text}' | \
+            curl -sSf -X POST -H 'Content-type: application/json' --data @- "$WEBHOOK"
+
+  notify-build-failure:
+    name: Notify @mabel (build/test failed)
+    needs: [rebase, build-and-test]
+    if: always() && needs.rebase.outputs.has_conflicts == 'false' && needs.build-and-test.result == 'failure'
+    runs-on: cloudstack-ubuntu24-micro
+    steps:
+      - name: Prompt @mabel to investigate failure
+        env:
+          WEBHOOK: ${{ secrets.SW_FBOSS_AUTOMATION_SLACK_WEBHOOK_URL }}
+          PR: ${{ inputs.pr_number }}
+          PR_BRANCH: ${{ needs.rebase.outputs.pr_branch }}
+          FAILED_TESTS: ${{ needs.build-and-test.outputs.failed_tests }}
+          FAILED_COUNT: ${{ needs.build-and-test.outputs.failed_test_count }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          msg=$(printf '<@%s> the build-and-test cycle for rebased upstream PR #%s (branch `%s`) failed. Please investigate and fix.\nFailed tests (%s):\n%s\nRun: %s' \
+            "$MABEL" "$PR" "$PR_BRANCH" "${FAILED_COUNT:-?}" "${FAILED_TESTS:-<none captured — likely a build failure>}" "$RUN_URL")
+          jq -n --arg text "$msg" '{text:$text}' | \
+            curl -sSf -X POST -H 'Content-type: application/json' --data @- "$WEBHOOK"
+
+  notify-dropped-commits:
+    name: Notify @mabel (dropped commits)
+    needs: rebase
+    if: needs.rebase.outputs.dropped_commits == 'true'
+    runs-on: cloudstack-ubuntu24-micro
+    steps:
+      - name: Warn @mabel about dropped commits
+        env:
+          WEBHOOK: ${{ secrets.SW_FBOSS_AUTOMATION_SLACK_WEBHOOK_URL }}
+          PR: ${{ inputs.pr_number }}
+          PR_BRANCH: ${{ needs.rebase.outputs.pr_branch }}
+          ORIG: ${{ needs.rebase.outputs.orig_commit_count }}
+          NEW: ${{ needs.rebase.outputs.new_commit_count }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          dropped=$(( ORIG - NEW ))
+          msg=$(printf '<@%s> ⚠️ rebase of upstream PR #%s (branch `%s`) dropped %s commit(s) (%s → %s). This is expected for already-merged patches, but please verify no important commits vanished before the PR is updated.\nRun: %s' \
+            "$MABEL" "$PR" "$PR_BRANCH" "$dropped" "$ORIG" "$NEW" "$RUN_URL")
+          jq -n --arg text "$msg" '{text:$text}' | \
+            curl -sSf -X POST -H 'Content-type: application/json' --data @- "$WEBHOOK"

@@ -1,0 +1,113 @@
+name: Build and Test Upstream Branch
+
+# Reusable workflow: build-and-test a *pure upstream* facebook/fboss branch (living
+# on our public fork nexthop-ai/fboss) using our internal cmake build harness.
+#
+# The bare upstream tree has none of our CI harness (fboss/oss/scripts/nhfboss-*,
+# .github/actions/fboss-builder-image, fboss-sim/...). So we make a throwaway branch
+# on private-fboss = upstream tree + our harness overlaid from origin/main, and run
+# the regular build-and-test.yml against it. The throwaway branch (which carries our
+# internal scripts) only ever lives on private-fboss, never on the public fork.
+#
+# Used by rebase-upstream-pr.yml after a rebase, and standalone to validate a fresh
+# upstream PR branch before sending it to facebook/fboss.
+#
+# Note: `uses: ./.github/workflows/...` and `./.github/actions/...` resolve from the
+# ref the *calling run* was launched on (not from `test_branch`), EXCEPT the composite
+# action fboss-builder-image, which build-and-test.yml reads from the checked-out
+# workspace — which is why the overlay below must include `.github/actions`.
+
+on:
+  workflow_call:
+    inputs:
+      fork_ref:
+        description: "Branch or SHA on nexthop-ai/fboss (public fork) to build"
+        required: true
+        type: string
+      test_branch:
+        description: "Convention-compliant private-fboss branch to create ($user.$topic)"
+        required: true
+        type: string
+      sai_version:
+        description: "SAI version to build against"
+        required: false
+        default: "1.16.1"
+        type: string
+    outputs:
+      failed_tests:
+        description: "List of failed tests (up to 10)"
+        value: ${{ jobs.build-and-test.outputs.failed_tests }}
+      failed_test_count:
+        description: "Total number of failed tests"
+        value: ${{ jobs.build-and-test.outputs.failed_test_count }}
+
+jobs:
+  prepare:
+    name: Prepare overlay branch
+    if: github.repository_owner == 'nexthop-ai'
+    runs-on: cloudstack-ubuntu24-micro
+    outputs:
+      test_branch: ${{ steps.overlay.outputs.test_branch }}
+    steps:
+      - name: Checkout private-fboss main
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "rabbit-nexthop"
+          git config --global user.email "rabbit@nexthop.ai"
+
+      - name: Build overlay branch (upstream tree + Nexthop CI)
+        id: overlay
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          FORK_REF: ${{ inputs.fork_ref }}
+          TEST_BRANCH: ${{ inputs.test_branch }}
+        run: |
+          set -euo pipefail
+          git remote add nexthop-ai "https://x-access-token:${GH_TOKEN}@github.com/nexthop-ai/fboss.git" 2>/dev/null || \
+            git remote set-url nexthop-ai "https://x-access-token:${GH_TOKEN}@github.com/nexthop-ai/fboss.git"
+          git fetch --no-tags origin main
+          git fetch --no-tags nexthop-ai "$FORK_REF"
+
+          # Start from the upstream tree, then fully replace our harness dirs with
+          # origin/main's versions (rm first so upstream-only files don't linger).
+          git checkout -B "$TEST_BRANCH" FETCH_HEAD
+          for p in .github fboss/oss/scripts fboss-sim fboss/oss/stable_commits; do
+            rm -rf "$p"
+            git checkout origin/main -- "$p"
+          done
+          git add -A
+          git commit --no-verify -m "CI: build-test upstream ${FORK_REF} with NH harness (do not merge)"
+
+          # Force-push so reruns reuse the same convention-compliant branch name.
+          git push --force --set-upstream origin "$TEST_BRANCH"
+          echo "test_branch=$TEST_BRANCH" >> "$GITHUB_OUTPUT"
+
+  build-and-test:
+    name: Build and Test
+    needs: prepare
+    uses: ./.github/workflows/build-and-test.yml
+    with:
+      sai_version: ${{ inputs.sai_version }}
+      use_clang: true
+      ref: ${{ needs.prepare.outputs.test_branch }}
+    secrets: inherit
+
+  cleanup:
+    name: Cleanup overlay branch
+    needs: [prepare, build-and-test]
+    if: always() && needs.prepare.outputs.test_branch != ''
+    runs-on: cloudstack-ubuntu24-micro
+    steps:
+      - name: Checkout
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          ref: main
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+      - name: Delete overlay branch
+        run: git push origin --delete ${{ needs.prepare.outputs.test_branch }} || true
