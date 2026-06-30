@@ -12,6 +12,7 @@
 #include <time.h>
 
 #include <common/fb303/if/gen-cpp2/FacebookService.h>
+#include <fb303/ServiceData.h>
 #include <folly/small_vector.h>
 
 namespace folly {
@@ -48,6 +49,10 @@ class FacebookBase2 : virtual public cpp2::FacebookServiceSvIf {
 
   int64_t getPid() override {
     return getpid();
+  }
+
+  void getCounters(std::map<std::string, int64_t>& _return) override {
+    ServiceData::get()->getCounters(_return);
   }
 };
 
