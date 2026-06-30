@@ -62,6 +62,8 @@ echo 1000 >/proc/self/oom_score_adj
 
 export SCCACHE_ERROR_LOG="/tmp/sccache.log"
 export SCCACHE_LOG=info
+export SCCACHE_DIST_REQUEST_TIMEOUT=2700
+export SCCACHE_IDLE_TIMEOUT=2700
 
 # Detect if distributed sccache is available and configure accordingly
 SCCACHE_SCHEDULER_HOST=sccache.us-west-1.nexthop.ai
@@ -108,16 +110,6 @@ _computed_compile_jobs=$((nproc_jobs < ram_jobs ? nproc_jobs : ram_jobs))
 # Allow CI to pin job counts so cache keys stay stable across fresh VMs of the
 # same flavor (free -g truncation can otherwise flicker the key).
 COMPILE_JOBS=${NHFBOSS_COMPILE_JOBS:-$_computed_compile_jobs}
-
-if [[ ${BUILD_TYPE:-} == "Debug" ]]; then
-  # PathValidator.cpp takes at least 32 minutes to build in debug mode
-  # Increase timeout to 45 minutes
-  export SCCACHE_DIST_REQUEST_TIMEOUT=2700
-  # Need to increase the idle timeout also, otherwise the local sccache
-  # server will exit because only *starting* a compile job counts as
-  # activity.
-  export SCCACHE_IDLE_TIMEOUT=2700
-fi
 
 if sccache --dist-status | grep Disabled; then
   echo Remote sccache not working!
