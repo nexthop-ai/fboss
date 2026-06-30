@@ -27,6 +27,8 @@ jobs:
       nh_branch: main
     secrets:
       GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+      VAULT_ROLE_ID: ${{ secrets.VAULT_ROLE_ID }}
+      VAULT_SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
   read-smoke-tests:
     name: Read smoke test list
     runs-on: cloudstack-ubuntu24-small
