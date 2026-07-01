@@ -133,7 +133,7 @@ RUN if [ "$USERNAME" != "root" ] && [ "$USER_UID" != "0" ]; then \
 RUN chmod 600 /etc/shadow
 
 # Download and install our own patched sccache
-RUN curl -L "https://github.com/nexthop-ai/sccache/releases/download/v11/sccache-0.12.0-$(uname -m)-unknown-linux-musl.zst" | \
+RUN curl -L "https://github.com/nexthop-ai/sccache/releases/download/v12/sccache-0.12.0-$(uname -m)-unknown-linux-musl.zst" | \
     zstdmt -d > /usr/local/bin/sccache && \
     chmod +x /usr/local/bin/sccache
 
