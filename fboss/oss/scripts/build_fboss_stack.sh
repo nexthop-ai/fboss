@@ -17,17 +17,27 @@
 #
 set -euxo pipefail
 
-if [ "${1:-}" = "--cfboss" ]; then
-  export BUILD_CFBOSS=1
-  shift
-fi
+free_up_disk=0
+while true; do
+  case "${1:-}" in
+  --cfboss)
+    export BUILD_CFBOSS=1
+    shift
+    ;;
+  --free-up-disk)
+    free_up_disk=1
+    shift
+    ;;
+  *) break ;;
+  esac
+done
 
 log() {
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
 }
 
 if [ "$#" -lt 1 ]; then
-  echo "Usage: $0 [--cfboss] forwarding|platform" >&2
+  echo "Usage: $0 [--cfboss] [--free-up-disk] forwarding|platform" >&2
   exit 1
 fi
 
@@ -243,6 +253,13 @@ perform_build() {
     --recursive \
     $common_options
 
+  # CI only (--free-up-disk passed by the bazel image genrule): drop each dep's
+  # build/ right after install to lower peak disk; dev keeps it for incrementals.
+  free_up_disk_flag=()
+  if [ "$free_up_disk" -eq 1 ]; then
+    free_up_disk_flag=(--free-up-disk)
+  fi
+
   # Build dependencies
   log "Building FBOSS dependencies..."
   time nice -n 10 ./fboss/oss/scripts/run-getdeps.py \
@@ -250,6 +267,7 @@ perform_build() {
     build \
     --build-type $BUILD_TYPE \
     --only-deps \
+    "${free_up_disk_flag[@]}" \
     $common_options
 
   log "Get deps SUCCESS"

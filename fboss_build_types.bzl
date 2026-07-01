@@ -37,6 +37,25 @@ def delete_build_products_in_ci(paths):
         fi
 """.format(paths = " ".join(paths))
 
+def free_up_disk_in_ci():
+    """Snippet that sets shell var $free_up_disk_arg to "--free-up-disk" on a CI
+    build (numeric BUILD_ID in volatile-status.txt), else "". Prepend to a genrule
+    cmd, then inject "${free_up_disk_arg}" into the build_fboss_stack.sh argv so
+    getdeps drops each dep's build/ after install (lowers peak disk in CI; dev
+    keeps intermediates). Same CI gate as delete_build_products_in_ci.
+    ($$ escapes to a shell $.)
+    """
+    return """
+        free_up_disk_arg=""
+        if [ -f bazel-out/volatile-status.txt ]; then
+            build_id="$$(sed -n 's/^BUILD_ID //p' bazel-out/volatile-status.txt)"
+            case "${build_id}" in
+                ''|*[!0-9]*) ;;
+                *) free_up_disk_arg="--free-up-disk" ;;
+            esac
+        fi
+"""
+
 def fboss_unit_test(name, tags=None):
     sh_test(
         name = "unittest-" + name,

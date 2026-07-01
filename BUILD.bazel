@@ -1,5 +1,5 @@
 load("@rules_shell//shell:sh_library.bzl", "sh_library")
-load("//fboss:fboss_build_types.bzl", "LOAD_FBOSS_BUILDER_CMD", "delete_build_products_in_ci", "fboss_unit_test")
+load("//fboss:fboss_build_types.bzl", "LOAD_FBOSS_BUILDER_CMD", "delete_build_products_in_ci", "fboss_unit_test", "free_up_disk_in_ci")
 load("//bazel_lib:heavy_genrule.bzl", "heavy_genrule")
 load("//bazel_lib:upload_artifact.bzl", "upload_build_artifact")
 
@@ -208,9 +208,9 @@ heavy_genrule(
         "fboss_platform_stack.tar",
         "fboss_platform_stack_tests.tar",
     ],
-    cmd = LOAD_FBOSS_BUILDER_CMD + """
+    cmd = LOAD_FBOSS_BUILDER_CMD + free_up_disk_in_ci() + """
         pushd fboss/fboss-image
-        jq '.["fboss-platform-stack"] = {"execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "platform"]}' nh-fboss-broadcom-xgs.json > platform-stack.json
+        jq --arg fud "${free_up_disk_arg}" '.["fboss-platform-stack"] = {"execute": (["../fboss/oss/scripts/build_fboss_stack.sh"] + (if $$fud == "" then [] else [$$fud] end) + ["platform"])}' nh-fboss-broadcom-xgs.json > platform-stack.json
         ./distro_cli/fboss-image build platform-stack.json fboss-platform-stack
         popd
 
@@ -300,14 +300,14 @@ heavy_genrule(
         "fboss_forwarding_stack_broadcom_xgs.tar",
         "fboss_forwarding_stack_tests_broadcom_xgs.tar",
     ],
-    cmd = LOAD_FBOSS_BUILDER_CMD + """
+    cmd = LOAD_FBOSS_BUILDER_CMD + free_up_disk_in_ci() + """
         BUILD_DIR="fboss/fboss-image/.nh-broadcom-xgs"
         mkdir -p "${BUILD_DIR}"
         ln -f $(location distro_kernel_6.11.tar) "${BUILD_DIR}/distro_kernel_6.11.tar"
         ln -f $(location //nhbroadcomsai/fboss-xgs:distro_sai.tar) "${BUILD_DIR}/distro_sai.tar"
 
         pushd fboss/fboss-image
-        jq '. ["fboss-forwarding-stack"] = {"execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "forwarding"]}' nh-fboss-broadcom-xgs.json > forwarding-stack-broadcom-xgs.json
+        jq --arg fud "${free_up_disk_arg}" '. ["fboss-forwarding-stack"] = {"execute": (["../fboss/oss/scripts/build_fboss_stack.sh"] + (if $$fud == "" then [] else [$$fud] end) + ["forwarding"])}' nh-fboss-broadcom-xgs.json > forwarding-stack-broadcom-xgs.json
         ./distro_cli/fboss-image build forwarding-stack-broadcom-xgs.json fboss-forwarding-stack
         popd
 
@@ -407,14 +407,14 @@ heavy_genrule(
         "fboss_forwarding_stack_broadcom_th6.tar",
         "fboss_forwarding_stack_tests_broadcom_th6.tar",
     ],
-    cmd = LOAD_FBOSS_BUILDER_CMD + """
+    cmd = LOAD_FBOSS_BUILDER_CMD + free_up_disk_in_ci() + """
         BUILD_DIR="fboss/fboss-image/.nh-broadcom-th6"
         mkdir -p "${BUILD_DIR}"
         ln -f $(location distro_kernel_6.11.tar) "${BUILD_DIR}/distro_kernel_6.11.tar"
         ln -f $(location //nhbroadcomsai/fboss-th6:distro_sai.tar) "${BUILD_DIR}/distro_sai.tar"
 
         pushd fboss/fboss-image
-        jq '. ["fboss-forwarding-stack"] = {"execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "forwarding"]}' nh-fboss-broadcom-th6.json > forwarding-stack-broadcom-th6.json
+        jq --arg fud "${free_up_disk_arg}" '. ["fboss-forwarding-stack"] = {"execute": (["../fboss/oss/scripts/build_fboss_stack.sh"] + (if $$fud == "" then [] else [$$fud] end) + ["forwarding"])}' nh-fboss-broadcom-th6.json > forwarding-stack-broadcom-th6.json
         ./distro_cli/fboss-image build forwarding-stack-broadcom-th6.json fboss-forwarding-stack
         popd
 
@@ -512,14 +512,14 @@ heavy_genrule(
         "fboss_forwarding_stack_cisco_s1.tar",
         "fboss_forwarding_stack_tests_cisco_s1.tar",
     ],
-    cmd = LOAD_FBOSS_BUILDER_CMD + """
+    cmd = LOAD_FBOSS_BUILDER_CMD + free_up_disk_in_ci() + """
         BUILD_DIR="fboss/fboss-image/.nh-cisco-s1"
         mkdir -p "${BUILD_DIR}"
         ln -f $(location distro_kernel_6.11.tar) "${BUILD_DIR}/distro_kernel_6.11.tar"
         ln -f $(location //nhciscosai/fboss-s1:distro_sai.tar) "${BUILD_DIR}/distro_sai.tar"
 
         pushd fboss/fboss-image
-        jq '. ["fboss-forwarding-stack"] = {"execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "forwarding"]}' nh-fboss-cisco-s1.json > forwarding-stack-cisco-s1.json
+        jq --arg fud "${free_up_disk_arg}" '. ["fboss-forwarding-stack"] = {"execute": (["../fboss/oss/scripts/build_fboss_stack.sh"] + (if $$fud == "" then [] else [$$fud] end) + ["forwarding"])}' nh-fboss-cisco-s1.json > forwarding-stack-cisco-s1.json
         ./distro_cli/fboss-image build forwarding-stack-cisco-s1.json fboss-forwarding-stack
         popd
 
