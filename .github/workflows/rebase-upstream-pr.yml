@@ -39,7 +39,6 @@ jobs:
       test_branch: ${{ steps.rebase.outputs.test_branch }}
       expected_oid: ${{ steps.rebase.outputs.expected_oid }}
       rebased_sha: ${{ steps.rebase.outputs.rebased_sha }}
-      fork_test_ref: ${{ steps.rebase.outputs.fork_test_ref }}
       target: ${{ steps.rebase.outputs.target }}
       has_conflicts: ${{ steps.rebase.outputs.has_conflicts }}
       conflicting_files: ${{ steps.rebase.outputs.conflicting_files }}
@@ -73,10 +72,10 @@ jobs:
     name: Build and Test
     needs: rebase
     if: needs.rebase.outputs.has_conflicts == 'false'
-    uses: ./.github/workflows/build-and-test-upstream.yml
+    uses: ./.github/workflows/build-and-test.yml
     with:
-      fork_ref: ${{ needs.rebase.outputs.fork_test_ref }}
-      test_branch: ${{ needs.rebase.outputs.test_branch }}
+      use_clang: true
+      ref: ${{ needs.rebase.outputs.test_branch }}
     secrets: inherit
 
   # On green, force-push the validated rebase to the real PR branch (updates the
@@ -99,29 +98,37 @@ jobs:
           PR_BRANCH: ${{ needs.rebase.outputs.pr_branch }}
           EXPECTED_OID: ${{ needs.rebase.outputs.expected_oid }}
           REBASED_SHA: ${{ needs.rebase.outputs.rebased_sha }}
-          FORK_TEST_REF: ${{ needs.rebase.outputs.fork_test_ref }}
+          TEST_BRANCH: ${{ needs.rebase.outputs.test_branch }}
         run: |
           set -euo pipefail
           git remote add nexthop-ai "https://x-access-token:${GH_TOKEN}@github.com/nexthop-ai/fboss.git" 2>/dev/null || \
             git remote set-url nexthop-ai "https://x-access-token:${GH_TOKEN}@github.com/nexthop-ai/fboss.git"
-          git fetch --no-tags nexthop-ai "$FORK_TEST_REF"
+          # test_branch (private-fboss) is rebased_sha plus our NH-harness overlay commit
+          # on top; fetch it so rebased_sha is a local object, then push just that SHA --
+          # never the harness overlay -- to the real (public) PR branch.
+          git fetch --no-tags origin "$TEST_BRANCH"
           git push --force-with-lease="$PR_BRANCH:$EXPECTED_OID" \
             nexthop-ai "$REBASED_SHA:refs/heads/$PR_BRANCH"
           echo "✅ Updated nexthop-ai/fboss:$PR_BRANCH to $REBASED_SHA"
 
-  # Always clean up the public-fork temp branch holding the clean rebased commit.
+  # Always clean up the private-fboss test branch holding the rebase + NH harness overlay.
+  # test_branch is emitted as soon as the PR is resolved (before the rebase itself), so
+  # gate on has_conflicts rather than test_branch != '' -- on conflicts it's never pushed.
   cleanup:
-    name: Cleanup temp branch
+    name: Cleanup test branch
     needs: [rebase, update-pr]
-    if: always() && needs.rebase.outputs.fork_test_ref != ''
+    if: always() && needs.rebase.outputs.has_conflicts == 'false'
     runs-on: cloudstack-ubuntu24-micro
     steps:
-      - name: Delete temp branch
+      - name: Checkout
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          ref: main
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+      - name: Delete test branch
         env:
-          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
-          FORK_TEST_REF: ${{ needs.rebase.outputs.fork_test_ref }}
-        run: |
-          gh api --method DELETE "repos/nexthop-ai/fboss/git/refs/heads/$FORK_TEST_REF" || true
+          TEST_BRANCH: ${{ needs.rebase.outputs.test_branch }}
+        run: git push origin --delete "$TEST_BRANCH" || true
 
   # ─── @mabel handoffs ──────────────────────────────────────────────────────
   notify-conflicts:

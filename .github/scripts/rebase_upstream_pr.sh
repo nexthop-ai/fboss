@@ -12,8 +12,13 @@
 #                         a sha  -> that upstream commit
 #
 # Requires: GH_TOKEN with read access to facebook/fboss and push access to
-# nexthop-ai/fboss (the public fork).  Outputs are written to $GITHUB_OUTPUT when
-# set.  Remotes used: upstream -> facebook/fboss, nexthop-ai -> nexthop-ai/fboss.
+# nexthop-ai/fboss (the public fork, used only for fetching the PR branch and, on
+# conflicts, pushing a WIP branch for manual resolution). The clean rebase gets our
+# NH CI harness overlaid on top and is pushed straight to a convention-compliant
+# branch on this checkout (private-fboss) -- build-and-test never touches the
+# public fork.  Outputs are written to $GITHUB_OUTPUT when set.  Remotes used:
+# upstream -> facebook/fboss, nexthop-ai -> nexthop-ai/fboss, origin -> this repo
+# (nexthop-ai/private-fboss).
 
 set -euo pipefail
 
@@ -26,7 +31,6 @@ REBASE_ONTO=${2:-}
 upstream_repo="facebook/fboss"
 fork_repo="nexthop-ai/fboss"
 upstream_base_branch="main"
-run_id=${GITHUB_RUN_ID:-local}
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 echo_debug() { ((DEBUG)) && echo "🐞 DEBUG: $*" || true; }
@@ -69,6 +73,25 @@ run_conflict_resolver() {
   rm -f .github/scripts/nh-fix-merge-conflicts.py
 }
 
+# Overlay our internal CI harness onto the clean rebase (bare upstream trees have
+# none of it) as one extra commit, so the pushed branch is build-test-ready without
+# a second round trip through the public fork.
+#
+# This rm's/recreates .github, which contains this very script -- that's fine:
+# Linux keeps this process's already-open fd on the script pointing at the old
+# (now unlinked) inode, so bash keeps executing the original content regardless
+# of what `git checkout` writes to that path afterward.
+overlay_nh_harness() {
+  local p
+  for p in .github fboss/oss/docker fboss/oss/scripts fboss-sim fboss/oss/stable_commits \
+    build/fbcode_builder/getdeps.py build/fbcode_builder/getdeps; do
+    rm -rf "$p"
+    git checkout origin/main -- "$p"
+  done
+  git add -A
+  git commit --no-verify -m "CI: build-test upstream PR ${PR} with NH harness (do not merge)"
+}
+
 # ─── 1. Remotes ─────────────────────────────────────────────────────────────
 : "${GH_TOKEN:?GH_TOKEN required (read facebook/fboss, push nexthop-ai/fboss)}"
 export GH_TOKEN
@@ -104,7 +127,6 @@ author_user=$(printf '%s' "$author_user" | tr '[:upper:]' '[:lower:]' | tr -c 'a
 [[ -z $author_user ]] && author_user="upstream"
 test_branch="${author_user}.upstream-test.pr${PR}"
 wip_branch="${pr_branch}-rebase-wip"
-fork_test_ref="ci/upstream-rebase/pr-${PR}-${run_id}"
 
 echo_info "PR branch:    $pr_branch (head $expected_oid)"
 echo_info "Author:       $author_login -> user '$author_user'"
@@ -213,10 +235,12 @@ else
   emit dropped_commits "false"
 fi
 
-echo_info "Pushing clean rebased commit $rebased_sha to $fork_repo:$fork_test_ref"
-git push --force nexthop-ai "HEAD:refs/heads/$fork_test_ref"
+echo_info "Overlaying NH CI harness onto the clean rebase"
+overlay_nh_harness
+
+echo_info "Pushing rebase + NH harness to private-fboss:$test_branch"
+git push --force origin "HEAD:refs/heads/$test_branch"
 
 emit has_conflicts "false"
 emit rebased_sha "$rebased_sha"
-emit fork_test_ref "$fork_test_ref"
 echo_info "✅ Rebase complete."
