@@ -357,22 +357,6 @@ std::string PciExplorer::createRtmCtrl(
 }
 
 std::string PciExplorer::createFpgaIpBlock(
-||||||| 7965f21dbd
-std::string PciExplorer::createRtmCtrl(
-    const PciDevice& pciDevice,
-    const RtmCtrlConfig& rtmCtrlConfig,
-    uint32_t instanceId) {
-  auto auxData = getAuxData(*rtmCtrlConfig.fpgaIpBlockConfig(), instanceId);
-  auxData.rtm_data.port_num = *rtmCtrlConfig.portNumber();
-  create(pciDevice, *rtmCtrlConfig.fpgaIpBlockConfig(), auxData);
-  return getRtmCtrlSysfsPath(
-      pciDevice, *rtmCtrlConfig.fpgaIpBlockConfig(), instanceId);
-}
-
-void PciExplorer::createFpgaIpBlock(
-=======
-void PciExplorer::createFpgaIpBlock(
->>>>>>> ac0f8c3e61c71eb95eca42307bedf46e7fd35502
     const PciDevice& pciDevice,
     const FpgaIpBlockConfig& fpgaIpBlockConfig,
     uint32_t instanceId) {
