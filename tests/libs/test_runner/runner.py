@@ -155,7 +155,6 @@ _LINK_QSFP_TEST_CONFIG_NAME: dict[str, str] = {
     "minipack3": "montblanc",
     "nh4215f": "m4062nhp",
     "nhbw800f": "wedge800bact",
-    "wedge800bact": "wedge800bnhp",
 }
 
 # vendor/coldboot-sai/warmboot-sai/asic — key for run_test.py
