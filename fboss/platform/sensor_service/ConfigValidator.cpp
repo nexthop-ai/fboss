@@ -39,12 +39,10 @@ bool ConfigValidator::isValid(const SensorConfig& sensorConfig) {
   if (!isValidAsicCommand(sensorConfig)) {
     return false;
   }
-<<<<<<< HEAD
   if (!isValidLoadLineConfig(sensorConfig)) {
-||||||| 7965f21dbd
-=======
+    return false;
+  }
   if (!isValidLoggedSensorNames(sensorConfig)) {
->>>>>>> ac0f8c3e61c71eb95eca42307bedf46e7fd35502
     return false;
   }
   return true;
