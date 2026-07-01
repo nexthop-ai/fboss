@@ -1396,7 +1396,6 @@ TEST(ConfigValidatorTest, VersionedTemperatureSensorWithoutThresholds) {
   EXPECT_FALSE(ConfigValidator().isValid(config));
 }
 
-<<<<<<< HEAD
 TEST(ConfigValidatorTest, RealConfigsValid) {
   // Regression coverage: committed sensor_service configs must pass full
   // validation. Loads each baked config via ConfigLib so a malformed
@@ -1409,8 +1408,8 @@ TEST(ConfigValidatorTest, RealConfigsValid) {
         config);
     EXPECT_TRUE(ConfigValidator().isValid(config));
   }
-||||||| 7965f21dbd
-=======
+}
+
 TEST(ConfigValidatorTest, ValidLoggedSensorNames) {
   auto config = createBasicSensorConfig();
 
@@ -1460,5 +1459,4 @@ TEST(ConfigValidatorTest, InvalidLoggedSensorNamesNotInAllVersions) {
 
   config.loggedSensorNames() = {"RESPIN_A_ONLY"};
   EXPECT_FALSE(ConfigValidator().isValid(config));
->>>>>>> ac0f8c3e61c71eb95eca42307bedf46e7fd35502
 }
