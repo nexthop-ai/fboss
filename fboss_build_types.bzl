@@ -43,12 +43,13 @@ def free_up_disk_in_ci():
     cmd, then inject "${free_up_disk_arg}" into the build_fboss_stack.sh argv so
     getdeps drops each dep's build/ after install (lowers peak disk in CI; dev
     keeps intermediates). Same CI gate as delete_build_products_in_ci.
-    ($$ escapes to a shell $.)
+    (heavy_genrule expands cmd via ctx.expand_location, which does NOT reduce
+    $$ to $ like native genrule -- use a single $ for shell expansion.)
     """
     return """
         free_up_disk_arg=""
         if [ -f bazel-out/volatile-status.txt ]; then
-            build_id="$$(sed -n 's/^BUILD_ID //p' bazel-out/volatile-status.txt)"
+            build_id="$(sed -n 's/^BUILD_ID //p' bazel-out/volatile-status.txt)"
             case "${build_id}" in
                 ''|*[!0-9]*) ;;
                 *) free_up_disk_arg="--free-up-disk" ;;
