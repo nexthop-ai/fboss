@@ -548,6 +548,7 @@ heavy_genrule(
         "distro_kernel_6.11.tar",
         "fboss_platform_stack.tar",
         "fboss_forwarding_stack_cisco_s1.tar",
+        ":image_builder",
         "CMakeLists.txt",
         "functions.cmake",
         "sdk_dependencies.txt",

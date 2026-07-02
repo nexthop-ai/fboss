@@ -136,9 +136,6 @@ perform_build() {
   if [ "$need_sai" -eq 1 ]; then
     log "Using SAI_SDK_VERSION=${SAI_SDK_VERSION:-N/A} for SAI_VERSION=${SAI_VERSION:-Unknown}"
 
-    npu_flags+=("--npu-libsai-impl-path" "$SAI_DIR/lib")
-    npu_flags+=("--npu-experiments-path" "$SAI_DIR/include")
-
     if [ -n "${BUILD_SAI_FAKE:-}" ]; then
       sai_name="sai-fake"
       # Default for run-getdeps.py is to assume Fake SAI. Must unset real-SAI arguments above
@@ -166,15 +163,14 @@ perform_build() {
   fi
 
   scratch_root="/build"
-  # Setup build directories based on scratch_root
-  if [ "$need_sai" -eq 1 ]; then
-    build_dir="${scratch_root}/forwarding-stack/${sai_name}${build_suffix}"
-  else
-    build_dir="${scratch_root}/platform-stack${build_suffix}"
-  fi
+  # All variants share one getdeps scratch: deps build once, others reuse via
+  # getdeps' content-hash markers. No locking -> builds must stay serialized.
+  build_dir="${scratch_root}"
   mkdir -p "$build_dir"
 
-  common_root="${scratch_root}/common"
+  # fboss is first-party so getdeps won't reconfigure across variants; a stale
+  # CMakeCache leaks the prior variant's find_library() paths. Force reconfigure.
+  rm -f "${build_dir}/build/fboss/CMakeCache.txt"
 
   common_options='--allow-system-packages'
   common_options+=' --scratch-path '$build_dir
@@ -186,20 +182,6 @@ perform_build() {
   common_options+='}'
   common_options+=' --src-dir .'
   common_options+=' fboss'
-
-  # Share download / repo / extracted caches across different types of builds
-  mkdir -p "${common_root}/downloads"
-  if [ ! -L "${build_dir}/downloads" ]; then
-    ln -s "${common_root}/downloads" "${build_dir}/downloads"
-  fi
-  mkdir -p "${common_root}/repos"
-  if [ ! -L "${build_dir}/repos" ]; then
-    ln -s "${common_root}/repos" "${build_dir}/repos"
-  fi
-  mkdir -p "${common_root}/extracted"
-  if [ ! -L "${build_dir}/extracted" ]; then
-    ln -s "${common_root}/extracted" "${build_dir}/extracted"
-  fi
 
   # Navigate to FBOSS source root
   cd /var/FBOSS/fboss
@@ -245,10 +227,9 @@ perform_build() {
   # End Nexthop-only
   #
 
-  # Install system dependencies
+  # No npu_flags: install-system-deps only needs system-package lists.
   log "Installing system dependencies..."
   time nice -n 10 ./fboss/oss/scripts/run-getdeps.py \
-    "${npu_flags[@]}" \
     install-system-deps \
     --recursive \
     $common_options
@@ -260,7 +241,7 @@ perform_build() {
     free_up_disk_flag=(--free-up-disk)
   fi
 
-  # Build dependencies
+  # npu_flags required: --npu-sai-version picks the libsai version built here.
   log "Building FBOSS dependencies..."
   time nice -n 10 ./fboss/oss/scripts/run-getdeps.py \
     "${npu_flags[@]}" \
@@ -275,8 +256,15 @@ perform_build() {
   # Build FBOSS stack
   log "Building FBOSS ${stack_label} stack..."
 
+  # Set sai_impl only on the final build; the ephemeral /tmp path would poison dep exports.
+  local -a sai_impl=()
+  if [ "$need_sai" -eq 1 ] && [ -z "${BUILD_SAI_FAKE:-}" ]; then
+    sai_impl+=("--npu-libsai-impl-path" "$SAI_DIR/lib")
+    sai_impl+=("--npu-experiments-path" "$SAI_DIR/include")
+  fi
   time nice -n 10 ./fboss/oss/scripts/run-getdeps.py \
     "${npu_flags[@]}" \
+    "${sai_impl[@]}" \
     --benchmark-install \
     build \
     --num-jobs "${num_jobs}" \
