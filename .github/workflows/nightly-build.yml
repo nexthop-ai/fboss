@@ -29,26 +29,15 @@ jobs:
       GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
       VAULT_ROLE_ID: ${{ secrets.VAULT_ROLE_ID }}
       VAULT_SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
-  read-smoke-tests:
-    name: Read smoke test list
-    runs-on: cloudstack-ubuntu24-small
-    outputs:
-      tests: ${{ steps.smoke.outputs.tests }}
-    steps:
-      - uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
-        with:
-          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
-          repository: nexthop-ai/private-fboss
-      - id: smoke
-        shell: bash
-        run: echo "tests=$(paste -sd, .github/fboss-smoke-tests.txt)" >> "$GITHUB_OUTPUT"
 
   enqueue-tide:
     needs: monobuild
     if: ${{ needs.monobuild.result == 'success' && needs.monobuild.outputs.build_id != '' }}
     runs-on: cloudstack-ubuntu24-small
     name: Enqueue Image to Tide
-    # Tide enqueue is shadow-path today; never fail the workflow on transport errors.
+    # Tide now schedules the nightly integration tests from the enqueued image.
+    # Enqueue failures emit a ::warning:: but don't fail the nightly build, so a
+    # transient enqueue/transport error doesn't red an otherwise-good build.
     continue-on-error: true
     steps:
       - name: Enqueue image to Tide
@@ -84,52 +73,9 @@ jobs:
             echo "::warning::Tide enqueue failed with HTTP $HTTP_STATUS"
           fi
 
-  fboss-smoke-tests:
-    needs: [monobuild, read-smoke-tests]
-    if: ${{ needs.monobuild.result == 'success' && needs.monobuild.outputs.build_id != '' }}
-    permissions:
-      id-token: write
-      contents: read
-    strategy:
-      fail-fast: false
-      matrix:
-        testbed_config:
-          - name: "Gold Eagle Testbeds"
-            pattern: "gold[2-9].*"
-            priority: 75
-          - name: "Wedge Testbeds"
-            pattern: "wdg10.*"
-            priority: 75
-          - name: "Cisco Wedge Testbeds"
-            pattern: "wdg15.*"
-            priority: 75
-          - name: "FBOSS Testbeds"
-            pattern: "fboss.*"
-            priority: 75
-          - name: "Black Kite Testbeds"
-            pattern: "blkt2.*"
-            priority: 75
-          - name: "Crowned Eagle Testbeds"
-            pattern: "crow.*"
-            priority: 75
-          - name: "Steller Eagle Testbeds"
-            pattern: "stlr.*"
-            priority: 75
-    uses: ./.github/workflows/fboss-itest.reusable.yml
-    with:
-      build_id: ${{ needs.monobuild.outputs.build_id }}
-      priority: ${{ matrix.testbed_config.priority }}
-      target_testbeds: ${{ matrix.testbed_config.pattern }}
-      tests: ${{ needs.read-smoke-tests.outputs.tests }}
-    secrets:
-      GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
-      AWS_NEXIS_BUILDRUNNER_SSH_KEY: ${{ secrets.AWS_NEXIS_BUILDRUNNER_SSH_KEY }}
-      AZURE_NEXIS_BUILDRUNNER_SSH_KEY: ${{ secrets.AZURE_NEXIS_BUILDRUNNER_SSH_KEY }}
-      NEXIS_BUILDRUNNER_TASKRABBIT_SSH_KEY: ${{ secrets.NEXIS_BUILDRUNNER_TASKRABBIT_SSH_KEY }}
-    name: ${{ matrix.testbed_config.name }}
   notify-slack-on-failure:
     runs-on: cloudstack-ubuntu24-small
-    needs: [build-and-test-clang, monobuild, fboss-smoke-tests]
+    needs: [build-and-test-clang, monobuild]
     if: failure()
     # `actions: read` is required for `gh api .../actions/runs/.../jobs`
     # below; without it the default GITHUB_TOKEN gets a 403 and the error
@@ -146,18 +92,15 @@ jobs:
           CLANG_FAILED_TESTS="${{ needs.build-and-test-clang.outputs.failed_tests }}"
           CLANG_FAILED_COUNT="${{ needs.build-and-test-clang.outputs.failed_test_count }}"
           MONOBUILD_RESULT="${{ needs.monobuild.result }}"
-          SMOKE_RESULT="${{ needs.fboss-smoke-tests.result }}"
 
           # Determine which top-level jobs failed
           FAILED=""
           [[ "$CLANG_RESULT" == "failure" ]] && FAILED="Clang build"
           [[ "$MONOBUILD_RESULT" == "failure" ]] && FAILED="${FAILED:+$FAILED, }Monobuild"
-          [[ "$SMOKE_RESULT" == "failure" ]] && FAILED="${FAILED:+$FAILED, }FBOSS smoke tests"
 
           # Query the GitHub Actions API to identify the specific failed job
-          # name(s). This is necessary for matrix jobs (fboss-smoke-tests) where
-          # `needs.*.result` only exposes an aggregate result, hiding which
-          # matrix variant actually failed.
+          # name(s), so the Slack message can name the actual failed job (e.g. a
+          # matrix variant) rather than only an aggregate `needs.*.result`.
           #
           # On any failure (e.g. missing `actions: read`), discard stdout so
           # an error body like `{"message":"Resource not accessible…"}` never
