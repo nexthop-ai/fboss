@@ -83,7 +83,7 @@ RUN dnf install -y --allowerasing gcc-toolset-12 gcc-toolset-12-libasan-devel gc
     rpm -ivh --nodeps libtool-*.rpm && \
     rm -f libtool-*.rpm
 
-RUN python3 -m pip install setuptools 'Cython>=3.0,<3.2' wheel auditwheel patchelf boto3 botocore gitpython meson jinja2 pyyaml filelock pytest
+RUN python3 -m pip install setuptools 'Cython>=3.0,<3.2' wheel auditwheel patchelf boto3 botocore gitpython meson jinja2 pyyaml filelock pytest requests
 
 COPY ${GITHUB_ROOT}/.pre-commit-config.yaml /tmp/.pre-commit-config.yaml
 COPY ./fboss/oss/docker/setup_clang.sh /tmp/setup_clang.sh
@@ -115,6 +115,17 @@ RUN dnf install -y perl-diagnostics perl-sort perl-English perl-Clone perl-Data-
     perl-List-MoreUtils perl-Moose perl-YAML perl-namespace-autoclean perl-JSON-XS perl-FindBin \
     perl-Math-BigInt perl-YAML-LibYAML perl-Sys-Hostname perl-Time
 
+# Pre-install gcc-clean component build deps so per-component dnf calls no-op.
+# Excludes perl/gcc/make: they pull system gcc and clobber the /usr/bin/gcc->clang symlink.
+RUN dnf install -y --allowerasing \
+      rpm-build rpmdevtools rpmlint bc rsync elfutils-libelf-devel elfutils-devel dwarves dracut \
+      aspell bison doxygen elfutils flex graphviz hostname libnsl2-devel \
+      perl-Const-Fast perl-Data-Compare perl-English perl-FindBin perl-Getopt-Long-Descriptive \
+      perl-List-MoreUtils perl-Math-BigInt perl-Moose perl-Sys-Hostname perl-Time perl-YAML \
+      perl-YAML-LibYAML perl-diagnostics perl-namespace-autoclean perl-sort vim wget \
+      epel-release kiwi policycoreutils python3-kiwi dracut-kiwi-live dracut-kiwi-overlay \
+      dnf-plugin-versionlock dracut-kiwi-oem-dump kiwi-systemdeps-image-validation syslinux btrfs-progs glibc-static \
+      libftdi-devel pciutils-devel libusbx-devel openssl-devel zlib-devel systemd-rpm-macros cpio rpm
 # ============================================================
 COPY ${GITHUB_ROOT}/requirements-dev.txt /tmp/requirements-dev.txt
 RUN python3 -m pip install -r /tmp/requirements-dev.txt && rm /tmp/requirements-dev.txt
