@@ -1,0 +1,73 @@
+name: Nightly Build Notify
+
+# Safety-net notifier for the "Nightly Build" workflow.
+#
+# Nightly Build has its own in-run `notify-slack-on-failure` job, but it is
+# gated on `if: failure()`, which can only become true once a job inside the
+# run has actually failed. A `startup_failure` — an invalid workflow file, or
+# a required secret that a called reusable workflow declares but the caller
+# omits — is rejected by GitHub *before any job executes*, so the in-run
+# notifier never runs and the failure is completely silent. That is exactly
+# how a required-secret regression in monobuild.reusable.yml caused several
+# days of silent nightly startup failures before anyone noticed.
+#
+# This workflow runs at the repository level via `workflow_run`, which fires
+# regardless of the triggering run's conclusion, and alerts on every
+# non-success conclusion that the in-run notifier structurally cannot catch.
+# Plain job `failure`s are deliberately excluded: the Nightly Build's own
+# notify-slack-on-failure job already covers those with richer per-job /
+# per-test detail, and excluding them here avoids duplicate alerts.
+#
+# NOTE: workflow_run triggers only fire for the copy of this file on the
+# repository's default branch, so this notifier takes effect once merged.
+
+on:
+  workflow_run:
+    workflows: ["Nightly Build"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  notify-startup-failure:
+    runs-on: cloudstack-ubuntu24-micro
+    # Alert on any non-success conclusion EXCEPT `failure` (already handled by
+    # the Nightly Build's in-run notify-slack-on-failure job) — this catches
+    # startup_failure, timed_out, cancelled, etc.
+    if: >-
+      github.event.workflow_run.conclusion != 'success' &&
+      github.event.workflow_run.conclusion != 'failure'
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v3.0.3
+        with:
+          webhook-type: incoming-webhook
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          payload: |
+            {
+              "text": ":rotating_light: Nightly Build did not complete: ${{ github.event.workflow_run.conclusion }}",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": ":rotating_light: Nightly Build Did Not Run"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Conclusion:* `${{ github.event.workflow_run.conclusion }}`\n*Trigger:* `${{ github.event.workflow_run.event }}`\n\nThe run ended with a non-success conclusion that the in-run failure notifier cannot report (e.g. a `startup_failure` rejects the workflow before any job executes). This usually means an invalid workflow file or a missing required secret in a called reusable workflow."
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<${{ github.event.workflow_run.html_url || format('{0}/{1}/actions', github.server_url, github.repository) }}|View Workflow Run>"
+                  }
+                }
+              ]
+            }
