@@ -12,7 +12,6 @@
 #include "fboss/cli/fboss2/CmdList.h"
 #include "fboss/cli/fboss2/commands/config/CmdConfigAppliedInfo.h"
 #include "fboss/cli/fboss2/commands/config/CmdConfigReload.h"
-#include "fboss/cli/fboss2/commands/config/admin_distance/CmdConfigAdminDistance.h"
 #include "fboss/cli/fboss2/commands/config/arp/CmdConfigArp.h"
 #include "fboss/cli/fboss2/commands/config/copp/CmdConfigCopp.h"
 #include "fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h"
@@ -110,6 +109,8 @@
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionCommit.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionDiff.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionRebase.h"
+#include "fboss/cli/fboss2/commands/config/switch/CmdConfigSwitch.h"
+#include "fboss/cli/fboss2/commands/config/switch/admin_distance/CmdConfigAdminDistance.h"
 #include "fboss/cli/fboss2/commands/config/tunnel/CmdConfigTunnel.h"
 #include "fboss/cli/fboss2/commands/config/tunnel/ip_in_ip/CmdConfigTunnelIpInIp.h"
 #include "fboss/cli/fboss2/commands/config/tunnel/ip_in_ip/decap/CmdConfigTunnelIpInIpDecap.h"
@@ -137,11 +138,19 @@ namespace facebook::fboss {
 
 const CommandTree& kConfigCommandTree() {
   static CommandTree root = {
-      {"config",
-       "admin-distance",
-       "Set administrative distance for a routing client",
-       commandHandler<CmdConfigAdminDistance>,
-       argRegistrar<CmdConfigAdminDistanceTraits>},
+      {
+          "config",
+          "switch",
+          "Configure switch-level settings",
+          commandHandler<CmdConfigSwitch>,
+          argRegistrar<CmdConfigSwitchTraits>,
+          {{
+              "admin-distance",
+              "Set administrative distance for a routing client",
+              commandHandler<CmdConfigAdminDistance>,
+              argRegistrar<CmdConfigAdminDistanceTraits>,
+          }},
+      },
 
       {"config",
        "applied-info",

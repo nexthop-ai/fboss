@@ -11,7 +11,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "fboss/cli/fboss2/commands/config/admin_distance/CmdConfigAdminDistance.h"
+#include "fboss/cli/fboss2/commands/config/switch/admin_distance/CmdConfigAdminDistance.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/test/config/CmdConfigTestBase.h"
 
@@ -43,7 +43,7 @@ class CmdConfigAdminDistanceTestFixture : public CmdConfigTestBase {
 })") {}
 
  protected:
-  const std::string setPrefix_ = "config admin-distance";
+  const std::string setPrefix_ = "config switch admin-distance";
 };
 
 // ==============================================================================
@@ -55,7 +55,6 @@ TEST_F(CmdConfigAdminDistanceTestFixture, argValidation) {
   EXPECT_EQ(AdminDistanceArg({"0", "20"}).getClientId(), 0);
   EXPECT_EQ(AdminDistanceArg({"0", "20"}).getDistance(), 20);
   EXPECT_EQ(AdminDistanceArg({"786", "10"}).getClientId(), 786);
-  EXPECT_EQ(AdminDistanceArg({"1", "0"}).getDistance(), 0);
   EXPECT_EQ(AdminDistanceArg({"700", "255"}).getDistance(), 255);
 
   // Invalid: empty
@@ -76,6 +75,16 @@ TEST_F(CmdConfigAdminDistanceTestFixture, argValidation) {
   // Invalid: distance out of [0, 255]
   EXPECT_THROW(AdminDistanceArg({"0", "-1"}), std::invalid_argument);
   EXPECT_THROW(AdminDistanceArg({"0", "256"}), std::invalid_argument);
+
+  // Invalid: forbidden client IDs whose admin distance is hardcoded in agent.
+  // STATIC_ROUTE(1)           -> AdminDistance::STATIC_ROUTE
+  // INTERFACE_ROUTE(2)        -> AdminDistance::DIRECTLY_CONNECTED
+  // LINKLOCAL_ROUTE(3)        -> AdminDistance::DIRECTLY_CONNECTED
+  // REMOTE_INTERFACE_ROUTE(4) -> AdminDistance::DIRECTLY_CONNECTED
+  EXPECT_THROW(AdminDistanceArg({"1", "5"}), std::invalid_argument);
+  EXPECT_THROW(AdminDistanceArg({"2", "5"}), std::invalid_argument);
+  EXPECT_THROW(AdminDistanceArg({"3", "5"}), std::invalid_argument);
+  EXPECT_THROW(AdminDistanceArg({"4", "5"}), std::invalid_argument);
 }
 
 // ==============================================================================
