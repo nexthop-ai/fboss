@@ -120,7 +120,7 @@ _FBOSS_ROOT_ON_DUT = "/opt/fboss"
 # bumps it while an in-place relink (which leaves the dir mtime untouched) is
 # never masked.
 #   - host extract cache (Nexis only):
-#       /tmp/fboss-test-cache/<namespace>/<tarball>/extracted/
+#       <root>/fboss-test-cache/<namespace>/<tarball>/extracted/
 #       the downloaded+extracted tarball, shared by every runner on that build_id.
 #       Amortizes the expensive Nexis download+extract.  Local builds need no such
 #       cache — _pack_slice reads the binaries + repo configs straight from disk.
@@ -130,7 +130,23 @@ _FBOSS_ROOT_ON_DUT = "/opt/fboss"
 #       deploy, the exact same bytes are already on the DUT — skip the SCP +
 #       on-DUT extract.  No build_id; one file per runner (overwritten), so it
 #       never accumulates.
-_HOST_CACHE_ROOT = "/tmp/fboss-test-cache"
+def _default_host_cache_root() -> str:
+    """Pick the host extract cache root for the current environment.
+
+    On a TestEngine runner (NHTOOLS_IN_DOCKER set) the container's /tmp is
+    ephemeral and consumes finite space on the k8s node. When a node's ephemeral
+    storage runs low, pods are evicted. /workspace is a PVC stored outside the
+    node which doesn't cause those issues.
+
+    Dev machines don't have /workspace and instead use /tmp.
+    """
+    if os.environ.get("NHTOOLS_IN_DOCKER"):
+        ws_root = os.environ.get("GIT_WS_ROOT", "/workspace")
+        return os.path.join(ws_root, "fboss-test-cache")
+    return "/tmp/fboss-test-cache"
+
+
+_HOST_CACHE_ROOT = _default_host_cache_root()
 _DUT_MARKER_DIR = f"{_FBOSS_ROOT_ON_DUT}/.deployed"
 
 # Map normalized HWSKU (from device DB model name) to FBOSS config codename

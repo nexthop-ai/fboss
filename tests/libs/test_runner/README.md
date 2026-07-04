@@ -80,7 +80,7 @@ configs come from the repo checkout (`fboss/oss/...`) — the same split
 ## Cache layout — runner host
 
 ```
-/tmp/fboss-test-cache/
+<root>/fboss-test-cache/                 ← <root> = /workspace on TestEngine runners, else /tmp
 └── <namespace>/                         ← Nexis build_id, or local-<fingerprint>
     ├── <tarball>/extracted/             ← Nexis only: downloaded+extracted tarball,
     │   └── bin/, share/, ...               shared by every runner on that build_id
@@ -142,7 +142,7 @@ extract are skipped. Content-addressed — no build_id, one file per runner
 
 | Layer | Cleared by | Survives |
 | --- | --- | --- |
-| Host cache (`/tmp/fboss-test-cache/`) | namespace change (auto-pruned to one build); `/tmp` wipe on pod/host restart; manual `rm -rf` | within-pod nhtests-run invocations on the same build |
+| Host cache (`<root>/fboss-test-cache/`, `<root>`=`/workspace` on runners else `/tmp`) | namespace change (auto-pruned to one build); volume/`/tmp` wipe on pod/host restart; manual `rm -rf` | within-pod nhtests-run invocations on the same build |
 | DUT marker (`/opt/fboss/.deployed/`) | re-image (fresh `/opt/fboss`) | no-image prepare, switch reboot, between tests |
 
 ## Operator debug recipes
@@ -159,10 +159,11 @@ ssh root@$DUT 'sudo rm -f /opt/fboss/.deployed/SaiTestRunner.sha'
 ssh root@$DUT 'sudo rm -rf /opt/fboss/.deployed/'
 ```
 
-**Clear the host cache entirely:**
+**Clear the host cache entirely** (on a TestEngine runner use `/workspace/fboss-test-cache`):
 
 ```bash
-rm -rf /tmp/fboss-test-cache
+rm -rf /tmp/fboss-test-cache        # dev machine
+rm -rf /workspace/fboss-test-cache  # TestEngine runner
 ```
 
 **Check what's actually on the DUT:**
