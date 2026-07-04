@@ -46,8 +46,11 @@ tabulate
 gcc12
 python-pyyaml
 
-# SAI-selection env vars (set by run-getdeps.py): listing them here puts them in
-# the fboss project hash, so each SAI variant gets distinct getdeps state.
+# Build-variant env vars folded into the fboss getdeps project hash. fboss uses a
+# stable install dir (installed/fboss); getdeps skips the build when the
+# .built-by-getdeps hash matches. Without BUILD_CFBOSS here, cfboss
+# (BUILD_CFBOSS=ON -> stub service binaries) and physical builds hash the same, so
+# a physical build reuses the cfboss stubs instead of rebuilding.
 [depends.environment]
 BUILD_SAI_FAKE
 SAI_BRCM_IMPL
@@ -55,6 +58,7 @@ SAI_BRCM_PAI_IMPL
 SAI_TAJO_IMPL
 SAI_SDK_VERSION
 SAI_VERSION
+BUILD_CFBOSS
 
 # ShipitPathMap always assume to use directory to fetch the source code.
 # If you need to sync the files to fboss github repo, please make changes in
