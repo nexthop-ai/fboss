@@ -246,6 +246,13 @@ class _PortInfo(NamedTuple):
     speed: int
 
 
+class _PortTemplate(NamedTuple):
+    port: dict
+    vlan: dict
+    vlan_port: dict
+    interface: dict
+
+
 def _load_platform_mapping(config_name: str) -> dict[str, _PortInfo]:
     path = _repo_dir(_PLATFORM_MAPPING_DIR) / f"{config_name}_platform_mapping.json"
     with open(path, encoding="utf-8") as f:
@@ -896,6 +903,7 @@ class LinkTestRunner(BaseHwTestRunner):
         port_map: dict[str, _PortInfo],
         name: str,
         vlan_id: int,
+        template: _PortTemplate,
         ip_addresses: list | None = None,
     ) -> dict:
         info = port_map.get(name)
@@ -904,8 +912,7 @@ class LinkTestRunner(BaseHwTestRunner):
         sw = base_json["sw"]
         # The agent requires every port to own exactly one interface, so a synthesized
         # port needs a matching vlan, vlanPort and interface too.
-        template = sw["ports"][0]["ingressVlan"]
-        port = copy.deepcopy(sw["ports"][0])
+        port = copy.deepcopy(template.port)
         port.update(
             {
                 "logicalID": info.logical_id,
@@ -917,15 +924,11 @@ class LinkTestRunner(BaseHwTestRunner):
                 "portType": 0,
             }
         )
-        vlan = copy.deepcopy(next(v for v in sw["vlans"] if v["id"] == template))
+        vlan = copy.deepcopy(template.vlan)
         vlan.update({"id": vlan_id, "intfID": vlan_id, "name": f"vlan{vlan_id}"})
-        vlan_port = copy.deepcopy(
-            next(p for p in sw["vlanPorts"] if p["vlanID"] == template)
-        )
+        vlan_port = copy.deepcopy(template.vlan_port)
         vlan_port.update({"vlanID": vlan_id, "logicalPort": info.logical_id})
-        intf = copy.deepcopy(
-            next(i for i in sw["interfaces"] if i.get("vlanID") == template)
-        )
+        intf = copy.deepcopy(template.interface)
         intf.update({"intfID": vlan_id, "vlanID": vlan_id, "ipAddresses": ip_addresses or []})
         sw["ports"].append(port)
         sw["vlans"].append(vlan)
@@ -945,6 +948,13 @@ class LinkTestRunner(BaseHwTestRunner):
         sw = base_json["sw"]
         vlan_of = {p["name"]: p["ingressVlan"] for p in sw["ports"]}
         ips_of = {i.get("vlanID"): i.get("ipAddresses", []) for i in sw["interfaces"]}
+        template_vlan_id = sw["ports"][0]["ingressVlan"]
+        template = _PortTemplate(
+            port=sw["ports"][0],
+            vlan=next(v for v in sw["vlans"] if v["id"] == template_vlan_id),
+            vlan_port=next(p for p in sw["vlanPorts"] if p["vlanID"] == template_vlan_id),
+            interface=next(i for i in sw["interfaces"] if i.get("vlanID") == template_vlan_id),
+        )
         # Strip all ports sharing an xcvr slot with a cabled port (breakout siblings).
         cabled_xcvr_prefixes = {
             "/".join(n.split("/")[:2]) + "/"
@@ -969,7 +979,7 @@ class LinkTestRunner(BaseHwTestRunner):
         free_vlans = (v for v in range(2000, 2252) if v not in used_vlans)
         for name, peer in pairs.items():
             port = cls._synthesize_port(
-                base_json, port_map, name, next(free_vlans),
+                base_json, port_map, name, next(free_vlans), template,
                 ip_addresses=ips_of.get(vlan_of.get(name)),
             )
             port["expectedLLDPValues"] = {cls._LLDP_PORT_TAG: peer}
