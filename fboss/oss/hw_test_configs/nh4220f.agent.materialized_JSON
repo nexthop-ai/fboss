@@ -143,6 +143,10 @@
     "defaultPortQueues": [],
     "defaultVlan": 4094,
     "defaultVoqConfig": [],
+    "sdkVersion": {
+      "asicSdk": "sdk",
+      "saiSdk": "sai"
+    },
     "dsfNodes": {},
     "interfaces": [
       {
