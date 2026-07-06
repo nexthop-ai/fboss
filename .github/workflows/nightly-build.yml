@@ -25,8 +25,10 @@ jobs:
     with:
       submodule: fboss
       nh_branch: main
+      use-nh-ci-app: true
     secrets:
       GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+      NH_CI_APP_PRIVATE_KEY: ${{ secrets.NH_CI_APP_PRIVATE_KEY }}
       VAULT_ROLE_ID: ${{ secrets.VAULT_ROLE_ID }}
       VAULT_SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
 
