@@ -72,9 +72,7 @@ _DEFAULT_CMAKE_DEFINES_JSON: str = json.dumps(_DEFAULT_CMAKE_DEFINES)
 
 
 def create_loader(
-    scratch_path: str,
-    extra_cmake_defines: str,
-    allow_system_packages: bool = False,
+    scratch_path: str, extra_cmake_defines: str, allow_system_packages: bool = False
 ) -> tuple[object, ManifestLoader]:
     """Set up BuildOptions and ManifestLoader, reusing getdeps internals."""
     args = argparse.Namespace(
@@ -109,7 +107,7 @@ def _maybe_symlink(src_dir: str, dest: str | None) -> None:
 # Bump when cached tarballs contain baked-in paths that become stale, e.g.
 # after fixing allow_system_packages consistency so cmake configs reference
 # the correct dep install dirs instead of the old mismatched paths.
-_CACHE_VERSION = "v2"
+_CACHE_VERSION = "v3"
 
 
 def cache_key(project_name: str, project_hash: str, build_type: str) -> str:
@@ -336,9 +334,7 @@ _MISS = "miss"  # must build from source
 
 
 def _precompute_dep_metadata(
-    loader: ManifestLoader,
-    dep_names: list[str],
-    build_type: str,
+    loader: ManifestLoader, dep_names: list[str], build_type: str
 ) -> list[tuple[str, str, str, str, str]]:
     """Return (dep_name, disposition, inst_dir, project_hash, cache_key) for each dep.
 
@@ -373,8 +369,7 @@ def _precompute_dep_metadata(
 
 
 def _parallel_check_and_download(
-    meta: list[tuple[str, str, str, str, str]],
-    cache_url: str,
+    meta: list[tuple[str, str, str, str, str]], cache_url: str
 ) -> list[tuple[str, str, str, str, str]]:
     """Promote _MISS entries to _HIT via parallel HEAD checks, then download hits in parallel.
 

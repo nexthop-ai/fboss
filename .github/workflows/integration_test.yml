@@ -83,7 +83,17 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Use the PR head SHA when available; fall back to the current commit SHA otherwise
+          # When called via workflow_call (PR Validation, Rebase Upstream PR),
+          # the build job uploaded fboss_cli_bins in this very run — grab it
+          # directly. The SHA-based lookup below only works for commits that
+          # had a PR Validation run, which rebased test branches never do.
+          if gh run download "${{ github.run_id }}" -n fboss_cli_bins --dir ./; then
+            echo "Downloaded fboss_cli_bins from current run ${{ github.run_id }}"
+            exit 0
+          fi
+
+          # Standalone workflow_dispatch: no build in this run — find the
+          # PR Validation run for the appropriate commit instead.
           HEAD_SHA="${{ github.sha }}"
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             HEAD_SHA="${{ github.event.pull_request.head.sha }}"

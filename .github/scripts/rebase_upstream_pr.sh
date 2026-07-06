@@ -17,8 +17,7 @@
 # NH CI harness overlaid on top and is pushed straight to a convention-compliant
 # branch on this checkout (private-fboss) -- build-and-test never touches the
 # public fork.  Outputs are written to $GITHUB_OUTPUT when set.  Remotes used:
-# upstream -> facebook/fboss, nexthop-ai -> nexthop-ai/fboss, origin -> this repo
-# (nexthop-ai/private-fboss).
+# upstream -> facebook/fboss, nexthop-ai -> nexthop-ai/fboss.
 
 set -euo pipefail
 
@@ -31,6 +30,9 @@ REBASE_ONTO=${2:-}
 upstream_repo="facebook/fboss"
 fork_repo="nexthop-ai/fboss"
 upstream_base_branch="main"
+# Branch to source the NH harness files from. The checkout action leaves no
+# origin/* remote-tracking refs and a detached HEAD, so use $GITHUB_REF_NAME.
+nh_repo_branch=${GITHUB_REF_NAME:-main}
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 echo_debug() { ((DEBUG)) && echo "🐞 DEBUG: $*" || true; }
@@ -47,26 +49,33 @@ rebase_in_progress() {
     [[ -d $(git rev-parse --git-path rebase-apply 2>/dev/null) ]]
 }
 
-# Extract the latest stable commit SHA from the tarball on upstream/main.
-# Mirrors .github/scripts/sync_upstream.sh (lines ~104-123); kept as a local copy
-# to avoid a risky refactor of the live sync script.
-get_stable_commit() {
-  local ref content
-  ref=$(git rev-list -1 "upstream/$upstream_base_branch" -- fboss/oss/stable_commits)
-  content=$(git show "$ref:fboss/oss/stable_commits/latest_stable_hashes.tar.gz")
-  if [[ $content =~ ^[a-zA-Z0-9_]+\.tar\.gz$ ]]; then
-    git show "$ref:fboss/oss/stable_commits/$content" |
-      tar -xzO --wildcards '*/fboss-rev.txt' | sed -n 's/^Subproject commit //p'
-  else
-    echo "$content" | tar -xzO --wildcards '*/fboss-rev.txt' | sed -n 's/^Subproject commit //p'
+# The stable tarball pins an fboss sha1 together with the dependency shas and
+# manifests it was validated with; they must be used as a set. Materialize the
+# tarball from the given commit into a temp file so the same copy that names
+# the rebase target also supplies the dep pins during the overlay.
+materialize_stable_tarball() {
+  local ref=$1 out
+  out=$(mktemp --suffix=.tar.gz)
+  git show "$ref:fboss/oss/stable_commits/latest_stable_hashes.tar.gz" >"$out"
+  # Some revisions store a pointer file naming the real tarball.
+  if ! gzip -t "$out" 2>/dev/null; then
+    git show "$ref:fboss/oss/stable_commits/$(cat "$out")" >"$out"
   fi
+  echo "$out"
 }
 
-# Materialize our resolver from origin/main (the upstream tree doesn't have it),
-# run it, then remove the untracked copy so it never lands in a pushed commit.
+# Extract the stable commit SHA from a materialized tarball. Mirrors
+# .github/scripts/sync_upstream.sh (lines ~104-123).
+get_stable_commit() {
+  tar -xzOf "$1" --wildcards '*/fboss-rev.txt' | sed -n 's/^Subproject commit //p'
+}
+
+# Materialize our resolver from $nh_repo_branch (the upstream tree doesn't have
+# it), run it, then remove the untracked copy so it never lands in a pushed
+# commit.
 run_conflict_resolver() {
   mkdir -p .github/scripts
-  git show origin/main:.github/scripts/nh-fix-merge-conflicts.py \
+  git show "$nh_repo_branch:.github/scripts/nh-fix-merge-conflicts.py" \
     >.github/scripts/nh-fix-merge-conflicts.py
   chmod 755 .github/scripts/nh-fix-merge-conflicts.py
   python3 .github/scripts/nh-fix-merge-conflicts.py || true
@@ -83,13 +92,38 @@ run_conflict_resolver() {
 # of what `git checkout` writes to that path afterward.
 overlay_nh_harness() {
   local p
+  # From build/fbcode_builder take only our getdeps fork (S3 cache, fetcher,
+  # hashed install dirs); manifests, patches, and CMake helpers stay at the
+  # rebase target's versions.
   for p in .github fboss/oss/docker fboss/oss/scripts fboss-sim fboss/oss/stable_commits \
     build/fbcode_builder/getdeps.py build/fbcode_builder/getdeps; do
     rm -rf "$p"
-    git checkout origin/main -- "$p"
+    git checkout "$nh_repo_branch" -- "$p"
   done
+  # Restore the manifests and github_hashes shas from the same tarball that
+  # named the rebase target, so the dep pins are exactly the set the stable
+  # commit was validated with.
+  rm -rf build/deps/github_hashes build/fbcode_builder/manifests
+  tar xzf "$stable_tarball" --wildcards \
+    'build/deps/github_hashes/*' 'build/fbcode_builder/manifests/*'
+  # docker-build.py's use_stable_hashes() re-extracts the pins from the tree's
+  # tarball at container start; put the same tarball in the tree so that
+  # re-extraction can't reintroduce a stale set.
+  cp "$stable_tarball" fboss/oss/stable_commits/latest_stable_hashes.tar.gz
   git add -A
   git commit --no-verify -m "CI: build-test upstream PR ${PR} with NH harness (do not merge)"
+  # Internal fixes the pure-upstream tree needs but that were never upstreamed.
+  # Applied after rebased_sha capture, so they never reach the real PR branch:
+  #   d09a2fbf: fake SAI initializes FakePort members; unfixed agents SEGV (#621)
+  #   c7d40884: distro_cli docker test self-skips when docker is absent
+  local fix
+  for fix in d09a2fbfe633fedbac25bd083e75cf2fa8122bad c7d40884e67522873e44206e6ac238c8e76a4751; do
+    git cherry-pick -x "$fix" || {
+      echo_error "cherry-pick of internal fix $fix failed; resolve or drop it"
+      git cherry-pick --abort || true
+      exit 1
+    }
+  done
 }
 
 # ─── 1. Remotes ─────────────────────────────────────────────────────────────
@@ -137,7 +171,9 @@ pr_head=$(git rev-parse FETCH_HEAD)
 
 # ─── 3. Resolve rebase target ─────────────────────────────────────────────────
 if [[ -z $REBASE_ONTO ]]; then
-  target_ref=$(get_stable_commit)
+  stable_tarball=$(materialize_stable_tarball \
+    "$(git rev-list -1 "upstream/$upstream_base_branch" -- fboss/oss/stable_commits)")
+  target_ref=$(get_stable_commit "$stable_tarball")
   echo_info "Rebase target: latest stable commit $target_ref"
 else
   target_ref=$REBASE_ONTO
@@ -148,6 +184,12 @@ git fetch --no-tags upstream "$target_ref"
 target=$(git rev-parse FETCH_HEAD)
 echo_info "Rebase target resolves to $target"
 emit target "$target"
+if [[ -n $REBASE_ONTO ]]; then
+  # Explicit target: no tarball names it, so take the newest one in the
+  # target's own tree — the closest matching set of dep pins.
+  stable_tarball=$(materialize_stable_tarball \
+    "$(git rev-list -1 "$target" -- fboss/oss/stable_commits)")
+fi
 emit pr_branch "$pr_branch"
 emit author_user "$author_user"
 emit test_branch "$test_branch"
@@ -234,6 +276,12 @@ if [[ $new_count -lt $orig_count ]]; then
 else
   emit dropped_commits "false"
 fi
+
+# Log the PR's net diff on the rebase target: the test branch is deleted on
+# cleanup, so this is the only record of what the rebase actually produced.
+echo_info "Diff applied by the rebase ($target..$rebased_sha):"
+git diff --stat "$target" "$rebased_sha"
+git diff "$target" "$rebased_sha"
 
 echo_info "Overlaying NH CI harness onto the clean rebase"
 overlay_nh_harness

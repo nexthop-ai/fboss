@@ -43,6 +43,31 @@ REQUIRED_BINARIES = [
     "fboss2_integration_test",
 ]
 
+# Upstream facebook/fboss cmake names the fake-SAI agents with a "-fake" suffix;
+# Nexthop's fork renames them to "-sai_impl" (cmake/AgentPlatformsSai.cmake) so
+# fake and real builds drop identically-named binaries at the /opt/fboss/bin/
+# paths the systemd units reference. When we build a rebased *upstream* PR, the
+# NH CI harness overlay carries this packaging script but not that cmake rename,
+# so the agents come out as "-fake". Accept either name and always install under
+# the canonical "-sai_impl" name the runtime units expect.
+BINARY_ALIASES = {
+    "wedge_agent-sai_impl": ["wedge_agent-fake"],
+    "fboss_hw_agent-sai_impl": ["fboss_hw_agent-fake"],
+}
+
+
+def resolve_binary(build_dir: Path, name: str) -> "Path | None":
+    """Return the source path for a required binary, honoring known aliases.
+
+    Prefers the canonical name; falls back to alternate names some build
+    configurations emit (e.g. upstream's "-fake" fake-SAI suffix).
+    """
+    for candidate in (name, *BINARY_ALIASES.get(name, [])):
+        path = build_dir / candidate
+        if path.exists():
+            return path
+    return None
+
 # Libraries to exclude from collection — these are provided by the base OS image
 # (CentOS Stream 9) and must NOT be overridden with host versions (Ubuntu).
 # Mixing glibc-family libs across OS versions causes GLIBC_ABI_* version errors.
@@ -80,7 +105,7 @@ def verify_binaries(build_dir: Path) -> None:
     print("\n🔍 Verifying required binaries...")
     missing = []
     for binary in REQUIRED_BINARIES:
-        if not (build_dir / binary).exists():
+        if resolve_binary(build_dir, binary) is None:
             missing.append(binary)
 
     if missing:
@@ -168,9 +193,11 @@ def copy_artifacts(
     # 1. Copy required binaries
     print(f"\n  → Copying {len(REQUIRED_BINARIES)} required binaries...")
     for binary in REQUIRED_BINARIES:
-        src = build_dir / binary
+        # verify_binaries() already guaranteed every required binary resolves.
+        src = resolve_binary(build_dir, binary)
         shutil.copy2(src, bin_dir / binary)
-        print(f"    ✓ {binary}")
+        note = "" if src.name == binary else f" (from {src.name})"
+        print(f"    ✓ {binary}{note}")
 
     # 2. Copy setup_fboss_env from run_scripts
     run_scripts_dir = repo_path / "fboss" / "oss" / "scripts" / "run_scripts"
@@ -190,7 +217,7 @@ def copy_artifacts(
 
     all_deps: set[str] = set()
     for binary in REQUIRED_BINARIES:
-        binary_path = build_dir / binary
+        binary_path = resolve_binary(build_dir, binary)
         all_deps.update(resolve_dependencies(binary_path))
 
     for lib_path in sorted(all_deps):

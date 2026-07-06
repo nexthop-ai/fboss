@@ -346,6 +346,23 @@ jobs:
         run: |
           docker exec fboss_sim_runtime_${USER} /opt/fboss/bin/fboss2_integration_test
 
+      # The cleanup step below destroys the runtime container, so on a
+      # readiness or integration-test failure capture both agents' journals,
+      # restart counts, and the crash stacks from wedge_agent.log while the
+      # container still exists.
+      - name: Dump fboss-sim agent diagnostics on failure
+        if: failure()
+        run: |
+          C=fboss_sim_runtime_${USER}
+          echo "=== systemctl status (restart counts) ==="
+          docker exec $C systemctl status fboss_sw_agent 'fboss_hw_agent@0' --no-pager -l || true
+          echo "=== journalctl fboss_hw_agent@0 ==="
+          docker exec $C journalctl -u 'fboss_hw_agent@0' --no-pager -n 300 || true
+          echo "=== journalctl fboss_sw_agent ==="
+          docker exec $C journalctl -u fboss_sw_agent --no-pager -n 100 || true
+          echo "=== wedge_agent.log crash stacks ==="
+          docker exec $C bash -c "grep -B5 -A40 'Aborted at\|Check failure' /var/facebook/logs/fboss/wedge_agent.log | tail -150" || true
+
       - name: Cleanup fboss-sim runtime container and image
         if: always()
         run: |

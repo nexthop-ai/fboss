@@ -78,6 +78,21 @@ jobs:
       ref: ${{ needs.rebase.outputs.test_branch }}
     secrets: inherit
 
+  # Run the fboss2 integration tests on a real DUT after the build, as
+  # pr-validation.yml does. Informational only — continue-on-error lives
+  # inside integration_test.yml, so DUT flakiness/availability never blocks
+  # the force-push. The DUT job pulls fboss_cli_bins from this run's build.
+  cli-integration-test:
+    name: CLI Integration Test (DUT)
+    needs: build-and-test
+    if: needs.build-and-test.result == 'success'
+    permissions:
+      id-token: write  # aws-actions/configure-aws-credentials (OIDC)
+      contents: read
+      actions: read    # gh run download/list for the fboss_cli_bins artifact
+    uses: ./.github/workflows/integration_test.yml
+    secrets: inherit
+
   # On green, force-push the validated rebase to the real PR branch (updates the
   # live upstream PR). --force-with-lease pins the PR head OID captured at rebase
   # start, so a concurrent update aborts rather than getting clobbered.

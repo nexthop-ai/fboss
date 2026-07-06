@@ -250,7 +250,7 @@ class TestDefinesRawStringPassthrough(unittest.TestCase):
 class TestCacheKey(unittest.TestCase):
     def test_format_with_build_type(self):
         key = cgd.cache_key("folly", "abc123", "MinSizeRel")
-        self.assertEqual(key, "fboss-getdeps-v2-folly-MinSizeRel-abc123")
+        self.assertEqual(key, "fboss-getdeps-v3-folly-MinSizeRel-abc123")
 
     def test_includes_project_name(self):
         self.assertIn("gflags", cgd.cache_key("gflags", "xyz", "MinSizeRel"))
@@ -264,11 +264,11 @@ class TestCacheKey(unittest.TestCase):
 
     def test_cache_object_url(self):
         url = cgd._cache_object_url(
-            "http://cache.example.com", "fboss-getdeps-v2-folly-MinSizeRel-abc"
+            "http://cache.example.com", "fboss-getdeps-v3-folly-MinSizeRel-abc"
         )
         self.assertEqual(
             url,
-            "http://cache.example.com/fboss-getdeps-v2-folly-MinSizeRel-abc.tar.zst",
+            "http://cache.example.com/fboss-getdeps-v3-folly-MinSizeRel-abc.tar.zst",
         )
 
 
@@ -973,10 +973,7 @@ class TestParallelCheckAndDownload(unittest.TestCase):
             hit_dir = os.path.join(tmpdir, "gflags")
             os.makedirs(hit_dir)
             miss_dir = os.path.join(tmpdir, "glog")
-            meta = [
-                self._miss("gflags", hit_dir),
-                self._miss("glog", miss_dir),
-            ]
+            meta = [self._miss("gflags", hit_dir), self._miss("glog", miss_dir)]
 
             def fake_check(_url, key):
                 return "gflags" in key
