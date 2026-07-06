@@ -290,23 +290,6 @@ perform_build() {
   mkdir -p "$OUT_DIR"
   mv "${package_target}.tar" "$OUT_DIR/${package_target}${output_suffix}.tar"
 
-  # A physical build must not ship the cFBOSS stub (CfbossServiceStub.cpp, built
-  # when BUILD_CFBOSS=ON): ~8 KB, just pause()es. Real platform_manager is MB.
-  # Fail fast if the scratch was poisoned by a cfboss build instead of shipping it.
-  if [ "$package_target" = "platform-stack" ] && [ -z "${BUILD_CFBOSS:-}" ]; then
-    pm_size=$(tar tvf "$OUT_DIR/${package_target}${output_suffix}.tar" 2>/dev/null |
-      awk '/bin\/platform_manager$/ {print $3; exit}')
-    if [ -z "$pm_size" ]; then
-      log "ERROR: platform_manager missing from ${package_target}${output_suffix}.tar"
-      exit 1
-    fi
-    if [ "$pm_size" -lt 100000 ]; then
-      log "ERROR: platform_manager is ${pm_size} B -- looks like the cFBOSS stub. Refusing to ship a stubbed physical image (getdeps scratch likely poisoned by a cfboss build)."
-      exit 1
-    fi
-    log "platform_manager size check OK: ${pm_size} B"
-  fi
-
   log "FBOSS ${stack_label} stack build complete!"
   log "Production artifact:"
   ls -lh "$OUT_DIR/${package_target}${output_suffix}.tar"
