@@ -412,18 +412,6 @@ add_library(fboss2_lib
   fboss/cli/fboss2/CmdLocalOptions.cpp
   fboss/cli/fboss2/commands/delete/config/CmdDeleteConfig.h
   fboss/cli/fboss2/commands/delete/config/CmdDeleteConfig.cpp
-  fboss/cli/fboss2/commands/delete/interface/CmdDeleteInterface.cpp
-  fboss/cli/fboss2/commands/delete/interface/CmdDeleteInterface.h
-  fboss/cli/fboss2/commands/delete/protocol/CmdDeleteProtocol.cpp
-  fboss/cli/fboss2/commands/delete/protocol/CmdDeleteProtocol.h
-  fboss/cli/fboss2/commands/delete/protocol/static/CmdDeleteProtocolStatic.cpp
-  fboss/cli/fboss2/commands/delete/protocol/static/CmdDeleteProtocolStatic.h
-  fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.cpp
-  fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.h
-  fboss/cli/fboss2/commands/delete/interface/ipv6/CmdDeleteInterfaceIpv6.cpp
-  fboss/cli/fboss2/commands/delete/interface/ipv6/CmdDeleteInterfaceIpv6.h
-  fboss/cli/fboss2/commands/delete/interface/ipv6/ndp/CmdDeleteInterfaceIpv6Ndp.cpp
-  fboss/cli/fboss2/commands/delete/interface/ipv6/ndp/CmdDeleteInterfaceIpv6Ndp.h
   fboss/cli/fboss2/commands/get/pcap/CmdGetPcap.h
   fboss/cli/fboss2/commands/get/pcap/CmdGetPcap.cpp
   fboss/cli/fboss2/commands/set/fanhold/CmdSetFanHold.h
@@ -1025,6 +1013,18 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/decap/CmdDeleteTunnelIpInIpDecap.h
   fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/encap/CmdDeleteTunnelIpInIpEncap.cpp
   fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/encap/CmdDeleteTunnelIpInIpEncap.h
+  fboss/cli/fboss2/commands/delete/interface/CmdDeleteInterface.cpp
+  fboss/cli/fboss2/commands/delete/interface/CmdDeleteInterface.h
+  fboss/cli/fboss2/commands/delete/interface/ipv6/CmdDeleteInterfaceIpv6.cpp
+  fboss/cli/fboss2/commands/delete/interface/ipv6/CmdDeleteInterfaceIpv6.h
+  fboss/cli/fboss2/commands/delete/interface/ipv6/ndp/CmdDeleteInterfaceIpv6Ndp.cpp
+  fboss/cli/fboss2/commands/delete/interface/ipv6/ndp/CmdDeleteInterfaceIpv6Ndp.h
+  fboss/cli/fboss2/commands/delete/protocol/CmdDeleteProtocol.cpp
+  fboss/cli/fboss2/commands/delete/protocol/CmdDeleteProtocol.h
+  fboss/cli/fboss2/commands/delete/protocol/static/CmdDeleteProtocolStatic.cpp
+  fboss/cli/fboss2/commands/delete/protocol/static/CmdDeleteProtocolStatic.h
+  fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.cpp
+  fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.h
   fboss/cli/fboss2/commands/config/vlan/CmdConfigVlan.cpp
   fboss/cli/fboss2/commands/config/vlan/CmdConfigVlan.h
   fboss/cli/fboss2/commands/config/vlan/CmdConfigVlanDefault.cpp
