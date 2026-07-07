@@ -11,7 +11,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "fboss/cli/fboss2/commands/config/icmpv4_unavailable_src_addr/CmdConfigIcmpV4UnavailableSrcAddr.h"
+#include "fboss/cli/fboss2/commands/config/switch/icmpv4_unavailable_src_addr/CmdConfigIcmpV4UnavailableSrcAddr.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/test/config/CmdConfigTestBase.h"
 
@@ -32,7 +32,7 @@ class CmdConfigIcmpV4UnavailableSrcAddrTestFixture : public CmdConfigTestBase {
 })") {}
 
  protected:
-  const std::string cmdPrefix_ = "config icmpv4-unavailable-src-addr";
+  const std::string cmdPrefix_ = "config switch icmpv4-unavailable-src-addr";
 };
 
 // Seed mirrors a fresh device where icmpV4UnavailableSrcAddress is absent
@@ -47,7 +47,7 @@ class CmdConfigIcmpV4UnavailableSrcAddrAbsentTestFixture
 })") {}
 
  protected:
-  const std::string cmdPrefix_ = "config icmpv4-unavailable-src-addr";
+  const std::string cmdPrefix_ = "config switch icmpv4-unavailable-src-addr";
 };
 
 // ==============================================================================

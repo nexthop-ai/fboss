@@ -8,7 +8,7 @@
  *
  */
 
-#include "fboss/cli/fboss2/commands/config/icmpv4_unavailable_src_addr/CmdConfigIcmpV4UnavailableSrcAddr.h"
+#include "fboss/cli/fboss2/commands/config/switch/icmpv4_unavailable_src_addr/CmdConfigIcmpV4UnavailableSrcAddr.h"
 #include <fmt/format.h>
 #include <folly/IPAddressV4.h>
 #include <iostream>

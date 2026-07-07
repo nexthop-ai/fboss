@@ -11,6 +11,7 @@
 #pragma once
 
 #include "fboss/cli/fboss2/CmdHandler.h"
+#include "fboss/cli/fboss2/commands/config/switch/CmdConfigSwitch.h"
 
 namespace facebook::fboss {
 
@@ -27,6 +28,7 @@ class IcmpV4UnavailableSrcAddrArg
 };
 
 struct CmdConfigIcmpV4UnavailableSrcAddrTraits : public WriteCommandTraits {
+  using ParentCmd = CmdConfigSwitch;
   static void addCliArg(CLI::App& cmd, std::vector<std::string>& args) {
     cmd.add_option(
            "ipv4-address",

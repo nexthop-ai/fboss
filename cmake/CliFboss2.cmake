@@ -792,12 +792,12 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/switch/CmdConfigSwitch.h
   fboss/cli/fboss2/commands/config/switch/admin_distance/CmdConfigAdminDistance.cpp
   fboss/cli/fboss2/commands/config/switch/admin_distance/CmdConfigAdminDistance.h
+  fboss/cli/fboss2/commands/config/switch/icmpv4_unavailable_src_addr/CmdConfigIcmpV4UnavailableSrcAddr.cpp
+  fboss/cli/fboss2/commands/config/switch/icmpv4_unavailable_src_addr/CmdConfigIcmpV4UnavailableSrcAddr.h
   fboss/cli/fboss2/commands/config/arp/CmdConfigArp.cpp
   fboss/cli/fboss2/commands/config/arp/CmdConfigArp.h
   fboss/cli/fboss2/commands/config/copp/CmdConfigCopp.cpp
   fboss/cli/fboss2/commands/config/copp/CmdConfigCopp.h
-  fboss/cli/fboss2/commands/config/icmpv4_unavailable_src_addr/CmdConfigIcmpV4UnavailableSrcAddr.cpp
-  fboss/cli/fboss2/commands/config/icmpv4_unavailable_src_addr/CmdConfigIcmpV4UnavailableSrcAddr.h
   fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.cpp
   fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h
   fboss/cli/fboss2/commands/config/interface/InterfaceAttrArgsBase.h

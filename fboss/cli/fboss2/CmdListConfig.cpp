@@ -16,7 +16,6 @@
 #include "fboss/cli/fboss2/commands/config/copp/CmdConfigCopp.h"
 #include "fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h"
 #include "fboss/cli/fboss2/commands/config/hostname/CmdConfigHostname.h"
-#include "fboss/cli/fboss2/commands/config/icmpv4_unavailable_src_addr/CmdConfigIcmpV4UnavailableSrcAddr.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceQueuingPolicy.h"
 #include "fboss/cli/fboss2/commands/config/interface/ipv6/CmdConfigInterfaceIpv6.h"
@@ -111,6 +110,7 @@
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionRebase.h"
 #include "fboss/cli/fboss2/commands/config/switch/CmdConfigSwitch.h"
 #include "fboss/cli/fboss2/commands/config/switch/admin_distance/CmdConfigAdminDistance.h"
+#include "fboss/cli/fboss2/commands/config/switch/icmpv4_unavailable_src_addr/CmdConfigIcmpV4UnavailableSrcAddr.h"
 #include "fboss/cli/fboss2/commands/config/tunnel/CmdConfigTunnel.h"
 #include "fboss/cli/fboss2/commands/config/tunnel/ip_in_ip/CmdConfigTunnelIpInIp.h"
 #include "fboss/cli/fboss2/commands/config/tunnel/ip_in_ip/decap/CmdConfigTunnelIpInIpDecap.h"
@@ -145,11 +145,17 @@ const CommandTree& kConfigCommandTree() {
           commandHandler<CmdConfigSwitch>,
           argRegistrar<CmdConfigSwitchTraits>,
           {{
-              "admin-distance",
-              "Set administrative distance for a routing client",
-              commandHandler<CmdConfigAdminDistance>,
-              argRegistrar<CmdConfigAdminDistanceTraits>,
-          }},
+               "admin-distance",
+               "Set administrative distance for a routing client",
+               commandHandler<CmdConfigAdminDistance>,
+               argRegistrar<CmdConfigAdminDistanceTraits>,
+           },
+           {
+               "icmpv4-unavailable-src-addr",
+               "Set IPv4 source address for ICMP when no address is configured",
+               commandHandler<CmdConfigIcmpV4UnavailableSrcAddr>,
+               argRegistrar<CmdConfigIcmpV4UnavailableSrcAddrTraits>,
+           }},
       },
 
       {"config",
@@ -195,12 +201,6 @@ const CommandTree& kConfigCommandTree() {
        "Set switch hostname",
        commandHandler<CmdConfigHostname>,
        argRegistrar<CmdConfigHostnameTraits>},
-
-      {"config",
-       "icmpv4-unavailable-src-addr",
-       "Set IPv4 source address for ICMP when no address is configured",
-       commandHandler<CmdConfigIcmpV4UnavailableSrcAddr>,
-       argRegistrar<CmdConfigIcmpV4UnavailableSrcAddrTraits>},
 
       {
           "config",
