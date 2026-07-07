@@ -21,8 +21,10 @@ from tests.libs.test_runner.runner import (
     BenchmarkTestRunner,
     BspTestRunner,
     PlatformTestRunner,
+    QsfpTestRunner,
     SaiAgentTestRunner,
     SaiTestRunner,
+    SmokeTestRunner,
     _STACK_FORWARDING,
     _STACK_PLATFORM,
 )
@@ -485,3 +487,156 @@ def test_runner_binaries_are_known_to_fboss_test_runner():
                 f"runner's BINARIES against fboss_test_runner/runners/*.py — it "
                 f"is the source of truth for binary names."
             )
+
+
+class TestDeployOnly:
+    """FBOSS_DEPLOY_ONLY (set by nhtests-run --mode deploy): run_test() deploys
+    this runner's slice via setup() then returns without executing the test."""
+
+    def _patch_clients(self, monkeypatch):
+        """Make setup() build mock SSH/SCP clients instead of real ones.
+
+        setup() reassigns self.ssh_client/scp_client to fresh Device*Clients, so
+        (unlike the _deploy_artifacts tests) we must patch the classes the
+        runner module imported, not the instance attributes.
+        """
+        ssh = MagicMock()
+        scp = MagicMock()
+        scp.put_file.return_value = (0, "ok")
+
+        def ssh_handler(cmd, *args, **kwargs):
+            # marker-probe miss → full deploy path runs
+            if "test -f" in cmd and "test -e" in cmd:
+                return (1, "")
+            return (0, "ok")
+
+        ssh.run_cmd.side_effect = ssh_handler
+        monkeypatch.setattr(runner_module, "DeviceSSHClient", lambda *a, **k: ssh)
+        monkeypatch.setattr(runner_module, "DeviceSCPClient", lambda *a, **k: scp)
+        return ssh, scp
+
+    def test_run_test_deploys_then_skips_execution(self, monkeypatch, isolated_cache):
+        ssh, scp = self._patch_clients(monkeypatch)
+        fake_run, _ = _fake_run_factory(SaiTestRunner.REQUIRED_PATHS)
+        monkeypatch.setattr(subprocess, "run", fake_run)
+
+        runner = SaiTestRunner()
+        env = dict(_NEXIS_ENV)
+        env["FBOSS_DEPLOY_ONLY"] = "1"
+        with patch.dict(os.environ, env):
+            result = runner.run_test({})
+
+        # Returns success without running the binary.
+        assert result is True
+
+        # Deploy still happened: the slice was SCP'd to the DUT.
+        scp.put_file.assert_called_once()
+        assert scp.put_file.call_args.args[1] == "/tmp/fboss-SaiTestRunner-slice.tar"
+
+        # Test was NOT executed: run_test.py never invoked, no results fetched.
+        assert all("run_test.py" not in c.args[0] for c in ssh.run_cmd.call_args_list)
+        scp.get_file.assert_not_called()
+
+    def test_run_test_deploy_failure_propagates(self, monkeypatch, isolated_cache):
+        """A failed upload must NOT be swallowed into a success. The SCP failure
+        raises out of setup()/_deploy_artifacts() (before the deploy-only
+        early-return), so run_test() raises — failing the pytest test (exit 1),
+        which nhtests-run maps to FAIL_ENV instead of a false PASS."""
+        ssh, scp = self._patch_clients(monkeypatch)
+        scp.put_file.return_value = (1, "scp: permission denied")  # upload fails
+        fake_run, _ = _fake_run_factory(SaiTestRunner.REQUIRED_PATHS)
+        monkeypatch.setattr(subprocess, "run", fake_run)
+
+        runner = SaiTestRunner()
+        env = dict(_NEXIS_ENV)
+        env["FBOSS_DEPLOY_ONLY"] = "1"
+        with patch.dict(os.environ, env):
+            with pytest.raises(RuntimeError, match="Failed to copy slice tar"):
+                runner.run_test({})
+
+        # Never reached the deploy-only skip / success return.
+        assert all("run_test.py" not in c.args[0] for c in ssh.run_cmd.call_args_list)
+
+    def test_run_test_without_deploy_only_executes(self, monkeypatch, isolated_cache):
+        """Sanity counterpart: with the env var unset, run_test() proceeds past
+        deploy and runs the binary on the DUT (run_test.py is invoked)."""
+        ssh, scp = self._patch_clients(monkeypatch)
+        scp.get_file.return_value = (0, "ok")
+        fake_run, _ = _fake_run_factory(SaiTestRunner.REQUIRED_PATHS)
+        monkeypatch.setattr(subprocess, "run", fake_run)
+
+        runner = SaiTestRunner()
+        env = {k: v for k, v in _NEXIS_ENV.items()}
+        env["DUT"] = "dut-1"
+        env["HWSKU"] = "minipack3"
+        # Ensure FBOSS_DEPLOY_ONLY is absent.
+        with patch.dict(os.environ, env, clear=False):
+            os.environ.pop("FBOSS_DEPLOY_ONLY", None)
+            runner.run_test({"filters": []})
+
+        assert any("run_test.py" in c.args[0] for c in ssh.run_cmd.call_args_list)
+
+    def test_smoke_runner_honors_deploy_only(self, monkeypatch, isolated_cache):
+        """SmokeTestRunner customizes execution via _run_test_impl, so the
+        deploy-only gate in the base run_test() applies to it too: the slice is
+        deployed but agent_smoke.py never runs. (Regression: when the gate lived
+        in a run_test() that SmokeTestRunner overrode, it was silently skipped.)"""
+        ssh, scp = self._patch_clients(monkeypatch)
+        fake_run, _ = _fake_run_factory(SmokeTestRunner.REQUIRED_PATHS)
+        monkeypatch.setattr(subprocess, "run", fake_run)
+
+        runner = SmokeTestRunner()
+        env = dict(_NEXIS_ENV)
+        env["FBOSS_DEPLOY_ONLY"] = "1"
+        with patch.dict(os.environ, env):
+            result = runner.run_test({})
+
+        assert result is True
+        scp.put_file.assert_called_once()  # deploy still happened
+        assert all("agent_smoke.py" not in c.args[0] for c in ssh.run_cmd.call_args_list)
+
+    def test_benchmark_runner_honors_deploy_only(self, monkeypatch, isolated_cache):
+        """BenchmarkTestRunner's _run_test_impl runs only after the base
+        run_test() clears the deploy-only gate, so in deploy-only mode no
+        benchmark runs and the CSV/tr.xml post-processing is skipped entirely.
+        (Regression: it used to call super().run_test(), get an early True, then
+        fail in CSV post-processing — a false failure plus a padding sleep.)"""
+        ssh, scp = self._patch_clients(monkeypatch)
+        fake_run, _ = _fake_run_factory(BenchmarkTestRunner.REQUIRED_PATHS)
+        monkeypatch.setattr(subprocess, "run", fake_run)
+
+        runner = BenchmarkTestRunner()
+        env = dict(_NEXIS_ENV)
+        env["FBOSS_DEPLOY_ONLY"] = "1"
+        with patch.dict(os.environ, env):
+            result = runner.run_test({})
+
+        assert result is True
+        scp.put_file.assert_called_once()  # deploy still happened
+        # Neither the benchmark run nor its result fetch happened.
+        assert all("run_test.py" not in c.args[0] for c in ssh.run_cmd.call_args_list)
+        scp.get_file.assert_not_called()
+
+    def test_qsfp_runner_honors_deploy_only_on_cabling_path(
+        self, monkeypatch, isolated_cache
+    ):
+        """QsfpTestRunner overrides _run_test_impl (not run_test), so the base
+        run_test() deploy-only gate fires before the cabling-aware path is ever
+        reached: the slice is deployed but no QSFP pass runs. (Regression: when
+        QsfpTestRunner overrode run_test() and routed the cabled DUT straight
+        into _run_cabling_aware, --mode deploy silently executed the tests.)"""
+        ssh, scp = self._patch_clients(monkeypatch)
+        fake_run, _ = _fake_run_factory(QsfpTestRunner.REQUIRED_PATHS)
+        monkeypatch.setattr(subprocess, "run", fake_run)
+
+        runner = QsfpTestRunner()
+        env = dict(_NEXIS_ENV)
+        env["FBOSS_DEPLOY_ONLY"] = "1"
+        env["QSFP_TEST_CABLING"] = "/does/not/matter"  # gate must win before this
+        with patch.dict(os.environ, env):
+            result = runner.run_test({})
+
+        assert result is True
+        scp.put_file.assert_called_once()  # deploy still happened
+        assert all("run_test.py" not in c.args[0] for c in ssh.run_cmd.call_args_list)
+        scp.get_file.assert_not_called()

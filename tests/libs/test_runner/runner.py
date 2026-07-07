@@ -44,16 +44,22 @@ def _enforce_min_failure_duration(run_test):
     keeps the surrounding retry cadence sane. Successful runs are never
     delayed.
 
-    Wraps both the base run_test and the SmokeTestRunner/BenchmarkTestRunner
-    overrides. Because the floor is measured from the outermost entry, a
-    subclass that calls super().run_test() is never double-padded.
+    Wraps the single template run_test() entry point; per-runner execution
+    lives in _run_test_impl(), which is not decorated, so a run is padded at
+    most once regardless of how many subclass layers it passes through.
+
+    Deploy-only runs (FBOSS_DEPLOY_ONLY) are exempt: they stage artifacts and
+    return without executing the test, so there is no fail-retry loop to pad.
     """
 
     @functools.wraps(run_test)
     def wrapper(self, *args, **kwargs):
         start = time.monotonic()
         success = run_test(self, *args, **kwargs)
-        if not success:
+        # Deploy-only runs stage artifacts and exit without executing the test,
+        # so there's no fail-retry loop to protect against — never pad them.
+        deploy_only = os.environ.get(_ENV_DEPLOY_ONLY) == _ENV_DEPLOY_ONLY_ON
+        if not success and not deploy_only:
             remaining = MIN_FAILURE_DURATION_SECS - (time.monotonic() - start)
             if remaining > 0:
                 logger.info(
@@ -110,6 +116,14 @@ _STACK_SHARE: dict[str, tuple[str, ...]] = {
     ),
     _STACK_PLATFORM: (),
 }
+
+# Deploy-only mode: when set to "1" (by nhtests-run --mode deploy), run_test()
+# performs setup()/_deploy_artifacts() to push this runner's slice onto the DUT,
+# then returns without executing the test on the DUT. Contract is an explicit
+# "1" (not mere presence) so a stray FBOSS_DEPLOY_ONLY=0/false can't silently
+# skip execution.
+_ENV_DEPLOY_ONLY = "FBOSS_DEPLOY_ONLY"
+_ENV_DEPLOY_ONLY_ON = "1"
 
 _FBOSS_ROOT_ON_DUT = "/opt/fboss"
 
@@ -820,9 +834,43 @@ class BaseHwTestRunner(ABC):
 
     @_enforce_min_failure_duration
     def run_test(self, test_context, skip_tr_xml=False):
-        """Run the hardware test on the DUT."""
+        """Connect to the DUT, deploy this runner's artifacts, then run the test.
+
+        Template method — do NOT override in subclasses. setup() (SSH/SCP
+        connect + _deploy_artifacts) and the deploy-only gate live here so every
+        runner deploys identically and honors --mode deploy; a subclass that
+        reimplemented run_test() could silently skip the gate. Subclasses
+        customize execution by overriding _run_test_impl() instead.
+        """
         logger.info("Running tests")
         self.setup(test_context)
+
+        # Deploy-only: setup() has uploaded this runner's artifact slice to the
+        # DUT.  Stop here without running the test binary — nhtests-run
+        # --mode deploy sets this to stage artifacts without executing tests.
+        if os.environ.get(_ENV_DEPLOY_ONLY) == _ENV_DEPLOY_ONLY_ON:
+            logger.info(
+                "%s: %s set; artifacts deployed, skipping test execution",
+                type(self).__name__, _ENV_DEPLOY_ONLY,
+            )
+            return True
+
+        return self._run_test_impl(test_context, skip_tr_xml=skip_tr_xml)
+
+    def _run_test_impl(self, test_context, skip_tr_xml=False):
+        """Run the hardware test on the DUT.
+
+        Called by run_test() after setup()/deploy, so it starts from a
+        connected, artifact-staged DUT. Override per runner to customize
+        execution (see SmokeTestRunner, BenchmarkTestRunner).
+        """
+        for local_path in ("/tmp/test.log", "/tmp/tr.xml"):
+            if os.path.exists(local_path):
+                os.unlink(local_path)
+
+        status = self.set_filters("/tmp/tests.conf", self.filter_filepath)
+        if not status:
+            return False
 
         model = _normalize_model(self.tc["model"])
 
@@ -951,16 +999,18 @@ class QsfpTestRunner(BaseHwTestRunner):
         args["firmware_upgrade_on_tcvr_insert"] = "false"
         return config
 
-    @_enforce_min_failure_duration
-    def run_test(self, test_context, skip_tr_xml=False):
+    def _run_test_impl(self, test_context, skip_tr_xml=False):
+        # Override _run_test_impl (not run_test) so the base run_test template
+        # runs setup()/deploy and the deploy-only gate for every QSFP path,
+        # including the cabling-aware one, and pads a failing run at most once.
         if not os.getenv(self._CABLING_ENV_VAR):
             # No cabling signal (dev/standalone run): one pass, static share
             # config, unsplit filter list, same as before.
-            return super().run_test(test_context, skip_tr_xml)
+            return super()._run_test_impl(test_context, skip_tr_xml)
         return self._run_cabling_aware(test_context, skip_tr_xml)
 
     def _run_cabling_aware(self, test_context, skip_tr_xml):
-        self.setup(test_context)
+        # setup()/deploy already ran in the base run_test() before this call.
         model = _normalize_model(self.tc["model"])
         all_ports, optics_ports = self._load_cabling(os.getenv(self._CABLING_ENV_VAR))
         copper_safe, optics_only = self._split_filters(self.tc["filters"])
@@ -1311,7 +1361,8 @@ class SmokeTestRunner(BaseHwTestRunner):
     AGENT_SMOKE_PATH = "/opt/fboss/bin/python_tests/agent_smoke.py"
 
     def test_args(self, model: str) -> str:
-        # Unused; SmokeTestRunner overrides run_test entirely.
+        # Unused; SmokeTestRunner overrides _run_test_impl (drives agent_smoke.py
+        # directly, not run_test.py), so no test_args are built.
         return ""
 
     def _build_remote_cmd(self) -> str:
@@ -1332,10 +1383,8 @@ class SmokeTestRunner(BaseHwTestRunner):
                 parts += [flag, str(value)]
         return shlex.join(parts)
 
-    @_enforce_min_failure_duration
-    def run_test(self, test_context):
+    def _run_test_impl(self, test_context, skip_tr_xml=False):
         logger.info("Running agent smoke test")
-        self.setup(test_context)
 
         cmd = f"sudo rm -f {self.testlog_filepath} {self.testresult_filepath}"
         exit_status, output = self.ssh_client.run_cmd(cmd)
@@ -1609,16 +1658,16 @@ class BenchmarkTestRunner(BaseHwTestRunner):
         tree.write(xml_path, encoding="UTF-8", xml_declaration=True)
         return True
 
-    @_enforce_min_failure_duration
-    def run_test(self, test_context: dict) -> bool:
+    def _run_test_impl(self, test_context, skip_tr_xml=False) -> bool:
         """
         Run the benchmark test on the DUT.
-        This acts as a wrapper around the base class implementation of
-        run_test and adds additional functionality for generating
-        a tr.xml based on a benchmark_result.csv, as benchmarks
-        do not produce a tr.xml automatically.
+        This acts as a wrapper around the base class implementation and adds
+        additional functionality for generating a tr.xml based on a
+        benchmark_result.csv, as benchmarks do not produce a tr.xml
+        automatically. (setup()/deploy and the deploy-only gate already ran in
+        run_test(); the base run always skips its own tr.xml fetch here.)
         """
-        success = super().run_test(test_context, skip_tr_xml=True)
+        success = super()._run_test_impl(test_context, skip_tr_xml=True)
         if not success:
             return False
 
