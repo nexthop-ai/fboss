@@ -42,7 +42,9 @@ if [ "$#" -lt 1 ]; then
 fi
 
 stack_type="$1"
-scratch_root="/build"
+# Nexthop-only
+# scratch_root="/build"
+scratch_root="/var/FBOSS/fboss/.build_dir"
 
 need_sai=0
 stack_label=""
@@ -162,11 +164,22 @@ perform_build() {
     fi
   fi
 
-  scratch_root="/build"
+  #
+  # Nexthop-only
+  #
+  # Ensure the build output is in fboss/.build_dir and not fboss/fboss/oss/scripts/.build
+
+  # scratch_root="/build"
+  scratch_root="/var/FBOSS/fboss/.build_dir"
+
   # All variants share one getdeps scratch: deps build once, others reuse via
   # getdeps' content-hash markers. No locking -> builds must stay serialized.
   build_dir="${scratch_root}"
   mkdir -p "$build_dir"
+
+  #
+  # End Nexthop-only
+  #
 
   # fboss is first-party so getdeps won't reconfigure across variants; a stale
   # CMakeCache leaks the prior variant's find_library() paths. Force reconfigure.

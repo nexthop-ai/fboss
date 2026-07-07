@@ -156,11 +156,20 @@ class BuilderBase:
             return
         old_wd = os.getcwd()
         os.chdir(self.src_dir)
+        # Nexthop-only: The extracted dependency sources sit under /src,
+        # whose .git gitfile points at the parent repo's submodule gitdir
+        # (../.git/modules/fboss) that is not present in the build container. 
+        # Stop git from walking up out of the scratch tree by capping
+        # discovery at the parent of src_dir.
+        env = dict(os.environ)
+        env["GIT_CEILING_DIRECTORIES"] = os.path.realpath(
+            os.path.join(self.src_dir, "..")
+        )
         # Apply patches from the git repo root so paths resolve correctly
         # even when src_dir is a subdirectory of the repo.
         try:
             git_root = subprocess.check_output(
-                ["git", "rev-parse", "--show-toplevel"], text=True
+                ["git", "rev-parse", "--show-toplevel"], text=True, env=env
             ).strip()
             os.chdir(git_root)
         except subprocess.CalledProcessError:
@@ -176,8 +185,6 @@ class BuilderBase:
         patchcmd = ["git", "apply", "--ignore-space-change"]
         if self.patchfile_opts:
             patchcmd.append(self.patchfile_opts)
-        env = dict(os.environ)
-        env["GIT_CEILING_DIRECTORIES"] = os.path.join(self.src_dir, "..")
         try:
             subprocess.check_call(patchcmd + [patchfile], env=env)
         except subprocess.CalledProcessError:
