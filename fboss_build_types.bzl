@@ -19,19 +19,19 @@ def delete_build_products_in_ci(paths):
             this keeps the snippet reusable from packages outside //fboss.
 
     Returns:
-        A shell snippet string. ($$ escapes to a shell $; ${{var}} passes a
-        literal ${var} through bazel and .format().)
+        A shell snippet string compatible with heavy_genrule(). NOT compatible
+        with genrule due to different $ escaping rules.
     """
     if not paths:
         fail("delete_build_products_in_ci: paths must be a non-empty list")
     return """
         if [ -f bazel-out/volatile-status.txt ]; then
-            build_id="$$(sed -n 's/^BUILD_ID //p' bazel-out/volatile-status.txt)"
+            build_id="$(sed -n 's/^BUILD_ID //p' bazel-out/volatile-status.txt)"
             case "${{build_id}}" in
                 ''|*[!0-9]*) ;;
                 *)
                     echo "CI build ${{build_id}}: clearing intermediates from {paths}"
-                    rm -rf {paths}
+                    sudo rm -rf {paths} || true
                     ;;
             esac
         fi
