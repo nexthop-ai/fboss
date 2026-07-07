@@ -3,6 +3,11 @@ load("//fboss:fboss_build_types.bzl", "FREE_UP_DISK_IN_CI_CMD", "LOAD_FBOSS_BUIL
 load("//bazel_lib:heavy_genrule.bzl", "heavy_genrule")
 load("//bazel_lib:upload_artifact.bzl", "upload_build_artifact")
 
+exports_files(
+    ["fboss/oss/stable_commits/latest_stable_hashes.tar.gz"],
+    visibility = ["//BGP:__pkg__"],
+)
+
 filegroup(
     name = "nh-fboss-manifests",
     visibility = ["//visibility:public"],
