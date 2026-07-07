@@ -139,7 +139,16 @@ jobs:
             for bin in $PKG/bin/*; do
               ldd "$bin" 2>/dev/null | awk "/=>/ { print \$3 }" | grep -v "^$"
             done | sort -u | while read lib; do
-              [ -f "$lib" ] && cp -a "$lib" $PKG/lib/ || true
+              # -L dereferences: many libc/libssl/etc libs are a versioned
+              # SONAME symlinked from an unversioned filename, and cp -a
+              # alone would copy the symlink itself. That symlink packs into
+              # the tarball pointing at the build containers absolute path,
+              # which does not exist once extracted on the runner/DUT, so the
+              # lib silently fails the "-f" check downstream and never ships.
+              # Copy the real file content instead. (No apostrophes in this
+              # comment block: it lives inside the single-quoted bash -c
+              # script below, so one would terminate the string early.)
+              [ -f "$lib" ] && cp -aL "$lib" $PKG/lib/ || true
             done
             ZSTD_NBTHREADS=0 tar -cf /var/FBOSS/tmp_bld_dir/fboss_cli_bins.tar.zst --zstd -C $PKG .
             echo "Size: $(du -sh /var/FBOSS/tmp_bld_dir/fboss_cli_bins.tar.zst)"

@@ -68,9 +68,15 @@ for _ in $(seq 1 180); do
   ELAPSED=$(($(date +%s) - POLL_START))
   ELAPSED_FMT="${ELAPSED}s elapsed / 30m max"
 
-  case "${STATUS%% *}" in
+  # First word is the state (done|dead|running|ssherror); read's last
+  # variable absorbs the rest of the line, so payloads with spaces
+  # (e.g. "Suite.Test (123 ms)") survive intact instead of needing a
+  # second round of prefix-stripping.
+  read -r STATUS_KIND STATUS_PAYLOAD <<<"$STATUS"
+
+  case "${STATUS_KIND}" in
   done)
-    TEST_RC="${STATUS#done }"
+    TEST_RC="${STATUS_PAYLOAD}"
     echo "Integration test finished with rc=${TEST_RC} (${ELAPSED}s)"
     break
     ;;
@@ -80,9 +86,8 @@ for _ in $(seq 1 180); do
     break
     ;;
   running)
-    RUNNING_PAYLOAD="${STATUS#running }"
-    CUR_TEST="${RUNNING_PAYLOAD%%|*}"
-    LAST_DONE="${RUNNING_PAYLOAD##*|}"
+    CUR_TEST="${STATUS_PAYLOAD%%|*}"
+    LAST_DONE="${STATUS_PAYLOAD#*|}"
     if [[ -n $LAST_DONE ]]; then
       echo "[${ELAPSED_FMT}] running: ${CUR_TEST} | last done: ${LAST_DONE}"
     else
@@ -110,6 +115,24 @@ if [[ -z ${TEST_RC} ]]; then
 fi
 
 if [[ ${TEST_RC} -ne 0 ]]; then
+  # First gate: did the binary actually complete a gtest run? A crash before
+  # gtest starts (e.g. missing/mismatched shared library, symbol lookup
+  # error) or a --gtest_break_on_failure trap on a real assertion failure
+  # both leave rc non-zero WITHOUT ever printing the final
+  # "[==========] N tests from M test suites ran." summary line, and in the
+  # break_on_failure case no "[  FAILED  ]" line either (the trap fires
+  # before gtest reports the test as failed). Treat any such incomplete run
+  # as a hard failure — only a completed run gets the "all skipped?" benefit
+  # of the doubt below.
+  GTEST_COMPLETED="$(nh dvc ssh "$DUT" -c \
+    'grep -qE "^\[==========\] [0-9]+ tests? from [0-9]+ test suites? ran\." /tmp/fboss2_itest.log 2>/dev/null && echo yes || echo no' \
+    2>/dev/null || echo no)"
+
+  if [[ ${GTEST_COMPLETED} != "yes" ]]; then
+    echo "::error::Test binary exited rc=${TEST_RC} without completing the test run (crash, missing symbol, or an assertion failure trapped by --gtest_break_on_failure) — treating as failure"
+    fail
+  fi
+
   # gtest exits non-zero when tests are skipped in some configurations. Only
   # treat it as an error if a test actually FAILED.
   ACTUAL_FAILURES="$(nh dvc ssh "$DUT" -c \
