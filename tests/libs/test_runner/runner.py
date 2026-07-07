@@ -862,6 +862,10 @@ class QsfpTestRunner(BaseHwTestRunner):
             cabled.append({"aPortName": a_port, "zPortName": z_port, "profileID": profile_id})
 
         config["qsfpTestConfig"]["cabledPortPairs"] = cabled
+        # Skip discovery-time firmware upgrade: fails when fboss_firmware.yaml is missing.
+        args = config.setdefault("defaultCommandLineArgs", {})
+        args["firmware_upgrade_on_coldboot"] = "false"
+        args["firmware_upgrade_on_tcvr_insert"] = "false"
         self._upload_generated_config(config)
 
     def test_args(self, model: str) -> str:
