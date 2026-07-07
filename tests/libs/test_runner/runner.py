@@ -301,7 +301,7 @@ class BaseHwTestRunner(ABC):
 
     def _upload_generated_config(self, config: dict) -> None:
         with tempfile.NamedTemporaryFile("w", suffix=".materialized_JSON", delete=False) as f:
-            json.dump(config, f)
+            json.dump(config, f, indent=4)
             local_path = f.name
         try:
             exit_status, output = self.scp_client.put_file(local_path, self._REMOTE_CONFIG_PATH)
@@ -678,6 +678,109 @@ class BaseHwTestRunner(ABC):
     def binary_exit_is_fatal(self, exit_status: int) -> bool:
         return exit_status != 0
 
+    def _merge_junit_results(
+        self,
+        passes: list[tuple[str, str, str]],
+        skipped: list[tuple[str, str]] = (),
+    ) -> None:
+        """Merge multiple (label, log_local, xml_local) pass results, plus a
+        synthetic <skipped> testcase per (pattern, reason) in ``skipped``,
+        into /tmp/test.log and /tmp/tr.xml.
+        """
+        testsuites_el = ET.Element("testsuites")
+        merged = ET.SubElement(testsuites_el, "testsuite", {
+            "tests": "0", "failures": "0", "errors": "0",
+            "disabled": "0", "skipped": "0", "time": "0",
+            "timestamp": "", "name": "AllTests",
+        })
+        totals = {"tests": 0, "failures": 0, "errors": 0, "disabled": 0, "skipped": 0}
+        total_time = 0.0
+        log_parts = []
+
+        for label, log_local, xml_local in passes:
+            if os.path.exists(log_local):
+                with open(log_local, encoding="utf-8", errors="replace") as f:
+                    log_parts.append(f"\n===== {label} pass =====\n{f.read()}")
+            if os.path.exists(xml_local):
+                try:
+                    suite = ET.parse(xml_local).getroot().find("testsuite")
+                except ET.ParseError as e:
+                    logger.warning(
+                        "Failed to parse %s pass results %s: %s", label, xml_local, e
+                    )
+                    suite = None
+                if suite is not None:
+                    for tc in suite.findall("testcase"):
+                        merged.append(tc)
+                    for key in totals:
+                        totals[key] += int(suite.get(key, 0) or 0)
+                    total_time += float(suite.get("time", 0) or 0)
+                    if not merged.get("timestamp"):
+                        merged.set("timestamp", suite.get("timestamp", ""))
+
+        for pattern, reason in skipped:
+            tc = ET.SubElement(merged, "testcase", {
+                "name": pattern.strip("*"), "classname": "Skipped", "time": "0",
+            })
+            ET.SubElement(tc, "skipped", {"message": reason})
+            totals["tests"] += 1
+            totals["skipped"] += 1
+            log_parts.append(f"\n===== pass skipped ({reason}): {pattern} =====\n")
+
+        for key, value in totals.items():
+            merged.set(key, str(value))
+        merged.set("time", f"{total_time:.3f}")
+
+        ET.indent(testsuites_el)
+        ET.ElementTree(testsuites_el).write("/tmp/tr.xml", encoding="UTF-8", xml_declaration=True)
+        with open("/tmp/test.log", "w", encoding="utf-8") as f:
+            f.write("\n".join(log_parts))
+
+    def _execute_test_binary(
+        self, model: str, log_local: str, xml_local: str, skip_tr_xml: bool
+    ) -> bool:
+        """Clear local+remote result files, run the test binary once, fetch results.
+
+        Returns True if the fetch succeeded and the binary's exit status
+        isn't fatal.
+        """
+        for local_path in (log_local, xml_local):
+            if os.path.exists(local_path):
+                os.unlink(local_path)
+
+        if not self.set_filters("/tmp/tests.conf", self.filter_filepath):
+            return False
+
+        cmd = f"sudo rm -f {self.testlog_filepath} {self.testresult_filepath}"
+        exit_status, output = self.ssh_client.run_cmd(cmd)
+        if exit_status != 0:
+            logger.error("Failed to run command: %s %s", cmd, output)
+            return False
+
+        cmd = self.build_test_cmd(model)
+        logger.info("Running remote command: %s", cmd)
+        test_exit_status, test_output = self.ssh_client.run_cmd(cmd)
+
+        exit_status, output = self.scp_client.get_file(self.testlog_filepath, log_local)
+        if exit_status != 0:
+            logger.error("Failed to fetch test logs: %s", output)
+            return False
+
+        if not skip_tr_xml:
+            exit_status, output = self.scp_client.get_file(
+                self.testresult_filepath, xml_local
+            )
+            if exit_status != 0:
+                logger.warning(
+                    "Failed to fetch test results (tr.xml may not exist if binary crashed): %s",
+                    output,
+                )
+
+        if self.binary_exit_is_fatal(test_exit_status):
+            logger.error("Failed to run tests: %s", test_output)
+            return False
+        return True
+
     def pre_test(self):
         """Wipe stale agent-ensemble state before each test.
 
@@ -721,61 +824,20 @@ class BaseHwTestRunner(ABC):
         logger.info("Running tests")
         self.setup(test_context)
 
-        for local_path in ("/tmp/test.log", "/tmp/tr.xml"):
-            if os.path.exists(local_path):
-                os.unlink(local_path)
-
-        status = self.set_filters("/tmp/tests.conf", self.filter_filepath)
-        if not status:
-            return False
-
         model = _normalize_model(self.tc["model"])
-
-        logger.info(
-            "Clearing remote files: %s and %s",
-            self.testlog_filepath,
-            self.testresult_filepath,
-        )
-        cmd = f"sudo rm -f {self.testlog_filepath} {self.testresult_filepath}"
-        exit_status, output = self.ssh_client.run_cmd(cmd)
-        if exit_status != 0:
-            logger.error("Failed to run command: %s %s", cmd, output)
-            return False
 
         self.pre_test()
         try:
-            cmd = self.build_test_cmd(model)
-            logger.info("Running remote command: %s", cmd)
-            test_exit_status, test_output = self.ssh_client.run_cmd(cmd)
-            logger.debug("exit_status %s output %s", test_exit_status, test_output)
+            success = self._execute_test_binary(
+                model, "/tmp/test.log", "/tmp/tr.xml", skip_tr_xml
+            )
         finally:
             self.post_test()
 
-        logger.info("Fetching test logs and results files")
-        exit_status, output = self.scp_client.get_file(
-            self.testlog_filepath, "/tmp/test.log"
-        )
-        if exit_status != 0:
-            logger.error("Failed to fetch test logs: %s", output)
-            return False
-
         if not skip_tr_xml:
-            exit_status, output = self.scp_client.get_file(
-                self.testresult_filepath, "/tmp/tr.xml"
-            )
-            if exit_status != 0:
-                logger.warning(
-                    "Failed to fetch test results (tr.xml may not exist if binary crashed): %s",
-                    output,
-                )
-
             self.normalize_test_results_file()
 
-        if self.binary_exit_is_fatal(test_exit_status):
-            logger.error("Failed to run tests: %s", test_output)
-            return False
-
-        return True
+        return success
 
     def close(self):
         """Close connections."""
@@ -839,34 +901,136 @@ class QsfpTestRunner(BaseHwTestRunner):
     _REMOTE_CONFIG_PATH = "/home/netops/qsfp_test.materialized_JSON"
     _FALLBACK_PROFILE_ID = 38
 
-    def pre_test(self):
-        super().pre_test()
-        cabling_path = os.getenv(self._CABLING_ENV_VAR)
-        if not cabling_path:
-            return
+    # These hard-assert a non-empty optical/active transceiver set.
+    _OPTICS_ONLY_FILTER_SUBSTRINGS = (
+        "i2cStressWrite",
+        "i2cLogCapacityWrite",
+        "cmisPageChange",
+        "verifyResetControl",
+    )
+    _PASS_LOCAL_PATHS = {
+        "main": ("/tmp/qsfp_test_main.log", "/tmp/qsfp_tr_main.xml"),
+        "optics": ("/tmp/qsfp_test_optics.log", "/tmp/qsfp_tr_optics.xml"),
+    }
 
-        model = _normalize_model(self.tc["model"])
-        config_name = _LINK_QSFP_TEST_CONFIG_NAME.get(model, model)
-        base_path = _repo_dir(self._BASE_CONFIG_DIR) / f"{config_name}.materialized_JSON"
+    def _load_cabling(self, cabling_path: str) -> tuple[list[str], list[str]]:
+        """Parse QSFP_TEST_CABLING: {port: {"is_copper": bool | None}}.
 
-        with open(base_path, encoding="utf-8") as f:
-            config = json.load(f)
-        with open(cabling_path, encoding="utf-8") as f:
-            pairs = json.load(f)
+        Returns (all_ports, optics_ports); unknown media type counts toward
+        all_ports but not optics_ports.
+        """
+        try:
+            with open(cabling_path, encoding="utf-8") as f:
+                cabling = json.load(f)
+        except (OSError, ValueError) as e:
+            raise RuntimeError(f"Failed to load QSFP cabling file {cabling_path}: {e}") from e
+        all_ports = list(cabling)
+        optics_ports = [p for p, info in cabling.items() if info.get("is_copper") is False]
+        return all_ports, optics_ports
 
-        port_map = _load_platform_mapping(config_name)
+    @classmethod
+    def _split_filters(cls, filters: list[str]) -> tuple[list[str], list[str]]:
+        """Bucket filters by substring match against optics-only test names."""
+        copper_safe, optics_only = [], []
+        for f in filters:
+            bucket = optics_only if any(s in f for s in cls._OPTICS_ONLY_FILTER_SUBSTRINGS) else copper_safe
+            bucket.append(f)
+        return copper_safe, optics_only
+
+    def _build_cabled_config(self, base_config: dict, ports: list[str], port_map: dict) -> dict:
+        config = copy.deepcopy(base_config)
         cabled = []
-        for a_port, z_port in pairs.items():
-            info = port_map.get(a_port) or port_map.get(z_port)
+        for port in ports:
+            info = port_map.get(port)
             profile_id = info.profile_id if info else self._FALLBACK_PROFILE_ID
-            cabled.append({"aPortName": a_port, "zPortName": z_port, "profileID": profile_id})
-
+            cabled.append({"aPortName": port, "zPortName": port, "profileID": profile_id})
         config["qsfpTestConfig"]["cabledPortPairs"] = cabled
         # Skip discovery-time firmware upgrade: fails when fboss_firmware.yaml is missing.
         args = config.setdefault("defaultCommandLineArgs", {})
         args["firmware_upgrade_on_coldboot"] = "false"
         args["firmware_upgrade_on_tcvr_insert"] = "false"
-        self._upload_generated_config(config)
+        return config
+
+    @_enforce_min_failure_duration
+    def run_test(self, test_context, skip_tr_xml=False):
+        if not os.getenv(self._CABLING_ENV_VAR):
+            # No cabling signal (dev/standalone run): one pass, static share
+            # config, unsplit filter list, same as before.
+            return super().run_test(test_context, skip_tr_xml)
+        return self._run_cabling_aware(test_context, skip_tr_xml)
+
+    def _run_cabling_aware(self, test_context, skip_tr_xml):
+        self.setup(test_context)
+        model = _normalize_model(self.tc["model"])
+        all_ports, optics_ports = self._load_cabling(os.getenv(self._CABLING_ENV_VAR))
+        copper_safe, optics_only = self._split_filters(self.tc["filters"])
+
+        passes = []  # list of (label, filters, ports)
+        if copper_safe:
+            passes.append(("main", copper_safe, all_ports))
+        skipped = []  # list of (filter_pattern, reason)
+        if optics_only:
+            if optics_ports:
+                passes.append(("optics", optics_only, optics_ports))
+            else:
+                logger.info(
+                    "No optics/active-cabled ports on this DUT; skipping optics-only tests: %s",
+                    optics_only,
+                )
+                skipped.extend(
+                    (pattern, "no optical/active transceivers cabled on this DUT")
+                    for pattern in optics_only
+                )
+
+        if not passes and not skipped:
+            logger.warning("QsfpTestRunner: no filters to run")
+            return True
+
+        config_name = _LINK_QSFP_TEST_CONFIG_NAME.get(model, model)
+        base_path = _repo_dir(self._BASE_CONFIG_DIR) / f"{config_name}.materialized_JSON"
+        try:
+            with open(base_path, encoding="utf-8") as f:
+                base_config = json.load(f)
+        except (OSError, ValueError) as e:
+            raise RuntimeError(f"Failed to load QSFP base config {base_path}: {e}") from e
+        port_map = _load_platform_mapping(config_name)
+
+        original_filters = self.tc["filters"]
+        pass_results = []
+        ran_labels = []
+        pre_test_called = False
+        try:
+            for label, filters, ports in passes:
+                self.tc["filters"] = filters
+                config = self._build_cabled_config(base_config, ports, port_map)
+                self._upload_generated_config(config)
+                self.pre_test()  # fresh warm/cold-boot state wipe per pass
+                pre_test_called = True
+                log_local, xml_local = self._PASS_LOCAL_PATHS[label]
+                success = self._execute_test_binary(model, log_local, xml_local, skip_tr_xml)
+                pass_results.append(success)
+                ran_labels.append(label)
+                if not success:
+                    logger.error("QSFP %s pass failed; aborting remaining passes", label)
+                    for _, remaining_filters, _ in passes[len(ran_labels):]:
+                        skipped.extend(
+                            (pattern, "earlier pass failed; run aborted")
+                            for pattern in remaining_filters
+                        )
+                    break
+        finally:
+            self.tc["filters"] = original_filters
+            if pre_test_called:
+                self.post_test()
+
+        if not skip_tr_xml:
+            self._merge_junit_results(
+                [(label, *self._PASS_LOCAL_PATHS[label]) for label in ran_labels],
+                skipped=skipped,
+            )
+            self.normalize_test_results_file()
+
+        return all(pass_results)
 
     def test_args(self, model: str) -> str:
         if self._use_generated_config:
@@ -1010,7 +1174,7 @@ class LinkTestRunner(BaseHwTestRunner):
                 "subscribe_to_state_from_fsdb"
             ] = "false"
             with open(local_path, "w", encoding="utf-8") as f:
-                json.dump(qsfp, f)
+                json.dump(qsfp, f, indent=4)
             exit_status, output = self.scp_client.put_file(
                 local_path, self._REMOTE_QSFP_CONFIG_PATH
             )
