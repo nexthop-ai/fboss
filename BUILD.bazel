@@ -1,5 +1,5 @@
 load("@rules_shell//shell:sh_library.bzl", "sh_library")
-load("//fboss:fboss_build_types.bzl", "LOAD_FBOSS_BUILDER_CMD", "delete_build_products_in_ci", "fboss_unit_test", "free_up_disk_in_ci")
+load("//fboss:fboss_build_types.bzl", "FREE_UP_DISK_IN_CI_CMD", "LOAD_FBOSS_BUILDER_CMD", "delete_build_products_in_ci", "fboss_unit_test")
 load("//bazel_lib:heavy_genrule.bzl", "heavy_genrule")
 load("//bazel_lib:upload_artifact.bzl", "upload_build_artifact")
 
@@ -208,7 +208,7 @@ heavy_genrule(
         "fboss_platform_stack.tar",
         "fboss_platform_stack_tests.tar",
     ],
-    cmd = LOAD_FBOSS_BUILDER_CMD + free_up_disk_in_ci() + """
+    cmd = LOAD_FBOSS_BUILDER_CMD + FREE_UP_DISK_IN_CI_CMD + """
         pushd fboss/fboss-image
         jq --arg fud "${free_up_disk_arg}" '.["fboss-platform-stack"] = {"execute": (["../fboss/oss/scripts/build_fboss_stack.sh"] + (if $fud == "" then [] else [$fud] end) + ["platform"])}' nh-fboss-broadcom-xgs.json > platform-stack.json
         ./distro_cli/fboss-image build platform-stack.json fboss-platform-stack
@@ -300,7 +300,7 @@ heavy_genrule(
         "fboss_forwarding_stack_broadcom_xgs.tar",
         "fboss_forwarding_stack_tests_broadcom_xgs.tar",
     ],
-    cmd = LOAD_FBOSS_BUILDER_CMD + free_up_disk_in_ci() + """
+    cmd = LOAD_FBOSS_BUILDER_CMD + FREE_UP_DISK_IN_CI_CMD + """
         BUILD_DIR="fboss/fboss-image/.nh-broadcom-xgs"
         mkdir -p "${BUILD_DIR}"
         ln -f $(location distro_kernel_6.11.tar) "${BUILD_DIR}/distro_kernel_6.11.tar"
@@ -407,7 +407,7 @@ heavy_genrule(
         "fboss_forwarding_stack_broadcom_th6.tar",
         "fboss_forwarding_stack_tests_broadcom_th6.tar",
     ],
-    cmd = LOAD_FBOSS_BUILDER_CMD + free_up_disk_in_ci() + """
+    cmd = LOAD_FBOSS_BUILDER_CMD + FREE_UP_DISK_IN_CI_CMD + """
         BUILD_DIR="fboss/fboss-image/.nh-broadcom-th6"
         mkdir -p "${BUILD_DIR}"
         ln -f $(location distro_kernel_6.11.tar) "${BUILD_DIR}/distro_kernel_6.11.tar"
@@ -512,7 +512,7 @@ heavy_genrule(
         "fboss_forwarding_stack_cisco_s1.tar",
         "fboss_forwarding_stack_tests_cisco_s1.tar",
     ],
-    cmd = LOAD_FBOSS_BUILDER_CMD + free_up_disk_in_ci() + """
+    cmd = LOAD_FBOSS_BUILDER_CMD + FREE_UP_DISK_IN_CI_CMD + """
         BUILD_DIR="fboss/fboss-image/.nh-cisco-s1"
         mkdir -p "${BUILD_DIR}"
         ln -f $(location distro_kernel_6.11.tar) "${BUILD_DIR}/distro_kernel_6.11.tar"
