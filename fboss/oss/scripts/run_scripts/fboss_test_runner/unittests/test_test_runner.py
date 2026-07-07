@@ -8,6 +8,7 @@ by _get_tests_to_run via args.filter_file."""
 
 import os
 import tempfile
+import xml.etree.ElementTree as ET
 from unittest.mock import MagicMock, patch
 
 from fboss_test_runner.result_types import GtestResult, GtestStatus, RunOutcome
@@ -134,9 +135,7 @@ class TestRunTestGtestFallback:
                 runner,
                 "_capture_subprocess",
                 new=_make_capture_writing(
-                    b"[  SKIPPED ] HwFooTest.Bar (5 ms)\n",
-                    runner,
-                    _STUB_GTEST_XML,
+                    b"[  SKIPPED ] HwFooTest.Bar (5 ms)\n", runner, _STUB_GTEST_XML
                 ),
             ),
         ):
@@ -452,3 +451,71 @@ class TestGetTestsToRunFilter:
         assert "HwRouteTest.Add" in second_filter
         assert "HwVlanTest.Delete" not in second_filter
         assert result == ["HwRouteTest.Add"]
+
+    def test_skipped_known_bad_names_are_recorded(self, runner):
+        # All dropped -> empty run list, but names still captured.
+        listed = ["HwVlanTest.Delete", "HwMirrorTest.Span"]
+
+        def fake_is_known_bad(test):
+            return test == "HwVlanTest.Delete"
+
+        def fake_is_unsupported(test):
+            return test == "HwMirrorTest.Span"
+
+        args = self._make_args()
+        with (
+            patch("run_test.args", new=args, create=True),
+            patch.object(runner, "_list_tests_to_run", return_value=listed),
+            patch.object(runner, "_is_known_bad_test", side_effect=fake_is_known_bad),
+            patch.object(
+                runner, "_is_unsupported_test", side_effect=fake_is_unsupported
+            ),
+        ):
+            result = runner._get_tests_to_run()
+
+        assert result == []
+        assert runner._skipped_known_bad_tests == [
+            "HwVlanTest.Delete",
+            "HwMirrorTest.Span",
+        ]
+
+
+class TestWriteResultsRecordsSkipped:
+    """Filtered-out known-bad/unsupported tests are recorded as <skipped>."""
+
+    def test_all_filtered_records_skipped_count_and_cases(self, runner, tmp_path):
+        runner.TESTRESULT_FILE = str(tmp_path / "tr.xml")
+        runner._skipped_known_bad_tests = ["HwVlanTest.Delete", "HwMirrorTest.Span"]
+
+        runner._write_results_to_xml([])  # nothing ran
+
+        root = ET.parse(runner.TESTRESULT_FILE).getroot()
+        suite = root.find("testsuite")
+        assert suite.get("tests") == "2"
+        assert suite.get("skipped") == "2"
+        assert suite.get("failures") == "0"
+        assert suite.get("errors") == "0"
+
+        skipped_cases = [
+            tc for tc in suite.iter("testcase") if tc.find("skipped") is not None
+        ]
+        assert len(skipped_cases) == 2
+        recorded = {(tc.get("classname"), tc.get("name")) for tc in skipped_cases}
+        assert recorded == {("HwVlanTest", "Delete"), ("HwMirrorTest", "Span")}
+
+    def test_skipped_added_on_top_of_real_results(self, runner, tmp_path):
+        runner.TESTRESULT_FILE = str(tmp_path / "tr.xml")
+        runner._skipped_known_bad_tests = ["HwVlanTest.Delete"]
+
+        # One real passing test alongside one filtered-out known-bad test.
+        ran = (
+            '<testsuites tests="1" failures="0" errors="0" time="0.1">'
+            '<testsuite name="HwFooTest" tests="1" failures="0" skipped="0" errors="0" time="0.1">'
+            '<testcase name="Bar" classname="HwFooTest" time="0.1" status="run"/>'
+            "</testsuite></testsuites>"
+        )
+        runner._write_results_to_xml([ran])
+
+        suite = ET.parse(runner.TESTRESULT_FILE).getroot().find("testsuite")
+        assert suite.get("tests") == "2"
+        assert suite.get("skipped") == "1"

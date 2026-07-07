@@ -63,9 +63,7 @@ from fboss_test_runner.reporters.console_reporter import ConsoleReporter
 from fboss_test_runner.reporters.csv_reporter import CsvReporter
 from fboss_test_runner.result_types import GtestResult, GtestStatus, RunOutcome
 from fboss_test_runner.runners.utils import load_from_file
-from fboss_test_runner.services.fboss_agent_utils import (
-    FBOSS_AGENT_VOLATILE_STATE_DIR,
-)
+from fboss_test_runner.services.fboss_agent_utils import FBOSS_AGENT_VOLATILE_STATE_DIR
 
 _YELLOW = "\033[1;33m"
 _RED = "\033[1;31m"
@@ -154,6 +152,8 @@ class TestRunner(abc.ABC):
     def __init__(self) -> None:
         self._known_bad_test_regexes: list[str] | None = None
         self._unsupported_test_regexes: list[str] | None = None
+        # Known-bad/unsupported tests dropped pre-run; recorded as <skipped>.
+        self._skipped_known_bad_tests: list[str] = []
         self.env_var: dict[str, str] = dict(os.environ)
 
     def _get_common_gflags(self) -> list[str]:
@@ -236,9 +236,7 @@ class TestRunner(abc.ABC):
             help="Only lists the tests, do not run any test",
         )
         sub_parser.add_argument(
-            OPT_ARG_CONFIG_FILE,
-            type=str,
-            help="run with the specified config file",
+            OPT_ARG_CONFIG_FILE, type=str, help="run with the specified config file"
         )
         sub_parser.add_argument(
             OPT_ARG_SKIP_KNOWN_BAD_TESTS,
@@ -395,10 +393,7 @@ class TestRunner(abc.ABC):
         return run_cmd + flags if flags else run_cmd
 
     def _get_test_regexes_from_file(
-        self,
-        file_path: str,
-        test_dict_key: str,
-        keys_to_try: list[str],
+        self, file_path: str, test_dict_key: str, keys_to_try: list[str]
     ) -> list[str]:
         """
         Helper function to extract test regexes from a JSON file.
@@ -570,11 +565,13 @@ class TestRunner(abc.ABC):
         else:
             test_names = self._list_tests_to_run("*")
         test_filter = ""
+        self._skipped_known_bad_tests = []
         for test_name in test_names:
             if self._is_known_bad_test(test_name) or self._is_unsupported_test(
                 test_name
             ):
                 print(f"  >> SKIPPING (known bad/unsupported): {test_name}")
+                self._skipped_known_bad_tests.append(test_name)
                 continue
             test_filter += f"{test_name}:"
         if not test_filter:
@@ -1002,6 +999,11 @@ class TestRunner(abc.ABC):
         # Aggregate test information using proper XML parsing
         info = self._aggregate_testsuite_info(test_results)
 
+        # Fold pre-run-dropped known-bad/unsupported tests into the counts.
+        num_filtered_skipped = len(self._skipped_known_bad_tests)
+        info["tests"] += num_filtered_skipped
+        info["skipped"] += num_filtered_skipped
+
         # Build XML tree programmatically
         testsuites = ET.Element("testsuites")
         testsuite = ET.SubElement(
@@ -1024,6 +1026,24 @@ class TestRunner(abc.ABC):
                 continue
             for testcase in root.iter("testcase"):
                 testsuite.append(testcase)
+
+        for full_name in self._skipped_known_bad_tests:
+            suite_name, _, case_name = full_name.partition(".")
+            if not case_name:
+                suite_name, case_name = "Unknown", full_name
+            testcase = ET.SubElement(
+                testsuite,
+                "testcase",
+                name=case_name,
+                classname=suite_name,
+                time="0.0",
+                status="notrun",
+            )
+            ET.SubElement(
+                testcase,
+                "skipped",
+                message="known bad or unsupported test, filtered out before running",
+            )
 
         # Pretty print with indentation
         ET.indent(testsuites)
