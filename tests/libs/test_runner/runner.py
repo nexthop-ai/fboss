@@ -214,7 +214,6 @@ def _normalize_model(model: str) -> str:
     """Shorten device-DB model name to FBOSS codename form, e.g. NH-4010-F -> nh4010f."""
     return model.lower().replace("-", "")
 
-
 def _repo_dir(relative: Path) -> Path:
     for parent in Path(__file__).resolve().parents:
         if (parent / relative).is_dir():
@@ -332,6 +331,7 @@ class BaseHwTestRunner(ABC):
         # HWSKU environment variable deprecated in favor of PRODUCT_MODEL
         self.tc["model"] = os.getenv("HWSKU", os.getenv("PRODUCT_MODEL"))
         self.tc["filepath"] = os.getenv("TESTFILE")
+        self.tc["gtest_filter"] = os.getenv("TESTFILTER")
         logger.info("dut %s", self.tc["dut"])
         logger.info("filepath %s", self.tc["filepath"])
 
@@ -639,7 +639,10 @@ class BaseHwTestRunner(ABC):
     def set_filters(self, src_filepath, dst_filepath):
         """Create and upload test filter file to DUT."""
         logger.debug("Setting filters")
-        filters = self.tc["filters"]
+        # tc["filter"] replaces the per-test-file default filter list with
+        # a single gtest-style expression
+        override_filter = self.tc.get("gtest_filter")
+        filters = [override_filter] if override_filter else self.tc["filters"]
         # create filters file
         with open(src_filepath, "w", encoding="utf-8") as f:
             for test_filter in filters:

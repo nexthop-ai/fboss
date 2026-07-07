@@ -22,6 +22,7 @@ build dir:
 | `FBOSS_FORWARDING_LOCAL_DIR` / `FBOSS_PLATFORM_LOCAL_DIR` | orchestrator: a locally-built CMake `build/fboss` dir | the runner packs the slice straight from these binaries + the repo's `share/` configs (no staging copy) |
 | `FBOSS_BUILD_ID` | `--test-build-id` (Nexis) | cache/marker namespace for the Nexis path. (The local path derives its namespace from a fingerprint of the runner's uploaded sources — see [Local namespace](#local-namespace).) |
 | `DUT`, `DUTUSERNAME`, `DUTPASSWORD`, `HWSKU`, `TESTFILE` | testbed inventory | SSH/SCP to the DUT + drive `run_test.py` |
+| `TESTFILTER` | `--test-filter` (nhtests-run) | gtest-style expression for `run_test.py`  |
 
 The orchestrator resolves *which* source to use — explicit `--test-build-id` →
 local CMake build → build_id stamped on the running DUT — and forwards **only**
