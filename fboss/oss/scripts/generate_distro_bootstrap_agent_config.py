@@ -56,11 +56,7 @@ PROFILE_SPEED: dict[int, int] = {
 
 OPTICAL_PROFILES = {1, 3, 8, 9, 10, 23, 25, 26, 37, 38, 39, 42, 47, 54, 55, 56, 63, 64}
 
-CORE_TYPE_TO_ASIC: dict[str, int] = {
-    "TH5_NIF": 13,
-    "J3_NIF": 15,
-    "TH6_NIF": 18,
-}
+CORE_TYPE_TO_ASIC: dict[str, int] = {"TH5_NIF": 13, "J3_NIF": 15, "TH6_NIF": 18}
 
 DEFAULT_ASIC_TYPE = 13
 
@@ -87,7 +83,7 @@ PLATFORM_CODENAME: dict[str, str] = {
     # _resolve_codename() matches "golden_eagle", "goldeneagle", "Golden-Eagle", etc.
     "goldeneagle": "nh4010f",
     "crownedeagle": "wedge800bnhp",
-    "friscoeagle": "wedge800cact",
+    "friscoeagle": "wedge800cnhp",
     "blackkite": "nh4220f",
 }
 
@@ -154,9 +150,7 @@ def _find_hw_test_config(
 
 
 def _load_asic_config(
-    source: pathlib.Path | None,
-    platform: str,
-    script_path: pathlib.Path,
+    source: pathlib.Path | None, platform: str, script_path: pathlib.Path
 ) -> dict:
     """Load ASIC config from a materialized JSON or standalone YAML file.
 
@@ -564,13 +558,10 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default_platforms_dir = None
 
     parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     parser.add_argument(
-        "--platform",
-        required=True,
-        help="Platform name (e.g. nh4010f, wedge800bnhp)",
+        "--platform", required=True, help="Platform name (e.g. nh4010f, wedge800bnhp)"
     )
     parser.add_argument(
         "--platforms-dir",
@@ -583,9 +574,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Path to materialized JSON or YAML with ASIC config (auto-detected)",
     )
     parser.add_argument(
-        "--output",
-        default="-",
-        help="Output file path (default: stdout)",
+        "--output", default="-", help="Output file path (default: stdout)"
     )
     return parser.parse_args(argv)
 
