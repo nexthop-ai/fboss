@@ -313,7 +313,14 @@ class SaiObject {
 
   ~SaiObject() {
     if (live_) {
-      remove();
+      // A SAI remove failing in this destructor (e.g. OBJECT IN USE) must not
+      // escape, or it would std::terminate the process.
+      try {
+        remove();
+      } catch (const std::exception& ex) {
+        XLOG(ERR) << "Suppressed exception during SaiObject teardown: "
+                  << ex.what();
+      }
     }
     live_ = false;
   }
