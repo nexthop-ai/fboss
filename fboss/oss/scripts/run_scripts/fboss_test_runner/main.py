@@ -17,6 +17,7 @@ from fboss_test_runner.constants import (
     SUB_CMD_BENCHMARK,
     SUB_CMD_BSP,
     SUB_CMD_FBOSS2_INTEGRATION,
+    SUB_CMD_LED,
     SUB_CMD_LINK,
     SUB_CMD_PLATFORM,
     SUB_CMD_QSFP,
@@ -31,6 +32,7 @@ from fboss_test_runner.runners.bsp_test_runner import BspTestRunner
 from fboss_test_runner.runners.fboss2_integration_test_runner import (
     Fboss2IntegrationTestRunner,
 )
+from fboss_test_runner.runners.led_test_runner import LedTestRunner
 from fboss_test_runner.runners.link_test_runner import LinkTestRunner
 from fboss_test_runner.runners.platform_services_test_runner import (
     PlatformServicesTestRunner,
@@ -51,9 +53,7 @@ def main() -> None:
     os.chdir("/opt/fboss")
     setup_fboss_env()
 
-    ap = ArgumentParser(
-        description="FBOSS Hardware Test Runner",
-    )
+    ap = ArgumentParser(description="FBOSS Hardware Test Runner")
     subparsers = ap.add_subparsers(dest="command", title="test types")
 
     def _register_runner(
@@ -69,6 +69,7 @@ def main() -> None:
     _register_runner(SUB_CMD_SAI, "run sai tests", SaiTestRunner)
     _register_runner(SUB_CMD_QSFP, "run qsfp tests", QsfpTestRunner)
     _register_runner(SUB_CMD_LINK, "run link tests", LinkTestRunner)
+    _register_runner(SUB_CMD_LED, "run led service tests", LedTestRunner)
     _register_runner(SUB_CMD_SAI_AGENT, "run sai agent tests", SaiAgentTestRunner)
     _register_runner(
         SUB_CMD_SAI_AGENT_SCALE, "run sai agent scale tests", SaiAgentScaleTestRunner

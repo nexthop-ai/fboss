@@ -907,6 +907,22 @@ class SaiTestRunner(BaseHwTestRunner):
     REQUIRED_PATHS = (*BINARIES, *_STACK_SHARE[STACK])
 
 
+class LedTestRunner(BaseHwTestRunner):
+    """Runner for LED service hardware tests.
+
+    led_service_hw_test ships in the forwarding tarball. It reads its platform
+    from /etc/coop/led.conf on the DUT, so no --config is passed — run_test.py
+    led just runs the binary against the wrapper's filter file. Only the binary
+    is sliced; the runner needs none of the forwarding share/ configs.
+    """
+
+    def test_args(self, model: str) -> str:  # noqa: ARG002
+        return "led"
+    STACK = _STACK_FORWARDING
+    BINARIES = ("bin/led_service_hw_test",)
+    REQUIRED_PATHS = BINARIES
+
+
 class SaiAgentTestRunner(BaseHwTestRunner):
     """Runner for SAI agent tests."""
 

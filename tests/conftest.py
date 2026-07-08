@@ -4,6 +4,7 @@ import pytest
 from tests.libs.test_runner.runner import (
     BspTestRunner,
     Fboss2IntegrationTestRunner,
+    LedTestRunner,
     LinkTestRunner,
     PlatformTestRunner,
     QsfpTestRunner,
@@ -50,6 +51,14 @@ def qsfp_test_runner():
 def link_test_runner():
     """Fixture for link tests."""
     runner = LinkTestRunner()
+    yield runner
+    runner.close()
+
+
+@pytest.fixture
+def led_service_hw_test_runner():
+    """Fixture for LED service hardware tests."""
+    runner = LedTestRunner()
     yield runner
     runner.close()
 

@@ -44,6 +44,7 @@ SUB_CMD_SAI_AGENT_SCALE = "sai_agent_scale"
 SUB_CMD_SAI_BINARY = "sai_test-sai_impl"
 SUB_CMD_SAI_INVARIANT_AGENT = "sai_invariant_agent"
 SUB_CMD_PLATFORM = "platform"
+SUB_CMD_LED = "led"
 SUB_CMD_FBOSS2_INTEGRATION = "fboss2_integration"
 SUB_CMD_BENCHMARK = "benchmark"
 
@@ -58,6 +59,7 @@ SUB_ARG_NUM_NPUS = "--num-npus"
 # in platform_services_test_runner.py since they are only used there.
 SUB_ARG_PLATFORM_MANAGER_HW_TEST = "platform_manager_hw_test"
 SUB_ARG_BSP_HW_TEST = "bsp_tests"
+SUB_ARG_LED_HW_TEST = "led_service_hw_test"
 
 XGS_SIMULATOR_ASICS = ["th3", "th4", "th4_b0", "th5"]
 DNX_SIMULATOR_ASICS = ["j3"]
