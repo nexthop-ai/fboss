@@ -201,23 +201,41 @@ def _find_getdeps_libs(
     return libs
 
 
+# Non-zero sentinel: the rpm/tar paths treat SOURCE_DATE_EPOCH=0 as unset.
+_SOURCE_DATE_EPOCH = int(os.environ.get("SOURCE_DATE_EPOCH") or 1)
+
+
+def _normalize_tarinfo(ti: tarfile.TarInfo) -> tarfile.TarInfo:
+    """Zero volatile metadata for reproducible archives."""
+    ti.mtime = _SOURCE_DATE_EPOCH
+    ti.uid = ti.gid = 0
+    ti.uname = ti.gname = ""
+    if ti.isdir() or ti.mode & 0o111:
+        ti.mode = 0o755
+    else:
+        ti.mode = 0o644
+    return ti
+
+
 def write_tar(filename: str, contents: dict[str, str]) -> None:
     if not contents:
         return
 
     print(f"Creating {filename}...")
     with tarfile.open(filename, "w") as tar:
-        for src, dest in contents.items():
+        # Sort by (archive path, source) for a stable, total member order.
+        for src, dest in sorted(contents.items(), key=lambda kv: (kv[1], kv[0])):
             if not os.path.exists(src):
                 print(f"Warning: {src} does not exist")
                 continue
-            tar.add(src, dest)
+            tar.add(src, dest, filter=_normalize_tarinfo)
 
         # Add lib64 -> lib symlink so binaries with RPATH/RUNPATH pointing to
         # lib64/ can find libraries packaged under lib/ (e.g. fboss2-dev).
         tarinfo = tarfile.TarInfo(name="lib64")
         tarinfo.type = tarfile.SYMTYPE
         tarinfo.linkname = "lib"
+        _normalize_tarinfo(tarinfo)
         tar.addfile(tarinfo)
 
 
