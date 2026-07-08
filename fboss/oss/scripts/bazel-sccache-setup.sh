@@ -72,12 +72,28 @@ export SCCACHE_LOG=info
 # (The cmake build bumps this to 2700 for the same reason; see nhfboss-common.sh.)
 export SCCACHE_IDLE_TIMEOUT=0
 
+# Strip the varying absolute prefixes (Bazel execroot, getdeps install root) from
+# the sccache key. Read by the server at start-up, so export before start; only
+# existing absolute paths (relative/missing => server refuses to start).
+SCCACHE_BASEDIRS=""
+EXECROOT="$(bazel info execution_root 2>/dev/null || true)"
+GETDEPS_INSTALL_DIR="${GETDEPS_INSTALL_DIR:-/var/FBOSS/tmp_bld_dir/installed}"
+for d in "$EXECROOT" "$GETDEPS_INSTALL_DIR"; do
+  case "$d" in
+  /*) [ -d "$d" ] && SCCACHE_BASEDIRS="${SCCACHE_BASEDIRS:+$SCCACHE_BASEDIRS:}$d" ;;
+  esac
+done
+export SCCACHE_BASEDIRS
+
 # If sccache is already running in distributed mode with the right config, skip
 # restart.  --dist-status reports {"SchedulerStatus":[...]} when the server is
 # up and connected to the scheduler (and {"...":"Disabled"} otherwise), so grep
 # for SchedulerStatus.  Getting this wrong means we tear down and restart a
 # perfectly good warm server on every build, reopening the cold-start race.
-if [ -f "$SCCACHE_RC" ] && SCCACHE_CONF="$SCCACHE_CONF" sccache --dist-status 2>/dev/null | grep -q SchedulerStatus; then
+# Restart on basedirs change: the server reads them only at start-up.
+BASEDIRS_SENTINEL="$BAZEL_D/sccache-basedirs"
+STORED_BASEDIRS="$(cat "$BASEDIRS_SENTINEL" 2>/dev/null || true)"
+if [ -f "$SCCACHE_RC" ] && [ "$STORED_BASEDIRS" = "$SCCACHE_BASEDIRS" ] && SCCACHE_CONF="$SCCACHE_CONF" sccache --dist-status 2>/dev/null | grep -q SchedulerStatus; then
   echo "sccache distributed compilation already active"
   exit 0
 fi
@@ -148,6 +164,22 @@ build --local_resources=cpu=$JOBS
 # jobs natively -- no flock wrapper needed.
 build --local_resources=memory=$SERVER_RAM_MB
 EOF
+
+# Emit -ffile-prefix-map for stable basedirs so cached objects are byte-identical
+# across build roots. Skip --action_env and the per-user Bazel execroot: both put a
+# per-user path in the Bazel action key and break CI/dev cache sharing. The server
+# already read SCCACHE_BASEDIRS at start-up.
+if [ -n "$SCCACHE_BASEDIRS" ]; then
+  IFS=':' read -ra basedirs <<<"$SCCACHE_BASEDIRS"
+  for d in "${basedirs[@]}"; do
+    [ "$d" = "$EXECROOT" ] && continue
+    echo "build --copt=-ffile-prefix-map=$d=." >>"$SCCACHE_RC"
+    echo "build --host_copt=-ffile-prefix-map=$d=." >>"$SCCACHE_RC"
+  done
+fi
+
+# Record basedirs for the change check above.
+printf '%s' "$SCCACHE_BASEDIRS" >"$BASEDIRS_SENTINEL"
 
 # Start the Bazel server (if not already running) so we can set its
 # oom_score_adj. All processes Bazel forks (genrules, local actions) inherit
