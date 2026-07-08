@@ -161,6 +161,7 @@ std::unique_ptr<PlatformMapping> createGenericSaiPlatformMapping(
     case PlatformType::PLATFORM_TAHANSB800BC:
       return std::make_unique<Tahansb800bcPlatformMapping>();
     case PlatformType::PLATFORM_WEDGE800CACT:
+    case PlatformType::PLATFORM_WEDGE800CNHP:
       return std::make_unique<Wedge800CACTPlatformMapping>();
     case PlatformType::PLATFORM_YANGRA:
       return std::make_unique<YangraPlatformMapping>();
@@ -315,6 +316,7 @@ std::unique_ptr<SaiPlatform> chooseSaiPlatform(
         std::move(productInfo), localMac, platformMappingStr);
   } else if (
       productInfo->getType() == PlatformType::PLATFORM_WEDGE800CACT ||
+      productInfo->getType() == PlatformType::PLATFORM_WEDGE800CNHP ||
       productInfo->getType() == PlatformType::PLATFORM_M5120CSC ||
       productInfo->getType() == PlatformType::PLATFORM_MORGAN800CC) {
     return createGenericSaiTajoPlatform(

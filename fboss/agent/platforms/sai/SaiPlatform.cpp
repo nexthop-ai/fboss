@@ -117,6 +117,7 @@ bool useGenericSaiBcmPlatformPort(PlatformType platformMode) {
 
 bool useGenericSaiTajoPlatformPort(PlatformType platformMode) {
   return platformMode == PlatformType::PLATFORM_WEDGE800CACT ||
+      platformMode == PlatformType::PLATFORM_WEDGE800CNHP ||
       platformMode == PlatformType::PLATFORM_M5120CSC ||
       platformMode == PlatformType::PLATFORM_MORGAN800CC;
 }
