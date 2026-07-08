@@ -25,6 +25,7 @@ def sai_hw_test_impl():
             "HwTestFlowletUtilsThriftHandler.cpp",
             "HwTestMirrorUtilsThriftHandler.cpp",
             "HwTestNeighborUtilsThriftHandler.cpp",
+            "HwTestPfcUtilsThriftHandler.cpp",
             "HwTestPortUtilsThriftHandler.cpp",
             "HwTestPtpTcUtilsThriftHandler.cpp",
             "HwTestRouteUtilsThriftHandler.cpp",
@@ -38,11 +39,21 @@ def sai_hw_test_impl():
             # in the corresponding ThriftHandler file.  Excluded (duplicates):
             # HwTestAclUtils, HwTestFlowletSwitchingUtils, HwTestMirrorUtils,
             # HwTestRouteUtils, HwTestTamUtils.
+            # SaiPortUtils.cpp and PhyCapabilities.cpp are required by
+            # HwTestPortUtilsThriftHandler.cpp (verifyInterfaceMode, verifyFec,
+            # rxSignalDetectSupportedInSdk, etc.) but were missing here, which
+            # only surfaces as a runtime "undefined symbol" error since these
+            # symbols aren't referenced at link time from anywhere else in
+            # this binary. See sai_port_utils / sai_phy_capabilities in
+            # cmake/AgentHwSaiHwTest.cmake for the equivalent CMake targets.
             "HwTestAqmUtils.cpp",
             "HwTestEcmpUtils.cpp",
             "HwTestFabricUtils.cpp",
             "HwTestNeighborUtils.cpp",
+            "HwTestPfcUtils.cpp",
             "HwTestPortUtils.cpp",
+            "SaiPortUtils.cpp",
+            "PhyCapabilities.cpp",
             "HwTestPtpTcUtils.cpp",
             "HwTestSwitchingModeUtils.cpp",
             "HwTestTeFlowUtils.cpp",
@@ -53,9 +64,11 @@ def sai_hw_test_impl():
             "//fboss/agent/hw/sai/diag:diag_lib",
             "//fboss/agent/hw/sai/switch:sai_switch",
             "//fboss/agent/hw/test:hw_test_thrift_handler_h",
+            "//fboss/agent/hw/test:hw_test_pfc_utils",
             "//fboss/agent/if:agent_hw_test_ctrl",
             "//fboss/agent/platforms/common/utils:wedge-led-utils",
             "//fboss/agent/test/utils:acl_test_utils",
+            "@googletest//:googletest",
         ],
         visibility = ["//visibility:public"],
     )
