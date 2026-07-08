@@ -47,11 +47,13 @@ meson install -C builddir --destdir="%{buildroot}"
 mkdir -p "%{buildroot}/usr/bin"
 ln -sf ../sbin/flashrom "%{buildroot}/usr/bin/flashrom"
 
+# Drop unused static archive: rpm's strip re-timestamps it, breaking reproducibility.
+rm -f "%{buildroot}/usr/lib64/libflashrom.a"
+
 %files
 /usr/sbin/flashrom
 /usr/bin/flashrom
 /usr/include/libflashrom.h
-/usr/lib64/libflashrom.a
 /usr/lib64/libflashrom.so
 /usr/lib64/libflashrom.so.1
 /usr/lib64/libflashrom.so.1.0.0

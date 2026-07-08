@@ -30,7 +30,13 @@ python3 -m venv venv
 venv/bin/pip install meson ninja
 export PATH="${TOPDIR}/venv/bin:${PATH}"
 
-rpmbuild -bb --define "_topdir ${TOPDIR}" "${SPEC_FILE}"
+# Reproducible RPM: pin BUILDTIME + mtimes. :-1 because rpm treats 0 as unset.
+export SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH:-1}"
+rpmbuild -bb \
+  --define "_topdir ${TOPDIR}" \
+  --define "use_source_date_epoch_as_buildtime 1" \
+  --define "clamp_mtime_to_source_date_epoch 1" \
+  "${SPEC_FILE}"
 
 # Copy the resulting RPM to /output with a deterministic name
 # (no %{dist} in Release to keep the filename stable across builds).
