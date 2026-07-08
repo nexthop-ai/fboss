@@ -19,6 +19,10 @@ const std::string kTahan800bc = "tahan800bc";
 const std::string kBlackwolf800banw = "blackwolf800banw";
 const std::string kSample = "sample";
 const std::string kM4062nhp = "m4062nhp";
+const std::string kWedge800bact = "wedge800bact";
+const std::string kWedge800bnhp = "wedge800bnhp";
+const std::string kWedge800cact = "wedge800cact";
+const std::string kWedge800cnhp = "wedge800cnhp";
 const std::string kNonExistentPlatform = "nonExistentPlatform";
 } // namespace
 
@@ -89,4 +93,38 @@ TEST(ConfigLibTest, Basic) {
   EXPECT_NO_THROW(ConfigLib().getShowtechConfig(kSample));
   EXPECT_THROW(
       ConfigLib().getShowtechConfig(kNonExistentPlatform), std::out_of_range);
+}
+
+TEST(ConfigLibTest, Wedge800bnhpReusesWedge800bactConfig) {
+  // WEDGE800BNHP is distinct hardware that reuses WEDGE800BACT's config.
+  EXPECT_EQ(
+      ConfigLib().getPlatformManagerConfig(kWedge800bnhp),
+      ConfigLib().getPlatformManagerConfig(kWedge800bact));
+  EXPECT_EQ(
+      ConfigLib().getSensorServiceConfig(kWedge800bnhp),
+      ConfigLib().getSensorServiceConfig(kWedge800bact));
+}
+
+TEST(ConfigLibTest, Wedge800cnhpReusesWedge800cactConfig) {
+  // WEDGE800CNHP is distinct hardware that reuses WEDGE800CACT's config.
+  EXPECT_EQ(
+      ConfigLib().getPlatformManagerConfig(kWedge800cnhp),
+      ConfigLib().getPlatformManagerConfig(kWedge800cact));
+  EXPECT_EQ(
+      ConfigLib().getSensorServiceConfig(kWedge800cnhp),
+      ConfigLib().getSensorServiceConfig(kWedge800cact));
+}
+
+TEST(ConfigLibTest, CanonicalConfigPlatformNameResolvesAlias) {
+  // An aliased platform resolves to the platform whose config it reuses.
+  EXPECT_EQ(
+      ConfigLib::canonicalConfigPlatformName("WEDGE800BNHP"), "WEDGE800BACT");
+  EXPECT_EQ(
+      ConfigLib::canonicalConfigPlatformName("WEDGE800CNHP"), "WEDGE800CACT");
+  EXPECT_EQ(
+      ConfigLib::canonicalConfigPlatformName("wedge800cnhp"), "WEDGE800CACT");
+  // A non-aliased platform is returned unchanged, normalized to uppercase.
+  EXPECT_EQ(
+      ConfigLib::canonicalConfigPlatformName("WEDGE800CACT"), "WEDGE800CACT");
+  EXPECT_EQ(ConfigLib::canonicalConfigPlatformName("montblanc"), "MONTBLANC");
 }
