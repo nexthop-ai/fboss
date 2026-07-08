@@ -132,9 +132,8 @@ if [[ ${BUILD_TYPE:-} == "Debug" ]]; then
   # 2 link jobs on 64GB VM peak at 56GB of RAM
   _computed_link_jobs=$(jobs_for_ram 48 8)
 else
-  # Measured: mold link RSS is flat ~27MB -> link parallelism is CPU-bound, not
-  # RAM-bound, so use nproc.
-  _computed_link_jobs=$(nproc)
+  # 2 works well on 24GB and 32GB VMs.
+  _computed_link_jobs=$(jobs_for_ram 11)
 fi
 LINK_JOBS=${NHFBOSS_LINK_JOBS:-$_computed_link_jobs}
 if [ $LINK_JOBS -eq 0 ]; then

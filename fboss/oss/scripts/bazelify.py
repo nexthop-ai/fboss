@@ -1430,9 +1430,6 @@ cc_library(
     name = "sai_impl",
     srcs = glob(["lib/*.a", "lib64/*.a"], allow_empty = True),
     deps = {full_deps},
-    # SAI blob is non-PIC + needs C libyaml; -no-pie required (mold rejects the
-    # absolute relocations lld tolerates). Propagates to every SAI binary.
-    linkopts = ["-no-pie", "-lyaml"],
     visibility = ["//visibility:public"],
     linkstatic = True,
 )

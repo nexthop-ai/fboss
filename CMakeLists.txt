@@ -233,18 +233,9 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-constexpr")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unneeded-internal-declaration")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-nullability-completeness")
-  # mold linker (low link RAM). -no-pie: prebuilt SAI blob is non-PIC.
-  # --allow-multiple-definition (NH-only): tolerate the fsdb/agent duplicate
-  # stat_publish_interval_ms DEFINE that lld's lazy archive resolution allowed;
-  # keeps fsdb/server/Server.cpp identical to upstream.
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=mold -no-pie -Wl,--allow-multiple-definition")
-  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=mold -Wl,--allow-multiple-definition")
-  if(BUILD_SAI_FAKE)
-    # mold discards folly's weak jemalloc refs under sai_switch's ignore-all, so the fake
-    # agent calls a null nallocx under jemalloc and SIGSEGVs at boot; keep weak undefs
-    # dynamic. Gated to fake: real-SAI builds would hit a copy-reloc and don't use these syms.
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-z,dynamic-undefined-weak")
-  endif()
+  # Use lld linker and disable PIE
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld -no-pie")
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=lld")
   # Clang-specific warnings
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-exception-parameter")
 endif()
