@@ -13,7 +13,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "fboss/cli/fboss2/commands/config/hostname/CmdConfigHostname.h"
+#include "fboss/cli/fboss2/commands/config/switch/hostname/CmdConfigHostname.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/test/config/CmdConfigTestBase.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
@@ -34,7 +34,7 @@ class CmdConfigHostnameTestFixture : public CmdConfigTestBase {
 })") {}
 
  protected:
-  const std::string cmdPrefix_ = "config hostname";
+  const std::string cmdPrefix_ = "config switch hostname";
 };
 
 class CmdConfigHostnameAbsentTestFixture : public CmdConfigTestBase {
@@ -47,7 +47,7 @@ class CmdConfigHostnameAbsentTestFixture : public CmdConfigTestBase {
 })") {}
 
  protected:
-  const std::string cmdPrefix_ = "config hostname";
+  const std::string cmdPrefix_ = "config switch hostname";
 };
 
 // ==============================================================================
@@ -133,7 +133,7 @@ TEST_F(CmdConfigHostnameTestFixture, alreadySet) {
 // ==============================================================================
 
 TEST_F(CmdConfigHostnameAbsentTestFixture, setNewHostnameWhenAbsent) {
-  setupTestableConfigSession("config hostname", "newswitch.example.com");
+  setupTestableConfigSession("config switch hostname", "newswitch.example.com");
   CmdConfigHostname cmd;
   HostInfo hostInfo("testhost");
   HostnameConfigArgs arg({"newswitch.example.com"});

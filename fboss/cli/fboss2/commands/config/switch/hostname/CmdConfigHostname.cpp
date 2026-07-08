@@ -8,7 +8,7 @@
  *
  */
 
-#include "fboss/cli/fboss2/commands/config/hostname/CmdConfigHostname.h"
+#include "fboss/cli/fboss2/commands/config/switch/hostname/CmdConfigHostname.h"
 
 #include "fboss/cli/fboss2/CmdHandler.cpp" // NOLINT(facebook-unused-include-check)
 

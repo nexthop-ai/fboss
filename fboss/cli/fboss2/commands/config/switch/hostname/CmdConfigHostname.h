@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "fboss/cli/fboss2/CmdHandler.h"
+#include "fboss/cli/fboss2/commands/config/switch/CmdConfigSwitch.h"
 
 namespace facebook::fboss {
 
@@ -29,6 +30,7 @@ class HostnameConfigArgs : public utils::BaseObjectArgType<std::string> {
 };
 
 struct CmdConfigHostnameTraits : public WriteCommandTraits {
+  using ParentCmd = CmdConfigSwitch;
   static void addCliArg(CLI::App& cmd, std::vector<std::string>& args) {
     cmd.add_option("hostname", args, "Switch hostname")
         ->required()
