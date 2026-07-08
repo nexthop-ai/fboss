@@ -1,0 +1,327 @@
+{
+  "platformName": "NH5010F",
+  "rootPmUnitName": "SCM",
+  "rootSlotType": "SCM_SLOT",
+  "slotTypeConfigs": {
+    "SCM_SLOT": {
+      "numOutgoingI2cBuses": 0,
+      "pmUnitName": "SCM"
+    },
+    "SMB_SLOT": {
+      "numOutgoingI2cBuses": 2,
+      "pmUnitName": "SMB"
+    }
+  },
+  "pmUnitConfigs": {
+    "SCM": {
+      "pluggedInSlotType": "SCM_SLOT",
+      "pciDeviceConfigs": [
+        {
+          "pmUnitScopedName": "SCM_IOB",
+          "vendorId": "0x10ee",
+          "deviceId": "0x7011",
+          "subSystemVendorId": "0x20a4",
+          "subSystemDeviceId": "0x0001",
+          "i2cAdapterBlockConfigs": [
+            {
+              "pmUnitScopedNamePrefix": "SCM_IOB_I2C",
+              "deviceName": "i2c_master",
+              "csrOffsetCalc": "0x40000 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
+              "startAdapterIndex": 0,
+              "numAdapters": 7
+            }
+          ]
+        }
+      ],
+      "i2cDeviceConfigs": [
+        {
+          "busName": "SCM_IOB_I2C_3",
+          "address": "0x41",
+          "kernelDeviceName": "adm1266",
+          "pmUnitScopedName": "DPM"
+        }
+      ],
+      "outgoingSlotConfigs": {
+        "SMB_SLOT@0": {
+          "slotType": "SMB_SLOT",
+          "outgoingI2cBusNames": [
+            "SCM_IOB_I2C_5",
+            "SCM_IOB_I2C_6"
+          ]
+        }
+      }
+    },
+    "SMB": {
+      "pluggedInSlotType": "SMB_SLOT",
+      "pciDeviceConfigs": [
+        {
+          "pmUnitScopedName": "SMB_IOB",
+          "vendorId": "0x10ee",
+          "deviceId": "0x7013",
+          "subSystemVendorId": "0x10ee",
+          "subSystemDeviceId": "0x0007",
+          "fanTachoPwmConfigs": [
+            {
+              "fpgaIpBlockConfig": {
+                "pmUnitScopedName": "FAN_CTRL",
+                "deviceName": "fan_ctrl",
+                "csrOffset": "0x00a0"
+              },
+              "numFans": 4
+            }
+          ],
+          "i2cAdapterBlockConfigs": [
+            {
+              "pmUnitScopedNamePrefix": "SMB_IOB_I2C",
+              "deviceName": "i2c_master",
+              "csrOffsetCalc": "0x40000 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
+              "startAdapterIndex": 0,
+              "numAdapters": 6
+            },
+            {
+              "pmUnitScopedNamePrefix": "SMB_OSFP_I2C",
+              "deviceName": "i2c_master",
+              "csrOffsetCalc": "0x40C00 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
+              "startAdapterIndex": 1,
+              "numAdapters": 32
+            }
+          ],
+          "xcvrCtrlBlockConfigs": [
+            {
+              "pmUnitScopedNamePrefix": "OSFP",
+              "deviceName": "xcvr_ctrl",
+              "csrOffsetCalc": "0x0034",
+              "startPort": 1,
+              "numPorts": 16
+            },
+            {
+              "pmUnitScopedNamePrefix": "OSFP",
+              "deviceName": "xcvr_ctrl",
+              "csrOffsetCalc": "0x0048",
+              "startPort": 17,
+              "numPorts": 16
+            }
+          ],
+          "ledCtrlConfigs": [
+            {
+              "fpgaIpBlockConfig": {
+                "pmUnitScopedName": "SYSTEM_STATUS_LED",
+                "deviceName": "sys_led",
+                "csrOffset": "0x84"
+              },
+              "portNumber": -1,
+              "ledId": 1
+            },
+            {
+              "fpgaIpBlockConfig": {
+                "pmUnitScopedName": "FAN_STATUS_LED",
+                "deviceName": "fan_led",
+                "csrOffset": "0x84"
+              },
+              "portNumber": -1,
+              "ledId": 1
+            },
+            {
+              "fpgaIpBlockConfig": {
+                "pmUnitScopedName": "PSU_STATUS_LED",
+                "deviceName": "psu_led",
+                "csrOffset": "0x84"
+              },
+              "portNumber": -1,
+              "ledId": 1
+            }
+          ],
+          "ledCtrlBlockConfigs": [
+            {
+              "pmUnitScopedNamePrefix": "SMB_PORT_LED",
+              "deviceName": "port_led",
+              "csrOffsetCalc": "0x60",
+              "numPorts": 8,
+              "ledPerPort": 2,
+              "startPort": 1
+            },
+            {
+              "pmUnitScopedNamePrefix": "SMB_PORT_LED",
+              "deviceName": "port_led",
+              "csrOffsetCalc": "0x64",
+              "numPorts": 8,
+              "ledPerPort": 2,
+              "startPort": 9
+            },
+            {
+              "pmUnitScopedNamePrefix": "SMB_PORT_LED",
+              "deviceName": "port_led",
+              "csrOffsetCalc": "0x70",
+              "numPorts": 8,
+              "ledPerPort": 2,
+              "startPort": 17
+            },
+            {
+              "pmUnitScopedNamePrefix": "SMB_PORT_LED",
+              "deviceName": "port_led",
+              "csrOffsetCalc": "0x74",
+              "numPorts": 8,
+              "ledPerPort": 2,
+              "startPort": 25
+            }
+          ]
+        }
+      ],
+      "i2cDeviceConfigs": [
+        {
+          "busName": "SMB_IOB_I2C_0",
+          "address": "0x71",
+          "kernelDeviceName": "fpga-mux",
+          "pmUnitScopedName": "SMB_MUX_0",
+          "numOutgoingChannels": 4
+        },
+        {
+          "busName": "SMB_MUX_0@0",
+          "address": "0x58",
+          "kernelDeviceName": "pmbus",
+          "pmUnitScopedName": "PSU1"
+        },
+        {
+          "busName": "SMB_MUX_0@1",
+          "address": "0x58",
+          "kernelDeviceName": "pmbus",
+          "pmUnitScopedName": "PSU2"
+        },
+        {
+          "busName": "SMB_MUX_0@3",
+          "address": "0x50",
+          "kernelDeviceName": "24c64",
+          "pmUnitScopedName": "FAN_EEPROM"
+        },
+        {
+          "busName": "INCOMING@0",
+          "address": "0x41",
+          "kernelDeviceName": "adm1266",
+          "pmUnitScopedName": "DPM_2"
+        },
+        {
+          "busName": "INCOMING@1",
+          "address": "0x50",
+          "kernelDeviceName": "24c64",
+          "pmUnitScopedName": "CHASSIS_EEPROM",
+          "isEeprom": true
+        },
+        {
+          "busName": "INCOMING@1",
+          "address": "0x48",
+          "kernelDeviceName": "tmp464",
+          "pmUnitScopedName": "SMB_TEMP_SENSOR"
+        }
+      ]
+    }
+  },
+  "i2cAdaptersFromCpu": [
+    "Synopsys DesignWare I2C adapter",
+    "SMBus PIIX4 adapter port 0 at 0b00",
+    "SMBus PIIX4 adapter port 2 at 0b00",
+    "SMBus PIIX4 adapter port 1 at 0b20"
+  ],
+  "symbolicLinkToDevicePath": {
+    "/run/devmap/eeproms/CHASSIS_EEPROM": "/SMB_SLOT@0/[CHASSIS_EEPROM]",
+    "/run/devmap/sensors/DPM": "/[DPM]",
+    "/run/devmap/sensors/DPM_2": "/SMB_SLOT@0/[DPM_2]",
+    "/run/devmap/fpgas/SCM_IOB": "/[SCM_IOB]",
+    "/run/devmap/i2c-busses/SCM_IOB_I2C_0": "/[SCM_IOB_I2C_0]",
+    "/run/devmap/i2c-busses/SCM_IOB_I2C_1": "/[SCM_IOB_I2C_1]",
+    "/run/devmap/i2c-busses/SCM_IOB_I2C_2": "/[SCM_IOB_I2C_2]",
+    "/run/devmap/i2c-busses/SCM_IOB_I2C_3": "/[SCM_IOB_I2C_3]",
+    "/run/devmap/i2c-busses/SCM_IOB_I2C_4": "/[SCM_IOB_I2C_4]",
+    "/run/devmap/i2c-busses/SCM_IOB_I2C_5": "/[SCM_IOB_I2C_5]",
+    "/run/devmap/i2c-busses/SCM_IOB_I2C_6": "/[SCM_IOB_I2C_6]",
+    "/run/devmap/fpgas/SMB_IOB": "/SMB_SLOT@0/[SMB_IOB]",
+    "/run/devmap/sensors/FAN_CTRL": "/SMB_SLOT@0/[FAN_CTRL]",
+    "/run/devmap/sensors/PSU1": "/SMB_SLOT@0/[PSU1]",
+    "/run/devmap/sensors/PSU2": "/SMB_SLOT@0/[PSU2]",
+    "/run/devmap/eeproms/FAN_EEPROM": "/SMB_SLOT@0/[FAN_EEPROM]",
+    "/run/devmap/xcvrs/xcvr_io_1": "/SMB_SLOT@0/[SMB_OSFP_I2C_1]",
+    "/run/devmap/xcvrs/xcvr_ctrl_1": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_1]",
+    "/run/devmap/xcvrs/xcvr_io_2": "/SMB_SLOT@0/[SMB_OSFP_I2C_2]",
+    "/run/devmap/xcvrs/xcvr_ctrl_2": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_2]",
+    "/run/devmap/xcvrs/xcvr_io_3": "/SMB_SLOT@0/[SMB_OSFP_I2C_3]",
+    "/run/devmap/xcvrs/xcvr_ctrl_3": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_3]",
+    "/run/devmap/xcvrs/xcvr_io_4": "/SMB_SLOT@0/[SMB_OSFP_I2C_4]",
+    "/run/devmap/xcvrs/xcvr_ctrl_4": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_4]",
+    "/run/devmap/xcvrs/xcvr_io_5": "/SMB_SLOT@0/[SMB_OSFP_I2C_5]",
+    "/run/devmap/xcvrs/xcvr_ctrl_5": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_5]",
+    "/run/devmap/xcvrs/xcvr_io_6": "/SMB_SLOT@0/[SMB_OSFP_I2C_6]",
+    "/run/devmap/xcvrs/xcvr_ctrl_6": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_6]",
+    "/run/devmap/xcvrs/xcvr_io_7": "/SMB_SLOT@0/[SMB_OSFP_I2C_7]",
+    "/run/devmap/xcvrs/xcvr_ctrl_7": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_7]",
+    "/run/devmap/xcvrs/xcvr_io_8": "/SMB_SLOT@0/[SMB_OSFP_I2C_8]",
+    "/run/devmap/xcvrs/xcvr_ctrl_8": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_8]",
+    "/run/devmap/xcvrs/xcvr_io_9": "/SMB_SLOT@0/[SMB_OSFP_I2C_9]",
+    "/run/devmap/xcvrs/xcvr_ctrl_9": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_9]",
+    "/run/devmap/xcvrs/xcvr_io_10": "/SMB_SLOT@0/[SMB_OSFP_I2C_10]",
+    "/run/devmap/xcvrs/xcvr_ctrl_10": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_10]",
+    "/run/devmap/xcvrs/xcvr_io_11": "/SMB_SLOT@0/[SMB_OSFP_I2C_11]",
+    "/run/devmap/xcvrs/xcvr_ctrl_11": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_11]",
+    "/run/devmap/xcvrs/xcvr_io_12": "/SMB_SLOT@0/[SMB_OSFP_I2C_12]",
+    "/run/devmap/xcvrs/xcvr_ctrl_12": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_12]",
+    "/run/devmap/xcvrs/xcvr_io_13": "/SMB_SLOT@0/[SMB_OSFP_I2C_13]",
+    "/run/devmap/xcvrs/xcvr_ctrl_13": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_13]",
+    "/run/devmap/xcvrs/xcvr_io_14": "/SMB_SLOT@0/[SMB_OSFP_I2C_14]",
+    "/run/devmap/xcvrs/xcvr_ctrl_14": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_14]",
+    "/run/devmap/xcvrs/xcvr_io_15": "/SMB_SLOT@0/[SMB_OSFP_I2C_15]",
+    "/run/devmap/xcvrs/xcvr_ctrl_15": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_15]",
+    "/run/devmap/xcvrs/xcvr_io_16": "/SMB_SLOT@0/[SMB_OSFP_I2C_16]",
+    "/run/devmap/xcvrs/xcvr_ctrl_16": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_16]",
+    "/run/devmap/xcvrs/xcvr_io_17": "/SMB_SLOT@0/[SMB_OSFP_I2C_17]",
+    "/run/devmap/xcvrs/xcvr_ctrl_17": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_17]",
+    "/run/devmap/xcvrs/xcvr_io_18": "/SMB_SLOT@0/[SMB_OSFP_I2C_18]",
+    "/run/devmap/xcvrs/xcvr_ctrl_18": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_18]",
+    "/run/devmap/xcvrs/xcvr_io_19": "/SMB_SLOT@0/[SMB_OSFP_I2C_19]",
+    "/run/devmap/xcvrs/xcvr_ctrl_19": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_19]",
+    "/run/devmap/xcvrs/xcvr_io_20": "/SMB_SLOT@0/[SMB_OSFP_I2C_20]",
+    "/run/devmap/xcvrs/xcvr_ctrl_20": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_20]",
+    "/run/devmap/xcvrs/xcvr_io_21": "/SMB_SLOT@0/[SMB_OSFP_I2C_21]",
+    "/run/devmap/xcvrs/xcvr_ctrl_21": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_21]",
+    "/run/devmap/xcvrs/xcvr_io_22": "/SMB_SLOT@0/[SMB_OSFP_I2C_22]",
+    "/run/devmap/xcvrs/xcvr_ctrl_22": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_22]",
+    "/run/devmap/xcvrs/xcvr_io_23": "/SMB_SLOT@0/[SMB_OSFP_I2C_23]",
+    "/run/devmap/xcvrs/xcvr_ctrl_23": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_23]",
+    "/run/devmap/xcvrs/xcvr_io_24": "/SMB_SLOT@0/[SMB_OSFP_I2C_24]",
+    "/run/devmap/xcvrs/xcvr_ctrl_24": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_24]",
+    "/run/devmap/xcvrs/xcvr_io_25": "/SMB_SLOT@0/[SMB_OSFP_I2C_25]",
+    "/run/devmap/xcvrs/xcvr_ctrl_25": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_25]",
+    "/run/devmap/xcvrs/xcvr_io_26": "/SMB_SLOT@0/[SMB_OSFP_I2C_26]",
+    "/run/devmap/xcvrs/xcvr_ctrl_26": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_26]",
+    "/run/devmap/xcvrs/xcvr_io_27": "/SMB_SLOT@0/[SMB_OSFP_I2C_27]",
+    "/run/devmap/xcvrs/xcvr_ctrl_27": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_27]",
+    "/run/devmap/xcvrs/xcvr_io_28": "/SMB_SLOT@0/[SMB_OSFP_I2C_28]",
+    "/run/devmap/xcvrs/xcvr_ctrl_28": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_28]",
+    "/run/devmap/xcvrs/xcvr_io_29": "/SMB_SLOT@0/[SMB_OSFP_I2C_29]",
+    "/run/devmap/xcvrs/xcvr_ctrl_29": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_29]",
+    "/run/devmap/xcvrs/xcvr_io_30": "/SMB_SLOT@0/[SMB_OSFP_I2C_30]",
+    "/run/devmap/xcvrs/xcvr_ctrl_30": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_30]",
+    "/run/devmap/xcvrs/xcvr_io_31": "/SMB_SLOT@0/[SMB_OSFP_I2C_31]",
+    "/run/devmap/xcvrs/xcvr_ctrl_31": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_31]",
+    "/run/devmap/xcvrs/xcvr_io_32": "/SMB_SLOT@0/[SMB_OSFP_I2C_32]",
+    "/run/devmap/xcvrs/xcvr_ctrl_32": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_32]",
+    "/run/devmap/sensors/SMB_TEMP_SENSOR": "/SMB_SLOT@0/[SMB_TEMP_SENSOR]"
+  },
+  "chassisEepromDevicePath": "/SMB_SLOT@0/[CHASSIS_EEPROM]",
+  "numXcvrs": 32,
+  "bspKmodsRpmName": "nexthop_bsp_kmods",
+  "bspKmodsRpmVersion": "1.0.0-1",
+  "requiredKmodsToLoad": [
+    "i2c_i801",
+    "i2c_mux",
+    "fbiob_pci",
+    "nh_fpga_i2c",
+    "nh_fpga_mux",
+    "nh_fpga_info",
+    "nh_fpga_fan",
+    "nh_fpga_led",
+    "nh_fpga_port_led",
+    "nh_xcvr_ctrl",
+    "tmp464",
+    "lm90",
+    "adm1266",
+    "pmbus"
+  ]
+}
