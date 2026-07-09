@@ -5,11 +5,11 @@
   "rootSlotType": "SCM_SLOT",
   "slotTypeConfigs": {
     "SCM_SLOT": {
-      "numOutgoingI2cBuses": 7,
+      "numOutgoingI2cBuses": 0,
       "pmUnitName": "SCM"
     },
     "SMB_SLOT": {
-      "numOutgoingI2cBuses": 0,
+      "numOutgoingI2cBuses": 2,
       "pmUnitName": "SMB"
     }
   },
@@ -40,29 +40,15 @@
           "address": "0x41",
           "kernelDeviceName": "adm1266",
           "pmUnitScopedName": "DPM"
-        },
-        {
-          "busName": "SCM_IOB_I2C_5",
-          "address": "0x41",
-          "kernelDeviceName": "adm1266",
-          "pmUnitScopedName": "DPM_2"
-        },
-        {
-          "busName": "SCM_IOB_I2C_6",
-          "address": "0x50",
-          "kernelDeviceName": "24c64",
-          "pmUnitScopedName": "CHASSIS_EEPROM"
-        },
-        {
-          "busName": "SCM_IOB_I2C_6",
-          "address": "0x48",
-          "kernelDeviceName": "tmp464",
-          "pmUnitScopedName": "SCM_TEMP_SENSOR"
         }
       ],
       "outgoingSlotConfigs": {
         "SMB_SLOT@0": {
-          "slotType": "SMB_SLOT"
+          "slotType": "SMB_SLOT",
+          "outgoingI2cBusNames": [
+            "SCM_IOB_I2C_5",
+            "SCM_IOB_I2C_6"
+          ]
         }
       }
     },
@@ -205,6 +191,25 @@
           "address": "0x58",
           "kernelDeviceName": "pmbus",
           "pmUnitScopedName": "PSU2"
+        },
+        {
+          "busName": "INCOMING@0",
+          "address": "0x41",
+          "kernelDeviceName": "adm1266",
+          "pmUnitScopedName": "DPM_2"
+        },
+        {
+          "busName": "INCOMING@1",
+          "address": "0x50",
+          "kernelDeviceName": "24c64",
+          "pmUnitScopedName": "CHASSIS_EEPROM",
+          "isEeprom": true
+        },
+        {
+          "busName": "INCOMING@1",
+          "address": "0x48",
+          "kernelDeviceName": "tmp464",
+          "pmUnitScopedName": "SMB_TEMP_SENSOR"
         }
       ]
     }
@@ -216,10 +221,10 @@
     "SMBus PIIX4 adapter port 1 at 0b20"
   ],
   "symbolicLinkToDevicePath": {
-    "/run/devmap/eeproms/CHASSIS_EEPROM": "/[CHASSIS_EEPROM]",
+    "/run/devmap/eeproms/CHASSIS_EEPROM": "/SMB_SLOT@0/[CHASSIS_EEPROM]",
     "/run/devmap/sensors/DPM": "/[DPM]",
-    "/run/devmap/sensors/DPM_2": "/[DPM_2]",
-    "/run/devmap/sensors/SCM_TEMP_SENSOR": "/[SCM_TEMP_SENSOR]",
+    "/run/devmap/sensors/DPM_2": "/SMB_SLOT@0/[DPM_2]",
+    "/run/devmap/sensors/SMB_TEMP_SENSOR": "/SMB_SLOT@0/[SMB_TEMP_SENSOR]",
     "/run/devmap/fpgas/SCM_IOB": "/[SCM_IOB]",
     "/run/devmap/i2c-busses/SCM_IOB_I2C_0": "/[SCM_IOB_I2C_0]",
     "/run/devmap/i2c-busses/SCM_IOB_I2C_1": "/[SCM_IOB_I2C_1]",
@@ -366,7 +371,7 @@
     "/run/devmap/xcvrs/xcvr_io_64": "/SMB_SLOT@0/[SMB_OSFP_I2C_64]",
     "/run/devmap/xcvrs/xcvr_ctrl_64": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_64]"
   },
-  "chassisEepromDevicePath": "/[CHASSIS_EEPROM]",
+  "chassisEepromDevicePath": "/SMB_SLOT@0/[CHASSIS_EEPROM]",
   "numXcvrs": 64,
   "bspKmodsRpmName": "nexthop_bsp_kmods",
   "bspKmodsRpmVersion": "1.0.0-1",

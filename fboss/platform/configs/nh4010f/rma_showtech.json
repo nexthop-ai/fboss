@@ -12,7 +12,7 @@
   "i2cDumpDevices": [
     "/run/devmap/sensors/DPM",
     "/run/devmap/sensors/DPM_2",
-    "/run/devmap/sensors/SCM_TEMP_SENSOR",
+    "/run/devmap/sensors/SMB_TEMP_SENSOR",
     "/run/devmap/sensors/MGMT_TEMP_SENSOR"
   ]
 }

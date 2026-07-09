@@ -26,8 +26,8 @@
           "compute": "@/1000.0"
         },
         {
-          "name": "SCM_TEMP_SENSOR",
-          "sysfsPath": "/run/devmap/sensors/SCM_TEMP_SENSOR/temp1_input",
+          "name": "SMB_TEMP_SENSOR",
+          "sysfsPath": "/run/devmap/sensors/SMB_TEMP_SENSOR/temp1_input",
           "type": 3,
           "thresholds": {
             "upperCriticalVal": 85
@@ -128,7 +128,7 @@
     {
       "name": "ASIC",
       "temperatureSensorNames": [
-        "SCM_TEMP_SENSOR"
+        "SMB_TEMP_SENSOR"
       ]
     }
   ],
