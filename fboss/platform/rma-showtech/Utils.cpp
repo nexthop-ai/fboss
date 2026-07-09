@@ -349,11 +349,25 @@ void Utils::printLogs() {
   std::cout << "##### QSFP Service Log #####" << std::endl;
   printServiceLogs("qsfp_service");
 
+  std::cout << "##### FSDB Log #####" << std::endl;
+  printServiceLogs("fsdb");
+
   std::cout << "##### fboss_sw_agent Log #####" << std::endl;
   printServiceLogs("fboss_sw_agent");
 
   std::cout << "##### fboss_hw_agent@0 Log #####" << std::endl;
   printServiceLogs("fboss_hw_agent@0");
+
+  std::cout << "##### Wedge Agent Log #####" << std::endl;
+  printServiceLogs("wedge_agent");
+
+  std::cout << "##### Wedge Agent Boot History #####" << std::endl;
+  printServiceLogs("wedge_agent_boot_history");
+
+  for (const auto& service : *config_.additionalServices()) {
+    std::cout << fmt::format("##### {} Log #####", service) << std::endl;
+    printServiceLogs(service);
+  }
 
   std::cout << "##### demsg Log #####" << std::endl;
   std::cout << execCommandWithLimit("dmesg").second << std::endl;

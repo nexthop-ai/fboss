@@ -45,6 +45,8 @@ namespace cpp2 facebook.fboss.platform.showtech_config
 //
 // `scPowerGood`: Optional configuration for switch card power good status
 // monitoring. See SwitchCardPowerGoodStatus struct below.
+//
+// `additionalServices`: Additional service names to collect (e.g. a platform-specific).
 struct ShowtechConfig {
   1: set<string> i2cBusIgnore;
   2: list<string> psus;
@@ -53,6 +55,7 @@ struct ShowtechConfig {
   5: list<FanSpinnerDevice> fanspinners;
   6: list<string> i2cDumpDevices;
   7: optional SwitchCardPowerGoodStatus scPowerGood;
+  8: list<string> additionalServices;
 }
 
 // GPIO (General Purpose Input/Output) configuration.
