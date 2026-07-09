@@ -10,13 +10,13 @@ pushd "$fboss_dir" >/dev/null || exit 1
 
 EXTRA_ARGS=()
 if [ "${FBOSS_META_ENV:-}" = "1" ]; then
-    echo "[fboss] Meta devserver detected — run with: sudo -E $0"
-    EXTRA_ARGS+=(--network=host
-                 --build-arg http_proxy=http://fwdproxy:8080
-                 --build-arg https_proxy=http://fwdproxy:8080
-                 --build-arg GITHUB_ROOT=fboss/github
-                 --build-arg FBCODE_BUILDER_PATH=opensource/fbcode_builder
-                 --build-arg FBOSS_META_ENV=1)
+  echo "[fboss] Meta devserver detected — run with: sudo -E $0"
+  EXTRA_ARGS+=(--network=host
+    --build-arg http_proxy=http://fwdproxy:8080
+    --build-arg https_proxy=http://fwdproxy:8080
+    --build-arg GITHUB_ROOT=fboss/github
+    --build-arg FBCODE_BUILDER_PATH=opensource/fbcode_builder
+    --build-arg FBOSS_META_ENV=1)
 fi
 
 DOCKER_BUILDKIT=1 docker build . -t fboss_builder -f fboss/oss/docker/Dockerfile \
