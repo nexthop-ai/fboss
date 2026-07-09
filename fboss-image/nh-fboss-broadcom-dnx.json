@@ -1,0 +1,32 @@
+{
+  "distribution_formats": {
+    "usb": "nh-fboss-broadcom-dnx.iso",
+    "pxe": "nh-fboss-broadcom-dnx.tar",
+    "onie": "nh-fboss-broadcom-dnx.bin"
+  },
+  "kernel": {
+    "download": "file:.nh-broadcom-dnx/distro_kernel_6.11.tar"
+  },
+  "other_dependencies": [
+    { "download": "file:.nh-broadcom-dnx/distro_nexthop_product_support.rpm" },
+    { "download": "file:.nh-broadcom-dnx/distro_bgpd.rpm" },
+    { "download": "file:.nh-broadcom-dnx/distro_flashrom.rpm" }
+  ],
+  "fboss-platform-stack": {
+    "download": "file:.nh-broadcom-dnx/fboss_platform_stack.tar"
+  },
+  "bsps": [
+    { "download": "file:.nh-broadcom-dnx/distro_nexthop_bsp.tar" }
+  ],
+  "npu_sai": {
+    "download": "file:.nh-broadcom-dnx/distro_sai.tar"
+  },
+  "phy_sai": {
+  },
+  "fboss-forwarding-stack": {
+    "download": "file:.nh-broadcom-dnx/forwarding-stack.tar"
+  },
+  "image_build_hooks": {
+    "after_pkgs_install": "nexthop-extra-pkgs.json"
+  }
+}
