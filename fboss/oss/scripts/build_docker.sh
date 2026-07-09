@@ -19,6 +19,7 @@ if [ "${FBOSS_META_ENV:-}" = "1" ]; then
     --build-arg FBOSS_META_ENV=1)
 fi
 
-DOCKER_BUILDKIT=1 docker build . -t fboss_builder -f fboss/oss/docker/Dockerfile \
+docker buildx build . -t fboss_builder -f fboss/oss/docker/Dockerfile \
   --build-arg USE_CLANG=true \
+  --output type=docker,compression=zstd,compression-level=12,force-compression=true \
   "${EXTRA_ARGS[@]}"
