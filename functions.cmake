@@ -36,6 +36,11 @@ function (add_sai_sdk_dependencies name)
       endif ()
     endforeach ()
   endif ()
+
+  # SAI-blob binaries link multi-GB; confine to the monobuild's heavy_link pool. No-op if unset (dev builds).
+  if (NH_HEAVY_LINK_POOL)
+    set_target_properties(${name} PROPERTIES JOB_POOL_LINK ${NH_HEAVY_LINK_POOL})
+  endif ()
 endfunction ()
 
 function (strtok str delim out_list)
