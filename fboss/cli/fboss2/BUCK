@@ -1338,6 +1338,7 @@ cpp_library(
         "//fboss/agent:agent_config-cpp2-types",
         "//fboss/agent:agent_dir_util",
         "//fboss/agent:fboss-error",
+        "//fboss/agent:switchinfo_utils",
         "//fboss/agent:fboss-types",
         "//fboss/agent:platform_config-cpp2-types",
         "//fboss/agent:switch_config-cpp2-types",

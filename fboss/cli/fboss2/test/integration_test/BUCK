@@ -39,6 +39,7 @@ cpp_binary(
         "ConfigPfcTest.cpp",
         "ConfigPortQueueConfigTest.cpp",
         "ConfigPtpTest.cpp",
+        "ConfigReloadTest.cpp",
         "ConfigInterfaceProfileTest.cpp",
         "ConfigQosPolicyMapTest.cpp",
         "ConfigSessionClearTest.cpp",
