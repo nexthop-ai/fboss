@@ -24,6 +24,8 @@
 #include <utility>
 #include <vector>
 #include "fboss/agent/AgentDirectoryUtil.h"
+#include "fboss/agent/SwitchInfoUtils.h"
+#include "fboss/agent/gen-cpp2/agent_config_types.h"
 #include "fboss/agent/if/gen-cpp2/FbossCtrl.h"
 #include "fboss/agent/if/gen-cpp2/FbossCtrlAsyncClient.h"
 #include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
@@ -45,6 +47,20 @@ constexpr std::string_view kSystemdServiceSuffix = ".service";
 } // namespace
 
 namespace facebook::fboss {
+
+FbossServiceUtil::FbossServiceUtil(const cfg::AgentConfig& agentConfig)
+    : systemd_(std::make_unique<SystemdInterface>()) {
+  const auto& args = *agentConfig.defaultCommandLineArgs();
+  // Parse multi_switch from the on-disk config rather than calling
+  // utils::isMultiSwitchEnabled(hostInfo), so this works independently of
+  // the agent's state without requiring a live thrift connection.
+  multiSwitch_ =
+      args.count("multi_switch") && args.at("multi_switch") == "true";
+  for (const auto& [_, info] : getSwitchInfoFromConfig(&(*agentConfig.sw()))) {
+    switchIndexes_.push_back(*info.switchIndex());
+  }
+  std::sort(switchIndexes_.begin(), switchIndexes_.end());
+}
 
 FbossServiceUtil::FbossServiceUtil(
     std::vector<int> switchIndexes,
