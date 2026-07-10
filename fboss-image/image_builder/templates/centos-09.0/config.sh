@@ -430,7 +430,18 @@ else
   chmod 600 /etc/NetworkManager/system-connections/*.nmconnection
 fi
 
-# 9. Done! Cleanup and install additional packages
+# 9. cFBOSS: relax /etc/shadow from CentOS's 0000 to 0600 (owner-readable).
+# At mode 0000, unix_chkpwd must use CAP_DAC_OVERRIDE to read the hash. In a
+# container on an AppArmor host the unix-chkpwd profile withholds that
+# capability, so pam_unix cannot read the hash and every password login is
+# rejected. 0600 lets unix_chkpwd read it via the owner bit with no capability
+# override.
+if [ "$BUILD_TARGET" = "cfboss" ]; then
+  echo "cfboss: setting /etc/shadow to 0600 (owner-readable)"
+  chmod 0600 /etc/shadow
+fi
+
+# 10. Done! Cleanup and install additional packages
 echo "Cleaning up /repos directory..."
 rm -rf /repos
 
