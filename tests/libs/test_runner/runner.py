@@ -312,6 +312,7 @@ class BaseHwTestRunner(ABC):
         self.testresult_filepath = "/home/netops/tr.xml"
         self.tc = None
         self._use_generated_config = False
+        self._fboss_logging = None
 
     def _upload_generated_config(self, config: dict) -> None:
         with tempfile.NamedTemporaryFile("w", suffix=".materialized_JSON", delete=False) as f:
@@ -826,14 +827,15 @@ class BaseHwTestRunner(ABC):
 
     def build_test_cmd(self, model: str) -> str:
         test_args = self.test_args(model)
+        logging_arg = f" --fboss_logging {self._fboss_logging}" if self._fboss_logging else ""
         return (
             f"sudo su -c 'cd /opt/fboss && source ./bin/setup_fboss_env && "
-            f" ./bin/run_test.py {test_args} --filter_file={self.filter_filepath} "
+            f" ./bin/run_test.py {test_args} --filter_file={self.filter_filepath}{logging_arg} "
             f"' > {self.testlog_filepath} 2>&1"
         )
 
     @_enforce_min_failure_duration
-    def run_test(self, test_context, skip_tr_xml=False):
+    def run_test(self, test_context, skip_tr_xml=False, fboss_logging=None):
         """Connect to the DUT, deploy this runner's artifacts, then run the test.
 
         Template method — do NOT override in subclasses. setup() (SSH/SCP
@@ -841,7 +843,11 @@ class BaseHwTestRunner(ABC):
         runner deploys identically and honors --mode deploy; a subclass that
         reimplemented run_test() could silently skip the gate. Subclasses
         customize execution by overriding _run_test_impl() instead.
+
+        fboss_logging overrides the test binary's --fboss_logging level for this
+        run (default: run_test.py's own DBG4).
         """
+        self._fboss_logging = fboss_logging
         logger.info("Running tests")
         self.setup(test_context)
 
