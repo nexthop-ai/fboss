@@ -69,6 +69,10 @@ _YELLOW = "\033[1;33m"
 _RED = "\033[1;31m"
 _RESET = "\033[0m"
 
+# Strip [cold_boot]/[warm_boot*] so phases of one logical test share a name.
+_BOOT_SUBSCRIPT_RE = re.compile(r"\[(?:cold|warm)_boot[^\]]*\]$")
+_STATUS_RANK = {"skipped": 0, "passed": 1, "error": 2, "failure": 3}
+
 
 def _print_deprecation_banner(lines: list[str]) -> None:
     """Print a highly visible warning banner with color and box formatting."""
@@ -992,49 +996,41 @@ class TestRunner(abc.ABC):
 
         return info
 
-    def _write_results_to_xml(self, test_results: list[str | None]) -> None:
-        """Write aggregated test results to XML file"""
-        output_xml = self.TESTRESULT_FILE
+    @staticmethod
+    def _testcase_status(testcase: ET.Element) -> str:
+        for child in testcase:
+            if child.tag in ("failure", "error", "skipped"):
+                return child.tag
+        return "passed"
 
-        # Aggregate test information using proper XML parsing
-        info = self._aggregate_testsuite_info(test_results)
+    def _collapse_boot_phases(self, testcases: list[ET.Element]) -> list[ET.Element]:
+        # One entry per logical name; worst status wins.
+        best: dict[str, tuple[int, ET.Element]] = {}
+        order: list[str] = []
+        for testcase in testcases:
+            base = _BOOT_SUBSCRIPT_RE.sub("", testcase.get("name", ""))
+            rank = _STATUS_RANK.get(self._testcase_status(testcase), 1)
+            if base not in best:
+                order.append(base)
+                best[base] = (rank, testcase)
+            elif rank > best[base][0]:
+                best[base] = (rank, testcase)
+        collapsed = []
+        for base in order:
+            testcase = best[base][1]
+            testcase.set("name", base)
+            collapsed.append(testcase)
+        return collapsed
 
-        # Fold pre-run-dropped known-bad/unsupported tests into the counts.
-        num_filtered_skipped = len(self._skipped_known_bad_tests)
-        info["tests"] += num_filtered_skipped
-        info["skipped"] += num_filtered_skipped
-
-        # Build XML tree programmatically
-        testsuites = ET.Element("testsuites")
-        testsuite = ET.SubElement(
-            testsuites,
-            "testsuite",
-            tests=str(info["tests"]),
-            failures=str(info["failures"]),
-            disabled=str(info["disabled"]),
-            errors=str(info["errors"]),
-            skipped=str(info["skipped"]),
-            time=str(info["time"]),
-            timestamp=info["timestamp"],
-            name=info["name"],
-        )
-
-        # Add testcase elements from all results
-        for result in test_results:
-            root = self._parse_test_result_xml(result)
-            if root is None:
-                continue
-            for testcase in root.iter("testcase"):
-                testsuite.append(testcase)
-
+    def _build_skipped_known_bad_testcases(self) -> list[ET.Element]:
+        testcases = []
         for full_name in self._skipped_known_bad_tests:
             suite_name, _, case_name = full_name.partition(".")
             if not case_name:
-                suite_name, case_name = "Unknown", full_name
-            testcase = ET.SubElement(
-                testsuite,
+                suite_name = "Unknown"
+            testcase = ET.Element(
                 "testcase",
-                name=case_name,
+                name=full_name,
                 classname=suite_name,
                 time="0.0",
                 status="notrun",
@@ -1044,11 +1040,45 @@ class TestRunner(abc.ABC):
                 "skipped",
                 message="known bad or unsupported test, filtered out before running",
             )
+            testcases.append(testcase)
+        return testcases
 
-        # Pretty print with indentation
+    def _write_results_to_xml(self, test_results: list[str | None]) -> None:
+        output_xml = self.TESTRESULT_FILE
+        info = self._aggregate_testsuite_info(test_results)
+
+        raw_testcases: list[ET.Element] = []
+        for result in test_results:
+            root = self._parse_test_result_xml(result)
+            if root is None:
+                continue
+            raw_testcases.extend(root.iter("testcase"))
+        raw_testcases.extend(self._build_skipped_known_bad_testcases())
+        collapsed = self._collapse_boot_phases(raw_testcases)
+
+        counts = dict.fromkeys(("failure", "error", "skipped"), 0)
+        for tc in collapsed:
+            status = self._testcase_status(tc)
+            if status in counts:
+                counts[status] += 1
+
+        testsuites = ET.Element("testsuites")
+        testsuite = ET.SubElement(
+            testsuites,
+            "testsuite",
+            tests=str(len(collapsed)),
+            failures=str(counts["failure"]),
+            disabled="0",
+            errors=str(counts["error"]),
+            skipped=str(counts["skipped"]),
+            time=str(info["time"]),
+            timestamp=info["timestamp"],
+            name=info["name"],
+        )
+        for testcase in collapsed:
+            testsuite.append(testcase)
+
         ET.indent(testsuites)
-
-        # Write to file with XML declaration
         with open(output_xml, "w") as f:
             f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             f.write(ET.tostring(testsuites, encoding="unicode"))

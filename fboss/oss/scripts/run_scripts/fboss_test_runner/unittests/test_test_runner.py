@@ -501,13 +501,14 @@ class TestWriteResultsRecordsSkipped:
         ]
         assert len(skipped_cases) == 2
         recorded = {(tc.get("classname"), tc.get("name")) for tc in skipped_cases}
-        assert recorded == {("HwVlanTest", "Delete"), ("HwMirrorTest", "Span")}
+        assert recorded == {
+            ("HwVlanTest", "HwVlanTest.Delete"),
+            ("HwMirrorTest", "HwMirrorTest.Span"),
+        }
 
     def test_skipped_added_on_top_of_real_results(self, runner, tmp_path):
         runner.TESTRESULT_FILE = str(tmp_path / "tr.xml")
         runner._skipped_known_bad_tests = ["HwVlanTest.Delete"]
-
-        # One real passing test alongside one filtered-out known-bad test.
         ran = (
             '<testsuites tests="1" failures="0" errors="0" time="0.1">'
             '<testsuite name="HwFooTest" tests="1" failures="0" skipped="0" errors="0" time="0.1">'
@@ -515,7 +516,105 @@ class TestWriteResultsRecordsSkipped:
             "</testsuite></testsuites>"
         )
         runner._write_results_to_xml([ran])
-
         suite = ET.parse(runner.TESTRESULT_FILE).getroot().find("testsuite")
         assert suite.get("tests") == "2"
+        assert suite.get("skipped") == "1"
+
+
+def _phase_result(suite: str, method: str, phase: str, outcome: str = "pass") -> str:
+    inner = {"pass": "", "fail": '<failure message="boom"/>', "skip": "<skipped/>"}[
+        outcome
+    ]
+    fails = "1" if outcome == "fail" else "0"
+    return (
+        f'<testsuites tests="1" failures="{fails}" errors="0" time="0.1">'
+        f'<testsuite name="{suite}" tests="1" failures="{fails}" skipped="0" '
+        f'errors="0" time="0.1">'
+        f'<testcase name="{suite}.{method}[{phase}]" classname="{suite}" '
+        f'time="0.1" status="run">{inner}</testcase>'
+        "</testsuite></testsuites>"
+    )
+
+
+class TestWriteResultsCollapsesBootPhases:
+    def _suite(self, runner, tmp_path, results):
+        runner.TESTRESULT_FILE = str(tmp_path / "tr.xml")
+        runner._skipped_known_bad_tests = []
+        runner._write_results_to_xml(results)
+        return ET.parse(runner.TESTRESULT_FILE).getroot().find("testsuite")
+
+    def test_cold_and_warm_collapse_to_one(self, runner, tmp_path):
+        suite = self._suite(
+            runner,
+            tmp_path,
+            [
+                _phase_result("AgentT", "M", "cold_boot", "fail"),
+                _phase_result("AgentT", "M", "warm_boot", "fail"),
+            ],
+        )
+        assert suite.get("tests") == "1"
+        assert suite.get("failures") == "1"
+        cases = list(suite.iter("testcase"))
+        assert len(cases) == 1
+        assert cases[0].get("name") == "AgentT.M"
+
+    def test_pass_and_fail_same_total(self, runner, tmp_path):
+        green = self._suite(
+            runner, tmp_path, [_phase_result("AgentT", "M", "warm_boot", "pass")]
+        )
+        red = self._suite(
+            runner,
+            tmp_path,
+            [
+                _phase_result("AgentT", "M", "cold_boot", "fail"),
+                _phase_result("AgentT", "M", "warm_boot", "fail"),
+            ],
+        )
+        assert green.get("tests") == red.get("tests") == "1"
+        assert green.get("failures") == "0"
+        assert red.get("failures") == "1"
+
+    def test_worst_status_wins(self, runner, tmp_path):
+        suite = self._suite(
+            runner,
+            tmp_path,
+            [
+                _phase_result("AgentT", "M", "cold_boot", "pass"),
+                _phase_result("AgentT", "M", "warm_boot", "fail"),
+            ],
+        )
+        assert suite.get("tests") == "1"
+        assert suite.get("failures") == "1"
+
+    def test_cold_only_counted_once(self, runner, tmp_path):
+        suite = self._suite(
+            runner, tmp_path, [_phase_result("AgentScale", "Max", "cold_boot", "pass")]
+        )
+        assert suite.get("tests") == "1"
+        assert suite.get("failures") == "0"
+
+    def test_duplicate_known_bad_deduped(self, runner, tmp_path):
+        runner.TESTRESULT_FILE = str(tmp_path / "tr.xml")
+        runner._skipped_known_bad_tests = [
+            "AgentHwMirrorTest.HwMirrorStat",
+            "AgentHwMirrorTest.HwMirrorStat",
+        ]
+        runner._write_results_to_xml([])
+        suite = ET.parse(runner.TESTRESULT_FILE).getroot().find("testsuite")
+        assert suite.get("tests") == "1"
+        assert suite.get("skipped") == "1"
+
+    def test_run_skip_and_phases_combined(self, runner, tmp_path):
+        runner.TESTRESULT_FILE = str(tmp_path / "tr.xml")
+        runner._skipped_known_bad_tests = ["AgentHw.Bad", "AgentHw.Bad"]
+        runner._write_results_to_xml(
+            [
+                _phase_result("AgentA", "P", "warm_boot", "pass"),
+                _phase_result("AgentB", "F", "cold_boot", "fail"),
+                _phase_result("AgentB", "F", "warm_boot", "fail"),
+            ]
+        )
+        suite = ET.parse(runner.TESTRESULT_FILE).getroot().find("testsuite")
+        assert suite.get("tests") == "3"
+        assert suite.get("failures") == "1"
         assert suite.get("skipped") == "1"
