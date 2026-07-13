@@ -168,15 +168,13 @@ _DUT_MARKER_DIR = f"{_FBOSS_ROOT_ON_DUT}/.deployed"
 # SaiAgentTestRunner.
 #
 # Wedge800 naming: B/C = Broadcom/Cisco ASIC, ACT/NHP = Accton/Nexthop vendor.
-# ACT DUTs use NHP configs (same ASIC, different manufacturer).
 #
 # Sources of truth:
 #   - fboss/fboss/lib/platforms/PlatformProductInfo.cpp (model -> PlatformType)
 #   - fboss/fboss/oss/hw_test_configs/ (available config files)
 _HW_TEST_CONFIG_NAME: dict[str, str] = {
     "minipack3": "montblanc",
-    "wedge800bact": "wedge800bnhp",
-    "nhbw800f": "wedge800bnhp",
+    "nhbw800f": "wedge800bact",
     "nh4215f": "m4062nhp",
 }
 
