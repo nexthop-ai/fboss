@@ -8,24 +8,14 @@
  *   - age-interval    -> arpAgerInterval
  *   - max-probes      -> maxNeighborProbes
  *   - stale-interval  -> staleEntryInterval
- * and the boolean toggle:
- *   - proactive       -> proactiveArp (enabled|disabled)
  *
- * NOTE: proactiveArp is not yet consumed by the agent, so the proactive test
- * only proves the value round-trips through the config (set -> commit -> read
- * back), not that proactive ARP behavior changes.
- *
- * For integer attributes (timeout, age-interval, max-probes, stale-interval)
- * the test runs 6 steps:
+ * Each test runs 6 steps:
  *   1. Read current value from running config + switch state
  *   2. Set a new value via `config arp <attr> <new>`
  *   3. Commit (HITLESS — no agent restart)
  *   4. Verify running config reflects the new value
  *   5. Verify agent switch state reflects the new value
  *   6. Restore original value
- *
- * For the boolean toggle (proactive), step 5 is omitted because proactiveArp
- * is not yet reflected in switch_state.thrift.
  *
  * Requirements:
  *   - FBOSS agent is running with a valid configuration
@@ -106,36 +96,4 @@ TEST_F(ConfigArpTest, SetMaxProbes) {
 TEST_F(ConfigArpTest, SetStaleInterval) {
   setAndVerify(
       "stale-interval", "staleEntryInterval", "staleEntryInterval", 15);
-}
-
-TEST_F(ConfigArpTest, SetProactive) {
-  // proactiveArp has thrift default=false and is not yet consumed by the
-  // agent; this test only proves the value round-trips through the config.
-  // The field is absent from the running config until first written, so use
-  // the two-arg overload with a default.
-  bool original = getSwConfigField<bool>("proactiveArp", false);
-  std::string target = original ? "disabled" : "enabled";
-  bool targetBool = !original;
-  XLOG(INFO) << "[Step 1] Original proactiveArp = " << original;
-
-  XLOG(INFO) << "[Step 2] Running: config arp proactive " << target;
-  auto result = runCli({"config", "arp", "proactive", target});
-  ASSERT_EQ(result.exitCode, 0)
-      << "stdout=" << result.stdout << " stderr=" << result.stderr;
-  EXPECT_THAT(result.stdout, HasSubstr("proactive"));
-
-  XLOG(INFO) << "[Step 3] Committing (expect HITLESS, no restart)...";
-  commitConfig();
-
-  XLOG(INFO) << "[Step 4] Verifying running config...";
-  EXPECT_EQ(getSwConfigField<bool>("proactiveArp", !targetBool), targetBool);
-
-  XLOG(INFO) << "[Step 5] Restoring original value " << original;
-  result =
-      runCli({"config", "arp", "proactive", original ? "enabled" : "disabled"});
-  ASSERT_EQ(result.exitCode, 0) << result.stderr;
-  commitConfig();
-  // Use !original as default so an absent field returns the wrong value and
-  // the assertion fails, rather than passing vacuously.
-  EXPECT_EQ(getSwConfigField<bool>("proactiveArp", !original), original);
 }

@@ -11,7 +11,6 @@
 #pragma once
 
 #include <cstdint>
-#include <stdexcept>
 #include <string>
 #include <vector>
 #include "fboss/cli/fboss2/CmdHandler.h"
@@ -21,16 +20,10 @@
 namespace facebook::fboss {
 
 // Argument for `config arp <attr> <value>`.
-// Validates that v[0] is one of the valid ARP attribute names. The accepted
-// shape of v[1] depends on the attribute:
-//   - the timer attributes (timeout, age-interval, max-probes,
-//     stale-interval) take a non-negative int32, exposed via getValue().
-//   - the boolean toggle (proactive) takes "enabled" / "disabled", exposed
-//     via getBoolValue().
+// Validates that v[0] is one of the valid ARP attribute names and that v[1]
+// is a non-negative int32, exposed via getValue().
 class ArpConfigArgs : public utils::BaseObjectArgType<std::string> {
  public:
-  enum class AttrKind { kInteger, kBoolean };
-
   /* implicit */ ArpConfigArgs( // NOLINT(google-explicit-constructor)
       std::vector<std::string> v);
 
@@ -38,33 +31,13 @@ class ArpConfigArgs : public utils::BaseObjectArgType<std::string> {
     return attribute_;
   }
 
-  // Valid only when attrKind_ == kInteger; throws std::logic_error otherwise.
-  // For the boolean toggle use getBoolValue().
   int32_t getValue() const {
-    if (attrKind_ == AttrKind::kBoolean) {
-      throw std::logic_error(
-          "getValue() called on boolean attr '" + attribute_ +
-          "'; use getBoolValue()");
-    }
     return value_;
-  }
-
-  // Valid only when attrKind_ == kBoolean; throws std::logic_error otherwise.
-  // For integer attrs use getValue().
-  bool getBoolValue() const {
-    if (attrKind_ != AttrKind::kBoolean) {
-      throw std::logic_error(
-          "getBoolValue() called on non-boolean attr '" + attribute_ +
-          "'; use getValue()");
-    }
-    return boolValue_;
   }
 
  private:
   std::string attribute_;
-  AttrKind attrKind_{AttrKind::kInteger};
   int32_t value_ = 0;
-  bool boolValue_ = false;
 };
 
 struct CmdConfigArpTraits : public WriteCommandTraits {
@@ -72,11 +45,9 @@ struct CmdConfigArpTraits : public WriteCommandTraits {
     cmd.add_option(
         "arp_attr_value",
         args,
-        // Keep "enabled"/"disabled" in sync with
-        // kProactiveEnabled/kProactiveDisabled in CmdConfigArp.cpp.
         "<attr> <value> where <attr> is one of: "
-        "age-interval, max-probes, proactive, stale-interval, timeout. "
-        "proactive takes enabled|disabled; all others take a non-negative integer.");
+        "age-interval, max-probes, stale-interval, timeout. "
+        "All attrs take a non-negative integer.");
   }
   using ObjectArgType = ArpConfigArgs;
   using RetType = std::string;

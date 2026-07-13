@@ -35,7 +35,6 @@ cpp_binary(
         "ConfigL2LearningModeTest.cpp",
         "ConfigLoadBalancingTest.cpp",
         "ConfigMacTest.cpp",
-        "ConfigNeedL2EntryForNeighborTest.cpp",
         "ConfigPfcTest.cpp",
         "ConfigPortQueueConfigTest.cpp",
         "ConfigPtpTest.cpp",
