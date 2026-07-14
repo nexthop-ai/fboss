@@ -37,7 +37,7 @@ jobs:
 
           if [[ ! "$PR_TITLE" =~ ^\[sync\]\ Sync\ with\ upstream ]]; then
             REASON="This workflow only works for sync PRs."
-            echo "::error::$REASON. PR title must start with '[sync] Sync with upstream'""
+            echo "::error::$REASON. PR title must start with '[sync] Sync with upstream'"
             echo "FAILURE_REASON=$REASON" >> "$GITHUB_ENV"
             exit 1
           fi
