@@ -344,7 +344,6 @@ std::string PciExplorer::createMdioBus(
   return getMdioBusCharDevPath(pciDevice, mdioBusConfig, instanceId);
 }
 
-<<<<<<< HEAD
 std::string PciExplorer::createRtmCtrl(
     const PciDevice& pciDevice,
     const RtmCtrlConfig& rtmCtrlConfig,
