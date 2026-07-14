@@ -533,19 +533,7 @@ class PlatformMappingV2:
                     si_settings=self.pm_parser.get_si_settings(),
                     profile=profile,
                     # pyre-fixme[6]: Expected `PortSpeed` for 4th param, but got `float`.
-<<<<<<< HEAD
-                    lane_speed=(
-                        0
-                        if speed_setting.num_lanes == 0
-                        else speed_setting.speed / speed_setting.num_lanes
-                    ),
-||||||| 7965f21dbd
-                    lane_speed=0
-                    if speed_setting.num_lanes == 0
-                    else speed_setting.speed / speed_setting.num_lanes,
-=======
                     lane_speed=lane_speed,
->>>>>>> ac0f8c3e61c71eb95eca42307bedf46e7fd35502
                     port_id=port_detail.global_port_id,
                     integrated_tcvr_mapping=self.pm_parser.get_integrated_transceiver_mapping(),
                 )

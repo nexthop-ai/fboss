@@ -151,12 +151,8 @@ TransmitterTechnology getMediaType(cfg::PortProfileID profile) {
     case cfg::PortProfileID::PROFILE_200G_1_PAM4_RS544X2N_COPPER:
     case cfg::PortProfileID::PROFILE_400G_2_PAM4_RS544X2N_COPPER:
     case cfg::PortProfileID::PROFILE_800G_4_PAM4_RS544X2N_COPPER:
-<<<<<<< HEAD
-    case cfg::PortProfileID::PROFILE_1600G_8_PAM4_RS544X2N_COPPER:
-||||||| 7965f21dbd
-=======
     case cfg::PortProfileID::PROFILE_212POINT5G_1_PAM4_RS544X2N_COPPER:
->>>>>>> ac0f8c3e61c71eb95eca42307bedf46e7fd35502
+    case cfg::PortProfileID::PROFILE_1600G_8_PAM4_RS544X2N_COPPER:
       return TransmitterTechnology::COPPER;
 
     case cfg::PortProfileID::PROFILE_10G_1_NRZ_NOFEC_OPTICAL:
