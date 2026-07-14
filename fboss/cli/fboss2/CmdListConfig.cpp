@@ -14,6 +14,9 @@
 #include "fboss/cli/fboss2/commands/config/CmdConfigReload.h"
 #include "fboss/cli/fboss2/commands/config/arp/CmdConfigArp.h"
 #include "fboss/cli/fboss2/commands/config/copp/CmdConfigCopp.h"
+#include "fboss/cli/fboss2/commands/config/dhcp/CmdConfigDhcp.h"
+#include "fboss/cli/fboss2/commands/config/dhcp/relay_source_override/CmdConfigDhcpRelaySourceOverride.h"
+#include "fboss/cli/fboss2/commands/config/dhcp/reply_source_override/CmdConfigDhcpReplySourceOverride.h"
 #include "fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceQueuingPolicy.h"
@@ -204,6 +207,26 @@ const CommandTree& kConfigCommandTree() {
        "Configure ARP settings",
        commandHandler<CmdConfigArp>,
        argRegistrar<CmdConfigArpTraits>},
+
+      {
+          "config",
+          "dhcp",
+          "Configure DHCP settings",
+          commandHandler<CmdConfigDhcp>,
+          argRegistrar<CmdConfigDhcpTraits>,
+          {{
+               "relay-source-override",
+               "Override source IP for DHCP relay packets to the DHCP server (ipv4|ipv6 <IP>)",
+               commandHandler<CmdConfigDhcpRelaySourceOverride>,
+               argRegistrar<CmdConfigDhcpRelaySourceOverrideTraits>,
+           },
+           {
+               "reply-source-override",
+               "Override source IP for DHCP reply packets to the client (ipv4|ipv6 <IP>)",
+               commandHandler<CmdConfigDhcpReplySourceOverride>,
+               argRegistrar<CmdConfigDhcpReplySourceOverrideTraits>,
+           }},
+      },
 
       {"config",
        "history",
@@ -800,7 +823,12 @@ const CommandTree& kConfigCommandTree() {
                   "static",
                   "Configure static routing",
                   commandHandler<CmdConfigProtocolStatic>,
+<<<<<<< HEAD
                   argRegistrar<CmdConfigProtocolStaticTraits>,
+||||||| 7965f21dbd
+=======
+                  argTypeHandler<CmdConfigProtocolStaticTraits>,
+>>>>>>> ac0f8c3e61c71eb95eca42307bedf46e7fd35502
                   {{
                        "ip",
                        "Configure IPv4 static routes",
@@ -1013,8 +1041,14 @@ const CommandTree& kConfigCommandTree() {
       {
           "delete",
           "interface",
+<<<<<<< HEAD
           "Delete interface configuration (<interface> <ip-address|ipv6-address> <value>) "
           "or reset interface settings (e.g. ipv6 ndp)",
+||||||| 7965f21dbd
+          "Reset interface settings (e.g. ipv6 ndp)",
+=======
+          "Reset interface settings (e.g. ipv6 ndp, ip-address)",
+>>>>>>> ac0f8c3e61c71eb95eca42307bedf46e7fd35502
           commandHandler<CmdDeleteInterface>,
           argRegistrar<CmdDeleteInterfaceTraits>,
           {{
@@ -1028,6 +1062,40 @@ const CommandTree& kConfigCommandTree() {
                   commandHandler<CmdDeleteInterfaceIpv6Ndp>,
                   argRegistrar<CmdDeleteInterfaceIpv6NdpTraits>,
               }},
+          }},
+      },
+
+      {
+          "delete",
+          "protocol",
+          "Delete protocol objects",
+          commandHandler<CmdDeleteProtocol>,
+          argTypeHandler<CmdDeleteProtocolTraits>,
+          {{
+              "static",
+              "Delete static routing configuration",
+              commandHandler<CmdDeleteProtocolStatic>,
+              argTypeHandler<CmdDeleteProtocolStaticTraits>,
+              {{
+                   "ip",
+                   "Delete IPv4 static routes",
+                   {{
+                       "route",
+                       "Delete IPv4 static route",
+                       commandHandler<CmdDeleteProtocolStaticIpRoute>,
+                       argRegistrar<CmdDeleteProtocolStaticIpRouteTraits>,
+                   }},
+               },
+               {
+                   "ipv6",
+                   "Delete IPv6 static routes",
+                   {{
+                       "route",
+                       "Delete IPv6 static route",
+                       commandHandler<CmdDeleteProtocolStaticIpv6Route>,
+                       argRegistrar<CmdDeleteProtocolStaticIpv6RouteTraits>,
+                   }},
+               }},
           }},
       },
 

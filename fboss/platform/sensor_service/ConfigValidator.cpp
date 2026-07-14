@@ -39,7 +39,12 @@ bool ConfigValidator::isValid(const SensorConfig& sensorConfig) {
   if (!isValidAsicCommand(sensorConfig)) {
     return false;
   }
+<<<<<<< HEAD
   if (!isValidLoadLineConfig(sensorConfig)) {
+||||||| 7965f21dbd
+=======
+  if (!isValidLoggedSensorNames(sensorConfig)) {
+>>>>>>> ac0f8c3e61c71eb95eca42307bedf46e7fd35502
     return false;
   }
   return true;
@@ -516,6 +521,37 @@ bool ConfigValidator::isValidAsicCommand(
     return false;
   }
 
+  return true;
+}
+
+bool ConfigValidator::isValidLoggedSensorNames(
+    const sensor_config::SensorConfig& sensorConfig) {
+  const auto& loggedSensorNames = *sensorConfig.loggedSensorNames();
+  if (loggedSensorNames.empty()) {
+    return true;
+  }
+
+  XLOG(DBG1) << "Validating loggedSensorNames";
+
+  // Validate against the universal set (base + asicCommand + the per-PmUnit
+  // intersection of versioned entries) — the same contract as
+  // inputVoltageSensors / temperatureSensorNames. A logged sensor must resolve
+  // on every hardware version; a name present on only some respins would
+  // otherwise log "sensor data missing" every cycle on the others.
+  auto sensorNames = getAllUniversalSensorNames(sensorConfig);
+  std::unordered_set<std::string> seen;
+  for (const auto& sensorName : loggedSensorNames) {
+    if (!seen.insert(sensorName).second) {
+      XLOG(ERR) << fmt::format(
+          "loggedSensorName {} is a duplicate", sensorName);
+      return false;
+    }
+    if (sensorNames.count(sensorName) == 0) {
+      XLOG(ERR) << fmt::format(
+          "loggedSensorName {} is not defined in SensorConfig", sensorName);
+      return false;
+    }
+  }
   return true;
 }
 

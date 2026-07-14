@@ -28,6 +28,7 @@ using namespace facebook::fboss;
 
 class ConfigIpRouteTest : public Fboss2IntegrationTest {
  protected:
+<<<<<<< HEAD
   void SetUp() override {
     GTEST_SKIP()
         << "Skipped: applying static-route config on the live (hitless) path "
@@ -104,6 +105,75 @@ class ConfigIpRouteTest : public Fboss2IntegrationTest {
         isIpv6 ? "ipv6" : "ip",
         "route",
         prefix};
+||||||| 7965f21dbd
+=======
+  /**
+   * Add an IP address to an interface.
+   * Command syntax: config interface <interface> ip-address <ip_prefix>
+   *             or: config interface <interface> ipv6-address <ip_prefix>
+   */
+  void addInterfaceIp(
+      const std::string& interface,
+      const std::string& ipPrefix,
+      bool isIpv6 = false) {
+    std::string attr = isIpv6 ? "ipv6-address" : "ip-address";
+    std::vector<std::string> args = {
+        "config", "interface", interface, attr, ipPrefix};
+    auto result = runCli(args);
+    ASSERT_EQ(result.exitCode, 0)
+        << "Failed to add interface IP: " << result.stderr;
+    commitConfig();
+  }
+
+  /**
+   * Delete an IP address from an interface.
+   * Command syntax: delete interface <interface> ip-address <ip_prefix>
+   *             or: delete interface <interface> ipv6-address <ip_prefix>
+   */
+  void deleteInterfaceIp(
+      const std::string& interface,
+      const std::string& ipPrefix,
+      bool isIpv6 = false) {
+    std::string attr = isIpv6 ? "ipv6-address" : "ip-address";
+    std::vector<std::string> args = {
+        "delete", "interface", interface, attr, ipPrefix};
+    auto result = runCli(args);
+    ASSERT_EQ(result.exitCode, 0)
+        << "Failed to delete interface IP: " << result.stderr;
+    commitConfig();
+  }
+
+  /**
+   * Add a static route with a nexthop.
+   */
+  void addRoute(
+      const std::string& prefix,
+      const std::string& nexthop,
+      bool isIpv6 = false) {
+    std::vector<std::string> args;
+    if (isIpv6) {
+      args = {"config", "protocol", "static", "ipv6", "route", prefix, nexthop};
+    } else {
+      args = {"config", "protocol", "static", "ip", "route", prefix, nexthop};
+    }
+    auto result = runCli(args);
+    ASSERT_EQ(result.exitCode, 0) << "Failed to add route: " << result.stderr;
+    commitConfig();
+  }
+
+  /**
+   * Delete a static route.
+   * Command syntax: delete protocol static ip route <prefix>
+   *             or: delete protocol static ipv6 route <prefix>
+   */
+  void deleteRoute(const std::string& prefix, bool isIpv6 = false) {
+    std::vector<std::string> args;
+    if (isIpv6) {
+      args = {"delete", "protocol", "static", "ipv6", "route", prefix};
+    } else {
+      args = {"delete", "protocol", "static", "ip", "route", prefix};
+    }
+>>>>>>> ac0f8c3e61c71eb95eca42307bedf46e7fd35502
     auto result = runCli(args);
     ASSERT_EQ(result.exitCode, 0)
         << "Failed to delete route: " << result.stderr;

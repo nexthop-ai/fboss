@@ -51,6 +51,11 @@
     }
   },
   "variants": {
+<<<<<<< HEAD
     "base": {}
+||||||| 7965f21dbd
+=======
+    "default": {}
+>>>>>>> ac0f8c3e61c71eb95eca42307bedf46e7fd35502
   }
 }

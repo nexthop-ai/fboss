@@ -41,8 +41,15 @@ const std::unordered_set<std::string> kValuelessDeleteAttributes = [] {
   return attrs;
 }();
 
+<<<<<<< HEAD
 // All delete attributes. ip-address / ipv6-address take a value (the specific
 // address to remove); the rest are valueless (reset to default).
+||||||| 7965f21dbd
+const std::string kValidDeleteAttrs =
+    fmt::format("loopback-mode, {}", folly::join(", ", lldpAttrNames()));
+=======
+// All known attributes: valueless resets + valued IP address removals.
+>>>>>>> ac0f8c3e61c71eb95eca42307bedf46e7fd35502
 const std::unordered_set<std::string> kKnownDeleteAttributes = [] {
   std::unordered_set<std::string> attrs = kValuelessDeleteAttributes;
   attrs.insert("ip-address");
@@ -57,9 +64,15 @@ const std::string kValidDeleteAttrs = fmt::format(
 } // namespace
 
 InterfaceDeleteConfig::InterfaceDeleteConfig(const std::vector<std::string>& v)
+<<<<<<< HEAD
     // Most delete attributes are valueless (reset to default); ip-address /
     // ipv6-address take the specific address to remove, so the known set is a
     // superset of the valueless set.
+||||||| 7965f21dbd
+    // For delete, every known attribute is valueless (delete always resets to
+    // default), so the known and valueless sets are identical.
+=======
+>>>>>>> ac0f8c3e61c71eb95eca42307bedf46e7fd35502
     : InterfaceAttrArgsBase(
           kKnownDeleteAttributes,
           kValuelessDeleteAttributes,
@@ -80,6 +93,13 @@ InterfaceDeleteConfig::InterfaceDeleteConfig(const std::vector<std::string>& v)
                 tok,
                 kValidDeleteAttrs));
       }
+    }
+  }
+
+  // Validate ip-address / ipv6-address values as CIDR networks.
+  for (const auto& [attr, value] : attributes_) {
+    if (attr == "ip-address" || attr == "ipv6-address") {
+      validateInterfaceIpAttr(attr, value);
     }
   }
 
@@ -111,6 +131,7 @@ CmdDeleteInterfaceTraits::RetType CmdDeleteInterface::queryClient(
 
   for (const auto& [attr, value] : attributes) {
     if (attr == "ip-address" || attr == "ipv6-address") {
+<<<<<<< HEAD
       // Value-based removal of a specific configured interface IP address.
       validateInterfaceIpAttr(attr, value);
       const std::string ipKind =
@@ -177,33 +198,105 @@ CmdDeleteInterfaceTraits::RetType CmdDeleteInterface::queryClient(
         if (*port->loopbackMode() != cfg::PortLoopbackMode::NONE) {
           port->loopbackMode() = cfg::PortLoopbackMode::NONE;
           changed = true;
-        }
-      } else if (auto tag = lldpTagForAttr(attr); tag.has_value()) {
-        changed |= port->expectedLLDPValues()->erase(*tag) > 0;
+||||||| 7965f21dbd
+    // Port-level valueless reset (loopback-mode, lldp-expected-*).
+    // Only report interfaces actually backed by a port; only save the
+    // config if a reset was a real change (not already at default).
+    std::vector<std::string> resetNames;
+    std::vector<std::string> skippedNames;
+    for (const utils::Intf& intf : interfaces) {
+      cfg::Port* port = intf.getPort();
+      if (!port) {
+        skippedNames.push_back(intf.name());
+        continue;
       }
-      resetNames.push_back(intf.name());
-    }
-
-    if (resetNames.empty()) {
-      results.push_back(
-          fmt::format(
-              "Attribute '{}' not reset: no port found for interface(s) {}",
-              attr,
-              folly::join(", ", skippedNames)));
-    } else if (skippedNames.empty()) {
-      results.push_back(
-          fmt::format(
-              "Successfully reset attribute '{}' for interface(s): {}",
-              attr,
-              folly::join(", ", resetNames)));
+      if (attr == "loopback-mode") {
+        if (*port->loopbackMode() != cfg::PortLoopbackMode::NONE) {
+          port->loopbackMode() = cfg::PortLoopbackMode::NONE;
+          changed = true;
+=======
+      // Remove a specific IP address from each interface's ipAddresses list.
+      bool expectV6 = (attr == "ipv6-address");
+      std::vector<std::string> doneNames;
+      std::vector<std::string> missingNames;
+      for (const utils::Intf& intf : interfaces) {
+        cfg::Interface* iface = intf.getInterface();
+        if (!iface) {
+          missingNames.push_back(intf.name());
+          continue;
+        }
+        auto& ipAddresses = *iface->ipAddresses();
+        auto it = std::find(ipAddresses.begin(), ipAddresses.end(), value);
+        if (it != ipAddresses.end()) {
+          ipAddresses.erase(it);
+          changed = true;
+          doneNames.push_back(intf.name());
+        } else {
+          results.push_back(
+              fmt::format(
+                  "{} {} not configured on interface {}",
+                  expectV6 ? "IPv6 address" : "IP address",
+                  value,
+                  intf.name()));
+>>>>>>> ac0f8c3e61c71eb95eca42307bedf46e7fd35502
+        }
+      }
+      if (!doneNames.empty()) {
+        results.push_back(
+            fmt::format(
+                "Successfully removed {} {} from interface(s): {}",
+                expectV6 ? "IPv6 address" : "IP address",
+                value,
+                folly::join(", ", doneNames)));
+      }
+      if (!missingNames.empty()) {
+        results.push_back(
+            fmt::format(
+                "No interface config found for: {}",
+                folly::join(", ", missingNames)));
+      }
     } else {
-      results.push_back(
-          fmt::format(
-              "Successfully reset attribute '{}' for interface(s): {}; "
-              "no port found for {}",
-              attr,
-              folly::join(", ", resetNames),
-              folly::join(", ", skippedNames)));
+      // Port-level valueless reset (loopback-mode, lldp-expected-*).
+      std::vector<std::string> resetNames;
+      std::vector<std::string> skippedNames;
+      for (const utils::Intf& intf : interfaces) {
+        cfg::Port* port = intf.getPort();
+        if (!port) {
+          skippedNames.push_back(intf.name());
+          continue;
+        }
+        if (attr == "loopback-mode") {
+          if (*port->loopbackMode() != cfg::PortLoopbackMode::NONE) {
+            port->loopbackMode() = cfg::PortLoopbackMode::NONE;
+            changed = true;
+          }
+        } else if (auto tag = lldpTagForAttr(attr); tag.has_value()) {
+          changed |= port->expectedLLDPValues()->erase(*tag) > 0;
+        }
+        resetNames.push_back(intf.name());
+      }
+
+      if (resetNames.empty()) {
+        results.push_back(
+            fmt::format(
+                "Attribute '{}' not reset: no port found for interface(s) {}",
+                attr,
+                folly::join(", ", skippedNames)));
+      } else if (skippedNames.empty()) {
+        results.push_back(
+            fmt::format(
+                "Successfully reset attribute '{}' for interface(s): {}",
+                attr,
+                folly::join(", ", resetNames)));
+      } else {
+        results.push_back(
+            fmt::format(
+                "Successfully reset attribute '{}' for interface(s): {}; "
+                "no port found for {}",
+                attr,
+                folly::join(", ", resetNames),
+                folly::join(", ", skippedNames)));
+      }
     }
   }
 

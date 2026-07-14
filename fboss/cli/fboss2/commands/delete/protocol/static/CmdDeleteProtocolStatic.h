@@ -17,6 +17,12 @@ namespace facebook::fboss {
 
 struct CmdDeleteProtocolStaticTraits : public WriteCommandTraits {
   using ParentCmd = CmdDeleteProtocol;
+<<<<<<< HEAD
+||||||| 7965f21dbd
+=======
+  static constexpr utils::ObjectArgTypeId ObjectArgTypeId =
+      utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_NONE;
+>>>>>>> ac0f8c3e61c71eb95eca42307bedf46e7fd35502
   using ObjectArgType = std::monostate;
   using RetType = std::string;
 };

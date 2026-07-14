@@ -11,6 +11,7 @@
 #include "fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.h"
 
 #include <fmt/format.h>
+<<<<<<< HEAD
 #include <algorithm>
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/cli/fboss2/CmdHandler.cpp"
@@ -62,6 +63,36 @@ std::string deleteStaticRouteImpl(const PrefixArgType& prefixArg) {
 
   ConfigSession::getInstance().saveConfig();
   return fmt::format("Successfully deleted static route {}", prefix);
+||||||| 7965f21dbd
+=======
+#include "fboss/agent/gen-cpp2/switch_config_types.h"
+#include "fboss/cli/fboss2/CmdHandler.cpp"
+#include "fboss/cli/fboss2/commands/config/protocol/static/route/StaticRouteUtils.h"
+#include "fboss/cli/fboss2/session/ConfigSession.h"
+
+namespace facebook::fboss {
+
+template <typename PrefixArgType>
+std::string deleteStaticRouteImpl(const PrefixArgType& prefixArg) {
+  auto& config = ConfigSession::getInstance().getAgentConfig();
+  auto& swConfig = *config.sw();
+
+  const std::string& prefix = prefixArg.getPrefix();
+  int32_t vrfId = 0;
+
+  bool found = false;
+  found |= eraseStaticRoute(*swConfig.staticRoutesWithNhops(), vrfId, prefix);
+  found |= eraseStaticRoute(*swConfig.staticRoutesToNull(), vrfId, prefix);
+  found |= eraseStaticRoute(*swConfig.staticRoutesToCPU(), vrfId, prefix);
+
+  if (!found) {
+    return fmt::format("Static route {} (VRF {}) not found", prefix, vrfId);
+  }
+
+  ConfigSession::getInstance().saveConfig();
+  return fmt::format(
+      "Successfully deleted static route {} (VRF {})", prefix, vrfId);
+>>>>>>> ac0f8c3e61c71eb95eca42307bedf46e7fd35502
 }
 
 CmdDeleteProtocolStaticIpRouteTraits::RetType
