@@ -69,14 +69,7 @@ const std::unordered_set<std::string> kValuelessAttributes = {
 };
 
 constexpr auto kValidConfigAttrs =
-<<<<<<< HEAD
-    "description, mtu, profile, ip-address, ipv6-address, loopback-mode, "
-||||||| 7965f21dbd
-    "description, mtu, profile, loopback-mode, flow-control-rx, "
-    "flow-control-tx, lldp-expected-*, type, shutdown, no-shutdown";
-=======
     "description, mtu, ip-address, ipv6-address, profile, loopback-mode, "
->>>>>>> ac0f8c3e61c71eb95eca42307bedf46e7fd35502
     "flow-control-rx, flow-control-tx, lldp-expected-*, type, shutdown, "
     "no-shutdown";
 

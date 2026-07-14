@@ -11,60 +11,6 @@
 #include "fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.h"
 
 #include <fmt/format.h>
-<<<<<<< HEAD
-#include <algorithm>
-#include "fboss/agent/gen-cpp2/switch_config_types.h"
-#include "fboss/cli/fboss2/CmdHandler.cpp"
-#include "fboss/cli/fboss2/session/ConfigSession.h"
-
-namespace facebook::fboss {
-
-template <typename PrefixArgType>
-std::string deleteStaticRouteImpl(const PrefixArgType& prefixArg) {
-  auto& config = ConfigSession::getInstance().getAgentConfig();
-  auto& swConfig = *config.sw();
-
-  const std::string& prefix = prefixArg.getPrefix();
-  bool found = false;
-
-  auto& nhopRoutes = *swConfig.staticRoutesWithNhops();
-  auto nhopIt = std::find_if(
-      nhopRoutes.begin(), nhopRoutes.end(), [&prefix](const auto& route) {
-        return *route.prefix() == prefix;
-      });
-  if (nhopIt != nhopRoutes.end()) {
-    nhopRoutes.erase(nhopIt);
-    found = true;
-  }
-
-  auto& nullRoutes = *swConfig.staticRoutesToNull();
-  auto nullIt = std::find_if(
-      nullRoutes.begin(), nullRoutes.end(), [&prefix](const auto& route) {
-        return *route.prefix() == prefix;
-      });
-  if (nullIt != nullRoutes.end()) {
-    nullRoutes.erase(nullIt);
-    found = true;
-  }
-
-  auto& cpuRoutes = *swConfig.staticRoutesToCPU();
-  auto cpuIt = std::find_if(
-      cpuRoutes.begin(), cpuRoutes.end(), [&prefix](const auto& route) {
-        return *route.prefix() == prefix;
-      });
-  if (cpuIt != cpuRoutes.end()) {
-    cpuRoutes.erase(cpuIt);
-    found = true;
-  }
-
-  if (!found) {
-    return fmt::format("Static route {} not found", prefix);
-  }
-
-  ConfigSession::getInstance().saveConfig();
-  return fmt::format("Successfully deleted static route {}", prefix);
-||||||| 7965f21dbd
-=======
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/cli/fboss2/CmdHandler.cpp"
 #include "fboss/cli/fboss2/commands/config/protocol/static/route/StaticRouteUtils.h"
@@ -92,7 +38,6 @@ std::string deleteStaticRouteImpl(const PrefixArgType& prefixArg) {
   ConfigSession::getInstance().saveConfig();
   return fmt::format(
       "Successfully deleted static route {} (VRF {})", prefix, vrfId);
->>>>>>> ac0f8c3e61c71eb95eca42307bedf46e7fd35502
 }
 
 CmdDeleteProtocolStaticIpRouteTraits::RetType

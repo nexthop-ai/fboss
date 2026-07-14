@@ -823,12 +823,7 @@ const CommandTree& kConfigCommandTree() {
                   "static",
                   "Configure static routing",
                   commandHandler<CmdConfigProtocolStatic>,
-<<<<<<< HEAD
-                  argRegistrar<CmdConfigProtocolStaticTraits>,
-||||||| 7965f21dbd
-=======
                   argTypeHandler<CmdConfigProtocolStaticTraits>,
->>>>>>> ac0f8c3e61c71eb95eca42307bedf46e7fd35502
                   {{
                        "ip",
                        "Configure IPv4 static routes",
@@ -1041,14 +1036,7 @@ const CommandTree& kConfigCommandTree() {
       {
           "delete",
           "interface",
-<<<<<<< HEAD
-          "Delete interface configuration (<interface> <ip-address|ipv6-address> <value>) "
-          "or reset interface settings (e.g. ipv6 ndp)",
-||||||| 7965f21dbd
-          "Reset interface settings (e.g. ipv6 ndp)",
-=======
           "Reset interface settings (e.g. ipv6 ndp, ip-address)",
->>>>>>> ac0f8c3e61c71eb95eca42307bedf46e7fd35502
           commandHandler<CmdDeleteInterface>,
           argRegistrar<CmdDeleteInterfaceTraits>,
           {{
@@ -1129,40 +1117,6 @@ const CommandTree& kConfigCommandTree() {
                           CmdDeleteCoppCpuTrafficPolicyMatchActionTraits>,
                   }},
               }},
-          }},
-      },
-
-      {
-          "delete",
-          "protocol",
-          "Delete protocol objects",
-          commandHandler<CmdDeleteProtocol>,
-          argRegistrar<CmdDeleteProtocolTraits>,
-          {{
-              "static",
-              "Delete static routing configuration",
-              commandHandler<CmdDeleteProtocolStatic>,
-              argRegistrar<CmdDeleteProtocolStaticTraits>,
-              {{
-                   "ip",
-                   "Delete IPv4 static routes",
-                   {{
-                       "route",
-                       "Delete IPv4 static route",
-                       commandHandler<CmdDeleteProtocolStaticIpRoute>,
-                       argRegistrar<CmdDeleteProtocolStaticIpRouteTraits>,
-                   }},
-               },
-               {
-                   "ipv6",
-                   "Delete IPv6 static routes",
-                   {{
-                       "route",
-                       "Delete IPv6 static route",
-                       commandHandler<CmdDeleteProtocolStaticIpv6Route>,
-                       argRegistrar<CmdDeleteProtocolStaticIpv6RouteTraits>,
-                   }},
-               }},
           }},
       },
 
