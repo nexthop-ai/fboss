@@ -41,6 +41,7 @@ cpp_unittest(
         "ConfigSessionSystemdTest.cpp",
         "CmdConfigIpRouteTest.cpp",
         "CmdDeleteConfigInterfaceTest.cpp",
+        "CmdDeleteCoppCpuTrafficPolicyMatchActionTest.cpp",
     ],
     headers = [
         "MockFbossServiceUtil.h",
