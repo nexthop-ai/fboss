@@ -4499,6 +4499,37 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
             "7": 128,
             "8": 128
           }
+        },
+        "129": {
+          "tcvrId": 129,
+          "accessControl": {
+            "controllerId": "129",
+            "type": 1,
+            "reset": {
+              "sysfsPath": "/run/devmap/xcvrs/xcvr_ctrl_129/xcvr_reset_129",
+              "mask": 1,
+              "gpioOffset": 0,
+              "resetHoldHi": 0
+            },
+            "presence": {
+              "sysfsPath": "/run/devmap/xcvrs/xcvr_ctrl_129/xcvr_present_129",
+              "mask": 1,
+              "gpioOffset": 0,
+              "presentHoldHi": 0
+            },
+            "gpioChip": ""
+          },
+          "io": {
+            "controllerId": "129",
+            "type": 1,
+            "devicePath": "/run/devmap/xcvrs/xcvr_io_129"
+          },
+          "tcvrLaneToLedId": {
+            "1": 129,
+            "2": 129,
+            "3": 129,
+            "4": 129
+          }
         }
       },
       "phyMapping": {},
@@ -5271,6 +5302,12 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
           "bluePath": "/sys/class/leds/port128_led1:blue:status",
           "yellowPath": "/sys/class/leds/port128_led2:amber:status",
           "transceiverId": 128
+        },
+        "129": {
+          "id": 129,
+          "bluePath": "/sys/class/leds/mgmt_qsfp_led:blue:status",
+          "yellowPath": "/sys/class/leds/mgmt_qsfp_led:amber:status",
+          "transceiverId": 129
         }
       }
     }

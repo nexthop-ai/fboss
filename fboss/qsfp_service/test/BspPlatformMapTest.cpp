@@ -84,7 +84,7 @@ TEST_F(BspPlatformMapTest, checkNumPimTransceivers) {
   // Check M4062nhp
   auto m4062nhpBspPlatformMap = M4062nhpBspPlatformMapping();
   EXPECT_EQ(m4062nhpBspPlatformMap.numPims(), 1);
-  EXPECT_EQ(m4062nhpBspPlatformMap.numTransceivers(), 128);
+  EXPECT_EQ(m4062nhpBspPlatformMap.numTransceivers(), 129);
 }
 
 } // namespace facebook::fboss
