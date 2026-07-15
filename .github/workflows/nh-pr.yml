@@ -1,0 +1,39 @@
+name: NH PR
+
+on:
+  pull_request:
+  merge_group:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  merge-status:
+    name: NH Merge Status
+    runs-on: cloudstack-ubuntu24-micro
+    permissions:
+      checks: read
+    steps:
+      - name: Wait for all checks to pass or be skipped
+        # Pinned to a post-v0.6.0 SHA that includes the dedupe fix from
+        # https://github.com/poseidon/wait-for-status-checks/pull/627 (merged 2025-07-19,
+        # unreleased pending https://github.com/poseidon/wait-for-status-checks/issues/851).
+        # Without this fix the action treats concurrency-cancelled check runs as failures
+        # even when a successful re-run exists for the same SHA, blocking merges that
+        # actually have all required checks green.
+        uses: poseidon/wait-for-status-checks@990a77d11cde85fd8897cb1747d2701ea9565615  # v0.6.0 + #627
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Ignore this job to avoid waiting on itself.
+          ignore: "NH Merge Status"
+          # grecs is enforced via `grecs-pr / grecs-validation` in required_status_checks
+          #
+          # "STARS: *" checks are posted after NH PR completes and report on
+          # this workflow's own jobs; gating on them deadlocks re-runs
+          # (DEVX-3572). Downstream triage signal, not a merge precondition.
+          ignore_pattern: "^(grecs-pr / |STARS: )"
+          # 8h: longest observed successful PR CI across our repos is ~6.5h
+          # (sonic image build + hardware tests). Failed checks fail fast
+          # regardless, so this only bounds the wait for slow successes.
+          timeout: 28800
