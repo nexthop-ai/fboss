@@ -200,7 +200,8 @@ jobs:
             --base main \
             --head ${{ needs.sync-upstream.outputs.sync_branch }} \
             --assignee benoit-nexthop \
-            --draft)
+            --assignee travisb-nexthop \
+            --assignee hillol-nexthop)
           echo "PR created: $PR_URL"
 
           echo "pr_created=true" >> "$GITHUB_OUTPUT"
