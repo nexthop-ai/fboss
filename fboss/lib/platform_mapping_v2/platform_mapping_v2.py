@@ -84,29 +84,16 @@ _PLATFORM_VARIANTS_MAP: dict[str, list[str]] = {
         "meru800bia_800g_fabric_uniform_local_offset",
         "meru800bia_hyperport_fabric_uniform_local_offset",
     ],
-    "tahan800bc": [
-        "tahan800bc_chassis",
-        "tahan800bc_test_fixture",
-    ],
-    "tahansb800bc": [
-        "tahansb800bc_test_fixture",
-    ],
+    "tahan800bc": ["tahan800bc_chassis", "tahan800bc_test_fixture"],
+    "tahansb800bc": ["tahansb800bc_test_fixture"],
     "ladakh800bcls": [
         "ladakh800bcls_rack",
         "ladakh800bcls_test_fixture",
         "ladakh800bcls_osfp_tray",
     ],
-    "leh800bcls": [
-        "leh800bcls_rack",
-        "leh800bcls_test_fixture",
-    ],
-    "montblanc": [
-        "montblanc_odd_ports_8x100G",
-        "montblanc",
-    ],
-    "minipack3bta": [
-        "minipack3bta_16rifs",
-    ],
+    "leh800bcls": ["leh800bcls_rack", "leh800bcls_test_fixture"],
+    "montblanc": ["montblanc_odd_ports_8x100G", "montblanc"],
+    "minipack3bta": ["minipack3bta_16rifs"],
 }
 
 _PLATFORM_TO_BASE_PLATFORM: dict[str, str] = {
@@ -152,10 +139,7 @@ class PlatformMappingParser:
         # First attempt to search for the actual platform file, then fall back to the base platform.
         try:
             return reader_func(
-                self.get_directory(),
-                self.get_mapping_prefix(),
-                *args,
-                **kwargs,
+                self.get_directory(), self.get_mapping_prefix(), *args, **kwargs
             )
         except FileNotFoundError:
             return reader_func(
@@ -199,8 +183,7 @@ class PlatformMappingParser:
         # Integrated transceiver mapping is optional — only CPO platforms have this CSV
         try:
             self._integrated_tcvr_mapping = read_integrated_transceiver_mapping(
-                self.get_directory(),
-                self.get_mapping_prefix(),
+                self.get_directory(), self.get_mapping_prefix()
             )
         except (FileNotFoundError, KeyError):
             print("No integrated transceiver mapping found...", file=sys.stderr)
@@ -324,11 +307,7 @@ class PlatformMappingV2:
     ) -> list[PlatformPortConfigOverride]:
         # merge lists
         merged_factors: list[
-            tuple[
-                PlatformPortConfigOverrideFactor,
-                list[PortPinConfig],
-                dict[int, int],
-            ]
+            tuple[PlatformPortConfigOverrideFactor, list[PortPinConfig], dict[int, int]]
         ] = []
         for port_config_override in port_config_overrides:
             found = False
@@ -451,8 +430,7 @@ class PlatformMappingV2:
         for profile in all_profiles:
             # Get NPU speed setting (always required)
             npu_speed_setting = self.pm_parser.get_profile_settings().get_speed_setting(
-                profile,
-                DataPlanePhyChipType.IPHY,
+                profile, DataPlanePhyChipType.IPHY
             )
 
             # Get XPHY line speed setting
@@ -461,9 +439,7 @@ class PlatformMappingV2:
             with contextlib.suppress(Exception):
                 xphy_line_speed_setting = (
                     self.pm_parser.get_profile_settings().get_speed_setting(
-                        profile,
-                        DataPlanePhyChipType.XPHY,
-                        Side.LINE,
+                        profile, DataPlanePhyChipType.XPHY, Side.LINE
                     )
                 )
 
@@ -473,9 +449,7 @@ class PlatformMappingV2:
             with contextlib.suppress(Exception):
                 xphy_system_speed_setting = (
                     self.pm_parser.get_profile_settings().get_speed_setting(
-                        profile,
-                        DataPlanePhyChipType.XPHY,
-                        Side.SYSTEM,
+                        profile, DataPlanePhyChipType.XPHY, Side.SYSTEM
                     )
                 )
 
@@ -509,8 +483,7 @@ class PlatformMappingV2:
             # Get pins for all supported profiles
             for profile in port_detail.supported_profiles:
                 speed_setting = self.pm_parser.get_profile_settings().get_speed_setting(
-                    profile=profile,
-                    phy_chip_type=DataPlanePhyChipType.IPHY,
+                    profile=profile, phy_chip_type=DataPlanePhyChipType.IPHY
                 )
                 profile_connections = get_connection_pairs_for_profile(
                     static_mapping=self.pm_parser.get_static_mapping(),
@@ -525,10 +498,7 @@ class PlatformMappingV2:
                     if speed_setting.num_lanes == 0
                     else speed_setting.speed / speed_setting.num_lanes
                 )
-                [
-                    pins,
-                    platform_port_config_override,
-                ] = get_pin_data_from_connections(
+                [pins, platform_port_config_override] = get_pin_data_from_connections(
                     connections=profile_connections,
                     si_settings=self.pm_parser.get_si_settings(),
                     profile=profile,
@@ -697,8 +667,7 @@ class PlatformMappingV2:
                     subsumed = hyper_port_subsumed[port_id]
                 if subsumed is not None:
                     new_supported_profiles[profile] = PlatformPortConfig(
-                        pins=port_config.pins,
-                        subsumedPorts=subsumed,
+                        pins=port_config.pins, subsumedPorts=subsumed
                     )
                 else:
                     new_supported_profiles[profile] = port_config
