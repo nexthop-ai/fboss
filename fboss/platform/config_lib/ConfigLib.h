@@ -38,16 +38,6 @@ class ConfigLib {
   virtual std::string getShowtechConfig(
       const std::optional<std::string>& platformName = std::nullopt) const;
 
-<<<<<<< HEAD
-  // Resolves a platform name to the canonical platform whose config it uses,
-  // applying config aliases (distinct hardware that shares another platform's
-  // config, e.g. WEDGE800CNHP -> WEDGE800CACT). The result is UPPERCASE. Used
-  // by services that cross-check a config's declared platformName against the
-  // running platform, so the check accepts an aliased platform.
-  static std::string canonicalConfigPlatformName(
-      const std::string& platformName);
-||||||| ac0f8c3e61
-=======
   virtual std::string getRebootCauseFinderConfig(
       const std::optional<std::string>& platformName = std::nullopt) const;
 
@@ -66,7 +56,6 @@ class ConfigLib {
   static void verifyPlatformNameMatches(
       const std::string& platformNameInConfig,
       const std::string& inferredPlatformName);
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
 
  protected:
   std::string configFilePath_;

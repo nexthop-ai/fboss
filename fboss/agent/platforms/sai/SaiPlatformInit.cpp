@@ -138,6 +138,7 @@ std::unique_ptr<PlatformMapping> createGenericSaiPlatformMapping(
     case PlatformType::PLATFORM_TAHANSB800BC:
       return std::make_unique<Tahansb800bcPlatformMapping>();
     case PlatformType::PLATFORM_WEDGE800CACT:
+    case PlatformType::PLATFORM_WEDGE800CNHP:
       return std::make_unique<Wedge800CACTPlatformMapping>();
     default:
       throw FbossError(
@@ -268,13 +269,6 @@ std::unique_ptr<SaiPlatform> chooseSaiPlatform(
   } else if (productInfo->getType() == PlatformType::PLATFORM_JANGA800BIC) {
     return std::make_unique<SaiJanga800bicPlatform>(
         std::move(productInfo), localMac, platformMappingStr);
-<<<<<<< HEAD
-  } else if (productInfo->getType() == PlatformType::PLATFORM_TAHAN800BC) {
-    return std::make_unique<SaiTahan800bcPlatform>(
-        std::move(productInfo), localMac, platformMappingStr);
-  } else if (productInfo->getType() == PlatformType::PLATFORM_ICECUBE800BC) {
-    return std::make_unique<SaiBcmIcecube800bcPlatform>(
-        std::move(productInfo), localMac, platformMappingStr);
   } else if (productInfo->getType() == PlatformType::PLATFORM_M4062NHP) {
     return std::make_unique<SaiBcmM4062nhpPlatform>(
         std::move(productInfo), localMac, platformMappingStr);
@@ -287,44 +281,6 @@ std::unique_ptr<SaiPlatform> chooseSaiPlatform(
   } else if (productInfo->getType() == PlatformType::PLATFORM_NH5010F) {
     return std::make_unique<SaiNh5010fPlatform>(
         std::move(productInfo), localMac, platformMappingStr);
-  } else if (productInfo->getType() == PlatformType::PLATFORM_ICECUBE800BANW) {
-    return std::make_unique<SaiBcmIcecube800banwPlatform>(
-        std::move(productInfo), localMac, platformMappingStr);
-  } else if (productInfo->getType() == PlatformType::PLATFORM_ICETEA800BC) {
-    return std::make_unique<SaiBcmIcetea800bcPlatform>(
-        std::move(productInfo), localMac, platformMappingStr);
-  } else if (productInfo->getType() == PlatformType::PLATFORM_LADAKH800BCLS) {
-    return std::make_unique<SaiBcmLadakh800bclsPlatform>(
-        std::move(productInfo), localMac, platformMappingStr);
-  } else if (productInfo->getType() == PlatformType::PLATFORM_LEH800BCLS) {
-    return std::make_unique<SaiBcmLeh800bclsPlatform>(
-        std::move(productInfo), localMac, platformMappingStr);
-  } else if (
-      productInfo->getType() == PlatformType::PLATFORM_WEDGE800BACT ||
-      productInfo->getType() == PlatformType::PLATFORM_WEDGE800BNHP) {
-    return std::make_unique<SaiBcmWedge800BACTPlatform>(
-||||||| ac0f8c3e61
-  } else if (productInfo->getType() == PlatformType::PLATFORM_TAHAN800BC) {
-    return std::make_unique<SaiTahan800bcPlatform>(
-        std::move(productInfo), localMac, platformMappingStr);
-  } else if (productInfo->getType() == PlatformType::PLATFORM_ICECUBE800BC) {
-    return std::make_unique<SaiBcmIcecube800bcPlatform>(
-        std::move(productInfo), localMac, platformMappingStr);
-  } else if (productInfo->getType() == PlatformType::PLATFORM_ICECUBE800BANW) {
-    return std::make_unique<SaiBcmIcecube800banwPlatform>(
-        std::move(productInfo), localMac, platformMappingStr);
-  } else if (productInfo->getType() == PlatformType::PLATFORM_ICETEA800BC) {
-    return std::make_unique<SaiBcmIcetea800bcPlatform>(
-        std::move(productInfo), localMac, platformMappingStr);
-  } else if (productInfo->getType() == PlatformType::PLATFORM_LADAKH800BCLS) {
-    return std::make_unique<SaiBcmLadakh800bclsPlatform>(
-        std::move(productInfo), localMac, platformMappingStr);
-  } else if (productInfo->getType() == PlatformType::PLATFORM_LEH800BCLS) {
-    return std::make_unique<SaiBcmLeh800bclsPlatform>(
-        std::move(productInfo), localMac, platformMappingStr);
-  } else if (productInfo->getType() == PlatformType::PLATFORM_WEDGE800BACT) {
-    return std::make_unique<SaiBcmWedge800BACTPlatform>(
-=======
   } else if (
       productInfo->getType() == PlatformType::PLATFORM_WEDGE800BACT ||
       productInfo->getType() == PlatformType::PLATFORM_WEDGE800BNHP ||
@@ -338,20 +294,11 @@ std::unique_ptr<SaiPlatform> chooseSaiPlatform(
       productInfo->getType() == PlatformType::PLATFORM_TAHAN800BC ||
       productInfo->getType() == PlatformType::PLATFORM_TAHANSB800BC) {
     return createGenericSaiBcmPlatform(
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
         std::move(productInfo), localMac, platformMappingStr);
-<<<<<<< HEAD
   } else if (
       productInfo->getType() == PlatformType::PLATFORM_WEDGE800CACT ||
       productInfo->getType() == PlatformType::PLATFORM_WEDGE800CNHP) {
-    return std::make_unique<SaiWedge800CACTPlatform>(
-||||||| ac0f8c3e61
-  } else if (productInfo->getType() == PlatformType::PLATFORM_WEDGE800CACT) {
-    return std::make_unique<SaiWedge800CACTPlatform>(
-=======
-  } else if (productInfo->getType() == PlatformType::PLATFORM_WEDGE800CACT) {
     return createGenericSaiTajoPlatform(
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
         std::move(productInfo), localMac, platformMappingStr);
   } else if (productInfo->getType() == PlatformType::PLATFORM_M5120CSC) {
     return std::make_unique<SaiM5120CSCPlatform>(

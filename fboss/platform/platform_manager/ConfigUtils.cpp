@@ -17,61 +17,6 @@ namespace facebook::fboss::platform::platform_manager {
 using apache::thrift::SimpleJSONSerializer;
 
 namespace {
-<<<<<<< HEAD
-// Verify that the platform name from the config and dmidecode match.  This
-// is necessary to prevent an incorrect config from being used on any platform.
-// A platform may reuse another platform's config (config alias); the canonical
-// name resolves the alias so the aliased platform is accepted.
-void verifyPlatformNameMatches(
-    const std::string& platformNameInConfig,
-    const std::string& platformNameFromBios) {
-  std::string platformNameInConfigUpper(platformNameInConfig);
-  std::transform(
-      platformNameInConfigUpper.begin(),
-      platformNameInConfigUpper.end(),
-      platformNameInConfigUpper.begin(),
-      ::toupper);
-
-  if (platformNameInConfigUpper ==
-      ConfigLib::canonicalConfigPlatformName(platformNameFromBios)) {
-    return;
-  }
-
-  throw std::runtime_error(
-      fmt::format(
-          "Platform name in config does not match the inferred platform name from "
-          "bios. Config: {}, Inferred name from BIOS {}",
-          platformNameInConfigUpper,
-          platformNameFromBios));
-}
-
-||||||| ac0f8c3e61
-// Verify that the platform name from the config and dmidecode match.  This
-// is necessary to prevent an incorrect config from being used on any platform.
-void verifyPlatformNameMatches(
-    const std::string& platformNameInConfig,
-    const std::string& platformNameFromBios) {
-  std::string platformNameInConfigUpper(platformNameInConfig);
-  std::transform(
-      platformNameInConfigUpper.begin(),
-      platformNameInConfigUpper.end(),
-      platformNameInConfigUpper.begin(),
-      ::toupper);
-
-  if (platformNameInConfigUpper == platformNameFromBios) {
-    return;
-  }
-
-  throw std::runtime_error(
-      fmt::format(
-          "Platform name in config does not match the inferred platform name from "
-          "bios. Config: {}, Inferred name from BIOS {}",
-          platformNameInConfigUpper,
-          platformNameFromBios));
-}
-
-=======
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
 std::string computeHash(const PlatformConfig& config) {
   auto configJson = SimpleJSONSerializer::serialize<std::string>(config);
   auto hash = folly::hasher<std::string>{}(configJson);

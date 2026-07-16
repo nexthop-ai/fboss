@@ -464,7 +464,6 @@ CmdConfigInterfaceTraits::RetType CmdConfigInterface::queryClient(
         }
       }
       results.push_back(fmt::format("mtu={}", mtu));
-<<<<<<< HEAD
     } else if (attr == "profile") {
       results.push_back(applyProfile(hostInfo, interfaces, value));
       changed = true;
@@ -485,12 +484,6 @@ CmdConfigInterfaceTraits::RetType CmdConfigInterface::queryClient(
         }
       }
       results.push_back(fmt::format("{}={}", attr, value));
-||||||| ac0f8c3e61
-    } else if (attr == "profile") {
-      results.push_back(applyProfile(hostInfo, interfaces, value));
-      changed = true;
-=======
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
     } else if (attr == "loopback-mode") {
       changed |= applyLoopbackMode(value, effectiveInterfaces);
       results.push_back(fmt::format("loopback-mode={}", value));

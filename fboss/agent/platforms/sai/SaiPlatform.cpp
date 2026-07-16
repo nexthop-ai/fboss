@@ -123,6 +123,7 @@ bool useGenericSaiBcmPlatformPort(PlatformType platformMode) {
 
 bool useGenericSaiTajoPlatformPort(PlatformType platformMode) {
   return platformMode == PlatformType::PLATFORM_WEDGE800CACT ||
+      platformMode == PlatformType::PLATFORM_WEDGE800CNHP ||
       platformMode == PlatformType::PLATFORM_M5120CSC ||
       platformMode == PlatformType::PLATFORM_MORGAN800CC;
 }
@@ -413,70 +414,16 @@ void SaiPlatform::initPorts() {
       saiPort = std::make_unique<SaiYangraPlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_MINIPACK3N) {
       saiPort = std::make_unique<SaiMinipack3NPlatformPort>(portId, this);
-<<<<<<< HEAD
     } else if (platformMode == PlatformType::PLATFORM_NH4010F) {
       saiPort = std::make_unique<SaiNh4010fPlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_NH4220F) {
       saiPort = std::make_unique<SaiNh4220fPlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_NH5010F) {
       saiPort = std::make_unique<SaiNh5010fPlatformPort>(portId, this);
-    } else if (
-        platformMode == PlatformType::PLATFORM_ICECUBE800BC ||
-        platformMode == PlatformType::PLATFORM_ICECUBE800BANW) {
-      saiPort = std::make_unique<SaiBcmIcecube800PlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_M4062NHP) {
       saiPort = std::make_unique<SaiBcmM4062nhpPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_ICETEA800BC) {
-      saiPort = std::make_unique<SaiBcmIcetea800bcPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_LADAKH800BCLS) {
-      saiPort = std::make_unique<SaiBcmLadakh800bclsPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_LEH800BCLS) {
-      saiPort = std::make_unique<SaiBcmLeh800bclsPlatformPort>(portId, this);
-    } else if (
-        platformMode == PlatformType::PLATFORM_WEDGE800BACT ||
-        platformMode == PlatformType::PLATFORM_WEDGE800BNHP) {
-      saiPort = std::make_unique<SaiBcmWedge800BACTPlatformPort>(portId, this);
-    } else if (
-        platformMode == PlatformType::PLATFORM_WEDGE800CACT ||
-        platformMode == PlatformType::PLATFORM_WEDGE800CNHP) {
-      saiPort = std::make_unique<SaiWedge800CACTPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_J4SIM) {
-      saiPort = std::make_unique<SaiBcmJ4SimPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_SAINTPAUL) {
-      saiPort = std::make_unique<SaiBcmSaintpaulPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_TAHANSB800BC) {
-      saiPort = std::make_unique<SaiBcmTahansb800bcPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_BLACKWOLF800BANW) {
-      saiPort =
-          std::make_unique<SaiBcmBlackwolf800banwPlatformPort>(portId, this);
-||||||| ac0f8c3e61
-    } else if (
-        platformMode == PlatformType::PLATFORM_ICECUBE800BC ||
-        platformMode == PlatformType::PLATFORM_ICECUBE800BANW) {
-      saiPort = std::make_unique<SaiBcmIcecube800PlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_ICETEA800BC) {
-      saiPort = std::make_unique<SaiBcmIcetea800bcPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_LADAKH800BCLS) {
-      saiPort = std::make_unique<SaiBcmLadakh800bclsPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_LEH800BCLS) {
-      saiPort = std::make_unique<SaiBcmLeh800bclsPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_WEDGE800BACT) {
-      saiPort = std::make_unique<SaiBcmWedge800BACTPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_WEDGE800CACT) {
-      saiPort = std::make_unique<SaiWedge800CACTPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_J4SIM) {
-      saiPort = std::make_unique<SaiBcmJ4SimPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_SAINTPAUL) {
-      saiPort = std::make_unique<SaiBcmSaintpaulPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_TAHANSB800BC) {
-      saiPort = std::make_unique<SaiBcmTahansb800bcPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_BLACKWOLF800BANW) {
-      saiPort =
-          std::make_unique<SaiBcmBlackwolf800banwPlatformPort>(portId, this);
-=======
     } else if (useGenericSaiTajoPlatformPort(platformMode)) {
       saiPort = std::make_unique<SaiTajoPlatformPort>(portId, this);
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
     } else if (platformMode == PlatformType::PLATFORM_YANGRA2) {
       saiPort = std::make_unique<SaiYangra2PlatformPort>(portId, this);
     } else {

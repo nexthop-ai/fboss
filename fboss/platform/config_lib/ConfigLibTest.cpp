@@ -19,12 +19,8 @@ const std::string kTahan800bc = "tahan800bc";
 const std::string kBlackwolf800banw = "blackwolf800banw";
 const std::string kSample = "sample";
 const std::string kM4062nhp = "m4062nhp";
-<<<<<<< HEAD
 const std::string kWedge800bact = "wedge800bact";
 const std::string kWedge800bnhp = "wedge800bnhp";
-||||||| ac0f8c3e61
-=======
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
 const std::string kWedge800cact = "wedge800cact";
 const std::string kWedge800cnhp = "wedge800cnhp";
 const std::string kNonExistentPlatform = "nonExistentPlatform";
