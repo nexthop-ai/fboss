@@ -1362,19 +1362,7 @@ cpp_library(
         ":table-utils",
         "//fboss/agent:agent_dir_util",
         "//fboss/agent:fboss-error",
-<<<<<<< HEAD
         "//fboss/agent:switchinfo_utils",
-        "//fboss/agent:fboss-types",
-        "//fboss/agent:platform_config-cpp2-types",
-        "//fboss/agent:switch_config-cpp2-types",
-        "//fboss/agent/if:common-cpp2-types",
-||||||| ac0f8c3e61
-        "//fboss/agent:fboss-types",
-        "//fboss/agent:platform_config-cpp2-types",
-        "//fboss/agent:switch_config-cpp2-types",
-        "//fboss/agent/if:common-cpp2-types",
-=======
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
         "//fboss/agent/if:ctrl-cpp2-clients",
         "//fboss/agent/if:ctrl-cpp2-services",
         "//fboss/agent/platforms/common:platform_mapping",

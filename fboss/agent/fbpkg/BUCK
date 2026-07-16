@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 # bazelify: exclude-all
 
-load("//fboss/agent/fbpkg:agent.bzl", "get_all_wedge_agent_nvda_path_actions")
-||||||| ac0f8c3e61
-load("//fboss/agent/fbpkg:agent.bzl", "get_all_wedge_agent_nvda_path_actions")
-=======
 load(
     "//fboss/agent/fbpkg:agent.bzl",
     "get_all_wedge_agent_csco_path_actions",
@@ -12,7 +7,6 @@ load(
     "get_all_wedge_agent_nvda_path_actions",
     "get_all_wedge_agent_path_actions",
 )
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
 load(
     "//fboss/agent/fbpkg:test_artifacts.bzl",
     "build_hw_agent_artifacts_fbpkgs",

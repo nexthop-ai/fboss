@@ -1440,12 +1440,8 @@ add_dependencies(fboss_platform_services
   fw_util
   weutil
   data_corral_service
-<<<<<<< HEAD
   led_service
-||||||| ac0f8c3e61
-=======
   reboot_cause_finder
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
   # Utilities
   sensor_service_client
   fixmyfboss

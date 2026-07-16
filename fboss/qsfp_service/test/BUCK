@@ -139,10 +139,6 @@ cpp_unittest(
     ],
 )
 
-<<<<<<< HEAD
-# bazelify: exclude
-||||||| ac0f8c3e61
-=======
 cpp_unittest(
     name = "cpo_transceiver_manager_test",
     srcs = [
@@ -163,7 +159,7 @@ cpp_unittest(
     ],
 )
 
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
+# bazelify: exclude
 cpp_library(
     name = "mock-state-machine",
     srcs = ["MockStateMachine.cpp"],
