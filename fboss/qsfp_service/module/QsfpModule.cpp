@@ -1386,7 +1386,8 @@ TransceiverManagementInterface QsfpModule::getTransceiverManagementInterface(
   if (moduleId ==
           static_cast<uint8_t>(TransceiverModuleIdentifier::QSFP_PLUS_CMIS) ||
       moduleId == static_cast<uint8_t>(TransceiverModuleIdentifier::QSFP_DD) ||
-      moduleId == static_cast<uint8_t>(TransceiverModuleIdentifier::OSFP)) {
+      moduleId == static_cast<uint8_t>(TransceiverModuleIdentifier::OSFP) ||
+      moduleId == static_cast<uint8_t>(TransceiverModuleIdentifier::CPO)) {
     return TransceiverManagementInterface::CMIS;
   } else if (
       moduleId ==
@@ -1490,9 +1491,12 @@ void QsfpModule::programTransceiver(
       mediaLaneToPortName_.clear();
       portNameToHostLanes_.clear();
       portNameToMediaLanes_.clear();
-      for (auto portIt : programTcvrState.ports) {
-        auto startHostLane = portIt.second.startHostLane;
-        updateLaneToPortNameMapping(portIt.first, startHostLane);
+      portNameToBankId_.clear();
+      for (const auto& [portName, portState] : programTcvrState.ports) {
+        updateLaneToPortNameMapping(portName, portState.startHostLane);
+        if (portState.bankId.has_value()) {
+          portNameToBankId_[portName] = *portState.bankId;
+        }
       }
       updateCachedTransceiverInfoLocked({});
 

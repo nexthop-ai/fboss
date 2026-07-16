@@ -12,9 +12,9 @@
 
 #include <fmt/format.h>
 #include <folly/String.h>
-#include <algorithm>
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/cli/fboss2/CmdHandler.cpp"
+#include "fboss/cli/fboss2/commands/config/protocol/static/route/StaticRouteUtils.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 
 namespace facebook::fboss {
@@ -25,131 +25,80 @@ std::string addStaticRouteImpl(const RouteArgType& routeArg) {
   auto& swConfig = *config.sw();
 
   const std::string& prefix = routeArg.getPrefix();
+  int32_t vrfId = 0;
+
   StaticRouteType routeType = routeArg.getRouteType();
 
   if (routeType == StaticRouteType::NULL_ROUTE) {
     cfg::StaticRouteNoNextHops newRoute;
-    newRoute.routerID() = 0;
+    newRoute.routerID() = vrfId;
     newRoute.prefix() = prefix;
 
     auto& nullRoutes = *swConfig.staticRoutesToNull();
-    auto it = std::find_if(
-        nullRoutes.begin(), nullRoutes.end(), [&prefix](const auto& route) {
-          return *route.prefix() == prefix;
-        });
-
-    if (it != nullRoutes.end()) {
-      return fmt::format("Static null0 route {} already exists", prefix);
+    if (findStaticRoute(nullRoutes, vrfId, prefix) != nullRoutes.end()) {
+      return fmt::format(
+          "Static null0 route {} (VRF {}) already exists", prefix, vrfId);
     }
 
-    auto& nhopRoutes = *swConfig.staticRoutesWithNhops();
-    auto nhopIt = std::find_if(
-        nhopRoutes.begin(), nhopRoutes.end(), [&prefix](const auto& route) {
-          return *route.prefix() == prefix;
-        });
-    if (nhopIt != nhopRoutes.end()) {
-      nhopRoutes.erase(nhopIt);
-    }
-
-    auto& cpuRoutes = *swConfig.staticRoutesToCPU();
-    auto cpuIt = std::find_if(
-        cpuRoutes.begin(), cpuRoutes.end(), [&prefix](const auto& route) {
-          return *route.prefix() == prefix;
-        });
-    if (cpuIt != cpuRoutes.end()) {
-      cpuRoutes.erase(cpuIt);
-    }
+    eraseStaticRoute(*swConfig.staticRoutesWithNhops(), vrfId, prefix);
+    eraseStaticRoute(*swConfig.staticRoutesToCPU(), vrfId, prefix);
 
     nullRoutes.push_back(newRoute);
 
     ConfigSession::getInstance().saveConfig();
-    return fmt::format("Successfully added static null0 route {}", prefix);
+    return fmt::format(
+        "Successfully added static null0 route {} (VRF {})", prefix, vrfId);
   } else if (routeType == StaticRouteType::CPU_ROUTE) {
     cfg::StaticRouteNoNextHops newRoute;
-    newRoute.routerID() = 0;
+    newRoute.routerID() = vrfId;
     newRoute.prefix() = prefix;
 
     auto& cpuRoutes = *swConfig.staticRoutesToCPU();
-    auto it = std::find_if(
-        cpuRoutes.begin(), cpuRoutes.end(), [&prefix](const auto& route) {
-          return *route.prefix() == prefix;
-        });
-
-    if (it != cpuRoutes.end()) {
-      return fmt::format("Static CPU route {} already exists", prefix);
+    if (findStaticRoute(cpuRoutes, vrfId, prefix) != cpuRoutes.end()) {
+      return fmt::format(
+          "Static CPU route {} (VRF {}) already exists", prefix, vrfId);
     }
 
-    auto& nhopRoutes = *swConfig.staticRoutesWithNhops();
-    auto nhopIt = std::find_if(
-        nhopRoutes.begin(), nhopRoutes.end(), [&prefix](const auto& route) {
-          return *route.prefix() == prefix;
-        });
-    if (nhopIt != nhopRoutes.end()) {
-      nhopRoutes.erase(nhopIt);
-    }
-
-    auto& nullRoutes = *swConfig.staticRoutesToNull();
-    auto nullIt = std::find_if(
-        nullRoutes.begin(), nullRoutes.end(), [&prefix](const auto& route) {
-          return *route.prefix() == prefix;
-        });
-    if (nullIt != nullRoutes.end()) {
-      nullRoutes.erase(nullIt);
-    }
+    eraseStaticRoute(*swConfig.staticRoutesWithNhops(), vrfId, prefix);
+    eraseStaticRoute(*swConfig.staticRoutesToNull(), vrfId, prefix);
 
     cpuRoutes.push_back(newRoute);
 
     ConfigSession::getInstance().saveConfig();
-    return fmt::format("Successfully added static CPU route {}", prefix);
+    return fmt::format(
+        "Successfully added static CPU route {} (VRF {})", prefix, vrfId);
   } else {
     cfg::StaticRouteWithNextHops newRoute;
-    newRoute.routerID() = 0;
+    newRoute.routerID() = vrfId;
     newRoute.prefix() = prefix;
     newRoute.nexthops() = routeArg.getNexthops();
 
     auto& nhopRoutes = *swConfig.staticRoutesWithNhops();
-    auto it = std::find_if(
-        nhopRoutes.begin(), nhopRoutes.end(), [&prefix](const auto& route) {
-          return *route.prefix() == prefix;
-        });
-
+    auto it = findStaticRoute(nhopRoutes, vrfId, prefix);
     if (it != nhopRoutes.end()) {
       it->nexthops() = routeArg.getNexthops();
 
       ConfigSession::getInstance().saveConfig();
       std::string nexthopsList = folly::join(", ", routeArg.getNexthops());
       return fmt::format(
-          "Successfully updated static route {} with nexthop{}: {}",
+          "Successfully updated static route {} (VRF {}) with nexthop{}: {}",
           prefix,
+          vrfId,
           routeArg.getNexthops().size() > 1 ? "s" : "",
           nexthopsList);
     }
 
-    auto& nullRoutes = *swConfig.staticRoutesToNull();
-    auto nullIt = std::find_if(
-        nullRoutes.begin(), nullRoutes.end(), [&prefix](const auto& route) {
-          return *route.prefix() == prefix;
-        });
-    if (nullIt != nullRoutes.end()) {
-      nullRoutes.erase(nullIt);
-    }
-
-    auto& cpuRoutes = *swConfig.staticRoutesToCPU();
-    auto cpuIt = std::find_if(
-        cpuRoutes.begin(), cpuRoutes.end(), [&prefix](const auto& route) {
-          return *route.prefix() == prefix;
-        });
-    if (cpuIt != cpuRoutes.end()) {
-      cpuRoutes.erase(cpuIt);
-    }
+    eraseStaticRoute(*swConfig.staticRoutesToNull(), vrfId, prefix);
+    eraseStaticRoute(*swConfig.staticRoutesToCPU(), vrfId, prefix);
 
     nhopRoutes.push_back(newRoute);
 
     ConfigSession::getInstance().saveConfig();
     std::string nexthopsList = folly::join(", ", routeArg.getNexthops());
     return fmt::format(
-        "Successfully added static route {} with nexthop{}: {}",
+        "Successfully added static route {} (VRF {}) with nexthop{}: {}",
         prefix,
+        vrfId,
         routeArg.getNexthops().size() > 1 ? "s" : "",
         nexthopsList);
   }

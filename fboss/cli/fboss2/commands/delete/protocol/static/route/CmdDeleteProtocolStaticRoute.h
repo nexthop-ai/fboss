@@ -42,23 +42,28 @@ class StaticRouteDeletePrefixArgBase
           "Expected <prefix>, got " + std::to_string(v.size()) + " arguments");
     }
 
-    // Parse and validate the prefix — let format exceptions escape naturally
-    auto [ip, prefixLen] = folly::IPAddress::createNetwork(v[0]);
-    bool isCorrectVersion =
-        (IPVersion == network::thrift::AddressType::V4) ? ip.isV4() : ip.isV6();
-    if (!isCorrectVersion) {
-      std::string expected =
-          (IPVersion == network::thrift::AddressType::V4) ? "IPv4" : "IPv6";
-      std::string got =
-          (IPVersion == network::thrift::AddressType::V4) ? "IPv6" : "IPv4";
-      std::string cmd = (IPVersion == network::thrift::AddressType::V4)
-          ? "delete protocol static ipv6 route"
-          : "delete protocol static ip route";
-      throw std::invalid_argument(
-          "Expected " + expected + " prefix, got " + got + ": " + v[0] +
-          ". Use '" + cmd + "' for " + got + " routes");
+    // Parse and validate the prefix (CIDR network)
+    try {
+      auto [ip, prefixLen] = folly::IPAddress::createNetwork(v[0]);
+      bool isCorrectVersion = (IPVersion == network::thrift::AddressType::V4)
+          ? ip.isV4()
+          : ip.isV6();
+      if (!isCorrectVersion) {
+        std::string expected =
+            (IPVersion == network::thrift::AddressType::V4) ? "IPv4" : "IPv6";
+        std::string got =
+            (IPVersion == network::thrift::AddressType::V4) ? "IPv6" : "IPv4";
+        std::string cmd = (IPVersion == network::thrift::AddressType::V4)
+            ? "delete protocol static ipv6 route"
+            : "delete protocol static ip route";
+        throw std::invalid_argument(
+            "Expected " + expected + " prefix, got " + got + ": " + v[0] +
+            ". Use '" + cmd + "' for " + got + " routes");
+      }
+      prefix_ = v[0];
+    } catch (const folly::IPAddressFormatException& e) {
+      throw std::invalid_argument(e.what());
     }
-    prefix_ = v[0];
   }
 
   const std::string& getPrefix() const {
@@ -95,6 +100,8 @@ struct CmdDeleteProtocolStaticIpRouteTraits : public WriteCommandTraits {
         args,
         "IPv4 route prefix in CIDR notation (e.g., 10.0.0.0/8)");
   }
+  static constexpr network::thrift::AddressType ipVersion =
+      network::thrift::AddressType::V4;
   using ObjectArgType = StaticRouteDeleteIpPrefixArg;
   using RetType = std::string;
 };
@@ -120,6 +127,8 @@ struct CmdDeleteProtocolStaticIpv6RouteTraits : public WriteCommandTraits {
         args,
         "IPv6 route prefix in CIDR notation (e.g., 2001:db8::/32)");
   }
+  static constexpr network::thrift::AddressType ipVersion =
+      network::thrift::AddressType::V6;
   using ObjectArgType = StaticRouteDeleteIpv6PrefixArg;
   using RetType = std::string;
 };

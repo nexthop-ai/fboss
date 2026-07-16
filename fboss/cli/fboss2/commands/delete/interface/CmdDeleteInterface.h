@@ -19,20 +19,19 @@ namespace facebook::fboss {
 
 /*
  * InterfaceDeleteConfig captures interface/port names plus the attributes to
- * delete (reset to default) for the `delete interface` command.
+ * delete (reset to default or remove by value) for the `delete interface`
+ * command.
  *
  * Usage: delete interface <port-list> [<attr> [<value>] ...]
  *
- * Tokens before the first known attribute name are interface/port names; the
- * rest are attribute names. Most attributes are valueless (delete resets to
- * default); ip-address / ipv6-address take the specific address to remove.
- *
- * Supported delete attributes (reset to default):
+ * Valueless attributes (reset to default):
  *   loopback-mode, lldp-expected-value, lldp-expected-chassis,
  *   lldp-expected-ttl, lldp-expected-port-desc, lldp-expected-system-name,
  *   lldp-expected-system-desc
- * Supported delete attributes (with value):
- *   ip-address <cidr>, ipv6-address <cidr>
+ *
+ * Valued attributes (remove specific entry):
+ *   ip-address <cidr>    — remove an IPv4 address (e.g. 10.0.0.1/24)
+ *   ipv6-address <cidr>  — remove an IPv6 address (e.g. 2001:db8::1/64)
  */
 class InterfaceDeleteConfig : public InterfaceAttrArgsBase {
  public:

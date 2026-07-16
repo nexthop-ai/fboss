@@ -11,9 +11,9 @@
 #include "fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.h"
 
 #include <fmt/format.h>
-#include <algorithm>
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/cli/fboss2/CmdHandler.cpp"
+#include "fboss/cli/fboss2/commands/config/protocol/static/route/StaticRouteUtils.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 
 namespace facebook::fboss {
@@ -24,44 +24,20 @@ std::string deleteStaticRouteImpl(const PrefixArgType& prefixArg) {
   auto& swConfig = *config.sw();
 
   const std::string& prefix = prefixArg.getPrefix();
+  int32_t vrfId = 0;
+
   bool found = false;
-
-  auto& nhopRoutes = *swConfig.staticRoutesWithNhops();
-  auto nhopIt = std::find_if(
-      nhopRoutes.begin(), nhopRoutes.end(), [&prefix](const auto& route) {
-        return *route.prefix() == prefix;
-      });
-  if (nhopIt != nhopRoutes.end()) {
-    nhopRoutes.erase(nhopIt);
-    found = true;
-  }
-
-  auto& nullRoutes = *swConfig.staticRoutesToNull();
-  auto nullIt = std::find_if(
-      nullRoutes.begin(), nullRoutes.end(), [&prefix](const auto& route) {
-        return *route.prefix() == prefix;
-      });
-  if (nullIt != nullRoutes.end()) {
-    nullRoutes.erase(nullIt);
-    found = true;
-  }
-
-  auto& cpuRoutes = *swConfig.staticRoutesToCPU();
-  auto cpuIt = std::find_if(
-      cpuRoutes.begin(), cpuRoutes.end(), [&prefix](const auto& route) {
-        return *route.prefix() == prefix;
-      });
-  if (cpuIt != cpuRoutes.end()) {
-    cpuRoutes.erase(cpuIt);
-    found = true;
-  }
+  found |= eraseStaticRoute(*swConfig.staticRoutesWithNhops(), vrfId, prefix);
+  found |= eraseStaticRoute(*swConfig.staticRoutesToNull(), vrfId, prefix);
+  found |= eraseStaticRoute(*swConfig.staticRoutesToCPU(), vrfId, prefix);
 
   if (!found) {
-    return fmt::format("Static route {} not found", prefix);
+    return fmt::format("Static route {} (VRF {}) not found", prefix, vrfId);
   }
 
   ConfigSession::getInstance().saveConfig();
-  return fmt::format("Successfully deleted static route {}", prefix);
+  return fmt::format(
+      "Successfully deleted static route {} (VRF {})", prefix, vrfId);
 }
 
 CmdDeleteProtocolStaticIpRouteTraits::RetType

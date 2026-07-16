@@ -202,7 +202,8 @@ TEST_F(CmdConfigIpRouteTestFixture, updateIpv4Route) {
 // Test invalid prefix format
 TEST_F(CmdConfigIpRouteTestFixture, invalidIpv4PrefixFormat) {
   EXPECT_THROW(
-      StaticRouteAddIpArg({"invalid-prefix", "192.168.1.1"}), std::exception);
+      StaticRouteAddIpArg({"invalid-prefix", "192.168.1.1"}),
+      std::invalid_argument);
 }
 
 // Test IPv6 prefix should fail for IPv4 command
@@ -298,7 +299,7 @@ TEST_F(CmdConfigIpRouteTestFixture, deleteNonExistentIpv4Route) {
 // Test invalid prefix format for delete
 TEST_F(CmdConfigIpRouteTestFixture, deleteInvalidIpv4PrefixFormat) {
   EXPECT_THROW(
-      StaticRouteDeleteIpPrefixArg({"invalid-prefix"}), std::exception);
+      StaticRouteDeleteIpPrefixArg({"invalid-prefix"}), std::invalid_argument);
 }
 
 // ============== IPv6 Route Add Tests ==============
@@ -390,7 +391,8 @@ TEST_F(CmdConfigIpRouteTestFixture, ipv4PrefixInIpv6Command) {
 // Test invalid IPv6 prefix format
 TEST_F(CmdConfigIpRouteTestFixture, invalidIpv6PrefixFormat) {
   EXPECT_THROW(
-      StaticRouteAddIpv6Arg({"invalid-prefix", "2001:db8::1"}), std::exception);
+      StaticRouteAddIpv6Arg({"invalid-prefix", "2001:db8::1"}),
+      std::invalid_argument);
 }
 
 // Test too few arguments for IPv6
@@ -506,7 +508,8 @@ TEST_F(CmdConfigIpRouteTestFixture, deleteIpv4PrefixInIpv6Command) {
 // Test invalid IPv6 prefix format for delete
 TEST_F(CmdConfigIpRouteTestFixture, deleteInvalidIpv6PrefixFormat) {
   EXPECT_THROW(
-      StaticRouteDeleteIpv6PrefixArg({"invalid-prefix"}), std::exception);
+      StaticRouteDeleteIpv6PrefixArg({"invalid-prefix"}),
+      std::invalid_argument);
 }
 
 } // namespace facebook::fboss

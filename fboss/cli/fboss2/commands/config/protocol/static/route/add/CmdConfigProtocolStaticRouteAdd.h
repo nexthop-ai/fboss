@@ -54,10 +54,14 @@ class StaticRouteAddArgBase : public utils::BaseObjectArgType<std::string> {
           std::to_string(v.size()) + " arguments");
     }
 
-    // Parse and validate the prefix — let format exceptions escape naturally
-    auto [ip, prefixLen] = folly::IPAddress::createNetwork(v[0]);
-    validateIpVersion(ip, v[0], "prefix");
-    prefix_ = v[0];
+    // Parse and validate the prefix (CIDR network)
+    try {
+      auto [ip, prefixLen] = folly::IPAddress::createNetwork(v[0]);
+      validateIpVersion(ip, v[0], "prefix");
+      prefix_ = v[0];
+    } catch (const folly::IPAddressFormatException& e) {
+      throw std::invalid_argument(e.what());
+    }
 
     // Check the route type from the first nexthop argument
     std::string firstNexthop = v[1];
@@ -161,8 +165,10 @@ struct CmdConfigProtocolStaticIpRouteAddTraits : public WriteCommandTraits {
     cmd.add_option(
         "static_route",
         args,
-        "<prefix> <nexthop|null0|cpu> [nexthop2 ...] - Add an IPv4 static route");
+        "<prefix> <nexthop|null0|cpu> - Add an IPv4 static route");
   }
+  static constexpr network::thrift::AddressType ipVersion =
+      network::thrift::AddressType::V4;
   using ObjectArgType = StaticRouteAddIpArg;
   using RetType = std::string;
 };
@@ -186,8 +192,10 @@ struct CmdConfigProtocolStaticIpv6RouteAddTraits : public WriteCommandTraits {
     cmd.add_option(
         "static_route",
         args,
-        "<prefix> <nexthop|null0|cpu> [nexthop2 ...] - Add an IPv6 static route");
+        "<prefix> <nexthop|null0|cpu> - Add an IPv6 static route");
   }
+  static constexpr network::thrift::AddressType ipVersion =
+      network::thrift::AddressType::V6;
   using ObjectArgType = StaticRouteAddIpv6Arg;
   using RetType = std::string;
 };

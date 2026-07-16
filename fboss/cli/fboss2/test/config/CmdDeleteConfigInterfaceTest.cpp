@@ -34,10 +34,79 @@ class CmdDeleteConfigInterfaceTestFixture : public CmdConfigTestBase {
   const std::string cmdPrefix_ = "delete interface";
 };
 
-// CmdDeleteInterface::queryClient tests
-// (Parse-time validation is covered by InterfaceDeleteConfig — see
-// CmdConfigInterfaceTest.cpp. The tests below cover the delete-specific
-// invariants enforced inside queryClient.)
+// ============================================================================
+// InterfaceDeleteConfig Validation Tests
+// ============================================================================
+
+// Test valid delete config with single interface
+TEST_F(CmdDeleteConfigInterfaceTestFixture, validSingleInterface) {
+  setupTestableConfigSession();
+  InterfaceDeleteConfig config({"eth1/1/1", "ip-address", "10.0.0.1/24"});
+  EXPECT_EQ(config.getInterfaces()[0].name(), "eth1/1/1");
+  EXPECT_EQ(config.getAttributes()[0].first, "ip-address");
+  EXPECT_EQ(config.getAttributes()[0].second, "10.0.0.1/24");
+}
+
+// Test IPv6 address
+TEST_F(CmdDeleteConfigInterfaceTestFixture, validIpv6Address) {
+  setupTestableConfigSession();
+  InterfaceDeleteConfig config({"eth1/1/1", "ipv6-address", "2001:db8::1/64"});
+  EXPECT_EQ(config.getInterfaces()[0].name(), "eth1/1/1");
+  EXPECT_EQ(config.getAttributes()[0].first, "ipv6-address");
+  EXPECT_EQ(config.getAttributes()[0].second, "2001:db8::1/64");
+}
+
+// Test case-insensitive attribute names
+TEST_F(CmdDeleteConfigInterfaceTestFixture, caseInsensitiveAttribute) {
+  setupTestableConfigSession();
+  InterfaceDeleteConfig config({"eth1/1/1", "IP-ADDRESS", "10.0.0.1/24"});
+  // Attribute should be normalized to lowercase
+  EXPECT_EQ(config.getAttributes()[0].first, "ip-address");
+}
+
+// Test unknown interface throws (eth1/2/1 is not in the test config)
+TEST_F(CmdDeleteConfigInterfaceTestFixture, unknownInterfaceThrows) {
+  setupTestableConfigSession();
+  EXPECT_THROW(
+      InterfaceDeleteConfig(
+          {"eth1/1/1", "eth1/2/1", "ip-address", "10.0.0.1/24"}),
+      std::invalid_argument);
+}
+
+// Test too few arguments throws
+TEST_F(CmdDeleteConfigInterfaceTestFixture, tooFewArgumentsThrows) {
+  setupTestableConfigSession();
+  EXPECT_THROW(
+      InterfaceDeleteConfig({"eth1/1/1", "ip-address"}), std::invalid_argument);
+}
+
+// Test unknown attribute throws
+TEST_F(CmdDeleteConfigInterfaceTestFixture, unknownAttributeThrows) {
+  setupTestableConfigSession();
+  EXPECT_THROW(
+      InterfaceDeleteConfig({"eth1/1/1", "description", "test"}),
+      std::invalid_argument);
+}
+
+// Test invalid IP address format throws
+TEST_F(CmdDeleteConfigInterfaceTestFixture, invalidIpAddressThrows) {
+  setupTestableConfigSession();
+  EXPECT_THROW(
+      InterfaceDeleteConfig({"eth1/1/1", "ip-address", "invalid"}),
+      std::exception);
+}
+
+// Test IP version mismatch throws during construction
+TEST_F(CmdDeleteConfigInterfaceTestFixture, ipVersionMismatchThrows) {
+  setupTestableConfigSession();
+  EXPECT_THROW(
+      (InterfaceDeleteConfig({"eth1/1/1", "ip-address", "2001:db8::1/64"})),
+      std::invalid_argument);
+}
+
+// ============================================================================
+// CmdDeleteConfigInterface::queryClient Tests
+// ============================================================================
 
 // Test deleting existing IPv4 address
 TEST_F(CmdDeleteConfigInterfaceTestFixture, deleteExistingIpv4Address) {
@@ -49,7 +118,7 @@ TEST_F(CmdDeleteConfigInterfaceTestFixture, deleteExistingIpv4Address) {
   auto& intfs = *config.sw()->interfaces();
   for (auto& intf : intfs) {
     if (*intf.name() == "eth1/1/1") {
-      intf.ipAddresses()->emplace_back("10.0.0.1/24");
+      intf.ipAddresses()->push_back("10.0.0.1/24");
       break;
     }
   }
@@ -60,7 +129,7 @@ TEST_F(CmdDeleteConfigInterfaceTestFixture, deleteExistingIpv4Address) {
   InterfaceDeleteConfig deleteConfig({"eth1/1/1", "ip-address", "10.0.0.1/24"});
   auto result = cmd.queryClient(localhost(), deleteConfig);
 
-  EXPECT_THAT(result, HasSubstr("Successfully deleted"));
+  EXPECT_THAT(result, HasSubstr("Successfully removed"));
   EXPECT_THAT(result, HasSubstr("10.0.0.1/24"));
   EXPECT_THAT(result, HasSubstr("eth1/1/1"));
 
@@ -83,25 +152,6 @@ TEST_F(CmdDeleteConfigInterfaceTestFixture, deleteNonExistentIpAddress) {
   auto result = cmd.queryClient(localhost(), deleteConfig);
 
   EXPECT_THAT(result, HasSubstr("not configured"));
-}
-
-// IP version mismatch is rejected by validateInterfaceIpAttr inside queryClient
-TEST_F(CmdDeleteConfigInterfaceTestFixture, ipVersionMismatchThrows) {
-  setupTestableConfigSession(cmdPrefix_, "eth1/1/1 ip-address 2001:db8::1/64");
-  auto cmd = CmdDeleteInterface();
-  InterfaceDeleteConfig deleteConfig(
-      {"eth1/1/1", "ip-address", "2001:db8::1/64"});
-  EXPECT_THROW(
-      cmd.queryClient(localhost(), deleteConfig), std::invalid_argument);
-}
-
-// Non-delete attributes (e.g., description) are not valid delete attributes,
-// so they are treated as interface names and rejected at parse time.
-TEST_F(CmdDeleteConfigInterfaceTestFixture, nonIpAttributeRejected) {
-  setupTestableConfigSession(cmdPrefix_, "eth1/1/1 description foo");
-  EXPECT_THROW(
-      InterfaceDeleteConfig({"eth1/1/1", "description", "foo"}),
-      std::invalid_argument);
 }
 
 } // namespace facebook::fboss
