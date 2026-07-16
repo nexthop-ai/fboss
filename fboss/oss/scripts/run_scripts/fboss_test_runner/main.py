@@ -6,14 +6,8 @@ import os
 import sys
 from argparse import ArgumentParser, Namespace
 
-<<<<<<< HEAD
-import run_test
 from setup import setup_fboss_env
 
-||||||| ac0f8c3e61
-import run_test
-=======
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
 from fboss_test_runner.constants import (
     OPT_ARG_FILTER,
     OPT_ARG_FILTER_FILE,
@@ -60,28 +54,10 @@ from fboss_test_runner.runners.sai_test_runner import SaiTestRunner
 from fboss_test_runner.runners.test_runner import TestRunner
 
 
-<<<<<<< HEAD
-def main() -> None:
-    os.chdir("/opt/fboss")
-    setup_fboss_env()
-
-    ap = ArgumentParser(description="FBOSS Hardware Test Runner")
-||||||| ac0f8c3e61
-def main() -> None:
-    os.chdir("/opt/fboss")
-    setup_fboss_env()
-
-    ap = ArgumentParser(
-        description="FBOSS Hardware Test Runner",
-    )
-=======
 def _build_parser() -> ArgumentParser:
     """Build the CLI parser. Instantiates the runners, which snapshot the
     environment, so this must be called after ``setup_fboss_env()``."""
-    ap = ArgumentParser(
-        description="FBOSS Hardware Test Runner",
-    )
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
+    ap = ArgumentParser(description="FBOSS Hardware Test Runner")
     subparsers = ap.add_subparsers(dest="command", title="test types")
 
     def _register_runner(

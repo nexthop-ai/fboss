@@ -12,13 +12,6 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
-<<<<<<< HEAD
-import run_test
-
-||||||| ac0f8c3e61
-import run_test
-=======
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
 from fboss_test_runner.runners.test_runner import TestRunner
 
 
@@ -70,7 +63,7 @@ def known_bad_tests_json():
                 {"test_name_regex": "HwAcl.*", "reason": "T67890"},
             ],
             "brcm/8.2/8.2/tomahawk/mono": [
-                {"test_name_regex": "HwRouteTest\\.MonoOnly", "reason": "T11111"},
+                {"test_name_regex": "HwRouteTest\\.MonoOnly", "reason": "T11111"}
             ],
         }
     }
@@ -87,8 +80,8 @@ def unsupported_tests_json():
     data = {
         "unsupported_tests": {
             "brcm/8.2/8.2/tomahawk": [
-                {"test_name_regex": "HwMirrorTest\\..*", "reason": "Not supported"},
-            ],
+                {"test_name_regex": "HwMirrorTest\\..*", "reason": "Not supported"}
+            ]
         }
     }
     with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".json") as f:

@@ -10,6 +10,7 @@ import json
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from fboss_test_runner.runners.sai_agent_test_runner import SaiAgentTestRunner
 
 
@@ -91,8 +92,7 @@ class TestTestRunArgsByMode:
             sai_agent_runner,
             "args",
             new=_make_args(
-                agent_run_mode="mono",
-                platform_mapping_override_path="/tmp/pm.json",
+                agent_run_mode="mono", platform_mapping_override_path="/tmp/pm.json"
             ),
         ):
             args_list = sai_agent_runner._get_test_run_args("dummy.conf")
@@ -114,7 +114,7 @@ class TestTestRunArgsByMode:
             assert "/tmp/pm.json" not in args_list
 
     def test_forwards_num_npus_to_test_binary(self, sai_agent_runner):
-        with patch("run_test.args", new=_make_args(num_npus=2)):
+        with patch.object(sai_agent_runner, "args", new=_make_args(num_npus=2)):
             args_list = sai_agent_runner._get_test_run_args("dummy.conf")
             assert "--undefok=num_npus_for_testing" in args_list
             assert "--num_npus_for_testing" in args_list
@@ -169,9 +169,7 @@ class TestFilterTestsProductionFeatures:
 
     def test_no_filter_when_neither_flag_set(self, sai_agent_runner):
         with patch.object(
-            sai_agent_runner,
-            "args",
-            new=_make_args(agent_run_mode="multi_switch"),
+            sai_agent_runner, "args", new=_make_args(agent_run_mode="multi_switch")
         ):
             tests = ["AgentA.t", "AgentB.t"]
             assert sai_agent_runner._filter_tests(tests) == tests

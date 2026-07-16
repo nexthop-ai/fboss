@@ -126,12 +126,11 @@ class TestRunTestGtestFallback:
         self, runner, mock_args, tmp_path
     ):
         """End-to-end: a SKIPPED gtest result must not be rewritten as OK."""
-<<<<<<< HEAD
         runner.TESTRESULT_CURRENT_RUN_FILE = str(tmp_path / "tr_current_run.xml")
-        # _get_test_run_cmd reads the module-level `args` global, which is only
-        # bound under `if __name__ == "__main__":` — use create=True to inject it.
+        # _get_test_run_cmd reads args off the runner instance (self.args);
+        # patch it on the runner for the duration of the call.
         with (
-            patch("run_test.args", new=mock_args, create=True),
+            patch.object(runner, "args", new=mock_args),
             patch.object(
                 runner,
                 "_capture_subprocess",
@@ -140,17 +139,6 @@ class TestRunTestGtestFallback:
                 ),
             ),
         ):
-||||||| ac0f8c3e61
-        mock_check_output.return_value = b"[  SKIPPED ] HwFooTest.Bar (5 ms)\n"
-        # _get_test_run_cmd reads the module-level `args` global, which is only
-        # bound under `if __name__ == "__main__":` — use create=True to inject it.
-        with patch("run_test.args", new=mock_args, create=True):
-=======
-        mock_check_output.return_value = b"[  SKIPPED ] HwFooTest.Bar (5 ms)\n"
-        # _get_test_run_cmd reads args off the runner instance (self.args);
-        # patch it on the runner for the duration of the call.
-        with patch.object(runner, "args", new=mock_args):
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
             outcome = runner._run_test(
                 conf_file="dummy.conf",
                 test_prefix="cold_boot.",
@@ -168,23 +156,15 @@ class TestRunTestGtestFallback:
         """Fallback path still works: empty output (e.g. --setup-for-warmboot early
         exit) should still synthesize an OK result so the test isn't lost from
         the summary."""
-<<<<<<< HEAD
         runner.TESTRESULT_CURRENT_RUN_FILE = str(tmp_path / "tr_current_run.xml")
         with (
-            patch("run_test.args", new=mock_args, create=True),
+            patch.object(runner, "args", new=mock_args, create=True),
             patch.object(
                 runner,
                 "_capture_subprocess",
                 new=_make_capture_writing(b"", runner, _STUB_GTEST_XML),
             ),
         ):
-||||||| ac0f8c3e61
-        mock_check_output.return_value = b""
-        with patch("run_test.args", new=mock_args, create=True):
-=======
-        mock_check_output.return_value = b""
-        with patch.object(runner, "args", new=mock_args, create=True):
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
             outcome = runner._run_test(
                 conf_file="dummy.conf",
                 test_prefix="warm_boot.",
@@ -206,21 +186,15 @@ class TestRunTestTimeout:
         # result file at a writable tmp location.
         runner.TESTRESULT_CURRENT_RUN_FILE = str(tmp_path / "tr_current_run.xml")
         mock_args.test_run_timeout = 300
-<<<<<<< HEAD
 
         def fake_capture(cmd, timeout):  # noqa: ARG001 - mirrors _capture_subprocess
             # returncode is ignored once timed_out is True (see exit_info).
             return -9, True, b"", b""
 
         with (
-            patch("run_test.args", new=mock_args, create=True),
+            patch.object(runner, "args", new=mock_args, create=True),
             patch.object(runner, "_capture_subprocess", new=fake_capture),
         ):
-||||||| ac0f8c3e61
-        with patch("run_test.args", new=mock_args, create=True):
-=======
-        with patch.object(runner, "args", new=mock_args, create=True):
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
             outcome = runner._run_test(
                 conf_file="dummy.conf",
                 test_prefix="cold_boot.",
@@ -490,7 +464,7 @@ class TestGetTestsToRunFilter:
 
         args = self._make_args()
         with (
-            patch("run_test.args", new=args, create=True),
+            patch.object(runner, "args", new=args, create=True),
             patch.object(runner, "_list_tests_to_run", return_value=listed),
             patch.object(runner, "_is_known_bad_test", side_effect=fake_is_known_bad),
             patch.object(

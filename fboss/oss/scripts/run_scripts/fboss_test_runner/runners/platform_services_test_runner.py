@@ -7,14 +7,7 @@ from argparse import ArgumentParser, Namespace
 from contextlib import suppress
 from typing import ClassVar
 
-<<<<<<< HEAD
-import run_test
-
 from fboss_test_runner.constants import SUB_ARG_PLATFORM_MANAGER_HW_TEST
-||||||| ac0f8c3e61
-import run_test
-=======
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
 from fboss_test_runner.result_types import GtestResult
 from fboss_test_runner.runners.test_runner import (
     disable_services,

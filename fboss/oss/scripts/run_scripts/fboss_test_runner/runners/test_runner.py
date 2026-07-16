@@ -16,8 +16,6 @@ from argparse import ArgumentParser, Namespace
 from contextlib import suppress
 from datetime import datetime, timezone
 
-<<<<<<< HEAD
-import run_test
 from nh_test_xml_utils import (
     emit_test_boundary,
     exit_info,
@@ -28,10 +26,6 @@ from nh_test_xml_utils import (
     write_synthetic_failure_xml,
 )
 
-||||||| ac0f8c3e61
-import run_test
-=======
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
 from fboss_test_runner.constants import (
     ALL_SIMUALTOR_ASICS_STR,
     DEFAULT_TEST_RUN_TIMEOUT_IN_SECOND,

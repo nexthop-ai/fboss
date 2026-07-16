@@ -91,41 +91,13 @@ _PLATFORM_VARIANTS_MAP: dict[str, list[str]] = {
         "ladakh800bcls_test_fixture",
         "ladakh800bcls_osfp_tray",
     ],
-<<<<<<< HEAD
     "leh800bcls": ["leh800bcls_rack", "leh800bcls_test_fixture"],
     "montblanc": ["montblanc_odd_ports_8x100G", "montblanc"],
     "minipack3bta": ["minipack3bta_16rifs"],
-||||||| ac0f8c3e61
-    "leh800bcls": [
-        "leh800bcls_rack",
-        "leh800bcls_test_fixture",
-    ],
-    "montblanc": [
-        "montblanc_odd_ports_8x100G",
-        "montblanc",
-    ],
-    "minipack3bta": [
-        "minipack3bta_16rifs",
-    ],
-=======
-    "leh800bcls": [
-        "leh800bcls_rack",
-        "leh800bcls_test_fixture",
-    ],
-    "montblanc": [
-        "montblanc_odd_ports_8x100G",
-        "montblanc",
-    ],
-    "minipack3bta": [
-        "minipack3bta_16rifs",
-    ],
     # Wedge800BNHP shares the exact same board / platform mapping as
     # Wedge800BACT; it only needs its own platform descriptor (distinct
     # PlatformType / detection), inheriting all mapping CSVs from the base.
-    "wedge800bact": [
-        "wedge800bnhp",
-    ],
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
+    "wedge800bact": ["wedge800bnhp"],
 }
 
 _PLATFORM_TO_BASE_PLATFORM: dict[str, str] = {

@@ -49,13 +49,6 @@ using namespace facebook::fboss;
 
 class ConfigInterfaceProfileTest : public Fboss2IntegrationTest {
  protected:
-<<<<<<< HEAD
-  void SetUp() override {
-    GTEST_SKIP()
-        << "Skipped: the 'config interface profile' command is being reworked "
-           "(PR #917). Remove this SetUp to re-enable once that lands.";
-||||||| ac0f8c3e61
-=======
   // A concrete profile-change to exercise, derived from the platform mapping.
   struct Candidate {
     std::string portName; // controlling port
@@ -105,7 +98,6 @@ class ConfigInterfaceProfileTest : public Fboss2IntegrationTest {
       }
     }
     return std::nullopt;
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
   }
 
   /**
