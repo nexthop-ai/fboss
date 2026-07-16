@@ -73,10 +73,6 @@ class FacebookBase2 : virtual public cpp2::FacebookServiceSvIf {
   int64_t getPid() override {
     return getpid();
   }
-
-  void getCounters(std::map<std::string, int64_t>& _return) override {
-    ServiceData::get()->getCounters(_return);
-  }
 };
 
 /// Stub
