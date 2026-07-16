@@ -37,17 +37,7 @@
 #include "fboss/agent/platforms/sai/SaiBcmElbertPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmFujiPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmJ4SimPlatform.h"
-<<<<<<< HEAD
-#include "fboss/agent/platforms/sai/SaiBcmLadakh800bclsPlatform.h"
-#include "fboss/agent/platforms/sai/SaiBcmLeh800bclsPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmM4062nhpPlatform.h"
-#include "fboss/agent/platforms/sai/SaiBcmMinipack3BTAPlatform.h"
-||||||| ac0f8c3e61
-#include "fboss/agent/platforms/sai/SaiBcmLadakh800bclsPlatform.h"
-#include "fboss/agent/platforms/sai/SaiBcmLeh800bclsPlatform.h"
-#include "fboss/agent/platforms/sai/SaiBcmMinipack3BTAPlatform.h"
-=======
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
 #include "fboss/agent/platforms/sai/SaiBcmMinipackPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmSaintpaulPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmWedge100Platform.h"
@@ -60,15 +50,9 @@
 #include "fboss/agent/platforms/sai/SaiMeru800biaPlatform.h"
 #include "fboss/agent/platforms/sai/SaiMinipack3NPlatform.h"
 #include "fboss/agent/platforms/sai/SaiMorgan800ccPlatform.h"
-<<<<<<< HEAD
 #include "fboss/agent/platforms/sai/SaiNh4010fPlatform.h"
 #include "fboss/agent/platforms/sai/SaiNh4220fPlatform.h"
 #include "fboss/agent/platforms/sai/SaiNh5010fPlatform.h"
-#include "fboss/agent/platforms/sai/SaiTahan800bcPlatform.h"
-||||||| ac0f8c3e61
-#include "fboss/agent/platforms/sai/SaiTahan800bcPlatform.h"
-=======
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
 #include "fboss/agent/platforms/sai/SaiWedge400CPlatform.h"
 #include "fboss/agent/platforms/sai/SaiYangra2Platform.h"
 #include "fboss/agent/platforms/sai/SaiYangraPlatform.h"

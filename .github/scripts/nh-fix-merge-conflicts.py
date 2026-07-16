@@ -120,9 +120,8 @@ def is_file_path_line(line: str, file_format: FileFormat) -> bool:
         if '"' in stripped:
             # #include "path/to/file.h"
             return True
-        elif '<' in stripped and '>' in stripped:
-            # #include <system/header.h>
-            return True
+        # Angle-bracket includes (#include <...>) can't be existence-checked
+        # against the repo, so skip those conflicts for manual resolution
         return False
 
     elif file_format == FileFormat.BUCK:
@@ -385,22 +384,28 @@ def find_files_with_conflicts(repo_root: Path) -> List[Tuple[Path, FileFormat]]:
             # Skip files that can't be read
             continue
 
-    # Find specific C++ files that commonly have include conflicts
-    cpp_files_to_check = [
-        repo_root / 'fboss' / 'cli' / 'fboss2' / 'CmdList.cpp',
-        repo_root / 'fboss' / 'cli' / 'fboss2' / 'CmdListConfig.cpp',
-    ]
-
-    for cpp_file in cpp_files_to_check:
-        if cpp_file.exists():
-            try:
-                with open(cpp_file, 'r') as f:
-                    content = f.read()
-                    if '<<<<<<< HEAD' in content:
-                        files_with_conflicts.append((cpp_file, FileFormat.CPP_INCLUDE))
-            except (IOError, UnicodeDecodeError):
-                # Skip files that can't be read
-                continue
+    # Find C++ files with conflicts (e.g. in #include lists). Grep tracked
+    # files for conflict markers rather than relying on the index's unmerged
+    # state, since files may have been (partially) staged already.
+    result = subprocess.run(
+        ['git', 'grep', '-l', '<<<<<<< HEAD', '--',
+         '*.cpp', '*.h', '*.hpp', '*.cc'],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    for rel_path in result.stdout.splitlines():
+        cpp_file = repo_root / rel_path
+        if not cpp_file.exists():
+            continue
+        try:
+            with open(cpp_file, 'r') as f:
+                if '<<<<<<< HEAD' in f.read():
+                    files_with_conflicts.append((cpp_file, FileFormat.CPP_INCLUDE))
+        except (IOError, UnicodeDecodeError):
+            # Skip files that can't be read
+            continue
 
     return files_with_conflicts
 

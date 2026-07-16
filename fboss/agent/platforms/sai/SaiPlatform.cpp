@@ -23,23 +23,7 @@
 #include "fboss/agent/platforms/sai/SaiBcmDarwinPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiBcmElbertPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiBcmFujiPlatformPort.h"
-<<<<<<< HEAD
-#include "fboss/agent/platforms/sai/SaiBcmIcecube800PlatformPort.h"
-#include "fboss/agent/platforms/sai/SaiBcmIcetea800bcPlatformPort.h"
-#include "fboss/agent/platforms/sai/SaiBcmJ4SimPlatformPort.h"
-#include "fboss/agent/platforms/sai/SaiBcmLadakh800bclsPlatformPort.h"
-#include "fboss/agent/platforms/sai/SaiBcmLeh800bclsPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiBcmM4062nhpPlatformPort.h"
-#include "fboss/agent/platforms/sai/SaiBcmMinipack3BTAPlatformPort.h"
-||||||| ac0f8c3e61
-#include "fboss/agent/platforms/sai/SaiBcmIcecube800PlatformPort.h"
-#include "fboss/agent/platforms/sai/SaiBcmIcetea800bcPlatformPort.h"
-#include "fboss/agent/platforms/sai/SaiBcmJ4SimPlatformPort.h"
-#include "fboss/agent/platforms/sai/SaiBcmLadakh800bclsPlatformPort.h"
-#include "fboss/agent/platforms/sai/SaiBcmLeh800bclsPlatformPort.h"
-#include "fboss/agent/platforms/sai/SaiBcmMinipack3BTAPlatformPort.h"
-=======
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
 #include "fboss/agent/platforms/sai/SaiBcmMinipackPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiBcmWedge100PlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiBcmWedge400PlatformPort.h"
@@ -47,18 +31,10 @@
 #include "fboss/agent/platforms/sai/SaiElbert8DDPhyPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiFakePlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiMinipack3NPlatformPort.h"
-<<<<<<< HEAD
-#include "fboss/agent/platforms/sai/SaiMorgan800ccPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiNh4010fPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiNh4220fPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiNh5010fPlatformPort.h"
-#include "fboss/agent/platforms/sai/SaiTahan800bcPlatformPort.h"
-||||||| ac0f8c3e61
-#include "fboss/agent/platforms/sai/SaiMorgan800ccPlatformPort.h"
-#include "fboss/agent/platforms/sai/SaiTahan800bcPlatformPort.h"
-=======
 #include "fboss/agent/platforms/sai/SaiTajoPlatformPort.h"
->>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
 #include "fboss/agent/platforms/sai/SaiWedge400CPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiYangra2PlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiYangraPlatformPort.h"
