@@ -18,7 +18,12 @@ namespace facebook::fboss {
 
 CmdConfigSwitchTraits::RetType CmdConfigSwitch::queryClient(
     const HostInfo& /* hostInfo */) {
+<<<<<<< HEAD
   return "Switch configuration commands. Use subcommands: admin-distance, hostname, icmpv4-unavailable-src-addr";
+||||||| ac0f8c3e61
+=======
+  return "Switch configuration commands. Use subcommands: admin-distance, icmpv4-unavailable-src-addr, hostname";
+>>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
 }
 
 void CmdConfigSwitch::printOutput(const RetType& output) {

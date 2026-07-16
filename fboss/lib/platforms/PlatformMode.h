@@ -134,8 +134,14 @@ inline std::string toString(PlatformType mode) {
       return "MERU400BIA";
     case PlatformType::PLATFORM_WEDGE800BNHP:
       return "WEDGE800BNHP";
+<<<<<<< HEAD
     case PlatformType::PLATFORM_WEDGE800CNHP:
       return "WEDGE800CNHP";
+||||||| ac0f8c3e61
+=======
+    case PlatformType::PLATFORM_M5120CSC:
+      return "M5120CSC";
+>>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
     case PlatformType::PLATFORM_UNKNOWN:
       return "UNKNOWN";
   }

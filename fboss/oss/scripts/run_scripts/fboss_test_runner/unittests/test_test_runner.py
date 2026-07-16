@@ -126,6 +126,7 @@ class TestRunTestGtestFallback:
         self, runner, mock_args, tmp_path
     ):
         """End-to-end: a SKIPPED gtest result must not be rewritten as OK."""
+<<<<<<< HEAD
         runner.TESTRESULT_CURRENT_RUN_FILE = str(tmp_path / "tr_current_run.xml")
         # _get_test_run_cmd reads the module-level `args` global, which is only
         # bound under `if __name__ == "__main__":` — use create=True to inject it.
@@ -139,6 +140,17 @@ class TestRunTestGtestFallback:
                 ),
             ),
         ):
+||||||| ac0f8c3e61
+        mock_check_output.return_value = b"[  SKIPPED ] HwFooTest.Bar (5 ms)\n"
+        # _get_test_run_cmd reads the module-level `args` global, which is only
+        # bound under `if __name__ == "__main__":` — use create=True to inject it.
+        with patch("run_test.args", new=mock_args, create=True):
+=======
+        mock_check_output.return_value = b"[  SKIPPED ] HwFooTest.Bar (5 ms)\n"
+        # _get_test_run_cmd reads args off the runner instance (self.args);
+        # patch it on the runner for the duration of the call.
+        with patch.object(runner, "args", new=mock_args):
+>>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
             outcome = runner._run_test(
                 conf_file="dummy.conf",
                 test_prefix="cold_boot.",
@@ -156,6 +168,7 @@ class TestRunTestGtestFallback:
         """Fallback path still works: empty output (e.g. --setup-for-warmboot early
         exit) should still synthesize an OK result so the test isn't lost from
         the summary."""
+<<<<<<< HEAD
         runner.TESTRESULT_CURRENT_RUN_FILE = str(tmp_path / "tr_current_run.xml")
         with (
             patch("run_test.args", new=mock_args, create=True),
@@ -165,6 +178,13 @@ class TestRunTestGtestFallback:
                 new=_make_capture_writing(b"", runner, _STUB_GTEST_XML),
             ),
         ):
+||||||| ac0f8c3e61
+        mock_check_output.return_value = b""
+        with patch("run_test.args", new=mock_args, create=True):
+=======
+        mock_check_output.return_value = b""
+        with patch.object(runner, "args", new=mock_args, create=True):
+>>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
             outcome = runner._run_test(
                 conf_file="dummy.conf",
                 test_prefix="warm_boot.",
@@ -186,6 +206,7 @@ class TestRunTestTimeout:
         # result file at a writable tmp location.
         runner.TESTRESULT_CURRENT_RUN_FILE = str(tmp_path / "tr_current_run.xml")
         mock_args.test_run_timeout = 300
+<<<<<<< HEAD
 
         def fake_capture(cmd, timeout):  # noqa: ARG001 - mirrors _capture_subprocess
             # returncode is ignored once timed_out is True (see exit_info).
@@ -195,6 +216,11 @@ class TestRunTestTimeout:
             patch("run_test.args", new=mock_args, create=True),
             patch.object(runner, "_capture_subprocess", new=fake_capture),
         ):
+||||||| ac0f8c3e61
+        with patch("run_test.args", new=mock_args, create=True):
+=======
+        with patch.object(runner, "args", new=mock_args, create=True):
+>>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
             outcome = runner._run_test(
                 conf_file="dummy.conf",
                 test_prefix="cold_boot.",
@@ -362,7 +388,7 @@ class TestBackupAndModifyConfig:
         try:
             args = MagicMock()
             args.run_on_reference_board = True
-            with patch("run_test.args", new=args, create=True):
+            with patch.object(runner, "args", new=args, create=True):
                 returned = runner._backup_and_modify_config(str(conf))
 
             assert returned == modified_path
@@ -382,7 +408,7 @@ class TestBackupAndModifyConfig:
         conf.write_text("AUTOLOAD_BOARD_SETTINGS: 0\n")
         args = MagicMock()
         args.run_on_reference_board = False
-        with patch("run_test.args", new=args, create=True):
+        with patch.object(runner, "args", new=args, create=True):
             returned = runner._backup_and_modify_config(str(conf))
         # Should return original path, unchanged contents.
         assert returned == str(conf)
@@ -412,7 +438,7 @@ class TestGetTestsToRunFilter:
                 profile="default",
             )
             with (
-                patch("run_test.args", new=args, create=True),
+                patch.object(runner, "args", new=args, create=True),
                 patch.object(
                     runner, "_list_tests_to_run", return_value=["HwVlanTest.A"]
                 ) as mock_list,
@@ -437,7 +463,7 @@ class TestGetTestsToRunFilter:
 
         args = self._make_args()
         with (
-            patch("run_test.args", new=args, create=True),
+            patch.object(runner, "args", new=args, create=True),
             patch.object(
                 runner, "_list_tests_to_run", side_effect=[listed, ["HwRouteTest.Add"]]
             ) as mock_list,

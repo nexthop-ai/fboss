@@ -7,9 +7,14 @@ from argparse import ArgumentParser, Namespace
 from contextlib import suppress
 from typing import ClassVar
 
+<<<<<<< HEAD
 import run_test
 
 from fboss_test_runner.constants import SUB_ARG_PLATFORM_MANAGER_HW_TEST
+||||||| ac0f8c3e61
+import run_test
+=======
+>>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
 from fboss_test_runner.result_types import GtestResult
 from fboss_test_runner.runners.test_runner import (
     disable_services,
@@ -48,7 +53,7 @@ class PlatformServicesTestRunner(TestRunner):
         )
 
     def _get_test_binary_name(self) -> str:
-        args = run_test.args
+        args = self.args
         binary_map = {
             SUB_ARG_PLATFORM_HW_TEST: "platform_hw_test",
             SUB_ARG_DATA_CORRAL_HW_TEST: "data_corral_service_hw_test",

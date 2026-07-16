@@ -118,7 +118,13 @@ TEST(ConfigValidatorTest, I2cAdaptersFromCpuValidation) {
   // CPU_BUS@1 — valid (AMD second bus)
   EXPECT_TRUE(ConfigValidator().isValidI2cAdaptersFromCpu({"CPU_BUS@1"}));
 
+<<<<<<< HEAD
   // CPU_BUS@0 through CPU_BUS@3 — valid (AMD i2c[N] index-aligned buses)
+||||||| ac0f8c3e61
+  // CPU_BUS@0 + CPU_BUS@1 — valid (AMD two-bus config)
+=======
+  // CPU_BUS@0 through CPU_BUS@3 — valid (AMD four-bus config)
+>>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
   EXPECT_TRUE(
       ConfigValidator().isValidI2cAdaptersFromCpu(
           {"CPU_BUS@0", "CPU_BUS@1", "CPU_BUS@2", "CPU_BUS@3"}));

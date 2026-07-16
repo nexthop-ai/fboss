@@ -56,6 +56,7 @@ target_link_libraries(platform_mapping_utils
   nh5010f_platform_mapping
   m4062nhp_platform_mapping
   wedge800cact_platform_mapping
+  m5120csc_platform_mapping
   ladakh800bcls_platform_mapping
   leh800bcls_platform_mapping
   yangra2_platform_mapping

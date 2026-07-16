@@ -237,6 +237,12 @@ device:
   // Index in the sample ports where data traffic is expected!
   const int kDataTrafficPortIndex{0};
   inline static const folly::MacAddress kMirrorDstMac{"06:00:00:00:00:01"};
+
+  std::optional<size_t> maxRequiredInterfacePorts() const override {
+    // Multi-switch Gibraltar needs system/recycle ports in config
+    return std::nullopt;
+  }
+
   std::vector<ProductionFeature> getProductionFeaturesVerified()
       const override {
     if constexpr (std::is_same_v<AddrT, folly::IPAddressV4>) {
@@ -377,7 +383,8 @@ device:
      * one per port and the maximum is 16. Configure 16 ports
      * for now on Tajo to enable sflow with mirroring.
      */
-    if (asic->getAsicType() == cfg::AsicType::ASIC_TYPE_EBRO) {
+    if (asic->getAsicType() == cfg::AsicType::ASIC_TYPE_EBRO ||
+        asic->getAsicType() == cfg::AsicType::ASIC_TYPE_P200) {
       return std::vector<PortID>(ports.begin(), ports.begin() + 16);
     }
     return ports;
@@ -390,6 +397,7 @@ device:
   std::optional<uint32_t> getHwLogicalPortId(PortID port) const {
     auto asic = checkSameAndGetAsic();
     if (asic->getAsicType() == cfg::AsicType::ASIC_TYPE_EBRO ||
+        asic->getAsicType() == cfg::AsicType::ASIC_TYPE_P200 ||
         asic->getAsicType() == cfg::AsicType::ASIC_TYPE_YUBA ||
         asic->getAsicType() == cfg::AsicType::ASIC_TYPE_G202X) {
       return std::nullopt;
@@ -430,6 +438,7 @@ device:
      */
     auto asic = checkSameAndGetAsic();
     if (asic->getAsicType() == cfg::AsicType::ASIC_TYPE_EBRO ||
+        asic->getAsicType() == cfg::AsicType::ASIC_TYPE_P200 ||
         asic->getAsicType() == cfg::AsicType::ASIC_TYPE_YUBA ||
         asic->getAsicType() == cfg::AsicType::ASIC_TYPE_G202X) {
       auto systemPortId = sflowPayload[0] << 8 | sflowPayload[1];
@@ -827,6 +836,7 @@ device:
     }
 
     if (checkSameAndGetAsic()->getAsicType() != cfg::AsicType::ASIC_TYPE_EBRO &&
+        checkSameAndGetAsic()->getAsicType() != cfg::AsicType::ASIC_TYPE_P200 &&
         checkSameAndGetAsic()->getAsicType() != cfg::AsicType::ASIC_TYPE_YUBA &&
         checkSameAndGetAsic()->getAsicType() !=
             cfg::AsicType::ASIC_TYPE_G202X &&
@@ -1411,9 +1421,10 @@ class AgentSflowMirrorWithLineRateTrafficTest
   void validateEventorPortQueueLimitRespected() {
     auto config{initialConfig(*getAgentEnsemble())};
     uint32_t maxExpectedQueueLimitBytes{0};
-    PortID eventorPortId;
+    const PortID eventorPortId =
+        masterLogicalPortIds({cfg::PortType::EVENTOR_PORT})[0];
     for (auto& port : *config.ports()) {
-      if (*port.portType() == cfg::PortType::EVENTOR_PORT) {
+      if (PortID(*port.logicalID()) == eventorPortId) {
         auto voqConfigName = *port.portVoqConfigName();
         for (auto& voqConfig : config.portQueueConfigs()[voqConfigName]) {
           // Set the expected queue limit bytes to be 15% higher than
@@ -1425,15 +1436,12 @@ class AgentSflowMirrorWithLineRateTrafficTest
             break;
           }
         }
-        eventorPortId = *port.logicalID();
         break;
       }
     }
     EXPECT_GT(maxExpectedQueueLimitBytes, 0);
     auto eventorSysPortId = getSystemPortID(
-        eventorPortId,
-        getProgrammedState(),
-        SwitchID(*checkSameAndGetAsic()->getSwitchId()));
+        eventorPortId, getProgrammedState(), switchIdForPort(eventorPortId));
     WITH_RETRIES({
       auto latestSysPortStats = getLatestSysPortStats(eventorSysPortId);
       auto watermarkBytes = latestSysPortStats.queueWatermarkBytes_()->at(0);

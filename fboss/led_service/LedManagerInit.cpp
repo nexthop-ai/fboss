@@ -87,12 +87,17 @@ std::unique_ptr<LedManager> createLedManager() {
     return std::make_unique<Icetea800bcLedManager>();
   } else if (mode == PlatformType::PLATFORM_TAHANSB800BC) {
     return std::make_unique<Tahansb800bcLedManager>();
+<<<<<<< HEAD
   } else if (mode == PlatformType::PLATFORM_NH4010F) {
     return std::make_unique<Nh4010fLedManager>();
   } else if (mode == PlatformType::PLATFORM_NH4220F) {
     return std::make_unique<Nh4220fLedManager>();
   } else if (mode == PlatformType::PLATFORM_NH5010F) {
     return std::make_unique<Nh5010fLedManager>();
+||||||| ac0f8c3e61
+  } else if (mode == PlatformType::PLATFORM_WEDGE800BACT) {
+=======
+>>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
   } else if (
       mode == PlatformType::PLATFORM_WEDGE800BACT ||
       mode == PlatformType::PLATFORM_WEDGE800BNHP) {

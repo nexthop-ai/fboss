@@ -32,10 +32,10 @@ std::string sanitizePlatformName(const std::string& platformNameFromBios) {
   if (platformNameUpper == "JANGA") {
     return "JANGA800BIC";
   }
-
   if (platformNameUpper == "TAHAN") {
     return "TAHAN800BC";
   }
+<<<<<<< HEAD
 
   // MERU800BIAB, MERU800BIAC and MERU800BIA have equivalent configs
   if (platformNameUpper == "MERU800BIAB" ||
@@ -63,6 +63,20 @@ std::string sanitizePlatformName(const std::string& platformNameFromBios) {
     return "MINIPACK3BA";
   }
 
+||||||| ac0f8c3e61
+
+  // MERU800BIAB, MERU800BIAC and MERU800BIA have equivalent configs
+  if (platformNameUpper == "MERU800BIAB" ||
+      platformNameUpper == "MERU800BIAC") {
+    return "MERU800BIA";
+  }
+
+  if (platformNameUpper == "MINIPACK3BTA") {
+    return "MINIPACK3BA";
+  }
+
+=======
+>>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
   return platformNameUpper;
 }
 

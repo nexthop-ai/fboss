@@ -32,6 +32,7 @@ class CmdConfigIcmpV4UnavailableSrcAddrTestFixture : public CmdConfigTestBase {
 })") {}
 
  protected:
+<<<<<<< HEAD
   const std::string cmdPrefix_ = "config switch icmpv4-unavailable-src-addr";
 };
 
@@ -48,6 +49,25 @@ class CmdConfigIcmpV4UnavailableSrcAddrAbsentTestFixture
 
  protected:
   const std::string cmdPrefix_ = "config switch icmpv4-unavailable-src-addr";
+||||||| ac0f8c3e61
+=======
+  const std::string cmdPrefix_ = "config icmpv4-unavailable-src-addr";
+};
+
+// Seed mirrors a fresh device where icmpV4UnavailableSrcAddress is absent
+class CmdConfigIcmpV4UnavailableSrcAddrAbsentTestFixture
+    : public CmdConfigTestBase {
+ public:
+  CmdConfigIcmpV4UnavailableSrcAddrAbsentTestFixture()
+      : CmdConfigTestBase(
+            "fboss_icmpv4_unavailable_src_addr_absent_test_%%%%-%%%%-%%%%-%%%%",
+            R"({
+  "sw": {}
+})") {}
+
+ protected:
+  const std::string cmdPrefix_ = "config icmpv4-unavailable-src-addr";
+>>>>>>> 4accde58608fff22a8b2d33fb7c592899d266899
 };
 
 // ==============================================================================
