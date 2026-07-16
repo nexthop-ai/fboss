@@ -139,6 +139,8 @@ cpp_unittest(
     ],
 )
 
+# bazelify: exclude -- needs transceiver_manager_test_helper (excluded above);
+# the WedgeManager mock chain does not link under Bazel yet. Covered by cmake.
 cpp_unittest(
     name = "cpo_transceiver_manager_test",
     srcs = [
