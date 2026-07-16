@@ -622,6 +622,15 @@ Fboss2IntegrationTest::waitForPortRunningInfo(
   return last;
 }
 
+std::string Fboss2IntegrationTest::agentProductName() const {
+  HostInfo hostInfo("localhost");
+  auto client =
+      utils::createClient<apache::thrift::Client<FbossCtrl>>(hostInfo);
+  ProductInfo productInfo;
+  client->sync_getProductInfo(productInfo);
+  return *productInfo.product();
+}
+
 PlatformMapping Fboss2IntegrationTest::fetchPlatformMapping() const {
   HostInfo hostInfo("localhost");
   auto client =

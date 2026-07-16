@@ -206,6 +206,14 @@ TEST_F(DeleteInterfaceTest, DISABLED_DeleteLoopbackModeAndLldpExpectedValue) {
 // ---------------------------------------------------------------------------
 
 TEST_F(DeleteInterfaceTest, DeleteWholePortRemovesCreatedSubport) {
+  // Golden Eagle (NH-4010-F, TH5-320): committing a port-profile change
+  // crashes fboss_sw_agent in the TH5 flexport recreate path (SAI create_port
+  // failure -> abort; see PR #707 root cause and the PR #917 note about the
+  // agent dying on the 800G->100G->800G restore). Skip until that is fixed.
+  if (agentProductName().rfind("NH-4010-F", 0) == 0) {
+    GTEST_SKIP() << "Port-profile commits crash the agent on NH-4010-F (TH5 "
+                    "flexport recreate bug)";
+  }
   auto cand = findFreeableCandidate();
   if (!cand) {
     GTEST_SKIP()

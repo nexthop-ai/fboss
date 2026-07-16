@@ -321,6 +321,12 @@ class Fboss2IntegrationTest : public ::testing::Test {
   PlatformMapping fetchPlatformMapping() const;
 
   /**
+   * The DUT's product name from the agent (via getProductInfo), e.g.
+   * "NH4010F". Useful for skipping tests on platforms with known issues.
+   */
+  std::string agentProductName() const;
+
+  /**
    * Ports currently present in the agent (subsumed/removed ports are absent),
    * keyed by logical id.
    */
