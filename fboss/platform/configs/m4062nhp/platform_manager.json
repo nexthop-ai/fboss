@@ -130,15 +130,6 @@
               },
               "portNumber": -1,
               "ledId": 1
-            },
-            {
-              "fpgaIpBlockConfig": {
-                "pmUnitScopedName": "MGMT_QSFP_LED",
-                "deviceName": "mgmt_qsfp_led",
-                "csrOffset": "0x9c"
-              },
-              "portNumber": 129,
-              "ledId": 1
             }
           ],
           "ledCtrlBlockConfigs": [
@@ -205,6 +196,24 @@
               "numPorts": 8,
               "ledPerPort": 2,
               "startPort": 89
+            },
+            {
+              "pmUnitScopedNamePrefix": "MGMT_QSFP_LED",
+              "deviceName": "mgmt_qsfp_led",
+              "csrOffsetCalc": "0x9c",
+              "numPorts": 1,
+              "ledPerPort": 1,
+              "lanesPerPort": 4,
+              "startPort": 129
+            }
+          ],
+          "xcvrCtrlBlockConfigs": [
+            {
+              "pmUnitScopedNamePrefix": "QSFP",
+              "deviceName": "xcvr_ctrl",
+              "csrOffsetCalc": "0x0",
+              "startPort": 129,
+              "numPorts": 1
             }
           ]
         },
@@ -311,15 +320,6 @@
               "numPorts": 8,
               "ledPerPort": 2,
               "startPort": 121
-            },
-            {
-              "pmUnitScopedNamePrefix": "MGMT_QSFP_LED",
-              "deviceName": "port_led",
-              "csrOffsetCalc": "0x9c",
-              "numPorts": 1,
-              "ledPerPort": 1,
-              "lanesPerPort": 4,
-              "startPort": 129
             }
           ],
           "xcvrCtrlBlockConfigs": [
@@ -350,13 +350,6 @@
               "csrOffsetCalc": "0x0",
               "startPort": 97,
               "numPorts": 32
-            },
-            {
-              "pmUnitScopedNamePrefix": "QSFP",
-              "deviceName": "xcvr_ctrl",
-              "csrOffsetCalc": "0x0",
-              "startPort": 129,
-              "numPorts": 1
             }
           ]
         }
