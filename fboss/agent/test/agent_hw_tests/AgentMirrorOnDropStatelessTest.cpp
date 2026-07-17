@@ -184,24 +184,6 @@ void AgentMirrorOnDropStatelessTest::validateMirrorOnDropPacket(
   EXPECT_EQ(fields.outerSrcIp, kSwitchIp_);
   EXPECT_EQ(fields.outerDstIp, kCollectorIp_);
   EXPECT_EQ(fields.outerDstPort, static_cast<uint16_t>(kMirrorDstPort));
-<<<<<<< HEAD
-  // Some ASICs report the hardware logical port id (not the FBOSS PortID) in
-  // the MoD packet; translate the injection PortID to match. The mapping comes
-  // from port stats, which lag a warm boot, so retry until it's populated.
-  auto expectedIngressPort = static_cast<uint16_t>(injectionPortId);
-  if (impl()->ingressPortIsHwLogicalPort()) {
-    std::optional<uint32_t> hwLogicalPortId;
-    WITH_RETRIES({
-      hwLogicalPortId = getSw()->getHwLogicalPortId(injectionPortId);
-      EXPECT_EVENTUALLY_TRUE(hwLogicalPortId.has_value());
-    });
-    ASSERT_TRUE(hwLogicalPortId.has_value());
-    expectedIngressPort = static_cast<uint16_t>(*hwLogicalPortId);
-  }
-  EXPECT_EQ(fields.ingressPort, expectedIngressPort);
-||||||| 4accde5860
-  EXPECT_EQ(fields.ingressPort, static_cast<uint16_t>(injectionPortId));
-=======
   // Tajo ingress MoD does not carry the original front-panel ingress port in
   // the export. The SDK redirects the drop to a fixed recycle port, so the punt
   // header's source_sp/source_lp are the recycle port's system/logical port
@@ -210,7 +192,6 @@ void AgentMirrorOnDropStatelessTest::validateMirrorOnDropPacket(
   if (!isTajoImpl) {
     EXPECT_EQ(fields.ingressPort, static_cast<uint16_t>(injectionPortId));
   }
->>>>>>> 320c57f4400b2536aac2e9a617fdc70e5b984952
   EXPECT_EQ(fields.dropReasonIngress, expectedReasons.ingressDropReason);
   EXPECT_EQ(fields.dropReasonEgress, expectedReasons.egressDropReason);
   EXPECT_EQ(fields.innerSrcIp, expectedInnerSrcIp.value_or(kPacketSrcIp_));

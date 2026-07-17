@@ -247,18 +247,8 @@ def use_stable_hashes():
     cwd = os.getcwd()
     os.chdir(get_repo_path())
 
-    rm_cmd = [
-        "rm",
-        "-rf",
-        "build/deps/github_hashes/",
-    ]
-<<<<<<< HEAD
-    subprocess.run(rm_cmd, check=True)
-||||||| 4accde5860
-    subprocess.run(rm_cmd)
-=======
+    rm_cmd = ["rm", "-rf", "build/deps/github_hashes/"]
     subprocess.run(rm_cmd, check=False)
->>>>>>> 320c57f4400b2536aac2e9a617fdc70e5b984952
 
     extract_cmd = [
         "tar",
@@ -268,13 +258,7 @@ def use_stable_hashes():
         "build/deps/github_hashes/*",
         "build/fbcode_builder/manifests/*",
     ]
-<<<<<<< HEAD
-    subprocess.run(extract_cmd, check=True)
-||||||| 4accde5860
-    subprocess.run(extract_cmd)
-=======
     subprocess.run(extract_cmd, check=False)
->>>>>>> 320c57f4400b2536aac2e9a617fdc70e5b984952
 
     os.chdir(cwd)
 
@@ -313,13 +297,7 @@ def build_docker_image(docker_dir_path: str, use_clang: bool = False):
         sys.exit(1)
 
 
-<<<<<<< HEAD
 def run_fboss_build(  # noqa: PLR0912, PLR0915
-||||||| 4accde5860
-def run_fboss_build(
-=======
-def run_fboss_build(  # noqa: PLR0912
->>>>>>> 320c57f4400b2536aac2e9a617fdc70e5b984952
     scratch_path: str,
     target: Optional[str],
     docker_output: bool,
@@ -333,15 +311,10 @@ def run_fboss_build(  # noqa: PLR0912
     extras_dir: Optional[str],
     extra_cmake_defines: Optional[str],
     dot_files: Optional[list],
-<<<<<<< HEAD
     build: bool = True,
     daemon: bool = False,
     source_path: Optional[str] = None,
     extra_mounts: Optional[list[str]] = None,
-||||||| 4accde5860
-    dot_files: Optional[List],
-=======
->>>>>>> 320c57f4400b2536aac2e9a617fdc70e5b984952
 ):
     use_stable_hashes()
 
@@ -399,15 +372,9 @@ def run_fboss_build(  # noqa: PLR0912
     cmd_args.append(f"{FBOSS_IMAGE_NAME}:latest")
     # Add build command args
     if build:
-        extra_defines = {
-            "CMAKE_BUILD_TYPE": "MinSizeRel",
-            "CMAKE_CXX_STANDARD": "20",
-        }
+        extra_defines = {"CMAKE_BUILD_TYPE": "MinSizeRel", "CMAKE_CXX_STANDARD": "20"}
         if use_clang:
-            clang_defines = {
-                "RANGE_V3_TESTS": "OFF",
-                "RANGE_V3_PERF": "OFF",
-            }
+            clang_defines = {"RANGE_V3_TESTS": "OFF", "RANGE_V3_PERF": "OFF"}
             extra_defines.update(clang_defines)
         if extra_cmake_defines:
             for k, v in json.loads(extra_cmake_defines).items():

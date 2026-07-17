@@ -272,10 +272,6 @@ std::unique_ptr<SaiPlatform> chooseSaiPlatform(
   } else if (productInfo->getType() == PlatformType::PLATFORM_MINIPACK3N) {
     return std::make_unique<SaiMinipack3NPlatform>(
         std::move(productInfo), localMac, platformMappingStr);
-<<<<<<< HEAD
-  } else if (productInfo->getType() == PlatformType::PLATFORM_JANGA800BIC) {
-    return std::make_unique<SaiJanga800bicPlatform>(
-        std::move(productInfo), localMac, platformMappingStr);
   } else if (productInfo->getType() == PlatformType::PLATFORM_M4062NHP) {
     return std::make_unique<SaiBcmM4062nhpPlatform>(
         std::move(productInfo), localMac, platformMappingStr);
@@ -288,12 +284,6 @@ std::unique_ptr<SaiPlatform> chooseSaiPlatform(
   } else if (productInfo->getType() == PlatformType::PLATFORM_NH5010F) {
     return std::make_unique<SaiNh5010fPlatform>(
         std::move(productInfo), localMac, platformMappingStr);
-||||||| 4accde5860
-  } else if (productInfo->getType() == PlatformType::PLATFORM_JANGA800BIC) {
-    return std::make_unique<SaiJanga800bicPlatform>(
-        std::move(productInfo), localMac, platformMappingStr);
-=======
->>>>>>> 320c57f4400b2536aac2e9a617fdc70e5b984952
   } else if (
       productInfo->getType() == PlatformType::PLATFORM_BLACKWOLF800BANW ||
       productInfo->getType() == PlatformType::PLATFORM_J4SIM ||
@@ -317,26 +307,9 @@ std::unique_ptr<SaiPlatform> chooseSaiPlatform(
       productInfo->getType() == PlatformType::PLATFORM_TAHANSB800BC) {
     return createGenericSaiBcmPlatform(
         std::move(productInfo), localMac, platformMappingStr);
-<<<<<<< HEAD
   } else if (
       productInfo->getType() == PlatformType::PLATFORM_WEDGE800CACT ||
-      productInfo->getType() == PlatformType::PLATFORM_WEDGE800CNHP) {
-    return createGenericSaiTajoPlatform(
-        std::move(productInfo), localMac, platformMappingStr);
-  } else if (productInfo->getType() == PlatformType::PLATFORM_M5120CSC) {
-    return std::make_unique<SaiM5120CSCPlatform>(
-        std::move(productInfo), localMac, platformMappingStr);
-||||||| 4accde5860
-  } else if (productInfo->getType() == PlatformType::PLATFORM_WEDGE800CACT) {
-    return createGenericSaiTajoPlatform(
-        std::move(productInfo), localMac, platformMappingStr);
-  } else if (productInfo->getType() == PlatformType::PLATFORM_M5120CSC) {
-    return std::make_unique<SaiM5120CSCPlatform>(
-        std::move(productInfo), localMac, platformMappingStr);
-=======
->>>>>>> 320c57f4400b2536aac2e9a617fdc70e5b984952
-  } else if (
-      productInfo->getType() == PlatformType::PLATFORM_WEDGE800CACT ||
+      productInfo->getType() == PlatformType::PLATFORM_WEDGE800CNHP ||
       productInfo->getType() == PlatformType::PLATFORM_M5120CSC ||
       productInfo->getType() == PlatformType::PLATFORM_MORGAN800CC) {
     return createGenericSaiTajoPlatform(
