@@ -1,0 +1,220 @@
+{
+  "platformName": "NH5010F",
+  "pmUnitSensorsList": [
+    {
+      "slotPath": "/",
+      "pmUnitName": "SCM",
+      "sensors": [
+        {
+          "name": "DPM_VIN",
+          "sysfsPath": "/run/devmap/sensors/DPM/in1_input",
+          "type": 1,
+          "thresholds": {
+            "upperCriticalVal": 14,
+            "lowerCriticalVal": 9
+          },
+          "compute": "@/1000.0"
+        }
+      ]
+    },
+    {
+      "slotPath": "/SMB_SLOT@0",
+      "pmUnitName": "SMB",
+      "sensors": [
+        {
+          "name": "DPM_2_VIN",
+          "sysfsPath": "/run/devmap/sensors/DPM_2/in1_input",
+          "type": 1,
+          "thresholds": {
+            "upperCriticalVal": 14,
+            "lowerCriticalVal": 9
+          },
+          "compute": "@/1000.0"
+        },
+        {
+          "name": "SMB_TEMP_SENSOR",
+          "sysfsPath": "/run/devmap/sensors/SMB_TEMP_SENSOR/temp1_input",
+          "type": 3,
+          "thresholds": {
+            "upperCriticalVal": 85
+          },
+          "compute": "@/1000.0"
+        },
+        {
+          "name": "FAN1_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan1_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
+          "name": "FAN2_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan2_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
+          "name": "FAN3_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan3_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
+          "name": "FAN4_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan4_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
+          "name": "FAN5_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan5_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
+          "name": "FAN6_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan6_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
+          "name": "FAN7_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan7_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
+          "name": "FAN8_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan8_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
+          "name": "PSU1_PIN",
+          "sysfsPath": "/run/devmap/sensors/PSU1/power1_input",
+          "type": 0,
+          "thresholds": {
+            "upperCriticalVal": 3500
+          },
+          "compute": "@/1000000"
+        },
+        {
+          "name": "PSU1_VIN",
+          "sysfsPath": "/run/devmap/sensors/PSU1/in1_input",
+          "type": 1,
+          "thresholds": {
+            "upperCriticalVal": 300
+          },
+          "compute": "@/1000.0"
+        },
+        {
+          "name": "PSU2_PIN",
+          "sysfsPath": "/run/devmap/sensors/PSU2/power1_input",
+          "type": 0,
+          "thresholds": {
+            "upperCriticalVal": 3500
+          },
+          "compute": "@/1000000"
+        },
+        {
+          "name": "PSU2_VIN",
+          "sysfsPath": "/run/devmap/sensors/PSU2/in1_input",
+          "type": 1,
+          "thresholds": {
+            "upperCriticalVal": 300
+          },
+          "compute": "@/1000.0"
+        },
+        {
+          "name": "DPM_3_VIN",
+          "sysfsPath": "/run/devmap/sensors/DPM_3/in1_input",
+          "type": 1,
+          "thresholds": {
+            "upperCriticalVal": 14,
+            "lowerCriticalVal": 9
+          },
+          "compute": "@/1000.0"
+        },
+        {
+          "name": "MEZZ_DPM_VIN",
+          "sysfsPath": "/run/devmap/sensors/MEZZ_DPM/in1_input",
+          "type": 1,
+          "thresholds": {
+            "upperCriticalVal": 14,
+            "lowerCriticalVal": 9
+          },
+          "compute": "@/1000.0"
+        },
+        {
+          "name": "SMB_TEMP_SENSOR_2",
+          "sysfsPath": "/run/devmap/sensors/SMB_TEMP_SENSOR_2/temp1_input",
+          "type": 3,
+          "thresholds": {
+            "upperCriticalVal": 85
+          },
+          "compute": "@/1000.0"
+        },
+        {
+          "name": "MEZZ_TEMP_SENSOR",
+          "sysfsPath": "/run/devmap/sensors/MEZZ_TEMP_SENSOR/temp1_input",
+          "type": 3,
+          "thresholds": {
+            "upperCriticalVal": 85
+          },
+          "compute": "@/1000.0"
+        }
+      ]
+    }
+  ],
+  "temperatureConfigs": [
+    {
+      "name": "ASIC",
+      "temperatureSensorNames": [
+        "SMB_TEMP_SENSOR"
+      ]
+    }
+  ],
+  "powerConfig": {
+    "perSlotPowerConfigs": [
+      {
+        "name": "PSU1",
+        "powerSensorName": "PSU1_PIN",
+        "slotPath": "/SMB_SLOT@0"
+      },
+      {
+        "name": "PSU2",
+        "powerSensorName": "PSU2_PIN",
+        "slotPath": "/SMB_SLOT@0"
+      }
+    ],
+    "inputVoltageSensors": [
+      "PSU1_VIN",
+      "PSU2_VIN"
+    ],
+    "minAcPsuCount": 1,
+    "minDcPsuCount": 1
+  }
+}

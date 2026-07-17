@@ -209,8 +209,39 @@
         {
           "busName": "INCOMING@1",
           "address": "0x48",
-          "kernelDeviceName": "tmp464",
+          "kernelDeviceName": "tmp468",
           "pmUnitScopedName": "SMB_TEMP_SENSOR"
+        },
+        {
+          "busName": "INCOMING@0",
+          "address": "0x43",
+          "kernelDeviceName": "adm1266",
+          "pmUnitScopedName": "DPM_3"
+        },
+        {
+          "busName": "INCOMING@0",
+          "address": "0x45",
+          "kernelDeviceName": "adm1266",
+          "pmUnitScopedName": "MEZZ_DPM"
+        },
+        {
+          "busName": "INCOMING@1",
+          "address": "0x49",
+          "kernelDeviceName": "tmp468",
+          "pmUnitScopedName": "SMB_TEMP_SENSOR_2"
+        },
+        {
+          "busName": "INCOMING@1",
+          "address": "0x4a",
+          "kernelDeviceName": "tmp464",
+          "pmUnitScopedName": "MEZZ_TEMP_SENSOR"
+        },
+        {
+          "busName": "INCOMING@1",
+          "address": "0x51",
+          "kernelDeviceName": "24c64",
+          "pmUnitScopedName": "MEZZ_EEPROM",
+          "isEeprom": true
         }
       ]
     }
@@ -302,7 +333,12 @@
     "/run/devmap/xcvrs/xcvr_ctrl_31": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_31]",
     "/run/devmap/xcvrs/xcvr_io_32": "/SMB_SLOT@0/[SMB_OSFP_I2C_32]",
     "/run/devmap/xcvrs/xcvr_ctrl_32": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_32]",
-    "/run/devmap/sensors/SMB_TEMP_SENSOR": "/SMB_SLOT@0/[SMB_TEMP_SENSOR]"
+    "/run/devmap/sensors/SMB_TEMP_SENSOR": "/SMB_SLOT@0/[SMB_TEMP_SENSOR]",
+    "/run/devmap/sensors/DPM_3": "/SMB_SLOT@0/[DPM_3]",
+    "/run/devmap/sensors/MEZZ_DPM": "/SMB_SLOT@0/[MEZZ_DPM]",
+    "/run/devmap/sensors/SMB_TEMP_SENSOR_2": "/SMB_SLOT@0/[SMB_TEMP_SENSOR_2]",
+    "/run/devmap/sensors/MEZZ_TEMP_SENSOR": "/SMB_SLOT@0/[MEZZ_TEMP_SENSOR]",
+    "/run/devmap/eeproms/MEZZ_EEPROM": "/SMB_SLOT@0/[MEZZ_EEPROM]"
   },
   "chassisEepromDevicePath": "/SMB_SLOT@0/[CHASSIS_EEPROM]",
   "numXcvrs": 32,
