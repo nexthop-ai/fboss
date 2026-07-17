@@ -12,16 +12,7 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
-import run_test
-
 from fboss_test_runner.runners.test_runner import TestRunner
-
-# `run_test.args` is populated at runtime by argparse inside main(), so the
-# attribute does not exist at import time. Declare it here so unit tests can
-# patch it without `create=True` — which means a rename of `args` in run_test.py
-# will surface as a loud AttributeError at patch time instead of being silently
-# fabricated by mock.
-run_test.args = None
 
 
 class StubTestRunner(TestRunner):
@@ -72,7 +63,7 @@ def known_bad_tests_json():
                 {"test_name_regex": "HwAcl.*", "reason": "T67890"},
             ],
             "brcm/8.2/8.2/tomahawk/mono": [
-                {"test_name_regex": "HwRouteTest\\.MonoOnly", "reason": "T11111"},
+                {"test_name_regex": "HwRouteTest\\.MonoOnly", "reason": "T11111"}
             ],
         }
     }
@@ -89,8 +80,8 @@ def unsupported_tests_json():
     data = {
         "unsupported_tests": {
             "brcm/8.2/8.2/tomahawk": [
-                {"test_name_regex": "HwMirrorTest\\..*", "reason": "Not supported"},
-            ],
+                {"test_name_regex": "HwMirrorTest\\..*", "reason": "Not supported"}
+            ]
         }
     }
     with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".json") as f:

@@ -23,14 +23,6 @@ class SaiNh4220fPlatform : public SaiBcmPlatform {
       const std::string& platformMappingStr);
   ~SaiNh4220fPlatform() override;
   HwAsic* getAsic() const override;
-  uint32_t numLanesPerCore() const override {
-    return 8;
-  }
-
-  uint32_t numCellsAvailable() const override {
-    return 319960; // NH TODO: get value from BCM78914 Theory of Operation
-  }
-
   bool isSerdesApiSupported() const override {
     return true;
   }

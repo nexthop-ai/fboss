@@ -18,14 +18,6 @@ class SaiBcmM4062nhpPlatform : public SaiBcmPlatform {
       const std::string& platformMappingStr);
   ~SaiBcmM4062nhpPlatform() override;
   HwAsic* getAsic() const override;
-  uint32_t numLanesPerCore() const override {
-    return 8;
-  }
-
-  uint32_t numCellsAvailable() const override {
-    return 616994;
-  }
-
   bool isSerdesApiSupported() const override {
     return true;
   }

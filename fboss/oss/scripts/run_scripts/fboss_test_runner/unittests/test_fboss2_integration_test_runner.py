@@ -55,7 +55,7 @@ class TestSetupRun(unittest.TestCase):
         return_value=[True, True],
     )
     def test_prod_multi_switch_snapshots_config(self, mock_is_running, mock_run):
-        with patch("run_test.args", _make_mock_args(), create=True):
+        with patch.object(self.runner, "args", _make_mock_args()):
             self.runner._setup_run("/etc/coop/agent.conf")
 
         self.assertTrue(self.runner._is_prod_multi_switch)
@@ -70,7 +70,7 @@ class TestSetupRun(unittest.TestCase):
         return_value=[True, True],
     )
     def test_prod_multi_switch_copies_test_config(self, mock_is_running, mock_run):
-        with patch("run_test.args", _make_mock_args(), create=True):
+        with patch.object(self.runner, "args", _make_mock_args()):
             self.runner._setup_run("/opt/fboss/share/link_test_configs/test.conf")
 
         mock_run.assert_any_call(
@@ -96,7 +96,7 @@ class TestSetupRun(unittest.TestCase):
     def test_bare_device_sets_up_services(
         self, mock_is_running, mock_hw_setup, mock_sw_setup, mock_run
     ):
-        with patch("run_test.args", _make_mock_args(), create=True):
+        with patch.object(self.runner, "args", _make_mock_args()):
             self.runner._setup_run(
                 "/opt/fboss/share/link_test_configs/montblanc.materialized_JSON"
             )
@@ -135,7 +135,7 @@ class TestSetupRun(unittest.TestCase):
         "fboss_test_runner.runners.fboss2_integration_test_runner.setup_and_start_hw_agent_service"
     )
     def test_bare_device_no_snapshot(self, mock_hw, mock_sw, mock_is_running, mock_run):
-        with patch("run_test.args", _make_mock_args(), create=True):
+        with patch.object(self.runner, "args", _make_mock_args()):
             self.runner._setup_run("/etc/coop/agent.conf")
 
         snapshot_calls = [
@@ -233,7 +233,9 @@ class TestSetupColdbootTest(unittest.TestCase):
         # Even with --skip-coldboot, the very first call must cold boot to load
         # the test config / clean state; the health gate is not consulted.
         self.runner._switch_indexes = [0]
-        with patch("run_test.args", _make_mock_args(skip_coldboot=True), create=True):
+        with patch.object(
+            self.runner, "args", _make_mock_args(skip_coldboot=True), create=True
+        ):
             self.runner._setup_coldboot_test()
         mock_cold_boot.assert_called_once()
         mock_agents_ready.assert_not_called()
@@ -250,7 +252,9 @@ class TestSetupColdbootTest(unittest.TestCase):
     ):
         self.runner._switch_indexes = [0]
         self.runner._initial_coldboot_done = True
-        with patch("run_test.args", _make_mock_args(skip_coldboot=False), create=True):
+        with patch.object(
+            self.runner, "args", _make_mock_args(skip_coldboot=False), create=True
+        ):
             self.runner._setup_coldboot_test()
         mock_cold_boot.assert_not_called()
         mock_run.assert_not_called()
@@ -266,7 +270,9 @@ class TestSetupColdbootTest(unittest.TestCase):
     ):
         self.runner._switch_indexes = [0]
         self.runner._initial_coldboot_done = True
-        with patch("run_test.args", _make_mock_args(skip_coldboot=False), create=True):
+        with patch.object(
+            self.runner, "args", _make_mock_args(skip_coldboot=False), create=True
+        ):
             self.runner._setup_coldboot_test()
         mock_cold_boot.assert_called_once()
 
@@ -281,7 +287,9 @@ class TestSetupColdbootTest(unittest.TestCase):
     ):
         self.runner._switch_indexes = [0]
         self.runner._initial_coldboot_done = True
-        with patch("run_test.args", _make_mock_args(skip_coldboot=True), create=True):
+        with patch.object(
+            self.runner, "args", _make_mock_args(skip_coldboot=True), create=True
+        ):
             self.runner._setup_coldboot_test()
         mock_cold_boot.assert_not_called()
         # The aggressive override does not even consult agent health.
@@ -368,8 +376,7 @@ class TestEndRun(unittest.TestCase):
             sw_agent_service_name="fboss_sw_agent",
         )
         mock_run.assert_any_call(
-            ["rm", "-f", "/tmp/agent.conf.fboss2_test_snapshot"],
-            check=False,
+            ["rm", "-f", "/tmp/agent.conf.fboss2_test_snapshot"], check=False
         )
 
     @patch("fboss_test_runner.runners.fboss2_integration_test_runner.subprocess.run")
@@ -421,13 +428,11 @@ class TestSetupRunHook(unittest.TestCase):
         runner._test_framework = MagicMock()
 
         mock_args = _make_mock_args(
-            sai_replayer_logging=None,
-            simulator=None,
-            coldboot_only=True,
+            sai_replayer_logging=None, simulator=None, coldboot_only=True
         )
 
         with (
-            patch("run_test.args", mock_args, create=True),
+            patch.object(runner, "args", mock_args),
             patch.object(
                 runner,
                 "_run_test",
@@ -437,9 +442,7 @@ class TestSetupRunHook(unittest.TestCase):
             ),
         ):
             runner._run_tests(
-                tests_to_run=["TestA"],
-                conf_file="/etc/coop/agent.conf",
-                args=mock_args,
+                tests_to_run=["TestA"], conf_file="/etc/coop/agent.conf", args=mock_args
             )
 
         self.assertEqual(call_order[0], "_setup_run")

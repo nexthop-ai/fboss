@@ -122,6 +122,7 @@ uint16_t uplinksCountFromSwitch(PlatformType mode) {
     case PM::PLATFORM_NH4010F:
     case PM::PLATFORM_NH4220F:
     case PM::PLATFORM_M4062NHP:
+    case PM::PLATFORM_M5120CSC:
       return 4;
     case PM::PLATFORM_MINIPACK3N:
     case PM::PLATFORM_YANGRA:

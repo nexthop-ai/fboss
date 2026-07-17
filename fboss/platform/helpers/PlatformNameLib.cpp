@@ -32,37 +32,21 @@ std::string sanitizePlatformName(const std::string& platformNameFromBios) {
   if (platformNameUpper == "JANGA") {
     return "JANGA800BIC";
   }
-
   if (platformNameUpper == "TAHAN") {
     return "TAHAN800BC";
   }
-
-  // MERU800BIAB, MERU800BIAC and MERU800BIA have equivalent configs
-  if (platformNameUpper == "MERU800BIAB" ||
-      platformNameUpper == "MERU800BIAC") {
-    return "MERU800BIA";
-  }
-
   if (platformNameUpper == "NH-4010-F") {
     return "NH4010F";
   }
-
   if (platformNameUpper == "NH-4220-F") {
     return "NH4220F";
   }
-
   if (platformNameUpper == "NH-5010-F") {
     return "NH5010F";
   }
-
-  if (platformNameUpper == "NOVA4000" || platformNameUpper == "M4062NHP") {
+  if (platformNameUpper == "NOVA4000") {
     return "M4062NHP";
   }
-
-  if (platformNameUpper == "MINIPACK3BTA") {
-    return "MINIPACK3BA";
-  }
-
   return platformNameUpper;
 }
 

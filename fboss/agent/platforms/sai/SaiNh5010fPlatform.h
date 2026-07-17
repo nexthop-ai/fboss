@@ -24,14 +24,6 @@ class SaiNh5010fPlatform : public SaiBcmPlatform {
       const std::string& platformMappingStr);
   ~SaiNh5010fPlatform() override;
   HwAsic* getAsic() const override;
-  uint32_t numLanesPerCore() const override {
-    return 8;
-  }
-
-  uint32_t numCellsAvailable() const override {
-    return 130665; // NH TODO: confirm value for NH-5010-F
-  }
-
   bool isSerdesApiSupported() const override {
     return true;
   }

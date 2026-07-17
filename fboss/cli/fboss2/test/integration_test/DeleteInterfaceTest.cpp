@@ -193,3 +193,78 @@ TEST_F(DeleteInterfaceTest, DISABLED_DeleteLoopbackModeAndLldpExpectedValue) {
   XLOG(INFO) << "  Combined delete succeeded (exit 0, config committed)";
   XLOG(INFO) << "TEST PASSED";
 }
+
+// ---------------------------------------------------------------------------
+// Test: bare 'delete interface <port>' removes a whole port.
+//
+// Break a controlling port into two lower-speed ports (create the freed subport
+// via a single combined command, as in
+// ConfigInterfaceProfileTest.CreateFreedPortSucceeds), then delete that subport
+// as a whole port and confirm the agent no longer reports it. Finally re-create
+// the original controlling port by widening it back to its starting profile,
+// leaving the DUT as we found it.
+// ---------------------------------------------------------------------------
+
+TEST_F(DeleteInterfaceTest, DeleteWholePortRemovesCreatedSubport) {
+  // Golden Eagle (NH-4010-F, TH5-320): committing a port-profile change
+  // crashes fboss_sw_agent in the TH5 flexport recreate path (SAI create_port
+  // failure -> abort; see PR #707 root cause and the PR #917 note about the
+  // agent dying on the 800G->100G->800G restore). Skip until that is fixed.
+  if (agentProductName().rfind("NH-4010-F", 0) == 0) {
+    GTEST_SKIP() << "Port-profile commits crash the agent on NH-4010-F (TH5 "
+                    "flexport recreate bug)";
+  }
+  auto cand = findFreeableCandidate();
+  if (!cand) {
+    GTEST_SKIP()
+        << "No absent subport freeable by narrowing its controlling port";
+  }
+  XLOG(INFO) << "[Step 1] controlling=" << cand->controllingName << " ("
+             << cand->controllingProfile << ") -> " << cand->narrowProfile
+             << "; subport=" << cand->subportName;
+
+  XLOG(INFO)
+      << "[Step 2] Breaking the controlling port into two (single command)...";
+  auto create = runCli(
+      {"config",
+       "interface",
+       cand->controllingName,
+       cand->subportName,
+       "profile",
+       cand->narrowProfile});
+  ASSERT_EQ(create.exitCode, 0) << create.stderr;
+  commitConfig();
+
+  auto created = waitForPortRunningInfo(
+      cand->subportName,
+      [&cand](const auto& i) { return i.profileId == cand->narrowProfile; });
+  ASSERT_EQ(created.profileId, cand->narrowProfile)
+      << "subport " << cand->subportName << " was not created";
+
+  XLOG(INFO) << "[Step 3] Deleting the whole subport " << cand->subportName
+             << "...";
+  auto del = runCli({"delete", "interface", cand->subportName});
+  ASSERT_EQ(del.exitCode, 0) << del.stderr;
+  commitConfig();
+
+  EXPECT_TRUE(waitForPortAbsent(cand->subportName))
+      << cand->subportName << " should be removed after 'delete interface'";
+
+  XLOG(INFO) << "[Step 4] Re-creating the original controlling port...";
+  auto restore = runCli(
+      {"config",
+       "interface",
+       cand->controllingName,
+       "profile",
+       cand->controllingProfile});
+  ASSERT_EQ(restore.exitCode, 0) << restore.stderr;
+  commitConfig();
+
+  auto restored =
+      waitForPortRunningInfo(cand->controllingName, [&cand](const auto& i) {
+        return i.profileId == cand->controllingProfile;
+      });
+  EXPECT_EQ(restored.profileId, cand->controllingProfile)
+      << "controlling port should be restored to its original profile";
+  XLOG(INFO) << "TEST PASSED";
+}

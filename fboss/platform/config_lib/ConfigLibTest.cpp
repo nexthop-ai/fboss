@@ -93,6 +93,29 @@ TEST(ConfigLibTest, Basic) {
   EXPECT_NO_THROW(ConfigLib().getShowtechConfig(kSample));
   EXPECT_THROW(
       ConfigLib().getShowtechConfig(kNonExistentPlatform), std::out_of_range);
+
+  // RebootCauseFinder Configs
+  EXPECT_NO_THROW(ConfigLib().getRebootCauseFinderConfig(kMeru800bfa));
+  EXPECT_NO_THROW(ConfigLib().getRebootCauseFinderConfig(kMeru800bia));
+  EXPECT_THROW(
+      ConfigLib().getRebootCauseFinderConfig(kNonExistentPlatform),
+      std::runtime_error);
+}
+
+TEST(ConfigLibTest, VerifyPlatformNameMatches) {
+  // Exact match passes.
+  EXPECT_NO_THROW(
+      ConfigLib::verifyPlatformNameMatches("MONTBLANC", "MONTBLANC"));
+  // The config name's case is normalized before comparing.
+  EXPECT_NO_THROW(
+      ConfigLib::verifyPlatformNameMatches("montblanc", "MONTBLANC"));
+  // An aliased inferred name matches the target platform's config.
+  EXPECT_NO_THROW(
+      ConfigLib::verifyPlatformNameMatches("WEDGE800CACT", "WEDGE800CNHP"));
+  // A genuine mismatch throws.
+  EXPECT_THROW(
+      ConfigLib::verifyPlatformNameMatches("MONTBLANC", "DARWIN"),
+      std::runtime_error);
 }
 
 TEST(ConfigLibTest, Wedge800bnhpReusesWedge800bactConfig) {

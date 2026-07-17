@@ -29,12 +29,20 @@ namespace {
 // Distinct hardware platforms that reuse another platform's config. Keys and
 // values are lowercase config names, matching the generated config map keys.
 const std::unordered_map<std::string, std::string> kConfigAliases = {
-    {"wedge800bnhp", "wedge800bact"},
     {"wedge800cnhp", "wedge800cact"},
+    {"wedge800bnhp", "wedge800bact"},
+    {"meru800biab", "meru800bia"},
+    {"meru800biac", "meru800bia"},
+    {"minipack3bta", "minipack3ba"},
 };
 
 std::string toLower(std::string str) {
   std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+  return str;
+}
+
+std::string toUpper(std::string str) {
+  std::transform(str.begin(), str.end(), str.begin(), ::toupper);
   return str;
 }
 
@@ -162,12 +170,36 @@ std::string ConfigLib::getShowtechConfig(
   return configs::rma_showtech.at(getPlatformName(platformName));
 }
 
+std::string ConfigLib::getRebootCauseFinderConfig(
+    const std::optional<std::string>& platformName) const {
+  if (auto configJson = getConfigFromFile()) {
+    return *configJson;
+  }
+  try {
+    return configs::reboot_cause_finder.at(getPlatformName(platformName));
+  } catch (const std::out_of_range&) {
+    throw std::runtime_error(
+        "reboot_cause_finder configuration not found for platform: " +
+        getPlatformName(platformName));
+  }
+}
+
 std::string ConfigLib::canonicalConfigPlatformName(
     const std::string& platformName) {
-  auto canonical = resolveConfigAlias(toLower(platformName));
-  std::transform(
-      canonical.begin(), canonical.end(), canonical.begin(), ::toupper);
-  return canonical;
+  return toUpper(resolveConfigAlias(toLower(platformName)));
+}
+
+void ConfigLib::verifyPlatformNameMatches(
+    const std::string& platformNameInConfig,
+    const std::string& inferredPlatformName) {
+  if (toUpper(platformNameInConfig) ==
+      canonicalConfigPlatformName(inferredPlatformName)) {
+    return;
+  }
+  throw std::runtime_error(
+      "platformName in config '" + platformNameInConfig +
+      "' does not match the inferred platform name '" + inferredPlatformName +
+      "'");
 }
 
 } // namespace facebook::fboss::platform
