@@ -79,7 +79,7 @@ jobs:
         uses: ./.github/actions/fboss-schedule-test
         with:
           build_id: ${{ inputs.build_id }}
-          priority: 75
+          priority: 100
           target_testbeds: "gold[2-9].*"
           tests: ${{ steps.smoke.outputs.tests }}
 
@@ -88,7 +88,7 @@ jobs:
         uses: ./.github/actions/fboss-schedule-test
         with:
           build_id: ${{ inputs.build_id }}
-          priority: 75
+          priority: 100
           target_testbeds: "wdg10.*"
           tests: ${{ steps.smoke.outputs.tests }}
 
@@ -97,7 +97,7 @@ jobs:
         uses: ./.github/actions/fboss-schedule-test
         with:
           build_id: ${{ inputs.build_id }}
-          priority: 75
+          priority: 100
           target_testbeds: "wdg15.*"
           tests: ${{ steps.smoke.outputs.tests }}
 
@@ -106,7 +106,7 @@ jobs:
         uses: ./.github/actions/fboss-schedule-test
         with:
           build_id: ${{ inputs.build_id }}
-          priority: 75
+          priority: 100
           target_testbeds: "fboss.*"
           tests: ${{ steps.smoke.outputs.tests }}
 
@@ -115,7 +115,7 @@ jobs:
         uses: ./.github/actions/fboss-schedule-test
         with:
           build_id: ${{ inputs.build_id }}
-          priority: 75
+          priority: 100
           target_testbeds: "crow.*"
           tests: ${{ steps.smoke.outputs.tests }}
 
@@ -124,7 +124,7 @@ jobs:
         uses: ./.github/actions/fboss-schedule-test
         with:
           build_id: ${{ inputs.build_id }}
-          priority: 75
+          priority: 100
           target_testbeds: "stlr.*"
           tests: ${{ steps.smoke.outputs.tests }}
 
