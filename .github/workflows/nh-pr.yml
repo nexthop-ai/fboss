@@ -32,7 +32,7 @@ jobs:
           # "STARS: *" checks are posted after NH PR completes and report on
           # this workflow's own jobs; gating on them deadlocks re-runs
           # (DEVX-3572). Downstream triage signal, not a merge precondition.
-          ignore_pattern: "^(grecs-pr / |STARS: )"
+          ignore_pattern: "^(grecs-pr / |STARS: |Smoke Tests / )"
           # 8h: longest observed successful PR CI across our repos is ~6.5h
           # (sonic image build + hardware tests). Failed checks fail fast
           # regardless, so this only bounds the wait for slow successes.
