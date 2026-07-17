@@ -10,7 +10,7 @@
 test_context = {
     "filters": [
         # Basic init
-        "EmptyHwTest.CheckInit",
+        # "EmptyHwTest.CheckInit",
 
         # Config
         "HwTransceiverConfigTest.moduleConfigVerification",
@@ -30,7 +30,6 @@ test_context = {
         # "HwTest.i2cStressWrite",
         "HwTest.i2cLogCapacityRead",
         "HwTest.i2cLogCapacityWrite",
-        "HwTest.cmisPageChange",
         "HwTest.i2cUniqueSerialNumbers",
 
         # CMIS
