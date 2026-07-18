@@ -19,7 +19,7 @@ std::string getConfigHistory(
   auto cmdToRun = utils::getCmdToRun(
       hostInfo.getName(),
       folly::to<std::string>(
-          "git -C /etc/coop log --graph --boundary "
+          "git -c safe.directory=/etc/coop -C /etc/coop log --graph --boundary "
           "--pretty=tformat:\'%C(yellow)%h%Creset "
           "%C(blue)%cd%C(reset) %C(red)%an%C(reset)%C(green)%d%Creset %s\' "
           "--color=always --all --date=format:\'%F %T\' -- /etc/coop/",
