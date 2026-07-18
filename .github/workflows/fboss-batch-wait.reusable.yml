@@ -121,7 +121,23 @@ jobs:
                       DISPLAY[i]="✅ DONE (pass)"
                     fi
                   elif [ "$progress" -eq 0 ]; then
-                    DISPLAY[i]="⏸  0% (not started)"
+                    # Not started yet — surface the queue position and wait time
+                    # so a long queue wait is legible instead of a featureless
+                    # "(not started)". Fall back to the old text if the queue
+                    # lookup fails or the batch is no longer pending.
+                    if track=$(ng te batch track "$bid" -o json 2>/dev/null) \
+                       && [ "$(echo "$track" | jq -r '.found')" = "true" ]; then
+                      pos=$(echo "$track" | jq -r '.position // empty')
+                      size=$(echo "$track" | jq -r '.lane_size // empty')
+                      wait=$(echo "$track" | jq -r '.wait_time // empty')
+                      if [ -n "$pos" ] && [ -n "$size" ]; then
+                        DISPLAY[i]="⏸  0% (queue pos ${pos}/${size}, wait ${wait:-N/A})"
+                      else
+                        DISPLAY[i]="⏸  0% (not started)"
+                      fi
+                    else
+                      DISPLAY[i]="⏸  0% (not started)"
+                    fi
                     all_done=0
                   else
                     DISPLAY[i]="⏳ ${progress}%"
