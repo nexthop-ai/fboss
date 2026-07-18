@@ -247,12 +247,8 @@ def use_stable_hashes():
     cwd = os.getcwd()
     os.chdir(get_repo_path())
 
-    rm_cmd = [
-        "rm",
-        "-rf",
-        "build/deps/github_hashes/",
-    ]
-    subprocess.run(rm_cmd, check=True)
+    rm_cmd = ["rm", "-rf", "build/deps/github_hashes/"]
+    subprocess.run(rm_cmd, check=False)
 
     extract_cmd = [
         "tar",
@@ -262,7 +258,7 @@ def use_stable_hashes():
         "build/deps/github_hashes/*",
         "build/fbcode_builder/manifests/*",
     ]
-    subprocess.run(extract_cmd, check=True)
+    subprocess.run(extract_cmd, check=False)
 
     os.chdir(cwd)
 
@@ -376,15 +372,9 @@ def run_fboss_build(  # noqa: PLR0912, PLR0915
     cmd_args.append(f"{FBOSS_IMAGE_NAME}:latest")
     # Add build command args
     if build:
-        extra_defines = {
-            "CMAKE_BUILD_TYPE": "MinSizeRel",
-            "CMAKE_CXX_STANDARD": "20",
-        }
+        extra_defines = {"CMAKE_BUILD_TYPE": "MinSizeRel", "CMAKE_CXX_STANDARD": "20"}
         if use_clang:
-            clang_defines = {
-                "RANGE_V3_TESTS": "OFF",
-                "RANGE_V3_PERF": "OFF",
-            }
+            clang_defines = {"RANGE_V3_TESTS": "OFF", "RANGE_V3_PERF": "OFF"}
             extra_defines.update(clang_defines)
         if extra_cmake_defines:
             for k, v in json.loads(extra_cmake_defines).items():
