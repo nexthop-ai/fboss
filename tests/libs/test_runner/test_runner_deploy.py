@@ -368,6 +368,47 @@ class TestLocalSourcePath:
         assert got == str(tmp_path / "fboss" / "oss" / "python_tests" / "agent_smoke.py")
 
 
+class TestPlatformMappingPath:
+    """_platform_mapping_path resolves both the legacy flat layout and the
+    newer descriptor-backed <vendor>/<config>/ layout."""
+
+    def _gen_dir(self, tmp_path):
+        d = tmp_path / "fboss" / "lib" / "platform_mapping_v2" / "generated_platform_mappings"
+        d.mkdir(parents=True, exist_ok=True)
+        return d
+
+    def test_flat_layout(self, tmp_path, monkeypatch):
+        gen = self._gen_dir(tmp_path)
+        flat = gen / "meru800bia_platform_mapping.json"
+        flat.write_text("{}")
+        monkeypatch.setattr(runner_module, "_repo_dir", lambda rel: gen)
+        assert runner_module._platform_mapping_path("meru800bia") == flat
+
+    def test_nested_vendor_layout(self, tmp_path, monkeypatch):
+        gen = self._gen_dir(tmp_path)
+        nested = gen / "accton" / "wedge800bact" / "platform_mapping.json"
+        nested.parent.mkdir(parents=True)
+        nested.write_text("{}")
+        monkeypatch.setattr(runner_module, "_repo_dir", lambda rel: gen)
+        assert runner_module._platform_mapping_path("wedge800bact") == nested
+
+    def test_flat_preferred_over_nested(self, tmp_path, monkeypatch):
+        gen = self._gen_dir(tmp_path)
+        flat = gen / "foo_platform_mapping.json"
+        flat.write_text("{}")
+        nested = gen / "vendor" / "foo" / "platform_mapping.json"
+        nested.parent.mkdir(parents=True)
+        nested.write_text("{}")
+        monkeypatch.setattr(runner_module, "_repo_dir", lambda rel: gen)
+        assert runner_module._platform_mapping_path("foo") == flat
+
+    def test_missing_raises(self, tmp_path, monkeypatch):
+        gen = self._gen_dir(tmp_path)
+        monkeypatch.setattr(runner_module, "_repo_dir", lambda rel: gen)
+        with pytest.raises(FileNotFoundError):
+            runner_module._platform_mapping_path("does_not_exist")
+
+
 class TestLocalBuildFingerprint:
     """The local-build cache namespace fingerprints only the sources this runner
     uploads (its REQUIRED_PATHS), keyed on each file's (size, mtime_ns) — not the

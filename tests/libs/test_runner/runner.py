@@ -265,8 +265,30 @@ class _PortTemplate(NamedTuple):
     interface: dict
 
 
+def _platform_mapping_path(config_name: str) -> Path:
+    """Locate a config's platform_mapping.json across both on-disk layouts.
+
+    Descriptor-backed platforms (e.g. wedge800bact/wedge800cact) are generated
+    into <vendor>/<config_name>/platform_mapping.json, while the rest keep the
+    legacy flat <config_name>_platform_mapping.json. Prefer the flat file for
+    backwards compat, then fall back to a vendor-directory scan mirroring
+    PlatformDescriptorRegistry (fboss/lib/platforms/PlatformDescriptor.h).
+    """
+    base = _repo_dir(_PLATFORM_MAPPING_DIR)
+    flat = base / f"{config_name}_platform_mapping.json"
+    if flat.is_file():
+        return flat
+    nested = sorted(base.glob(f"*/{config_name}/platform_mapping.json"))
+    if nested:
+        return nested[0]
+    raise FileNotFoundError(
+        f"no platform mapping for {config_name!r}: looked for {flat} and "
+        f"{base}/*/{config_name}/platform_mapping.json"
+    )
+
+
 def _load_platform_mapping(config_name: str) -> dict[str, _PortInfo]:
-    path = _repo_dir(_PLATFORM_MAPPING_DIR) / f"{config_name}_platform_mapping.json"
+    path = _platform_mapping_path(config_name)
     with open(path, encoding="utf-8") as f:
         mapping = json.load(f)
     prof = {
