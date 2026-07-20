@@ -47,11 +47,21 @@ SUB_ARG_AGENT_RUN_MODE_MONO = "mono"
 SUB_ARG_AGENT_RUN_MODE_MULTI = "multi_switch"
 SUB_ARG_NUM_NPUS = "--num-npus"
 
+<<<<<<< HEAD
 # Benchmark subcommand args
 OPT_ARG_SAI_BENCH = "--sai"
 OPT_ARG_QSFP_BENCH = "--qsfp"
 OPT_ARG_FORCE_5PIM_FUJI = "--force-5pim-fuji"
 OPT_ARG_PORT_MANAGER_MODE = "--port-manager-mode"
+=======
+# Platform-service test-type names shared between the platform-services runners
+# and TEST_DISABLE_SERVICES below. The remaining platform test-type names live
+# in platform_services_test_runner.py since they are only used there.
+SUB_ARG_PLATFORM_MANAGER_HW_TEST = "platform_manager_hw_test"
+SUB_ARG_BSP_HW_TEST = "bsp_tests"
+SUB_ARG_LED_HW_TEST = "led_service_hw_test"
+SUB_ARG_QSFP_HW_TEST = "qsfp_hw_test"
+>>>>>>> f241ee1f3a (NOS-10800: Fix qsfp_hw_test suite on WEDGE800BNHP (#1363))
 
 XGS_SIMULATOR_ASICS = ["th3", "th4", "th4_b0", "th5"]
 DNX_SIMULATOR_ASICS = ["j3"]
@@ -95,6 +105,36 @@ SAI_AGENT_TEST_KNOWN_BAD_TESTS = (
 SAI_AGENT_UNSUPPORTED_TESTS = (
     "./share/sai_hw_unsupported_tests/sai_agent_hw_unsupported_tests.materialized_JSON"
 )
+<<<<<<< HEAD
+=======
+
+_SAI_AGENT_DISABLE_SERVICES = ["fboss_sw_agent", "fboss_hw_agent@0", "bgpd"]
+
+# Shared by SAI hw_test and link binaries: prod agents hold port 5909 /
+# the SAI device; qsfp_service holds the transceivers.
+_SAI_DISABLE_SERVICES = ["fboss_sw_agent", "fboss_hw_agent@0", "qsfp_service"]
+
+TEST_DISABLE_SERVICES = {
+    # qsfp_hw_test has its own qsfp_service and must own the xcvr i2c bus, but
+    # the prod qsfp_service and led_service both poll it
+    SUB_ARG_QSFP_HW_TEST: ["qsfp_service", "led_service"],
+    SUB_ARG_BSP_HW_TEST: ["fan_service", "qsfp_service", "led_service"],
+    SUB_ARG_PLATFORM_MANAGER_HW_TEST: [
+        "platform_manager",
+        "sensor_service",
+        "fan_service",
+        "data_corral_service",
+        "qsfp_service",
+        "led_service",
+    ],
+    SUB_CMD_SAI_BINARY: _SAI_DISABLE_SERVICES,
+    SUB_CMD_SAI_AGENT_MONO_BINARY: _SAI_AGENT_DISABLE_SERVICES,
+    SUB_CMD_SAI_AGENT_MULTI_BINARY: _SAI_AGENT_DISABLE_SERVICES,
+    SUB_CMD_LINK_MONO_BINARY: _SAI_AGENT_DISABLE_SERVICES,
+    SUB_CMD_LINK_MULTI_BINARY: _SAI_AGENT_DISABLE_SERVICES,
+}
+
+>>>>>>> f241ee1f3a (NOS-10800: Fix qsfp_hw_test suite on WEDGE800BNHP (#1363))
 # Scale-specific known-bad list (scale test names differ from functional ones).
 SAI_AGENT_SCALE_KNOWN_BAD_TESTS = (
     "./share/hw_known_bad_tests/sai_agent_scale_known_bad_tests.materialized_JSON"
