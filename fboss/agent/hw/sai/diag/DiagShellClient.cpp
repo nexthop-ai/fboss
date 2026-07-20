@@ -90,38 +90,48 @@ const IPAddress getIPFromHost(const std::string& hostname) {
   return IPAddress();
 }
 
-void subscribeToDiagShell(folly::EventBase* evb, const IPAddress& ip) {
+void subscribeToDiagShell(
+    folly::EventBase* evb,
+    const IPAddress& ip,
+    bool* shouldStop) {
   auto client = utility::getStreamingClient(evb, ip, FLAGS_port);
-  auto responseAndStream = client->sync_startDiagShell();
-  folly::writeFull(
-      STDOUT_FILENO,
-      responseAndStream.response.c_str(),
-      responseAndStream.response.size());
-  std::move(responseAndStream.stream)
-      .subscribeExTry(
-          evb,
-          [evb](auto&& t) {
-            if (t.hasValue()) {
-              const auto& shellOut = t.value();
-              folly::writeFull(
-                  STDOUT_FILENO, shellOut.c_str(), shellOut.size());
-              // Typically, neither the error, nor completed events will
-              // occur, we expect most streams to end when the client is
-              // terminated by the user.
-            } else if (t.hasException()) {
-              auto msg = folly::exceptionStr(std::move(t.exception()));
-              // N.B., can't use folly logging, because it messes with the
-              // terminal mode such that backspace, ctrl+D, etc.. don't seem
-              // to work anymore.
-              LOG(ERROR) << "error in stream: " << msg;
-              evb->terminateLoopSoon();
-            } else {
-              LOG(INFO) << "stream completed!";
-              evb->terminateLoopSoon();
-            }
-          })
-      .detach();
-  evb->loop();
+  try {
+    // startDiagShell throws if another client holds the shell or the switch
+    // is not ready; catch it so the client exits instead of terminating.
+    auto responseAndStream = client->sync_startDiagShell();
+    folly::writeFull(
+        STDOUT_FILENO,
+        responseAndStream.response.c_str(),
+        responseAndStream.response.size());
+    std::move(responseAndStream.stream)
+        .subscribeExTry(
+            evb,
+            [evb](auto&& t) {
+              if (t.hasValue()) {
+                const auto& shellOut = t.value();
+                folly::writeFull(
+                    STDOUT_FILENO, shellOut.c_str(), shellOut.size());
+                // Typically, neither the error, nor completed events will
+                // occur, we expect most streams to end when the client is
+                // terminated by the user.
+              } else if (t.hasException()) {
+                auto msg = folly::exceptionStr(std::move(t.exception()));
+                // N.B., can't use folly logging, because it messes with the
+                // terminal mode such that backspace, ctrl+D, etc.. don't seem
+                // to work anymore.
+                LOG(ERROR) << "error in stream: " << msg;
+                evb->terminateLoopSoon();
+              } else {
+                LOG(INFO) << "stream completed!";
+                evb->terminateLoopSoon();
+              }
+            })
+        .detach();
+    evb->loop();
+  } catch (const std::exception& e) {
+    LOG(ERROR) << "failed to start diag shell: " << e.what();
+    *shouldStop = true;
+  }
 }
 
 void handleStdin(
@@ -214,8 +224,9 @@ int main(int argc, char* argv[]) {
   }
 
   LOG(INFO) << "Connecting to: " << hostIP;
-  std::thread streamT(
-      [&streamEvb, &hostIP]() { subscribeToDiagShell(&streamEvb, hostIP); });
+  std::thread streamT([&streamEvb, &hostIP, &stopThread]() {
+    subscribeToDiagShell(&streamEvb, hostIP, &stopThread);
+  });
 
   std::thread readStdinT([&stdinEvb, &hostIP, &stopThread]() {
     handleStdin(&stdinEvb, hostIP, &stopThread);
