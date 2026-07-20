@@ -111,6 +111,7 @@ _STACK_SHARE: dict[str, tuple[str, ...]] = {
         "share/qsfp_unsupported_tests/",
         "share/link_test_configs/",
         "share/link_known_bad_tests/",
+        "share/platform_descriptors/",
         "share/hw_benchmark_tests/",
         "share/fboss2_integration_known_bad_tests/",
     ),
@@ -486,12 +487,21 @@ class BaseHwTestRunner(ABC):
         """Map a REQUIRED_PATHS dest back to its local source.
 
         Mirrors fboss/oss/scripts/package.py's test_files mapping:
+          - ``share/platform_descriptors``  -> ``<repo>/fboss/lib/platform_mapping_v2/generated_platform_mappings``
           - ``share/<x>``                  -> ``<repo>/fboss/oss/<x>``
           - ``bin/python_tests/<x>``       -> ``<repo>/fboss/oss/python_tests/<x>``
           - ``bin/<x>.py`` | setup_fboss_env -> ``<repo>/fboss/oss/scripts/run_scripts/<x>``
           - ``bin/<binary>``               -> ``<build_dir>/build/fboss/<binary>``
         """
         oss = self._fboss_repo_root() / "fboss" / "oss"
+        if rel_dest == "share/platform_descriptors":
+            return str(
+                self._fboss_repo_root()
+                / "fboss"
+                / "lib"
+                / "platform_mapping_v2"
+                / "generated_platform_mappings"
+            )
         if rel_dest.startswith("share/"):
             return str(oss / rel_dest[len("share/"):])
         if rel_dest.startswith("bin/python_tests/"):

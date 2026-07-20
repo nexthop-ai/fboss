@@ -14,6 +14,10 @@ export FBOSS_LIB64=${FBOSS}/lib64
 export FBOSS_KMODS=${FBOSS}/lib/modules
 export FBOSS_DATA=${FBOSS}/share
 
+# /tmp is wiped on reboot; re-link on every service start so
+# platform_descriptor_config_path resolves to the shipped bundle.
+[ -d "${FBOSS_DATA}/platform_descriptors" ] && ln -sfn "${FBOSS_DATA}/platform_descriptors" /tmp/platform_descriptors
+
 export PATH=${FBOSS_BIN}${PATH:+:${PATH}}
 export LD_LIBRARY_PATH=${FBOSS_LIB}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 export LD_LIBRARY_PATH=${FBOSS_LIB64}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}

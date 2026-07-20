@@ -16,6 +16,7 @@ OSS_DIR = SRC_DIR / "fboss/oss"
 RUN_SCRIPTS_DIR = SRC_DIR / "fboss/oss/scripts/run_scripts"
 RUN_CONFIGS_DIR = SRC_DIR / "fboss/oss/scripts/run_configs"
 PYTHON_TESTS_DIR = OSS_DIR / "python_tests"
+PLATFORM_MAPPING_DIR = SRC_DIR / "fboss/lib/platform_mapping_v2"
 
 BUILD_DIR = "--build-dir"
 TARGET_NAMES = ("agent-benchmarks", "forwarding-stack", "platform-stack")
@@ -106,6 +107,7 @@ FORWARDING_TEST_EXTRA = {
     OSS_DIR / "qsfp_test_configs": "share/qsfp_test_configs",
     OSS_DIR / "qsfp_unsupported_tests": "share/qsfp_unsupported_tests",
     OSS_DIR / "sai_hw_unsupported_tests": "share/sai_hw_unsupported_tests",
+    PLATFORM_MAPPING_DIR / "generated_platform_mappings": "share/platform_descriptors",
     # sai_all_benchmarks-sai_impl ships in this tar (FORWARDING_TEST_BINARIES);
     # it needs sai_bench.materialized_JSON to prune known-bad/unsupported
     # benchmarks. Without it run_test.py runs unsupported cases and they crash.
