@@ -60,6 +60,7 @@ SUB_ARG_NUM_NPUS = "--num-npus"
 SUB_ARG_PLATFORM_MANAGER_HW_TEST = "platform_manager_hw_test"
 SUB_ARG_BSP_HW_TEST = "bsp_tests"
 SUB_ARG_LED_HW_TEST = "led_service_hw_test"
+SUB_ARG_QSFP_HW_TEST = "qsfp_hw_test"
 
 XGS_SIMULATOR_ASICS = ["th3", "th4", "th4_b0", "th5"]
 DNX_SIMULATOR_ASICS = ["j3"]
@@ -111,6 +112,9 @@ _SAI_AGENT_DISABLE_SERVICES = ["fboss_sw_agent", "fboss_hw_agent@0", "bgpd"]
 _SAI_DISABLE_SERVICES = ["fboss_sw_agent", "fboss_hw_agent@0", "qsfp_service"]
 
 TEST_DISABLE_SERVICES = {
+    # qsfp_hw_test has its own qsfp_service and must own the xcvr i2c bus, but
+    # the prod qsfp_service and led_service both poll it
+    SUB_ARG_QSFP_HW_TEST: ["qsfp_service", "led_service"],
     SUB_ARG_BSP_HW_TEST: ["fan_service", "qsfp_service", "led_service"],
     SUB_ARG_PLATFORM_MANAGER_HW_TEST: [
         "platform_manager",
