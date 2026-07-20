@@ -435,6 +435,7 @@ CmdConfigInterfaceTraits::RetType CmdConfigInterface::queryClient(
               ipAddresses.end()) {
             ipAddresses.push_back(value);
           }
+          changed = true;
         }
       }
       results.push_back(fmt::format("{}={}", attr, value));
@@ -464,26 +465,6 @@ CmdConfigInterfaceTraits::RetType CmdConfigInterface::queryClient(
         }
       }
       results.push_back(fmt::format("mtu={}", mtu));
-    } else if (attr == "profile") {
-      results.push_back(applyProfile(hostInfo, interfaces, value));
-      changed = true;
-    } else if (attr == "ip-address" || attr == "ipv6-address") {
-      validateInterfaceIpAttr(attr, value);
-
-      // Add IP address to all interfaces
-      for (const utils::Intf& intf : interfaces) {
-        cfg::Interface* interface = intf.getInterface();
-        if (interface) {
-          auto& ipAddresses = *interface->ipAddresses();
-          // Only add if not already present
-          if (std::find(ipAddresses.begin(), ipAddresses.end(), value) ==
-              ipAddresses.end()) {
-            ipAddresses.push_back(value);
-          }
-          changed = true;
-        }
-      }
-      results.push_back(fmt::format("{}={}", attr, value));
     } else if (attr == "loopback-mode") {
       changed |= applyLoopbackMode(value, effectiveInterfaces);
       results.push_back(fmt::format("loopback-mode={}", value));
