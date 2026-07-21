@@ -5305,8 +5305,8 @@ constexpr auto kJsonBspPlatformMappingStr = R"(
         },
         "129": {
           "id": 129,
-          "bluePath": "/sys/class/leds/mgmt_qsfp_led:blue:status",
-          "yellowPath": "/sys/class/leds/mgmt_qsfp_led:amber:status",
+          "bluePath": "/sys/class/leds/port129_led1:blue:status",
+          "yellowPath": "/sys/class/leds/port129_led2:amber:status",
           "transceiverId": 129
         }
       }
