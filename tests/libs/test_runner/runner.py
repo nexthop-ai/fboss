@@ -989,32 +989,42 @@ class SaiAgentTestRunner(BaseHwTestRunner):
             {_sai_skip_known_bad(model)}{self._enable_production_features(model)}"
 
 
-class QsfpTestRunner(BaseHwTestRunner):
-    """Runner for QSFP hardware tests."""
+class _CablingAwareRunnerMixin:
+    """Copper-safe vs optics-only filter split, shared by QsfpTestRunner and
+    LinkTestRunner. Subclasses set _OPTICS_ONLY_FILTER_SUBSTRINGS and may
+    override _prepare_pass() if the DUT config needs to change per pass.
+    """
 
-    STACK = _STACK_FORWARDING
-    BINARIES = ("bin/qsfp_hw_test",)
-    REQUIRED_PATHS = (*BINARIES, *_STACK_SHARE[STACK])
+    _OPTICS_ONLY_FILTER_SUBSTRINGS: tuple[str, ...] = ()
+    _PORTS_INFO_ENV_VAR = "TEST_PORTS_INFO"
 
-    _CABLING_ENV_VAR = "QSFP_TEST_CABLING"
-    _BASE_CONFIG_DIR = Path("fboss/oss/qsfp_test_configs")
-    _REMOTE_CONFIG_PATH = "/home/netops/qsfp_test.materialized_JSON"
-    _FALLBACK_PROFILE_ID = 38
+    def __init__(self):
+        super().__init__()
+        self._cached_base_config = None
+        self._cached_port_map = None
 
-    # These hard-assert a non-empty optical/active transceiver set.
-    _OPTICS_ONLY_FILTER_SUBSTRINGS = (
-        "i2cStressWrite",
-        "i2cLogCapacityWrite",
-        "cmisPageChange",
-        "verifyResetControl",
-    )
-    _PASS_LOCAL_PATHS = {
-        "main": ("/tmp/qsfp_test_main.log", "/tmp/qsfp_tr_main.xml"),
-        "optics": ("/tmp/qsfp_test_optics.log", "/tmp/qsfp_tr_optics.xml"),
-    }
+    def _load_base_config_and_port_map(self, base_config_dir: Path, config_name: str) -> tuple[dict, dict]:
+        """Load and cache the base config JSON + platform-mapping port map.
+
+        _prepare_pass() is called once per pass (main/optics), and both inputs
+        are the same across passes for a given run, so cache them on first
+        load instead of re-reading + re-parsing per pass.
+        """
+        if self._cached_base_config is None:
+            base_path = _repo_dir(base_config_dir) / f"{config_name}.materialized_JSON"
+            try:
+                with open(base_path, encoding="utf-8") as f:
+                    self._cached_base_config = json.load(f)
+            except (OSError, ValueError) as e:
+                raise RuntimeError(f"Failed to load base config {base_path}: {e}") from e
+            self._cached_port_map = _load_platform_mapping(config_name)
+        return self._cached_base_config, self._cached_port_map
+
+    def _prepare_pass(self, model: str, ports: list[str]) -> None:  # noqa: ARG002
+        pass
 
     def _load_cabling(self, cabling_path: str) -> tuple[list[str], list[str]]:
-        """Parse QSFP_TEST_CABLING: {port: {"is_copper": bool | None}}.
+        """Parse TEST_PORTS_INFO: {port: {"is_copper": bool | None}}.
 
         Returns (all_ports, optics_ports); unknown media type counts toward
         all_ports but not optics_ports.
@@ -1023,7 +1033,7 @@ class QsfpTestRunner(BaseHwTestRunner):
             with open(cabling_path, encoding="utf-8") as f:
                 cabling = json.load(f)
         except (OSError, ValueError) as e:
-            raise RuntimeError(f"Failed to load QSFP cabling file {cabling_path}: {e}") from e
+            raise RuntimeError(f"Failed to load ports-info file {cabling_path}: {e}") from e
         all_ports = list(cabling)
         optics_ports = [p for p, info in cabling.items() if info.get("is_copper") is False]
         return all_ports, optics_ports
@@ -1036,6 +1046,135 @@ class QsfpTestRunner(BaseHwTestRunner):
             bucket = optics_only if any(s in f for s in cls._OPTICS_ONLY_FILTER_SUBSTRINGS) else copper_safe
             bucket.append(f)
         return copper_safe, optics_only
+
+    @classmethod
+    def _split_gtest_filter(cls, expr: str) -> tuple[str, str]:
+        """Split a single --gtest_filter expression into copper-safe/optics-only
+        sub-expressions, sharing the negative-pattern suffix.
+
+        gtest's own filter grammar is positives['-'negatives], split on the first
+        '-'; colon-separated positives are classified the same way _split_filters
+        buckets tc["filters"], so a mixed TESTFILTER runs as two passes against
+        the right port set each, instead of once against the wrong one.
+        """
+        positive, sep, negative = expr.partition("-")
+        patterns = [p for p in positive.split(":") if p]
+        if not patterns and sep:
+            # "-foo" alone means "everything except foo" (gtest defaults the
+            # positive side to "*"); an empty positive here is not "no tests".
+            patterns = ["*"]
+        copper_safe, optics_only = cls._split_filters(patterns)
+        suffix = f"-{negative}" if sep else ""
+        copper_expr = ":".join(copper_safe) + suffix if copper_safe else ""
+        optics_expr = ":".join(optics_only) + suffix if optics_only else ""
+        return copper_expr, optics_expr
+
+    def _pass_local_paths(self, label: str) -> tuple[str, str]:
+        prefix = type(self).__name__.lower()
+        return (f"/tmp/{prefix}_test_{label}.log", f"/tmp/{prefix}_tr_{label}.xml")
+
+    def _run_test_impl(self, test_context, skip_tr_xml=False):
+        # Override _run_test_impl (not run_test) so the base run_test template
+        # runs setup()/deploy and the deploy-only gate for every path,
+        # including the cabling-aware one, and pads a failing run at most once.
+        cabling_path = os.getenv(self._PORTS_INFO_ENV_VAR)
+        if not cabling_path:
+            return super()._run_test_impl(test_context, skip_tr_xml)
+        return self._run_cabling_aware(cabling_path, test_context, skip_tr_xml)
+
+    def _run_cabling_aware(self, cabling_path, test_context, skip_tr_xml):
+        # setup()/deploy already ran in the base run_test() before this call.
+        model = _normalize_model(self.tc["model"])
+        all_ports, optics_ports = self._load_cabling(cabling_path)
+
+        gtest_filter = self.tc.get("gtest_filter")
+        if gtest_filter:
+            copper_bucket, optics_bucket = self._split_gtest_filter(gtest_filter)
+        else:
+            copper_bucket, optics_bucket = self._split_filters(self.tc["filters"])
+
+        passes = []  # list of (label, filter_value, ports)
+        if copper_bucket:
+            passes.append(("main", copper_bucket, all_ports))
+        skipped = []  # list of (filter_pattern, reason)
+        if optics_bucket:
+            if optics_ports:
+                passes.append(("optics", optics_bucket, optics_ports))
+            else:
+                logger.info(
+                    "No optics/active-cabled ports on this DUT; skipping optics-only tests: %s",
+                    optics_bucket,
+                )
+                skipped.extend(
+                    (pattern, "no optical/active transceivers cabled on this DUT")
+                    for pattern in ([optics_bucket] if gtest_filter else optics_bucket)
+                )
+
+        if not passes and not skipped:
+            logger.warning("%s: no filters to run", type(self).__name__)
+            return True
+
+        original_filters = self.tc["filters"]
+        original_gtest_filter = gtest_filter
+        pass_results = []
+        ran_labels = []
+        pre_test_called = False
+        try:
+            for label, filter_value, ports in passes:
+                if gtest_filter:
+                    self.tc["gtest_filter"] = filter_value
+                else:
+                    self.tc["filters"] = filter_value
+                self._prepare_pass(model, ports)
+                self.pre_test()  # fresh warm/cold-boot state wipe per pass
+                pre_test_called = True
+                log_local, xml_local = self._pass_local_paths(label)
+                success = self._execute_test_binary(model, log_local, xml_local, skip_tr_xml)
+                pass_results.append(success)
+                ran_labels.append(label)
+                if not success:
+                    logger.error("%s %s pass failed; aborting remaining passes", type(self).__name__, label)
+                    for _, remaining, _ in passes[len(ran_labels):]:
+                        skipped.extend(
+                            (pattern, "earlier pass failed; run aborted")
+                            for pattern in ([remaining] if gtest_filter else remaining)
+                        )
+                    break
+        finally:
+            self.tc["filters"] = original_filters
+            if gtest_filter:
+                self.tc["gtest_filter"] = original_gtest_filter
+            if pre_test_called:
+                self.post_test()
+
+        if not skip_tr_xml:
+            self._merge_junit_results(
+                [(label, *self._pass_local_paths(label)) for label in ran_labels],
+                skipped=skipped,
+            )
+            self.normalize_test_results_file()
+
+        return all(pass_results)
+
+
+class QsfpTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
+    """Runner for QSFP hardware tests."""
+
+    STACK = _STACK_FORWARDING
+    BINARIES = ("bin/qsfp_hw_test",)
+    REQUIRED_PATHS = (*BINARIES, *_STACK_SHARE[STACK])
+
+    _BASE_CONFIG_DIR = Path("fboss/oss/qsfp_test_configs")
+    _REMOTE_CONFIG_PATH = "/home/netops/qsfp_test.materialized_JSON"
+    _FALLBACK_PROFILE_ID = 38
+
+    # These hard-assert a non-empty optical/active transceiver set.
+    _OPTICS_ONLY_FILTER_SUBSTRINGS = (
+        "i2cStressWrite",
+        "i2cLogCapacityWrite",
+        "cmisPageChange",
+        "verifyResetControl",
+    )
 
     def _build_cabled_config(self, base_config: dict, ports: list[str], port_map: dict) -> dict:
         config = copy.deepcopy(base_config)
@@ -1051,88 +1190,11 @@ class QsfpTestRunner(BaseHwTestRunner):
         args["firmware_upgrade_on_tcvr_insert"] = "false"
         return config
 
-    def _run_test_impl(self, test_context, skip_tr_xml=False):
-        # Override _run_test_impl (not run_test) so the base run_test template
-        # runs setup()/deploy and the deploy-only gate for every QSFP path,
-        # including the cabling-aware one, and pads a failing run at most once.
-        if not os.getenv(self._CABLING_ENV_VAR):
-            # No cabling signal (dev/standalone run): one pass, static share
-            # config, unsplit filter list, same as before.
-            return super()._run_test_impl(test_context, skip_tr_xml)
-        return self._run_cabling_aware(test_context, skip_tr_xml)
-
-    def _run_cabling_aware(self, test_context, skip_tr_xml):
-        # setup()/deploy already ran in the base run_test() before this call.
-        model = _normalize_model(self.tc["model"])
-        all_ports, optics_ports = self._load_cabling(os.getenv(self._CABLING_ENV_VAR))
-        copper_safe, optics_only = self._split_filters(self.tc["filters"])
-
-        passes = []  # list of (label, filters, ports)
-        if copper_safe:
-            passes.append(("main", copper_safe, all_ports))
-        skipped = []  # list of (filter_pattern, reason)
-        if optics_only:
-            if optics_ports:
-                passes.append(("optics", optics_only, optics_ports))
-            else:
-                logger.info(
-                    "No optics/active-cabled ports on this DUT; skipping optics-only tests: %s",
-                    optics_only,
-                )
-                skipped.extend(
-                    (pattern, "no optical/active transceivers cabled on this DUT")
-                    for pattern in optics_only
-                )
-
-        if not passes and not skipped:
-            logger.warning("QsfpTestRunner: no filters to run")
-            return True
-
+    def _prepare_pass(self, model: str, ports: list[str]) -> None:
         config_name = _LINK_QSFP_TEST_CONFIG_NAME.get(model, model)
-        base_path = _repo_dir(self._BASE_CONFIG_DIR) / f"{config_name}.materialized_JSON"
-        try:
-            with open(base_path, encoding="utf-8") as f:
-                base_config = json.load(f)
-        except (OSError, ValueError) as e:
-            raise RuntimeError(f"Failed to load QSFP base config {base_path}: {e}") from e
-        port_map = _load_platform_mapping(config_name)
-
-        original_filters = self.tc["filters"]
-        pass_results = []
-        ran_labels = []
-        pre_test_called = False
-        try:
-            for label, filters, ports in passes:
-                self.tc["filters"] = filters
-                config = self._build_cabled_config(base_config, ports, port_map)
-                self._upload_generated_config(config)
-                self.pre_test()  # fresh warm/cold-boot state wipe per pass
-                pre_test_called = True
-                log_local, xml_local = self._PASS_LOCAL_PATHS[label]
-                success = self._execute_test_binary(model, log_local, xml_local, skip_tr_xml)
-                pass_results.append(success)
-                ran_labels.append(label)
-                if not success:
-                    logger.error("QSFP %s pass failed; aborting remaining passes", label)
-                    for _, remaining_filters, _ in passes[len(ran_labels):]:
-                        skipped.extend(
-                            (pattern, "earlier pass failed; run aborted")
-                            for pattern in remaining_filters
-                        )
-                    break
-        finally:
-            self.tc["filters"] = original_filters
-            if pre_test_called:
-                self.post_test()
-
-        if not skip_tr_xml:
-            self._merge_junit_results(
-                [(label, *self._PASS_LOCAL_PATHS[label]) for label in ran_labels],
-                skipped=skipped,
-            )
-            self.normalize_test_results_file()
-
-        return all(pass_results)
+        base_config, port_map = self._load_base_config_and_port_map(self._BASE_CONFIG_DIR, config_name)
+        config = self._build_cabled_config(base_config, ports, port_map)
+        self._upload_generated_config(config)
 
     def test_args(self, model: str) -> str:
         if self._use_generated_config:
@@ -1141,10 +1203,19 @@ class QsfpTestRunner(BaseHwTestRunner):
         return f"qsfp --qsfp-config ./share/qsfp_test_configs/{config_name}.materialized_JSON"
 
 
-class LinkTestRunner(BaseHwTestRunner):
+class LinkTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
     """Runner for link tests."""
 
-    _CABLING_ENV_VAR = "LINK_TEST_CABLING"
+    # These hard-assert a non-empty optical/active transceiver set.
+    _OPTICS_ONLY_FILTER_SUBSTRINGS = (
+        "verifyTxRxLatches",
+        "opticsTxDisableRandomPorts",
+        "opticsTxDisableEnable",
+        "opticsVdmPerformanceMonitoring",
+        "FR4",
+    )
+
+    _SNAKE_PAIRS_ENV_VAR = "TEST_SNAKE_PAIRS"
     _BASE_CONFIG_DIR = Path("fboss/oss/link_test_configs")
     _REMOTE_CONFIG_PATH = "/home/netops/link_test_config.materialized_JSON"
     _SYSTEM_QSFP_CONFIG_PATH = "/etc/coop/qsfp.conf"
@@ -1160,14 +1231,14 @@ class LinkTestRunner(BaseHwTestRunner):
     def __init__(self):
         super().__init__()
         self._use_generated_qsfp = False
+        self._pass_ports: list[str] | None = None
+
+    def _prepare_pass(self, model: str, ports: list[str]) -> None:  # noqa: ARG002
+        self._pass_ports = ports
 
     @classmethod
     def _config_name(cls, model: str) -> str:
         return _LINK_QSFP_TEST_CONFIG_NAME.get(model, model)
-
-    @classmethod
-    def _base_config_path(cls, config_name: str) -> Path:
-        return _repo_dir(cls._BASE_CONFIG_DIR) / f"{config_name}.materialized_JSON"
 
     @classmethod
     def _synthesize_port(
@@ -1292,21 +1363,22 @@ class LinkTestRunner(BaseHwTestRunner):
         model = _normalize_model(self.tc["model"])
         self._stage_qsfp_config()
 
-        # Set by the nhtest executor to a {port: peer_port} JSON file when cabling
-        # was generated from netbox; absent for standalone dev runs.
-        cabling_path = os.getenv(self._CABLING_ENV_VAR)
+        # Set by the nhtest executor to a {port: peer_port} JSON file (TEST_SNAKE_PAIRS)
+        # when cabling was generated from netbox; absent for standalone dev runs.
+        cabling_path = os.getenv(self._SNAKE_PAIRS_ENV_VAR)
         if not cabling_path:
             return
 
         config_name = self._config_name(model)
 
-        with open(self._base_config_path(config_name), encoding="utf-8") as f:
-            base = json.load(f)
         with open(cabling_path, encoding="utf-8") as f:
             pairs = json.load(f)
+        if self._pass_ports is not None:
+            allowed = set(self._pass_ports)
+            pairs = {port: peer for port, peer in pairs.items() if port in allowed and peer in allowed}
 
-        port_map = _load_platform_mapping(config_name)
-        config = self._overlay_cabling(base, pairs, port_map)
+        base_config, port_map = self._load_base_config_and_port_map(self._BASE_CONFIG_DIR, config_name)
+        config = self._overlay_cabling(copy.deepcopy(base_config), pairs, port_map)
         self._upload_generated_config(config)
 
     def test_args(self, model: str) -> str:
