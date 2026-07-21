@@ -8,9 +8,9 @@
  *
  */
 #pragma once
+#include <atomic>
 #include <memory>
 
-#include <gflags/gflags.h>
 #include <string>
 
 #include "fboss/agent/CommonInit.h"
@@ -37,6 +37,12 @@ class SplitHwAgentSignalHandler : public SignalHandler {
  private:
   std::unique_ptr<HwAgent> hwAgent_;
   SplitAgentThriftSyncer* syncer_;
+  // Set by the first exit signal. signalReceived() returns (it no longer
+  // terminates the process), so a second signal delivered while the shutdown
+  // is draining would re-enter it -- after gracefulExit() already tore down
+  // the SAI switch (warm) or hwAgent_ was reset (cold). Guard against that
+  // instead of re-driving the teardown.
+  std::atomic<bool> exitSignalReceived_{false};
 };
 
 void setSDKVersionInfo();

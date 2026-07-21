@@ -16,6 +16,9 @@
 
 #include <folly/logging/xlog.h>
 
+#include <unistd.h>
+#include <csignal>
+
 namespace facebook::fboss {
 void HwSwitchConnectionStatusTable::connected(SwitchID switchId) {
   bool isFirstConnection{false};
@@ -70,7 +73,8 @@ bool HwSwitchConnectionStatusTable::disconnected(SwitchID switchId) {
                  << ": " << dirUtil->getHwColdBootOnceFile(switchIndex);
     }
 
-    std::exit(EXIT_SUCCESS);
+    kill(getpid(), SIGTERM);
+    return true;
   }
   if (FLAGS_exit_for_any_hw_disconnect) {
     XLOG(FATAL)
