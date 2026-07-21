@@ -79,6 +79,9 @@ const std::vector<std::pair<std::string, FunctionWithDisruptiveFlag>>
         {"logs",
          {[](Utils& util) { util.printLogs(); },
           Disruptiveness::NONDISRUPTIVE}},
+        {"crash",
+         {[](Utils& util) { util.printCrashDetails(); },
+          Disruptiveness::NONDISRUPTIVE}},
 };
 
 std::set<std::string> getValidDetailNames() {

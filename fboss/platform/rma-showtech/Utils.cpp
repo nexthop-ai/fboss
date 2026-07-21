@@ -381,6 +381,63 @@ void Utils::printLogs() {
             << std::endl;
 }
 
+std::vector<std::string> Utils::getCoredumpPids(
+    const std::string& coreList) const {
+  std::vector<std::string> pids;
+  std::vector<std::string> rows;
+  folly::split('\n', coreList, rows, true);
+  for (const auto& row : rows) {
+    std::vector<std::string> fields;
+    folly::split(' ', row, fields, true);
+    if (fields.size() < 5) {
+      continue;
+    }
+    const auto& pid = fields[4];
+    if (!pid.empty() &&
+        pid.find_first_not_of("0123456789") == std::string::npos) {
+      pids.push_back(pid);
+    }
+  }
+  return pids;
+}
+
+void Utils::printFileIfPresent(const std::string& path) const {
+  if (!std::filesystem::exists(path)) {
+    return;
+  }
+  std::cout << fmt::format("#### {} ####", path) << std::endl;
+  std::cout << platformUtils_.execCommand(fmt::format("cat {}", path)).second
+            << std::endl;
+}
+
+void Utils::printCrashDetails() {
+  std::cout << "##### Crash Information #####" << std::endl;
+
+  std::cout << "#### Core Dumps ####" << std::endl;
+  auto coreList =
+      platformUtils_.execCommand("coredumpctl list --no-pager").second;
+  std::cout << coreList << std::endl;
+
+  for (const auto& pid : getCoredumpPids(coreList)) {
+    std::cout << fmt::format("#### Core PID {} ####", pid) << std::endl;
+    std::cout << platformUtils_
+                     .execCommand(fmt::format("coredumpctl info {}", pid))
+                     .second
+              << std::endl;
+  }
+
+  const std::string crashDir = "/var/facebook/fboss/crash";
+  if (std::filesystem::is_directory(crashDir)) {
+    std::cout << "#### FBOSS Crash State ####" << std::endl;
+    std::cout
+        << platformUtils_.execCommand(fmt::format("ls -la {}", crashDir)).second
+        << std::endl;
+
+    printFileIfPresent(crashDir + "/bad_update/old_state");
+    printFileIfPresent(crashDir + "/bad_update/new_state");
+  }
+}
+
 void Utils::runFbossCliCmd(const std::string& cmd) {
   if (!std::filesystem::exists("/etc/ramdisk")) {
     auto fullCmd = fmt::format("fboss2 show {}", cmd);

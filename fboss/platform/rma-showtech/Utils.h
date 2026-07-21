@@ -30,6 +30,7 @@ class Utils {
   void printNvmeDetails();
   void printPowerGoodDetails();
   void printLogs();
+  void printCrashDetails();
 
  private:
   const showtech_config::ShowtechConfig& config_;
@@ -39,8 +40,10 @@ class Utils {
   void printSysfsAttribute(const std::string& label, const std::string& path);
   void printGpio(const showtech_config::Gpio& gpio);
   void printServiceLogs(const std::string& service) const;
+  void printFileIfPresent(const std::string& path) const;
   std::optional<std::tuple<int, int>> getI2cInfoForDevice(
       const std::string& path);
+  std::vector<std::string> getCoredumpPids(const std::string& coreList) const;
   std::pair<int, std::string> execCommandWithLimit(
       const std::string& cmd,
       int maxLines = 5000) const;
