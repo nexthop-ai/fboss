@@ -31,6 +31,7 @@ class Utils {
   void printPowerGoodDetails();
   void printLogs();
   void printCrashDetails();
+  void printSystemdDetails();
 
  private:
   const showtech_config::ShowtechConfig& config_;

@@ -450,6 +450,47 @@ void Utils::printCrashDetails() {
   }
 }
 
+void Utils::printSystemdDetails() {
+  std::cout << "##### Systemd Information #####" << std::endl;
+
+  std::cout << "#### Failed Units ####" << std::endl;
+  std::cout
+      << platformUtils_.execCommand("systemctl --failed --no-pager").second
+      << std::endl;
+
+  std::string units =
+      "'fboss*' platform_manager qsfp_service fsdb sensor_service "
+      "fan_service led_service data_corral_service";
+
+  for (const auto& unit : *config_.additionalServiceUnits()) {
+    units += " " + unit;
+  }
+
+  std::cout << "#### Service Status ####" << std::endl;
+  auto [statusRet, statusOutput] = execCommandWithLimit(
+      fmt::format("systemctl status {} --no-pager -l", units));
+  std::cout << statusOutput << std::endl;
+  if (statusRet != 0) {
+    std::cout << fmt::format(
+                     "Error: `systemctl status {}` exited with non-zero "
+                     "status: {} (one or more units may not exist)\n",
+                     units,
+                     statusRet)
+              << std::endl;
+  }
+
+  std::cout << "#### Service State ####" << std::endl;
+  std::cout << platformUtils_
+                   .execCommand(
+                       fmt::format(
+                           "systemctl show {} -p "
+                           "Id,ActiveState,SubState,Result,NRestarts,"
+                           "ExecMainStartTimestamp,ExecMainStatus",
+                           units))
+                   .second
+            << std::endl;
+}
+
 void Utils::runFbossCliCmd(const std::string& cmd) {
   if (!std::filesystem::exists("/etc/ramdisk")) {
     auto fullCmd = fmt::format("fboss2 show {}", cmd);
