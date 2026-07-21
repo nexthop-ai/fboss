@@ -27,6 +27,7 @@
 #include "fboss/agent/platforms/common/janga800bic/Janga800bicPlatformMapping.h"
 #include "fboss/agent/platforms/common/ladakh800bcls/Ladakh800bclsPlatformMapping.h"
 #include "fboss/agent/platforms/common/leh800bcls/Leh800bclsPlatformMapping.h"
+#include "fboss/agent/platforms/common/m4062nhp/M4062nhpPlatformMapping.h"
 #include "fboss/agent/platforms/common/m5120csc/M5120CSCPlatformMapping.h"
 #include "fboss/agent/platforms/common/meru800bfa/Meru800bfaP1PlatformMapping.h"
 #include "fboss/agent/platforms/common/meru800bfa/Meru800bfaPlatformMapping.h"
@@ -44,7 +45,6 @@
 #include "fboss/agent/platforms/sai/SaiBcmDarwinPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmElbertPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmFujiPlatform.h"
-#include "fboss/agent/platforms/sai/SaiBcmM4062nhpPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmMinipackPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmWedge100Platform.h"
 #include "fboss/agent/platforms/sai/SaiBcmWedge400Platform.h"
@@ -136,6 +136,8 @@ std::unique_ptr<PlatformMapping> createGenericSaiPlatformMapping(
       return std::make_unique<Ladakh800bclsPlatformMapping>();
     case PlatformType::PLATFORM_LEH800BCLS:
       return std::make_unique<Leh800bclsPlatformMapping>();
+    case PlatformType::PLATFORM_M4062NHP:
+      return std::make_unique<M4062nhpPlatformMapping>();
     case PlatformType::PLATFORM_MERU800BIA:
     case PlatformType::PLATFORM_MERU800BIAB:
     case PlatformType::PLATFORM_MERU800BIAC:
@@ -272,9 +274,6 @@ std::unique_ptr<SaiPlatform> chooseSaiPlatform(
   } else if (productInfo->getType() == PlatformType::PLATFORM_MINIPACK3N) {
     return std::make_unique<SaiMinipack3NPlatform>(
         std::move(productInfo), localMac, platformMappingStr);
-  } else if (productInfo->getType() == PlatformType::PLATFORM_M4062NHP) {
-    return std::make_unique<SaiBcmM4062nhpPlatform>(
-        std::move(productInfo), localMac, platformMappingStr);
   } else if (productInfo->getType() == PlatformType::PLATFORM_NH4010F) {
     return std::make_unique<SaiNh4010fPlatform>(
         std::move(productInfo), localMac, platformMappingStr);
@@ -301,6 +300,7 @@ std::unique_ptr<SaiPlatform> chooseSaiPlatform(
       productInfo->getType() == PlatformType::PLATFORM_ICETEA800BC ||
       productInfo->getType() == PlatformType::PLATFORM_LADAKH800BCLS ||
       productInfo->getType() == PlatformType::PLATFORM_LEH800BCLS ||
+      productInfo->getType() == PlatformType::PLATFORM_M4062NHP ||
       productInfo->getType() == PlatformType::PLATFORM_MINIPACK3BTA ||
       productInfo->getType() == PlatformType::PLATFORM_MONTBLANC ||
       productInfo->getType() == PlatformType::PLATFORM_TAHAN800BC ||

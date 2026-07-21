@@ -23,7 +23,6 @@
 #include "fboss/agent/platforms/sai/SaiBcmDarwinPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiBcmElbertPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiBcmFujiPlatformPort.h"
-#include "fboss/agent/platforms/sai/SaiBcmM4062nhpPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiBcmMinipackPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiBcmWedge100PlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiBcmWedge400PlatformPort.h"
@@ -116,6 +115,7 @@ bool useGenericSaiBcmPlatformPort(PlatformType platformMode) {
       platformMode == PlatformType::PLATFORM_WEDGE800BACT ||
       platformMode == PlatformType::PLATFORM_WEDGE800BNHP ||
       platformMode == PlatformType::PLATFORM_TAHANSB800BC ||
+      platformMode == PlatformType::PLATFORM_M4062NHP ||
       platformMode == PlatformType::PLATFORM_J4SIM ||
       platformMode == PlatformType::PLATFORM_SAINTPAUL ||
       platformMode == PlatformType::PLATFORM_BLACKWOLF800BANW;
@@ -420,8 +420,6 @@ void SaiPlatform::initPorts() {
       saiPort = std::make_unique<SaiNh4220fPlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_NH5010F) {
       saiPort = std::make_unique<SaiNh5010fPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_M4062NHP) {
-      saiPort = std::make_unique<SaiBcmM4062nhpPlatformPort>(portId, this);
     } else if (useGenericSaiTajoPlatformPort(platformMode)) {
       saiPort = std::make_unique<SaiTajoPlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_YANGRA2) {
