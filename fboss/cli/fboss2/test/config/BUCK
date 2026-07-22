@@ -26,6 +26,7 @@ cpp_unittest(
         "CmdConfigMacAgingTimeTest.cpp",
         "CmdConfigPtpTransparentClockTest.cpp",
         "CmdConfigQosBufferPoolTest.cpp",
+        "CmdConfigQosDefaultQueueConfigTest.cpp",
         "CmdConfigReloadTest.cpp",
         "CmdConfigSessionCommitTest.cpp",
         "CmdConfigSessionDiffTest.cpp",
@@ -42,6 +43,13 @@ cpp_unittest(
         "CmdDeleteInterfaceTest.cpp",
         "CmdDeleteTunnelIpInIpTest.cpp",
         "ConfigSessionSystemdTest.cpp",
+<<<<<<< HEAD
+=======
+        "CmdConfigIpRouteTest.cpp",
+        "CmdDeleteConfigInterfaceTest.cpp",
+        "CmdDeleteCoppCpuTrafficPolicyMatchActionTest.cpp",
+        "CmdDeleteQosDefaultQueueConfigTest.cpp",
+>>>>>>> f2bbd0a370 (NOS-7161: add fboss2-dev config/delete qos default-queue-config commands (#1178))
         "ProfileValidationTest.cpp",
     ],
     headers = [

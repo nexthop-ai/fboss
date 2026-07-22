@@ -40,6 +40,12 @@ cpp_binary(
         "ConfigPfcTest.cpp",
         "ConfigPortQueueConfigTest.cpp",
         "ConfigPtpTest.cpp",
+<<<<<<< HEAD
+=======
+        "ConfigReloadTest.cpp",
+        "ConfigInterfaceProfileTest.cpp",
+        "ConfigQosDefaultQueueConfigTest.cpp",
+>>>>>>> f2bbd0a370 (NOS-7161: add fboss2-dev config/delete qos default-queue-config commands (#1178))
         "ConfigQosPolicyMapTest.cpp",
         "ConfigSessionClearTest.cpp",
         "ConfigVlanCreateTest.cpp",
