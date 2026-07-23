@@ -85,6 +85,7 @@ FORWARDING_TEST_BINARIES = [
     "led_service_hw_test",
     "multi_switch_agent_hw_test",
     "qsfp_hw_test",
+    "qsfp_hw_test_benchmark",
     "sai_agent_hw_test-sai_impl",
     "sai_agent_scale_test-sai_impl",
     "sai_invariant_agent_test-sai_impl",
@@ -111,6 +112,7 @@ FORWARDING_TEST_EXTRA = {
     # sai_all_benchmarks-sai_impl ships in this tar (FORWARDING_TEST_BINARIES);
     # it needs sai_bench.materialized_JSON to prune known-bad/unsupported
     # benchmarks. Without it run_test.py runs unsupported cases and they crash.
+    # Likewise, qsfp_hw_test_benchmark needs qsfp_bench.materialized_JSON.
     OSS_DIR / "hw_benchmark_tests": "share/hw_benchmark_tests",
     RUN_SCRIPTS_DIR / "brcmsim.py": "bin/brcmsim.py",
     PYTHON_TESTS_DIR / "agent_smoke.py": "bin/python_tests/agent_smoke.py",

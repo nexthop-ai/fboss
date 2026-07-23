@@ -1536,11 +1536,16 @@ if (SAI_IMPL OR BUILD_SAI_FAKE)
       sai_mono_link_test-sai_impl
       sai_multi_link_test-sai_impl
       sai_replayer-sai_impl
-      sai_all_benchmarks-sai_impl
       multi_switch_agent_hw_test
       qsfp_hw_test
       led_service_hw_test
     )
+    if(BENCHMARK_INSTALL)
+      add_dependencies(fboss_forwarding_stack
+        sai_all_benchmarks-sai_impl
+        qsfp_hw_test_benchmark
+      )
+    endif()
   endif()
 endif()
 
