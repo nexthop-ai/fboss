@@ -135,9 +135,9 @@ JOBS=$((NPROC * 20))
 [ "$JOBS" -lt 4 ] && JOBS=4
 
 # Read machine RAM in MB for Bazel's resource pool.
-# .bazelrc declares each CppLink action needs 11000 MB via
+# .bazelrc declares each CppLink action needs 6000 MB via
 # --modify_execution_info; Bazel uses SERVER_RAM_MB to decide how many
-# links to run concurrently (floor(RAM / 11000)).
+# links to run concurrently (floor(RAM / 6000)).
 SERVER_RAM_MB=$(free -m | awk '/^Mem:/{print $2}')
 
 # Write .bazelrc.sccache that overrides the compiler settings.
@@ -159,8 +159,8 @@ build --jobs=$JOBS
 # concurrent actions at HOST_CPUS regardless of --jobs.
 build --local_resources=cpu=$JOBS
 # Override the default memory pool with actual machine RAM. Combined with
-# --modify_execution_info=CppLink=+resources:memory:11000 in .bazelrc,
-# this lets Bazel schedule floor($SERVER_RAM_MB / 11000) concurrent link
+# --modify_execution_info=CppLink=+resources:memory:6000 in .bazelrc,
+# this lets Bazel schedule floor($SERVER_RAM_MB / 6000) concurrent link
 # jobs natively -- no flock wrapper needed.
 build --local_resources=memory=$SERVER_RAM_MB
 EOF

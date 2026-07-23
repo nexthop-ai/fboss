@@ -132,10 +132,13 @@ if [[ ${BUILD_TYPE:-} == "Debug" ]]; then
   # 2 link jobs on 64GB VM peak at 56GB of RAM
   _computed_link_jobs=$(jobs_for_ram 48 8)
 else
-  # 2 works well on 24GB and 32GB VMs.
-  _computed_link_jobs=$(jobs_for_ram 11)
+  # mold normal links are cheap -> nproc-wide; giant SAI links go to the heavy_link pool below.
+  _computed_link_jobs=$(nproc)
 fi
 LINK_JOBS=${NHFBOSS_LINK_JOBS:-$_computed_link_jobs}
+# Giant SAI links ~3.5GB RSS; 7GB/job (headroom for concurrent compile+link pools) -> 3-wide on 24GB, wider on big VMs.
+_computed_heavy_link_jobs=$(jobs_for_ram 7)
+HEAVY_LINK_JOBS=${NHFBOSS_HEAVY_LINK_JOBS:-$((_computed_heavy_link_jobs > 0 ? _computed_heavy_link_jobs : 1))}
 if [ $LINK_JOBS -eq 0 ]; then
   echo "Not enough memory to link"
   exit 1
@@ -171,7 +174,7 @@ build_dir=${build_dir:-/var/FBOSS/tmp_bld_dir}
 # NOTE: Because COMPILE_JOBS and LINK_JOBS are embedded here, you must keep
 # NHFBOSS_COMPILE_JOBS/NHFBOSS_LINK_JOBS pinned to the same values in CI
 # across get-deps and build steps, or the hashes will diverge.
-export extra_cmake_defines='{"CMAKE_C_COMPILER_LAUNCHER":"sccache","CMAKE_CXX_COMPILER_LAUNCHER":"sccache","CMAKE_JOB_POOLS":"compile='$COMPILE_JOBS';link='$LINK_JOBS'","CMAKE_JOB_POOL_COMPILE":"compile","CMAKE_JOB_POOL_LINK":"link","RANGE_V3_TESTS":"OFF","RANGE_V3_PERF":"OFF","CMAKE_EXPORT_COMPILE_COMMANDS":"ON","Python3_EXECUTABLE":"/usr/bin/python3.12"'
+export extra_cmake_defines='{"CMAKE_C_COMPILER_LAUNCHER":"sccache","CMAKE_CXX_COMPILER_LAUNCHER":"sccache","CMAKE_JOB_POOLS":"compile='$COMPILE_JOBS';link='$LINK_JOBS';heavy_link='$HEAVY_LINK_JOBS'","CMAKE_JOB_POOL_COMPILE":"compile","CMAKE_JOB_POOL_LINK":"link","NH_HEAVY_LINK_POOL":"heavy_link","RANGE_V3_TESTS":"OFF","RANGE_V3_PERF":"OFF","CMAKE_EXPORT_COMPILE_COMMANDS":"ON","Python3_EXECUTABLE":"/usr/bin/python3.12"'
 # cfboss builds flip cmake gates (swap in stub binaries for platform services).
 # Keep this conditional inside extra_cmake_defines so the same byte string flows
 # to both common_options and cached-get-deps.py.  When BUILD_CFBOSS is unset the

@@ -93,8 +93,8 @@ build --conlyopt=-DHAVE_SETNS=1
 build --dynamic_mode=off
 
 # Linker flags
-build --linkopt=-fuse-ld=lld
-build --host_linkopt=-fuse-ld=lld
+build --linkopt=-fuse-ld=mold
+build --host_linkopt=-fuse-ld=mold
 build --linkopt=-Wl,-rpath,/usr/local/llvm/lib/x86_64-unknown-linux-gnu
 build --linkopt=-Wl,--allow-shlib-undefined
 # Note: third-party archives (folly, fbthrift, etc.) contain ~230MB of debug
@@ -103,14 +103,8 @@ build --linkopt=-Wl,--allow-shlib-undefined
 # Bazel builds (they share the same prebuilt .a files). Do NOT add -Wl,-S
 # here — it would make the Bazel build diverge from cmake.
 
-# Limit concurrent link jobs by declaring memory requirements on link actions.
-# Each FBOSS link needs ~11GB. Bazel uses this together with --local_resources
-# (set per-machine in .bazelrc.sccache, or the default below) to schedule
-# only as many concurrent links as RAM allows — analogous to heavy_genrule's
-# resource_set mechanism.
-build --modify_execution_info=CppLink=+resources:memory:11000
-# Conservative default (2 concurrent links on 24GB). Overridden per-machine
-# in .bazelrc.sccache by bazel-sccache-setup.sh with the actual machine RAM.
+# 6GB/CppLink -> ~4 concurrent links on 24GB (sweep: 6000=41s fastest non-OOM vs 11000=71s). Per-machine RAM in .bazelrc.sccache.
+build --modify_execution_info=CppLink=+resources:memory:6000
 build --local_resources=memory=24000
 
 # Use clang. cmake uses /usr/bin/c++ (which resolves to the same clang-21
