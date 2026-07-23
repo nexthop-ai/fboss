@@ -7,6 +7,7 @@ import json
 import os
 import re
 import shutil
+import socket
 import subprocess
 import sys
 import threading
@@ -151,6 +152,9 @@ class TestRunner(abc.ABC):
     WARMBOOT_PREFIX = "warm_boot."
     TESTRESULT_FILE = "/home/netops/tr.xml"
     TESTRESULT_CURRENT_RUN_FILE = "/home/netops/tr_current_run.xml"
+    # SwSwitch agent thrift ports (SwAgentInitializer FLAGS_port / migrated_port).
+    AGENT_THRIFT_PORTS = (5909, 5959)
+    AGENT_PORT_FREE_TIMEOUT_S = 60
 
     def __init__(self) -> None:
         self._known_bad_test_regexes: list[str] | None = None
@@ -648,6 +652,34 @@ class TestRunner(abc.ABC):
         sys.stderr.flush()
         return returncode, timed_out, stdout_tee.snapshot(), stderr_tee.snapshot()
 
+    @staticmethod
+    def _port_in_use(port: int) -> bool:
+        # SO_REUSEADDR so a TIME_WAIT socket doesn't read as busy; only an
+        # actively bound agent does.
+        with socket.socket(socket.AF_INET6, socket.SOCK_STREAM) as probe:
+            probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            try:
+                probe.bind(("::", port))
+                return False
+            except OSError:
+                return True
+
+    def _wait_for_agent_thrift_ports_free(self) -> None:
+        deadline = time.monotonic() + self.AGENT_PORT_FREE_TIMEOUT_S
+        while True:
+            busy = [p for p in self.AGENT_THRIFT_PORTS if self._port_in_use(p)]
+            if not busy:
+                return
+            if time.monotonic() >= deadline:
+                print(
+                    "Warning: agent thrift port(s) "
+                    f"{busy} still in use after {self.AGENT_PORT_FREE_TIMEOUT_S}s; "
+                    "starting the test anyway",
+                    flush=True,
+                )
+                return
+            time.sleep(1)
+
     def _run_test(
         self,
         conf_file: str,
@@ -669,6 +701,10 @@ class TestRunner(abc.ABC):
         # onto the previous test's XML.
         with suppress(FileNotFoundError):
             os.unlink(self.TESTRESULT_CURRENT_RUN_FILE)
+
+        # Wait for the previous test's agent to release the thrift ports before
+        # launching, else the bind races and the agent aborts.
+        self._wait_for_agent_thrift_ports_free()
 
         test_run_cmd = self._get_test_run_cmd(conf_file, test_to_run, flags)
         print(f"Running command {test_run_cmd}", flush=True)
