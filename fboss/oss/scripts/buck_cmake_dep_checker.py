@@ -116,19 +116,7 @@ class BuckParser:
 
         # Parse cpp_library and executable-type targets (cpp_binary,
         # cpp_unittest, cpp_benchmark). They all share the same srcs/deps shape.
-<<<<<<< HEAD
-        for rule_type in (
-            "cpp_library",
-            "cpp_binary",
-            "cpp_unittest",
-            "cpp_benchmark",
-        ):
-||||||| 320c57f440
-        # Parse cpp_library targets
-        self._parse_cpp_library(content, buck_path, str(file_path))
-=======
         for rule_type in ("cpp_library", "cpp_binary", "cpp_unittest", "cpp_benchmark"):
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
             self._parse_cpp_rule(rule_type, content, buck_path, str(file_path))
 
         # Parse thrift_library targets
@@ -968,15 +956,7 @@ class DependencyAnalyzer:
                         FileInconsistency(
                             direction="missing_from_cmake",
                             file_path=f,
-<<<<<<< HEAD
-                            cmake_target=CmakeTarget(
-                                name="(none)",
-                                target_type="",
-                            ),
-||||||| 320c57f440
-=======
                             cmake_target=CmakeTarget(name="(none)", target_type=""),
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
                             buck_target=buck_target,
                         )
                     )
@@ -1067,49 +1047,7 @@ def print_dep_report(
 
 
 def print_file_inconsistencies_report(
-<<<<<<< HEAD
-    inconsistencies: list[FileInconsistency],
-    mode_description: str,
-||||||| 320c57f440
-def main():
-    parser = argparse.ArgumentParser(
-        description="Check for missing cmake dependencies compared to Buck",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  %(prog)s                    # Analyze current directory
-  %(prog)s -r /path/to/fboss  # Analyze specific repository
-  %(prog)s -v                 # Verbose output with match details
-  %(prog)s --target foo       # Only analyze target 'foo'
-""",
-    )
-    parser.add_argument(
-        "-r",
-        "--repo-root",
-        default=".",
-        help="Repository root directory (default: current directory)",
-    )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        help="Show verbose output including all matches",
-    )
-    parser.add_argument("--target", help="Only analyze a specific cmake target")
-    parser.add_argument(
-        "--list-matches",
-        action="store_true",
-        help="List all cmake-to-Buck target matches",
-    )
-    parser.add_argument(
-        "--list-buck", action="store_true", help="List all Buck targets found"
-    )
-    parser.add_argument(
-        "--list-cmake", action="store_true", help="List all cmake targets found"
-    )
-=======
     inconsistencies: list[FileInconsistency], mode_description: str
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
 ):
     """Print the file-list inconsistency report."""
     print("\n" + "=" * 80)

@@ -9,6 +9,7 @@ import subprocess
 import threading
 from argparse import Namespace
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 from fboss_test_runner.frameworks.benchmark_suite import BenchmarkSuite
 from fboss_test_runner.reporters.console_reporter import ConsoleReporter
@@ -460,6 +461,260 @@ class BenchmarkFramework:
             self._write_results_and_summary([], skipped_count + unsupported_skipped)
 ||||||| 320c57f440
 =======
+||||||| parent of 868975b219 (Simple conflict resolutions)
+<<<<<<< HEAD
+
+from fboss_test_runner.frameworks.benchmark_suite import BenchmarkSuite
+from fboss_test_runner.reporters.console_reporter import ConsoleReporter
+from fboss_test_runner.reporters.csv_reporter import CsvReporter
+from fboss_test_runner.result_types import BenchmarkResult
+from fboss_test_runner.runners.utils import (
+    get_test_regexes_from_file,
+    load_from_file,
+    test_matches_any_regex,
+)
+
+
+class BenchmarkFramework:
+    """Generic, suite-driven benchmark test framework.
+
+    Owns the full benchmark lifecycle -- discover benchmarks from the binary via
+    ``--bm_list``, apply ``--filter`` / ``--filter_file``, filter known-bad and
+    unsupported tests, run each benchmark as its own process with full
+    setup/run/teardown isolation via ``--bm_regex``, parse JSON metrics, check
+    thresholds, and report CSV + console summaries.
+
+    Everything benchmark-family-specific (binary, config, command, services,
+    threshold key format) is delegated to a ``BenchmarkSuite``, so SAI, QSFP, and
+    future benchmark types share this one framework.
+    """
+
+    def __init__(self, suite: BenchmarkSuite) -> None:
+        self.suite = suite
+
+    # ---- config loading (generic; suite supplies path + key variants) --------
+
+    def _load_known_bad_test_regexes(self, platform_key: str) -> list[str]:
+        return get_test_regexes_from_file(
+            file_path=self.suite.config_path(),
+            test_dict_key="known_bad_tests",
+            keys_to_try=self.suite.known_bad_keys(platform_key),
+        )
+
+    def _load_unsupported_test_regexes(self, platform_key: str) -> list[str]:
+        return get_test_regexes_from_file(
+            file_path=self.suite.config_path(),
+            test_dict_key="unsupported_tests",
+            keys_to_try=self.suite.known_bad_keys(platform_key),
+        )
+
+    def _load_benchmark_thresholds(self) -> dict:
+        """Load the ``buck_rule_or_test_id_to_benchmark_thres`` map from the
+        suite's config JSON (empty dict when the file is absent)."""
+        config_path = self.suite.config_path()
+        if not os.path.exists(config_path):
+            return {}
+        with open(config_path) as f:
+            config = json.load(f)
+        return config.get("buck_rule_or_test_id_to_benchmark_thres", {})
+
+    # ---- benchmark discovery -------------------------------------------------
+
+    def _list_benchmarks(self, binary_path: str) -> list[str] | None:
+        """Discover available benchmarks via ``--bm_list``.
+
+        Returns a list of benchmark name strings, or None on failure.
+        """
+        try:
+            output = subprocess.check_output(
+                [binary_path, "--bm_list"],
+                stderr=subprocess.DEVNULL,
+                text=True,
+                timeout=30,
+            )
+            benchmarks = []
+            for line in output.splitlines():
+                name = line.strip()
+                if name and re.match(r"^[A-Za-z]\w*$", name):
+                    benchmarks.append(name)
+            return benchmarks
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError) as e:
+            print(f"Warning: Failed to list benchmarks from {binary_path}: {e}")
+            return None
+
+    def _load_requested_benchmarks(self, filter_file: str) -> list[str] | None:
+        """Load benchmark names from a filter file (one per line)."""
+        if not os.path.exists(filter_file):
+            print(f"Error: Configuration file not found: {filter_file}")
+            return None
+        names = load_from_file(filter_file)
+        if not names:
+            print(f"Error: No benchmarks found in {filter_file}")
+            return None
+        return names
+
+    def _get_benchmarks_to_run(
+        self, all_benchmarks: list[str], args: Namespace
+    ) -> list[str] | None:
+        """Apply ``--filter`` and ``--filter_file`` to narrow the benchmark
+        list. Returns the filtered list, or None on error."""
+        benchmarks = list(all_benchmarks)
+        available_set = set(all_benchmarks)
+
+        if args.filter:
+            try:
+                benchmarks = [
+                    name for name in benchmarks if re.search(args.filter, name)
+                ]
+            except re.error as e:
+                print(f"Error: Invalid --filter regex '{args.filter}': {e}")
+                return None
+            if not benchmarks:
+                print(f"No benchmarks matching --filter '{args.filter}'")
+                return None
+            print(f"--filter '{args.filter}' matched {len(benchmarks)} benchmarks")
+
+        if args.filter_file:
+            requested = self._load_requested_benchmarks(args.filter_file)
+            if requested is None:
+                return None
+            not_found = [name for name in requested if name not in available_set]
+            if not_found:
+                print(
+                    f"\nWarning: {len(not_found)} benchmark names not found in binary:"
+                )
+                for name in not_found:
+                    print(f"  - {name}")
+            requested_set = set(requested)
+            benchmarks = [name for name in benchmarks if name in requested_set]
+
+        return benchmarks
+
+    def _filter_known_bad(
+        self, benchmarks: list[str], known_bad_regexes: list[str]
+    ) -> tuple[list[str], int]:
+        """Remove known-bad tests before running. Returns (kept, skipped)."""
+        if not known_bad_regexes:
+            return benchmarks, 0
+        filtered = []
+        for name in benchmarks:
+            if test_matches_any_regex(name, known_bad_regexes):
+                print(f"  >> SKIPPING (known bad): {name}")
+            else:
+                filtered.append(name)
+        skipped_count = len(benchmarks) - len(filtered)
+        if skipped_count:
+            print(f"Pre-filtered {skipped_count} known bad benchmarks")
+        return filtered, skipped_count
+
+    def _filter_unsupported(
+        self, benchmarks: list[str], unsupported_regexes: list[str]
+    ) -> tuple[list[str], int]:
+        """Remove unsupported tests before running. Returns (kept, skipped)."""
+        if not unsupported_regexes:
+            return benchmarks, 0
+        filtered = []
+        for name in benchmarks:
+            if test_matches_any_regex(name, unsupported_regexes):
+                print(f"  >> SKIPPING (unsupported): {name}")
+            else:
+                filtered.append(name)
+        skipped_count = len(benchmarks) - len(filtered)
+        if skipped_count:
+            print(f"Pre-filtered {skipped_count} unsupported benchmarks")
+        return filtered, skipped_count
+
+    # ---- output parsing ------------------------------------------------------
+
+    @staticmethod
+    def _find_jsons_in_str(output: str) -> list[dict]:
+        """Extract all JSON dicts from a string that may contain non-JSON text."""
+        decoder = json.JSONDecoder()
+        results = []
+        idx = 0
+        while idx < len(output):
+            idx = output.find("{", idx)
+            if idx == -1:
+                break
+            try:
+                obj, end_idx = decoder.raw_decode(output, idx)
+                if isinstance(obj, dict):
+                    results.append(obj)
+                idx = end_idx
+            except (json.JSONDecodeError, ValueError):
+                idx += 1
+        return results
+
+    @staticmethod
+    def _empty_benchmark_result(
+        binary_name: str, benchmark_name: str | None, status: str
+    ) -> BenchmarkResult:
+        return {
+            "benchmark_binary_name": binary_name,
+            "benchmark_test_name": benchmark_name or "",
+            "benchmark_time_ps": "",
+            "test_status": status,
+            "cpu_time_usec": "",
+            "max_rss": "",
+            "cpu_rx_pps": "",
+            "cpu_tx_pps": "",
+            "metrics": {},
+        }
+
+    def _parse_benchmark_output(
+        self, binary_name: str, stdout: str, benchmark_name: str | None = None
+    ) -> BenchmarkResult:
+        """Parse ``--json`` benchmark output into a flat metrics dict.
+
+        The binary emits one or more JSON objects: the folly timing
+        ({"BenchmarkName": <picoseconds>}), optional benchmark-specific metrics
+        ({"cpu_rx_pps": ...}), and rusage ({"cpu_time_usec": ..., "max_rss":
+        ...}). All key/value pairs are merged for threshold comparison.
+        """
+        result = self._empty_benchmark_result(binary_name, benchmark_name, "FAILED")
+        json_dicts = self._find_jsons_in_str(stdout)
+
+        all_metrics = {}
+        for d in json_dicts:
+            all_metrics.update(d)
+        result["metrics"] = all_metrics
+
+        if benchmark_name and benchmark_name in all_metrics:
+            result["benchmark_time_ps"] = str(all_metrics[benchmark_name])
+
+        for key in ("cpu_time_usec", "max_rss", "cpu_rx_pps", "cpu_tx_pps"):
+            if key in all_metrics:
+                result[key] = str(all_metrics[key])
+
+        return result
+
+    # ---- execution -----------------------------------------------------------
+
+    @staticmethod
+    def _read_stream(stream: object, lines_list: list[str], prefix: str = "") -> None:
+        """Read lines from a stream, echo in real-time, and collect them."""
+        for line in stream:
+            print(f"{prefix}{line}", end="", flush=True)
+            lines_list.append(line)
+
+    def _run_benchmark_binary(
+        self, binary_name: str, args: Namespace, benchmark_name: str | None = None
+    ) -> BenchmarkResult:
+        """Run a single benchmark (selected via ``--bm_regex``) as its own
+        process and return the parsed result."""
+        display_name = benchmark_name or os.path.basename(binary_name)
+        print(f"########## Running benchmark: {display_name}", flush=True)
+
+        run_cmd = self.suite.build_cmd(binary_name, args, benchmark_name)
+        print(f"Running command: {' '.join(run_cmd)}", flush=True)
+
+        try:
+            process = subprocess.Popen(
+                run_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+||||||| 320c57f440
+=======
+=======
+>>>>>>> 868975b219 (Simple conflict resolutions)
 from collections.abc import Iterable
 
 from fboss_test_runner.frameworks.benchmark_suite import BenchmarkSuite

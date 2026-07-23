@@ -949,13 +949,6 @@ std::map<std::string, int64_t> AgentEnsemble::getFb303CountersByRegex(
       client->getChannelShared()};
   monitoringClient.sync_getRegexCounters(counters, regex);
 #else
-<<<<<<< HEAD
-  auto switchID = scopeResolver().scope(portId).switchId();
-||||||| 320c57f440
-  // TODO: This needs to be updated to support multi-switch.
-  counters = facebook::fb303::fbData->getRegexCounters(regex);
-=======
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
   counters = queryHwAgentFb303RegexCounters(switchID, regex);
 #endif
   return counters;
@@ -1044,38 +1037,6 @@ std::map<std::string, int64_t> AgentEnsemble::queryHwAgentFb303RegexCounters(
   if (!getSw()->isRunModeMultiSwitch()) {
     counters = facebook::fb303::fbData->getRegexCounters(regex);
   } else {
-<<<<<<< HEAD
-    try {
-      auto hwTestClient = getHwAgentTestClient(switchID);
-      hwTestClient->sync_getFb303RegexCounters(counters, regex);
-    } catch (const std::exception& ex) {
-      XLOG(ERR)
-          << "Failed to fetch remote fb303 counters via HwTestCtrl for switch "
-          << switchID << ": " << ex.what();
-      throw;
-    }
-  }
-  return counters;
-}
-
-int64_t AgentEnsemble::queryHwAgentFb303Counter(
-    const SwitchID& switchID,
-    const std::string& key) {
-  int64_t counter{0};
-  if (!getSw()->isRunModeMultiSwitch()) {
-    counter = facebook::fb303::fbData->getCounter(key);
-  } else {
-    try {
-      auto hwTestClient = getHwAgentTestClient(switchID);
-      counter = hwTestClient->sync_getFb303Counter(key);
-    } catch (const std::exception& ex) {
-      XLOG(ERR)
-          << "Failed to fetch remote fb303 counter via HwTestCtrl for switch "
-          << switchID << ": " << ex.what();
-      throw;
-    }
-||||||| 320c57f440
-=======
     auto hwTestClient = getHwAgentTestClient(switchID);
     hwTestClient->sync_getFb303RegexCounters(counters, regex);
   }
@@ -1093,7 +1054,6 @@ int64_t AgentEnsemble::queryHwAgentFb303Counter(
   } else {
     auto hwTestClient = getHwAgentTestClient(switchID);
     counter = hwTestClient->sync_getFb303Counter(key);
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
   }
   return counter;
 }

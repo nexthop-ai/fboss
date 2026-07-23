@@ -414,26 +414,14 @@ void SaiPlatform::initPorts() {
           getAsic()->getAsicType() == cfg::AsicType::ASIC_TYPE_TOMAHAWK4) {
         saiPort = std::make_unique<SaiBcmElbertPlatformPort>(portId, this);
       }
-<<<<<<< HEAD
-    } else if (platformMode == PlatformType::PLATFORM_YANGRA) {
-      saiPort = std::make_unique<SaiYangraPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_MINIPACK3N) {
-      saiPort = std::make_unique<SaiMinipack3NPlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_NH4010F) {
       saiPort = std::make_unique<SaiNh4010fPlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_NH4220F) {
       saiPort = std::make_unique<SaiNh4220fPlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_NH5010F) {
       saiPort = std::make_unique<SaiNh5010fPlatformPort>(portId, this);
-||||||| 320c57f440
-    } else if (platformMode == PlatformType::PLATFORM_YANGRA) {
-      saiPort = std::make_unique<SaiYangraPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_MINIPACK3N) {
-      saiPort = std::make_unique<SaiMinipack3NPlatformPort>(portId, this);
-=======
     } else if (useGenericSaiChenabPlatformPort(platformMode)) {
       saiPort = std::make_unique<SaiChenabPlatformPort>(portId, this);
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
     } else if (useGenericSaiTajoPlatformPort(platformMode)) {
       saiPort = std::make_unique<SaiTajoPlatformPort>(portId, this);
     } else {

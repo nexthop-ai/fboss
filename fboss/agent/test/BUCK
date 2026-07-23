@@ -917,10 +917,6 @@ cpp_benchmark(
     ],
 )
 
-<<<<<<< HEAD
-# bazelify: exclude
-||||||| 320c57f440
-=======
 cpp_benchmark(
     name = "state_delta_serialization",
     srcs = [
@@ -940,7 +936,6 @@ cpp_benchmark(
     ],
 )
 
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
 cpp_unittest(
     name = "hwswitch_matcher_tests",
     srcs = [

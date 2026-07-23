@@ -18,6 +18,7 @@ import subprocess
 from unittest.mock import Mock, patch
 
 import pytest
+<<<<<<< HEAD
 
 from fboss_test_runner.frameworks.benchmark_framework import BenchmarkFramework
 from fboss_test_runner.frameworks.benchmark_suite import BenchmarkSuite
@@ -444,6 +445,100 @@ import tempfile
 from unittest.mock import Mock, patch
 
 import pytest
+||||||| parent of 868975b219 (Simple conflict resolutions)
+<<<<<<< HEAD
+
+from fboss_test_runner.frameworks.benchmark_framework import BenchmarkFramework
+from fboss_test_runner.frameworks.benchmark_suite import BenchmarkSuite
+
+_BIN = "/opt/fboss/bin/fake_benchmark"
+
+
+class FakeSuite(BenchmarkSuite):
+    """Minimal suite for exercising the framework in isolation."""
+
+    def __init__(self, config_path="/nonexistent/fake_bench.json"):
+        self._config_path = config_path
+        self.setup_called = 0
+        self.teardown_called = 0
+
+    def binary_path(self, args):
+        return _BIN
+
+    def config_path(self):
+        return self._config_path
+
+    def known_bad_keys(self, platform_key):
+        return [platform_key]
+
+    def build_cmd(self, binary, args, benchmark_name=None):
+        cmd = [binary, "--json"]
+        if benchmark_name:
+            cmd.extend(["--bm_regex", f"^{benchmark_name}$"])
+        return cmd
+
+    def find_thresholds(self, benchmark_name, platform_key, all_thresholds, args):
+        return all_thresholds.get(benchmark_name, [])
+
+    def setup(self, args):
+        self.setup_called += 1
+
+    def teardown(self, args):
+        self.teardown_called += 1
+
+
+@pytest.fixture
+def suite():
+    return FakeSuite()
+
+
+@pytest.fixture
+def framework(suite):
+    return BenchmarkFramework(suite)
+
+
+@pytest.fixture
+def bench_args():
+    args = Mock()
+    args.filter = None
+    args.filter_file = None
+    args.list_tests = False
+    args.fruid_path = None
+    args.test_run_timeout = 300
+    args.skip_known_bad_tests = None
+    return args
+
+
+@pytest.fixture(autouse=True)
+def _binary_present():
+    with patch("os.path.isfile", return_value=True):
+        yield
+
+
+# ---- discovery / parsing -------------------------------------------------
+
+
+def test_list_benchmarks_filters_noise(framework):
+    out = (
+        "[==========] Running 0 tests\n"
+        "HwEcmpGroupShrink\n"
+        '{\n  "cpu_time_usec": 911\n}\n'
+        "runTxSlowPathBenchmark\n"
+    )
+    with patch("subprocess.check_output", return_value=out):
+        assert framework._list_benchmarks(_BIN) == [
+            "HwEcmpGroupShrink",
+            "runTxSlowPathBenchmark",
+        ]
+
+
+def test_list_benchmarks_failure_returns_none(framework, capsys):
+    with patch(
+        "subprocess.check_output", side_effect=subprocess.CalledProcessError(1, "cmd")
+||||||| 320c57f440
+=======
+=======
+>>>>>>> 868975b219 (Simple conflict resolutions)
 from fboss_test_runner.frameworks.benchmark_framework import BenchmarkFramework
 from fboss_test_runner.frameworks.benchmark_suite import BenchmarkSuite
 

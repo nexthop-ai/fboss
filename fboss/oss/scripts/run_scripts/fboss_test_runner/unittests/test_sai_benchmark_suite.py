@@ -7,11 +7,6 @@
 from unittest.mock import Mock
 
 import pytest
-<<<<<<< HEAD
-
-||||||| 320c57f440
-=======
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
 from fboss_test_runner.frameworks import sai_benchmark_suite
 from fboss_test_runner.frameworks.sai_benchmark_suite import SaiBenchmarkSuite
 
