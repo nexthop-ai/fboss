@@ -9,4 +9,4 @@ test_context = {
 
 
 def test_route_scale_agent_hw_tests(sai_agent_test_runner):
-    assert sai_agent_test_runner.run_test(test_context, fboss_logging="INFO")
+    assert sai_agent_test_runner.run_test(test_context, fboss_logging="fboss=INFO")
