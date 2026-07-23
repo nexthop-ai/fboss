@@ -230,6 +230,78 @@
           }
         },
         {
+          "name": "FAN9_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan9_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
+          "name": "FAN10_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan10_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
+          "name": "FAN11_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan11_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
+          "name": "FAN12_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan12_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
+          "name": "FAN13_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan13_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
+          "name": "FAN14_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan14_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
+          "name": "FAN15_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan15_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
+          "name": "FAN16_RPM",
+          "sysfsPath": "/run/devmap/sensors/FAN_CTRL/fan16_input",
+          "type": 4,
+          "thresholds": {
+            "upperCriticalVal": 25000,
+            "lowerCriticalVal": 5000
+          }
+        },
+        {
           "name": "PSU1_PIN",
           "sysfsPath": "/run/devmap/sensors/PSU1/power1_input",
           "type": 0,
