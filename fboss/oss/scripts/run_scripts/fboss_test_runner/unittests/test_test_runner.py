@@ -618,3 +618,91 @@ class TestWriteResultsCollapsesBootPhases:
         assert suite.get("tests") == "3"
         assert suite.get("failures") == "1"
         assert suite.get("skipped") == "1"
+
+
+def _gtest_phase_result(
+    suite: str, method: str, phase: str, outcome: str = "pass"
+) -> str:
+    # Mirrors real gtest --gtest_output=xml: `name` is the bare method and
+    # `classname` is the suite (get_updated_test_result_with_classname_subscript
+    # then appends the boot-phase subscript to `name`).
+    inner = {"pass": "", "fail": '<failure message="boom"/>', "skip": "<skipped/>"}[
+        outcome
+    ]
+    fails = "1" if outcome == "fail" else "0"
+    return (
+        f'<testsuites tests="1" failures="{fails}" errors="0" time="0.1">'
+        f'<testsuite name="{suite}" tests="1" failures="{fails}" skipped="0" '
+        f'errors="0" time="0.1">'
+        f'<testcase name="{method}[{phase}]" classname="{suite}" '
+        f'time="0.1" status="run">{inner}</testcase>'
+        "</testsuite></testsuites>"
+    )
+
+
+class TestCollapseKeysOnSuiteAndMethod:
+    def _suite(self, runner, tmp_path, results):
+        runner.TESTRESULT_FILE = str(tmp_path / "tr.xml")
+        runner._skipped_known_bad_tests = []
+        runner._write_results_to_xml(results)
+        return ET.parse(runner.TESTRESULT_FILE).getroot().find("testsuite")
+
+    def test_same_method_different_suites_not_merged(self, runner, tmp_path):
+        # Two distinct tests sharing a method name must stay separate; the
+        # failing one must not be masked by the passing one.
+        suite = self._suite(
+            runner,
+            tmp_path,
+            [
+                _gtest_phase_result(
+                    "AgentNetworkAIQosSchedulerTest", "VerifyWRR", "cold_boot", "pass"
+                ),
+                _gtest_phase_result(
+                    "AgentNetworkAIQosSchedulerTest", "VerifyWRR", "warm_boot", "pass"
+                ),
+                _gtest_phase_result(
+                    "AgentOlympicQosSchedulerTest", "VerifyWRR", "cold_boot", "pass"
+                ),
+                _gtest_phase_result(
+                    "AgentOlympicQosSchedulerTest", "VerifyWRR", "warm_boot", "fail"
+                ),
+            ],
+        )
+        assert suite.get("tests") == "2"
+        assert suite.get("failures") == "1"
+        cases = list(suite.iter("testcase"))
+        assert {c.get("classname") for c in cases} == {
+            "AgentNetworkAIQosSchedulerTest",
+            "AgentOlympicQosSchedulerTest",
+        }
+
+    def test_two_failing_same_method_counted_separately(self, runner, tmp_path):
+        suite = self._suite(
+            runner,
+            tmp_path,
+            [
+                _gtest_phase_result(
+                    "SuiteA", "VerifyDscpQueueMapping", "cold_boot", "fail"
+                ),
+                _gtest_phase_result(
+                    "SuiteB", "VerifyDscpQueueMapping", "cold_boot", "fail"
+                ),
+            ],
+        )
+        assert suite.get("tests") == "2"
+        assert suite.get("failures") == "2"
+
+    def test_phases_still_collapse_per_suite(self, runner, tmp_path):
+        suite = self._suite(
+            runner,
+            tmp_path,
+            [
+                _gtest_phase_result("SuiteA", "M", "cold_boot", "pass"),
+                _gtest_phase_result("SuiteA", "M", "warm_boot", "fail"),
+            ],
+        )
+        assert suite.get("tests") == "1"
+        assert suite.get("failures") == "1"
+        cases = list(suite.iter("testcase"))
+        assert len(cases) == 1
+        assert cases[0].get("name") == "M"

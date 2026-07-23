@@ -1040,20 +1040,25 @@ class TestRunner(abc.ABC):
         return "passed"
 
     def _collapse_boot_phases(self, testcases: list[ET.Element]) -> list[ET.Element]:
-        # One entry per logical name; worst status wins.
-        best: dict[str, tuple[int, ET.Element]] = {}
-        order: list[str] = []
+        # One entry per logical (classname, name); worst status wins.
+        # gtest's XML output sets `name` to the bare method and `classname` to
+        # the suite, so different suites can share a method name (e.g.
+        # VerifyWRR). Key on both so unrelated tests are not merged.
+        best: dict[tuple[str, str], tuple[int, ET.Element]] = {}
+        order: list[tuple[str, str]] = []
         for testcase in testcases:
             base = _BOOT_SUBSCRIPT_RE.sub("", testcase.get("name", ""))
+            key = (testcase.get("classname", ""), base)
             rank = _STATUS_RANK.get(self._testcase_status(testcase), 1)
-            if base not in best:
-                order.append(base)
-                best[base] = (rank, testcase)
-            elif rank > best[base][0]:
-                best[base] = (rank, testcase)
+            if key not in best:
+                order.append(key)
+                best[key] = (rank, testcase)
+            elif rank > best[key][0]:
+                best[key] = (rank, testcase)
         collapsed = []
-        for base in order:
-            testcase = best[base][1]
+        for key in order:
+            _, base = key
+            testcase = best[key][1]
             testcase.set("name", base)
             collapsed.append(testcase)
         return collapsed
