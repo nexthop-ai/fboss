@@ -1,11 +1,7 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
-<<<<<<< HEAD
 #include <fmt/ranges.h> // Needed for fmt::join
-||||||| 320c57f440
-=======
 #include <fmt/format.h>
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
 #include <folly/MapUtil.h>
 
 #include "fboss/agent/AgentFeatures.h"

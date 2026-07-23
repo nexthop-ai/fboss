@@ -1117,7 +1117,6 @@ const CommandTree& kConfigCommandTree() {
 
       {
           "delete",
-<<<<<<< HEAD
           "qos",
           "Delete QoS configuration",
           commandHandler<CmdDeleteQos>,
@@ -1127,8 +1126,11 @@ const CommandTree& kConfigCommandTree() {
               "Remove a queue entry from the default port queue config",
               commandHandler<CmdDeleteQosDefaultQueueConfig>,
               argRegistrar<CmdDeleteQosDefaultQueueConfigTraits>,
-||||||| 320c57f440
-=======
+          }},
+      },
+
+      {
+          "delete",
           "acl",
           "Delete (clear) ACL settings",
           commandHandler<CmdDeleteAcl>,
@@ -1138,7 +1140,6 @@ const CommandTree& kConfigCommandTree() {
               "Delete an ACL rule (and any associated MatchAction) from an AclTable",
               commandHandler<CmdDeleteAclRule>,
               argRegistrar<CmdDeleteAclRuleTraits>,
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
           }},
       },
 
