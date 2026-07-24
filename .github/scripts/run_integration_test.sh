@@ -1,40 +1,71 @@
 #!/usr/bin/env bash
 #
-# Launch the fboss2 integration test on a DUT and wait for it to finish.
+# Launch the fboss2 integration tests on a DUT via run_test.py and wait for
+# them to finish.
 #
-# Usage: run_integration_test.sh <DUT>
+# Usage: run_integration_test.sh <DUT> [config]
 #
-# The test is launched in a backgrounded subshell on the DUT (a foreground
-# `nh dvc ssh ... ./fboss2_integration_test` is tied to the ssh session, which
-# times out around 120s while the suite runs longer). The DUT writes:
-#   /tmp/fboss2_itest.log  - all test stdout/stderr
-#   /tmp/fboss2_itest.rc   - the exit code, written ONLY after the test exits
+# The suite is driven by /opt/fboss/bin/run_test.py fboss2_integration (the
+# same entry point Meta uses), which runs each gtest case as a separate
+# binary invocation, manages agent cold boots between tests, and aggregates
+# results into /home/netops/tr.xml.
+#
+# The runner is launched in a backgrounded subshell on the DUT (a foreground
+# `nh dvc ssh` session times out around 120s while the suite runs longer).
+# The DUT writes:
+#   /tmp/fboss2_itest.log  - all runner stdout/stderr
+#   /tmp/fboss2_itest.rc   - the exit code, written ONLY after the runner exits
 #   /tmp/fboss2_itest.pid  - the wrapper pid, so we can tell if it died early
 # The rc file is the completion signal polled below.
 #
-# Exits non-zero only if a test actually FAILED or the run never completed.
+# NOTE: run_test.py always exits 0 for gtest suites (pass/fail lives in the
+# result files, matching Meta's netcastle flow), so a zero rc only means the
+# runner completed. Pass/fail is decided from the summary counts in the log.
+#
+# Exits non-zero only if a test actually FAILED / timed out, the runner
+# crashed, or the run never completed.
 set -euo pipefail
 
-DUT="${1:?usage: run_integration_test.sh <DUT>}"
+DUT="${1:?usage: run_integration_test.sh <DUT> [config]}"
+# The device's own materialized config by default; the runner snapshots and
+# restores it around the run. Pass e.g.
+# /opt/fboss/share/link_test_configs/montblanc.materialized_JSON to run with
+# a specific lab config instead.
+CONFIG="${2:-/etc/coop/agent.conf}"
 
-echo "::group::[$DUT] Launch integration test"
+echo "::group::[$DUT] Launch integration test runner"
 nh dvc ssh "$DUT" -c '
   set -euo pipefail
 
   # Clean up stale files from a previous run so we do not read an old
-  # log / rc / pid and think the current test already finished.
+  # log / rc / pid and think the current run already finished.
   rm -f /tmp/fboss2_itest.log /tmp/fboss2_itest.rc /tmp/fboss2_itest.pid
 
-  # stdbuf -oL -eL forces line buffering so each gtest result line
-  # (e.g. "[ OK ] Suite.Test (123 ms)") is flushed to the log as it prints.
-  # Without it, libc block-buffers stdout (the target is a file, not a TTY)
-  # and buffered lines are LOST if the process is killed / aborts, leaving
-  # the timing table empty. --gtest_break_on_failure aborts at the first
-  # failed assertion so the collected agent/wedge logs stay relevant to that
-  # failure (no later tests scribble over the failure state).
+  # The preinstalled agents log to /var/facebook/logs/fboss (StandardOutput=
+  # append: in their systemd units), which run_test.py --log-bundle does not
+  # sweep -- it only collects /opt/fboss/logs. Symlink the agent logs into
+  # /opt/fboss/logs so the runner sweep (shutil.copy2, which follows symlinks)
+  # pulls their contents into the bundle. Best-effort: a missing file or link
+  # failure is not fatal.
+  sudo mkdir -p /opt/fboss/logs
+  for agent_log in /var/facebook/logs/fboss/*.log; do
+    if [ -e "$agent_log" ]; then
+      sudo ln -sf "$agent_log" /opt/fboss/logs/ || true
+    fi
+  done
+
+  # stdbuf -oL -eL forces line buffering so each runner progress line
+  # (e.g. "########## Coldboot test results (5/107): ...") is flushed to the
+  # log as it prints. Without it, libc block-buffers stdout (the target is a
+  # file, not a TTY) and buffered lines are LOST if the process is killed.
+  # LD_LIBRARY_PATH=$HOME keeps the PR-built libraries copied to ~ reachable
+  # by the PR-built test binary (run_test.py prepends /opt/fboss/lib{,64}
+  # but preserves the inherited value).
   (
-    stdbuf -oL -eL env LD_LIBRARY_PATH="$HOME:${LD_LIBRARY_PATH:-}" ./fboss2_integration_test \
-      --gtest_break_on_failure \
+    stdbuf -oL -eL env LD_LIBRARY_PATH="$HOME:${LD_LIBRARY_PATH:-}" \
+      python3 /opt/fboss/bin/run_test.py fboss2_integration \
+      --log-bundle \
+      --config '"$CONFIG"' \
       > /tmp/fboss2_itest.log 2>&1
     echo $? > /tmp/fboss2_itest.rc
   ) </dev/null >/dev/null 2>&1 &
@@ -47,41 +78,41 @@ echo "::endgroup::"
 echo "::group::[$DUT] Wait for completion"
 TEST_RC=""
 
-# Poll for up to 30 min (180 * 10s) via short ssh round-trips rather than one
+# Poll for up to 45 min (270 * 10s) via short ssh round-trips rather than one
 # long-held session. Each probe ALWAYS exits 0 (every branch ends in printf)
 # and reports state on stdout as "done <rc>", "dead", or "running <cur>|<last>"
 # so a non-zero probe (e.g. rc file not there yet) never reads as ssh failure.
 POLL_START=$(date +%s)
-for _ in $(seq 1 180); do
+for _ in $(seq 1 270); do
   STATUS="$(nh dvc ssh "$DUT" -c '
     if [ -f /tmp/fboss2_itest.rc ]; then
       printf "done %s" "$(cat /tmp/fboss2_itest.rc)"
     elif [ -f /tmp/fboss2_itest.pid ] && ! kill -0 "$(cat /tmp/fboss2_itest.pid)" 2>/dev/null; then
       printf "dead"
     else
-      cur="$(grep -oP "\[ RUN      \] \K\S+" /tmp/fboss2_itest.log 2>/dev/null | tail -n 1)"
-      last="$(grep -oP "^\[  +(OK|FAILED|SKIPPED)  +\] \K.+" /tmp/fboss2_itest.log 2>/dev/null | tail -n 1)"
-      printf "running %s|%s" "${cur:-unknown}" "${last:-}"
+      cur="$(grep -oP "^########## Running test: \K\S+" /tmp/fboss2_itest.log 2>/dev/null | tail -n 1)"
+      last="$(grep -oP "^########## Coldboot test results \(\d+/\d+\): \K.+" /tmp/fboss2_itest.log 2>/dev/null | tail -n 1)"
+      printf "running %s|%s" "${cur:-starting}" "${last:-}"
     fi
   ' 2>/dev/null || echo "ssherror")"
 
   ELAPSED=$(($(date +%s) - POLL_START))
-  ELAPSED_FMT="${ELAPSED}s elapsed / 30m max"
+  ELAPSED_FMT="${ELAPSED}s elapsed / 45m max"
 
   # First word is the state (done|dead|running|ssherror); read's last
   # variable absorbs the rest of the line, so payloads with spaces
-  # (e.g. "Suite.Test (123 ms)") survive intact instead of needing a
+  # (e.g. "[ OK ] Suite.Test (123 ms)") survive intact instead of needing a
   # second round of prefix-stripping.
   read -r STATUS_KIND STATUS_PAYLOAD <<<"$STATUS"
 
   case "${STATUS_KIND}" in
   done)
     TEST_RC="${STATUS_PAYLOAD}"
-    echo "Integration test finished with rc=${TEST_RC} (${ELAPSED}s)"
+    echo "Integration test runner finished with rc=${TEST_RC} (${ELAPSED}s)"
     break
     ;;
   dead)
-    echo "::warning::Test process is no longer running but rc file was not written (${ELAPSED}s)"
+    echo "::warning::Runner process is no longer running but rc file was not written (${ELAPSED}s)"
     TEST_RC=1
     break
     ;;
@@ -110,38 +141,35 @@ fail() {
 }
 
 if [[ -z ${TEST_RC} ]]; then
-  echo "::error::Integration test did not finish within polling timeout"
+  echo "::error::Integration test run did not finish within polling timeout"
   fail
 fi
 
 if [[ ${TEST_RC} -ne 0 ]]; then
-  # First gate: did the binary actually complete a gtest run? A crash before
-  # gtest starts (e.g. missing/mismatched shared library, symbol lookup
-  # error) or a --gtest_break_on_failure trap on a real assertion failure
-  # both leave rc non-zero WITHOUT ever printing the final
-  # "[==========] N tests from M test suites ran." summary line, and in the
-  # break_on_failure case no "[  FAILED  ]" line either (the trap fires
-  # before gtest reports the test as failed). Treat any such incomplete run
-  # as a hard failure — only a completed run gets the "all skipped?" benefit
-  # of the doubt below.
-  GTEST_COMPLETED="$(nh dvc ssh "$DUT" -c \
-    'grep -qE "^\[==========\] [0-9]+ tests? from [0-9]+ test suites? ran\." /tmp/fboss2_itest.log 2>/dev/null && echo yes || echo no' \
-    2>/dev/null || echo no)"
-
-  if [[ ${GTEST_COMPLETED} != "yes" ]]; then
-    echo "::error::Test binary exited rc=${TEST_RC} without completing the test run (crash, missing symbol, or an assertion failure trapped by --gtest_break_on_failure) — treating as failure"
-    fail
-  fi
-
-  # gtest exits non-zero when tests are skipped in some configurations. Only
-  # treat it as an error if a test actually FAILED.
-  ACTUAL_FAILURES="$(nh dvc ssh "$DUT" -c \
-    'count=$(grep -c "^\[  FAILED  \]" /tmp/fboss2_itest.log 2>/dev/null) || count=0; echo "$count"' \
-    2>/dev/null || echo 0)"
-  if [[ ${ACTUAL_FAILURES} -eq 0 ]]; then
-    echo "::warning::Test binary exited rc=${TEST_RC} but no FAILED tests found (all skipped?) — treating as pass"
-  else
-    echo "::error::Integration tests failed on DUT ${DUT} (${ACTUAL_FAILURES} test(s) FAILED)"
-    fail
-  fi
+  echo "::error::run_test.py exited rc=${TEST_RC} (runner crash — it exits 0 even when tests fail)"
+  fail
 fi
+
+# The runner completed; pass/fail comes from its final summary block:
+#   Summary:
+#      PASSED : 90
+#      FAILED : 0
+#      TIMEOUT : 0
+#      SKIPPED : 17
+# A missing summary means the runner never reached reporting (e.g. test
+# binary not found), which must not read as a pass.
+SUMMARY="$(nh dvc ssh "$DUT" -c '
+  grep -oP "^\s+(FAILED|TIMEOUT) : \K[0-9]+" /tmp/fboss2_itest.log 2>/dev/null | paste -sd+ - | bc
+' 2>/dev/null || echo "")"
+
+if [[ -z ${SUMMARY} ]]; then
+  echo "::error::Runner exited rc=0 but no result summary found in log — treating as failure"
+  fail
+fi
+
+if [[ ${SUMMARY} -ne 0 ]]; then
+  echo "::error::Integration tests failed on DUT ${DUT} (${SUMMARY} test(s) FAILED or timed out)"
+  fail
+fi
+
+echo "All tests passed (or skipped) on ${DUT}"

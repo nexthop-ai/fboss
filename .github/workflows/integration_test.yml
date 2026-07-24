@@ -109,8 +109,12 @@ jobs:
       - name: Find stable image builds
         id: stable_builds
         run: |
-          set -e
-          BUILDS_JSON=$(python3 .github/scripts/find_stable_image.py)
+          if ! BUILDS_JSON=$(python3 .github/scripts/find_stable_image.py); then
+            # Infra, not a test result: an empty build map makes Prepare DUT
+            # skip every candidate and end with dut_ready=false.
+            echo "::warning::Could not resolve stable image builds — skipping integration tests."
+            BUILDS_JSON='{}'
+          fi
           echo "Stable image builds: $BUILDS_JSON"
           echo "builds_json=$BUILDS_JSON" >> "$GITHUB_OUTPUT"
 
@@ -120,8 +124,10 @@ jobs:
           set -e
           CANDIDATES=$(python3 .github/scripts/find_dut.py --count 3 || echo "")
           if [ -z "$CANDIDATES" ]; then
-            echo "::error::No healthy FBOSS DUTs available."
-            exit 1
+            # Infra, not a test result: warn and skip instead of failing the PR.
+            echo "::warning::No healthy FBOSS DUTs available — skipping integration tests."
+            echo "candidates=" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
           echo "DUT candidates: $CANDIDATES"
           echo "candidates=$(echo "$CANDIDATES" | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
@@ -202,7 +208,9 @@ jobs:
             echo "::endgroup::"
 
             echo "::group::[$DUT] Copy integration test binary and libraries"
-            if ! nh dvc scp fboss_pkg/bin/fboss2_integration_test "$DUT":~/; then
+            # run_test.py resolves the bare binary name via $PATH, so the test
+            # binary must live in /opt/fboss/bin.
+            if ! nh dvc scp fboss_pkg/bin/fboss2_integration_test "$DUT":/opt/fboss/bin/; then
               echo "::warning::Failed to copy fboss2_integration_test, trying next DUT"
               nh tb release "$DUT" || true
               echo "::endgroup::"
@@ -219,14 +227,35 @@ jobs:
             done
             echo "::endgroup::"
 
+            echo "::group::[$DUT] Copy test runner scripts"
+            # The DUT image carries the run_scripts from the last stable
+            # build; overlay this PR's copy so runner changes are tested too.
+            tar -C fboss/oss/scripts/run_scripts \
+              --exclude=__pycache__ --exclude=unittests \
+              -czf run_scripts.tgz .
+            if ! nh dvc scp run_scripts.tgz "$DUT":/tmp/; then
+              echo "::warning::Failed to copy run_scripts, trying next DUT"
+              nh tb release "$DUT" || true
+              echo "::endgroup::"
+              continue
+            fi
+            if ! nh dvc ssh "$DUT" -c 'tar -C /opt/fboss/bin -xzf /tmp/run_scripts.tgz && rm -f /tmp/run_scripts.tgz'; then
+              echo "::warning::Failed to extract run_scripts, trying next DUT"
+              nh tb release "$DUT" || true
+              echo "::endgroup::"
+              continue
+            fi
+            echo "::endgroup::"
+
             echo "dut_name=$DUT" >> "$GITHUB_OUTPUT"
             echo "dut_ready=true" >> "$GITHUB_OUTPUT"
             exit 0
           done
 
-          echo "::error::All DUT candidates failed."
+          # Infra, not a test result: warn and skip instead of failing the PR.
+          echo "::warning::No DUT could be claimed and prepared — skipping integration tests."
           echo "dut_ready=false" >> "$GITHUB_OUTPUT"
-          exit 1
+          exit 0
 
       - name: Run integration tests
         id: run_tests
@@ -240,6 +269,19 @@ jobs:
       - name: Collect wedge agent logs
         if: always() && steps.prepare_dut.outputs.dut_ready == 'true'
         run: .github/scripts/collect_agent_logs.sh "${{ steps.prepare_dut.outputs.dut_name }}"
+
+      - name: Collect log bundle
+        if: always() && steps.prepare_dut.outputs.dut_ready == 'true'
+        run: .github/scripts/collect_log_bundle.sh "${{ steps.prepare_dut.outputs.dut_name }}"
+
+      - name: Upload log bundle
+        if: always() && steps.prepare_dut.outputs.dut_ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fboss2-integration-log-bundle
+          path: log_bundle/*.zip
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Release DUT
         if: always() && steps.prepare_dut.outputs.dut_ready == 'true'

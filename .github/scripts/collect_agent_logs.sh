@@ -7,6 +7,18 @@
 set -uo pipefail
 
 DUT="${1:?usage: collect_agent_logs.sh <DUT>}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Per-failed-test agent log slices: run_test.py keeps running (and cold
+# booting) after a failure, so the fixed-size tail below can miss the failing
+# test's window. The slicer targets it via the NH_TEST_START/END timestamps.
+echo "::group::[${DUT}] wedge_agent.log slices for failed tests"
+if nh dvc scp "${SCRIPT_DIR}/slice_agent_logs.py" "$DUT":/tmp/ 2>/dev/null; then
+  nh dvc ssh "$DUT" -c 'sudo python3 /tmp/slice_agent_logs.py' 2>/dev/null || true
+else
+  echo "could not copy slicer to DUT, skipping"
+fi
+echo "::endgroup::"
 
 echo "::group::[${DUT}] agent diagnostics"
 nh dvc ssh "$DUT" -c '
