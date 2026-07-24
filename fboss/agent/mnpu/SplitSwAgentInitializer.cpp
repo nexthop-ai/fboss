@@ -1,12 +1,13 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
 #include "fboss/agent/mnpu/SplitSwAgentInitializer.h"
-#include <thread>
 #include "fboss/agent/MultiSwitchThriftHandler.h"
 #include "fboss/agent/PacketStreamHandler.h"
 #include "fboss/agent/TunManager.h"
 #include "fboss/agent/mnpu/MultiSwitchHwSwitchHandler.h"
 #include "fboss/lib/CommonFileUtils.h"
+
+#include <thread>
 
 #ifndef IS_OSS
 #if __has_feature(address_sanitizer)
@@ -54,12 +55,7 @@ SplitSwAgentInitializer::getThrifthandlers() {
   return handlers;
 }
 
-void SplitSwAgentInitializer::handleExitSignal(bool /* gracefulExit */) {
-  if (exitSignalReceived_.exchange(true)) {
-    XLOG(WARNING)
-        << "[Exit] Exit signal received while shutdown is already in progress, ignoring";
-    return;
-  }
+void SplitSwAgentInitializer::handleExitSignal(bool gracefulExit) {
   if (!sw_->isInitialized()) {
     XLOG(WARNING)
         << "[Exit] Signal received before initializing sw switch, waiting for initialization to finish.";
@@ -109,14 +105,12 @@ void SplitSwAgentInitializer::handleExitSignal(bool /* gracefulExit */) {
 #endif
 #endif
   initializer_.reset();
-  // NOS-8262: do not terminate from the signal handler -- it runs on the very
-  // thread that drives serve(), so exiting here tears down EventBases that
-  // are still on this stack (folly EventBase.cpp "Driving an EventBase while
-  // it is already being driven" CHECK). stopServer() above asked the thrift
-  // server to stop; return and let serve() unwind back into
-  // SwAgentInitializer::initAgent(), which joins the thrift IO/CPU workers
-  // (server_.reset()) and returns to main() for a normal exit. sw_ was
-  // released above, so ~SwSwitch never runs.
+  this->waitForServerStopped();
+  if (gracefulExit) {
+    exit(0);
+  } else {
+    exit(1);
+  }
 }
 
 void SplitSwAgentInitializer::stopAgent(bool setupWarmboot, bool gracefulExit) {

@@ -5,7 +5,7 @@
 #include "fboss/agent/AgentDirectoryUtil.h"
 #include "fboss/agent/SwAgentInitializer.h"
 
-#include <atomic>
+#include <folly/io/async/EventBase.h>
 
 namespace facebook::fboss {
 
@@ -39,11 +39,6 @@ class SplitSwAgentInitializer : public SwAgentInitializer {
   void exitForWarmBoot(bool gracefulExit);
   AgentDirectoryUtil agentDirectoryUtil_;
   MultiSwitchThriftHandler* multiSwitchThriftHandler_{nullptr};
-  // Set by the first exit signal. handleExitSignal() returns (it no longer
-  // terminates the process), so a second signal delivered while the shutdown
-  // is draining would re-enter it after sw_ was released and initializer_
-  // reset -- guard against that instead of dereferencing null.
-  std::atomic<bool> exitSignalReceived_{false};
 };
 
 } // namespace facebook::fboss

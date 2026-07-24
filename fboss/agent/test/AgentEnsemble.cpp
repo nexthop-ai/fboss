@@ -3,7 +3,6 @@
 #include "fboss/agent/test/AgentEnsemble.h"
 
 #include <chrono>
-#include <cstdlib>
 #include <map>
 #include <vector>
 
@@ -421,18 +420,6 @@ void AgentEnsemble::gracefulExit() {
   bool gracefulExit = !::testing::Test::HasFailure();
   initializer->stopAgent(
       true /* setupWarmboot */, gracefulExit /* gracefulExit */);
-  // The warm-boot (--setup_for_warmboot) phase of the test ends here by
-  // design: warm-boot state has been persisted and gtest TearDown() is
-  // skipped. The monolithic agent's stopAgent() exits the process itself. The
-  // split agent's stopAgent() returns after its graceful shutdown; serve()
-  // then unwinds on asyncInitThread_ and initAgent() joins the thrift workers
-  // (server_.reset()), mirroring production where serve() unwinds back to
-  // main(). Join that thread, then exit with the full C++ teardown -- safe
-  // because no thread is driving an EventBase anymore. A non-zero code
-  // reports the gtest failure to the warm-boot test runner.
-  joinAsyncInitThread();
-  // NOLINTNEXTLINE(concurrency-mt-unsafe)
-  exit(gracefulExit ? 0 : 1);
 }
 
 void AgentEnsemble::applyNewState(
