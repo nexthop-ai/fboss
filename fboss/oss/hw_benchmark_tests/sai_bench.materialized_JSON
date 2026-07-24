@@ -1403,6 +1403,30 @@
         {
           "test_name_regex": "cpuLatency(1Batch|10Batches)1Packet",
           "reason": "New test, needs more debugging"
+        },
+        {
+          "test_name_regex": "HwEcmpBackupGroupSpilloverBenchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "RouteAddHwEcmpGroupScale128x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "RouteAddHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "RouteDelHwEcmpGroupScale128x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollection",
+          "reason": "Flowlet/ARS not supported on wedge800B (tomahawk5t)"
         }
     ],
     "brcm/13.3.0.0_odp/tomahawk5/mono": [
@@ -1425,6 +1449,30 @@
         {
           "test_name_regex": "cpuLatency(1Batch|10Batches)1Packet",
           "reason": "New test, needs more debugging"
+        },
+        {
+          "test_name_regex": "HwEcmpBackupGroupSpilloverBenchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "RouteAddHwEcmpGroupScale128x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "RouteAddHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "RouteDelHwEcmpGroupScale128x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollection",
+          "reason": "Flowlet/ARS not supported on wedge800B (tomahawk5t)"
         }
     ],
     "brcm/13.3.0.0_odp/tomahawk5/multi_switch": [
@@ -1447,6 +1495,30 @@
         {
           "test_name_regex": "cpuLatency(1Batch|10Batches)1Packet",
           "reason": "New test, needs more debugging"
+        },
+        {
+          "test_name_regex": "HwEcmpBackupGroupSpilloverBenchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "RouteAddHwEcmpGroupScale128x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "RouteAddHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "RouteDelHwEcmpGroupScale128x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollection",
+          "reason": "Flowlet/ARS not supported on wedge800B (tomahawk5t)"
         }
     ],
     "brcm/13.3.0.0_odp/tomahawk5t": [
@@ -3593,7 +3665,7 @@
     ]
   },
   "test_failure_patterns": [
-    
+
   ],
   "buck_rule_or_test_id_to_benchmark_thres": {
     "fboss.agent.hw.sai.benchmarks.multi_switch.HwHgridUUScaleRouteAddBenchmark": [

@@ -13372,6 +13372,30 @@
           "test_name_regex": "roundtrip.trunk_2_preprod_2_trunk.warm_boot.AgentPortLedTest.TestLed$"
         },
         {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentPortBandwidthTest.*$"
+        },
+        {
+          "test_name_regex": "AgentRollbackTest.*$"
+        },
+        {
+          "test_name_regex": "AgentQphRollbackTest.*$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
+        },
+        {
           "test_name_regex": "AgentCoppTest/[01].Ipv6LinkLocalUcastIpNetworkControlDscpToHighPriQ$"
         },
         {
@@ -13490,6 +13514,12 @@
         },
         {
           "test_name_regex": "AgentTest_PROFILE_800G_.*$"
+        },
+        {
+          "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.cold_boot.AgentAmIdlesTest.VerifyAmIdles$"
+        },
+        {
+          "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentAmIdlesTest.VerifyAmIdles$"
         }
     ],
     "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5/multi_switch": [
@@ -13794,6 +13824,30 @@
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
         },
         {
+          "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
+        },
+        {
+          "test_name_regex": "AgentOlympicV2SPToWRRQosSchedulerTest.VerifyOlympicV2AllSPTrafficToWRR$"
+        },
+        {
+          "test_name_regex": "AgentPortBandwidthTest.*$"
+        },
+        {
+          "test_name_regex": "AgentRollbackTest.*$"
+        },
+        {
+          "test_name_regex": "AgentQphRollbackTest.*$"
+        },
+        {
+          "test_name_regex": "AgentMacSwLearningModeTest.VerifyNbrMacInL2Table$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticDynamicTransformations$"
+        },
+        {
+          "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
+        },
+        {
           "test_name_regex": "AgentCoppTest/[01].Ipv6LinkLocalUcastIpNetworkControlDscpToHighPriQ$"
         },
         {
@@ -13933,6 +13987,12 @@
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentFlowletSwitchingTest.CreateMaxDlbGroups$"
+        },
+        {
+          "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.cold_boot.AgentAmIdlesTest.VerifyAmIdles$"
+        },
+        {
+          "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentAmIdlesTest.VerifyAmIdles$"
         }
     ],
     "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5t/mono": [
