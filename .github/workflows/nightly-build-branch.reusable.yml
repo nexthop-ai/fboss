@@ -36,6 +36,7 @@ jobs:
       nh_branch: ${{ inputs.branch }}
       build_branch: ${{ inputs.branch }}
       use-nh-ci-app: true
+      extra_tags: only-for-nightly
     secrets:
       GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
       NH_CI_APP_PRIVATE_KEY: ${{ secrets.NH_CI_APP_PRIVATE_KEY }}
