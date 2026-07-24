@@ -40,4 +40,5 @@ jobs:
       repository: ${{ github.event.inputs.repository || '' }}
       use_strict_model: ${{ github.event.inputs.use_strict_model == 'true' }}
       prompt_repo: ${{ github.event.repository.name }}
+      app_client_id: ${{ vars.AI_REVIEW_CLIENT_ID }}
     secrets: inherit
