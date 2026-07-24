@@ -7,6 +7,7 @@ from tests.libs.test_runner.runner import (
     LedTestRunner,
     LinkTestRunner,
     PlatformTestRunner,
+    QsfpBenchmarkTestRunner,
     QsfpTestRunner,
     SaiAgentTestRunner,
     SaiTestRunner,
@@ -139,6 +140,14 @@ def smoke_test_runner():
 def benchmark_test_runner():
     """Fixture for benchmark tests."""
     runner = BenchmarkTestRunner()
+    yield runner
+    runner.close()
+
+
+@pytest.fixture
+def qsfp_benchmark_test_runner():
+    """Fixture for QSFP benchmark tests."""
+    runner = QsfpBenchmarkTestRunner()
     yield runner
     runner.close()
 

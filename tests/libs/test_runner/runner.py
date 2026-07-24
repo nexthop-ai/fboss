@@ -1828,3 +1828,24 @@ class BenchmarkTestRunner(BaseHwTestRunner):
         self.normalize_test_results_file()
 
         return True
+
+
+class QsfpBenchmarkTestRunner(BenchmarkTestRunner):
+    """Runner for QSFP benchmarks (run_test.py benchmark --qsfp)."""
+
+    STACK = _STACK_FORWARDING
+    BINARIES = ("bin/qsfp_hw_test_benchmark",)
+    REQUIRED_PATHS = (*BINARIES, *_STACK_SHARE[STACK])
+
+    # Binary must own the xcvr i2c bus, same as qsfp_hw_test (TEST_DISABLE_SERVICES).
+    BENCHMARK_DISABLE_SERVICES = ["qsfp_service", "led_service"]
+
+    def test_args(self, model: str) -> str:
+        config_name = _LINK_QSFP_TEST_CONFIG_NAME.get(model, model)
+        logger.info("model=%s qsfp_test_config=%s", model, config_name)
+        # Thresholds regex-match the config-name prefix; the /<phy_sdk> suffix is arbitrary here.
+        return (
+            f"benchmark --qsfp"
+            f" --qsfp-config ./share/qsfp_test_configs/{config_name}.materialized_JSON"
+            f" --skip-known-bad-tests {config_name}/oss"
+        )

@@ -21,6 +21,7 @@ from tests.libs.test_runner.runner import (
     BenchmarkTestRunner,
     BspTestRunner,
     PlatformTestRunner,
+    QsfpBenchmarkTestRunner,
     QsfpTestRunner,
     SaiAgentTestRunner,
     SaiTestRunner,
@@ -487,8 +488,14 @@ class TestRunnerManifests:
         assert BenchmarkTestRunner.STACK == _STACK_FORWARDING
         assert "bin/sai_all_benchmarks-sai_impl" in BenchmarkTestRunner.REQUIRED_PATHS
 
+    def test_qsfp_benchmark_runner_has_a_deploy_manifest(self):
+        assert QsfpBenchmarkTestRunner.STACK == _STACK_FORWARDING
+        assert "bin/qsfp_hw_test_benchmark" in QsfpBenchmarkTestRunner.REQUIRED_PATHS
+        # Must not inherit the SAI benchmark binary slice.
+        assert "bin/sai_all_benchmarks-sai_impl" not in QsfpBenchmarkTestRunner.REQUIRED_PATHS
+
     def test_forwarding_runners_route_to_forwarding_stack(self):
-        for cls in (SaiTestRunner, SaiAgentTestRunner, BenchmarkTestRunner):
+        for cls in (SaiTestRunner, SaiAgentTestRunner, BenchmarkTestRunner, QsfpBenchmarkTestRunner):
             assert cls.STACK == _STACK_FORWARDING, f"{cls.__name__} should be forwarding"
 
     def test_platform_stack_runners_route_to_platform_stack(self):
@@ -533,7 +540,12 @@ def test_runner_binaries_are_known_to_fboss_test_runner():
     for py in pkg.rglob("*.py"):
         tokens |= set(re.findall(r"[A-Za-z0-9_.\-]+", py.read_text()))
 
-    for cls in BaseHwTestRunner.__subclasses__():
+    def _all_subclasses(cls):
+        for sub in cls.__subclasses__():
+            yield sub
+            yield from _all_subclasses(sub)
+
+    for cls in _all_subclasses(BaseHwTestRunner):
         for name in _declared_test_binaries(cls):
             assert name in tokens, (
                 f"{cls.__name__} deploys bin/{name}, but the upstream "
