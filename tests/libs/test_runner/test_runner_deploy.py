@@ -698,7 +698,7 @@ class TestDeployOnly:
         runner = QsfpTestRunner()
         env = dict(_NEXIS_ENV)
         env["FBOSS_DEPLOY_ONLY"] = "1"
-        env["QSFP_TEST_CABLING"] = "/does/not/matter"  # gate must win before this
+        env["TEST_PORTS_INFO"] = "/does/not/matter"  # gate must win before this
         with patch.dict(os.environ, env):
             result = runner.run_test({})
 
