@@ -114,7 +114,7 @@ class Fboss2IntegrationTestRunner(TestRunner):
     def _get_warmboot_check_file(self) -> str:
         return ""
 
-    def _get_test_run_args(self, conf_file: str) -> list[str]:
+    def _get_test_run_args(self, conf_file: str) -> list[str]:  # noqa: ARG002
         return []
 
     def _setup_run(self, conf_file: str) -> None:
@@ -137,8 +137,7 @@ class Fboss2IntegrationTestRunner(TestRunner):
                 "Snapshotting agent config."
             )
             subprocess.run(
-                ["cp", self._AGENT_CONFIG_PATH, self._CONFIG_SNAPSHOT_PATH],
-                check=True,
+                ["cp", self._AGENT_CONFIG_PATH, self._CONFIG_SNAPSHOT_PATH], check=True
             )
         else:
             print("No running agents detected — setting up agent services.")
@@ -161,7 +160,15 @@ class Fboss2IntegrationTestRunner(TestRunner):
                 sw_agent_service_name=SW_AGENT_SERVICE_PROD,
             )
 
-    def _setup_coldboot_test(self, sai_replayer_log_path: str | None = None) -> None:
+    def _wait_for_agent_thrift_ports_free(self) -> None:
+        # The base-class wait exists for suites where each test binary starts
+        # its own agent and must bind the agent thrift ports. The fboss2 CLI
+        # suite is the inverse: it runs against the production agents, which
+        # hold those ports for the entire run by design, so the wait can never
+        # succeed and would burn its full timeout before every single test.
+        return
+
+    def _setup_coldboot_test(self, sai_replayer_log_path: str | None = None) -> None:  # noqa: ARG002
         # The first cold boot always runs: it loads the test config and
         # establishes a clean state (in prod multi-switch the running agents
         # still hold the old config until rebooted).
@@ -250,8 +257,7 @@ class Fboss2IntegrationTestRunner(TestRunner):
         if self._is_prod_multi_switch:
             print("Restoring original agent config and restarting agents.")
             subprocess.run(
-                ["cp", self._CONFIG_SNAPSHOT_PATH, self._AGENT_CONFIG_PATH],
-                check=False,
+                ["cp", self._CONFIG_SNAPSHOT_PATH, self._AGENT_CONFIG_PATH], check=False
             )
             try:
                 cold_boot_agents(

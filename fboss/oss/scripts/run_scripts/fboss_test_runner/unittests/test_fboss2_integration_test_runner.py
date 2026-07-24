@@ -350,6 +350,22 @@ class TestAgentsReady(unittest.TestCase):
         self.assertEqual(mock_sleep.call_count, 2)
 
 
+class TestThriftPortWaitSkipped(unittest.TestCase):
+    def setUp(self):
+        self.runner = Fboss2IntegrationTestRunner()
+
+    @patch("fboss_test_runner.runners.test_runner.time.sleep")
+    @patch.object(Fboss2IntegrationTestRunner, "_port_in_use")
+    def test_wait_is_a_noop(self, mock_port_in_use, mock_sleep):
+        # The CLI suite runs against the production agents, which hold the
+        # agent thrift ports for the entire run; the base-class wait would
+        # burn its full timeout before every test. The override must return
+        # without polling ports or sleeping.
+        self.runner._wait_for_agent_thrift_ports_free()
+        mock_port_in_use.assert_not_called()
+        mock_sleep.assert_not_called()
+
+
 class TestEndRun(unittest.TestCase):
     def setUp(self):
         self.runner = Fboss2IntegrationTestRunner()
