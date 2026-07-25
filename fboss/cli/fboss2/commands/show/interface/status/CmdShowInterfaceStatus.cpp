@@ -111,8 +111,8 @@ CmdShowInterfaceStatus::RetType CmdShowInterfaceStatus::createModel(
   std::sort(
       model.interfaces()->begin(),
       model.interfaces()->end(),
-      [](cli::InterfaceStatus& a, cli::InterfaceStatus b) {
-        return a.name().value() < b.name().value();
+      [](const cli::InterfaceStatus& a, const cli::InterfaceStatus& b) {
+        return utils::comparePortName(a.name().value(), b.name().value());
       });
   return model;
 }

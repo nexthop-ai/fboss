@@ -120,6 +120,33 @@ TEST_F(CmdShowInterfaceStatusTestFixture, createModel) {
   EXPECT_EQ(statusModel[2].get_mpn(), "Not Present");
 }
 
+TEST_F(CmdShowInterfaceStatusTestFixture, createModelNaturalSort) {
+  // Interfaces should be ordered by their numeric module/port/subport IDs, not
+  // lexicographically by name (otherwise eth1/10/1 would sort before eth1/2/1).
+  std::map<int32_t, facebook::fboss::PortInfoThrift> ports;
+  for (const auto& name :
+       {"eth1/2/1", "eth1/10/1", "eth1/1/1", "eth1/100/1", "eth2/1/1"}) {
+    facebook::fboss::PortInfoThrift port;
+    port.portId() = static_cast<int32_t>(ports.size());
+    port.name() = name;
+    port.description() = "";
+    port.operState() = facebook::fboss::PortOperState::UP;
+    port.speedMbps() = 100000;
+    ports[folly::copy(port.portId().value())] = port;
+  }
+
+  auto cmd = CmdShowInterfaceStatus();
+  auto model = cmd.createModel(ports, {}, {});
+  auto statusModel = model.interfaces().value();
+
+  ASSERT_EQ(statusModel.size(), 5);
+  EXPECT_EQ(statusModel[0].get_name(), "eth1/1/1");
+  EXPECT_EQ(statusModel[1].get_name(), "eth1/2/1");
+  EXPECT_EQ(statusModel[2].get_name(), "eth1/10/1");
+  EXPECT_EQ(statusModel[3].get_name(), "eth1/100/1");
+  EXPECT_EQ(statusModel[4].get_name(), "eth2/1/1");
+}
+
 TEST_F(CmdShowInterfaceStatusTestFixture, printOutput) {
   auto cmd = CmdShowInterfaceStatus();
   auto model = cmd.createModel(portEntries, transceiverInfo, queriedEntries);

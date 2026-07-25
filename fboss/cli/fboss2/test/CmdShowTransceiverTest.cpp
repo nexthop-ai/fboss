@@ -809,4 +809,21 @@ TEST_F(CmdShowTransceiverTestFixture, printOutput) {
   EXPECT_EQ(output, expectOutput);
 }
 
+TEST_F(CmdShowTransceiverTestFixture, printOutputNaturalSort) {
+  // Rows should be ordered by numeric module/port/subport IDs, not
+  // lexicographically. "eth1/10/1" sorts between "eth1/1/1" and "eth1/2/1" as a
+  // string, but numerically it must come after all single-digit ports.
+  auto model = normalizedModel;
+  auto detail = model.transceivers()->at("eth1/1/1");
+  detail.name() = "eth1/10/1";
+  model.transceivers()->emplace("eth1/10/1", std::move(detail));
+
+  std::stringstream ss;
+  CmdShowTransceiver().printOutput(model, ss);
+  std::string output = ss.str();
+
+  EXPECT_NE(output.find("eth1/10/1"), std::string::npos);
+  EXPECT_GT(output.find("eth1/10/1"), output.find("eth1/8/1"));
+}
+
 } // namespace facebook::fboss

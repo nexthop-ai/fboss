@@ -58,7 +58,27 @@ void CmdShowTransceiver::printOutput(const RetType& model, std::ostream& out) {
        "Rx Power (dBm)",
        "Rx SNR"});
 
+  std::vector<const cli::TransceiverDetail*> sortedDetails;
+  sortedDetails.reserve(model.transceivers()->size());
   for (const auto& [portId, details] : model.transceivers().value()) {
+    sortedDetails.push_back(&details);
+  }
+  std::sort(
+      sortedDetails.begin(),
+      sortedDetails.end(),
+      [](const cli::TransceiverDetail* a, const cli::TransceiverDetail* b) {
+        // Bypass modules may carry interface names that don't match the
+        // moduleNum/port/subport pattern; fall back to the numeric
+        // transceiver ID rather than letting comparePortName throw.
+        try {
+          return utils::comparePortName(a->name().value(), b->name().value());
+        } catch (const std::invalid_argument&) {
+          return a->transceiverID().value() < b->transceiverID().value();
+        }
+      });
+
+  for (const auto* detailsPtr : sortedDetails) {
+    const auto& details = *detailsPtr;
     outTable.addRow({
         details.name().value(),
         statusToString(
@@ -261,6 +281,7 @@ CmdShowTransceiver::RetType CmdShowTransceiver::createModel(
 
       cli::TransceiverDetail details;
       details.name() = intf;
+      details.transceiverID() = tcvrEntry.first;
 
       const auto& tcvrState = *transceiver.tcvrState();
       const auto& tcvrStats = *transceiver.tcvrStats();
