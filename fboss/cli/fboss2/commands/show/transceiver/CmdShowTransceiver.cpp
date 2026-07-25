@@ -67,14 +67,7 @@ void CmdShowTransceiver::printOutput(const RetType& model, std::ostream& out) {
       sortedDetails.begin(),
       sortedDetails.end(),
       [](const cli::TransceiverDetail* a, const cli::TransceiverDetail* b) {
-        // Bypass modules may carry interface names that don't match the
-        // moduleNum/port/subport pattern; fall back to the numeric
-        // transceiver ID rather than letting comparePortName throw.
-        try {
-          return utils::comparePortName(a->name().value(), b->name().value());
-        } catch (const std::invalid_argument&) {
-          return a->transceiverID().value() < b->transceiverID().value();
-        }
+        return utils::comparePortName(a->name().value(), b->name().value());
       });
 
   for (const auto* detailsPtr : sortedDetails) {
@@ -281,7 +274,6 @@ CmdShowTransceiver::RetType CmdShowTransceiver::createModel(
 
       cli::TransceiverDetail details;
       details.name() = intf;
-      details.transceiverID() = tcvrEntry.first;
 
       const auto& tcvrState = *transceiver.tcvrState();
       const auto& tcvrStats = *transceiver.tcvrStats();
