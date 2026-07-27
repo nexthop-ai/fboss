@@ -45,7 +45,11 @@
  * Requirements:
  * - FBOSS agent must be running with a valid configuration
  * - The test must be run as root (or with appropriate permissions)
- * - Tests that need an existing L2 VLAN skip on pure routed-mode DUTs
+ *
+ * These tests do not assume the DUT is configured any particular way: the
+ * fixture picks an ethernet port and provisions the VLANs it needs (see
+ * SetUp / ensureCommittedVlan / TearDown), so they run on both L2- and pure
+ * routed-mode DUTs instead of skipping.
  */
 
 #include <folly/json/dynamic.h>
@@ -66,18 +70,34 @@ using namespace facebook::fboss;
 
 class ConfigVlanCreateTest : public Fboss2IntegrationTest {
  protected:
-  // Discover an existing VLAN + port before each test. existingVlanId_ stays
-  // -1 on pure routed-mode DUTs (no L2 VLANs).
+  // These tests must not assume the DUT is configured any particular way, so
+  // the fixture provisions everything they need:
+  //   - existingVlanPort_: any ethernet port. static-mac / switchport resolve
+  //     a port by logical ID, so L2-VLAN membership is irrelevant to them —
+  //     any eth port works, on L2- and routed-mode DUTs alike.
+  //   - kExistingVlanId (kExistingVlanId): a VLAN created + committed on demand
+  //     via ensureCommittedVlan(), for the cases that need a VLAN that is
+  //     already present in the running config.
+  // TearDown() removes every VLAN the fixture may have created so runs stay
+  // idempotent and the DUT is left as we found it.
   void SetUp() override {
     Fboss2IntegrationTest::SetUp();
-    if (auto vp = findConfiguredVlanPort()) {
-      existingVlanId_ = vp->first;
-      existingVlanPort_ = vp->second;
-    }
-    XLOG(INFO) << "SetUp: existing VLAN=" << existingVlanId_
-               << " port=" << existingVlanPort_;
+    existingVlanPort_ = findFirstEthInterface().name;
+    XLOG(INFO) << "SetUp: port=" << existingVlanPort_
+               << " (existing-VLAN id=" << kExistingVlanId << ")";
   }
 
+  void TearDown() override {
+    // Remove any VLAN this fixture created + committed. Session-only VLANs
+    // (kAccessVlanId) never reach the running config, so they need no cleanup.
+    for (int vlanId : {kExistingVlanId, kNewVlanId, kCreateVlanId}) {
+      cleanupVlanFromConfig(vlanId);
+    }
+    Fboss2IntegrationTest::TearDown();
+  }
+
+  // VLAN the fixture creates + commits for the "already exists" cases.
+  static constexpr int kExistingVlanId = 3996;
   // A VLAN ID used to test auto-create; cleaned up before each run
   static constexpr int kNewVlanId = 3999;
   // VLAN ID for the "config vlan <id>" create test (committed, then removed
@@ -88,9 +108,52 @@ class ConfigVlanCreateTest : public Fboss2IntegrationTest {
   static constexpr int kAccessVlanId = 3997;
   static constexpr const char* kTestMac = "02:00:00:00:27:01";
 
-  // Discovered in SetUp(). -1/"" means no L2 VLAN on this DUT.
-  int existingVlanId_ = -1;
+  // Set in SetUp().
   std::string existingVlanPort_;
+
+  // Create `vlanId` in the running config (idempotent) so a fresh session sees
+  // it as already existing. Creating a barebone VLAN + its cfg::Interface is
+  // accepted by the agent regardless of L2/L3 mode (same path exercised by
+  // AutoCreateVlanInSession and Fboss2IntegrationTest::ensureUnderlayIntfId).
+  void ensureCommittedVlan(int vlanId) {
+    auto hasVlan = [vlanId](const folly::dynamic& c) {
+      if (!c.isObject() || !c.count("sw") || !c["sw"].count("vlans")) {
+        return false;
+      }
+      for (const auto& v : c["sw"]["vlans"]) {
+        if (v.count("id") && v["id"].asInt() == vlanId) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    // Nothing to commit if the VLAN is already present (e.g. leftover from a
+    // prior run that didn't reach TearDown) — a no-op commit would error.
+    // discardSession() (not the "config session clear" CLI command) both
+    // clears the on-disk session files and resets the in-process
+    // ConfigSession singleton — see the comment in cleanupVlanFromConfig()
+    // for why the CLI command alone is not enough.
+    if (hasVlan(getRunningConfig())) {
+      discardSession();
+      return;
+    }
+
+    discardSession();
+    auto result = runCli({"config", "vlan", std::to_string(vlanId)});
+    ASSERT_EQ(result.exitCode, 0)
+        << "Failed to create VLAN " << vlanId << ": " << result.stderr;
+    commitConfig();
+
+    // A commit that creates a VLAN can warmboot the agent; wait until the VLAN
+    // is visible in the running config before the test relies on it.
+    auto cfg = waitForRunningConfig(hasVlan);
+    ASSERT_TRUE(hasVlan(cfg))
+        << "VLAN " << vlanId << " not in running config after commit";
+
+    // Start the test proper from a clean session built on the committed config.
+    discardSession();
+  }
 
   void
   addStaticMac(int vlanId, const std::string& mac, const std::string& port) {
@@ -125,7 +188,7 @@ class ConfigVlanCreateTest : public Fboss2IntegrationTest {
    * test is idempotent across multiple runs.
    *
    * Strategy:
-   *  1. Run a benign config command on existingVlanId_ to initialize the
+   *  1. Run a benign config command on kExistingVlanId to initialize the
    *     session file (~/.fboss2/agent.conf) from the current running config.
    *  2. Read the JSON session file and filter out any vlans, interfaces, and
    *     staticMacAddrs entries that reference vlanId.
@@ -136,11 +199,13 @@ class ConfigVlanCreateTest : public Fboss2IntegrationTest {
     XLOG(INFO) << "[Cleanup] Removing VLAN " << vlanId
                << " from config (if present)...";
 
-    // Initialize session from running config via a benign idempotent delete
+    // Initialize the session file from the running config via a benign
+    // idempotent delete (a delete on a missing VLAN is a no-op, and the
+    // session is materialized on first access regardless).
     runCli(
         {"config",
          "vlan",
-         std::to_string(existingVlanId_),
+         std::to_string(vlanId),
          "static-mac",
          "delete",
          "00:00:00:00:00:00"});
@@ -192,8 +257,18 @@ class ConfigVlanCreateTest : public Fboss2IntegrationTest {
     if (!vlanFound) {
       XLOG(INFO) << "[Cleanup]   VLAN " << vlanId
                  << " not in running config — no cleanup needed.";
-      // Discard the session we just created (nothing to commit)
-      runCli({"config", "session", "clear"});
+      // Discard the session we just created (nothing to commit). Use
+      // discardSession() rather than the "config session clear" CLI command:
+      // that command only deletes the on-disk session files, it does not
+      // reset the in-process ConfigSession singleton. Since this fixture
+      // calls cleanupVlanFromConfig() repeatedly in TearDown(), a stale
+      // singleton would make the *next* call's getAgentConfig() return the
+      // cached in-memory config without touching disk at all — so a
+      // subsequent no-op delete (nothing found, no saveConfig()) would never
+      // recreate the session file, and this method's own ASSERT_TRUE above
+      // would fail on the following call. discardSession() also resets the
+      // singleton, avoiding that trap.
+      discardSession();
       return;
     }
 
@@ -222,20 +297,19 @@ class ConfigVlanCreateTest : public Fboss2IntegrationTest {
 };
 
 TEST_F(ConfigVlanCreateTest, StaticMacAddDeleteOnExistingVlan) {
-  if (existingVlanId_ < 0) {
-    GTEST_SKIP()
-        << "No L2 VLAN with port members on this DUT (pure routed mode)";
-  }
-  XLOG(INFO) << "[Step 1] Using VLAN=" << existingVlanId_
+  // Provision the "existing" VLAN so the add below operates on a VLAN that is
+  // already present (no "Created VLAN" message expected).
+  ensureCommittedVlan(kExistingVlanId);
+  XLOG(INFO) << "[Step 1] Using VLAN=" << kExistingVlanId
              << " port=" << existingVlanPort_;
 
   // Step 2: Add a static MAC to an existing VLAN - no creation message expected
   XLOG(INFO) << "[Step 2] Adding static MAC to existing VLAN "
-             << existingVlanId_ << "...";
+             << kExistingVlanId << "...";
   auto addResult = runCli(
       {"config",
        "vlan",
-       std::to_string(existingVlanId_),
+       std::to_string(kExistingVlanId),
        "static-mac",
        "add",
        kTestMac,
@@ -254,15 +328,11 @@ TEST_F(ConfigVlanCreateTest, StaticMacAddDeleteOnExistingVlan) {
 
   // Step 3: Clean up - delete the static MAC entry
   XLOG(INFO) << "[Step 3] Cleaning up static MAC entry...";
-  deleteStaticMac(existingVlanId_, kTestMac);
+  deleteStaticMac(kExistingVlanId, kTestMac);
   XLOG(INFO) << "  Cleanup complete. TEST PASSED";
 }
 
 TEST_F(ConfigVlanCreateTest, AutoCreateVlanInSession) {
-  if (existingVlanId_ < 0) {
-    GTEST_SKIP()
-        << "No L2 VLAN with port members on this DUT (pure routed mode)";
-  }
   XLOG(INFO) << "[Step 1] Using port=" << existingVlanPort_;
 
   // Step 0: Ensure VLAN kNewVlanId is absent (idempotency across test runs).
@@ -336,11 +406,6 @@ TEST_F(ConfigVlanCreateTest, DeleteOnNonExistentVlanIsIdempotent) {
 }
 
 TEST_F(ConfigVlanCreateTest, CreateVlanCommand) {
-  if (existingVlanId_ < 0) {
-    GTEST_SKIP()
-        << "No L2 VLAN with port members on this DUT (pure routed mode)";
-  }
-
   // Step 0: Ensure the test VLAN is absent (idempotency across runs).
   XLOG(INFO) << "[Step 0] Ensuring VLAN " << kCreateVlanId
              << " is absent from running config...";
@@ -382,43 +447,38 @@ TEST_F(ConfigVlanCreateTest, CreateVlanCommand) {
   auto result3 = runCli({"config", "vlan", std::to_string(kCreateVlanId)});
   ASSERT_EQ(result3.exitCode, 0) << "Command failed: " << result3.stderr;
   EXPECT_THAT(result3.stdout, ::testing::HasSubstr("already exists"));
-  runCli({"config", "session", "clear"});
+  discardSession();
   XLOG(INFO) << "  TEST PASSED (VLAN " << kCreateVlanId
              << " remains; removed by cleanup on next run)";
 }
 
 TEST_F(ConfigVlanCreateTest, CreateVlanAlreadyExists) {
-  if (existingVlanId_ < 0) {
-    GTEST_SKIP()
-        << "No L2 VLAN with port members on this DUT (pure routed mode)";
-  }
-  XLOG(INFO) << "Testing 'config vlan' on existing VLAN " << existingVlanId_
+  // Provision a VLAN in the running config, then verify 'config vlan' reports
+  // it as already existing.
+  ensureCommittedVlan(kExistingVlanId);
+  XLOG(INFO) << "Testing 'config vlan' on existing VLAN " << kExistingVlanId
              << "...";
-  auto result = runCli({"config", "vlan", std::to_string(existingVlanId_)});
+  auto result = runCli({"config", "vlan", std::to_string(kExistingVlanId)});
   ASSERT_EQ(result.exitCode, 0) << "Command failed: " << result.stderr;
   EXPECT_THAT(
       result.stdout,
       ::testing::HasSubstr(
-          "VLAN " + std::to_string(existingVlanId_) + " already exists"));
+          "VLAN " + std::to_string(kExistingVlanId) + " already exists"));
   EXPECT_THAT(
       result.stdout,
       ::testing::Not(::testing::HasSubstr("Successfully created")));
   // Nothing was modified; discard the session.
-  runCli({"config", "session", "clear"});
+  discardSession();
   XLOG(INFO) << "  Output: " << result.stdout << " TEST PASSED";
 }
 
 TEST_F(ConfigVlanCreateTest, SwitchportAccessVlanAutoCreates) {
-  if (existingVlanId_ < 0) {
-    GTEST_SKIP()
-        << "No L2 VLAN with port members on this DUT (pure routed mode)";
-  }
   XLOG(INFO) << "[Step 1] Using port=" << existingVlanPort_;
 
   // Step 0: Start from a clean session so kAccessVlanId isn't left over from
   // a previous (aborted) run. This test never commits, so the running config
   // is untouched.
-  runCli({"config", "session", "clear"});
+  discardSession();
 
   // Step 2: Assign the port to a non-existent VLAN — it gets auto-created.
   XLOG(INFO) << "[Step 2] switchport access vlan " << kAccessVlanId
@@ -458,8 +518,6 @@ TEST_F(ConfigVlanCreateTest, SwitchportAccessVlanAutoCreates) {
 
   // Step 4: Discard the session — never committed, DUT is unchanged.
   XLOG(INFO) << "[Step 4] Clearing session (no commit)...";
-  auto clearResult = runCli({"config", "session", "clear"});
-  ASSERT_EQ(clearResult.exitCode, 0)
-      << "Failed to clear session: " << clearResult.stderr;
+  discardSession();
   XLOG(INFO) << "  TEST PASSED";
 }
