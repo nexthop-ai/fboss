@@ -4,12 +4,15 @@
 """
 Package fboss-sim build artifacts into a minimal runtime Docker image.
 
-This script collects FBOSS binaries directly from the build output directory
-(.build_dir/build/fboss/), resolves their shared library dependencies via ldd,
-and copies everything into a Docker build context for the runtime image.
+This script collects FBOSS binaries from the build output directory, resolves
+their shared library dependencies via ldd, and copies everything into a Docker
+build context for the runtime image.
 
-Prerequisites:
-- Build FBOSS with fake SAI (binaries will be in .build_dir/build/fboss/)
+Two build back-ends are supported:
+  cmake (default): binaries in .build_dir/build/fboss/
+    Build with: ./fboss/oss/scripts/nhfboss-build.sh SAI_IMPL=fake
+  bazel (--bazel): binaries in bazel-bin/ (symlinks resolved in-container)
+    Build with: ./fboss/oss/scripts/bazel.sh build --sai fake <targets>
 
 This script is environment-agnostic: it does not assume any particular build
 container or repo mount. The only requirement is that the `--collect-only`
@@ -68,6 +71,18 @@ def resolve_binary(build_dir: Path, name: str) -> "Path | None":
             return path
     return None
 
+
+# bazel-bin-relative paths for each required binary.
+# Must match the cc_binary target locations produced by bazelify.
+BAZEL_BINARY_PATHS = {
+    "wedge_agent-sai_impl":   "fboss/agent/platforms/sai/wedge_agent-sai_impl",
+    "fboss_hw_agent-sai_impl": "fboss/agent/platforms/sai/fboss_hw_agent-sai_impl",
+    "fboss_sw_agent":          "fboss/agent/fboss_sw_agent",
+    "fboss2":                  "fboss/cli/fboss2/fboss2",
+    "fboss2-dev":              "fboss/cli/fboss2/fboss2-dev",
+    "fboss2_integration_test": "fboss/cli/fboss2/test/integration_test/fboss2_integration_test",
+}
+
 # Libraries to exclude from collection — these are provided by the base OS image
 # (CentOS Stream 9) and must NOT be overridden with host versions (Ubuntu).
 # Mixing glibc-family libs across OS versions causes GLIBC_ABI_* version errors.
@@ -91,13 +106,37 @@ def get_repo_path() -> Path:
 
 
 def get_build_dir(repo_path: Path) -> Path:
-    """Get the FBOSS build output directory."""
+    """Get the cmake FBOSS build output directory."""
     return repo_path / ".build_dir" / "build" / "fboss"
 
 
 def get_installed_dir(repo_path: Path) -> Path:
     """Get the getdeps installed directory (contains dependency libs)."""
     return repo_path / ".build_dir" / "installed"
+
+
+def stage_bazel_binaries(repo_path: Path, staging_dir: Path) -> None:
+    """Copy real ELF files from bazel-bin/ into a flat staging_dir.
+
+    Must run inside the build container so bazel-bin/ symlink targets resolve.
+    """
+    bazel_bin = repo_path / "bazel-bin"
+    staging_dir.mkdir(parents=True, exist_ok=True)
+
+    missing = []
+    for name, rel_path in BAZEL_BINARY_PATHS.items():
+        src = (bazel_bin / rel_path).resolve()
+        if not src.exists():
+            missing.append(f"{name} (expected {bazel_bin / rel_path})")
+            continue
+        shutil.copy2(src, staging_dir / name)
+        print(f"  staged {name}  ←  {src}")
+
+    if missing:
+        print("\nError: Bazel binaries not found (build --sai fake first):")
+        for m in missing:
+            print(f"  {m}")
+        sys.exit(1)
 
 
 def verify_binaries(build_dir: Path) -> None:
@@ -355,6 +394,11 @@ def main():
         action="store_true",
         help="Only docker build the image from an existing tmp_build_dir/ (no collect)",
     )
+    parser.add_argument(
+        "--bazel",
+        action="store_true",
+        help="Source binaries from bazel-bin/ (--sai fake build) instead of .build_dir/",
+    )
     args = parser.parse_args()
 
     print("=" * 60)
@@ -362,9 +406,17 @@ def main():
     print("=" * 60)
 
     repo_path = get_repo_path()
-    build_dir = get_build_dir(repo_path)
     installed_dir = get_installed_dir(repo_path)
     dest_dir = repo_path / "tmp_build_dir"
+
+    if args.bazel:
+        # Stage Bazel binaries into a flat dir so the rest of the pipeline is unchanged.
+        bazel_staging = repo_path / "tmp_bazel_stage"
+        print(f"\nBazel mode: staging binaries from bazel-bin/ → {bazel_staging}")
+        stage_bazel_binaries(repo_path, bazel_staging)
+        build_dir = bazel_staging
+    else:
+        build_dir = get_build_dir(repo_path)
 
     print(f"Repository:  {repo_path}")
     print(f"Build dir:   {build_dir}")
@@ -374,10 +426,20 @@ def main():
     if args.collect_only or not args.build_only:
         if not build_dir.exists():
             print(f"\n❌ Error: Build directory not found: {build_dir}")
-            print("   Please build FBOSS first with SAI_IMPL=fake")
+            if args.bazel:
+                print("   Build first: bazel.sh build --sai fake <targets>")
+            else:
+                print("   Please build FBOSS first with SAI_IMPL=fake")
             sys.exit(1)
         verify_binaries(build_dir)
         copy_artifacts(repo_path, build_dir, installed_dir, dest_dir)
+        # In --collect-only mode the staging dir was created by this process
+        # (it didn't exist before main() ran), so clean it up here.  In the
+        # full (non-collect-only) path the same cleanup happens in the finally
+        # block below, after collect_inside_container() recreates the staging
+        # dir inside the container.
+        if args.bazel:
+            shutil.rmtree(build_dir, ignore_errors=True)
         if args.collect_only:
             print(f"\n✅ Collected artifacts into {dest_dir}")
             print("   Next: run `--build-only` where the Docker daemon is available.")
@@ -393,6 +455,8 @@ def main():
         ret = build_runtime_image(repo_path)
     finally:
         shutil.rmtree(dest_dir, ignore_errors=True)
+        if args.bazel:
+            shutil.rmtree(repo_path / "tmp_bazel_stage", ignore_errors=True)
 
     if ret == 0:
         image_tag = f"{DEFAULT_IMAGE_NAME}:latest"

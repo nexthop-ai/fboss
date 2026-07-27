@@ -6,9 +6,11 @@ Uses oss/ implementations (no proprietary BCM/Tajo sources).
 
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
 
-# SAI version and BCM defines are set globally in .bazelrc.
-# Only add target-specific copts here if needed.
-_SAI_COPTS = []
+# -DSAI_VERSION_13_3_0_0_ODP must be absent for fake SAI; mirrors sai_api.
+_SAI_COPTS = select({
+    "//fboss/agent/hw/sai:is_bcm": ["-DSAI_VERSION_13_3_0_0_ODP"],
+    "//fboss/agent/hw/sai:is_fake": [],
+})
 
 def sai_platform_impl():
     """Define SAI platform library and wedge_agent binary."""
@@ -96,8 +98,10 @@ def sai_platform_impl():
             "//fboss/agent:monolithic_agent_initializer",
             "//fboss/agent:setup_thrift_prod",
             "//fboss/agent/hw/sai/api:sai_traced_api",
-            "@sai_impl//:sai_impl",
-        ],
+        ] + select({
+            "//fboss/agent/hw/sai:is_bcm": ["@sai_impl//:sai_impl"],
+            "//fboss/agent/hw/sai:is_fake": ["//fboss/agent/hw/sai/fake:fake_sai"],
+        }),
         visibility = ["//visibility:public"],
     )
 
@@ -128,7 +132,9 @@ def sai_platform_impl():
             "//fboss/agent:load_agent_config",
             "//fboss/agent/hw/sai/api:sai_traced_api",
             "//fboss/agent/hw/sai/hw_test:agent_hw_test_thrift_handler",
-            "@sai_impl//:sai_impl",
-        ],
+        ] + select({
+            "//fboss/agent/hw/sai:is_bcm": ["@sai_impl//:sai_impl"],
+            "//fboss/agent/hw/sai:is_fake": ["//fboss/agent/hw/sai/fake:fake_sai"],
+        }),
         visibility = ["//visibility:public"],
     )

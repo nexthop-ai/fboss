@@ -19,7 +19,6 @@ build --cxxopt=-DBOOST_REGEX_NO_LIB
 build --cxxopt=-DGFLAGS_IS_A_DLL=0
 build --cxxopt=-DGLOG_USE_GLOG_EXPORT
 build --cxxopt=-DIS_OSS_BRCM_SAI=true
-build --cxxopt=-DSAI_VERSION_13_3_0_0_ODP
 build --cxxopt=-DSAI_VER_MAJOR=1
 build --cxxopt=-DSAI_VER_MINOR=16
 build --cxxopt=-DSAI_VER_RELEASE=1

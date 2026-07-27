@@ -17,6 +17,11 @@
 #
 # Or add an alias in your shell config:
 #   alias bazel=/var/FBOSS/fboss/fboss/oss/scripts/bazel.sh
+#
+# One wrapper-level flag on top of bazel's own:
+#   --sai <impl>   SAI implementation to build against: bcm (default) or fake.
+#                  fake needs no vendor SDK and is what fboss-sim uses:
+#                    bazel.sh build --sai fake //fboss/cli/...
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
@@ -77,13 +82,57 @@ if [ -f "$ENV_FILE" ]; then
   source "$ENV_FILE"
 fi
 
+# Extract the wrapper-level --sai flag.  It is not a bazel option: strip it
+# from argv and translate it into --//fboss/agent/hw/sai:sai_impl=<impl>
+# placed right after the bazel command.  The explicit flag form is also
+# recognized so both spellings drive the guard and bazelify logic below.
+SAI_IMPL=bcm
+_sai_flag_explicit=0
+ARGS=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+  --sai)
+    SAI_IMPL="${2:?--sai requires a value (bcm or fake)}"
+    shift 2
+    ;;
+  --sai=*)
+    SAI_IMPL="${1#--sai=}"
+    shift
+    ;;
+  --//fboss/agent/hw/sai:sai_impl=*)
+    SAI_IMPL="${1#*sai_impl=}"
+    _sai_flag_explicit=1
+    ARGS+=("$1")
+    shift
+    ;;
+  *)
+    ARGS+=("$1")
+    shift
+    ;;
+  esac
+done
+case "$SAI_IMPL" in
+bcm | fake) ;;
+*)
+  echo "ERROR: unsupported SAI implementation '$SAI_IMPL' (supported: bcm, fake)" >&2
+  exit 1
+  ;;
+esac
+if [ "$SAI_IMPL" != "bcm" ] && [ "$_sai_flag_explicit" -eq 0 ] && [ "${#ARGS[@]}" -gt 0 ]; then
+  set -- "${ARGS[0]}" "--//fboss/agent/hw/sai:sai_impl=$SAI_IMPL" "${ARGS[@]:1}"
+else
+  set -- "${ARGS[@]}"
+fi
+
 # Check that the SAI implementation dependency is configured.  The Bazel build
-# currently only supports building with a real SAI implementation.
+# currently supports building with a real SAI implementation and fake SAI when
+# explicitly selected.
 # fboss-build.env writes the sai_impl manifest when preparing a SAI build.
 FBOSS_MANIFEST="$REPO_ROOT/build/fbcode_builder/manifests/fboss"
-if [ -f "$FBOSS_MANIFEST" ] && ! grep -q '^sai_impl$' "$FBOSS_MANIFEST"; then
+if [ "$SAI_IMPL" = "bcm" ] && [ -f "$FBOSS_MANIFEST" ] && ! grep -q '^sai_impl$' "$FBOSS_MANIFEST"; then
   echo "ERROR: Bazel build requires a SAI implementation (sai_impl not found in fboss manifest)." >&2
   echo "  Add a valid fboss-build.env to configure the SAI implementation automatically." >&2
+  echo "  Or build the fake SAI flavor instead: bazel.sh build --sai fake ..." >&2
   exit 1
 fi
 
@@ -92,6 +141,13 @@ fi
 BAZELIFY_ARGS="--if-needed -r $REPO_ROOT"
 if [ -n "${GETDEPS_CACHE_URL:-}" ]; then
   BAZELIFY_ARGS="$BAZELIFY_ARGS --cache-url $GETDEPS_CACHE_URL"
+fi
+# Generate for fake SAI when selected, and also when no sai_impl manifest is
+# present (the host has no vendor SAI configured), so the vendor SAI tarball
+# is never fetched in either case.
+SAI_IMPL_MANIFEST="$REPO_ROOT/build/fbcode_builder/manifests/sai_impl"
+if [ "$SAI_IMPL" = "fake" ] || [ ! -f "$SAI_IMPL_MANIFEST" ]; then
+  BAZELIFY_ARGS="$BAZELIFY_ARGS --sai-impl fake"
 fi
 python3 "$SCRIPT_DIR/bazelify.py" $BAZELIFY_ARGS
 

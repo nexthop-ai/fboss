@@ -5,30 +5,46 @@ Minimal Docker runtime (~1.2 GB) for FBOSS with fake SAI — no hardware require
 ## Quick Start
 
 ```bash
-# 1. Build FBOSS with fake SAI (binaries land in .build_dir/build/fboss/).
-#    Use the standard getdeps OSS build with the fake-SAI target.
-sudo ./build/fbcode_builder/getdeps.py build --allow-system-packages fboss
+# 1. Enter the build container for your worktree
+CT=$(docker ps --format '{{.Names}}' | grep "FBOSS_build.*$(basename $PWD)")
 
-# 2. Build the runtime image.
-#    The packager has two phases:
-#      --collect-only : resolve binaries+libs into tmp_build_dir/ (ldd must run
-#                       in an OS matching the image base — CentOS Stream 9)
-#      --build-only   : docker build the image from tmp_build_dir/
-#    If you built on a CentOS Stream 9 host, run both at once with no flag:
-python3 fboss-sim/scripts/fboss-sim-docker-package.py
+# 2. Build all required binaries with fake SAI (no vendor SDK needed)
+docker exec "$CT" bash -lc \
+  'cd /var/FBOSS/fboss && ./fboss/oss/scripts/bazel.sh build --sai fake \
+   //fboss/agent/platforms/sai:wedge_agent-sai_impl \
+   //fboss/agent/platforms/sai:fboss_hw_agent-sai_impl \
+   //fboss/agent:fboss_sw_agent \
+   //fboss/cli/fboss2:fboss2 \
+   //fboss/cli/fboss2:fboss2-dev \
+   "//fboss/cli/fboss2/test/integration_test:fboss2_integration_test"'
 
-# 3. Start the container
+# 3. Collect binaries + libs, build runtime image
+docker exec "$CT" python3 \
+  /var/FBOSS/fboss/fboss-sim/scripts/fboss-sim-docker-package.py \
+  --collect-only --bazel
+docker build \
+  -f fboss-sim/docker/Dockerfile.runtime \
+  -t fboss_sim_runtime_${USER}:latest .
+
+# 4. Start the container
 python3 fboss-sim/scripts/fboss-sim-docker-run.py
 
-# 4. Run integration test
-docker exec fboss_sim_runtime_${USER} /opt/fboss/bin/fboss2_integration_test
+# 5. Run integration tests
+docker exec fboss_sim_runtime_${USER} \
+  /opt/fboss/bin/fboss2_integration_test "--gtest_filter=-ConfigPfcTest.*"
 ```
+
+> **cmake alternative** (still supported): replace steps 2-3 with
+> `docker exec -e SAI_IMPL=fake $CT ./fboss/oss/scripts/nhfboss-build.sh ...`
+> then `python3 fboss-sim/scripts/fboss-sim-docker-package.py` (no `--bazel`).
 
 ### Split build/host environments
 
 When FBOSS is built inside a CentOS build container on a different-distro host
-(e.g. Ubuntu), `ldd` must resolve libraries inside the container, but
-`docker build` needs the host's Docker daemon. Run the two phases separately:
+(e.g. Ubuntu) and you're not using the container-based flow above (e.g. cmake
+mode run from the host), `ldd` must resolve libraries inside the container,
+but `docker build` needs the host's Docker daemon. Run the two phases
+separately:
 
 ```bash
 # collect inside the build container (CentOS libs resolve correctly)
@@ -93,14 +109,23 @@ builds identically inside or outside the Nexthop fork.
 
 ### How `fboss-sim-docker-package.py` works
 
-1. Verifies required binaries exist in `.build_dir/build/fboss/`
-2. **Collect phase** (`--collect-only`, or the first half of a flagless run):
-   resolves each binary's shared libraries via `ldd` and copies binaries,
-   libraries, and config files into `tmp_build_dir/`. This must run where the
-   resolved libs match the image base OS (CentOS Stream 9).
-3. **Build phase** (`--build-only`, or the second half of a flagless run):
-   builds the Docker image from `Dockerfile.runtime` using `tmp_build_dir/` as
-   context, then cleans up `tmp_build_dir/`.
+Both modes share the same **collect** (`--collect-only`, or the first half of
+a flagless run) and **build** (`--build-only`, or the second half) phase
+split: collect resolves shared libraries via `ldd` and copies binaries,
+libraries, and config files into `tmp_build_dir/` — this must run where the
+resolved libs match the image base OS (CentOS Stream 9); build then builds the
+Docker image from `Dockerfile.runtime` using `tmp_build_dir/` as context and
+cleans up afterward.
+
+**Bazel mode** (`--bazel`, recommended):
+1. Resolves `bazel-bin/` symlinks to real ELF files, stages them flat in `tmp_bazel_stage/`
+2. Runs the collect phase against that staging dir (typically inside the build
+   container, so `ldd` resolves the right CentOS system libs)
+3. Runs the build phase, then cleans up both staging dirs on completion
+
+**cmake mode** (default, no `--bazel`):
+Same as above but binaries are read directly from `.build_dir/build/fboss/`
+instead of being staged from `bazel-bin/`.
 
 ### Why IPv6 matters for split mode
 

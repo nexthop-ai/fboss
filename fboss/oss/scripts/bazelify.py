@@ -181,6 +181,10 @@ SKIP_DIRS = _load_skip_dirs(Path(__file__).resolve().parents[3])
 # Bump these here when upgrading.
 _RULES_CC_VERSION = "0.2.17"
 _RULES_PYTHON_VERSION = "1.0.0"
+# bazel_skylib provides string_flag for //fboss/agent/hw/sai:sai_impl.
+# Matches the version other modules already pull in transitively, so the
+# root-module pin doesn't conflict with the resolved dependency graph.
+_BAZEL_SKYLIB_VERSION = "1.8.2"
 # Hedron compile-commands extractor — pinned to a specific commit (not in BCR).
 # To upgrade: update the commit hash and run
 # `bazel run //fboss/build_defs:refresh_compile_commands`.
@@ -767,6 +771,9 @@ def generate_module_bazel(deps: dict[str, PrebuiltDep]) -> str:
             ],
         )
 
+        # string_flag for //fboss/agent/hw/sai:sai_impl (SAI flavor selection).
+        bazel_dep(name = "bazel_skylib", version = "{_BAZEL_SKYLIB_VERSION}")
+
         # Import new_local_repository for pre-built deps
         new_local_repository = use_repo_rule(
             "@bazel_tools//tools/build_defs/repo:local.bzl",
@@ -967,11 +974,14 @@ def generate_module_bazel_getdeps(
     getdeps_graph: list[dict],
     scratch_path: str,
     cache_url: str,
+    sai_impl: str = "bcm",
 ) -> str:
     """Generate MODULE.bazel using getdeps_repository for built deps.
 
     System deps and deps that are already pre-built use new_local_repository.
     Deps that need building use getdeps_repository.
+    sai_impl selects the SAI implementation; "fake" excludes the vendor
+    sai_impl dep so no vendor SAI tarball is fetched.
     """
     _indent = "        "  # shared indent for template content
     chunks = [
@@ -992,6 +1002,9 @@ def generate_module_bazel_getdeps(
                 "//fboss/build_defs:disable_include_validation.patch",
             ],
         )
+
+        # string_flag for //fboss/agent/hw/sai:sai_impl (SAI flavor selection).
+        bazel_dep(name = "bazel_skylib", version = "{_BAZEL_SKYLIB_VERSION}")
 
         # hedron_compile_commands generates compile_commands.json for clang
         # tooling (clang-tidy, clang-include-cleaner, clangd).  Not in BCR,
@@ -1041,6 +1054,13 @@ def generate_module_bazel_getdeps(
             # FBOSS BUCK files at all.
             continue
 
+        # Fake SAI needs no vendor implementation: skip the sai_impl dep so
+        # its tarball is never downloaded and @sai_impl is not declared in
+        # MODULE.bazel.  libsai's generated BUILD drops its
+        # @sai_impl//:sai_impl_headers dep too (_make_build_file_content).
+        if sai_impl == "fake" and name == "sai_impl":
+            continue
+
         # Built dep — use getdeps_repository
         # Generate build_file_content from prebuilt dep info if available,
         # otherwise create a synthetic PrebuiltDep from manifest metadata.
@@ -1057,7 +1077,7 @@ def generate_module_bazel_getdeps(
         if dep_obj is None:
             dep_obj = _synthetic_prebuilt_dep(name, dep_info)
         build_content = _make_build_file_content(
-            dep_obj, bazel_name, inter_deps=inter_deps
+            dep_obj, bazel_name, inter_deps=inter_deps, sai_impl=sai_impl
         )
         if build_content is None:
             continue
@@ -1234,7 +1254,10 @@ SYSTEM_LIB_STUBS: dict[str, str] = {
 
 
 def _make_build_file_content(  # noqa: PLR0911, PLR0912, PLR0915
-    dep: PrebuiltDep, bazel_name: str, inter_deps: list[str] | None = None
+    dep: PrebuiltDep,
+    bazel_name: str,
+    inter_deps: list[str] | None = None,
+    sai_impl: str = "bcm",
 ) -> str | None:
     """Generate build_file_content for a pre-built dep.
 
@@ -1370,20 +1393,37 @@ cc_library(
             includes = '["."]'
             extra_deps_str = deps_str
         elif dep.extra_include_dirs or dep.name == "libsai":
-            # libsai's saiobject.h includes experimental headers (saiexperimental*.h)
-            # that live only in sai_impl/include/, not in libsai/include/.  Depend on
-            # @sai_impl//:sai_impl_headers so sai_impl/include/ is on the include path.
-            # We also intentionally do NOT expose libsai/experimental/ (if it exists)
-            # because those open-source stubs would shadow the BCM-specific versions in
-            # sai_impl/include/ for targets with IS_OSS_BRCM_SAI=true.
-            hdrs_glob = 'glob(["include/**"], allow_empty = True)'
-            includes = '["include"]'
-            sai_impl_dep = '"@sai_impl//:sai_impl_headers"'
-            if inter_deps:
-                deps_list = ", ".join(f'"{d}"' for d in inter_deps)
-                extra_deps_str = f"\n    deps = [{deps_list}, {sai_impl_dep}],"
+            # saiobject.h includes experimental headers as flat names, e.g.:
+            #   #include <saiexperimentaldashtrustedvni.h>
+            # (no directory prefix — a bare filename on the include path).
+            #
+            # BCM builds: sai_impl/include/ contains the BCM-specific experimental
+            # headers flat in that directory.  Expose only libsai/include/ here
+            # so the open-source stubs in libsai/experimental/ don't shadow them.
+            # @sai_impl//:sai_impl_headers puts sai_impl/include/ on the path.
+            #
+            # Fake SAI builds: @sai_impl is absent.  Add libsai/experimental/
+            # to the include path (includes = ["include", "experimental"]) so
+            # the bare filename resolves to libsai/experimental/<header>.h.
+            if sai_impl == "fake":
+                hdrs_glob = (
+                    'glob(["include/**", "experimental/**"], allow_empty = True)'
+                )
+                # "experimental" on the include path resolves bare experimental
+                # header names (e.g. <saiexperimentaldashtrustedvni.h>) from
+                # libsai/experimental/ — the open-source stubs directory.
+                includes = '["include", "experimental"]'
+                all_deps = [f'"{d}"' for d in (inter_deps or [])]
             else:
-                extra_deps_str = f"\n    deps = [{sai_impl_dep}],"
+                hdrs_glob = 'glob(["include/**"], allow_empty = True)'
+                includes = '["include"]'
+                all_deps = [f'"{d}"' for d in (inter_deps or [])] + [
+                    '"@sai_impl//:sai_impl_headers"'
+                ]
+            if all_deps:
+                extra_deps_str = f"\n    deps = [{', '.join(all_deps)}],"
+            else:
+                extra_deps_str = ""
         else:
             hdrs_glob = 'glob(["include/**"], allow_empty = True)'
             includes = '["include"]'
@@ -2811,13 +2851,16 @@ def _cleanup_orphaned_build_files(repo_root: Path) -> None:
 _INPUT_CHECKSUM_PREFIX = "# bazelify-input-checksum: "
 
 
-def _compute_input_checksum(repo_root: Path) -> str:
+def _compute_input_checksum(repo_root: Path, extra_salt: bytes = b"") -> str:
     """SHA-256 over the contents of every file that can affect generated output.
 
     Content-based, so immune to timestamp changes from branch switches,
-    stash/pop, or rebases.
+    stash/pop, or rebases.  Pass extra_salt to distinguish outputs that differ
+    only by a flag (e.g. --sai-impl fake vs bcm) so --if-needed still invalidates.
     """
     hasher = hashlib.sha256()
+    if extra_salt:
+        hasher.update(extra_salt)
 
     file_predicates = [
         "-name", "BUCK",
@@ -2926,6 +2969,15 @@ Examples:
         "have changed since the last run. Uses a content checksum stored in "
         "MODULE.bazel to avoid unnecessary regeneration.",
     )
+    parser.add_argument(
+        "--sai-impl",
+        choices=["bcm", "fake"],
+        default="bcm",
+        dest="sai_impl",
+        help="SAI implementation to generate for. 'fake' omits the vendor "
+        "sai_impl dep from MODULE.bazel and from libsai's generated BUILD "
+        "so no vendor SAI tarball is fetched.",
+    )
     return parser.parse_args()
 
 
@@ -2940,7 +2992,11 @@ def main():  # noqa: PLR0912, PLR0915
         return 0
 
     # Fast path: skip regeneration if inputs haven't changed.
-    input_checksum = _compute_input_checksum(repo_root)
+    # Salt with the SAI implementation so switching --sai-impl triggers
+    # regeneration even when no input files changed.
+    input_checksum = _compute_input_checksum(
+        repo_root, extra_salt=args.sai_impl.encode()
+    )
     if args.if_needed:
         stored = _read_stored_checksum(repo_root)
         if stored == input_checksum:
@@ -3010,7 +3066,11 @@ def main():  # noqa: PLR0912, PLR0915
     print("Generating MODULE.bazel...")
     if args.use_getdeps_rules:
         module_content = generate_module_bazel_getdeps(
-            prebuilt_deps, getdeps_graph, args.scratch_path, args.cache_url
+            prebuilt_deps,
+            getdeps_graph,
+            args.scratch_path,
+            args.cache_url,
+            sai_impl=args.sai_impl,
         )
     else:
         module_content = generate_module_bazel(prebuilt_deps)
