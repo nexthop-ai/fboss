@@ -50,6 +50,9 @@ namespace cpp2 facebook.fboss.platform.showtech_config
 //
 // `additionalServiceUnits`: Extra systemd unit names to include in the
 // `systemd` section.
+//
+// `configFiles`: Optional additional configurations to collect.
+// Each entry is a named file path. See FileSource struct below.
 struct ShowtechConfig {
   1: set<string> i2cBusIgnore;
   2: list<string> psus;
@@ -60,6 +63,18 @@ struct ShowtechConfig {
   7: optional SwitchCardPowerGoodStatus scPowerGood;
   8: list<string> additionalServices;
   9: list<string> additionalServiceUnits;
+  10: list<FileSource> configFiles;
+}
+
+// A named file to collect verbatim under the `config` section.
+//
+// `name`: Human-readable label shown as the section header in the showtech
+// output (e.g. "os-release").
+//
+// `path`: Absolute path to the file to collect (e.g. "/etc/os-release").
+struct FileSource {
+  1: string name;
+  2: string path;
 }
 
 // GPIO (General Purpose Input/Output) configuration.

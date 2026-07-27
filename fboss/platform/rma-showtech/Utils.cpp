@@ -491,6 +491,82 @@ void Utils::printSystemdDetails() {
             << std::endl;
 }
 
+void Utils::printFile(const std::string& path) const {
+  if (std::filesystem::exists(path)) {
+    std::cout << platformUtils_.execCommand(fmt::format("cat {}", path)).second
+              << std::endl;
+  } else {
+    std::cout << fmt::format("{} not found", path) << std::endl;
+  }
+}
+
+void Utils::printCoopConfigFiles() const {
+  const std::string coopDir = "/etc/coop";
+  if (!std::filesystem::is_directory(coopDir)) {
+    std::cout << fmt::format("{} not found", coopDir) << std::endl;
+    return;
+  }
+
+  auto it = std::filesystem::recursive_directory_iterator(
+      coopDir, std::filesystem::directory_options::skip_permission_denied);
+  const auto end = std::filesystem::recursive_directory_iterator();
+  for (; it != end; ++it) {
+    const auto& path = it->path();
+    if (it->is_directory() && path.filename() == ".git") {
+      it.disable_recursion_pending();
+      continue;
+    }
+    if (!it->is_regular_file()) {
+      continue;
+    }
+    std::cout << fmt::format(
+                     "##### {} Configuration #####",
+                     std::filesystem::relative(path, coopDir).string())
+              << std::endl;
+    printFile(path.string());
+  }
+}
+
+void Utils::printCoopGitHistory() const {
+  const std::string coopDir = "/etc/coop";
+  if (!std::filesystem::is_directory(coopDir + "/.git")) {
+    std::cout << fmt::format(
+                     "{} is not a git repository "
+                     "(config not managed via `fboss2 config` session)",
+                     coopDir)
+              << std::endl;
+    return;
+  }
+
+  std::cout << "#### Config Git History ####" << std::endl;
+  std::cout << platformUtils_
+                   .execCommand(
+                       fmt::format("git -C {} log --oneline -n 200", coopDir))
+                   .second
+            << std::endl;
+
+  std::cout << "#### Uncommitted Config Changes ####" << std::endl;
+  std::cout << platformUtils_
+                   .execCommand(fmt::format("git -C {} diff", coopDir))
+                   .second
+            << std::endl;
+}
+
+void Utils::printConfigDetails() {
+  printCoopConfigFiles();
+
+  std::cout << "##### running-agent.conf Configuration #####" << std::endl;
+  printFile("/var/facebook/fboss/running-agent.conf");
+
+  printCoopGitHistory();
+
+  for (const auto& file : *config_.configFiles()) {
+    std::cout << fmt::format("##### {} Configuration #####", *file.name())
+              << std::endl;
+    printFile(*file.path());
+  }
+}
+
 void Utils::runFbossCliCmd(const std::string& cmd) {
   if (!std::filesystem::exists("/etc/ramdisk")) {
     auto fullCmd = fmt::format("fboss2 show {}", cmd);
