@@ -232,7 +232,7 @@ cpp_library(
         "AgentL3ForwardingTests.cpp",
         "AgentL4PortBlackholingTests.cpp",
         "AgentLinkLocalForwardingTests.cpp",
-        "AgentLoadBalancerTests.cpp",  # bazelify: exclude
+        "AgentLoadBalancerTests.cpp",
         "AgentLoopBackTests.cpp",
         "AgentMPLSDataplaneTestUtils.cpp",
         "AgentMPLSHeadEndTests.cpp",
@@ -255,7 +255,7 @@ cpp_library(
         "AgentPacketSendTests.cpp",
         "AgentPacketStreamHandlerTests.cpp",
         "AgentPfcConfigTest.cpp",
-        "AgentPfcTests.cpp",  # bazelify: exclude
+        "AgentPfcTests.cpp",
         "AgentPortBandWidthTests.cpp",
         "AgentPortLedTests.cpp",
         "AgentPortProfileTests.cpp",
