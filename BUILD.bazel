@@ -370,6 +370,7 @@ heavy_genrule(
 
         BUILD_INFO="fboss/fboss-image/image_builder/templates/centos-09.0/root_files/etc/nexthop_build_info"
         mkdir -p "${BUILD_INFO%/*}"
+        echo "IMAGE_TYPE broadcom_xgs" > "${BUILD_INFO}"
         grep \\
             -e 'BUILD_ID ' \\
             -e 'GIT_COMMIT_NH ' \\
@@ -377,7 +378,7 @@ heavy_genrule(
             -e 'GIT_COMMIT_FBOSS_BSPS_FBOSS_BSP_KMODS ' \\
             -e 'GIT_COMMIT_FBOSS_BSPS_NEXTHOP_FBOSS_BSP_KMODS ' \\
             -e 'GIT_COMMIT_NHBROADCOMSAI_FBOSS_XGS ' \\
-            bazel-out/volatile-status.txt > "${BUILD_INFO}"
+            bazel-out/volatile-status.txt >> "${BUILD_INFO}"
 
         pushd fboss/fboss-image
         ./distro_cli/fboss-image build nh-fboss-broadcom-xgs.json 2>&1
@@ -475,13 +476,14 @@ heavy_genrule(
 
         BUILD_INFO="fboss/fboss-image/image_builder/templates/centos-09.0/root_files/etc/nexthop_build_info"
         mkdir -p "${BUILD_INFO%/*}"
+        echo "IMAGE_TYPE broadcom_th6" > "${BUILD_INFO}"
         grep \\
             -e 'BUILD_ID ' \\
             -e 'GIT_COMMIT_NH ' \\
             -e 'GIT_COMMIT_FBOSS ' \\
             -e 'GIT_COMMIT_FBOSS_BSPS_NEXTHOP_FBOSS_BSP_KMODS ' \\
             -e 'GIT_COMMIT_NHBROADCOMSAI_FBOSS_TH6 ' \\
-            bazel-out/volatile-status.txt > "${BUILD_INFO}"
+            bazel-out/volatile-status.txt >> "${BUILD_INFO}"
 
         pushd fboss/fboss-image
         ./distro_cli/fboss-image build nh-fboss-broadcom-th6.json 2>&1
@@ -579,13 +581,14 @@ heavy_genrule(
 
         BUILD_INFO="fboss/fboss-image/image_builder/templates/centos-09.0/root_files/etc/nexthop_build_info"
         mkdir -p "${BUILD_INFO%/*}"
+        echo "IMAGE_TYPE broadcom_dnx" > "${BUILD_INFO}"
         grep \\
             -e 'BUILD_ID ' \\
             -e 'GIT_COMMIT_NH ' \\
             -e 'GIT_COMMIT_FBOSS ' \\
             -e 'GIT_COMMIT_FBOSS_BSPS_NEXTHOP_FBOSS_BSP_KMODS ' \\
             -e 'GIT_COMMIT_NHBROADCOMSAI_FBOSS_TH6 ' \\
-            bazel-out/volatile-status.txt > "${BUILD_INFO}"
+            bazel-out/volatile-status.txt >> "${BUILD_INFO}"
 
         pushd fboss/fboss-image
         ./distro_cli/fboss-image build nh-fboss-broadcom-dnx.json 2>&1
@@ -681,12 +684,13 @@ heavy_genrule(
 
         BUILD_INFO="fboss/fboss-image/image_builder/templates/centos-09.0/root_files/etc/nexthop_build_info"
         mkdir -p "${BUILD_INFO%/*}"
+        echo "IMAGE_TYPE cisco_s1" > "${BUILD_INFO}"
         grep \\
             -e 'BUILD_ID ' \\
             -e 'GIT_COMMIT_NH ' \\
             -e 'GIT_COMMIT_FBOSS ' \\
             -e 'GIT_COMMIT_FBOSS_BSPS_FBOSS_BSP_KMODS ' \\
-            bazel-out/volatile-status.txt > "${BUILD_INFO}"
+            bazel-out/volatile-status.txt >> "${BUILD_INFO}"
 
         pushd fboss/fboss-image
         ./distro_cli/fboss-image build nh-fboss-cisco-s1.json 2>&1
