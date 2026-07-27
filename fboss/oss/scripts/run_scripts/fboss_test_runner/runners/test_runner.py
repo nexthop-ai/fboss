@@ -610,6 +610,30 @@ class TestRunner(abc.ABC):
         sys.stderr.flush()
         return returncode, timed_out, stdout_tee.snapshot(), stderr_tee.snapshot()
 
+    def _collect_rma_showtech(self, test_to_run: str) -> None:
+        """Stream rma-showtech output to the test log on test failure."""
+        # Collect broad platform diagnostics. Only the non-disruptive details
+        # are gathered (i.e. no --disruptive) so collecting diagnostics does not
+        # further perturb the DUT under test.
+        cmd = ["rma-showtech", "--details", "all"]
+        timeout_s = 300
+        begin_marker = "########## BEGIN rma-showtech (test failed) ##########"
+        end_marker = "########## END rma-showtech ##########"
+
+        print(f"{begin_marker} for {test_to_run}", flush=True)
+        try:
+            returncode, timed_out, _, _ = self._capture_subprocess(cmd, timeout_s)
+            if timed_out:
+                print(f"rma-showtech timed out after {timeout_s}s", flush=True)
+            elif returncode != 0:
+                print(f"rma-showtech exited with code {returncode}", flush=True)
+        except FileNotFoundError:
+            print("rma-showtech binary not found; skipping diagnostics", flush=True)
+        except Exception as e:  # must not mask the test failure
+            print(f"Failed to run rma-showtech: {e}", flush=True)
+        finally:
+            print(end_marker, flush=True)
+
     @staticmethod
     def _port_in_use(port: int) -> bool:
         # SO_REUSEADDR so a TIME_WAIT socket doesn't read as busy; only an
@@ -733,6 +757,11 @@ class TestRunner(abc.ABC):
                     test_prefix + test_to_run, GtestStatus.FAILED, elapsed_ms
                 )
             outcome = RunOutcome(synthesized.as_log_line(), [synthesized])
+
+        # On any non-OK outcome, collect platform diagnostics from the DUT and
+        # record them in the test log, inside this test's START/END boundary.
+        if info["kind"] != "OK":
+            self._collect_rma_showtech(test_to_run)
 
         emit_test_boundary(
             kind="END",

@@ -706,3 +706,70 @@ class TestCollapseKeysOnSuiteAndMethod:
         cases = list(suite.iter("testcase"))
         assert len(cases) == 1
         assert cases[0].get("name") == "M"
+
+
+class TestCollectRmaShowtechOnFail:
+    """rma-showtech diagnostics collection on test failure (_run_test hook and
+    _collect_rma_showtech behavior)."""
+
+    def test_runs_rma_showtech_nondisruptive(self, runner):
+        """rma-showtech runs with '--details all' and without '--disruptive' so
+        diagnostics don't further perturb the DUT."""
+        with patch.object(
+            runner, "_capture_subprocess", return_value=(0, False, b"", b"")
+        ) as mock_capture:
+            runner._collect_rma_showtech("HwFooTest.Bar")
+        mock_capture.assert_called_once()
+        cmd = mock_capture.call_args.args[0]
+        assert cmd == ["rma-showtech", "--details", "all"]
+        assert "--disruptive" not in cmd
+
+    def test_missing_binary_does_not_raise(self, runner):
+        """A missing rma-showtech binary must not mask the underlying test
+        failure."""
+        with patch.object(runner, "_capture_subprocess", side_effect=FileNotFoundError):
+            # Must not raise.
+            runner._collect_rma_showtech("HwFooTest.Bar")
+
+    def test_run_test_collects_on_failure(self, runner, mock_args, tmp_path):
+        """_run_test triggers rma-showtech collection on a non-OK outcome."""
+        runner.TESTRESULT_CURRENT_RUN_FILE = str(tmp_path / "tr_current_run.xml")
+
+        def fake_capture(cmd, timeout):  # noqa: ARG001 - mirrors _capture_subprocess
+            # Non-zero return code with no XML => FAIL outcome.
+            return 1, False, b"", b""
+
+        with (
+            patch.object(runner, "args", new=mock_args),
+            patch.object(runner, "_capture_subprocess", new=fake_capture),
+            patch.object(runner, "_collect_rma_showtech") as mock_collect,
+        ):
+            runner._run_test(
+                conf_file="dummy.conf",
+                test_prefix="cold_boot.",
+                test_to_run="HwFooTest.Bar",
+                setup_warmboot=False,
+            )
+        mock_collect.assert_called_once_with("HwFooTest.Bar")
+
+    def test_run_test_no_collection_on_pass(self, runner, mock_args, tmp_path):
+        """_run_test does not collect diagnostics when the test passes."""
+        runner.TESTRESULT_CURRENT_RUN_FILE = str(tmp_path / "tr_current_run.xml")
+        with (
+            patch.object(runner, "args", new=mock_args),
+            patch.object(
+                runner,
+                "_capture_subprocess",
+                new=_make_capture_writing(
+                    b"[  PASSED  ] HwFooTest.Bar (5 ms)\n", runner, _STUB_GTEST_XML
+                ),
+            ),
+            patch.object(runner, "_collect_rma_showtech") as mock_collect,
+        ):
+            runner._run_test(
+                conf_file="dummy.conf",
+                test_prefix="cold_boot.",
+                test_to_run="HwFooTest.Bar",
+                setup_warmboot=False,
+            )
+        mock_collect.assert_not_called()
