@@ -35,6 +35,16 @@ class PlatformServicesTestRunner(TestRunner):
         SUB_ARG_PLATFORM_MANAGER_HW_TEST,
     ]
 
+    def _wait_for_agent_thrift_ports_free(self) -> None:
+        # The base-class wait exists for suites where each test binary starts
+        # its own agent and must bind the agent thrift ports. Platform services
+        # tests never touch those ports (they talk to sysfs directly), while the
+        # DUT's production fboss_sw_agent/fboss_hw_agent hold 5909/5959 for the
+        # whole run by design, so the wait can never succeed and would burn its
+        # full timeout before every single test. Same rationale as the fboss2
+        # integration runner's override.
+        return
+
     def add_subcommand_arguments(self, sub_parser: ArgumentParser) -> None:
         super().add_subcommand_arguments(sub_parser)
         sub_parser.add_argument(

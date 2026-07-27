@@ -9,6 +9,7 @@ iteration in run_test that iterates TEST_TYPE_CHOICES when --type is omitted."""
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from fboss_test_runner.runners.platform_services_test_runner import (
     PlatformServicesTestRunner,
 )
@@ -95,3 +96,17 @@ class TestRunTestMultiTypeIteration:
 
         # All 7 platform test types are iterated, in the order of TEST_TYPE_CHOICES.
         assert seen_types == list(PlatformServicesTestRunner.TEST_TYPE_CHOICES)
+
+
+def test_thrift_port_wait_is_a_noop(platform_runner):
+    # Platform tests never bind the agent thrift ports, but the DUT's
+    # production agents hold 5909/5959 for the whole run, so the base-class
+    # wait would burn its full timeout before every test. The override must
+    # return without polling ports or sleeping.
+    with (
+        patch("fboss_test_runner.runners.test_runner.time.sleep") as mock_sleep,
+        patch.object(PlatformServicesTestRunner, "_port_in_use") as mock_port_in_use,
+    ):
+        platform_runner._wait_for_agent_thrift_ports_free()
+        mock_port_in_use.assert_not_called()
+        mock_sleep.assert_not_called()
