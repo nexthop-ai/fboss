@@ -88,10 +88,20 @@ if git merge "$stable_commit" -m "$commit_msg"; then
     exit 0
   fi
   echo_info "✅ Merge successful with no conflicts"
+
+  # Overwrite fboss/oss/stable_commits with the version this sync actually
+  # used
+  copy_stable_commits_from_ref "$stable_commits_ref"
+  if ! git diff --cached --quiet; then
+    git commit --amend --no-edit --no-verify
+  fi
 else
   echo_info "⚠️ Merge conflicts detected, attempting auto-resolution..."
 
-  autoresolve_stable_hashes "$stable_commits_ref"
+  # Overwrite fboss/oss/stable_commits with the version this sync actually
+  # used
+  copy_stable_commits_from_ref "$stable_commits_ref"
+  autoresolve_stable_hashes
 
   # Auto-resolve file list conflicts in CMake and BUCK files
   echo_info "Auto-resolving file list conflicts in CMake and BUCK files..."

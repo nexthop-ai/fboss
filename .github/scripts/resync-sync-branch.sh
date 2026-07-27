@@ -169,11 +169,18 @@ has_merge_conflicts=false
 # checkout the upstream hash files before committing (see below).
 git merge --no-ff --no-commit "$upstream_commit" || has_merge_conflicts=true
 
+# Use fboss/oss/stable_commits from the original merge commit: the sync that
+# created this branch already copied the tarball it actually used (the tree at
+# $upstream_commit carries the *previous* stable tarball). This
+# resolves any merge conflicts under fboss/oss/stable_commits, and must run
+# before autoresolve_stable_hashes, which reads the tarballs from the working
+# tree.
+copy_stable_commits_from_ref "$merge_commit"
+
 if $has_merge_conflicts; then
   info "⚠️ Merge had conflicts — running auto-resolution..."
 
-  stable_ref=$(git rev-list -1 "$upstream_commit" -- fboss/oss/stable_commits 2>/dev/null || true)
-  [[ -z $stable_ref ]] || autoresolve_stable_hashes "$stable_ref"
+  autoresolve_stable_hashes
 
   info "Running nh-fix-merge-conflicts.py..."
   "$SCRIPT_DIR/nh-fix-merge-conflicts.py"
@@ -187,9 +194,9 @@ fi
 
 # Always take build/deps/github_hashes directly from the upstream commit's
 # tree.  git's 3-way merge picks ours when only we changed a hash (upstream
-# held it steady); autoresolve_stable_hashes has the same problem: its
-# stable_ref walks the upstream ancestry and lands on a prior Nexthop commit
-# whose tarball predates the current upstream stable values.
+# held it steady); autoresolve_stable_hashes has a similar limitation here:
+# it reads the tarballs copied from $merge_commit, which for older sync
+# branches may predate the current upstream stable values.
 git checkout "$upstream_commit" -- build/deps/github_hashes/ 2>/dev/null || true
 git add build/deps/github_hashes/ 2>/dev/null || true
 

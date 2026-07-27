@@ -6,50 +6,47 @@
 #   echo_info()  { echo "💡 INFO:  $*"; }
 #   echo_debug() { :; }   # or a real debug logger
 
-# Resolve stable hash conflicts that arise when merging upstream.
-# Takes the upstream ref that last changed fboss/oss/stable_commits.
+# Copy fboss/oss/stable_commits from the given ref over whatever the merge
+# brought in.
 #
-# Mirrors (and is the canonical source for) the logic in sync_upstream.sh.
-autoresolve_stable_hashes() {
+# Upstream publishes the tarball naming a commit only after that commit, so
+# taking the directory from the merged tree leaves latest_stable_hashes.tar.gz
+# one stable behind.
+#
+# Pass the ref whose latest_stable_hashes.tar.gz the sync actually used.
+copy_stable_commits_from_ref() {
   local ref=$1
-  echo_info "Auto-resolving stable hash conflicts using ref: $ref"
+  echo_info "Copying fboss/oss/stable_commits from ref: $ref"
 
-  # Remove files marked "deleted by them" (UD status)
-  git status --porcelain=v1 fboss/oss/stable_commits 2>/dev/null |
-    awk '$1=="UD" {print $2}' |
-    xargs --no-run-if-empty git rm -- 2>/dev/null || true
+  # Remove the directory first so snapshots rotated out at $ref do not linger.
+  git rm -r -q -f fboss/oss/stable_commits 2>/dev/null || true
+  git checkout "$ref" -- fboss/oss/stable_commits
+  git add fboss/oss/stable_commits 2>/dev/null || true
+}
+
+# Resolve stable hash conflicts that arise when merging upstream.
+#
+# Reads the stable-hash tarballs from the working tree, so
+# copy_stable_commits_from_ref must have run first. This resolves
+# any merge conflicts in that directory as a side effect).
+autoresolve_stable_hashes() {
+  echo_info "Auto-resolving stable hash conflicts from the working tree"
 
   # Accept upstream versions of stable hashes
-  git checkout --theirs fboss/oss/stable_commits \
-    build/deps/github_hashes/*/*-rev.txt 2>/dev/null || true
+  git checkout --theirs build/deps/github_hashes/*/*-rev.txt 2>/dev/null || true
 
-  # Extract the tarball from the ref (not the working tree) so we get the
-  # correct pinned versions that correspond to the stable commit.
+  # Extract the tarball from the working tree (populated by
+  # copy_stable_commits_from_ref).
   local temp_dir
   temp_dir=$(mktemp -d)
-
-  local tarball_content
-  tarball_content=$(git show "$ref:fboss/oss/stable_commits/latest_stable_hashes.tar.gz")
-  if [[ $tarball_content =~ ^[a-zA-Z0-9_]+\.tar\.gz$ ]]; then
-    echo_debug "latest_stable_hashes.tar.gz is a symlink to $tarball_content"
-    git show "$ref:fboss/oss/stable_commits/$tarball_content" | tar xzf - -C "$temp_dir"
-  else
-    echo_debug "latest_stable_hashes.tar.gz is an actual tarball"
-    echo "$tarball_content" | tar xzf - -C "$temp_dir"
-  fi
+  tar xf fboss/oss/stable_commits/latest_stable_hashes.tar.gz -C "$temp_dir"
 
   # Remove any hashes that were present in the previous tarball but dropped
   # from the latest one.
-  local prev_tarball_content
-  prev_tarball_content=$(git show "$ref:fboss/oss/stable_commits/previous_stable_hashes.tar.gz" 2>/dev/null) || true
-  if [[ -n $prev_tarball_content ]]; then
+  if [[ -e fboss/oss/stable_commits/previous_stable_hashes.tar.gz ]]; then
     local prev_dir
     prev_dir=$(mktemp -d)
-    if [[ $prev_tarball_content =~ ^[a-zA-Z0-9_]+\.tar\.gz$ ]]; then
-      git show "$ref:fboss/oss/stable_commits/$prev_tarball_content" | tar xzf - -C "$prev_dir"
-    else
-      echo "$prev_tarball_content" | tar xzf - -C "$prev_dir"
-    fi
+    tar xf fboss/oss/stable_commits/previous_stable_hashes.tar.gz -C "$prev_dir"
 
     comm -23 \
       <(find "$prev_dir/build/deps/github_hashes" -type f 2>/dev/null |
