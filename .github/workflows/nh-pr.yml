@@ -27,12 +27,17 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           # Ignore this job to avoid waiting on itself.
           ignore: "NH Merge Status"
-          # grecs is enforced via `grecs-pr / grecs-validation` in required_status_checks
+          # Wait on the grecs-pr/* jobs directly, in addition to the
+          # grecs-pr / grecs-validation aggregator (which stays a required check
+          # while dependent repos still list it). This is the prerequisite for
+          # eventually retiring grecs-validation. The #627 dedupe fix above keeps
+          # concurrency-cancelled grecs runs from blocking the merge when a
+          # successful re-run exists for the same SHA.
           #
           # "STARS: *" checks are posted after NH PR completes and report on
           # this workflow's own jobs; gating on them deadlocks re-runs
           # (DEVX-3572). Downstream triage signal, not a merge precondition.
-          ignore_pattern: "^(grecs-pr / |STARS: |Smoke Tests / )"
+          ignore_pattern: "^(STARS: |Smoke Tests / )"
           # 8h: longest observed successful PR CI across our repos is ~6.5h
           # (sonic image build + hardware tests). Failed checks fail fast
           # regardless, so this only bounds the wait for slow successes.

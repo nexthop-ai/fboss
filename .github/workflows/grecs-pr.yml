@@ -10,19 +10,17 @@ on:
       - labeled
       - unlabeled
       - closed
-      - synchronize
   merge_group:
 
 concurrency:
   # For open PRs:
-  # - Body events (opened/edited/synchronize/closed-before-merge) share a
-  #   per-PR group.
+  # - Body events (opened/edited/closed-before-merge) share a per-PR group.
   # - Label events (labeled/unlabeled) share a separate per-PR group.
   # - ready_for_review gets its own per-PR group so Jira transitions are
   #   not cancelled by body events that follow quickly.
   # - opened/reopened get their own per-PR group so the Jira transition
-  #   and GRECS upserts are not cancelled by an edited/synchronize event
-  #   that arrives shortly after.
+  #   and GRECS upserts are not cancelled by an edited event that arrives
+  #   shortly after.
   # This lets body events cancel each other, and label events cancel each
   # other, without cross-cancel between body, label, opened, and review flows.
   #
