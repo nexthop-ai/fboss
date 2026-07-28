@@ -453,7 +453,6 @@ class TestGetTestsToRunFilter:
         assert "HwVlanTest.Delete" not in second_filter
         assert result == ["HwRouteTest.Add"]
 
-<<<<<<< HEAD
     def test_skipped_known_bad_names_are_recorded(self, runner):
         # All dropped -> empty run list, but names still captured.
         listed = ["HwVlanTest.Delete", "HwMirrorTest.Span"]
@@ -775,8 +774,7 @@ class TestCollectRmaShowtechOnFail:
                 setup_warmboot=False,
             )
         mock_collect.assert_not_called()
-||||||| 320c57f440
-=======
+
 
 class TestResolveTestsFile:
     """Tests for the shared TestRunner._resolve_tests_file helper used by every
@@ -830,4 +828,3 @@ class TestResolveTestsFile:
     def test_no_default_returns_empty(self, runner):
         # A runner with no default file (default_file="") and no override.
         assert runner._resolve_tests_file(None, "", "unsupported") == ""
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
