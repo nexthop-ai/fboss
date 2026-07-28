@@ -1,1 +1,2 @@
 tests/platform/t0_platform_hw_tests.py
+tests/agent_hw/t0_agent_hw_tests_empty.py

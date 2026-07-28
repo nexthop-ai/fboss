@@ -10,7 +10,6 @@ test_context = {
         "*DscpQueueMapping*",
         "*PortBandwidth*",
         "*Prbs*",
-        "*AgentEmpty*",
         # Exclusion Criteria
         "-*AgentCoppTest/0*",
         "*AgentCoppTest/1*",
