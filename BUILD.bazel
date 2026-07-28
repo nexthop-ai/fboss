@@ -375,6 +375,7 @@ heavy_genrule(
             -e 'BUILD_ID ' \\
             -e 'GIT_COMMIT_NH ' \\
             -e 'GIT_COMMIT_FBOSS ' \\
+            -e 'GIT_COMMIT_BGP ' \\
             -e 'GIT_COMMIT_FBOSS_BSPS_FBOSS_BSP_KMODS ' \\
             -e 'GIT_COMMIT_FBOSS_BSPS_NEXTHOP_FBOSS_BSP_KMODS ' \\
             -e 'GIT_COMMIT_NHBROADCOMSAI_FBOSS_XGS ' \\
@@ -481,6 +482,7 @@ heavy_genrule(
             -e 'BUILD_ID ' \\
             -e 'GIT_COMMIT_NH ' \\
             -e 'GIT_COMMIT_FBOSS ' \\
+            -e 'GIT_COMMIT_BGP ' \\
             -e 'GIT_COMMIT_FBOSS_BSPS_NEXTHOP_FBOSS_BSP_KMODS ' \\
             -e 'GIT_COMMIT_NHBROADCOMSAI_FBOSS_TH6 ' \\
             bazel-out/volatile-status.txt >> "${BUILD_INFO}"
@@ -586,6 +588,7 @@ heavy_genrule(
             -e 'BUILD_ID ' \\
             -e 'GIT_COMMIT_NH ' \\
             -e 'GIT_COMMIT_FBOSS ' \\
+            -e 'GIT_COMMIT_BGP ' \\
             -e 'GIT_COMMIT_FBOSS_BSPS_NEXTHOP_FBOSS_BSP_KMODS ' \\
             -e 'GIT_COMMIT_NHBROADCOMSAI_FBOSS_TH6 ' \\
             bazel-out/volatile-status.txt >> "${BUILD_INFO}"
@@ -689,6 +692,7 @@ heavy_genrule(
             -e 'BUILD_ID ' \\
             -e 'GIT_COMMIT_NH ' \\
             -e 'GIT_COMMIT_FBOSS ' \\
+            -e 'GIT_COMMIT_BGP ' \\
             -e 'GIT_COMMIT_FBOSS_BSPS_FBOSS_BSP_KMODS ' \\
             bazel-out/volatile-status.txt >> "${BUILD_INFO}"
 
