@@ -489,6 +489,15 @@ void Utils::printSystemdDetails() {
                            units))
                    .second
             << std::endl;
+
+  std::vector<std::string> journalUnits;
+  folly::split(' ', units, journalUnits, true);
+
+  for (const auto& unit : journalUnits) {
+    std::cout << fmt::format("#### {} Journalctl ####", unit) << std::endl;
+    auto cmd = fmt::format("journalctl -u {}", unit);
+    std::cout << execCommandWithLimit(cmd).second << std::endl;
+  }
 }
 
 void Utils::printFile(const std::string& path) const {
