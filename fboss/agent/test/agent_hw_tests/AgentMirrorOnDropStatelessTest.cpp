@@ -190,7 +190,19 @@ void AgentMirrorOnDropStatelessTest::validateMirrorOnDropPacket(
   // gids (constant across injection ports), not the injection PortID.
   // TODO: ask Cisco to exposes the original ingress port for ingress MoD.
   if (!isTajoImpl) {
-    EXPECT_EQ(fields.ingressPort, static_cast<uint16_t>(injectionPortId));
+    // XGS reports the hw logical port id (low bits of the SAI port OID), not
+    // the FBOSS PortID; translate before comparing. Stats-backed, so retry —
+    // the mapping lags a warm boot.
+    auto expectedIngressPort = static_cast<uint16_t>(injectionPortId);
+    std::optional<uint32_t> hwLogicalPortId;
+    WITH_RETRIES({
+      hwLogicalPortId = getSw()->getHwLogicalPortId(injectionPortId);
+      EXPECT_EVENTUALLY_TRUE(hwLogicalPortId.has_value());
+    });
+    if (hwLogicalPortId.has_value()) {
+      expectedIngressPort = static_cast<uint16_t>(*hwLogicalPortId);
+    }
+    EXPECT_EQ(fields.ingressPort, expectedIngressPort);
   }
   EXPECT_EQ(fields.dropReasonIngress, expectedReasons.ingressDropReason);
   EXPECT_EQ(fields.dropReasonEgress, expectedReasons.egressDropReason);
