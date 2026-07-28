@@ -82,7 +82,7 @@ class ConfigVlanCreateTest : public Fboss2IntegrationTest {
   // idempotent and the DUT is left as we found it.
   void SetUp() override {
     Fboss2IntegrationTest::SetUp();
-    existingVlanPort_ = getRandomInterfacePortName().name;
+    existingVlanPort_ = getRandomInterfacePortName();
     XLOG(INFO) << "SetUp: port=" << existingVlanPort_
                << " (existing-VLAN id=" << kExistingVlanId << ")";
   }

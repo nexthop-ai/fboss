@@ -186,7 +186,6 @@ class ConfigPfcTest : public Fboss2IntegrationTest {
 
 TEST_F(ConfigPfcTest, BufferPoolPriorityGroupAndPortPfc) {
   std::string ifName = getRandomInterfacePortName();
-  pfcIntfName_ = ifName;
   XLOG(INFO) << "Using test interface " << ifName;
 
   XLOG(INFO) << "[Step 1] Configuring buffer pool...";

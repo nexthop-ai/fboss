@@ -54,7 +54,7 @@ TEST_F(ConfigVlanDefaultTest, SetDefaultVlanTo300) {
       }
     }
     if (!exists) {
-      auto firstEthPort = findFirstEthInterface().name;
+      auto firstEthPort = getRandomInterfacePortName();
       ASSERT_FALSE(firstEthPort.empty())
           << "No eth port found for VLAN creation";
       auto createResult = runCli(
@@ -134,7 +134,7 @@ TEST_F(ConfigVlanDefaultTest, SetDefaultVlanTo300) {
       }
     }
     if (!cdExists) {
-      auto firstEthPort = findFirstEthInterface().name;
+      auto firstEthPort = getRandomInterfacePortName();
       runCli(
           {"config",
            "vlan",
