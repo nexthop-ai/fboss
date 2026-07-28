@@ -65,12 +65,7 @@ from fboss_test_runner.runners.utils import (
     load_from_file,
     test_matches_any_regex,
 )
-<<<<<<< HEAD
 from fboss_test_runner.services.fboss_agent_utils import FBOSS_AGENT_VOLATILE_STATE_DIR
-||||||| 320c57f440
-from fboss_test_runner.runners.utils import load_from_file
-=======
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
 
 _YELLOW = "\033[1;33m"
 _RED = "\033[1;31m"
@@ -157,32 +152,21 @@ class TestRunner(abc.ABC):
     WARMBOOT_SETUP_OPTION = "--setup-for-warmboot"
     COLDBOOT_PREFIX = "cold_boot."
     WARMBOOT_PREFIX = "warm_boot."
-<<<<<<< HEAD
-    TESTRESULT_FILE = "/home/netops/tr.xml"
-    TESTRESULT_CURRENT_RUN_FILE = "/home/netops/tr_current_run.xml"
     # SwSwitch agent thrift ports (SwAgentInitializer FLAGS_port / migrated_port).
     AGENT_THRIFT_PORTS = (5909, 5959)
     AGENT_PORT_FREE_TIMEOUT_S = 60
-||||||| 320c57f440
-=======
     # Category labels passed to _resolve_tests_file (used in log messages).
     KNOWN_BAD_TESTS_LABEL = "known_bad"
     UNSUPPORTED_TESTS_LABEL = "unsupported"
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
+
+    TESTRESULT_FILE = "/home/netops/tr.xml"
+    TESTRESULT_CURRENT_RUN_FILE = "/home/netops/tr_current_run.xml"
 
     def __init__(self) -> None:
-<<<<<<< HEAD
-        self._known_bad_test_regexes: list[str] | None = None
-        self._unsupported_test_regexes: list[str] | None = None
-        # Known-bad/unsupported tests dropped pre-run; recorded as <skipped>.
-        self._skipped_known_bad_tests: list[str] = []
-||||||| 320c57f440
-        self._known_bad_test_regexes: list[str] | None = None
-        self._unsupported_test_regexes: list[str] | None = None
-=======
         self._known_bad_test_regexes: list[str] = []
         self._unsupported_test_regexes: list[str] = []
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
+        # Known-bad/unsupported tests dropped pre-run; recorded as <skipped>.
+        self._skipped_known_bad_tests: list[str] = []
         self.env_var: dict[str, str] = dict(os.environ)
         # Populated by run_test() before any per-run method runs. Defaults to an
         # empty Namespace so attribute access is typed (Namespace.__getattr__ ->
@@ -573,24 +557,13 @@ class TestRunner(abc.ABC):
         test_filter = ""
         self._skipped_known_bad_tests = []
         for test_name in test_names:
-<<<<<<< HEAD
-            if self._is_known_bad_test(test_name) or self._is_unsupported_test(
-                test_name
-            ):
-                print(f"  >> SKIPPING (known bad/unsupported): {test_name}")
-                self._skipped_known_bad_tests.append(test_name)
-||||||| 320c57f440
-            if self._is_known_bad_test(test_name) or self._is_unsupported_test(
-                test_name
-            ):
-                print(f"  >> SKIPPING (known bad/unsupported): {test_name}")
-=======
             if self._is_known_bad_test(test_name):
                 print(f"  >> SKIPPING (known bad)  : {test_name}")
+                self._skipped_known_bad_tests.append(test_name)
                 continue
             if self._is_unsupported_test(test_name):
                 print(f"  >> SKIPPING (unsupported): {test_name}")
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
+                self._skipped_known_bad_tests.append(test_name)
                 continue
             test_filter += f"{test_name}:"
         if not test_filter:
@@ -730,7 +703,6 @@ class TestRunner(abc.ABC):
         flags += self._get_sai_logging_flags()
         flags += ["--logging", args.fboss_logging]
 
-<<<<<<< HEAD
         # Guard against a leftover XML from a prior run being mis-attributed:
         # callers already unlink before each call, but unlinking here too means
         # a future caller that forgets won't silently stamp this run's streams
@@ -742,14 +714,14 @@ class TestRunner(abc.ABC):
         # launching, else the bind races and the agent aborts.
         self._wait_for_agent_thrift_ports_free()
 
-        test_run_cmd = self._get_test_run_cmd(conf_file, test_to_run, flags)
-        print(f"Running command {test_run_cmd}", flush=True)
-        emit_test_boundary(kind="START", test_name=test_to_run, prefix=test_prefix)
-
         # monotonic for durations (immune to NTP step), wall-clock for the
         # core-dump-finder which compares against filesystem mtime.
         wall_start = time.time()
         mono_start = time.monotonic()
+        test_run_cmd = self._get_test_run_cmd(conf_file, test_to_run, flags)
+        print(f"Running command {test_run_cmd}", flush=True)
+        emit_test_boundary(kind="START", test_name=test_to_run, prefix=test_prefix)
+
         returncode, timed_out, stdout_tail, stderr_tail = self._capture_subprocess(
             test_run_cmd, args.test_run_timeout
         )
@@ -761,42 +733,9 @@ class TestRunner(abc.ABC):
         if info["kind"] == "FAIL" and xml_exists:
             inject_streams_into_xml(
                 self.TESTRESULT_CURRENT_RUN_FILE, stdout_tail, stderr_tail
-||||||| 320c57f440
-        try:
-            test_run_cmd = self._get_test_run_cmd(conf_file, test_to_run, flags)
-            print(
-                f"Running command {test_run_cmd}",
-                flush=True,
-=======
-        start_time = time.time()
-        try:
-            test_run_cmd = self._get_test_run_cmd(conf_file, test_to_run, flags)
-            print(
-                f"Running command {test_run_cmd}",
-                flush=True,
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
             )
 
-<<<<<<< HEAD
         if info["kind"] in ("OK", "FAIL") and xml_exists:
-||||||| 320c57f440
-            start_time = time.time()
-            run_test_output = subprocess.check_output(
-                test_run_cmd,
-                timeout=args.test_run_timeout,
-                env=self.env_var,
-            )
-            elapsed_ms = int((time.time() - start_time) * 1000)
-
-=======
-            run_test_output = subprocess.check_output(
-                test_run_cmd,
-                timeout=args.test_run_timeout,
-                env=self.env_var,
-            )
-            elapsed_ms = int((time.time() - start_time) * 1000)
-
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
             # Parse the real gtest output and tag each result with the
             # boot-phase prefix (cold_boot./warm_boot.).
             results = self._parse_gtest_run_output(stdout_tail)

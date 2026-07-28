@@ -344,11 +344,6 @@ std::string PciExplorer::createMdioBus(
   return getMdioBusCharDevPath(pciDevice, mdioBusConfig, instanceId);
 }
 
-<<<<<<< HEAD
-std::string PciExplorer::createFpgaIpBlock(
-||||||| 320c57f440
-void PciExplorer::createFpgaIpBlock(
-=======
 std::string PciExplorer::createRtmCtrl(
     const PciDevice& pciDevice,
     const RtmCtrlConfig& rtmCtrlConfig,
@@ -360,8 +355,7 @@ std::string PciExplorer::createRtmCtrl(
       pciDevice, *rtmCtrlConfig.fpgaIpBlockConfig(), instanceId);
 }
 
-void PciExplorer::createFpgaIpBlock(
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
+std::string PciExplorer::createFpgaIpBlock(
     const PciDevice& pciDevice,
     const FpgaIpBlockConfig& fpgaIpBlockConfig,
     uint32_t instanceId) {

@@ -81,21 +81,19 @@
         <source path="http://mirror.us-west-1.nexthop.ai/centos-9-stream/BaseOS/x86_64/os"/>
     </repository>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <repository type="rpm-md" alias="EPEL" sourcetype="baseurl" customize="mirror-fallback.sh">
         <source path="http://mirror.us-west-1.nexthop.ai/epel/9/Everything/x86_64/"/>
 ||||||| 320c57f440
-    <repository type="rpm-md" alias="EPEL" >
-        <source path="http://download.fedoraproject.org/pub/epel/9/Everything/x86_64/"/>
-    </repository>
-
-    <repository type="rpm-md" alias="KiwiTools">
-        <source path="https://download.opensuse.org/repositories/Virtualization:/Appliances:/Builder/CentOS_10/"/>
-    </repository>
-
+||||||| parent of 670950e30e (More conflict resolutions)
+<<<<<<< HEAD
+    <repository type="rpm-md" alias="EPEL" sourcetype="baseurl">
+        <source path="https://dl.fedoraproject.org/pub/epel/9/Everything/x86_64/"/>
+||||||| 320c57f440
 =======
+>>>>>>> 670950e30e (More conflict resolutions)
     <repository type="rpm-md" alias="EPEL" >
         <source path="http://download.fedoraproject.org/pub/epel/9/Everything/x86_64/"/>
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
     </repository>
 
     <packages type="image">

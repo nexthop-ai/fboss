@@ -185,18 +185,9 @@ class ConfigPfcTest : public Fboss2IntegrationTest {
 };
 
 TEST_F(ConfigPfcTest, BufferPoolPriorityGroupAndPortPfc) {
-<<<<<<< HEAD
-  Interface intf = findFirstEthInterface();
-  XLOG(INFO) << "Using test interface " << intf.name;
-||||||| 320c57f440
-  Interface intf = findFirstEthInterface();
-  pfcIntfName_ = intf.name;
-  XLOG(INFO) << "Using test interface " << intf.name;
-=======
   std::string ifName = getRandomInterfacePortName();
   pfcIntfName_ = ifName;
   XLOG(INFO) << "Using test interface " << ifName;
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
 
   XLOG(INFO) << "[Step 1] Configuring buffer pool...";
   configureBufferPool(/*sharedBytes=*/78773528, /*headroomBytes=*/4405376);

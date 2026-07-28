@@ -69,7 +69,6 @@ namespace fs = std::filesystem;
 using namespace facebook::fboss;
 
 class ConfigVlanCreateTest : public Fboss2IntegrationTest {
-<<<<<<< HEAD
  protected:
   // These tests must not assume the DUT is configured any particular way, so
   // the fixture provisions everything they need:
@@ -83,45 +82,9 @@ class ConfigVlanCreateTest : public Fboss2IntegrationTest {
   // idempotent and the DUT is left as we found it.
   void SetUp() override {
     Fboss2IntegrationTest::SetUp();
-    existingVlanPort_ = findFirstEthInterface().name;
+    existingVlanPort_ = getRandomInterfacePortName().name;
     XLOG(INFO) << "SetUp: port=" << existingVlanPort_
                << " (existing-VLAN id=" << kExistingVlanId << ")";
-||||||| 320c57f440
- public:
-  // Find and cache an eth interface name once before any test in this suite
-  // runs. This avoids calling show interface during the agent reload window
-  // that follows test 1's commit.
-  static void SetUpTestSuite() {
-    // Concrete subclass to access protected Fboss2IntegrationTest methods.
-    struct Helper : public Fboss2IntegrationTest {
-      void TestBody() override {}
-      Interface getFirstEthInterface() {
-        return findFirstEthInterface();
-      }
-    };
-    Helper h;
-    auto iface = h.getFirstEthInterface();
-    s_testInterfaceName_ = iface.name;
-    XLOG(INFO) << "SetUpTestSuite: cached test interface = "
-               << s_testInterfaceName_;
-=======
- public:
-  // Find and cache an eth interface name once before any test in this suite
-  // runs. This avoids calling show interface during the agent reload window
-  // that follows test 1's commit.
-  static void SetUpTestSuite() {
-    // Concrete subclass to access protected Fboss2IntegrationTest methods.
-    struct Helper : public Fboss2IntegrationTest {
-      void TestBody() override {}
-      std::string getFirstEthInterface() {
-        return getRandomInterfacePortName();
-      }
-    };
-    Helper h;
-    s_testInterfaceName_ = h.getFirstEthInterface();
-    XLOG(INFO) << "SetUpTestSuite: cached test interface = "
-               << s_testInterfaceName_;
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
   }
 
   void TearDown() override {
