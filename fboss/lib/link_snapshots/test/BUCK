@@ -3,6 +3,10 @@ load("@fbsource//tools/build_defs/testinfra:network_access_utils.bzl", "network_
 
 oncall("fboss_agent_push")
 
+# bazelify: exclude
+# SnapshotManagerTest.cpp includes folly/logging/test/TestLogHandler.h, which
+# the prebuilt @folly external repo does not install, so this test cannot
+# build under Bazel (the OSS CMake build does not build it either).
 cpp_unittest(
     name = "snapshot_manager_test",
     srcs = [
