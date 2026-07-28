@@ -445,6 +445,7 @@ import tempfile
 from unittest.mock import Mock, patch
 
 import pytest
+<<<<<<< HEAD
 ||||||| parent of 868975b219 (Simple conflict resolutions)
 <<<<<<< HEAD
 
@@ -539,6 +540,10 @@ def test_list_benchmarks_failure_returns_none(framework, capsys):
 =======
 =======
 >>>>>>> 868975b219 (Simple conflict resolutions)
+||||||| parent of 3618fca7de (Apply pre-commit formatting fixes)
+=======
+
+>>>>>>> 3618fca7de (Apply pre-commit formatting fixes)
 from fboss_test_runner.frameworks.benchmark_framework import BenchmarkFramework
 from fboss_test_runner.frameworks.benchmark_suite import BenchmarkSuite
 
@@ -625,8 +630,7 @@ def test_list_benchmarks_filters_noise(framework):
 
 def test_list_benchmarks_failure_returns_none(framework, capsys):
     with patch(
-        "subprocess.check_output",
-        side_effect=subprocess.CalledProcessError(1, "cmd"),
+        "subprocess.check_output", side_effect=subprocess.CalledProcessError(1, "cmd")
     ):
         assert framework._list_benchmarks(_BIN) is None
     assert "Failed to list benchmarks" in capsys.readouterr().out

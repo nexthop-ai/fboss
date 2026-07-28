@@ -7,6 +7,7 @@
 from unittest.mock import Mock
 
 import pytest
+
 from fboss_test_runner.frameworks import sai_benchmark_suite
 from fboss_test_runner.frameworks.sai_benchmark_suite import SaiBenchmarkSuite
 

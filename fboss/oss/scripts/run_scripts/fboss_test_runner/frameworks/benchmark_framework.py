@@ -791,11 +791,7 @@ class BenchmarkFramework:
                 if name and re.match(r"^[A-Za-z]\w*$", name):
                     benchmarks.append(name)
             return benchmarks
-        except (
-            subprocess.CalledProcessError,
-            subprocess.TimeoutExpired,
-            OSError,
-        ) as e:
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError) as e:
             print(f"Warning: Failed to list benchmarks from {binary_path}: {e}")
             return None
 
@@ -969,10 +965,7 @@ class BenchmarkFramework:
 
         try:
             process = subprocess.Popen(
-                run_cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
+                run_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
             )
 
             stdout_lines: list[str] = []

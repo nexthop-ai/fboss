@@ -14,9 +14,7 @@ def test_matches_any_regex(test: str, regex_list: list[str]) -> bool:
 
 
 def get_test_regexes_from_file(
-    file_path: str,
-    test_dict_key: str,
-    keys_to_try: list[str],
+    file_path: str, test_dict_key: str, keys_to_try: list[str]
 ) -> list[str]:
     """Extract test-name regexes from a benchmark/test config JSON file.
 

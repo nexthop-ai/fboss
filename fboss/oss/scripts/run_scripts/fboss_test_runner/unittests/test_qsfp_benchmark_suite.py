@@ -7,6 +7,7 @@
 from unittest.mock import Mock, patch
 
 import pytest
+
 from fboss_test_runner.frameworks import qsfp_benchmark_suite
 from fboss_test_runner.frameworks.qsfp_benchmark_suite import (
     QSFP_BENCH_TARGET,
