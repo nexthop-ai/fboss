@@ -6,8 +6,10 @@
 Two phases, with shared budgets across all services to avoid bloating runtime.
   1. Startup: every service must reach its expected active count within
      --startup-timeout seconds (total, not per-service).
-  2. Stability: sleep --stability-window seconds, then every service must
-     still be active and have NRestarts == 0.
+  2. Stability: snapshot systemd NRestarts for each active unit, sleep
+     --stability-window seconds, then every service must still be active and
+     must not have increased NRestarts since the snapshot (prior boot-time
+     restarts are ignored).
 """
 
 import subprocess
@@ -92,15 +94,20 @@ def wait_all_started(
         time.sleep(POLL_INTERVAL_SEC)
 
 
-def verify_stable(actives: list[str]) -> tuple[bool, str]:
+def baseline_restarts(units: list[str]) -> dict[str, int]:
+    """Snapshot cumulative NRestarts when the stability window begins."""
+    return {unit: restart_count(unit) for unit in units}
+
+
+def verify_stable(actives: list[str], baseline: dict[str, int]) -> tuple[bool, str]:
     failures = []
     for unit in actives:
         if not is_active(unit):
             failures.append(f"{unit} went inactive")
             continue
-        n = restart_count(unit)
-        if n > 0:
-            failures.append(f"{unit} restarted {n} time(s)")
+        delta = restart_count(unit) - baseline.get(unit, 0)
+        if delta > 0:
+            failures.append(f"{unit} restarted {delta} time(s) during stability window")
     if failures:
         return False, "; ".join(failures)
     return True, f"stable ({len(actives)} active: {actives})"
@@ -149,9 +156,12 @@ def main(argv: list[str] | None = None) -> int:
             for pattern, state in startup.items()
         ]
     else:
+        baseline = baseline_restarts(
+            [unit for state in startup.values() for unit in state.actives]
+        )
         time.sleep(args.stability_window)
         results = [
-            (pattern, *verify_stable(state.actives))
+            (pattern, *verify_stable(state.actives, baseline))
             for pattern, state in startup.items()
         ]
 
