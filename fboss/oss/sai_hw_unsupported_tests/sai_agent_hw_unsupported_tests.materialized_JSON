@@ -3515,7 +3515,7 @@
         }
     ],
     "brcm/14.2.0.0_dnx_odp/14.2.0.0_dnx_odp/ramon3/mono/fe13": [
-        
+
     ],
     "brcm/14.2.0.0_dnx_odp/14.2.0.0_dnx_odp/ramon3/mono/fe2": [
         {
@@ -4844,6 +4844,24 @@
           "test_name_regex": "AgentSendPacketToMulticastQueueTest.SendPacketOutOfPortToMCQueue$"
         },
         {
+          "test_name_regex": "AgentSrv6BindingSidTest.*$"
+        },
+        {
+          "test_name_regex": "AgentSrv6DecapTest.*$"
+        },
+        {
+          "test_name_regex": "AgentSrv6EncapTest.*$"
+        },
+        {
+          "test_name_regex": "AgentSrv6MidpointTest.*$"
+        },
+        {
+          "test_name_regex": "AgentSrv6ResourceUsageTest.*$"
+        },
+        {
+          "test_name_regex": "AgentSrv6TrunkLoadBalancerTest.*$"
+        },
+        {
           "test_name_regex": "AgentMacOverFlowTest.*$"
         },
         {
@@ -4904,6 +4922,24 @@
         },
         {
           "test_name_regex": "AgentSendPacketToMulticastQueueTest.SendPacketOutOfPortToMCQueue$"
+        },
+        {
+          "test_name_regex": "AgentSrv6BindingSidTest.*$"
+        },
+        {
+          "test_name_regex": "AgentSrv6DecapTest.*$"
+        },
+        {
+          "test_name_regex": "AgentSrv6EncapTest.*$"
+        },
+        {
+          "test_name_regex": "AgentSrv6MidpointTest.*$"
+        },
+        {
+          "test_name_regex": "AgentSrv6ResourceUsageTest.*$"
+        },
+        {
+          "test_name_regex": "AgentSrv6TrunkLoadBalancerTest.*$"
         },
         {
           "test_name_regex": "AgentMacOverFlowTest.*$"
