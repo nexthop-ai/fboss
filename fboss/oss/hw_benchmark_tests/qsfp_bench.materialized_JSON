@@ -1,10 +1,10 @@
 {
   "team": "qsfp_bench",
   "known_bad_tests": {
-    
+
   },
   "test_failure_patterns": [
-    
+
   ],
   "buck_rule_or_test_id_to_benchmark_thres": {
     "//fboss/qsfp_service/test/benchmarks:qsfp_bench_test": [
@@ -11141,6 +11141,48 @@
           "test_name_regex": "ReadRegister_DR4_800G_GEARBOX$",
           "reason": "Transceiver type not supported."
         },
+        {
+          "test_name_regex": "PhyInitAllColdBoot",
+          "reason": "XPHY tests not supported."
+        },
+        {
+          "test_name_regex": "PhyInitAllWarmBoot",
+          "reason": "XPHY tests not supported."
+        },
+        {
+          "test_name_regex": "UpdateXphyStats",
+          "reason": "XPHY tests not supported."
+        }
+    ],
+    "m4062nhp/credo-0.7.2": [
+        {
+          "test_name_regex": "PhyInitAllColdBoot",
+          "reason": "XPHY tests not supported."
+        },
+        {
+          "test_name_regex": "PhyInitAllWarmBoot",
+          "reason": "XPHY tests not supported."
+        },
+        {
+          "test_name_regex": "UpdateXphyStats",
+          "reason": "XPHY tests not supported."
+        }
+    ],
+    "nh4010f/credo-0.7.2": [
+        {
+          "test_name_regex": "PhyInitAllColdBoot",
+          "reason": "XPHY tests not supported."
+        },
+        {
+          "test_name_regex": "PhyInitAllWarmBoot",
+          "reason": "XPHY tests not supported."
+        },
+        {
+          "test_name_regex": "UpdateXphyStats",
+          "reason": "XPHY tests not supported."
+        }
+    ],
+    "nh4220f/credo-0.7.2": [
         {
           "test_name_regex": "PhyInitAllColdBoot",
           "reason": "XPHY tests not supported."

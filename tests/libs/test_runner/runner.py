@@ -186,6 +186,10 @@ _LINK_QSFP_TEST_CONFIG_NAME: dict[str, str] = {
     "nhbw800f": "wedge800bact",
 }
 
+# Default CREDO_SDK_VERSION in fboss/lib/phy/CredoSdkVersion.h. qsfp_bench keys
+# unsupported_tests on <platform>/<phy_sdk> and matches it exactly.
+_QSFP_BENCH_PHY_SDK = "credo-0.7.2"
+
 # vendor/coldboot-sai/warmboot-sai/asic — key for run_test.py
 # --skip-known-bad-tests against ./share/hw_known_bad_tests/sai*_known_bad_tests.
 # Without this, ~128 known-broken tests for tomahawk5 (and the unsupported list)
@@ -1843,9 +1847,8 @@ class QsfpBenchmarkTestRunner(BenchmarkTestRunner):
     def test_args(self, model: str) -> str:
         config_name = _LINK_QSFP_TEST_CONFIG_NAME.get(model, model)
         logger.info("model=%s qsfp_test_config=%s", model, config_name)
-        # Thresholds regex-match the config-name prefix; the /<phy_sdk> suffix is arbitrary here.
         return (
             f"benchmark --qsfp"
             f" --qsfp-config ./share/qsfp_test_configs/{config_name}.materialized_JSON"
-            f" --skip-known-bad-tests {config_name}/oss"
+            f" --skip-known-bad-tests {config_name}/{_QSFP_BENCH_PHY_SDK}"
         )
