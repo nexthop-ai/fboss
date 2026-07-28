@@ -4,6 +4,7 @@
 
 import abc
 import os
+import re
 import shutil
 import socket
 import subprocess
@@ -858,7 +859,7 @@ class TestRunner(abc.ABC):
         elif simulator in DNX_SIMULATOR_ASICS:
             self.env_var.update(DNX_SIMULATOR_ENV)
 
-    def _run_tests(
+    def _run_tests(  # noqa: PLR0915
         self, tests_to_run: list[str], conf_file: str, args: Namespace
     ) -> tuple[list, list]:
         sai_replayer_logging = getattr(args, "sai_replayer_logging", None)
