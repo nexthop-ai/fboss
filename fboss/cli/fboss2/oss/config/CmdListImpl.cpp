@@ -16,7 +16,7 @@ const CommandTree& kAdditionalCommandTree() {
     CommandTree result = kBaseAdditionalCommandTree();
     const auto& configCommands = kConfigCommandTree();
     result.insert(result.end(), configCommands.begin(), configCommands.end());
-    sort(result.begin(), result.end());
+    std::stable_sort(result.begin(), result.end());
     return result;
   }();
   return merged;

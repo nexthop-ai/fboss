@@ -10,6 +10,8 @@
 
 #include "fboss/cli/fboss2/CmdList.h"
 
+#include <algorithm>
+
 #include <fboss/cli/fboss2/utils/CmdUtils.h> // NOLINT(misc-include-cleaner)
 #include "fboss/cli/fboss2/CmdHandler.h" // NOLINT(misc-include-cleaner)
 #include "fboss/cli/fboss2/commands/bounce/interface/CmdBounceInterface.h"
@@ -668,7 +670,7 @@ const CommandTree& kCommandTree() {
             argTypeHandler<CmdStreamSubFsdbOperStateTraits>},
        }},
   };
-  sort(root.begin(), root.end());
+  std::stable_sort(root.begin(), root.end());
   return root;
 }
 

@@ -1169,7 +1169,7 @@ const CommandTree& kConfigCommandTree() {
        }}},
 
   };
-  sort(root.begin(), root.end());
+  std::stable_sort(root.begin(), root.end());
   return root;
 }
 
