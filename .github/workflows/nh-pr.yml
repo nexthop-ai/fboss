@@ -11,7 +11,7 @@ concurrency:
 jobs:
   merge-status:
     name: NH Merge Status
-    runs-on: cloudstack-ubuntu24-micro
+    runs-on: k8s-nano
     permissions:
       checks: read
     steps:
