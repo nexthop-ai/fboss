@@ -39,7 +39,13 @@ jobs:
           # Smoke Tests: Often fail right now due to failure to schedule
           # PR Validation / cli-integration-test / Integration-Test: Not yet reliable
           # (DEVX-3572). Downstream triage signal, not a merge precondition.
+<<<<<<< HEAD
           ignore_pattern: "^(STARS: |Smoke Tests / |PR Validation / cli-integration-test / Integration-Test)"
+||||||| parent of dddba3264b (Fix ignore pattern)
+          ignore_pattern: "^(grecs-pr / |STARS: |Smoke Tests / )"
+=======
+          ignore_pattern: "^(STARS: |Smoke Tests / |cli-integration-test / Integration-Test)"
+>>>>>>> dddba3264b (Fix ignore pattern)
           # 8h: longest observed successful PR CI across our repos is ~6.5h
           # (sonic image build + hardware tests). Failed checks fail fast
           # regardless, so this only bounds the wait for slow successes.
