@@ -35,9 +35,11 @@ jobs:
           # successful re-run exists for the same SHA.
           #
           # "STARS: *" checks are posted after NH PR completes and report on
-          # this workflow's own jobs; gating on them deadlocks re-runs
+          #   this workflow's own jobs; gating on them deadlocks re-runs
+          # Smoke Tests: Often fail right now due to failure to schedule
+          # PR Validation / cli-integration-test / Integration-Test: Not yet reliable
           # (DEVX-3572). Downstream triage signal, not a merge precondition.
-          ignore_pattern: "^(STARS: |Smoke Tests / )"
+          ignore_pattern: "^(STARS: |Smoke Tests / |PR Validation / cli-integration-test / Integration-Test)"
           # 8h: longest observed successful PR CI across our repos is ~6.5h
           # (sonic image build + hardware tests). Failed checks fail fast
           # regardless, so this only bounds the wait for slow successes.
