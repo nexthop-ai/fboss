@@ -609,7 +609,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
 
-    output = json.dumps(config, indent=2, sort_keys=True)
+    output = json.dumps(config, indent=2)
 
     if args.output == "-":
         print(output)
