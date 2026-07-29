@@ -80,20 +80,8 @@
     <repository type="rpm-md" alias="CentOS9-BaseOS" sourcetype="baseurl" customize="mirror-fallback.sh">
         <source path="http://mirror.us-west-1.nexthop.ai/centos-9-stream/BaseOS/x86_64/os"/>
     </repository>
-<<<<<<< HEAD
-<<<<<<< HEAD
     <repository type="rpm-md" alias="EPEL" sourcetype="baseurl" customize="mirror-fallback.sh">
         <source path="http://mirror.us-west-1.nexthop.ai/epel/9/Everything/x86_64/"/>
-||||||| 320c57f440
-||||||| parent of 670950e30e (More conflict resolutions)
-<<<<<<< HEAD
-    <repository type="rpm-md" alias="EPEL" sourcetype="baseurl">
-        <source path="https://dl.fedoraproject.org/pub/epel/9/Everything/x86_64/"/>
-||||||| 320c57f440
-=======
->>>>>>> 670950e30e (More conflict resolutions)
-    <repository type="rpm-md" alias="EPEL" >
-        <source path="http://download.fedoraproject.org/pub/epel/9/Everything/x86_64/"/>
     </repository>
 
     <packages type="image">

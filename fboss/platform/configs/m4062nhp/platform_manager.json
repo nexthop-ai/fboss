@@ -243,7 +243,6 @@
               "csrOffsetCalc": "0x0",
               "startPort": 129,
               "numPorts": 1
-<<<<<<< HEAD
             }
           ],
           "infoRomConfigs": [
@@ -251,9 +250,6 @@
               "pmUnitScopedName": "SMB0_IOB_INFO_ROM",
               "deviceName": "fpga_info_iob",
               "csrOffset": "0x0000"
-||||||| 320c57f440
-=======
->>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
             }
           ]
         },
