@@ -84,6 +84,26 @@
             "upperCriticalVal": 110
           },
           "compute": "@/1000.0"
+        },
+        {
+          "name": "DIMM1_TEMP",
+          "sysfsPath": "/run/devmap/sensors/DIMM1_TEMP/temp1_input",
+          "type": 3,
+          "thresholds": {
+            "maxAlarmVal": 85,
+            "upperCriticalVal": 95
+          },
+          "compute": "@/1000.0"
+        },
+        {
+          "name": "DIMM2_TEMP",
+          "sysfsPath": "/run/devmap/sensors/DIMM2_TEMP/temp1_input",
+          "type": 3,
+          "thresholds": {
+            "maxAlarmVal": 85,
+            "upperCriticalVal": 95
+          },
+          "compute": "@/1000.0"
         }
       ]
     },

@@ -79,6 +79,14 @@
         {
           "pmUnitScopedName": "NIC_TEMP",
           "sysfsPath": "/sys/bus/pci/devices/0000:02:00.0"
+        },
+        {
+          "pmUnitScopedName": "DIMM1_TEMP",
+          "sysfsPath": "/sys/bus/i2c/devices/1-0050"
+        },
+        {
+          "pmUnitScopedName": "DIMM2_TEMP",
+          "sysfsPath": "/sys/bus/i2c/devices/1-0051"
         }
       ],
       "outgoingSlotConfigs": {
@@ -469,6 +477,8 @@
     "/run/devmap/sensors/CPU_TEMP": "/[CPU_TEMP]",
     "/run/devmap/sensors/NVME_TEMP": "/[NVME_TEMP]",
     "/run/devmap/sensors/NIC_TEMP": "/[NIC_TEMP]",
+    "/run/devmap/sensors/DIMM1_TEMP": "/[DIMM1_TEMP]",
+    "/run/devmap/sensors/DIMM2_TEMP": "/[DIMM2_TEMP]",
     "/run/devmap/sensors/SWITCH_CARD_TEMP_SENSOR": "/SMB_SLOT@0/[SWITCH_CARD_TEMP_SENSOR]",
     "/run/devmap/fpgas/SCM_IOB": "/[SCM_IOB]",
     "/run/devmap/inforoms/SCM_IOB_INFO_ROM": "/[SCM_IOB_INFO_ROM]",
@@ -766,6 +776,8 @@
   "bspKmodsRpmVersion": "1.0.0-1",
   "nonBspKmodsToLoad": [
     "i2c_i801",
+    "i2c_piix4",
+    "spd5118",
     "i2c_mux",
     "fbiob_pci",
     "nh_fpga_i2c",
