@@ -35,6 +35,7 @@ _FILTER_FAMILY = (
     LinkTestRunner,
     PlatformTestRunner,
     Fboss2IntegrationTestRunner,
+    BenchmarkTestRunner,
 )
 
 

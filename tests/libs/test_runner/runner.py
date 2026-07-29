@@ -1589,23 +1589,6 @@ class BenchmarkTestRunner(BaseHwTestRunner):
         logger.info("model=%s hw_test_config=%s", model, config_name)
         return f"benchmark --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON{_benchmark_skip_known_bad(model)}"
 
-    def set_filters(self, src_filepath, dst_filepath):
-        """Benchmarks run every registered case — no filter file needed.
-
-        run_test.py's benchmark sub-command treats a missing --filter_file as
-        "run all" and prunes known-bad/unsupported cases from sai_bench config;
-        an empty filter file would instead select zero benchmarks.
-        """
-        return True
-
-    def build_test_cmd(self, model: str) -> str:
-        # Omit --filter_file so run_test.py runs all benchmarks (see set_filters).
-        return (
-            f"sudo su -c 'cd /opt/fboss && source ./bin/setup_fboss_env && "
-            f" ./bin/run_test.py {self.test_args(model)} "
-            f"' > {self.testlog_filepath} 2>&1"
-        )
-
     # Benchmark binaries spin up their own agent (binds thrift port 5909, owns
     # the ASIC), so the production agents must be down first or the bind aborts
     # (Address already in use) and the ASIC contends (SIGBUS/SIGSEGV). run_test.py
