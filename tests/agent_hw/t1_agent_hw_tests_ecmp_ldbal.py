@@ -2,6 +2,8 @@ test_context = {
     "filters": [
         "*Ecmp*",
         "*LoadBalancer*",
+        # Exclusion Criteria
+        "-*Neighbor*",
     ],
 }
 

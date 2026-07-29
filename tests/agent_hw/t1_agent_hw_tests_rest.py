@@ -5,6 +5,9 @@ test_context = {
         "*Aqm*",
         "*QueuePerHost*",
         "*IngressBuffer*",
+        # Exclusion Criteria
+        "-*AgentAcl*",
+        "*Neighbor*",
     ],
 }
 

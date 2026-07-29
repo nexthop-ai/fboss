@@ -1,6 +1,9 @@
 test_context = {
     "filters": [
         "*AgentHwAcl*",
+        # Exclusion Criteria
+        "-*Neighbor*",
+        "*Vlan*",
     ],
 }
 

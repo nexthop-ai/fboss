@@ -1,6 +1,8 @@
 test_context = {
     "filters": [
         "*AgentAcl*",
+        # Exclusion Criteria
+        "-*DscpQueueMapping*",
     ],
 }
 

@@ -13,6 +13,7 @@ test_context = {
         # Exclusion Criteria
         "-*AgentCoppTest/0*",
         "*AgentCoppTest/1*",
+        "*Neighbor*",
     ],
 }
 

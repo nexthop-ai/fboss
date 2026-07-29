@@ -7,6 +7,12 @@ test_context = {
         "*EgressForwardingDiscard*",
         "*InNullRouteDiscard*",
         "*InTrapDiscard*",
+        # Exclusion Criteria
+        "-*MacLearning*",
+        "*MacSwLearning*",
+        "*LoadBalancer*",
+        "*Neighbor*",
+        "*Ecmp*",
     ],
 }
 

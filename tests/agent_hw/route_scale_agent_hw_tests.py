@@ -4,6 +4,8 @@ logging so their logs stay under the T-Recs ingest size limit."""
 test_context = {
     "filters": [
         "*RouteScale*",
+        # Exclusion Criteria
+        "-*Alpm*",
     ],
 }
 

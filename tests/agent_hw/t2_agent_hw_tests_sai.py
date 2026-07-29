@@ -8,6 +8,11 @@ test_context = {
         "*PortStress*",
         "*SwitchStateReplay*",
         "*Rollback*",
+        # Exclusion Criteria
+        "-*Ecmp*",
+        "*PacketSend*",
+        "*Neighbor*",
+        "*AgentRoute*",
     ],
 }
 

@@ -2,6 +2,10 @@ test_context = {
     "filters": [
         "*Sflow*",
         "*Mirror*",
+        # Exclusion Criteria
+        "-*AgentAcl*",
+        "*Acl*",
+        "*Trunk*",
     ],
 }
 

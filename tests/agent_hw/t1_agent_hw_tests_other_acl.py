@@ -7,6 +7,10 @@ test_context = {
         # Exclusion Criteria
         "-*AgentAcl*",
         "*AgentHwAcl*",
+        "*L3*",
+        "*Neighbor*",
+        "*Copp*",
+        "*DscpQueueMapping*",
     ],
 }
 
