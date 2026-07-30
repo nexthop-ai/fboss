@@ -39,6 +39,7 @@ cpp_unittest(
         "CmdConfigVlanStaticMacTest.cpp",
         "CmdConfigVlanTest.cpp",
         "CmdDeleteConfigInterfaceTest.cpp",
+        "CmdDeleteVlanTest.cpp",
         "CmdDeleteInterfaceIpv6NdpTest.cpp",
         "CmdDeleteInterfaceTest.cpp",
         "CmdDeleteTunnelIpInIpTest.cpp",

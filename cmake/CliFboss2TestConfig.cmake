@@ -38,6 +38,7 @@ add_executable(fboss2_cmd_config_test
   fboss/cli/fboss2/test/config/CmdConfigVlanStaticMacTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigVlanTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteConfigInterfaceTest.cpp
+  fboss/cli/fboss2/test/config/CmdDeleteVlanTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteCoppCpuTrafficPolicyMatchActionTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteInterfaceIpv6NdpTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteInterfaceTest.cpp
