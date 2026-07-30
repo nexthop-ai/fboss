@@ -5,7 +5,7 @@ gpgcheck=0
 metadata_expire=6h
 enabled=1
 
-# Platform Manager explictly uses the 'kernel' repo for BSPs, satisfy with a local repo alias
+# Platform Manager explicitly uses the 'kernel' repo for BSPs, satisfy with a local repo alias
 [kernel]
 name=Local Platform RPM repo (kernel alias)
 baseurl=file:///usr/local/share/local_rpm_repo

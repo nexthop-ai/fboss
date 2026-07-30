@@ -54,7 +54,7 @@ TEST_F(ConfigVlanDefaultTest, SetDefaultVlanTo300) {
       }
     }
     if (!exists) {
-      auto firstEthPort = findFirstEthInterface().name;
+      auto firstEthPort = getRandomInterfacePortName();
       ASSERT_FALSE(firstEthPort.empty())
           << "No eth port found for VLAN creation";
       auto createResult = runCli(
@@ -134,7 +134,7 @@ TEST_F(ConfigVlanDefaultTest, SetDefaultVlanTo300) {
       }
     }
     if (!cdExists) {
-      auto firstEthPort = findFirstEthInterface().name;
+      auto firstEthPort = getRandomInterfacePortName();
       runCli(
           {"config",
            "vlan",
@@ -235,30 +235,29 @@ TEST_F(ConfigVlanDefaultTest, RefuseWhenPortOnDefaultVlanWithNoInterface) {
   }
 
   // Move one eth port onto the default VLAN to create the precondition.
-  auto testPort = findFirstEthInterface();
+  auto ifName = getRandomInterfacePortName();
   int64_t originalPortVlan = -1;
   for (const auto& port : initialConfig["sw"]["ports"]) {
-    if (port.getDefault("name", "").asString() == testPort.name) {
+    if (port.getDefault("name", "").asString() == ifName) {
       originalPortVlan = port.getDefault("ingressVlan", -1).asInt();
       break;
     }
   }
-  ASSERT_NE(originalPortVlan, -1) << "Could not find port " << testPort.name;
+  ASSERT_NE(originalPortVlan, -1) << "Could not find port " << ifName;
 
   if (originalPortVlan != currentDefault) {
     auto moveResult = runCli(
         {"config",
          "interface",
-         testPort.name,
+         ifName,
          "switchport",
          "access",
          "vlan",
          std::to_string(currentDefault)});
     ASSERT_EQ(moveResult.exitCode, 0)
-        << "Failed to move " << testPort.name
+        << "Failed to move " << ifName
         << " to default VLAN: " << moveResult.stderr;
-    XLOG(INFO) << "[Setup] Moved " << testPort.name << " to VLAN "
-               << currentDefault;
+    XLOG(INFO) << "[Setup] Moved " << ifName << " to VLAN " << currentDefault;
   }
 
   // Now the guard should refuse: port on default VLAN, no interface.
@@ -274,7 +273,7 @@ TEST_F(ConfigVlanDefaultTest, RefuseWhenPortOnDefaultVlanWithNoInterface) {
     runCli(
         {"config",
          "interface",
-         testPort.name,
+         ifName,
          "switchport",
          "access",
          "vlan",
@@ -313,15 +312,15 @@ TEST_F(ConfigVlanDefaultTest, ChangeDefaultVlanWithPortInNonDefaultVlan) {
   XLOG(INFO) << "currentDefault=" << currentDefault << " sideVlan=" << sideVlan;
 
   // Pick a test port and record its original VLAN.
-  auto testPort = findFirstEthInterface();
+  auto ifName = getRandomInterfacePortName();
   int64_t originalPortVlan = -1;
   for (const auto& port : initialConfig["sw"]["ports"]) {
-    if (port.getDefault("name", "").asString() == testPort.name) {
+    if (port.getDefault("name", "").asString() == ifName) {
       originalPortVlan = port.getDefault("ingressVlan", -1).asInt();
       break;
     }
   }
-  ASSERT_NE(originalPortVlan, -1) << "Could not find port " << testPort.name;
+  ASSERT_NE(originalPortVlan, -1) << "Could not find port " << ifName;
 
   // Move the port onto the default VLAN first, then off to the side VLAN.
   // This ensures at least one port has ingressVlan != defaultVlan.
@@ -329,25 +328,25 @@ TEST_F(ConfigVlanDefaultTest, ChangeDefaultVlanWithPortInNonDefaultVlan) {
     auto r = runCli(
         {"config",
          "interface",
-         testPort.name,
+         ifName,
          "switchport",
          "access",
          "vlan",
          std::to_string(currentDefault)});
     ASSERT_EQ(r.exitCode, 0)
-        << "Failed to move " << testPort.name << " to default VLAN";
+        << "Failed to move " << ifName << " to default VLAN";
   }
   auto moveOff = runCli(
       {"config",
        "interface",
-       testPort.name,
+       ifName,
        "switchport",
        "access",
        "vlan",
        std::to_string(sideVlan)});
   ASSERT_EQ(moveOff.exitCode, 0)
-      << "Failed to move " << testPort.name << " to side VLAN " << sideVlan;
-  XLOG(INFO) << "[Step 1] Moved " << testPort.name << " to VLAN " << sideVlan;
+      << "Failed to move " << ifName << " to side VLAN " << sideVlan;
+  XLOG(INFO) << "[Step 1] Moved " << ifName << " to VLAN " << sideVlan;
 
   // Set a new default VLAN — the command must succeed even when no ports
   // remain on the old default VLAN.
@@ -364,12 +363,12 @@ TEST_F(ConfigVlanDefaultTest, ChangeDefaultVlanWithPortInNonDefaultVlan) {
   EXPECT_EQ(getSwConfigField<int>("defaultVlan"), newDefault);
 
   // Restore: move the port back and reset defaultVlan.
-  XLOG(INFO) << "[Restore] Moving " << testPort.name << " back to VLAN "
+  XLOG(INFO) << "[Restore] Moving " << ifName << " back to VLAN "
              << originalPortVlan;
   runCli(
       {"config",
        "interface",
-       testPort.name,
+       ifName,
        "switchport",
        "access",
        "vlan",

@@ -92,7 +92,12 @@ _PLATFORM_VARIANTS_MAP: dict[str, list[str]] = {
         "ladakh800bcls_osfp_tray",
     ],
     "leh800bcls": ["leh800bcls_rack", "leh800bcls_test_fixture"],
-    "montblanc": ["montblanc_odd_ports_8x100G", "montblanc"],
+    "montblanc": [
+        "montblanc_odd_ports_8x100G",
+        "montblanc_gtsw_yolo",
+        "montblanc_precoding",
+        "montblanc",
+    ],
     "minipack3bta": ["minipack3bta_16rifs"],
     # Wedge800BNHP shares the exact same board / platform mapping as
     # Wedge800BACT; it only needs its own platform descriptor (distinct

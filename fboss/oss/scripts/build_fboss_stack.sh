@@ -18,6 +18,7 @@
 set -euxo pipefail
 
 free_up_disk=0
+job_override=""
 while true; do
   case "${1:-}" in
   --cfboss)
@@ -28,6 +29,15 @@ while true; do
     free_up_disk=1
     shift
     ;;
+  --num-jobs)
+    shift
+    job_override="$1"
+    if [[ ! $job_override =~ ^[1-9][0-9]*$ ]]; then
+      echo "Invalid --num-jobs value: $job_override (expected a positive integer)" >&2
+      exit 1
+    fi
+    shift
+    ;;
   *) break ;;
   esac
 done
@@ -36,9 +46,13 @@ log() {
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
 }
 
-if [ "$#" -lt 1 ]; then
-  echo "Usage: $0 [--cfboss] [--free-up-disk] forwarding|platform" >&2
+usage() {
+  echo "Usage: $0 [--cfboss] [--free-up-disk] [--num-jobs N] forwarding|platform" >&2
   exit 1
+}
+
+if [ "$#" -ne 1 ]; then
+  usage
 fi
 
 stack_type="$1"
@@ -72,14 +86,19 @@ platform)
   ;;
 esac
 
-gb_per_core=$(free -g | awk '/^Mem:/{print int($2 / '$mem_per_core')}')
-num_cores=$(nproc)
-if [ "$num_cores" -gt "$gb_per_core" ]; then
-  num_jobs="$gb_per_core"
+if [ -n "$job_override" ]; then
+  num_jobs="$job_override"
 else
-  num_jobs="$num_cores"
+  gb_per_core=$(free -g | awk '/^Mem:/{print int($2 / '$mem_per_core')}')
+  num_cores=$(nproc)
+  if [ "$num_cores" -gt "$gb_per_core" ]; then
+    num_jobs="$gb_per_core"
+  else
+    num_jobs="$num_cores"
+  fi
 fi
 export num_jobs # Export so it's available in subshells
+log "Using num_jobs=${num_jobs} for ${stack_type} stack"
 
 BUILD_TYPE="${BUILD_TYPE:-MinSizeRel}"
 

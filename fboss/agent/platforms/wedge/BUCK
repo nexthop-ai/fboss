@@ -170,10 +170,10 @@ cpp_library(
         "//thrift/lib/cpp/util:enum_utils",
     ],
     exported_external_deps = [
-        "gflags",
         ("boost", None, "boost_container"),
         ("boost", None, "boost_regex"),
         ("broadcom-xgs-robo", None, "xgs_robo"),
+        "gflags",
     ],
 )
 
@@ -247,10 +247,10 @@ cpp_library(
         "//thrift/lib/cpp/util:enum_utils",
     ],
     exported_external_deps = [
-        "gflags",
         ("boost", None, "boost_container"),
         ("boost", None, "boost_regex"),
         ("broadcom-xgs-robo", None, "xgs_robo"),
+        "gflags",
     ],
 )
 

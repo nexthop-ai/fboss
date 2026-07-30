@@ -33,6 +33,7 @@ fboss_thrift_library(
     deps = [
         "//configerator/structs/neteng/bgp_policy/thrift:rib_policy",
         "//configerator/structs/neteng/fboss/bgp/if:bgp_attr",
+        "//configerator/structs/neteng/fboss/thrift:common",
     ],
     visibility = ["//visibility:public"],
 )

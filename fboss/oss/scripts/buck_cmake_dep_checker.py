@@ -116,12 +116,7 @@ class BuckParser:
 
         # Parse cpp_library and executable-type targets (cpp_binary,
         # cpp_unittest, cpp_benchmark). They all share the same srcs/deps shape.
-        for rule_type in (
-            "cpp_library",
-            "cpp_binary",
-            "cpp_unittest",
-            "cpp_benchmark",
-        ):
+        for rule_type in ("cpp_library", "cpp_binary", "cpp_unittest", "cpp_benchmark"):
             self._parse_cpp_rule(rule_type, content, buck_path, str(file_path))
 
         # Parse thrift_library targets
@@ -961,10 +956,7 @@ class DependencyAnalyzer:
                         FileInconsistency(
                             direction="missing_from_cmake",
                             file_path=f,
-                            cmake_target=CmakeTarget(
-                                name="(none)",
-                                target_type="",
-                            ),
+                            cmake_target=CmakeTarget(name="(none)", target_type=""),
                             buck_target=buck_target,
                         )
                     )
@@ -1055,8 +1047,7 @@ def print_dep_report(
 
 
 def print_file_inconsistencies_report(
-    inconsistencies: list[FileInconsistency],
-    mode_description: str,
+    inconsistencies: list[FileInconsistency], mode_description: str
 ):
     """Print the file-list inconsistency report."""
     print("\n" + "=" * 80)

@@ -58,6 +58,7 @@ add_library(agent_voq_test_src
   fboss/agent/test/agent_hw_tests/AgentVoqSwitchTests.cpp
   fboss/agent/test/agent_hw_tests/AgentVoqSwitchWithFabricPortsTests.cpp
   fboss/agent/test/agent_hw_tests/AgentVoqSwitchWithMultipleDsfNodesTests.cpp
+  fboss/agent/test/agent_hw_tests/AgentVoqSwitchWarmbootReconcileTests.cpp
 )
 
 target_link_libraries(agent_voq_test_src
@@ -141,6 +142,7 @@ add_library(agent_hw_test_src
   fboss/agent/test/agent_hw_tests/AgentLinkLocalForwardingTests.cpp
   fboss/agent/test/agent_hw_tests/AgentLoadBalancerTests.cpp
   fboss/agent/test/agent_hw_tests/AgentHwLinkDebounceTests.cpp
+  fboss/agent/test/agent_hw_tests/AgentHwLlrTest.cpp
   fboss/agent/test/agent_hw_tests/AgentMacLearningTests.cpp
   fboss/agent/test/agent_hw_tests/AgentMacLearningAndNeighborResolutionTests.cpp
   fboss/agent/test/agent_hw_tests/AgentMirrorOnDropDnxTests.cpp

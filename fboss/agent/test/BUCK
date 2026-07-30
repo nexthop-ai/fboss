@@ -62,7 +62,6 @@ cpp_unittest(
         "NDPTest.cpp",
         "OperDeltaFilterTests.cpp",
         "PacketStreamHandlerTest.cpp",
-        "PortUpdateHandlerARPTest.cpp",
         "PortUpdateHandlerNDPTest.cpp",
         "PortUpdateHandlerTest.cpp",
         "ReachabilityGroupTests.cpp",
@@ -98,6 +97,7 @@ cpp_unittest(
         "TxPacketTest.cpp",
         "UDPTest.cpp",
         "UtilsTest.cpp",
+        "WarmbootRemoteRouteReconcileTest.cpp",
     ],
     args = [
         "--folly_enable_async_scuba_trace=false",
@@ -120,6 +120,7 @@ cpp_unittest(
         "//common/stats:monotonic_counter",
         "//common/thrift/cpp/server/code_frameworks/testing:server",
         "//fb303:service_data",
+        "//fb303:thread_cached_service_data",
         "//fboss/agent:address_utils",
         "//fboss/agent:agent_config-cpp2-types",
         "//fboss/agent:agent_dir_util",
@@ -197,8 +198,8 @@ cpp_unittest(
         "//thrift/lib/cpp2/util:util",
     ],
     external_deps = [
-        "gflags",
         ("boost", None, "boost_range"),
+        "gflags",
     ],
 )
 
@@ -774,6 +775,7 @@ cpp_library(
     # Need symbols from bcm, sai layers.
     undefined_symbols = True,
     exported_deps = [
+        "fbsource//third-party/fmt:fmt",
         "fbsource//third-party/googletest:gtest",
         ":linkstate_toggler",
         ":route_distribution_gen",
@@ -915,7 +917,25 @@ cpp_benchmark(
     ],
 )
 
-# bazelify: exclude
+cpp_benchmark(
+    name = "state_delta_serialization",
+    srcs = [
+        "StateDeltaSerializationBenchmark.cpp",
+    ],
+    args = ["--json"],
+    deps = [
+        ":hw_test_handle",
+        ":route_scale_gen",
+        ":utils",
+        "//fboss/agent:fsdb_helper",
+        "//fboss/fsdb/common:utils",
+        "//fboss/fsdb/if:fsdb_oper-cpp2-types",
+        "//fboss/thrift_cow/nodes:serializer",
+        "//folly:benchmark",
+        "//folly/init:init",
+    ],
+)
+
 cpp_unittest(
     name = "hwswitch_matcher_tests",
     srcs = [
@@ -1120,6 +1140,7 @@ cpp_unittest(
     ],
     test_main = "//fboss/agent/test:fboss_test_main",
     deps = [
+        "fbsource//third-party/fmt:fmt",
         ":hw_test_handle",
         ":utils",
         "//fboss/agent:address_utils",

@@ -27,16 +27,14 @@
 #include "fboss/agent/platforms/sai/SaiBcmWedge100PlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiBcmWedge400PlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiBcmYampPlatformPort.h"
+#include "fboss/agent/platforms/sai/SaiChenabPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiElbert8DDPhyPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiFakePlatformPort.h"
-#include "fboss/agent/platforms/sai/SaiMinipack3NPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiNh4010fPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiNh4220fPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiNh5010fPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiTajoPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiWedge400CPlatformPort.h"
-#include "fboss/agent/platforms/sai/SaiYangra2PlatformPort.h"
-#include "fboss/agent/platforms/sai/SaiYangraPlatformPort.h"
 #include "fboss/agent/state/Port.h"
 #include "fboss/lib/CommonFileUtils.h"
 #include "fboss/lib/config/PlatformConfigUtils.h"
@@ -126,6 +124,12 @@ bool useGenericSaiTajoPlatformPort(PlatformType platformMode) {
       platformMode == PlatformType::PLATFORM_WEDGE800CNHP ||
       platformMode == PlatformType::PLATFORM_M5120CSC ||
       platformMode == PlatformType::PLATFORM_MORGAN800CC;
+}
+
+bool useGenericSaiChenabPlatformPort(PlatformType platformMode) {
+  return platformMode == PlatformType::PLATFORM_YANGRA ||
+      platformMode == PlatformType::PLATFORM_YANGRA2 ||
+      platformMode == PlatformType::PLATFORM_MINIPACK3N;
 }
 
 SaiSwitchTraits::Attributes::HwInfo getHwInfo(SaiPlatform* platform) {
@@ -410,20 +414,16 @@ void SaiPlatform::initPorts() {
           getAsic()->getAsicType() == cfg::AsicType::ASIC_TYPE_TOMAHAWK4) {
         saiPort = std::make_unique<SaiBcmElbertPlatformPort>(portId, this);
       }
-    } else if (platformMode == PlatformType::PLATFORM_YANGRA) {
-      saiPort = std::make_unique<SaiYangraPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_MINIPACK3N) {
-      saiPort = std::make_unique<SaiMinipack3NPlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_NH4010F) {
       saiPort = std::make_unique<SaiNh4010fPlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_NH4220F) {
       saiPort = std::make_unique<SaiNh4220fPlatformPort>(portId, this);
     } else if (platformMode == PlatformType::PLATFORM_NH5010F) {
       saiPort = std::make_unique<SaiNh5010fPlatformPort>(portId, this);
+    } else if (useGenericSaiChenabPlatformPort(platformMode)) {
+      saiPort = std::make_unique<SaiChenabPlatformPort>(portId, this);
     } else if (useGenericSaiTajoPlatformPort(platformMode)) {
       saiPort = std::make_unique<SaiTajoPlatformPort>(portId, this);
-    } else if (platformMode == PlatformType::PLATFORM_YANGRA2) {
-      saiPort = std::make_unique<SaiYangra2PlatformPort>(portId, this);
     } else {
       saiPort = std::make_unique<SaiFakePlatformPort>(portId, this);
     }

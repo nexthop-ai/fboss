@@ -153,19 +153,27 @@ class TestRunner(abc.ABC):
     WARMBOOT_SETUP_OPTION = "--setup-for-warmboot"
     COLDBOOT_PREFIX = "cold_boot."
     WARMBOOT_PREFIX = "warm_boot."
-    TESTRESULT_FILE = "/home/netops/tr.xml"
-    TESTRESULT_CURRENT_RUN_FILE = "/home/netops/tr_current_run.xml"
     # SwSwitch agent thrift ports (SwAgentInitializer FLAGS_port / migrated_port).
     AGENT_THRIFT_PORTS = (5909, 5959)
     AGENT_PORT_FREE_TIMEOUT_S = 60
+    # Category labels passed to _resolve_tests_file (used in log messages).
+    KNOWN_BAD_TESTS_LABEL = "known_bad"
+    UNSUPPORTED_TESTS_LABEL = "unsupported"
+
+    TESTRESULT_FILE = "/home/netops/tr.xml"
+    TESTRESULT_CURRENT_RUN_FILE = "/home/netops/tr_current_run.xml"
 
     def __init__(self) -> None:
-        self._known_bad_test_regexes: list[str] | None = None
-        self._unsupported_test_regexes: list[str] | None = None
+        self._known_bad_test_regexes: list[str] = []
+        self._unsupported_test_regexes: list[str] = []
         # Known-bad/unsupported tests dropped pre-run; recorded as <skipped>.
         self._skipped_known_bad_tests: list[str] = []
         self.env_var: dict[str, str] = dict(os.environ)
-        self.args: Namespace | None = None
+        # Populated by run_test() before any per-run method runs. Defaults to an
+        # empty Namespace so attribute access is typed (Namespace.__getattr__ ->
+        # Any) rather than Optional; a method reached before run_test() fails
+        # loudly on the missing attribute, same as the old None default.
+        self.args: Namespace = Namespace()
 
     def _get_common_gflags(self) -> list[str]:
         """
@@ -178,6 +186,23 @@ class TestRunner(abc.ABC):
         return []
 
     def _get_config_path(self) -> str:
+        return ""
+
+    def _resolve_tests_file(
+        self, user_file: str | None, default_file: str, label: str
+    ) -> str:
+        """Resolve a known-bad / unsupported tests file, shared by all runners:
+        prefer a caller-supplied override when it exists, else fall back to the
+        default file when it exists, else return "" (no filtering)."""
+        if user_file:
+            if os.path.exists(user_file):
+                print(f"Using user-specified {label} tests file: {user_file}")
+                return user_file
+            print(f"Warning: User-specified {label} tests file not found: {user_file}")
+        if default_file and os.path.exists(default_file):
+            print(f"Using default {label} tests file: {default_file}")
+            return default_file
+        print(f"No {label} tests file found, skipping {label} test filtering")
         return ""
 
     def _get_known_bad_tests_file(self) -> str:
@@ -533,10 +558,12 @@ class TestRunner(abc.ABC):
         test_filter = ""
         self._skipped_known_bad_tests = []
         for test_name in test_names:
-            if self._is_known_bad_test(test_name) or self._is_unsupported_test(
-                test_name
-            ):
-                print(f"  >> SKIPPING (known bad/unsupported): {test_name}")
+            if self._is_known_bad_test(test_name):
+                print(f"  >> SKIPPING (known bad)  : {test_name}")
+                self._skipped_known_bad_tests.append(test_name)
+                continue
+            if self._is_unsupported_test(test_name):
+                print(f"  >> SKIPPING (unsupported): {test_name}")
                 self._skipped_known_bad_tests.append(test_name)
                 continue
             test_filter += f"{test_name}:"
@@ -688,14 +715,14 @@ class TestRunner(abc.ABC):
         # launching, else the bind races and the agent aborts.
         self._wait_for_agent_thrift_ports_free()
 
-        test_run_cmd = self._get_test_run_cmd(conf_file, test_to_run, flags)
-        print(f"Running command {test_run_cmd}", flush=True)
-        emit_test_boundary(kind="START", test_name=test_to_run, prefix=test_prefix)
-
         # monotonic for durations (immune to NTP step), wall-clock for the
         # core-dump-finder which compares against filesystem mtime.
         wall_start = time.time()
         mono_start = time.monotonic()
+        test_run_cmd = self._get_test_run_cmd(conf_file, test_to_run, flags)
+        print(f"Running command {test_run_cmd}", flush=True)
+        emit_test_boundary(kind="START", test_name=test_to_run, prefix=test_prefix)
+
         returncode, timed_out, stdout_tail, stderr_tail = self._capture_subprocess(
             test_run_cmd, args.test_run_timeout
         )
@@ -832,7 +859,7 @@ class TestRunner(abc.ABC):
         elif simulator in DNX_SIMULATOR_ASICS:
             self.env_var.update(DNX_SIMULATOR_ENV)
 
-    def _run_tests(
+    def _run_tests(  # noqa: PLR0915
         self, tests_to_run: list[str], conf_file: str, args: Namespace
     ) -> tuple[list, list]:
         sai_replayer_logging = getattr(args, "sai_replayer_logging", None)
@@ -902,7 +929,18 @@ class TestRunner(abc.ABC):
                 # With --num-warmboot-iterations N, soak the test across N consecutive
                 # warmboots; each iteration re-arms --setup-for-warmboot so the next boot
                 # can warmboot, and we stop early on the first failure.
-                num_wb_iterations = max(1, getattr(args, "num_warmboot_iterations", 1))
+                _raw_wb_iters = getattr(args, "num_warmboot_iterations", 1)
+                try:
+                    # getattr on a Mock returns a Mock which isn't comparable to int.
+                    # Coerce to int defensively; fall back to 1.
+                    num_wb_iterations = (
+                        _raw_wb_iters
+                        if isinstance(_raw_wb_iters, int)
+                        else int(_raw_wb_iters)
+                    )
+                except Exception:
+                    num_wb_iterations = 1
+                num_wb_iterations = max(1, num_wb_iterations)
                 for wb_iter in range(num_wb_iterations):
                     if not (
                         warmboot and os.path.isfile(self._get_warmboot_check_file())

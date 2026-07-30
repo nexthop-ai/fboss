@@ -1,3 +1,4 @@
+load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")
 load("@fbcode_macros//build_defs:thrift_library.bzl", "thrift_library")
 
 oncall("fboss_agent_push")
@@ -9,4 +10,25 @@ thrift_library(
     ],
     thrift_cpp2_options = "json",
     thrift_srcs = {"model.thrift": []},
+)
+
+# bazelify: exclude
+# Keeping this package thrift-only for Bazel: bazelify compiles the command
+# .cpp files via the auto-generated :_impl target that fboss2-lib depends on
+# (like every other command package). Translating this cpp_library instead
+# would drop CmdShowAgentFirmware.cpp/CmdShowAgentSsl.cpp (not in its srcs)
+# and create a dependency cycle with fboss2-lib.
+cpp_library(
+    name = "CmdShowAgentBootType",
+    srcs = ["CmdShowAgentBootType.cpp"],
+    labels = ["autodeps2_generated"],
+    deps = [
+        "//fboss/cli/fboss2:table-utils",
+    ],
+    exported_deps = [
+        ":model-cpp2-types",
+        "//fboss/agent/if:ctrl-cpp2-types",
+        "//fboss/cli/fboss2:cmd-handler",
+        "//fboss/cli/fboss2:fboss2-lib",
+    ],
 )
