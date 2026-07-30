@@ -1,10 +1,15 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
 #include "fboss/agent/hw/sai/switch/SaiSwitch.h"
+#include "fboss/agent/TxPacket.h"
 #include "fboss/agent/hw/sai/switch/ConcurrentIndices.h"
-#include "fboss/agent/hw/sai/switch/SaiTxPacket.h"
-#include "fboss/agent/hw/sai/switch/SaiVendorSwitchManager.h"
+// SaiVendorSwitchManager is used only under BRCM_SAI_SDK_DNX_GTE_12_0, which
+// clang-tidy does not define.
+#include "fboss/agent/hw/sai/switch/SaiVendorSwitchManager.h" // NOLINT(misc-include-cleaner)
 #include "fboss/agent/packet/PktUtil.h"
+
+#include <type_traits>
+#include <utility>
 
 extern "C" {
 #if !defined(BRCM_SAI_SDK_XGS_AND_DNX)
@@ -16,6 +21,25 @@ extern "C" {
 }
 
 namespace {
+
+// sai_switch_ser_log_info_t carries the offending port's OID only in some SAI
+// releases -- 14.2.0.0 DNX ODP does not have the field. Detect it rather than
+// enumerating SAI versions.
+template <typename T, typename = void>
+struct SerLogHasObjectId : std::false_type {};
+template <typename T>
+struct SerLogHasObjectId<T, std::void_t<decltype(std::declval<T>().object_id)>>
+    : std::true_type {};
+
+template <typename T>
+sai_object_id_t serLogObjectId(const T* info) {
+  if constexpr (SerLogHasObjectId<T>::value) {
+    return info->object_id;
+  } else {
+    return SAI_NULL_OBJECT_ID;
+  }
+}
+
 std::string eventName(uint32_t eventID) {
   switch (eventID) {
     case SAI_SWITCH_EVENT_TYPE_STABLE_FULL:
@@ -1021,36 +1045,28 @@ void SaiSwitch::switchEventCallback(
       XLOG(ERR) << "Firmware Auto Admin Link Disable callback received: "
                 << " error type: " << errorType(eventInfo->error_type)
                 << " Auto Admin disabled link: "
-                << static_cast<int>(fwDisabledSdkPortId)
-#if defined(SAI_VERSION_14_2_0_0_DNX_ODP) || \
-    defined(SAI_VERSION_12_2_0_0_DNX_ODP)
-                << " object_id: 0x" << std::hex << eventInfo->object_id
-                << std::dec
-#endif
-          ;
+                << static_cast<int>(fwDisabledSdkPortId) << " object_id: 0x"
+                << std::hex << serLogObjectId(eventInfo) << std::dec;
 
       if (eventInfo->error_type ==
           SAI_SWITCH_ERROR_TYPE_FABRIC_AUTO_LINK_DISABLE) {
         int32_t fwDisabledFbossPortId = fwDisabledSdkPortId;
-#if defined(SAI_VERSION_14_2_0_0_DNX_ODP) || \
-    defined(SAI_VERSION_12_2_0_0_DNX_ODP)
-        if (eventInfo->object_id != SAI_NULL_OBJECT_ID) {
+        const auto serPortOid = serLogObjectId(eventInfo);
+        if (serPortOid != SAI_NULL_OBJECT_ID) {
           const auto portItr = concurrentIndices_->portSaiId2PortInfo.find(
-              PortSaiId(eventInfo->object_id));
+              PortSaiId(serPortOid));
           if (portItr != concurrentIndices_->portSaiId2PortInfo.cend()) {
             fwDisabledFbossPortId = portItr->second.portID;
-            XLOG(DBG2) << "Resolved SAI port OID 0x" << std::hex
-                       << eventInfo->object_id << std::dec
-                       << " to FBOSS PortID " << fwDisabledFbossPortId
+            XLOG(DBG2) << "Resolved SAI port OID 0x" << std::hex << serPortOid
+                       << std::dec << " to FBOSS PortID "
+                       << fwDisabledFbossPortId
                        << " (raw hw link index: " << fwDisabledSdkPortId << ")";
           } else {
-            XLOG(FATAL) << "Failed to resolve SAI port OID "
-                        << eventInfo->object_id
+            XLOG(FATAL) << "Failed to resolve SAI port OID " << serPortOid
                         << " to FBOSS PortID for fw disabled link "
                         << fwDisabledSdkPortId;
           }
         }
-#endif
         // Link active/inactive callback and Firmware device isolate is
         // processed by txReadyStatusChangeOrFwIsolateCallbackBottomHalf.
         // Schedule Firmware link disable callback Bottom half in the same event
