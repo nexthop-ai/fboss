@@ -10,7 +10,6 @@ on:
       - labeled
       - unlabeled
       - closed
-  merge_group:
 
 concurrency:
   # For open PRs:
@@ -24,9 +23,8 @@ concurrency:
   # This lets body events cancel each other, and label events cancel each
   # other, without cross-cancel between body, label, opened, and review flows.
   #
-  # For merged PRs and merge_group events:
-  # - Group by run_id so closed/merged flows and merge queue runs are never
-  #   canceled.
+  # For merged PRs:
+  # - Group by run_id so closed/merged flows are never canceled.
   group: >
     ${{ (github.event_name == 'pull_request_target' && !github.event.pull_request.merged
           && contains(fromJSON('["labeled","unlabeled"]'), github.event.action)
