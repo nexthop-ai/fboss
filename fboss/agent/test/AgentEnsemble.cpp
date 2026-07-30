@@ -24,6 +24,7 @@
 #include "fboss/lib/CommonUtils.h"
 #include "fboss/lib/config/PlatformConfigUtils.h"
 
+#include <fmt/format.h>
 #include <folly/io/async/EventBase.h>
 #include <folly/io/async/ScopedEventBaseThread.h>
 #include <folly/testing/TestUtil.h>
@@ -589,7 +590,7 @@ void AgentEnsemble::runCint(
     const SwitchID& switchId) {
   folly::test::TemporaryFile file;
   folly::writeFull(file.fd(), cintData.c_str(), cintData.size());
-  auto cmd = folly::sformat("cint {}\n", file.path().c_str());
+  auto cmd = fmt::format("cint {}\n", file.path().c_str());
   runDiagCommand(cmd, output, switchId);
 }
 
@@ -941,14 +942,20 @@ std::map<std::string, int64_t> AgentEnsemble::getFb303CountersByRegex(
     const PortID& portId,
     const std::string& regex) {
   std::map<std::string, int64_t> counters;
-#ifndef IS_OSS
   auto switchID = scopeResolver().scope(portId).switchId();
+#ifndef IS_OSS
   auto client = getSw()->getHwSwitchThriftClientTable()->getClient(switchID);
   apache::thrift::Client<facebook::thrift::Monitor> monitoringClient{
       client->getChannelShared()};
   monitoringClient.sync_getRegexCounters(counters, regex);
 #else
+<<<<<<< HEAD
   auto switchID = scopeResolver().scope(portId).switchId();
+||||||| 320c57f440
+  // TODO: This needs to be updated to support multi-switch.
+  counters = facebook::fb303::fbData->getRegexCounters(regex);
+=======
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
   counters = queryHwAgentFb303RegexCounters(switchID, regex);
 #endif
   return counters;
@@ -1037,6 +1044,7 @@ std::map<std::string, int64_t> AgentEnsemble::queryHwAgentFb303RegexCounters(
   if (!getSw()->isRunModeMultiSwitch()) {
     counters = facebook::fb303::fbData->getRegexCounters(regex);
   } else {
+<<<<<<< HEAD
     try {
       auto hwTestClient = getHwAgentTestClient(switchID);
       hwTestClient->sync_getFb303RegexCounters(counters, regex);
@@ -1066,6 +1074,26 @@ int64_t AgentEnsemble::queryHwAgentFb303Counter(
           << switchID << ": " << ex.what();
       throw;
     }
+||||||| 320c57f440
+=======
+    auto hwTestClient = getHwAgentTestClient(switchID);
+    hwTestClient->sync_getFb303RegexCounters(counters, regex);
+  }
+  return counters;
+}
+
+int64_t AgentEnsemble::queryHwAgentFb303Counter(
+    const SwitchID& switchID,
+    const std::string& key) {
+  int64_t counter{0};
+  if (!getSw()->isRunModeMultiSwitch()) {
+    // getCounterIfExists (not getCounter) so a missing key yields 0 instead of
+    // throwing, matching the multi-switch handler.
+    counter = facebook::fb303::fbData->getCounterIfExists(key).value_or(0);
+  } else {
+    auto hwTestClient = getHwAgentTestClient(switchID);
+    counter = hwTestClient->sync_getFb303Counter(key);
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
   }
   return counter;
 }

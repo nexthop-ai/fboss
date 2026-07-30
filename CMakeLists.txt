@@ -524,6 +524,14 @@ add_fbthrift_cpp_library(
     ctrl_cpp2
 )
 add_fbthrift_cpp_library(
+  state_delta_log_cpp2
+  fboss/agent/state_delta_log.thrift
+  OPTIONS
+    json
+  DEPENDS
+    fsdb_oper_cpp2
+)
+add_fbthrift_cpp_library(
   prbs_cpp2
   fboss/lib/phy/prbs.thrift
   OPTIONS
@@ -1447,6 +1455,7 @@ add_dependencies(fboss_platform_services
   data_corral_service
   led_service
   reboot_cause_finder
+  watchdog_util
   # Utilities
   sensor_service_client
   fixmyfboss

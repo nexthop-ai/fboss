@@ -7,7 +7,11 @@
 from unittest.mock import Mock, patch
 
 import pytest
+<<<<<<< HEAD
 
+||||||| 320c57f440
+=======
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
 from fboss_test_runner.frameworks import qsfp_benchmark_suite
 from fboss_test_runner.frameworks.qsfp_benchmark_suite import (
     QSFP_BENCH_TARGET,

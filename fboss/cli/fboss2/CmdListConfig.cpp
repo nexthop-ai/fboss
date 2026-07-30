@@ -12,6 +12,8 @@
 #include "fboss/cli/fboss2/CmdList.h"
 #include "fboss/cli/fboss2/commands/config/CmdConfigAppliedInfo.h"
 #include "fboss/cli/fboss2/commands/config/CmdConfigReload.h"
+#include "fboss/cli/fboss2/commands/config/acl/CmdConfigAcl.h"
+#include "fboss/cli/fboss2/commands/config/acl/rule/CmdConfigAclRule.h"
 #include "fboss/cli/fboss2/commands/config/arp/CmdConfigArp.h"
 #include "fboss/cli/fboss2/commands/config/copp/CmdConfigCopp.h"
 #include "fboss/cli/fboss2/commands/config/dhcp/CmdConfigDhcp.h"
@@ -125,6 +127,8 @@
 #include "fboss/cli/fboss2/commands/config/vlan/static_mac/CmdConfigVlanStaticMac.h"
 #include "fboss/cli/fboss2/commands/config/vlan/static_mac/add/CmdConfigVlanStaticMacAdd.h"
 #include "fboss/cli/fboss2/commands/config/vlan/static_mac/delete/CmdConfigVlanStaticMacDelete.h"
+#include "fboss/cli/fboss2/commands/delete/acl/CmdDeleteAcl.h"
+#include "fboss/cli/fboss2/commands/delete/acl/rule/CmdDeleteAclRule.h"
 #include "fboss/cli/fboss2/commands/delete/config/CmdDeleteConfig.h"
 #include "fboss/cli/fboss2/commands/delete/copp/CmdDeleteCopp.h"
 #include "fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/CmdDeleteCoppCpuTrafficPolicy.h"
@@ -179,6 +183,20 @@ const CommandTree& kConfigCommandTree() {
        "Show config applied information",
        commandHandler<CmdConfigAppliedInfo>,
        argRegistrar<CmdConfigAppliedInfoTraits>},
+
+      {
+          "config",
+          "acl",
+          "Configure ACL settings",
+          commandHandler<CmdConfigAcl>,
+          argRegistrar<CmdConfigAclTraits>,
+          {{
+              "rule",
+              "Configure an ACL rule (e.g. match fields on an AclEntry)",
+              commandHandler<CmdConfigAclRule>,
+              argRegistrar<CmdConfigAclRuleTraits>,
+          }},
+      },
 
       {
           "config",
@@ -1099,6 +1117,7 @@ const CommandTree& kConfigCommandTree() {
 
       {
           "delete",
+<<<<<<< HEAD
           "qos",
           "Delete QoS configuration",
           commandHandler<CmdDeleteQos>,
@@ -1108,6 +1127,18 @@ const CommandTree& kConfigCommandTree() {
               "Remove a queue entry from the default port queue config",
               commandHandler<CmdDeleteQosDefaultQueueConfig>,
               argRegistrar<CmdDeleteQosDefaultQueueConfigTraits>,
+||||||| 320c57f440
+=======
+          "acl",
+          "Delete (clear) ACL settings",
+          commandHandler<CmdDeleteAcl>,
+          argRegistrar<CmdDeleteAclTraits>,
+          {{
+              "rule",
+              "Delete an ACL rule (and any associated MatchAction) from an AclTable",
+              commandHandler<CmdDeleteAclRule>,
+              argRegistrar<CmdDeleteAclRuleTraits>,
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
           }},
       },
 

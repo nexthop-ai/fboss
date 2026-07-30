@@ -19,6 +19,7 @@
 
 namespace facebook::fboss {
 const std::map<PlatformType, folly::StringPiece> kHardwareNameMap = {
+<<<<<<< HEAD
     {facebook::fboss::PlatformType::PLATFORM_MONTBLANC,
      kPortMappingMontblancCsv},
     {facebook::fboss::PlatformType::PLATFORM_MINIPACK3BTA,
@@ -53,17 +54,60 @@ const std::map<PlatformType, folly::StringPiece> kHardwareNameMap = {
      kPortMappingWedge800CACTCsv},
     {facebook::fboss::PlatformType::PLATFORM_WEDGE800CNHP,
      kPortMappingWedge800CACTCsv},
+||||||| 320c57f440
+    {facebook::fboss::PlatformType::PLATFORM_MONTBLANC,
+     kPortMappingMontblancCsv},
+    {facebook::fboss::PlatformType::PLATFORM_MINIPACK3BTA,
+     kPortMappingMinipack3BTACsv},
+    {facebook::fboss::PlatformType::PLATFORM_MINIPACK3N,
+     kPortMappingMinipack3NCsv},
+    {facebook::fboss::PlatformType::PLATFORM_MERU800BIA,
+     kPortMappingMeru800biaCsv},
+    {facebook::fboss::PlatformType::PLATFORM_MERU800BIAB,
+     kPortMappingMeru800biaCsv},
+    {facebook::fboss::PlatformType::PLATFORM_MERU800BIAC,
+     kPortMappingMeru800biaCsv},
+    {facebook::fboss::PlatformType::PLATFORM_MERU800BFA,
+     kPortMappingMeru800bfaCsv},
+    {facebook::fboss::PlatformType::PLATFORM_JANGA800BIC,
+     kPortMappingJanga800bicCsv},
+    {facebook::fboss::PlatformType::PLATFORM_TAHAN800BC,
+     kPortMappingTahan800bcCsv},
+    {facebook::fboss::PlatformType::PLATFORM_MORGAN800CC,
+     kPortMappingMorgan800ccCsv},
+    {facebook::fboss::PlatformType::PLATFORM_ICECUBE800BC,
+     kPortMappingIcecube800bcCsv},
+    {facebook::fboss::PlatformType::PLATFORM_ICETEA800BC,
+     kPortMappingIcetea800bcCsv},
+    {facebook::fboss::PlatformType::PLATFORM_TAHANSB800BC,
+     kPortMappingTahansb800bcCsv},
+    {facebook::fboss::PlatformType::PLATFORM_WEDGE800BACT,
+     kPortMappingWedge800BACTCsv},
+    {facebook::fboss::PlatformType::PLATFORM_WEDGE800BNHP,
+     kPortMappingWedge800BACTCsv},
+    {facebook::fboss::PlatformType::PLATFORM_WEDGE800CACT,
+     kPortMappingWedge800CACTCsv},
+=======
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
     {facebook::fboss::PlatformType::PLATFORM_LADAKH800BCLS,
      kPortMappingLadakh800bclsCsv},
     {facebook::fboss::PlatformType::PLATFORM_NH4010F, kPortMappingNh4010fCsv},
     {facebook::fboss::PlatformType::PLATFORM_NH4220F, kPortMappingNh4220fCsv},
     {facebook::fboss::PlatformType::PLATFORM_LEH800BCLS,
      kPortMappingLeh800bclsCsv},
+<<<<<<< HEAD
     {facebook::fboss::PlatformType::PLATFORM_ICECUBE800BANW,
      kPortMappingIcecube800banwCsv},
     {facebook::fboss::PlatformType::PLATFORM_SAINTPAUL,
      kPortMappingSaintpaulCsv},
     {facebook::fboss::PlatformType::PLATFORM_M4062NHP, kPortMappingM4062nhpCsv},
+||||||| 320c57f440
+    {facebook::fboss::PlatformType::PLATFORM_ICECUBE800BANW,
+     kPortMappingIcecube800banwCsv},
+    {facebook::fboss::PlatformType::PLATFORM_SAINTPAUL,
+     kPortMappingSaintpaulCsv},
+=======
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
 };
 
 // Helper function to generate PHY CSV filename from regular CSV filename

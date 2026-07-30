@@ -103,8 +103,8 @@ cpp_library(
         "gflags",
     ],
     exported_external_deps = [
-        "gflags",
         ("boost", None, "boost_algorithm"),
+        "gflags",
     ],
 )
 

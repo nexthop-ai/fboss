@@ -556,6 +556,13 @@ class HwAsic {
     // Policy based routing via a dedicated ACL table matching on next hop
     // group and traffic class, redirecting to a per-TC next hop group.
     PBR_ACL,
+    // UEC Link Layer Retry (UE Spec 1.0.2 section 5.1): hop-by-hop link-layer
+    // retransmission of LLR-eligible frames between link partners. Currently
+    // supported only on Tomahawk Ultra.
+    LINK_LAYER_RETRANSMISSION,
+    // Per-port link up/down debounce (hold-off timers) and the associated
+    // debounce retrigger counters.
+    PORT_DEBOUNCE,
   };
 
   enum class AsicMode {

@@ -140,7 +140,7 @@ void RibRouteUpdater::update(
         (addItr == toAdd.end() ? std::vector<RouteEntry>() : addItr->second),
         (delItr == toDel.end() ? std::vector<folly::CIDRNetwork>()
                                : delItr->second),
-        resetClientsRoutesFor.find(client) != resetClientsRoutesFor.end());
+        resetClientsRoutesFor.contains(client));
   }
   updateDone();
 }
@@ -867,7 +867,7 @@ void RibRouteUpdater::getFwdInfoFromNhop(
   auto route = it->value();
   CHECK(route);
 
-  if (resolving_.find(route.get()) != resolving_.end()) {
+  if (resolving_.contains(route.get())) {
     XLOG(DBG2) << "Cycle detected resolving nexthop " << nh
                << " — route is already being resolved";
     ++cyclesDetected_;
@@ -991,7 +991,8 @@ std::shared_ptr<Route<AddressT>> RibRouteUpdater::resolveOne(
           CHECK(
               clientId == kInterfaceRouteClientId ||
               clientId == kRemoteInterfaceRouteClientId ||
-              (addr.isV6() && addr.isLinkLocal()));
+              (addr.isV6() && addr.isLinkLocal()))
+              << "Next hop:" << nh << " cannot be associated with a RIF";
           nhToFwds[nh].emplace(nh);
           continue;
         }
@@ -1221,7 +1222,7 @@ void RibRouteUpdater::resolve(NetworkToRouteMap<AddressT>* routes) {
 template <typename AddressT>
 bool RibRouteUpdater::needResolve(
     const std::shared_ptr<Route<AddressT>>& route) const {
-  return needsResolution_.find(route.get()) != needsResolution_.end();
+  return needsResolution_.contains(route.get());
 }
 
 void RibRouteUpdater::updateDone() {

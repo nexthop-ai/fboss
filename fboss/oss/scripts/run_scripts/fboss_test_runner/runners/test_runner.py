@@ -4,7 +4,6 @@
 
 import abc
 import os
-import re
 import shutil
 import socket
 import subprocess
@@ -66,7 +65,12 @@ from fboss_test_runner.runners.utils import (
     load_from_file,
     test_matches_any_regex,
 )
+<<<<<<< HEAD
 from fboss_test_runner.services.fboss_agent_utils import FBOSS_AGENT_VOLATILE_STATE_DIR
+||||||| 320c57f440
+from fboss_test_runner.runners.utils import load_from_file
+=======
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
 
 _YELLOW = "\033[1;33m"
 _RED = "\033[1;31m"
@@ -153,19 +157,38 @@ class TestRunner(abc.ABC):
     WARMBOOT_SETUP_OPTION = "--setup-for-warmboot"
     COLDBOOT_PREFIX = "cold_boot."
     WARMBOOT_PREFIX = "warm_boot."
+<<<<<<< HEAD
     TESTRESULT_FILE = "/home/netops/tr.xml"
     TESTRESULT_CURRENT_RUN_FILE = "/home/netops/tr_current_run.xml"
     # SwSwitch agent thrift ports (SwAgentInitializer FLAGS_port / migrated_port).
     AGENT_THRIFT_PORTS = (5909, 5959)
     AGENT_PORT_FREE_TIMEOUT_S = 60
+||||||| 320c57f440
+=======
+    # Category labels passed to _resolve_tests_file (used in log messages).
+    KNOWN_BAD_TESTS_LABEL = "known_bad"
+    UNSUPPORTED_TESTS_LABEL = "unsupported"
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
 
     def __init__(self) -> None:
+<<<<<<< HEAD
         self._known_bad_test_regexes: list[str] | None = None
         self._unsupported_test_regexes: list[str] | None = None
         # Known-bad/unsupported tests dropped pre-run; recorded as <skipped>.
         self._skipped_known_bad_tests: list[str] = []
+||||||| 320c57f440
+        self._known_bad_test_regexes: list[str] | None = None
+        self._unsupported_test_regexes: list[str] | None = None
+=======
+        self._known_bad_test_regexes: list[str] = []
+        self._unsupported_test_regexes: list[str] = []
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
         self.env_var: dict[str, str] = dict(os.environ)
-        self.args: Namespace | None = None
+        # Populated by run_test() before any per-run method runs. Defaults to an
+        # empty Namespace so attribute access is typed (Namespace.__getattr__ ->
+        # Any) rather than Optional; a method reached before run_test() fails
+        # loudly on the missing attribute, same as the old None default.
+        self.args: Namespace = Namespace()
 
     def _get_common_gflags(self) -> list[str]:
         """
@@ -178,6 +201,23 @@ class TestRunner(abc.ABC):
         return []
 
     def _get_config_path(self) -> str:
+        return ""
+
+    def _resolve_tests_file(
+        self, user_file: str | None, default_file: str, label: str
+    ) -> str:
+        """Resolve a known-bad / unsupported tests file, shared by all runners:
+        prefer a caller-supplied override when it exists, else fall back to the
+        default file when it exists, else return "" (no filtering)."""
+        if user_file:
+            if os.path.exists(user_file):
+                print(f"Using user-specified {label} tests file: {user_file}")
+                return user_file
+            print(f"Warning: User-specified {label} tests file not found: {user_file}")
+        if default_file and os.path.exists(default_file):
+            print(f"Using default {label} tests file: {default_file}")
+            return default_file
+        print(f"No {label} tests file found, skipping {label} test filtering")
         return ""
 
     def _get_known_bad_tests_file(self) -> str:
@@ -533,11 +573,24 @@ class TestRunner(abc.ABC):
         test_filter = ""
         self._skipped_known_bad_tests = []
         for test_name in test_names:
+<<<<<<< HEAD
             if self._is_known_bad_test(test_name) or self._is_unsupported_test(
                 test_name
             ):
                 print(f"  >> SKIPPING (known bad/unsupported): {test_name}")
                 self._skipped_known_bad_tests.append(test_name)
+||||||| 320c57f440
+            if self._is_known_bad_test(test_name) or self._is_unsupported_test(
+                test_name
+            ):
+                print(f"  >> SKIPPING (known bad/unsupported): {test_name}")
+=======
+            if self._is_known_bad_test(test_name):
+                print(f"  >> SKIPPING (known bad)  : {test_name}")
+                continue
+            if self._is_unsupported_test(test_name):
+                print(f"  >> SKIPPING (unsupported): {test_name}")
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
                 continue
             test_filter += f"{test_name}:"
         if not test_filter:
@@ -677,6 +730,7 @@ class TestRunner(abc.ABC):
         flags += self._get_sai_logging_flags()
         flags += ["--logging", args.fboss_logging]
 
+<<<<<<< HEAD
         # Guard against a leftover XML from a prior run being mis-attributed:
         # callers already unlink before each call, but unlinking here too means
         # a future caller that forgets won't silently stamp this run's streams
@@ -707,9 +761,42 @@ class TestRunner(abc.ABC):
         if info["kind"] == "FAIL" and xml_exists:
             inject_streams_into_xml(
                 self.TESTRESULT_CURRENT_RUN_FILE, stdout_tail, stderr_tail
+||||||| 320c57f440
+        try:
+            test_run_cmd = self._get_test_run_cmd(conf_file, test_to_run, flags)
+            print(
+                f"Running command {test_run_cmd}",
+                flush=True,
+=======
+        start_time = time.time()
+        try:
+            test_run_cmd = self._get_test_run_cmd(conf_file, test_to_run, flags)
+            print(
+                f"Running command {test_run_cmd}",
+                flush=True,
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
             )
 
+<<<<<<< HEAD
         if info["kind"] in ("OK", "FAIL") and xml_exists:
+||||||| 320c57f440
+            start_time = time.time()
+            run_test_output = subprocess.check_output(
+                test_run_cmd,
+                timeout=args.test_run_timeout,
+                env=self.env_var,
+            )
+            elapsed_ms = int((time.time() - start_time) * 1000)
+
+=======
+            run_test_output = subprocess.check_output(
+                test_run_cmd,
+                timeout=args.test_run_timeout,
+                env=self.env_var,
+            )
+            elapsed_ms = int((time.time() - start_time) * 1000)
+
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
             # Parse the real gtest output and tag each result with the
             # boot-phase prefix (cold_boot./warm_boot.).
             results = self._parse_gtest_run_output(stdout_tail)
@@ -902,7 +989,18 @@ class TestRunner(abc.ABC):
                 # With --num-warmboot-iterations N, soak the test across N consecutive
                 # warmboots; each iteration re-arms --setup-for-warmboot so the next boot
                 # can warmboot, and we stop early on the first failure.
-                num_wb_iterations = max(1, getattr(args, "num_warmboot_iterations", 1))
+                _raw_wb_iters = getattr(args, "num_warmboot_iterations", 1)
+                try:
+                    # getattr on a Mock returns a Mock which isn't comparable to int.
+                    # Coerce to int defensively; fall back to 1.
+                    num_wb_iterations = (
+                        _raw_wb_iters
+                        if isinstance(_raw_wb_iters, int)
+                        else int(_raw_wb_iters)
+                    )
+                except Exception:
+                    num_wb_iterations = 1
+                num_wb_iterations = max(1, num_wb_iterations)
                 for wb_iter in range(num_wb_iterations):
                     if not (
                         warmboot and os.path.isfile(self._get_warmboot_check_file())

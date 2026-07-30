@@ -1,6 +1,11 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
+<<<<<<< HEAD
 #include <fmt/ranges.h> // Needed for fmt::join
+||||||| 320c57f440
+=======
+#include <fmt/format.h>
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
 #include <folly/MapUtil.h>
 
 #include "fboss/agent/AgentFeatures.h"
@@ -202,8 +207,8 @@ void validateIngressPriorityGroupWatermarkCounters(
                                  ->getPorts()
                                  ->getNodeIf(portId)
                                  ->getName();
-      std::string pg = ensemble->isSai() ? folly::sformat(".pg{}", pri) : "";
-      auto regex = folly::sformat(
+      std::string pg = ensemble->isSai() ? fmt::format(".pg{}", pri) : "";
+      auto regex = fmt::format(
           "buffer_watermark_pg_({}).{}{}.p100.60", watermarkKeys, portName, pg);
       auto counters = ensemble->getFb303CountersByRegex(portId, regex);
       EXPECT_EVENTUALLY_EQ(counters.size(), numKeys);
@@ -366,7 +371,7 @@ class AgentTrafficPfcTest : public AgentHwTest {
     const auto& cfg = getAgentEnsemble()->getCurrentConfig();
     for (const auto& port : *cfg.ports()) {
       if (PortID(*port.logicalID()) == portId) {
-        return folly::sformat(
+        return fmt::format(
             "portId={} name={}", *port.logicalID(), *port.name());
       }
     }
@@ -383,7 +388,7 @@ class AgentTrafficPfcTest : public AgentHwTest {
   std::vector<folly::IPAddressV6> getDestinationIps(int count = 2) const {
     std::vector<folly::IPAddressV6> ips;
     for (int i = 4; i < count + 4; i++) {
-      ips.emplace_back(folly::sformat("2620:0:1cfe:face:b00c::{}", i));
+      ips.emplace_back(fmt::format("2620:0:1cfe:face:b00c::{}", i));
     }
     return ips;
   }
@@ -785,7 +790,7 @@ class AgentTrafficPfcGenTest : public AgentTrafficPfcTest {
 
     cfg::Vlan vlan;
     vlan.id() = vlanId;
-    vlan.name() = folly::sformat("vlan{}", static_cast<int>(vlanId));
+    vlan.name() = fmt::format("vlan{}", static_cast<int>(vlanId));
     vlan.routable() = false; // No routing needed, just isolation
     // Set the interface ID for the VLAN
     vlan.intfID() = kTxForVlanForChenab;

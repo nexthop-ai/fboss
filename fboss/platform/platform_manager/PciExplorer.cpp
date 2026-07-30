@@ -344,7 +344,24 @@ std::string PciExplorer::createMdioBus(
   return getMdioBusCharDevPath(pciDevice, mdioBusConfig, instanceId);
 }
 
+<<<<<<< HEAD
 std::string PciExplorer::createFpgaIpBlock(
+||||||| 320c57f440
+void PciExplorer::createFpgaIpBlock(
+=======
+std::string PciExplorer::createRtmCtrl(
+    const PciDevice& pciDevice,
+    const RtmCtrlConfig& rtmCtrlConfig,
+    uint32_t instanceId) {
+  auto auxData = getAuxData(*rtmCtrlConfig.fpgaIpBlockConfig(), instanceId);
+  auxData.rtm_data.port_num = *rtmCtrlConfig.portNumber();
+  create(pciDevice, *rtmCtrlConfig.fpgaIpBlockConfig(), auxData);
+  return getRtmCtrlSysfsPath(
+      pciDevice, *rtmCtrlConfig.fpgaIpBlockConfig(), instanceId);
+}
+
+void PciExplorer::createFpgaIpBlock(
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
     const PciDevice& pciDevice,
     const FpgaIpBlockConfig& fpgaIpBlockConfig,
     uint32_t instanceId) {
@@ -826,6 +843,25 @@ std::string PciExplorer::getMdioBusCharDevPath(
   throw PciSubDeviceRuntimeError(
       fmt::format(
           "Couldn't find MdioBusCharDevPath {} under {}",
+          *fpgaIpBlockConfig.deviceName(),
+          pciDevice.sysfsPath()),
+      *fpgaIpBlockConfig.pmUnitScopedName());
+}
+
+std::string PciExplorer::getRtmCtrlSysfsPath(
+    const PciDevice& pciDevice,
+    const FpgaIpBlockConfig& fpgaIpBlockConfig,
+    uint32_t instanceId) {
+  auto expectedEnding =
+      fmt::format(".{}.{}", *fpgaIpBlockConfig.deviceName(), instanceId);
+  for (const auto& dirEntry : fs::directory_iterator(pciDevice.sysfsPath())) {
+    if (dirEntry.path().string().ends_with(expectedEnding)) {
+      return dirEntry.path().string();
+    }
+  }
+  throw PciSubDeviceRuntimeError(
+      fmt::format(
+          "Couldn't find RtmCtrl {} under {}",
           *fpgaIpBlockConfig.deviceName(),
           pciDevice.sysfsPath()),
       *fpgaIpBlockConfig.pmUnitScopedName());

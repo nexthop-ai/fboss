@@ -27,8 +27,8 @@ cpp_library(
         "//folly/json:dynamic",
     ],
     exported_external_deps = [
-        "gflags",
         ("boost", None, "boost_container"),
+        "gflags",
     ],
 )
 
@@ -67,8 +67,8 @@ cpp_library(
         "//folly/logging:logging",
     ],
     exported_external_deps = [
-        ("boost", None, "boost_container"),
         "boost",
+        ("boost", None, "boost_container"),
     ],
 )
 
@@ -94,6 +94,7 @@ cpp_unittest(
     network_access = network_access_utils.none(),
     test_main = "//fboss/agent/test:fboss_test_main",
     deps = [
+        "fbsource//third-party/fmt:fmt",
         ":fib_updater",
         ":network_to_route_map",
         ":nexthop_id_manager",
@@ -122,7 +123,6 @@ cpp_unittest(
         "//fboss/agent/test/utils:nexthop_id_test_utils",
         "//folly:network_address",
         "//folly:scope_guard",
-        "//folly/functional:partial",
         "//folly/json:dynamic",
         "//folly/logging:logging",
     ],

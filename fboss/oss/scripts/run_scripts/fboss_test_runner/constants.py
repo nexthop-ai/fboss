@@ -54,6 +54,7 @@ SUB_ARG_AGENT_RUN_MODE_MONO = "mono"
 SUB_ARG_AGENT_RUN_MODE_MULTI = "multi_switch"
 SUB_ARG_NUM_NPUS = "--num-npus"
 
+<<<<<<< HEAD
 # Platform-service test-type names shared between the platform-services runners
 # and TEST_DISABLE_SERVICES below. The remaining platform test-type names live
 # in platform_services_test_runner.py since they are only used there.
@@ -62,6 +63,9 @@ SUB_ARG_BSP_HW_TEST = "bsp_tests"
 SUB_ARG_LED_HW_TEST = "led_service_hw_test"
 SUB_ARG_QSFP_HW_TEST = "qsfp_hw_test"
 
+||||||| 320c57f440
+=======
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
 # Benchmark subcommand args
 OPT_ARG_SAI_BENCH = "--sai"
 OPT_ARG_QSFP_BENCH = "--qsfp"

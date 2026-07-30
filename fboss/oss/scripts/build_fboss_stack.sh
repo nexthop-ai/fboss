@@ -36,15 +36,39 @@ log() {
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
 }
 
+<<<<<<< HEAD
 if [ "$#" -lt 1 ]; then
   echo "Usage: $0 [--cfboss] [--free-up-disk] forwarding|platform" >&2
+||||||| 320c57f440
+if [ "$#" -lt 1 ]; then
+  echo "Usage: $0 forwarding|platform" >&2
+=======
+usage() {
+  echo "Usage: $0 forwarding|platform [--num-jobs N]" >&2
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
   exit 1
+}
+
+if [ "$#" -ne 1 ] && [ "$#" -ne 3 ]; then
+  usage
 fi
 
 stack_type="$1"
 # Nexthop-only
 # scratch_root="/build"
 scratch_root="/var/FBOSS/fboss/.build_dir"
+
+job_override=""
+if [ "$#" -eq 3 ]; then
+  if [ "$2" != "--num-jobs" ]; then
+    usage
+  fi
+  job_override="$3"
+  if [[ ! $job_override =~ ^[1-9][0-9]*$ ]]; then
+    echo "Invalid --num-jobs value: $job_override (expected a positive integer)" >&2
+    exit 1
+  fi
+fi
 
 need_sai=0
 stack_label=""
@@ -72,14 +96,19 @@ platform)
   ;;
 esac
 
-gb_per_core=$(free -g | awk '/^Mem:/{print int($2 / '$mem_per_core')}')
-num_cores=$(nproc)
-if [ "$num_cores" -gt "$gb_per_core" ]; then
-  num_jobs="$gb_per_core"
+if [ -n "$job_override" ]; then
+  num_jobs="$job_override"
 else
-  num_jobs="$num_cores"
+  gb_per_core=$(free -g | awk '/^Mem:/{print int($2 / '$mem_per_core')}')
+  num_cores=$(nproc)
+  if [ "$num_cores" -gt "$gb_per_core" ]; then
+    num_jobs="$gb_per_core"
+  else
+    num_jobs="$num_cores"
+  fi
 fi
 export num_jobs # Export so it's available in subshells
+log "Using num_jobs=${num_jobs} for ${stack_type} stack"
 
 BUILD_TYPE="${BUILD_TYPE:-MinSizeRel}"
 

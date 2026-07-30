@@ -221,6 +221,7 @@ class TestRunTestsWarmboot:
         mock_args.sai_logging = "WARN"
         mock_args.fboss_logging = "WARN"
         mock_args.test_run_timeout = 300
+        mock_args.num_warmboot_iterations = 1
         return mock_args
 
     def _make_conf(self, tmp_path):
@@ -452,6 +453,7 @@ class TestGetTestsToRunFilter:
         assert "HwVlanTest.Delete" not in second_filter
         assert result == ["HwRouteTest.Add"]
 
+<<<<<<< HEAD
     def test_skipped_known_bad_names_are_recorded(self, runner):
         # All dropped -> empty run list, but names still captured.
         listed = ["HwVlanTest.Delete", "HwMirrorTest.Span"]
@@ -773,3 +775,59 @@ class TestCollectRmaShowtechOnFail:
                 setup_warmboot=False,
             )
         mock_collect.assert_not_called()
+||||||| 320c57f440
+=======
+
+class TestResolveTestsFile:
+    """Tests for the shared TestRunner._resolve_tests_file helper used by every
+    runner: prefer a caller-supplied override when it exists, else fall back to
+    the default file when it exists, else return "" (no filtering). Per-runner
+    tests only assert their default file wires through; the resolution logic is
+    exercised here once."""
+
+    _EXISTS = "fboss_test_runner.runners.test_runner.os.path.exists"
+    _DEFAULT = "./share/known_bad_tests/default.materialized_JSON"
+
+    def test_override_used_when_present(self, runner):
+        with patch(self._EXISTS, return_value=True):
+            assert (
+                runner._resolve_tests_file(
+                    "/tmp/override.json", self._DEFAULT, "known_bad"
+                )
+                == "/tmp/override.json"
+            )
+
+    def test_override_missing_falls_back_to_default(self, runner):
+        # Override set but absent -> use the (present) default file.
+        with patch(self._EXISTS, side_effect=lambda p: p == self._DEFAULT):
+            assert (
+                runner._resolve_tests_file(
+                    "/tmp/missing.json", self._DEFAULT, "known_bad"
+                )
+                == self._DEFAULT
+            )
+
+    def test_override_and_default_missing_returns_empty(self, runner):
+        with patch(self._EXISTS, return_value=False):
+            assert (
+                runner._resolve_tests_file(
+                    "/tmp/missing.json", self._DEFAULT, "known_bad"
+                )
+                == ""
+            )
+
+    def test_default_used_when_present(self, runner):
+        with patch(self._EXISTS, return_value=True):
+            assert (
+                runner._resolve_tests_file(None, self._DEFAULT, "unsupported")
+                == self._DEFAULT
+            )
+
+    def test_default_missing_returns_empty(self, runner):
+        with patch(self._EXISTS, return_value=False):
+            assert runner._resolve_tests_file(None, self._DEFAULT, "unsupported") == ""
+
+    def test_no_default_returns_empty(self, runner):
+        # A runner with no default file (default_file="") and no override.
+        assert runner._resolve_tests_file(None, "", "unsupported") == ""
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80

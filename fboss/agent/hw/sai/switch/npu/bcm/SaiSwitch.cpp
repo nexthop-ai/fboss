@@ -8,8 +8,13 @@
 #include "fboss/agent/hw/sai/switch/SaiVendorSwitchManager.h" // NOLINT(misc-include-cleaner)
 #include "fboss/agent/packet/PktUtil.h"
 
+<<<<<<< HEAD
 #include <type_traits>
 #include <utility>
+||||||| 320c57f440
+=======
+#include <fmt/format.h>
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
 
 extern "C" {
 #if !defined(BRCM_SAI_SDK_XGS_AND_DNX)
@@ -372,7 +377,7 @@ std::string errorType(sai_switch_error_type_t type) {
     default:
       break;
   }
-  return folly::sformat("Unknown error type: {} ", static_cast<int>(type));
+  return fmt::format("Unknown error type: {} ", static_cast<int>(type));
 }
 
 #if defined(BRCM_SAI_SDK_DNX_GTE_11_7)

@@ -69,11 +69,11 @@
 #include "fboss/lib/phy/gen-cpp2/prbs_types.h"
 
 #include <fb303/ServiceData.h>
+#include <fmt/format.h>
 #include <folly/IPAddressV4.h>
 #include <folly/IPAddressV6.h>
 #include <folly/Range.h>
 #include <folly/container/F14Map.h>
-#include <folly/functional/Partial.h>
 #include <folly/io/Cursor.h>
 #include <folly/io/IOBuf.h>
 #include <folly/logging/xlog.h>
@@ -750,8 +750,15 @@ void validateLinkLocalNextHopInterfaces(
   for (const auto& nhop : nextHops) {
     const auto& address = toIPAddress(*nhop.address());
     auto ifName = apache::thrift::get_pointer(nhop.address()->ifName());
-    if (!ifName || !address.isV6() || !address.isLinkLocal()) {
+    if (!ifName) {
       continue;
+    }
+    if (!(address.isV6() && address.isLinkLocal())) {
+      throw FbossError(
+          "Interface ",
+          *ifName,
+          " associated with a non link-local next hop ",
+          address.str());
     }
     auto intfID = utility::getIDFromTunIntfName(*ifName);
     if (!state->getInterfaces()->getNodeIf(intfID)) {
@@ -1616,7 +1623,7 @@ void ThriftHandler::patchCurrentStateJSONForPaths(
   };
 
   sw_->updateState(
-      folly::sformat("Update state by patchCurrentStateJSONForPaths: "),
+      fmt::format("Update state by patchCurrentStateJSONForPaths: "),
       std::move(updateDsfStateFn));
 }
 
@@ -1724,6 +1731,22 @@ void ThriftHandler::setInterfacesPrbs(
     auto stateCopy = std::make_unique<prbs::InterfacePrbsState>(*state);
     setInterfacePrbs(std::move(portNamePtr), component, std::move(stateCopy));
   }
+}
+
+void ThriftHandler::addAdjacencyFrr(
+    std::unique_ptr<FrrProtectedObject>,
+    std::unique_ptr<std::vector<NextHopThrift>>) {
+  ensureConfigured(__func__);
+
+  // TODO add support
+  throw FbossError("addAdjacencyFrr Not supported");
+}
+
+void ThriftHandler::removeAdjacencyFrr(std::unique_ptr<FrrProtectedObject>) {
+  ensureConfigured(__func__);
+
+  // TODO add support
+  throw FbossError("removeAdjacencyFrr Not supported");
 }
 
 void ThriftHandler::clearPortPrbsStats(
@@ -2578,18 +2601,6 @@ int32_t ThriftHandler::flushNeighborEntry(
       if (parsedIP.isV6()) {
         sw_->sendNeighborSolicitationForConfiguredInterfaces(
             "NDP entry clear", parsedIP.asV6());
-      }
-    }
-
-    // Check if ARP static neighbor is enabled
-    if (FLAGS_arp_static_neighbor) {
-      XLOG(DBG4) << "ThriftHandler::flushNeighborEntry - Entry flushed for "
-                 << parsedIP.str()
-                 << ", checking for interfaces that need ARP request";
-
-      if (parsedIP.isV4()) {
-        sw_->sendArpRequestForConfiguredInterfaces(
-            "ARP entry clear", parsedIP.asV4());
       }
     }
 

@@ -12,12 +12,27 @@ per-family behavior in test_sai_benchmark_suite.py / test_qsfp_benchmark_suite.p
 from unittest.mock import Mock, patch
 
 import pytest
+<<<<<<< HEAD
+||||||| 320c57f440
+from fboss_test_runner.runners.benchmark_test_runner import BenchmarkTestRunner
+=======
+from fboss_test_runner.frameworks.qsfp_benchmark_suite import QsfpBenchmarkSuite
+from fboss_test_runner.frameworks.sai_benchmark_suite import SaiBenchmarkSuite
+from fboss_test_runner.main import _build_parser
+from fboss_test_runner.runners.benchmark_test_runner import BenchmarkTestRunner
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
 
+<<<<<<< HEAD
 from fboss_test_runner.frameworks.qsfp_benchmark_suite import QsfpBenchmarkSuite
 from fboss_test_runner.frameworks.sai_benchmark_suite import SaiBenchmarkSuite
 from fboss_test_runner.main import _build_parser
 from fboss_test_runner.runners.benchmark_test_runner import BenchmarkTestRunner
 
+||||||| 320c57f440
+# Fixtures
+
+=======
+>>>>>>> 3559fdd971013577a6bc60c48bf25bd69bfdbc80
 
 @pytest.fixture
 def runner():
