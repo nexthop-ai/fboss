@@ -562,6 +562,9 @@ void Utils::printCoopGitHistory() const {
 }
 
 void Utils::printConfigDetails() {
+  std::cout << "##### Nexthop Build Info #####" << std::endl;
+  printFile("/etc/nexthop_build_info");
+
   printCoopConfigFiles();
 
   std::cout << "##### running-agent.conf Configuration #####" << std::endl;
