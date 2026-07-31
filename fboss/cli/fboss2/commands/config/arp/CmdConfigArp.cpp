@@ -28,6 +28,7 @@
 
 namespace facebook::fboss {
 
+<<<<<<< HEAD
 namespace {
 constexpr std::string_view kAttrTimeout = "timeout";
 constexpr std::string_view kAttrAgeInterval = "age-interval";
@@ -45,6 +46,9 @@ const std::set<std::string_view> kArpValidAttrs = {
     kAttrStaleInterval,
 };
 } // namespace
+=======
+using namespace arp_attrs;
+>>>>>>> 1b94c3a41e (NOS-5734: Add fboss2-dev delete arp subcommand (#1434))
 
 ArpConfigArgs::ArpConfigArgs(std::vector<std::string> v) {
   if (v.size() != 2) {
@@ -52,15 +56,20 @@ ArpConfigArgs::ArpConfigArgs(std::vector<std::string> v) {
         fmt::format(
             "Expected <attr> <value>, got {} argument(s). Valid attrs: {}",
             v.size(),
-            folly::join(", ", kArpValidAttrs)));
+            folly::join(", ", kValidAttrs)));
   }
 
+<<<<<<< HEAD
   if (kArpValidAttrs.find(v[0]) == kArpValidAttrs.end()) {
+=======
+  if (std::find(kValidAttrs.begin(), kValidAttrs.end(), v[0]) ==
+      kValidAttrs.end()) {
+>>>>>>> 1b94c3a41e (NOS-5734: Add fboss2-dev delete arp subcommand (#1434))
     throw std::invalid_argument(
         fmt::format(
             "Unknown ARP attribute '{}'. Valid attrs: {}",
             v[0],
-            folly::join(", ", kArpValidAttrs)));
+            folly::join(", ", kValidAttrs)));
   }
 
   int32_t parsed = 0;
@@ -92,6 +101,7 @@ CmdConfigArpTraits::RetType CmdConfigArp::queryClient(
   const auto& attr = args.getAttribute();
   int32_t value = args.getValue();
 
+<<<<<<< HEAD
   if (attr == kAttrTimeout) {
     swConfig.arpTimeoutSeconds() = value;
   } else if (attr == kAttrAgeInterval) {
@@ -100,8 +110,18 @@ CmdConfigArpTraits::RetType CmdConfigArp::queryClient(
     swConfig.maxNeighborProbes() = value;
   } else if (attr == kAttrStaleInterval) {
     swConfig.staleEntryInterval() = value;
+=======
+  if (attr == kTimeout) {
+    swConfig.arpTimeoutSeconds() = args.getValue();
+  } else if (attr == kAgeInterval) {
+    swConfig.arpAgerInterval() = args.getValue();
+  } else if (attr == kMaxProbes) {
+    swConfig.maxNeighborProbes() = args.getValue();
+  } else if (attr == kStaleInterval) {
+    swConfig.staleEntryInterval() = args.getValue();
+>>>>>>> 1b94c3a41e (NOS-5734: Add fboss2-dev delete arp subcommand (#1434))
   } else {
-    // ArpConfigArgs validates this; defensive guard in case kArpValidAttrs
+    // ArpConfigArgs validates this; defensive guard in case kValidAttrs
     // drifts from the dispatch switch here.
     throw std::runtime_error(fmt::format("Unhandled ARP attribute '{}'", attr));
   }

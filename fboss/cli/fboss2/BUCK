@@ -1191,6 +1191,15 @@ cpp_library(
         "commands/config/vlan/static_mac/delete/CmdConfigVlanStaticMacDelete.cpp",
         "commands/delete/acl/CmdDeleteAcl.cpp",
         "commands/delete/acl/rule/CmdDeleteAclRule.cpp",
+<<<<<<< HEAD
+=======
+        "commands/delete/arp/CmdDeleteArp.cpp",
+        "commands/delete/copp/CmdDeleteCopp.cpp",
+        "commands/delete/copp/cpu_traffic_policy/CmdDeleteCoppCpuTrafficPolicy.cpp",
+        "commands/delete/copp/cpu_traffic_policy/match/CmdDeleteCoppCpuTrafficPolicyMatch.cpp",
+        "commands/delete/copp/cpu_traffic_policy/match/action/CmdDeleteCoppCpuTrafficPolicyMatchAction.cpp",
+        "commands/delete/vlan/CmdDeleteVlan.cpp",
+>>>>>>> 1b94c3a41e (NOS-5734: Add fboss2-dev delete arp subcommand (#1434))
         "commands/delete/interface/CmdDeleteInterface.cpp",
         "commands/delete/interface/ipv6/CmdDeleteInterfaceIpv6.cpp",
         "commands/delete/interface/ipv6/ndp/CmdDeleteInterfaceIpv6Ndp.cpp",
@@ -1322,6 +1331,15 @@ cpp_library(
         "commands/config/vlan/static_mac/delete/CmdConfigVlanStaticMacDelete.h",
         "commands/delete/acl/CmdDeleteAcl.h",
         "commands/delete/acl/rule/CmdDeleteAclRule.h",
+<<<<<<< HEAD
+=======
+        "commands/delete/arp/CmdDeleteArp.h",
+        "commands/delete/copp/CmdDeleteCopp.h",
+        "commands/delete/copp/cpu_traffic_policy/CmdDeleteCoppCpuTrafficPolicy.h",
+        "commands/delete/copp/cpu_traffic_policy/match/CmdDeleteCoppCpuTrafficPolicyMatch.h",
+        "commands/delete/copp/cpu_traffic_policy/match/action/CmdDeleteCoppCpuTrafficPolicyMatchAction.h",
+        "commands/delete/vlan/CmdDeleteVlan.h",
+>>>>>>> 1b94c3a41e (NOS-5734: Add fboss2-dev delete arp subcommand (#1434))
         "commands/delete/interface/CmdDeleteInterface.h",
         "commands/delete/interface/ipv6/CmdDeleteInterfaceIpv6.h",
         "commands/delete/interface/ipv6/ndp/CmdDeleteInterfaceIpv6Ndp.h",
