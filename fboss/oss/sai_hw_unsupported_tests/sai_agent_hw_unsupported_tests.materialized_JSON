@@ -4850,7 +4850,13 @@
           "test_name_regex": "AgentSrv6DecapTest.*$"
         },
         {
+          "test_name_regex": "AgentSrv6EcmpLoadBalancerTest.*$"
+        },
+        {
           "test_name_regex": "AgentSrv6EncapTest.*$"
+        },
+        {
+          "test_name_regex": "AgentSrv6FlowLabelEcmpLoadBalancerTest.*$"
         },
         {
           "test_name_regex": "AgentSrv6MidpointTest.*$"
@@ -4930,7 +4936,13 @@
           "test_name_regex": "AgentSrv6DecapTest.*$"
         },
         {
+          "test_name_regex": "AgentSrv6EcmpLoadBalancerTest.*$"
+        },
+        {
           "test_name_regex": "AgentSrv6EncapTest.*$"
+        },
+        {
+          "test_name_regex": "AgentSrv6FlowLabelEcmpLoadBalancerTest.*$"
         },
         {
           "test_name_regex": "AgentSrv6MidpointTest.*$"
