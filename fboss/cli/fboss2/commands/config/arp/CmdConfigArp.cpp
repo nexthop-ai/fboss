@@ -30,24 +30,7 @@
 
 namespace facebook::fboss {
 
-namespace {
-constexpr std::string_view kAttrTimeout = "timeout";
-constexpr std::string_view kAttrAgeInterval = "age-interval";
-constexpr std::string_view kAttrMaxProbes = "max-probes";
-constexpr std::string_view kAttrStaleInterval = "stale-interval";
-/* arpRefreshSeconds is defined in switch_config.thrift yet not implemented
-constexpr std::string_view kAttrRefresh = "refresh";
-*/
-
-// Valid ARP/NDP attribute names accepted by `fboss2-dev config arp <attr>`.
-// Alphabetical order so folly::join produces a stable, sorted error message.
-constexpr auto kArpValidAttrs = std::to_array<std::string_view>({
-    kAttrAgeInterval,
-    kAttrMaxProbes,
-    kAttrStaleInterval,
-    kAttrTimeout,
-});
-} // namespace
+using namespace arp_attrs;
 
 ArpConfigArgs::ArpConfigArgs(std::vector<std::string> v) {
   if (v.size() != 2) {
@@ -55,16 +38,16 @@ ArpConfigArgs::ArpConfigArgs(std::vector<std::string> v) {
         fmt::format(
             "Expected <attr> <value>, got {} argument(s). Valid attrs: {}",
             v.size(),
-            folly::join(", ", kArpValidAttrs)));
+            folly::join(", ", kValidAttrs)));
   }
 
-  if (std::find(kArpValidAttrs.begin(), kArpValidAttrs.end(), v[0]) ==
-      kArpValidAttrs.end()) {
+  if (std::find(kValidAttrs.begin(), kValidAttrs.end(), v[0]) ==
+      kValidAttrs.end()) {
     throw std::invalid_argument(
         fmt::format(
             "Unknown ARP attribute '{}'. Valid attrs: {}",
             v[0],
-            folly::join(", ", kArpValidAttrs)));
+            folly::join(", ", kValidAttrs)));
   }
 
   int32_t parsed = 0;
@@ -94,16 +77,16 @@ CmdConfigArpTraits::RetType CmdConfigArp::queryClient(
 
   const auto& attr = args.getAttribute();
 
-  if (attr == kAttrTimeout) {
+  if (attr == kTimeout) {
     swConfig.arpTimeoutSeconds() = args.getValue();
-  } else if (attr == kAttrAgeInterval) {
+  } else if (attr == kAgeInterval) {
     swConfig.arpAgerInterval() = args.getValue();
-  } else if (attr == kAttrMaxProbes) {
+  } else if (attr == kMaxProbes) {
     swConfig.maxNeighborProbes() = args.getValue();
-  } else if (attr == kAttrStaleInterval) {
+  } else if (attr == kStaleInterval) {
     swConfig.staleEntryInterval() = args.getValue();
   } else {
-    // ArpConfigArgs validates this; defensive guard in case kArpValidAttrs
+    // ArpConfigArgs validates this; defensive guard in case kValidAttrs
     // drifts from the dispatch switch here.
     throw std::runtime_error(fmt::format("Unhandled ARP attribute '{}'", attr));
   }
