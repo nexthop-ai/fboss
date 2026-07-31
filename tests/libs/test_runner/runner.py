@@ -231,6 +231,23 @@ def _normalize_model(model: str) -> str:
     """Shorten device-DB model name to FBOSS codename form, e.g. NH-4010-F -> nh4010f."""
     return model.lower().replace("-", "")
 
+
+def _load_json_pairs(path: str | None) -> dict[str, str]:
+    """Load a {port: peer} JSON map; {} when unset, unreadable or not a map."""
+    if not path:
+        return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            pairs = json.load(f)
+    except (OSError, ValueError) as e:
+        logger.warning("Could not read snake-pairs file %s: %s", path, e)
+        return {}
+    if not isinstance(pairs, dict):
+        logger.warning("Snake-pairs file %s is not a JSON object; ignoring", path)
+        return {}
+    return pairs
+
+
 def _repo_dir(relative: Path) -> Path:
     for parent in Path(__file__).resolve().parents:
         if (parent / relative).is_dir():
@@ -1027,11 +1044,11 @@ class _CablingAwareRunnerMixin:
     def _prepare_pass(self, model: str, ports: list[str]) -> None:  # noqa: ARG002
         pass
 
-    def _load_cabling(self, cabling_path: str) -> tuple[list[str], list[str]]:
-        """Parse TEST_PORTS_INFO: {port: {"is_copper": bool | None}}.
+    def _load_cabling(self, cabling_path: str) -> tuple[list[str], list[str], dict[str, str | None]]:
+        """Parse TEST_PORTS_INFO: {port: {"is_copper": bool | None, "media_interface": str | None}}.
 
-        Returns (all_ports, optics_ports); unknown media type counts toward
-        all_ports but not optics_ports.
+        Returns (all_ports, optics_ports, media_by_port); unknown media type
+        counts toward all_ports but not optics_ports.
         """
         try:
             with open(cabling_path, encoding="utf-8") as f:
@@ -1040,7 +1057,16 @@ class _CablingAwareRunnerMixin:
             raise RuntimeError(f"Failed to load ports-info file {cabling_path}: {e}") from e
         all_ports = list(cabling)
         optics_ports = [p for p, info in cabling.items() if info.get("is_copper") is False]
-        return all_ports, optics_ports
+        media_by_port = {p: info.get("media_interface") for p, info in cabling.items()}
+        return all_ports, optics_ports, media_by_port
+
+    def _gate_filters(
+        self, patterns: list[str], media_by_port: dict[str, str | None], optics_ports: list[str]
+    ) -> tuple[list[str], list[tuple[str, str]]]:
+        """Hook for cabling-aware filter gating. Base impl is a no-op (keeps
+        all patterns); LinkTestRunner overrides to drop patterns the DUT's
+        cabling can't satisfy."""
+        return list(patterns), []
 
     @classmethod
     def _split_filters(cls, filters: list[str]) -> tuple[list[str], list[str]]:
@@ -1051,15 +1077,12 @@ class _CablingAwareRunnerMixin:
             bucket.append(f)
         return copper_safe, optics_only
 
-    @classmethod
-    def _split_gtest_filter(cls, expr: str) -> tuple[str, str]:
-        """Split a single --gtest_filter expression into copper-safe/optics-only
-        sub-expressions, sharing the negative-pattern suffix.
+    @staticmethod
+    def _parse_gtest_filter(expr: str) -> tuple[list[str], str]:
+        """Split a --gtest_filter expression into its positive patterns and shared
+        negative-pattern suffix.
 
-        gtest's own filter grammar is positives['-'negatives], split on the first
-        '-'; colon-separated positives are classified the same way _split_filters
-        buckets tc["filters"], so a mixed TESTFILTER runs as two passes against
-        the right port set each, instead of once against the wrong one.
+        gtest's own filter grammar is positives['-'negatives], split on the first '-'.
         """
         positive, sep, negative = expr.partition("-")
         patterns = [p for p in positive.split(":") if p]
@@ -1067,11 +1090,27 @@ class _CablingAwareRunnerMixin:
             # "-foo" alone means "everything except foo" (gtest defaults the
             # positive side to "*"); an empty positive here is not "no tests".
             patterns = ["*"]
-        copper_safe, optics_only = cls._split_filters(patterns)
         suffix = f"-{negative}" if sep else ""
+        return patterns, suffix
+
+    @classmethod
+    def _bucket_expressions(cls, patterns: list[str], suffix: str) -> tuple[str, str]:
+        """Bucket patterns, then rejoin each side into a --gtest_filter expression."""
+        copper_safe, optics_only = cls._split_filters(patterns)
         copper_expr = ":".join(copper_safe) + suffix if copper_safe else ""
         optics_expr = ":".join(optics_only) + suffix if optics_only else ""
         return copper_expr, optics_expr
+
+    @classmethod
+    def _split_gtest_filter(cls, expr: str) -> tuple[str, str]:
+        """Split a single --gtest_filter expression into copper-safe/optics-only
+        sub-expressions, sharing the negative-pattern suffix.
+
+        Colon-separated positives are classified the same way _split_filters
+        buckets tc["filters"], so a mixed TESTFILTER runs as two passes against
+        the right port set each, instead of once against the wrong one.
+        """
+        return cls._bucket_expressions(*cls._parse_gtest_filter(expr))
 
     def _pass_local_paths(self, label: str) -> tuple[str, str]:
         prefix = type(self).__name__.lower()
@@ -1089,18 +1128,23 @@ class _CablingAwareRunnerMixin:
     def _run_cabling_aware(self, cabling_path, test_context, skip_tr_xml):
         # setup()/deploy already ran in the base run_test() before this call.
         model = _normalize_model(self.tc["model"])
-        all_ports, optics_ports = self._load_cabling(cabling_path)
+        all_ports, optics_ports, media_by_port = self._load_cabling(cabling_path)
 
         gtest_filter = self.tc.get("gtest_filter")
         if gtest_filter:
-            copper_bucket, optics_bucket = self._split_gtest_filter(gtest_filter)
+            patterns, suffix = self._parse_gtest_filter(gtest_filter)
         else:
-            copper_bucket, optics_bucket = self._split_filters(self.tc["filters"])
+            patterns, suffix = list(self.tc["filters"]), ""
+
+        kept_patterns, skipped = self._gate_filters(patterns, media_by_port, optics_ports)
+        if gtest_filter:
+            copper_bucket, optics_bucket = self._bucket_expressions(kept_patterns, suffix)
+        else:
+            copper_bucket, optics_bucket = self._split_filters(kept_patterns)
 
         passes = []  # list of (label, filter_value, ports)
         if copper_bucket:
             passes.append(("main", copper_bucket, all_ports))
-        skipped = []  # list of (filter_pattern, reason)
         if optics_bucket:
             if optics_ports:
                 passes.append(("optics", optics_bucket, optics_ports))
@@ -1210,14 +1254,31 @@ class QsfpTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
 class LinkTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
     """Runner for link tests."""
 
-    # These hard-assert a non-empty optical/active transceiver set.
+    # Must stay in step with the PRBS_*_TEST instantiations in AgentEnsemblePrbsTest.cpp.
+    _MEDIA_INTERFACE_TOKENS = (
+        "FR1_100G",
+        "FR4_200G",
+        "FR4_400G",
+        "DR4_400G",
+        "CR4_400G",
+        "CR8_800G",
+        "FR8_800G",
+        "DR4_800G",
+    )
+
+    # These hard-assert a non-empty optical/active transceiver set. CR codes belong
+    # here too: the PRBS pair source drops passive copper before checkValidMedia runs.
     _OPTICS_ONLY_FILTER_SUBSTRINGS = (
         "verifyTxRxLatches",
         "opticsTxDisableRandomPorts",
         "opticsTxDisableEnable",
         "opticsVdmPerformanceMonitoring",
-        "FR4",
+        *_MEDIA_INTERFACE_TOKENS,
     )
+
+    # TCVR_L-to-TCVR_L programs PRBS on both ends of a pair; ASIC-to-TCVR_S only on
+    # the one port it tests. Matched against the generated class names.
+    _BOTH_ENDS_TOKEN = "TCVR_L"
 
     _SNAKE_PAIRS_ENV_VAR = "TEST_SNAKE_PAIRS"
     _BASE_CONFIG_DIR = Path("fboss/oss/link_test_configs")
@@ -1239,6 +1300,58 @@ class LinkTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
 
     def _prepare_pass(self, model: str, ports: list[str]) -> None:  # noqa: ARG002
         self._pass_ports = ports
+
+    @classmethod
+    def _media_token_in(cls, pattern: str) -> str | None:
+        return next((token for token in cls._MEDIA_INTERFACE_TOKENS if token in pattern), None)
+
+    def _load_snake_pairs(self) -> dict[str, str]:
+        return _load_json_pairs(os.getenv(self._SNAKE_PAIRS_ENV_VAR))
+
+    @classmethod
+    def _media_cabled(
+        cls, pattern: str, media: str, media_by_port: dict[str, str | None], pairs: dict[str, str]
+    ) -> bool:
+        if not pairs:
+            # No pairs to check ends against; fall back to "cabled anywhere".
+            return media in media_by_port.values()
+        if cls._BOTH_ENDS_TOKEN in pattern:
+            return any(
+                media_by_port.get(port) == media and media_by_port.get(peer) == media
+                for port, peer in pairs.items()
+            )
+        return any(media_by_port.get(port) == media for port in pairs)
+
+    def _gate_filters(
+        self, patterns: list[str], media_by_port: dict[str, str | None], optics_ports: list[str]
+    ) -> tuple[list[str], list[tuple[str, str]]]:
+        """Keep only patterns whose referenced media is actually cabled on this DUT.
+
+        PRBS patterns naming no media are gated too: they would expand to every
+        media-templated class, including ones with no ports, and abort the binary.
+        """
+        optical = set(optics_ports)
+        eligible = {p: m for p, m in media_by_port.items() if p in optical}
+        pairs = {p: peer for p, peer in self._load_snake_pairs().items() if p in eligible and peer in eligible}
+        kept, skipped = [], []
+        for pattern in patterns:
+            media = self._media_token_in(pattern)
+            if media is None and "Prbs" not in pattern:
+                kept.append(pattern)
+            elif media is None:
+                # Must precede the no-optics case: such a pattern is copper-safe, so
+                # it would otherwise reach the main pass and abort the binary there.
+                skipped.append((pattern, "PRBS filter names no media interface"))
+            elif not eligible:
+                # No optical/active ports at all; the optics-pass check reports that.
+                kept.append(pattern)
+            elif not any(eligible.values()):
+                skipped.append((pattern, "port media interface unavailable"))
+            elif self._media_cabled(pattern, media, eligible, pairs):
+                kept.append(pattern)
+            else:
+                skipped.append((pattern, f"no {media} optics cabled on this DUT"))
+        return kept, skipped
 
     @classmethod
     def _config_name(cls, model: str) -> str:
@@ -1369,18 +1482,24 @@ class LinkTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
 
         # Set by the nhtest executor to a {port: peer_port} JSON file (TEST_SNAKE_PAIRS)
         # when cabling was generated from netbox; absent for standalone dev runs.
-        cabling_path = os.getenv(self._SNAKE_PAIRS_ENV_VAR)
-        if not cabling_path:
+        pairs = self._load_snake_pairs()
+        if not pairs:
             return
 
-        config_name = self._config_name(model)
-
-        with open(cabling_path, encoding="utf-8") as f:
-            pairs = json.load(f)
         if self._pass_ports is not None:
             allowed = set(self._pass_ports)
             pairs = {port: peer for port, peer in pairs.items() if port in allowed and peer in allowed}
+        # The pairs come from netbox while _pass_ports comes from the DUT, so a
+        # documented cable whose optic is absent drops out here. Falling back to the
+        # stock config beats letting _overlay_cabling raise mid-run, which would skip
+        # post_test and leave fsdb/qsfp_service stopped.
+        if not pairs:
+            logger.warning("No cabled pairs left after filtering to this pass's ports; using the stock config")
+            # An earlier pass may have uploaded one; don't silently reuse its cabling.
+            self._use_generated_config = False
+            return
 
+        config_name = self._config_name(model)
         base_config, port_map = self._load_base_config_and_port_map(self._BASE_CONFIG_DIR, config_name)
         config = self._overlay_cabling(copy.deepcopy(base_config), pairs, port_map)
         self._upload_generated_config(config)

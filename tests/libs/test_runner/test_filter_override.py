@@ -221,3 +221,209 @@ class TestCablingAwareGtestFilterSplit:
         assert kwargs["skipped"] == [
             ("*verifyTxRxLatches*", "earlier pass failed; run aborted")
         ]
+
+
+def _run_media_gated(tmp_path, monkeypatch, filters, ports_info, pairs=None):
+    """Drive LinkTestRunner._run_cabling_aware() in filters-list mode (as
+    t1_link_hw_tests.py uses it) with TEST_PORTS_INFO/TEST_SNAKE_PAIRS backing
+    the media gate, and capture what actually ran vs. what got skipped."""
+    runner = LinkTestRunner()
+    runner.tc = {"model": "m4062nhp", "gtest_filter": None, "filters": filters}
+    runner.scp_client = MagicMock()
+    runner.scp_client.put_file.return_value = (0, "ok")
+    runner.ssh_client = MagicMock()
+
+    cabling_path = tmp_path / "ports_info.json"
+    cabling_path.write_text(json.dumps(ports_info))
+    if pairs is not None:
+        pairs_path = tmp_path / "snake_pairs.json"
+        pairs_path.write_text(json.dumps(pairs))
+        monkeypatch.setenv("TEST_SNAKE_PAIRS", str(pairs_path))
+    else:
+        monkeypatch.delenv("TEST_SNAKE_PAIRS", raising=False)
+
+    prepare_calls = []
+    execute_calls = []
+
+    def fake_prepare_pass(model, ports):
+        prepare_calls.append((model, list(ports)))
+
+    def fake_execute(model, log_local, xml_local, skip_tr_xml):  # noqa: ARG001
+        execute_calls.append(list(runner.tc["filters"]))
+        return True
+
+    with patch.object(runner, "_prepare_pass", side_effect=fake_prepare_pass), \
+         patch.object(runner, "pre_test"), \
+         patch.object(runner, "post_test"), \
+         patch.object(runner, "_execute_test_binary", side_effect=fake_execute), \
+         patch.object(runner, "_merge_junit_results") as merge, \
+         patch.object(runner, "normalize_test_results_file"):
+        result = runner._run_cabling_aware(str(cabling_path), {}, skip_tr_xml=False)
+
+    _, kwargs = merge.call_args
+    return result, prepare_calls, execute_calls, kwargs["skipped"]
+
+
+_CABLED_PAIR = {"eth1/25/1": "eth1/26/1", "eth1/26/1": "eth1/25/1"}
+
+# Class names the two media-templated PRBS variants generate; the gate requires the
+# media on both ends of a pair for the first and only one end for the second.
+_TCVR_L = "*Prbs_TCVR_L*{}*"
+_ASIC_TCVR_S = "*Prbs_ASIC*TCVR_S*{}*"
+
+
+def _optical(media):
+    return {"is_copper": False, "media_interface": media}
+
+
+class TestMediaGate:
+    """LinkTestRunner._gate_filters(): drops a PRBS filter pattern when its
+    media isn't actually cabled on this DUT, instead of letting the gtest
+    binary hit AgentEnsemblePrbsTest's CHECK(!portsToTest_.empty()) and abort."""
+
+    def test_fr8_only_dut_skips_fr4_and_runs_fr8(self, tmp_path, monkeypatch):
+        ports_info = {"eth1/25/1": _optical("FR8_800G"), "eth1/26/1": _optical("FR8_800G")}
+        result, _, execute_calls, skipped = _run_media_gated(
+            tmp_path, monkeypatch,
+            filters=[_TCVR_L.format("FR4_400G"), _TCVR_L.format("FR8_800G")],
+            ports_info=ports_info, pairs=_CABLED_PAIR,
+        )
+        assert result is True
+        assert execute_calls == [[_TCVR_L.format("FR8_800G")]]
+        assert skipped == [(_TCVR_L.format("FR4_400G"), "no FR4_400G optics cabled on this DUT")]
+
+    def test_matching_pair_runs(self, tmp_path, monkeypatch):
+        ports_info = {"eth1/25/1": _optical("FR4_400G"), "eth1/26/1": _optical("FR4_400G")}
+        result, _, execute_calls, skipped = _run_media_gated(
+            tmp_path, monkeypatch,
+            filters=[_TCVR_L.format("FR4_400G")],
+            ports_info=ports_info, pairs=_CABLED_PAIR,
+        )
+        assert result is True
+        assert execute_calls == [[_TCVR_L.format("FR4_400G")]]
+        assert skipped == []
+
+    def test_media_on_one_end_only_skips_tcvr_l_but_runs_asic(self, tmp_path, monkeypatch):
+        """A mixed-media link: TCVR_L-to-TCVR_L needs both ends, so it is skipped,
+        while ASIC-to-TCVR_S only needs the one port it tests, so it still runs."""
+        ports_info = {"eth1/25/1": _optical("FR4_400G"), "eth1/26/1": _optical("DR4_400G")}
+        result, _, execute_calls, skipped = _run_media_gated(
+            tmp_path, monkeypatch,
+            filters=[_TCVR_L.format("FR4_400G"), _ASIC_TCVR_S.format("FR4_400G")],
+            ports_info=ports_info, pairs=_CABLED_PAIR,
+        )
+        assert result is True
+        assert execute_calls == [[_ASIC_TCVR_S.format("FR4_400G")]]
+        assert skipped == [(_TCVR_L.format("FR4_400G"), "no FR4_400G optics cabled on this DUT")]
+
+    def test_breakout_module_reports_per_port_code(self, tmp_path, monkeypatch):
+        """Guards the module-vs-per-port decode: a 2x400G FR4 breakout part reports
+        FR4_400G per port, so the FR4_400G filter must run, not be skipped."""
+        ports_info = {"eth1/25/1": _optical("FR4_400G"), "eth1/26/1": _optical("FR4_400G")}
+        result, _, execute_calls, skipped = _run_media_gated(
+            tmp_path, monkeypatch,
+            filters=[_TCVR_L.format("FR4_400G"), _TCVR_L.format("FR4_2x400G")],
+            ports_info=ports_info, pairs=_CABLED_PAIR,
+        )
+        assert result is True
+        assert execute_calls == [[_TCVR_L.format("FR4_400G")]]
+        # FR4_2x400G is not a PRBS-instantiated media, so it names no known token.
+        assert skipped == [(_TCVR_L.format("FR4_2x400G"), "PRBS filter names no media interface")]
+
+    def test_missing_media_interface_key_skips_as_unavailable(self, tmp_path, monkeypatch):
+        ports_info = {"eth1/25/1": {"is_copper": False}, "eth1/26/1": {"is_copper": False}}
+        result, _, execute_calls, skipped = _run_media_gated(
+            tmp_path, monkeypatch,
+            filters=[_TCVR_L.format("FR4_400G"), "*LinkTest*trafficRxTx*"],
+            ports_info=ports_info, pairs=_CABLED_PAIR,
+        )
+        assert result is True
+        assert execute_calls == [["*LinkTest*trafficRxTx*"]]
+        assert skipped == [(_TCVR_L.format("FR4_400G"), "port media interface unavailable")]
+
+    def test_no_snake_pairs_falls_back_to_cabled_anywhere(self, tmp_path, monkeypatch):
+        """Without TEST_SNAKE_PAIRS there is no pairing to check ends against, so
+        presence of the media on any cabled port keeps the pattern."""
+        ports_info = {"eth1/25/1": _optical("FR4_400G"), "eth1/26/1": _optical("DR4_400G")}
+        result, _, execute_calls, skipped = _run_media_gated(
+            tmp_path, monkeypatch,
+            filters=[_TCVR_L.format("FR4_400G"), _TCVR_L.format("FR8_800G")],
+            ports_info=ports_info, pairs=None,
+        )
+        assert result is True
+        assert execute_calls == [[_TCVR_L.format("FR4_400G")]]
+        assert skipped == [(_TCVR_L.format("FR8_800G"), "no FR8_800G optics cabled on this DUT")]
+
+    def test_prbs_filter_without_media_token_is_skipped(self, tmp_path, monkeypatch):
+        """A bare *Prbs* pattern would expand to every media-templated class,
+        including ones with no ports, so it is skipped rather than passed through."""
+        ports_info = {"eth1/25/1": _optical("FR8_800G"), "eth1/26/1": _optical("FR8_800G")}
+        result, _, execute_calls, skipped = _run_media_gated(
+            tmp_path, monkeypatch,
+            filters=["*Prbs*", "*LinkTest*trafficRxTx*"],
+            ports_info=ports_info, pairs=_CABLED_PAIR,
+        )
+        assert result is True
+        assert execute_calls == [["*LinkTest*trafficRxTx*"]]
+        assert skipped == [("*Prbs*", "PRBS filter names no media interface")]
+
+    def test_prbs_filter_without_media_token_is_skipped_on_all_copper_dut(self, tmp_path, monkeypatch):
+        """With no optical ports there is nothing to fall back on, so a bare *Prbs*
+        must still be skipped: being copper-safe, it would otherwise reach the main
+        pass and abort the binary there."""
+        ports_info = {
+            "eth1/25/1": {"is_copper": True, "media_interface": "CR8_800G"},
+            "eth1/26/1": {"is_copper": True, "media_interface": "CR8_800G"},
+        }
+        result, _, execute_calls, skipped = _run_media_gated(
+            tmp_path, monkeypatch,
+            filters=["*Prbs*", "*LinkTest*trafficRxTx*"],
+            ports_info=ports_info, pairs=_CABLED_PAIR,
+        )
+        assert result is True
+        assert execute_calls == [["*LinkTest*trafficRxTx*"]]
+        assert skipped == [("*Prbs*", "PRBS filter names no media interface")]
+
+    def test_cr8_800g_runs_in_optics_pass(self, tmp_path, monkeypatch):
+        """CR media still needs an optical/active port: the PRBS pair source drops
+        passive copper, so a CR pattern must run in the optics pass, not the main one."""
+        ports_info = {"eth1/25/1": _optical("CR8_800G"), "eth1/26/1": _optical("CR8_800G")}
+        result, prepare_calls, execute_calls, skipped = _run_media_gated(
+            tmp_path, monkeypatch,
+            filters=[_TCVR_L.format("CR8_800G")],
+            ports_info=ports_info, pairs=_CABLED_PAIR,
+        )
+        assert result is True
+        assert execute_calls == [[_TCVR_L.format("CR8_800G")]]
+        assert skipped == []
+        # One "optics" pass against the optical/active port set, no "main" pass.
+        assert prepare_calls == [("m4062nhp", ["eth1/25/1", "eth1/26/1"])]
+
+    def test_passive_copper_cr_media_is_skipped(self, tmp_path, monkeypatch):
+        """A CR code on a passive DAC is not in the optics port set, so the pattern
+        is skipped rather than running against an empty port set and aborting."""
+        ports_info = {
+            "eth1/25/1": {"is_copper": True, "media_interface": "CR8_800G"},
+            "eth1/26/1": {"is_copper": True, "media_interface": "CR8_800G"},
+        }
+        result, _, execute_calls, skipped = _run_media_gated(
+            tmp_path, monkeypatch,
+            filters=[_TCVR_L.format("CR8_800G")],
+            ports_info=ports_info, pairs=_CABLED_PAIR,
+        )
+        assert result is True
+        assert execute_calls == []
+        assert skipped == [
+            (_TCVR_L.format("CR8_800G"), "no optical/active transceivers cabled on this DUT")
+        ]
+
+
+class TestGateFiltersDefault:
+    def test_base_mixin_gate_is_noop(self):
+        # QsfpTestRunner inherits _gate_filters from the mixin unmodified: media
+        # data flowing through TEST_PORTS_INFO doesn't change QSFP behaviour.
+        kept, skipped = QsfpTestRunner()._gate_filters(
+            ["*Foo*", "*Prbs*FR4_400G*"], {"eth1/1/1": "FR4_400G"}, ["eth1/1/1"]
+        )
+        assert kept == ["*Foo*", "*Prbs*FR4_400G*"]
+        assert skipped == []
