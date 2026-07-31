@@ -25,28 +25,25 @@ def _module_inclusion_filters(filepath):
 
 
 def _build_test_context():
-    """Build the untiered filter from every other agent_hw/sai_test module.
+    """Build the untiered filter from every other agent_hw module.
 
     The untiered tests are everything not already covered by the tiered
-    agent_hw and sai_test modules, so the exclusion criteria are the union of
-    those modules' inclusion criteria.
+    agent_hw modules, so the exclusion criteria are the union of those
+    modules' inclusion criteria.
     """
     this_file = os.path.abspath(__file__)
     agent_hw_dir = os.path.dirname(this_file)
-    tests_dir = os.path.dirname(agent_hw_dir)
-    sai_test_dir = os.path.join(tests_dir, "sai_test")
 
     exclusions = []
-    for test_dir in (agent_hw_dir, sai_test_dir):
-        for filename in sorted(os.listdir(test_dir)):
-            if not filename.endswith(".py") or filename == "__init__.py":
-                continue
-            filepath = os.path.join(test_dir, filename)
-            if os.path.abspath(filepath) == this_file:
-                continue
-            for regex in _module_inclusion_filters(filepath):
-                if regex not in exclusions:
-                    exclusions.append(regex)
+    for filename in sorted(os.listdir(agent_hw_dir)):
+        if not filename.endswith(".py") or filename == "__init__.py":
+            continue
+        filepath = os.path.join(agent_hw_dir, filename)
+        if os.path.abspath(filepath) == this_file:
+            continue
+        for regex in _module_inclusion_filters(filepath):
+            if regex not in exclusions:
+                exclusions.append(regex)
 
     filters = ["*"]
     for i, regex in enumerate(exclusions):
