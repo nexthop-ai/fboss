@@ -38,6 +38,7 @@
 
 #include <folly/IPAddressV6.h>
 #include <thrift/lib/cpp/util/EnumUtils.h>
+#include <thrift/lib/cpp2/protocol/Serializer.h>
 #include "fboss/agent/gen-cpp2/platform_config_types.h"
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/agent/if/gen-cpp2/FbossCtrl.h"
@@ -100,6 +101,31 @@ void Fboss2IntegrationTest::discardSession() const {
   // Reset the in-memory singleton so the next CLI command starts a fresh
   // session from the current system config, not stale in-process state.
   ConfigSession::resetInstance();
+}
+
+std::string Fboss2IntegrationTest::snapshotConfig() const {
+  discardSession();
+  auto snapshot = apache::thrift::SimpleJSONSerializer::serialize<std::string>(
+      ConfigSession::getInstance().getAgentConfig());
+  discardSession();
+  return snapshot;
+}
+
+void Fboss2IntegrationTest::restoreConfig(const std::string& configJson) const {
+  if (configJson.empty()) {
+    return;
+  }
+  discardSession();
+
+  XLOG(INFO) << "Restoring config snapshot...";
+  auto& session = ConfigSession::getInstance();
+  auto& config = session.getAgentConfig();
+  apache::thrift::SimpleJSONSerializer::deserialize(configJson, config);
+  session.saveConfig(
+      cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
+  commitConfig();
+  waitForAgentReady();
+  XLOG(INFO) << "Config snapshot restored";
 }
 
 Fboss2IntegrationTest::Result Fboss2IntegrationTest::executeCliCommand(
@@ -352,6 +378,15 @@ Fboss2IntegrationTest::Interface Fboss2IntegrationTest::getInterfaceInfo(
 }
 
 std::string Fboss2IntegrationTest::getRandomInterfacePortName() const {
+  auto picked = getRandomInterfacePortNames(1);
+  if (picked.empty()) {
+    throw std::runtime_error("No INTERFACE_PORT found in getAllPortInfo");
+  }
+  return picked.front();
+}
+
+std::vector<std::string> Fboss2IntegrationTest::getRandomInterfacePortNames(
+    size_t count) const {
   // Retry with backoff to handle the window where the agent is processing a
   // config reload after a preceding commit. Agent reloads can take up to ~30s.
   constexpr int kMaxRetries = 60;
@@ -362,6 +397,7 @@ std::string Fboss2IntegrationTest::getRandomInterfacePortName() const {
   // still carry an L3 interface, but that interface is virtual and the agent
   // omits its member ports from getAllInterfaces(); selecting one would make
   // getInterfaceIdForPort() throw "No L3 interface found for port".
+  std::vector<std::string> best;
   for (int attempt = 0; attempt < kMaxRetries; ++attempt) {
     HostInfo hostInfo("localhost");
     auto client =
@@ -380,23 +416,27 @@ std::string Fboss2IntegrationTest::getRandomInterfacePortName() const {
         upCandidates.push_back(*portInfo.name());
       }
     }
-    const auto& pool = !upCandidates.empty() ? upCandidates : allCandidates;
-    if (!pool.empty()) {
+    auto& pool = upCandidates.size() >= count ? upCandidates : allCandidates;
+    if (pool.size() >= count) {
+      // Randomize the selection to reduce the chance of piling test load onto
+      // the same ports across back-to-back runs.
       thread_local std::mt19937 rng{std::random_device{}()};
-      std::uniform_int_distribution<size_t> dist(0, pool.size() - 1);
-      const auto& chosenName = pool[dist(rng)];
-      XLOG(INFO) << "Selected test interface " << chosenName
-                 << " (pool=" << (!upCandidates.empty() ? "up" : "all")
-                 << ", size=" << pool.size() << ")";
-      // Callers that need vlan/addresses/description can pass this name to
+      std::shuffle(pool.begin(), pool.end(), rng);
+      pool.resize(count);
+      XLOG(INFO) << "Selected test interface(s) [" << folly::join(", ", pool)
+                 << "] (pool=" << (upCandidates.size() >= count ? "up" : "all")
+                 << ")";
+      // Callers that need vlan/addresses/description can pass these names to
       // getInterfaceInfo().
-      return chosenName;
+      return pool;
+    }
+    if (pool.size() > best.size()) {
+      best = pool;
     }
     if (attempt + 1 < kMaxRetries) {
-      XLOG(WARN) << "getRandomInterfacePortName: no INTERFACE_PORT found "
-                    "(attempt "
-                 << (attempt + 1) << "/" << kMaxRetries
-                 << "), retrying in 1s...";
+      XLOG(WARN) << "getRandomInterfacePortNames: only " << pool.size() << "/"
+                 << count << " INTERFACE_PORTs found (attempt " << (attempt + 1)
+                 << "/" << kMaxRetries << "), retrying in 1s...";
       // Polling backoff: the port list is populated asynchronously by the
       // agent, with no event/future to await, so a short delay between retries
       // is the appropriate pattern here.
@@ -404,7 +444,7 @@ std::string Fboss2IntegrationTest::getRandomInterfacePortName() const {
       std::this_thread::sleep_for(kRetryDelay);
     }
   }
-  throw std::runtime_error("No INTERFACE_PORT found in getAllPortInfo");
+  return best;
 }
 
 std::optional<Fboss2IntegrationTest::Interface>

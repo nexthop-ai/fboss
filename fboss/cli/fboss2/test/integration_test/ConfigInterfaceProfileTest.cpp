@@ -282,10 +282,6 @@ TEST_F(ConfigInterfaceProfileTest, ChangeProfileWithoutSubsumingSucceeds) {
 // currently-present port succeeds, and the subsumed port is removed from the
 // config (verified via the agent).
 TEST_F(ConfigInterfaceProfileTest, ChangeProfileSubsumesAndRemovesPorts) {
-  if (skipPortRecreateOnNh4010f()) {
-    GTEST_SKIP() << "Port create/remove profile commits crash the agent on "
-                    "NH-4010-F (TH5 flexport recreate bug)";
-  }
   auto cand = findSubsumingCandidate();
   if (!cand) {
     GTEST_SKIP()

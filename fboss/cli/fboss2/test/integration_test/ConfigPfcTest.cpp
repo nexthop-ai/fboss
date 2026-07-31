@@ -13,17 +13,12 @@
 
 #include <fmt/format.h>
 #include <folly/json/dynamic.h>
-#include <folly/json/json.h>
 #include <folly/logging/xlog.h>
 #include <gtest/gtest.h>
-#include <thrift/lib/cpp2/protocol/Serializer.h>
 #include <cstdint>
 #include <initializer_list>
-#include <optional>
 #include <string>
 #include <vector>
-#include "fboss/agent/gen-cpp2/switch_config_types.h"
-#include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/test/integration_test/Fboss2IntegrationTest.h"
 
 using namespace facebook::fboss;
@@ -62,42 +57,26 @@ class ConfigPfcTest : public Fboss2IntegrationTest {
     Fboss2IntegrationTest::SetUp();
     XLOG(INFO) << "Using buffer-pool: " << bufferPoolName_;
     XLOG(INFO) << "Using pg-policy:  " << policyName_;
-    // Snapshot the full running config BEFORE this test mutates it. The
-    // buffer-pool / priority-group-policy / port-PFC objects this test creates
-    // have no `delete` CLI, so a per-field revert is impossible. The only clean
-    // way to undo is to restore the entire SwitchConfig in TearDown. Leaving
-    // the PFC state behind makes a later test's hitless config apply crash the
+    // Snapshot the full config BEFORE this test mutates it. The buffer-pool
+    // / priority-group-policy / port-PFC objects this test creates have no
+    // `delete` CLI, so a per-field revert is impossible; TearDown restores
+    // the whole snapshot. restoreConfig() commits with a restart — a
+    // *hitless* apply of this revert is exactly the path that aborts the
     // agent (EventBase re-entrancy on gracefulExit).
-    configSnapshot_ = getRunningConfig();
+    configSnapshotJson_ = snapshotConfig();
   }
 
   void TearDown() override {
-    if (configSnapshot_.has_value() && configSnapshot_->count("sw")) {
-      XLOG(INFO) << "TearDown: restoring pre-test config snapshot";
-      try {
-        auto sw = apache::thrift::SimpleJSONSerializer::deserialize<
-            cfg::SwitchConfig>(folly::toJson((*configSnapshot_)["sw"]));
-        auto& session = ConfigSession::getInstance();
-        session.getAgentConfig().sw() = std::move(sw);
-        // Force WARMBOOT (not the default HITLESS): committing a restart
-        // re-applies the snapshot cleanly at boot. A *hitless* apply of this
-        // revert is exactly the path that aborts the agent, so we must avoid
-        // it.
-        session.saveConfig(
-            cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
-        commitConfig();
-        waitForAgentReady();
-        XLOG(INFO) << "TearDown: config snapshot restored";
-      } catch (const std::exception& e) {
-        XLOG(ERR) << "TearDown: failed to restore config snapshot: "
-                  << e.what();
-      }
+    try {
+      restoreConfig(configSnapshotJson_);
+    } catch (const std::exception& e) {
+      XLOG(ERR) << "TearDown: failed to restore config snapshot: " << e.what();
     }
     Fboss2IntegrationTest::TearDown();
   }
 
-  // Full running config captured in SetUp, restored in TearDown.
-  std::optional<folly::dynamic> configSnapshot_;
+  // Full config captured in SetUp, restored in TearDown.
+  std::string configSnapshotJson_;
 
   void configureBufferPool(int sharedBytes, int headroomBytes) {
     ASSERT_EQ(

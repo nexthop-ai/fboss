@@ -55,11 +55,15 @@ class ConfigCoppCpuTrafficPolicyTest : public Fboss2IntegrationTest {
  protected:
   std::optional<std::string> matcherName_;
   bool injectedAcl_ = false;
-  // Running config captured before any mutation; TearDown restores to this.
+  // Running config captured before any mutation; used for matcher selection
+  // and drift detection.
   folly::dynamic snapshot_;
+  // Session-view config snapshot; TearDown restores to this.
+  std::string snapshotJson_;
 
   void SetUp() override {
     Fboss2IntegrationTest::SetUp();
+    snapshotJson_ = snapshotConfig();
     snapshot_ = getRunningConfig();
     selectMatcher(snapshot_);
     if (IsSkipped()) {
@@ -269,21 +273,9 @@ class ConfigCoppCpuTrafficPolicyTest : public Fboss2IntegrationTest {
   }
 
   /**
-   * Write the SetUp snapshot into the config session and commit hitlessly,
-   * reverting every config change made since the snapshot was taken.
-   */
-  void commitSnapshot() {
-    XLOG(INFO) << "Restoring pre-test config snapshot";
-    initSessionAndRead(); // materialize the session; staged content is
-                          // replaced wholesale by the snapshot below
-    writeSessionConfig(snapshot_);
-    commitConfig();
-  }
-
-  /**
-   * TearDown hook: decide whether the committed config drifted from the
-   * SetUp snapshot and restore it if so. Must never throw (a throwing
-   * TearDown aborts cleanup and leaks test state onto the switch).
+   * TearDown hook: restore the SetUp snapshot if the config drifted. Must
+   * never throw (a throwing TearDown aborts cleanup and leaks test state
+   * onto the switch).
    */
   void restoreSnapshot() {
     if (!snapshot_.isObject() || !snapshot_.count("sw")) {
@@ -293,7 +285,7 @@ class ConfigCoppCpuTrafficPolicyTest : public Fboss2IntegrationTest {
       if (getRunningConfig() == snapshot_) {
         return;
       }
-      commitSnapshot();
+      restoreConfig(snapshotJson_);
     } catch (const std::exception& ex) {
       ADD_FAILURE() << "Config snapshot restore failed; switch may be left "
                     << "with test config: " << ex.what();
