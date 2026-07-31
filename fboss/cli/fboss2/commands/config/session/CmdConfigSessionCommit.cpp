@@ -23,7 +23,7 @@ CmdConfigSessionCommitTraits::RetType CmdConfigSessionCommit::queryClient(
     const HostInfo& hostInfo) {
   auto& session = ConfigSession::getInstance();
 
-  if (!session.sessionExists()) {
+  if (!session.hasActiveSession()) {
     return "No config session exists. Make a config change first.";
   }
 

@@ -17,12 +17,14 @@
 #include <folly/json/json.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <unistd.h>
 #include <filesystem>
 #include <fstream>
 #include <stdexcept>
 #include <string>
 
 #include "fboss/cli/fboss2/test/TestableConfigSession.h"
+#include "fboss/cli/fboss2/test/config/MockSystemdInterface.h"
 
 namespace fs = std::filesystem;
 
@@ -195,7 +197,7 @@ TEST_F(ConfigSessionTestFixture, sessionCommit) {
 
     // Verify metadata file was also committed to git
     auto metadataCommits = git.log(targetMetadata.string());
-    EXPECT_EQ(metadataCommits.size(), 2); // 2 commits
+    EXPECT_EQ(metadataCommits.size(), 3); // Initial baseline + 2 commits
   }
 }
 
@@ -509,7 +511,8 @@ TEST_F(ConfigSessionTestFixture, rollbackToSpecificCommit) {
 
     // Verify metadata file history
     auto metadataCommits = git.log(metadataPath.string());
-    EXPECT_EQ(metadataCommits.size(), 3); // 2 commits + rollback
+    EXPECT_EQ(
+        metadataCommits.size(), 4); // Initial baseline + 2 commits + rollback
   }
 }
 
@@ -1002,6 +1005,62 @@ TEST_F(ConfigSessionTestFixture, concurrentSessionConflict) {
   EXPECT_THAT(content, ::testing::Not(::testing::HasSubstr("User2 change")));
 }
 
+// BGP analog of concurrentSessionConflict: two BGP sessions start from the same
+// base; once user1 commits (advancing HEAD), user2's commit must be rejected
+// because its base is now stale -- one session "steps onto" the other. Only
+// user1's BGP change reaches the running bgpd config.
+TEST_F(ConfigSessionTestFixture, concurrentBgpSessionConflict) {
+  fs::path sessionDir1 = getTestHomeDir() / ".fboss2_user1";
+  fs::path sessionDir2 = getTestHomeDir() / ".fboss2_user2";
+  fs::path bgpSys = getTestEtcDir() / "coop" / "bgpcpp" / "bgpcpp.conf";
+
+  auto makeSession = [&](const fs::path& dir) {
+    auto s = std::make_unique<TestableConfigSession>(
+        dir.string(), (getTestEtcDir() / "coop").string());
+    // BGP commits restart bgpd via systemd; mock it out. Only user1 commits, so
+    // no agent reload is triggered (no mocked agent server needed).
+    s->setMockSystemdFactory([] {
+      return std::make_unique<::testing::NiceMock<MockSystemdInterface>>();
+    });
+    return s;
+  };
+
+  // Both users start sessions at the same base (current HEAD).
+  auto session1 = makeSession(sessionDir1);
+  auto session2 = makeSession(sessionDir2);
+
+  // User1 stages a BGP change and commits -> HEAD advances.
+  session1->getBgpConfig().router_id() = "1.1.1.1";
+  session1->setCommandLine("config protocol bgp global router-id 1.1.1.1");
+  session1->saveBgpConfig();
+  EXPECT_FALSE(session1->commit(localhost()).commitSha.empty());
+
+  // User2 stages a different BGP change on top of the now-stale base.
+  session2->getBgpConfig().router_id() = "2.2.2.2";
+  session2->setCommandLine("config protocol bgp global router-id 2.2.2.2");
+  session2->saveBgpConfig();
+
+  // User2's commit must fail because user1 already advanced HEAD.
+  EXPECT_THROW(
+      {
+        try {
+          session2->commit(localhost());
+        } catch (const std::runtime_error& e) {
+          EXPECT_THAT(
+              e.what(),
+              ::testing::HasSubstr("system configuration has changed"));
+          throw;
+        }
+      },
+      std::runtime_error);
+
+  // Only user1's BGP change reached the running bgpd config.
+  std::string content;
+  ASSERT_TRUE(folly::readFile(bgpSys.string().c_str(), content));
+  EXPECT_THAT(content, ::testing::HasSubstr("1.1.1.1"));
+  EXPECT_THAT(content, ::testing::Not(::testing::HasSubstr("2.2.2.2")));
+}
+
 TEST_F(ConfigSessionTestFixture, rebaseSuccessNoConflict) {
   // Test successful rebase when user2's changes don't conflict with user1's
   fs::path sessionDir1 = getTestHomeDir() / ".fboss2_user1";
@@ -1139,8 +1198,12 @@ TEST_F(ConfigSessionTestFixture, threeWayMergeScenarios) {
   fs::path cliConfigPath = getTestEtcDir() / "coop" / "cli" / "agent.conf";
 
   setupMockedAgentServer();
-  // 5 commits: 2 in scenario 1, 2 in scenario 2, 1 in scenario 3 (rebase fails)
-  EXPECT_CALL(getMockAgent(), reloadConfig()).Times(5);
+  // Reloads happen only when a commit actually changes the promoted config
+  // (agent skip-when-unchanged): scenario 1 = 2 commits (both change config);
+  // scenario 2's session2 rebases to the SAME value session1 committed, so its
+  // commit is a no-op and does NOT reload -> only 1 reload there; scenario 3 =
+  // 1 commit (session2's rebase throws before committing). Total = 2 + 1 + 1.
+  EXPECT_CALL(getMockAgent(), reloadConfig()).Times(4);
 
   // Scenario 1: Only session changed, head unchanged
   // User1 commits, User2 changes different field - should merge cleanly
@@ -1288,6 +1351,48 @@ TEST_F(ConfigSessionTestFixture, emptyCommit) {
   EXPECT_TRUE(session.sessionExists());
 }
 
+// Re-committing an agent config that is byte-identical to what is already
+// promoted must be a no-op: no git revision and (crucially) no reloadConfig().
+// A config command records an AGENT action even when it sets a field to its
+// current value, so commit() must skip based on content equality (the same
+// skip-when-unchanged rule BGP uses).
+TEST_F(ConfigSessionTestFixture, commitUnchangedAgentConfigIsNoOp) {
+  fs::path sessionDir = getTestHomeDir() / ".fboss2";
+
+  setupMockedAgentServer();
+  // The first (real) commit reloads once; the second (unchanged) commit must
+  // NOT reload.
+  EXPECT_CALL(getMockAgent(), reloadConfig()).Times(1);
+
+  // First commit: set a description and commit. This normalizes cli/agent.conf
+  // into the canonical serialized form.
+  {
+    TestableConfigSession session(
+        sessionDir.string(), (getTestEtcDir() / "coop").string());
+    (*session.getAgentConfig().sw()->ports())[0].description() = "same_desc";
+    session.setCommandLine("config interface eth1/1/1 description same_desc");
+    session.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
+    ASSERT_FALSE(session.commit(localhost()).commitSha.empty());
+  }
+
+  // Second commit: set the SAME description again -> staged config is identical
+  // to what is running, so the commit is a no-op (empty commitSha, no reload).
+  {
+    TestableConfigSession session(
+        sessionDir.string(), (getTestEtcDir() / "coop").string());
+    (*session.getAgentConfig().sw()->ports())[0].description() = "same_desc";
+    session.setCommandLine("config interface eth1/1/1 description same_desc");
+    session.saveConfig(
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
+    auto result = session.commit(localhost());
+    EXPECT_TRUE(result.commitSha.empty())
+        << "re-committing an unchanged agent config should be a no-op (no reload)";
+    EXPECT_EQ(result.actions.count(cli::ServiceType::AGENT), 0u)
+        << "unchanged agent config must not apply a reload";
+  }
+}
+
 // Test that committing twice in a row - second commit should be empty
 TEST_F(ConfigSessionTestFixture, commitTwiceSecondIsEmpty) {
   fs::path sessionDir = getTestHomeDir() / ".fboss2";
@@ -1327,6 +1432,324 @@ TEST_F(ConfigSessionTestFixture, commitTwiceSecondIsEmpty) {
     // Verify the result indicates no commit was made
     EXPECT_TRUE(result.commitSha.empty());
     EXPECT_TRUE(result.actions.empty());
+  }
+}
+
+// Editing one part of the typed BGP config (e.g. a top-level field) and saving
+// must round-trip the WHOLE config, so peers/peer-groups already staged in the
+// file survive. ConfigSession owns the entire typed bgp::thrift::BgpConfig and
+// is agnostic about which section a command touches.
+TEST_F(ConfigSessionTestFixture, bgpConfigEditPreservesOtherSections) {
+  fs::path sessionDir = getTestHomeDir() / ".fboss2";
+  TestableConfigSession session(
+      sessionDir.string(), (getTestEtcDir() / "coop").string());
+
+  // Stage a config that already has peers/peer-groups (as another command would
+  // have done via the same typed config).
+  fs::path bgpPath = sessionDir / "bgp_config.json";
+  folly::dynamic staged = folly::dynamic::object(
+      "peers",
+      folly::dynamic::array(
+          folly::dynamic::object("peer_addr", "2401:db00::1")(
+              "is_passive", true)))(
+      "peer_groups",
+      folly::dynamic::array(folly::dynamic::object("name", "RACK")));
+  ASSERT_TRUE(folly::writeFile(folly::toPrettyJson(staged), bgpPath.c_str()));
+
+  // Edit a top-level field via the typed API and persist.
+  auto& bgp = session.getBgpConfig();
+  bgp.router_id() = "10.0.0.1";
+  bgp.count_confeds_in_as_path_len() = true;
+  session.setCommandLine(
+      "fboss2-dev config protocol bgp global router-id 10.0.0.1");
+  session.saveBgpConfig();
+
+  // The saved file carries the edited fields AND the untouched peers/groups.
+  std::string content;
+  ASSERT_TRUE(folly::readFile(bgpPath.c_str(), content));
+  auto saved = folly::parseJson(content);
+
+  EXPECT_EQ(saved["router_id"].asString(), "10.0.0.1");
+  ASSERT_TRUE(saved.count("count_confeds_in_as_path_len"));
+  EXPECT_TRUE(saved["count_confeds_in_as_path_len"].asBool());
+
+  ASSERT_TRUE(saved.count("peers"));
+  ASSERT_EQ(saved["peers"].size(), 1);
+  EXPECT_EQ(saved["peers"][0]["peer_addr"].asString(), "2401:db00::1");
+  EXPECT_TRUE(saved["peers"][0]["is_passive"].asBool());
+
+  ASSERT_TRUE(saved.count("peer_groups"));
+  ASSERT_EQ(saved["peer_groups"].size(), 1);
+  EXPECT_EQ(saved["peer_groups"][0]["name"].asString(), "RACK");
+
+  // A BGP restart must be recorded so `config session commit` applies it.
+  // bgpd has no hitless reload, so the recorded level is AGENT_WARMBOOT (a
+  // plain service restart for BGP).
+  EXPECT_EQ(
+      session.getRequiredAction(cli::ServiceType::BGP),
+      cli::ConfigActionLevel::AGENT_WARMBOOT);
+}
+
+// A staged BGP edit persists to disk and is seeded back by a fresh session via
+// the typed view.
+TEST_F(ConfigSessionTestFixture, bgpConfigEditPersistsAndSeeds) {
+  fs::path sessionDir = getTestHomeDir() / ".fboss2";
+  fs::path bgpPath = sessionDir / "bgp_config.json";
+  {
+    TestableConfigSession session(
+        sessionDir.string(), (getTestEtcDir() / "coop").string());
+    auto& bgp = session.getBgpConfig();
+    bgp.local_as_4_byte() = 65001;
+    session.setCommandLine(
+        "fboss2-dev config protocol bgp global local-asn 65001");
+    session.saveBgpConfig();
+  }
+  ASSERT_TRUE(fs::exists(bgpPath));
+
+  {
+    TestableConfigSession session(
+        sessionDir.string(), (getTestEtcDir() / "coop").string());
+    auto& bgp = session.getBgpConfig();
+    ASSERT_TRUE(bgp.local_as_4_byte().has_value());
+    EXPECT_EQ(*bgp.local_as_4_byte(), 65001);
+  }
+}
+
+// A BGP-only session must be rebaseable when another commit advances HEAD; the
+// staged BGP global edit is preserved (merged against an unchanged bgpcpp.conf)
+// and the agent change committed by the other user is folded in.
+TEST_F(ConfigSessionTestFixture, rebaseBgpSession) {
+  fs::path sessionDir1 = getTestHomeDir() / ".fboss2_user1";
+  fs::path sessionDir2 = getTestHomeDir() / ".fboss2_user2";
+
+  setupMockedAgentServer();
+  // Only user1's agent commit reloads the agent; rebase does not.
+  EXPECT_CALL(getMockAgent(), reloadConfig()).Times(1);
+
+  TestableConfigSession session1(
+      sessionDir1.string(), (getTestEtcDir() / "coop").string());
+  TestableConfigSession session2(
+      sessionDir2.string(), (getTestEtcDir() / "coop").string());
+
+  // user1 commits an agent change -> HEAD advances, session2's base goes stale.
+  (*session1.getAgentConfig().sw()->ports())[0].description() = "User1 change";
+  session1.setCommandLine("config interface eth1/1/1 description User1");
+  session1.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
+  EXPECT_FALSE(session1.commit(localhost()).commitSha.empty());
+
+  // user2 stages a BGP change.
+  session2.getBgpConfig().router_id() = "7.7.7.7";
+  session2.setCommandLine("config protocol bgp global router-id 7.7.7.7");
+  session2.saveBgpConfig();
+
+  // Committing fails (stale base); rebase resolves it without conflicts.
+  EXPECT_THROW(session2.commit(localhost()), std::runtime_error);
+  EXPECT_NO_THROW(session2.rebase());
+
+  // The staged BGP value survives the rebase...
+  std::string bgp;
+  ASSERT_TRUE(
+      folly::readFile((sessionDir2 / "bgp_config.json").string().c_str(), bgp));
+  EXPECT_THAT(bgp, ::testing::HasSubstr("7.7.7.7"));
+  // ...and user1's agent change was folded into session2's agent config.
+  std::string agent;
+  ASSERT_TRUE(
+      folly::readFile((sessionDir2 / "agent.conf").string().c_str(), agent));
+  EXPECT_THAT(agent, ::testing::HasSubstr("User1 change"));
+}
+
+// Rolling back to an earlier commit must restore the BGP system config and
+// restart bgpd (not just the agent config).
+TEST_F(ConfigSessionTestFixture, rollbackBgpConfig) {
+  fs::path sessionDir = getTestHomeDir() / ".fboss2";
+  fs::path bgpSys = getTestEtcDir() / "coop" / "bgpcpp" / "bgpcpp.conf";
+
+  auto makeSession = [&]() {
+    auto s = std::make_unique<TestableConfigSession>(
+        sessionDir.string(), (getTestEtcDir() / "coop").string());
+    // BGP commits/rollback restart bgpd via systemd; mock it out.
+    s->setMockSystemdFactory([] {
+      return std::make_unique<::testing::NiceMock<MockSystemdInterface>>();
+    });
+    return s;
+  };
+
+  std::string sha1;
+  {
+    auto s = makeSession();
+    s->getBgpConfig().router_id() = "1.1.1.1";
+    s->setCommandLine("config protocol bgp global router-id 1.1.1.1");
+    s->saveBgpConfig();
+    sha1 = s->commit(localhost()).commitSha;
+    ASSERT_FALSE(sha1.empty());
+  }
+  {
+    auto s = makeSession();
+    s->getBgpConfig().router_id() = "2.2.2.2";
+    s->setCommandLine("config protocol bgp global router-id 2.2.2.2");
+    s->saveBgpConfig();
+    ASSERT_FALSE(s->commit(localhost()).commitSha.empty());
+  }
+
+  // System BGP config now reflects the latest commit.
+  std::string content;
+  ASSERT_TRUE(folly::readFile(bgpSys.string().c_str(), content));
+  EXPECT_THAT(content, ::testing::HasSubstr("2.2.2.2"));
+
+  // Roll back to the first commit -> BGP config restored to 1.1.1.1.
+  {
+    auto s = makeSession();
+    std::string rb = s->rollback(localhost(), sha1);
+    EXPECT_FALSE(rb.empty());
+  }
+  ASSERT_TRUE(folly::readFile(bgpSys.string().c_str(), content));
+  EXPECT_THAT(content, ::testing::HasSubstr("1.1.1.1"));
+  EXPECT_THAT(content, ::testing::Not(::testing::HasSubstr("2.2.2.2")));
+}
+
+// Re-committing a BGP config that is byte-identical to the running
+// /etc/coop/bgpcpp/bgpcpp.conf must be a no-op: no git commit and (crucially)
+// no disruptive bgpd restart. saveBgpConfig() records a restart
+// unconditionally, so commit() compares staged vs running content.
+TEST_F(ConfigSessionTestFixture, commitUnchangedBgpConfigIsNoOp) {
+  fs::path sessionDir = getTestHomeDir() / ".fboss2";
+  auto makeSession = [&]() {
+    auto s = std::make_unique<TestableConfigSession>(
+        sessionDir.string(), (getTestEtcDir() / "coop").string());
+    s->setMockSystemdFactory([] {
+      return std::make_unique<::testing::NiceMock<MockSystemdInterface>>();
+    });
+    return s;
+  };
+
+  {
+    auto s = makeSession();
+    s->getBgpConfig().router_id() = "1.1.1.1";
+    s->setCommandLine("config protocol bgp global router-id 1.1.1.1");
+    s->saveBgpConfig();
+    ASSERT_FALSE(s->commit(localhost()).commitSha.empty());
+  }
+  // Stage the SAME value again and commit -> no-op (empty commitSha, so no git
+  // revision and no bgpd restart).
+  {
+    auto s = makeSession();
+    s->getBgpConfig().router_id() = "1.1.1.1";
+    s->setCommandLine("config protocol bgp global router-id 1.1.1.1");
+    s->saveBgpConfig();
+    auto result = s->commit(localhost());
+    EXPECT_TRUE(result.commitSha.empty())
+        << "committing an unchanged BGP config should be a no-op (no restart)";
+    EXPECT_EQ(result.actions.count(cli::ServiceType::BGP), 0u)
+        << "unchanged BGP config must not apply a bgpd restart";
+  }
+}
+
+// commit() must abort if it cannot read the running bgpcpp.conf, instead of
+// silently proceeding with an empty snapshot (which a later failed-commit
+// rollback would write back, corrupting the running config). Mirrors the guard
+// rollback() already has.
+TEST_F(ConfigSessionTestFixture, commitThrowsWhenRunningBgpConfigUnreadable) {
+  fs::path sessionDir = getTestHomeDir() / ".fboss2";
+  fs::path bgpSys = getTestEtcDir() / "coop" / "bgpcpp" / "bgpcpp.conf";
+  auto makeSession = [&]() {
+    auto s = std::make_unique<TestableConfigSession>(
+        sessionDir.string(), (getTestEtcDir() / "coop").string());
+    s->setMockSystemdFactory([] {
+      return std::make_unique<::testing::NiceMock<MockSystemdInterface>>();
+    });
+    return s;
+  };
+
+  {
+    auto s = makeSession();
+    s->getBgpConfig().router_id() = "1.1.1.1";
+    s->setCommandLine("config protocol bgp global router-id 1.1.1.1");
+    s->saveBgpConfig();
+    ASSERT_FALSE(s->commit(localhost()).commitSha.empty());
+  }
+  ASSERT_TRUE(fs::exists(bgpSys));
+
+  // Make the running config unreadable; running as a non-root user this makes
+  // folly::readFile fail. (Skip the assertion if we happen to run as root,
+  // where permission bits are bypassed.)
+  fs::permissions(bgpSys, fs::perms::none);
+  if (::geteuid() != 0) {
+    auto s = makeSession();
+    s->getBgpConfig().router_id() = "2.2.2.2";
+    s->setCommandLine("config protocol bgp global router-id 2.2.2.2");
+    s->saveBgpConfig();
+    EXPECT_THROW(s->commit(localhost()), std::runtime_error);
+  }
+  // Restore perms so fixture teardown can remove the temp tree.
+  fs::permissions(bgpSys, fs::perms::owner_all);
+}
+
+// A BGP-only session (bgp_config.json + metadata present, agent.conf session
+// file absent) must RESUME on the next CLI invocation, not be misdetected as
+// fresh -- otherwise requiredActions_ (the recorded bgpd restart) is cleared
+// and the staged change is silently dropped at commit time.
+TEST_F(ConfigSessionTestFixture, bgpOnlySessionResumesAcrossInvocations) {
+  fs::path sessionDir = getTestHomeDir() / ".fboss2";
+  fs::path agentSess = sessionDir / "agent.conf";
+  fs::path bgpSess = sessionDir / "bgp_config.json";
+  auto makeSession = [&]() {
+    auto s = std::make_unique<TestableConfigSession>(
+        sessionDir.string(), (getTestEtcDir() / "coop").string());
+    s->setMockSystemdFactory([] {
+      return std::make_unique<::testing::NiceMock<MockSystemdInterface>>();
+    });
+    return s;
+  };
+
+  {
+    auto s = makeSession();
+    s->getBgpConfig().router_id() = "9.9.9.9";
+    s->setCommandLine("config protocol bgp global router-id 9.9.9.9");
+    s->saveBgpConfig();
+  }
+  // Simulate a pure BGP-only session: drop the agent session file that the
+  // first construction seeded, leaving only the staged BGP config + metadata.
+  fs::remove(agentSess);
+  ASSERT_TRUE(fs::exists(bgpSess));
+  ASSERT_FALSE(fs::exists(agentSess));
+
+  // The next invocation must resume and still commit the staged BGP change.
+  {
+    auto s = makeSession();
+    auto result = s->commit(localhost());
+    EXPECT_FALSE(result.commitSha.empty())
+        << "BGP-only session must resume, not be wiped as a fresh session";
+  }
+}
+
+// No-arg rollback() walks cli/cli_metadata.json history so BGP-only commits are
+// reachable. The initial baseline commit must therefore also touch metadata, or
+// rolling back to the baseline (after exactly one real commit) fails.
+TEST_F(ConfigSessionTestFixture, noArgRollbackReachesBaseline) {
+  fs::path sessionDir = getTestHomeDir() / ".fboss2";
+  auto makeSession = [&]() {
+    auto s = std::make_unique<TestableConfigSession>(
+        sessionDir.string(), (getTestEtcDir() / "coop").string());
+    s->setMockSystemdFactory([] {
+      return std::make_unique<::testing::NiceMock<MockSystemdInterface>>();
+    });
+    return s;
+  };
+
+  {
+    auto s = makeSession();
+    s->getBgpConfig().router_id() = "1.1.1.1";
+    s->setCommandLine("config protocol bgp global router-id 1.1.1.1");
+    s->saveBgpConfig();
+    ASSERT_FALSE(s->commit(localhost()).commitSha.empty());
+  }
+  // Exactly one real commit sits on top of the baseline; no-arg rollback must
+  // still reach the baseline (it appears in metadata history now).
+  {
+    auto s = makeSession();
+    std::string rb;
+    EXPECT_NO_THROW(rb = s->rollback(localhost()));
+    EXPECT_FALSE(rb.empty());
   }
 }
 
