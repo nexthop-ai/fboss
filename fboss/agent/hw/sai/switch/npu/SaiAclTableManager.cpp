@@ -99,6 +99,8 @@ std::vector<sai_int32_t> SaiAclTableManager::getActionTypeList(
     bool isChenab = platform_->getAsic()->getAsicVendor() ==
         HwAsic::AsicVendor::ASIC_VENDOR_CHENAB;
 
+    bool isQumran3d = platform_->getAsic()->getAsicType() ==
+        cfg::AsicType::ASIC_TYPE_QUMRAN3D;
     bool isQumran4d = platform_->getAsic()->getAsicType() ==
         cfg::AsicType::ASIC_TYPE_QUMRAN4D;
 
@@ -109,12 +111,12 @@ std::vector<sai_int32_t> SaiAclTableManager::getActionTypeList(
         SAI_ACL_ACTION_TYPE_SET_DSCP};
 
     // TODO (Q4D/J4/R4): Enable once SDK support is available
-    if (!isQumran4d && !isJericho4) {
+    if (!isQumran3d && !isQumran4d && !isJericho4) {
       actionTypeList.push_back(SAI_ACL_ACTION_TYPE_MIRROR_INGRESS);
     }
 
     if (!(isTajo || isJericho2 || isJericho3 || isJericho4 || isChenab ||
-          isQumran4d)) {
+          isQumran3d || isQumran4d)) {
       // Chenab supports egress mirror action in egress table
       actionTypeList.push_back(SAI_ACL_ACTION_TYPE_MIRROR_EGRESS);
     }
@@ -198,21 +200,23 @@ std::
     return exists;
   };
 
-  // Q4D/J4 DNX SDK Workaround: FIELD_IP_PROTOCOL and
-  // FIELD_IPV6_NEXT_HEADER are overloaded onto the same underlying HW field on
-  // J4/Q4D, so a table created with FIELD_IP_PROTOCOL=false /
-  // FIELD_IPV6_NEXT_HEADER=true reads back FIELD_IP_PROTOCOL=true on a
-  // get_acl_table_attribute, which breaks warmboot/rollback state
-  // reconciliation. As agreed with Broadcom, whenever IPV6_NEXT_HEADER is used
-  // we also set FIELD_IP_PROTOCOL=true so the created value matches the value
-  // returned on GET.
-  // TODO (Q4D/J4/R4): Remove once the SDK decouples the two fields.
-  bool isQumran4dOrJericho4 = platform_->getAsic()->getAsicType() ==
-          cfg::AsicType::ASIC_TYPE_QUMRAN4D ||
+  // DNX SDK Workaround: FIELD_IP_PROTOCOL and FIELD_IPV6_NEXT_HEADER are
+  // overloaded onto the same underlying HW field on DNX (Q3D/Q4D/J4), so a
+  // table created with FIELD_IP_PROTOCOL=false / FIELD_IPV6_NEXT_HEADER=true
+  // reads back FIELD_IP_PROTOCOL=true on a get_acl_table_attribute, which
+  // breaks warmboot/rollback state reconciliation. As agreed with Broadcom,
+  // whenever IPV6_NEXT_HEADER is used we also set FIELD_IP_PROTOCOL=true so the
+  // created value matches the value returned on GET.
+  // TODO (Q3D/Q4D/J4/R4): Remove once the SDK decouples the two fields.
+  bool isQumran3d =
+      platform_->getAsic()->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN3D;
+  bool isQumran4d =
+      platform_->getAsic()->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D;
+  bool isJericho4 =
       platform_->getAsic()->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO4;
   bool fieldIpProtocol =
       qualifierExistsFn(cfg::AclTableQualifier::IP_PROTOCOL_NUMBER) ||
-      (isQumran4dOrJericho4 &&
+      ((isQumran3d || isQumran4d || isJericho4) &&
        qualifierExistsFn(cfg::AclTableQualifier::IPV6_NEXT_HEADER));
 
   std::vector<std::optional<sai_object_id_t>> udfGroupIds(

@@ -339,6 +339,7 @@ void addDefaultAclTable(
   auto isTomahawkUltra1 =
       asic->getAsicType() == cfg::AsicType::ASIC_TYPE_TOMAHAWKULTRA1;
   auto isQumran4dOrJericho4 =
+      asic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN3D ||
       asic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D ||
       asic->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO4;
 

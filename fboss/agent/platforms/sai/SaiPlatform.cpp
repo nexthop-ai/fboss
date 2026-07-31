@@ -19,6 +19,7 @@
 #include "fboss/agent/hw/switch_asics/HwAsic.h"
 #include "fboss/agent/hw/switch_asics/Jericho3Asic.h"
 #include "fboss/agent/hw/switch_asics/Jericho4Asic.h"
+#include "fboss/agent/hw/switch_asics/Qumran3DAsic.h"
 #include "fboss/agent/hw/switch_asics/Qumran4DAsic.h"
 #include "fboss/agent/platforms/sai/SaiBcmDarwinPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiBcmElbertPlatformPort.h"
@@ -557,6 +558,7 @@ SaiSwitchTraits::CreateAttributes SaiPlatform::getSwitchAttributes(
       swInfo.switchType() = cfg::SwitchType::VOQ;
       swInfo.switchMac() = localMac.toString();
       const Jericho3Asic j3(0, swInfo);
+      const Qumran3DAsic qumran3d(0, swInfo);
       const Qumran4DAsic qumran4d(0, swInfo);
       const Jericho4Asic j4(0, swInfo);
       for (const auto& [id, dsfNode] : *agentCfg->thrift.sw()->dsfNodes()) {
@@ -570,6 +572,11 @@ SaiSwitchTraits::CreateAttributes SaiPlatform::getSwitchAttributes(
             maxCoreCount = std::max(j3.getNumCores(), maxCoreCount);
             maxSystemCoreCount =
                 std::max(maxSystemCoreCount, uint32_t(id + j3.getNumCores()));
+            break;
+          case cfg::AsicType::ASIC_TYPE_QUMRAN3D:
+            maxCoreCount = std::max(qumran3d.getNumCores(), maxCoreCount);
+            maxSystemCoreCount = std::max(
+                maxSystemCoreCount, uint32_t(id + qumran3d.getNumCores()));
             break;
           case cfg::AsicType::ASIC_TYPE_QUMRAN4D:
             maxCoreCount = std::max(qumran4d.getNumCores(), maxCoreCount);
@@ -931,8 +938,9 @@ SaiSwitchTraits::CreateAttributes SaiPlatform::getSwitchAttributes(
   //   - MaxSystemPorts: 1024
   //
 
-  // Q4D standalone box configuration
-  if (getAsic()->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D) {
+  // Q3D/Q4D standalone box configuration
+  if (getAsic()->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN3D ||
+      getAsic()->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D) {
     maxSystemPorts = 1024;
     maxVoqs = 8 * 1024;
     maxSystemPortId = 1024 - 1;

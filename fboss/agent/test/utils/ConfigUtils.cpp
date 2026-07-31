@@ -78,6 +78,7 @@ int getSysPortIdsAllocated(
   CHECK(
       asic.getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO3 ||
       asic.getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO4 ||
+      asic.getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN3D ||
       asic.getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D);
   if (deviceIndex < getMaxRdsw(platformType)) {
     portsConsumed += deviceIndex * getRdswSysPortBlockSize(platformType) - 1;
@@ -480,6 +481,7 @@ cfg::DsfNode dsfNodeConfig(
         return PlatformType::PLATFORM_J4SIM;
       case cfg::AsicType::ASIC_TYPE_RAMON3:
         return PlatformType::PLATFORM_MERU800BFA;
+      case cfg::AsicType::ASIC_TYPE_QUMRAN3D:
       case cfg::AsicType::ASIC_TYPE_QUMRAN4D:
         return PlatformType::PLATFORM_BLACKWOLF800BANW;
       default:

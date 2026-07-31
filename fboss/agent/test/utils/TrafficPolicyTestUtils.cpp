@@ -34,7 +34,8 @@ cfg::AclEntry* addDscpAclToCfg(
   // group that never sees IPv6 packets on DNX.
   std::string tableName = utility::kDefaultAclTable();
   if (FLAGS_enable_acl_table_group) {
-    tableName = (hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D ||
+    tableName = (hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN3D ||
+                 hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D ||
                  hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO4)
         ? utility::kIpv6AclTable()
         : utility::getAclTableForAclEntry(*config, acl);

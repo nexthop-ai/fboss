@@ -505,6 +505,7 @@ class AgentAclCounterTest : public AgentHwTest {
             // packet ingressing on a specific port is trapped
             acl->ipType() = cfg::IpType::ANY;
           } else if (
+              asic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN3D ||
               asic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D ||
               asic->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO4) {
             // Q4D/J4 (DNX) reject FIELD_SRC_PORT + FIELD_ACL_IP_TYPE=NON_IP.

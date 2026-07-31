@@ -703,6 +703,7 @@ TransmitterTechnology fromSaiMediaType(sai_port_media_type_t saiMediaType) {
       break;
     case cfg::AsicType::ASIC_TYPE_TOMAHAWK5:
     case cfg::AsicType::ASIC_TYPE_TOMAHAWK6:
+    case cfg::AsicType::ASIC_TYPE_QUMRAN3D:
     case cfg::AsicType::ASIC_TYPE_QUMRAN4D:
     case cfg::AsicType::ASIC_TYPE_JERICHO4:
       return 0;

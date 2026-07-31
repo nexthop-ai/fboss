@@ -41,7 +41,8 @@ class AgentHwAclMatchActionsTest : public AgentHwTest {
     auto l3Asics = getAgentEnsemble()->getSw()->getHwAsicTable()->getL3Asics();
     auto asic = checkSameAndGetAsicForTesting(l3Asics);
     if (FLAGS_enable_acl_table_group &&
-        (asic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D ||
+        (asic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN3D ||
+         asic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D ||
          asic->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO4)) {
       return utility::kIpv6AclTable();
     }

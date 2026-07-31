@@ -13,8 +13,8 @@
 
 namespace facebook::fboss {
 
-// TODO: NH-5010-F uses the Qumran3D ASIC, using Jericho3 as a placeholder
-class Jericho3Asic;
+// NH-5010-F uses the Broadcom Qumran3D ASIC (bcm88872).
+class Qumran3DAsic;
 
 class SaiNh5010fPlatform : public SaiBcmPlatform {
  public:
@@ -35,8 +35,7 @@ class SaiNh5010fPlatform : public SaiBcmPlatform {
       std::optional<int64_t> switchId,
       const cfg::SwitchInfo& switchInfo,
       std::optional<HwAsic::FabricNodeRole> fabricNodeRole) override;
-  // TODO: switch to Qumran3DAsic once that type is added.
-  std::unique_ptr<Jericho3Asic> asic_;
+  std::unique_ptr<Qumran3DAsic> asic_;
 };
 
 } // namespace facebook::fboss

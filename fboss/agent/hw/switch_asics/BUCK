@@ -17,6 +17,7 @@ cpp_library(
         "Jericho3Asic.cpp",
         "Jericho4Asic.cpp",
         "P200Asic.cpp",
+        "Qumran3DAsic.cpp",
         "Qumran4DAsic.cpp",
         "Ramon3Asic.cpp",
         "RamonAsic.cpp",

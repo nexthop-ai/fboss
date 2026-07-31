@@ -265,8 +265,10 @@ void PortUpdateHandler::computeFabricOverdrainPct(const StateDelta& delta) {
     if (switchInfo.switchType() != cfg::SwitchType::VOQ) {
       continue;
     }
-    // Q4D is a VOQ switch but has no fabric ports, skip fabric overhead calc
-    if (*switchInfo.asicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D) {
+    // Q3D/Q4D are VOQ switches but have no fabric ports, skip fabric overhead
+    // calc
+    if (*switchInfo.asicType() == cfg::AsicType::ASIC_TYPE_QUMRAN3D ||
+        *switchInfo.asicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D) {
       continue;
     }
     auto& bwInfo = swIndexToBwInfo[*switchInfo.switchIndex()];
@@ -328,6 +330,7 @@ void PortUpdateHandler::computeFabricOverdrainPct(const StateDelta& delta) {
       case cfg::AsicType::ASIC_TYPE_AGERA3:
       case cfg::AsicType::ASIC_TYPE_G202X:
       case cfg::AsicType::ASIC_TYPE_TOMAHAWKULTRA1:
+      case cfg::AsicType::ASIC_TYPE_QUMRAN3D:
       case cfg::AsicType::ASIC_TYPE_QUMRAN4D:
       case cfg::AsicType::ASIC_TYPE_CHENAB2:
         throw FbossError(

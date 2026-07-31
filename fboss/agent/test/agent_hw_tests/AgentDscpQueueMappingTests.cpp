@@ -234,7 +234,8 @@ class AgentAclAndDscpQueueMappingTest : public AgentDscpQueueMappingTestBase {
     // table explicitly there.
     std::optional<std::string> aclTableName;
     if (FLAGS_enable_acl_table_group &&
-        (asic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D ||
+        (asic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN3D ||
+         asic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D ||
          asic->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO4)) {
       aclTableName = utility::kIpv6AclTable();
     }

@@ -238,6 +238,7 @@ void HwTestThriftHandler::triggerParityError() {
       break;
     case cfg::AsicType::ASIC_TYPE_JERICHO3:
     case cfg::AsicType::ASIC_TYPE_JERICHO4:
+    case cfg::AsicType::ASIC_TYPE_QUMRAN3D:
     case cfg::AsicType::ASIC_TYPE_QUMRAN4D:
       triggerBcmJericho3ParityError(hwSwitch_);
       break;

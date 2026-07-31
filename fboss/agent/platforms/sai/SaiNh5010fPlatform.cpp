@@ -10,7 +10,7 @@
 
 #include "fboss/agent/platforms/sai/SaiNh5010fPlatform.h"
 
-#include "fboss/agent/hw/switch_asics/Jericho3Asic.h"
+#include "fboss/agent/hw/switch_asics/Qumran3DAsic.h"
 #include "fboss/agent/platforms/common/nh5010f/Nh5010fPlatformMapping.h"
 
 #include <cstring>
@@ -32,8 +32,7 @@ void SaiNh5010fPlatform::setupAsic(
     const cfg::SwitchInfo& switchInfo,
     std::optional<HwAsic::FabricNodeRole> fabricNodeRole) {
   CHECK(!fabricNodeRole.has_value());
-  // TODO: switch to Qumran3DAsic once that type is added (separate PR).
-  asic_ = std::make_unique<Jericho3Asic>(switchId, switchInfo);
+  asic_ = std::make_unique<Qumran3DAsic>(switchId, switchInfo);
 }
 
 HwAsic* SaiNh5010fPlatform::getAsic() const {

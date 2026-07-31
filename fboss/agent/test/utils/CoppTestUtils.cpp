@@ -137,6 +137,7 @@ cfg::ToCpuAction getCpuActionType(const HwAsic* hwAsic) {
     case cfg::AsicType::ASIC_TYPE_JERICHO2:
     case cfg::AsicType::ASIC_TYPE_JERICHO3:
     case cfg::AsicType::ASIC_TYPE_JERICHO4:
+    case cfg::AsicType::ASIC_TYPE_QUMRAN3D:
     case cfg::AsicType::ASIC_TYPE_QUMRAN4D:
     case cfg::AsicType::ASIC_TYPE_CHENAB:
     case cfg::AsicType::ASIC_TYPE_CHENAB2:
@@ -222,6 +223,7 @@ cfg::PortQueueRate getPortQueueRate(const HwAsic* hwAsic, uint16_t queueId) {
     uint32_t kbps;
     if (hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO3 ||
         hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO4 ||
+        hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN3D ||
         hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D) {
       kbps = kCoppDnxLowPriKbitsPerSec;
     } else {
@@ -354,6 +356,7 @@ void setDefaultCpuTrafficPolicyConfig(
     }
   } else {
     const bool isQumran4dOrJericho4 =
+        hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN3D ||
         hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D ||
         hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO4;
     for (auto stage :
@@ -958,6 +961,7 @@ defaultIngressCpuAclsForSai(
       // getCoppRxReasonToQueuesForSai); trap DHCP/DHCPv6 to mid pri via ACLs
       // instead.
       if (hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO4 ||
+          hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN3D ||
           hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D) {
         addMidPriAclForDhcp(
             hwAsic,
@@ -1263,6 +1267,7 @@ std::vector<cfg::PacketRxReasonToQueue> getCoppRxReasonToQueuesForSai(
             cfg::PacketRxReason::TTL_1, kCoppLowPriQueueId),
     };
     if (hwAsic->getAsicType() != cfg::AsicType::ASIC_TYPE_JERICHO4 &&
+        hwAsic->getAsicType() != cfg::AsicType::ASIC_TYPE_QUMRAN3D &&
         hwAsic->getAsicType() != cfg::AsicType::ASIC_TYPE_QUMRAN4D) {
       rxReasonToQueues.push_back(
           ControlPlane::makeRxReasonToQueueEntry(

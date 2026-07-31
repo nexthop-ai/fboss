@@ -1627,6 +1627,7 @@ enum AsicType {
   ASIC_TYPE_JERICHO4 = 24,
   ASIC_TYPE_CHENAB2 = 25,
   ASIC_TYPE_P200 = 26,
+  ASIC_TYPE_QUMRAN3D = 27,
 }
 /**
  * The configuration for an interface
