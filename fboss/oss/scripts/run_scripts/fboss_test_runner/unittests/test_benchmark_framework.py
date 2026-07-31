@@ -14,7 +14,6 @@ import io
 import json
 import os
 import subprocess
-import tempfile
 from unittest.mock import Mock, patch
 
 import pytest
@@ -73,6 +72,7 @@ def bench_args():
     args = Mock()
     args.filter = None
     args.filter_file = None
+    args.profile = None
     args.list_tests = False
     args.fruid_path = None
     args.test_run_timeout = 300
@@ -111,36 +111,113 @@ def test_list_benchmarks_failure_returns_none(framework, capsys):
     assert "Failed to list benchmarks" in capsys.readouterr().out
 
 
-# ---- filter file (_load_requested_benchmarks) ----------------------------
+# ---- filter grammar (_get_benchmarks_to_run) -----------------------------
+
+_ALL = [
+    "HwFswScaleRouteAddBenchmark",
+    "HwVoqScaleRouteAddBenchmark",
+    "HwEcmpGroupShrink",
+]
 
 
-def test_load_requested_benchmarks_reads_names(framework):
-    with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".conf") as f:
-        f.write("benchmark1\nbenchmark2\nbenchmark3\n")
-        path = f.name
-    try:
-        assert framework._load_requested_benchmarks(path) == [
-            "benchmark1",
-            "benchmark2",
-            "benchmark3",
-        ]
-    finally:
-        os.unlink(path)
+def _filter_file(tmp_path, *lines):
+    path = tmp_path / "tests.conf"
+    path.write_text("".join(f"{line}\n" for line in lines))
+    return str(path)
 
 
-def test_load_requested_benchmarks_missing_file(framework, capsys):
-    assert framework._load_requested_benchmarks("/nonexistent/file.conf") is None
+@pytest.mark.parametrize(
+    ("filter_string", "expected"),
+    [
+        ("*Route*", ["HwFswScaleRouteAddBenchmark", "HwVoqScaleRouteAddBenchmark"]),
+        # multiple includes OR together
+        ("*Fsw*:*Ecmp*", ["HwFswScaleRouteAddBenchmark", "HwEcmpGroupShrink"]),
+        # empty include side means everything
+        ("-*Voq*", ["HwFswScaleRouteAddBenchmark", "HwEcmpGroupShrink"]),
+        ("*Route*:-*Voq*", ["HwFswScaleRouteAddBenchmark"]),
+        # everything after the first '-' excludes
+        ("*:-*Voq*:*Ecmp*", ["HwFswScaleRouteAddBenchmark"]),
+        ("*Ecmp?roupShrink", ["HwEcmpGroupShrink"]),
+        # plain regex back-compat
+        (".*Route.*", ["HwFswScaleRouteAddBenchmark", "HwVoqScaleRouteAddBenchmark"]),
+    ],
+)
+def test_get_benchmarks_to_run_grammar(framework, bench_args, filter_string, expected):
+    bench_args.filter = filter_string
+    assert framework._get_benchmarks_to_run(_ALL, bench_args) == expected
+
+
+@pytest.mark.parametrize(
+    ("pattern", "expected"),
+    [
+        ("*Route*", ".*Route.*"),
+        # already-regex constructs survive untouched
+        (".*Route.*", ".*Route.*"),
+        (r"Hw\*Literal", r"Hw\*Literal"),
+        ("Ecmp?Group", "Ecmp.Group"),
+        (".*?Route", ".*?Route"),
+    ],
+)
+def test_wildcards_to_regex(framework, pattern, expected):
+    assert framework._wildcards_to_regex(pattern) == expected
+
+
+def test_plain_regex_matches_name_at_position_zero(framework, bench_args):
+    # Guards the ".*" -> "..*" bug.
+    bench_args.filter = ".*Route.*"
+    assert framework._get_benchmarks_to_run(["RouteAdd", "EcmpShrink"], bench_args) == [
+        "RouteAdd"
+    ]
+
+
+def test_get_benchmarks_to_run_no_filter_returns_all(framework, bench_args):
+    assert framework._get_benchmarks_to_run(_ALL, bench_args) == _ALL
+
+
+def test_get_benchmarks_to_run_no_match_is_error(framework, bench_args, capsys):
+    bench_args.filter = "*NoSuchThing*"
+    assert framework._get_benchmarks_to_run(_ALL, bench_args) is None
+    assert "No benchmarks matching filter" in capsys.readouterr().out
+
+
+def test_get_benchmarks_to_run_invalid_pattern(framework, bench_args, capsys):
+    bench_args.filter = "Hw(Unclosed"
+    assert framework._get_benchmarks_to_run(_ALL, bench_args) is None
+    assert "Invalid include pattern" in capsys.readouterr().out
+
+
+def test_get_benchmarks_to_run_invalid_exclude_pattern(framework, bench_args, capsys):
+    bench_args.filter = "*:-Hw(Unclosed"
+    assert framework._get_benchmarks_to_run(_ALL, bench_args) is None
+    assert "Invalid exclude pattern" in capsys.readouterr().out
+
+
+def test_filter_file_lines_are_patterns(framework, bench_args, tmp_path):
+    # Lines join with ':' as gtest grammar, not exact benchmark names.
+    bench_args.filter_file = _filter_file(tmp_path, "*Route*", "-*Voq*")
+    assert framework._get_benchmarks_to_run(_ALL, bench_args) == [
+        "HwFswScaleRouteAddBenchmark"
+    ]
+
+
+def test_filter_file_wins_over_filter(framework, bench_args, tmp_path):
+    bench_args.filter = "*Ecmp*"
+    bench_args.filter_file = _filter_file(tmp_path, "*Voq*")
+    assert framework._get_benchmarks_to_run(_ALL, bench_args) == [
+        "HwVoqScaleRouteAddBenchmark"
+    ]
+
+
+def test_filter_file_missing(framework, bench_args, capsys):
+    bench_args.filter_file = "/nonexistent/file.conf"
+    assert framework._get_benchmarks_to_run(_ALL, bench_args) is None
     assert "Configuration file not found" in capsys.readouterr().out
 
 
-def test_load_requested_benchmarks_empty_file(framework, capsys):
-    with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".conf") as f:
-        path = f.name
-    try:
-        assert framework._load_requested_benchmarks(path) is None
-        assert "No benchmarks found" in capsys.readouterr().out
-    finally:
-        os.unlink(path)
+def test_filter_file_empty(framework, bench_args, tmp_path, capsys):
+    bench_args.filter_file = _filter_file(tmp_path)
+    assert framework._get_benchmarks_to_run(_ALL, bench_args) is None
+    assert "No benchmark filters found" in capsys.readouterr().out
 
 
 def test_find_jsons_in_str(framework):
@@ -317,21 +394,49 @@ def test_run_filter_regex(mock_list, mock_run, _mock_write, framework, bench_arg
 @patch.object(BenchmarkFramework, "_write_results_and_summary")
 @patch.object(BenchmarkFramework, "_run_benchmark_binary")
 @patch.object(BenchmarkFramework, "_list_benchmarks")
-def test_run_with_filter_file_intersects_and_warns(
-    mock_list, mock_run, _mock_write, framework, bench_args, capsys
+def test_run_with_filter_file(
+    mock_list, mock_run, _mock_write, framework, bench_args, tmp_path
 ):
-    mock_list.return_value = ["RouteAdd", "RouteDel"]
+    mock_list.return_value = ["RouteAdd", "RouteDel", "EcmpShrink"]
     mock_run.return_value = _ok_result("RouteAdd")
-    with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".conf") as f:
-        # RouteAdd exists; Missing does not -> only RouteAdd runs, warning emitted
-        f.write("RouteAdd\nMissing\n")
-        bench_args.filter_file = f.name
-    try:
+    bench_args.filter_file = _filter_file(tmp_path, "*Route*", "-*Del*")
+    framework.run(bench_args)
+    assert mock_run.call_count == 1
+
+
+@patch.object(BenchmarkFramework, "_run_benchmark_binary")
+@patch.object(BenchmarkFramework, "_list_benchmarks")
+def test_run_all_selected_unsupported_reports_skips(
+    mock_list, mock_run, suite, bench_args, tmp_path, capsys
+):
+    # An all-unsupported bucket must still write results; a missing CSV reads as
+    # an infra failure.
+    cfg = tmp_path / "bench.json"
+    cfg.write_text(
+        json.dumps({"unsupported_tests": {"plat": [{"test_name_regex": ".*Voq.*"}]}})
+    )
+    suite._config_path = str(cfg)
+    mock_list.return_value = ["HwVoqA", "HwVoqB"]
+    bench_args.skip_known_bad_tests = "plat"
+    framework = BenchmarkFramework(suite)
+    with patch.object(framework, "_write_results_and_summary") as mock_write:
         framework.run(bench_args)
-        assert mock_run.call_count == 1
-        assert "not found in binary" in capsys.readouterr().out
-    finally:
-        os.unlink(bench_args.filter_file)
+    mock_run.assert_not_called()
+    mock_write.assert_called_once_with([], 2)
+    assert "No benchmarks to run after filtering" in capsys.readouterr().out
+
+
+@patch.object(BenchmarkFramework, "_run_benchmark_binary")
+@patch.object(BenchmarkFramework, "_list_benchmarks")
+def test_run_list_tests_does_not_write_results(
+    mock_list, mock_run, framework, bench_args
+):
+    mock_list.return_value = ["A"]
+    bench_args.list_tests = True
+    with patch.object(framework, "_write_results_and_summary") as mock_write:
+        framework.run(bench_args)
+    mock_run.assert_not_called()
+    mock_write.assert_not_called()
 
 
 @patch.object(BenchmarkFramework, "_write_results_and_summary")
