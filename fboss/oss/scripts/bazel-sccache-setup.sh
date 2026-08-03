@@ -100,6 +100,18 @@ fi
 
 echo "Using distributed sccache: $SCCACHE_SCHEDULER_HOST"
 
+# Point sccache's result cache at an S3-compatible bucket, configured via
+# SCCACHE_ENDPOINT et al in fboss-build.env (see fboss-build.env.example).
+# Without this the server falls back to local-disk storage, which on
+# ephemeral CI runners starts empty every run -- 0% hit rate while the cmake
+# path (nhfboss-common.sh, sourced from the same fboss-build.env values) gets
+# ~100% from S3. The server reads storage config at start-up, so export
+# before --start-server below.
+if [ -n "${SCCACHE_ENDPOINT:-}" ] && timeout 1 bash -c ">/dev/tcp/${SCCACHE_ENDPOINT%%:*}/${SCCACHE_ENDPOINT##*:}" 2>/dev/null; then
+  export SCCACHE_BUCKET SCCACHE_ENDPOINT SCCACHE_S3_KEY_PREFIX SCCACHE_REGION AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
+  echo "Using sccache bucket: $SCCACHE_ENDPOINT/$SCCACHE_BUCKET/$SCCACHE_S3_KEY_PREFIX"
+fi
+
 # Stop any existing sccache server before reconfiguring.
 sccache --stop-server >/dev/null 2>&1 || true
 
