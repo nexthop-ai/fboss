@@ -6,6 +6,11 @@ name: Rebase Upstream PR
 # our internal cmake harness. On green, the validated rebase is force-pushed back to
 # the PR branch (updating the live upstream PR). On unresolved conflicts or a
 # build/test failure, we hand off to the @mabel Slack bot in #sw-fboss-automation.
+#
+# Conflict handoffs are resumable: after the conflicts are resolved and pushed to
+# the -rebase-wip branch, re-dispatching with resume_from_wip=true (and the same
+# rebase_onto target) picks the resolution up from there and runs it through the
+# same build-and-test gate — the PR branch is only ever updated on green.
 
 on:
   workflow_dispatch:
@@ -19,6 +24,11 @@ on:
         required: false
         default: ""
         type: string
+      resume_from_wip:
+        description: "Resume from the PR's -rebase-wip branch (after manual conflict resolution) instead of the PR head"
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: rebase-upstream-${{ inputs.pr_number }}
@@ -65,7 +75,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
         run: |
-          .github/scripts/rebase_upstream_pr.sh "${{ inputs.pr_number }}" "${{ inputs.rebase_onto }}"
+          .github/scripts/rebase_upstream_pr.sh "${{ inputs.pr_number }}" "${{ inputs.rebase_onto }}" "${{ inputs.resume_from_wip }}"
 
   # Build-and-test the clean rebased branch (only when the rebase was conflict-free).
   build-and-test:
@@ -144,6 +154,63 @@ jobs:
         env:
           TEST_BRANCH: ${{ needs.rebase.outputs.test_branch }}
         run: git push origin --delete "$TEST_BRANCH" || true
+      # The wip branch (if this PR ever went through a conflict handoff) has served
+      # its purpose once the validated rebase reaches the PR branch. Only delete it
+      # after update-pr succeeded — on a failed build it still holds the manual
+      # resolution, which would otherwise be lost.
+      - name: Delete wip branch
+        if: needs.update-pr.result == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          WIP_BRANCH: ${{ needs.rebase.outputs.wip_branch }}
+        run: gh api -X DELETE "repos/nexthop-ai/fboss/git/refs/heads/$WIP_BRANCH" || true
+
+  # On green + PR updated, tell the author what happened and how to undo it.
+  # The old head OID is the one piece of state that's painful to dig up later
+  # (PR timeline archaeology), so the revert command ships in the message.
+  notify-success:
+    name: Notify author (PR updated)
+    needs: [rebase, update-pr]
+    if: needs.update-pr.result == 'success'
+    runs-on: cloudstack-ubuntu24-micro
+    steps:
+      - name: DM author on Slack (channel fallback)
+        env:
+          WEBHOOK: ${{ secrets.SW_FBOSS_AUTOMATION_SLACK_WEBHOOK_URL }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          PR: ${{ inputs.pr_number }}
+          PR_BRANCH: ${{ needs.rebase.outputs.pr_branch }}
+          AUTHOR: ${{ needs.rebase.outputs.author_user }}
+          TARGET: ${{ needs.rebase.outputs.target }}
+          OLD_OID: ${{ needs.rebase.outputs.expected_oid }}
+          NEW_SHA: ${{ needs.rebase.outputs.rebased_sha }}
+          RESUMED: ${{ inputs.resume_from_wip }}
+          WIP_BRANCH: ${{ needs.rebase.outputs.wip_branch }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          via="automatic rebase"
+          [[ $RESUMED == 'true' ]] && via="manual resolution on \`$WIP_BRANCH\` (branch now deleted)"
+          msg=$(printf '✅ Upstream PR #%s rebased onto `%s`, build and tests passed, and your PR branch `%s` in nexthop-ai/fboss was updated to `%s` (via %s).\nTo revert to your previous commits, run from your fboss clone:\n```git push --force origin %s:refs/heads/%s```\nRun: %s' \
+            "$PR" "$TARGET" "$PR_BRANCH" "$NEW_SHA" "$via" "$OLD_OID" "$PR_BRANCH" "$RUN_URL")
+          # DM the author when a bot token is configured: internal usernames map
+          # to @nexthop.ai emails, which Slack resolves to a member id. Requires
+          # scopes chat:write + users:read.email.
+          if [[ -n ${SLACK_BOT_TOKEN:-} ]]; then
+            uid=$(curl -sSf -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+              "https://slack.com/api/users.lookupByEmail?email=${AUTHOR}@nexthop.ai" \
+              | jq -r 'select(.ok) | .user.id // empty')
+            if [[ -n $uid ]]; then
+              ok=$(jq -n --arg ch "$uid" --arg text "$msg" '{channel:$ch, text:$text}' | \
+                curl -sSf -X POST -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+                  -H 'Content-type: application/json' --data @- \
+                  https://slack.com/api/chat.postMessage | jq -r '.ok')
+              [[ $ok == true ]] && exit 0
+            fi
+            echo "::warning::Slack DM to '$AUTHOR' failed; falling back to channel webhook."
+          fi
+          jq -n --arg text "$AUTHOR: $msg" '{text:$text}' | \
+            curl -sSf -X POST -H 'Content-type: application/json' --data @- "$WEBHOOK"
 
   # ─── @mabel handoffs ──────────────────────────────────────────────────────
   notify-conflicts:
@@ -160,10 +227,11 @@ jobs:
           WIP_BRANCH: ${{ needs.rebase.outputs.wip_branch }}
           CONFLICTS: ${{ needs.rebase.outputs.conflicting_files }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
-          msg=$(printf '<@%s> the rebase of upstream PR #%s onto `%s` still has conflicts after nh-fix-merge-conflicts.py. Please resolve the merge conflicts on branch `%s` in nexthop-ai/fboss and push the corrected rebase.\nConflicting files:\n%s\nRun: %s' \
-            "$MABEL" "$PR" "$TARGET" "$WIP_BRANCH" "$CONFLICTS" "$RUN_URL")
+          msg=$(printf '<@%s> the rebase of upstream PR #%s onto `%s` still has conflicts after nh-fix-merge-conflicts.py. Please resolve the merge conflicts on branch `%s` in nexthop-ai/fboss, force-push the corrected rebase to that same branch, then resume validation with:\n```gh workflow run rebase-upstream-pr.yml -R %s -f pr_number=%s -f rebase_onto=%s -f resume_from_wip=true```\nDo NOT push to the PR branch directly — the resume run build-tests the wip branch and updates the PR only on green.\nConflicting files:\n%s\nRun: %s' \
+            "$MABEL" "$PR" "$TARGET" "$WIP_BRANCH" "$REPO" "$PR" "$TARGET" "$CONFLICTS" "$RUN_URL")
           jq -n --arg text "$msg" '{text:$text}' | \
             curl -sSf -X POST -H 'Content-type: application/json' --data @- "$WEBHOOK"
 

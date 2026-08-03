@@ -5,11 +5,15 @@
 # it before the FBOSS team reviews it.  Designed to run in GitHub Actions, but the
 # happy path is also runnable locally for debugging.
 #
-# Usage: rebase_upstream_pr.sh <upstream_pr_number> [rebase_onto]
+# Usage: rebase_upstream_pr.sh <upstream_pr_number> [rebase_onto] [resume_from_wip]
 #   <upstream_pr_number>  PR number in facebook/fboss (required)
 #   [rebase_onto]         empty  -> latest stable commit (default)
 #                         a name -> upstream branch (e.g. "main")
 #                         a sha  -> that upstream commit
+#   [resume_from_wip]     "true" -> rebase from the PR's -rebase-wip branch
+#                         (manually resolved conflicts) instead of the PR head.
+#                         The PR branch is still only updated after a green
+#                         build-and-test, same as a normal run.
 #
 # Requires: GH_TOKEN with read access to facebook/fboss and push access to
 # nexthop-ai/fboss (the public fork, used only for fetching the PR branch and, on
@@ -26,6 +30,7 @@ INFO=${INFO:-1}
 
 PR=${1:?"upstream PR number required"}
 REBASE_ONTO=${2:-}
+RESUME_FROM_WIP=${3:-false}
 
 upstream_repo="facebook/fboss"
 fork_repo="nexthop-ai/fboss"
@@ -169,6 +174,18 @@ echo_info "Test branch:  $test_branch (private-fboss)"
 git fetch --no-tags nexthop-ai "$pr_branch"
 pr_head=$(git rev-parse FETCH_HEAD)
 
+# Resume mode: rebase from the manually resolved wip branch instead of the PR
+# head. expected_oid stays the PR head captured above, so the final force-push
+# still aborts if someone moved the PR branch while the wip fix was in flight.
+if [[ $RESUME_FROM_WIP == true ]]; then
+  if ! git fetch --no-tags nexthop-ai "$wip_branch"; then
+    echo_error "resume_from_wip requested but '$wip_branch' does not exist on $fork_repo"
+    exit 1
+  fi
+  pr_head=$(git rev-parse FETCH_HEAD)
+  echo_info "Resuming from wip branch $wip_branch (head $pr_head)"
+fi
+
 # ─── 3. Resolve rebase target ─────────────────────────────────────────────────
 if [[ -z $REBASE_ONTO ]]; then
   stable_tarball=$(materialize_stable_tarball \
@@ -253,9 +270,16 @@ fi
 # ─── 7. Push result ───────────────────────────────────────────────────────────
 if [[ $has_conflicts == true ]]; then
   conflicting_files=$(git grep -lI '^<<<<<<< ' -- . 2>/dev/null || true)
-  echo_info "⚠️ Conflicts remain. Pushing best-effort branch '$wip_branch' for manual fix."
   echo "$conflicting_files"
-  git push --force nexthop-ai "HEAD:refs/heads/$wip_branch"
+  if [[ $RESUME_FROM_WIP == true ]]; then
+    # Resume run found the wip branch itself still has conflict markers (the
+    # manual resolution was incomplete). Leave the branch exactly as pushed —
+    # never rewrite manual work — and let the notify job ask for another pass.
+    echo_error "⚠️ wip branch '$wip_branch' still contains conflict markers; leaving it untouched."
+  else
+    echo_info "⚠️ Conflicts remain. Pushing best-effort branch '$wip_branch' for manual fix."
+    git push --force nexthop-ai "HEAD:refs/heads/$wip_branch"
+  fi
   emit has_conflicts "true"
   {
     echo "conflicting_files<<EOF"
