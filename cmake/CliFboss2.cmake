@@ -1070,6 +1070,73 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/delete/protocol/static/CmdDeleteProtocolStatic.h
   fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.cpp
   fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.h
+<<<<<<< HEAD
+=======
+  fboss/cli/fboss2/commands/delete/qos/CmdDeleteQos.cpp
+  fboss/cli/fboss2/commands/delete/qos/CmdDeleteQos.h
+  fboss/cli/fboss2/commands/delete/qos/default_queue_config/CmdDeleteQosDefaultQueueConfig.cpp
+  fboss/cli/fboss2/commands/delete/qos/default_queue_config/CmdDeleteQosDefaultQueueConfig.h
+  fboss/cli/fboss2/commands/delete/tunnel/CmdDeleteTunnel.cpp
+  fboss/cli/fboss2/commands/delete/tunnel/CmdDeleteTunnel.h
+  fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/CmdDeleteTunnelIpInIp.cpp
+  fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/CmdDeleteTunnelIpInIp.h
+  fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/TunnelIpInIpDeleteUtils.cpp
+  fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/TunnelIpInIpDeleteUtils.h
+  fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/decap/CmdDeleteTunnelIpInIpDecap.cpp
+  fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/decap/CmdDeleteTunnelIpInIpDecap.h
+  fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/encap/CmdDeleteTunnelIpInIpEncap.cpp
+  fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/encap/CmdDeleteTunnelIpInIpEncap.h
+  fboss/cli/fboss2/commands/config/vlan/CmdConfigVlan.cpp
+  fboss/cli/fboss2/commands/config/vlan/CmdConfigVlan.h
+  fboss/cli/fboss2/commands/config/vlan/CmdConfigVlanDefault.cpp
+  fboss/cli/fboss2/commands/config/vlan/CmdConfigVlanDefault.h
+  fboss/cli/fboss2/commands/config/vlan/VlanManager.cpp
+  fboss/cli/fboss2/commands/config/vlan/VlanManager.h
+  fboss/cli/fboss2/commands/config/vlan/port/CmdConfigVlanPort.cpp
+  fboss/cli/fboss2/commands/config/vlan/port/CmdConfigVlanPort.h
+  fboss/cli/fboss2/commands/config/vlan/port/tagging_mode/CmdConfigVlanPortTaggingMode.cpp
+  fboss/cli/fboss2/commands/config/vlan/port/tagging_mode/CmdConfigVlanPortTaggingMode.h
+  fboss/cli/fboss2/commands/config/vlan/static_mac/CmdConfigVlanStaticMac.cpp
+  fboss/cli/fboss2/commands/config/vlan/static_mac/CmdConfigVlanStaticMac.h
+  fboss/cli/fboss2/commands/config/vlan/static_mac/add/CmdConfigVlanStaticMacAdd.h
+  fboss/cli/fboss2/commands/config/vlan/static_mac/add/CmdConfigVlanStaticMacAdd.cpp
+  fboss/cli/fboss2/commands/config/vlan/static_mac/delete/CmdConfigVlanStaticMacDelete.h
+  fboss/cli/fboss2/commands/config/vlan/static_mac/delete/CmdConfigVlanStaticMacDelete.cpp
+  fboss/cli/fboss2/commands/delete/arp/CmdDeleteArp.cpp
+  fboss/cli/fboss2/commands/delete/arp/CmdDeleteArp.h
+  fboss/cli/fboss2/commands/delete/vlan/CmdDeleteVlan.cpp
+  fboss/cli/fboss2/commands/delete/vlan/CmdDeleteVlan.h
+  fboss/cli/fboss2/commands/delete/copp/CmdDeleteCopp.cpp
+  fboss/cli/fboss2/commands/delete/copp/CmdDeleteCopp.h
+  fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/CmdDeleteCoppCpuTrafficPolicy.cpp
+  fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/CmdDeleteCoppCpuTrafficPolicy.h
+  fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/match/CmdDeleteCoppCpuTrafficPolicyMatch.cpp
+  fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/match/CmdDeleteCoppCpuTrafficPolicyMatch.h
+  fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/match/action/CmdDeleteCoppCpuTrafficPolicyMatchAction.cpp
+  fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/match/action/CmdDeleteCoppCpuTrafficPolicyMatchAction.h
+  fboss/cli/fboss2/commands/delete/dhcp/CmdDeleteDhcp.cpp
+  fboss/cli/fboss2/commands/delete/dhcp/CmdDeleteDhcp.h
+  fboss/cli/fboss2/commands/delete/dhcp/relay_source_override/CmdDeleteDhcpRelaySourceOverride.cpp
+  fboss/cli/fboss2/commands/delete/dhcp/relay_source_override/CmdDeleteDhcpRelaySourceOverride.h
+  fboss/cli/fboss2/commands/delete/dhcp/reply_source_override/CmdDeleteDhcpReplySourceOverride.cpp
+  fboss/cli/fboss2/commands/delete/dhcp/reply_source_override/CmdDeleteDhcpReplySourceOverride.h
+  fboss/cli/fboss2/commands/delete/interface/CmdDeleteInterface.cpp
+  fboss/cli/fboss2/commands/delete/interface/CmdDeleteInterface.h
+  fboss/cli/fboss2/commands/delete/interface/ipv6/CmdDeleteInterfaceIpv6.cpp
+  fboss/cli/fboss2/commands/delete/interface/ipv6/CmdDeleteInterfaceIpv6.h
+  fboss/cli/fboss2/commands/delete/interface/ipv6/ndp/CmdDeleteInterfaceIpv6Ndp.cpp
+  fboss/cli/fboss2/commands/delete/interface/ipv6/ndp/CmdDeleteInterfaceIpv6Ndp.h
+  fboss/cli/fboss2/commands/delete/protocol/CmdDeleteProtocol.cpp
+  fboss/cli/fboss2/commands/delete/protocol/CmdDeleteProtocol.h
+  fboss/cli/fboss2/commands/delete/protocol/static/CmdDeleteProtocolStatic.cpp
+  fboss/cli/fboss2/commands/delete/protocol/static/CmdDeleteProtocolStatic.h
+  fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.cpp
+  fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.h
+  fboss/cli/fboss2/commands/delete/qos/CmdDeleteQos.cpp
+  fboss/cli/fboss2/commands/delete/qos/CmdDeleteQos.h
+  fboss/cli/fboss2/commands/delete/qos/default_queue_config/CmdDeleteQosDefaultQueueConfig.cpp
+  fboss/cli/fboss2/commands/delete/qos/default_queue_config/CmdDeleteQosDefaultQueueConfig.h
+>>>>>>> 8e54071fd6 (NOS-7155: Add fboss2-dev delete dhcp source-override subcommands (#1571))
   fboss/cli/fboss2/commands/delete/tunnel/CmdDeleteTunnel.cpp
   fboss/cli/fboss2/commands/delete/tunnel/CmdDeleteTunnel.h
   fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/CmdDeleteTunnelIpInIp.cpp

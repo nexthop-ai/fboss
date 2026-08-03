@@ -49,6 +49,11 @@ cpp_binary(
         "ConfigVlanPortTaggingModeTest.cpp",
         "ConfigVlanStaticMacTest.cpp",
         "ConfigVlanSwitchportAccessTest.cpp",
+<<<<<<< HEAD
+=======
+        "DeleteArpTest.cpp",
+        "DeleteDhcpSourceOverrideTest.cpp",
+>>>>>>> 8e54071fd6 (NOS-7155: Add fboss2-dev delete dhcp source-override subcommands (#1571))
         "DeleteInterfaceIpv6NdpTest.cpp",
         "DeleteInterfaceTest.cpp",
         "Fboss2IntegrationTest.cpp",

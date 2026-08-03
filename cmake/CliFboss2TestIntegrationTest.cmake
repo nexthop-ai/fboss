@@ -41,6 +41,11 @@ add_executable(fboss2_integration_test
   fboss/cli/fboss2/test/integration_test/ConfigVlanPortTaggingModeTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigVlanStaticMacTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigVlanSwitchportAccessTest.cpp
+<<<<<<< HEAD
+=======
+  fboss/cli/fboss2/test/integration_test/DeleteArpTest.cpp
+  fboss/cli/fboss2/test/integration_test/DeleteDhcpSourceOverrideTest.cpp
+>>>>>>> 8e54071fd6 (NOS-7155: Add fboss2-dev delete dhcp source-override subcommands (#1571))
   fboss/cli/fboss2/test/integration_test/DeleteInterfaceIpv6NdpTest.cpp
   fboss/cli/fboss2/test/integration_test/TunnelIpInIpTest.cpp
   fboss/cli/fboss2/utils/CmdInitUtils.cpp

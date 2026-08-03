@@ -39,6 +39,11 @@ cpp_unittest(
         "CmdConfigVlanStaticMacTest.cpp",
         "CmdDeleteAclRuleTest.cpp",
         "CmdDeleteConfigInterfaceTest.cpp",
+<<<<<<< HEAD
+=======
+        "CmdDeleteDhcpTest.cpp",
+        "CmdDeleteVlanTest.cpp",
+>>>>>>> 8e54071fd6 (NOS-7155: Add fboss2-dev delete dhcp source-override subcommands (#1571))
         "CmdDeleteInterfaceIpv6NdpTest.cpp",
         "CmdDeleteInterfaceTest.cpp",
         "CmdDeleteQosDefaultPolicyTest.cpp",
