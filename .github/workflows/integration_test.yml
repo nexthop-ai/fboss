@@ -42,11 +42,14 @@ jobs:
 
           git diff --name-only "$BASE_SHA"..."$HEAD_SHA" > /tmp/changed_files.txt || true
 
-          if grep -q '^fboss/cli/' /tmp/changed_files.txt; then
-            echo "Detected changes under fboss/cli/ - integration tests will run"
+          # The test plumbing itself (this workflow, the scripts it runs on the
+          # DUT, the run_scripts overlaid onto the DUT) must run the suite too,
+          # otherwise a broken DUT setup step ships unnoticed.
+          if grep -qE '^fboss/cli/|^\.github/workflows/integration_test\.yml$|^\.github/scripts/|^fboss/oss/scripts/run_scripts/' /tmp/changed_files.txt; then
+            echo "Detected CLI or integration-test plumbing changes - integration tests will run"
             echo "cli_changed=true" >> "$GITHUB_OUTPUT"
           else
-            echo "No changes under fboss/cli/ - skipping integration tests"
+            echo "No CLI or integration-test plumbing changes - skipping integration tests"
             echo "cli_changed=false" >> "$GITHUB_OUTPUT"
           fi
 
@@ -222,8 +225,13 @@ jobs:
               echo "::endgroup::"
               continue
             fi
+            # `nh dvc scp` connects as root, so a `~/` target lands in /root
+            # while the runner's ssh session has a different HOME and would not
+            # find the libraries. Use a path that does not depend on which user
+            # either side authenticates as.
+            nh dvc ssh "$DUT" -c 'sudo mkdir -p /opt/fboss/pr_lib' || true
             for lib in fboss_pkg/lib/*; do
-              [ -f "$lib" ] && nh dvc scp "$lib" "$DUT":~/ || true
+              [ -f "$lib" ] && nh dvc scp "$lib" "$DUT":/opt/fboss/pr_lib/ || true
             done
             echo "::endgroup::"
 
@@ -239,7 +247,13 @@ jobs:
               echo "::endgroup::"
               continue
             fi
-            if ! nh dvc ssh "$DUT" -c 'tar -C /opt/fboss/bin -xzf /tmp/run_scripts.tgz && rm -f /tmp/run_scripts.tgz'; then
+            # /opt/fboss/bin is root-owned and `nh dvc ssh` lands as an
+            # unprivileged user, so the extraction needs sudo. So does the
+            # cleanup: `nh dvc scp` transfers as root, which leaves a
+            # root-owned tarball in sticky /tmp.
+            # --no-same-owner keeps the extracted files root-owned instead of
+            # inheriting the CI runner's uid from the archive.
+            if ! nh dvc ssh "$DUT" -c 'sudo tar --no-same-owner -C /opt/fboss/bin -xzf /tmp/run_scripts.tgz && sudo rm -f /tmp/run_scripts.tgz'; then
               echo "::warning::Failed to extract run_scripts, trying next DUT"
               nh tb release "$DUT" || true
               echo "::endgroup::"
@@ -253,7 +267,11 @@ jobs:
           done
 
           # Infra, not a test result: warn and skip instead of failing the PR.
+          # A warning alone is easy to miss on an otherwise green job, so say it
+          # in the run summary too: a setup bug that fails every DUT candidate
+          # otherwise reads as a pass.
           echo "::warning::No DUT could be claimed and prepared — skipping integration tests."
+          echo ":warning: **Integration tests DID NOT RUN** — no DUT could be claimed and prepared (see the Prepare DUT step)." >> "$GITHUB_STEP_SUMMARY"
           echo "dut_ready=false" >> "$GITHUB_OUTPUT"
           exit 0
 

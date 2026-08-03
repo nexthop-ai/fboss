@@ -8,7 +8,8 @@
 # The suite is driven by /opt/fboss/bin/run_test.py fboss2_integration (the
 # same entry point Meta uses), which runs each gtest case as a separate
 # binary invocation, manages agent cold boots between tests, and aggregates
-# results into /home/netops/tr.xml.
+# results into tr.xml under the invoking user's home. Nothing here reads that
+# file; pass/fail is taken from the runner log below.
 #
 # The runner is launched in a backgrounded subshell on the DUT (a foreground
 # `nh dvc ssh` session times out around 120s while the suite runs longer).
@@ -38,8 +39,10 @@ nh dvc ssh "$DUT" -c '
   set -euo pipefail
 
   # Clean up stale files from a previous run so we do not read an old
-  # log / rc / pid and think the current run already finished.
-  rm -f /tmp/fboss2_itest.log /tmp/fboss2_itest.rc /tmp/fboss2_itest.pid
+  # log / rc / pid and think the current run already finished. sudo because a
+  # file left behind by a root-owned run cannot be removed from sticky /tmp by
+  # an unprivileged user.
+  sudo rm -f /tmp/fboss2_itest.log /tmp/fboss2_itest.rc /tmp/fboss2_itest.pid
 
   # The preinstalled agents log to /var/facebook/logs/fboss (StandardOutput=
   # append: in their systemd units), which run_test.py --log-bundle does not
@@ -54,15 +57,21 @@ nh dvc ssh "$DUT" -c '
     fi
   done
 
+  # The runner needs root: it writes its run directory under /opt/fboss/logs
+  # (root-owned) and restarts the agent services between test cases.
+  # sudo comes before stdbuf so libstdbuf survives -- sudo strips LD_PRELOAD,
+  # so `stdbuf sudo ...` would silently lose line buffering.
   # stdbuf -oL -eL forces line buffering so each runner progress line
   # (e.g. "########## Coldboot test results (5/107): ...") is flushed to the
   # log as it prints. Without it, libc block-buffers stdout (the target is a
   # file, not a TTY) and buffered lines are LOST if the process is killed.
-  # LD_LIBRARY_PATH=$HOME keeps the PR-built libraries copied to ~ reachable
-  # by the PR-built test binary (run_test.py prepends /opt/fboss/lib{,64}
-  # but preserves the inherited value).
+  # LD_LIBRARY_PATH points at the directory the workflow copied the PR-built
+  # libraries into, so the PR-built test binary can resolve them (run_test.py
+  # prepends /opt/fboss/lib{,64} but preserves the inherited value). It is an
+  # absolute path rather than $HOME because the copy and the run do not
+  # necessarily authenticate as the same user.
   (
-    stdbuf -oL -eL env LD_LIBRARY_PATH="$HOME:${LD_LIBRARY_PATH:-}" \
+    sudo stdbuf -oL -eL env LD_LIBRARY_PATH="/opt/fboss/pr_lib:${LD_LIBRARY_PATH:-}" \
       python3 /opt/fboss/bin/run_test.py fboss2_integration \
       --log-bundle \
       --config '"$CONFIG"' \
