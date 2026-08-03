@@ -17,6 +17,8 @@ concurrency:
 
 env:
   SAI_VERSION: ${{ inputs.sai_version || '1.16.1' }}
+  GETDEPS_CACHE_URL: "http://bucket.internal.nexthop.ai:7480/image-stash/getdeps-cache"
+  GETDEPS_CACHE_UPLOAD: "1"
 
 permissions:
   contents: read
@@ -40,7 +42,11 @@ jobs:
 
       - name: Build FBOSS with Bazel
         run: |
-          docker exec -e SAI_VERSION=${{ env.SAI_VERSION }} FBOSS_build_${USER} fboss/oss/scripts/bazel.sh build --remote_upload_local_results=true --keep_going //fboss/...
+          docker exec \
+            -e SAI_VERSION=${{ env.SAI_VERSION }} \
+            -e GETDEPS_CACHE_URL=${{ env.GETDEPS_CACHE_URL }} \
+            -e GETDEPS_CACHE_UPLOAD=${{ env.GETDEPS_CACHE_UPLOAD }} \
+            FBOSS_build_${USER} fboss/oss/scripts/bazel.sh build --remote_upload_local_results=true --keep_going //fboss/...
 
       - name: Collect sccache statistics
         if: always()
@@ -49,7 +55,11 @@ jobs:
 
       - name: Run Bazel tests
         run: |
-          docker exec -e SAI_VERSION=${{ env.SAI_VERSION }} FBOSS_build_${USER} fboss/oss/scripts/bazel.sh test --remote_upload_local_results=true --keep_going --test_output=errors //fboss/...
+          docker exec \
+            -e SAI_VERSION=${{ env.SAI_VERSION }} \
+            -e GETDEPS_CACHE_URL=${{ env.GETDEPS_CACHE_URL }} \
+            -e GETDEPS_CACHE_UPLOAD=${{ env.GETDEPS_CACHE_UPLOAD }} \
+            FBOSS_build_${USER} fboss/oss/scripts/bazel.sh test --remote_upload_local_results=true --keep_going --test_output=errors //fboss/...
 
       - name: Run bazelify unit tests
         run: |

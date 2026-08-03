@@ -57,6 +57,8 @@ def _getdeps_repository_impl(ctx):
         ]
         if ctx.attr.cache_url:
             cmd += ["--cache-url", ctx.attr.cache_url]
+            if ctx.attr.cache_upload:
+                cmd += ["--upload"]
 
         result = ctx.execute(cmd, timeout = 3600, quiet = False)
         if result.return_code != 0:
@@ -94,6 +96,8 @@ getdeps_repository = repository_rule(
         "build_file_content": attr.string(mandatory = True),
         "first_party": attr.bool(default = False),
         "cache_url": attr.string(default = ""),
+        # CI only: upload freshly built deps so later runs get a cache hit.
+        "cache_upload": attr.bool(default = False),
         "scratch_path": attr.string(default = "/var/FBOSS/tmp_bld_dir"),
     },
     local = True,

@@ -141,6 +141,11 @@ fi
 BAZELIFY_ARGS="--if-needed -r $REPO_ROOT"
 if [ -n "${GETDEPS_CACHE_URL:-}" ]; then
   BAZELIFY_ARGS="$BAZELIFY_ARGS --cache-url $GETDEPS_CACHE_URL"
+  # CI sets GETDEPS_CACHE_UPLOAD=1 so cache misses are published for the next
+  # run; dev machines stay read-only against the shared cache.
+  if [ "${GETDEPS_CACHE_UPLOAD:-}" = "1" ]; then
+    BAZELIFY_ARGS="$BAZELIFY_ARGS --cache-upload"
+  fi
 fi
 # Generate for fake SAI when selected, and also when no sai_impl manifest is
 # present (the host has no vendor SAI configured), so the vendor SAI tarball

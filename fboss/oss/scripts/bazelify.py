@@ -974,6 +974,7 @@ def generate_module_bazel_getdeps(
     getdeps_graph: list[dict],
     scratch_path: str,
     cache_url: str,
+    cache_upload: bool = False,
     sai_impl: str = "bcm",
 ) -> str:
     """Generate MODULE.bazel using getdeps_repository for built deps.
@@ -1098,6 +1099,8 @@ def generate_module_bazel_getdeps(
             oa += f'{attr_indent}scratch_path = "{scratch_path}",\n'
         if cache_url:
             oa += f'{attr_indent}cache_url = "{cache_url}",\n'
+            if cache_upload:
+                oa += f"{attr_indent}cache_upload = True,\n"
 
         bc = textwrap.indent(build_content.strip(), _indent)
         chunks.append(f"""\
@@ -2963,6 +2966,12 @@ Examples:
         "--cache-url", default="", help="HTTP cache URL for dep tarballs"
     )
     parser.add_argument(
+        "--cache-upload",
+        action="store_true",
+        help="Upload freshly built deps to --cache-url (CI only; dev machines "
+        "should not publish to the shared cache)",
+    )
+    parser.add_argument(
         "--if-needed",
         action="store_true",
         help="Only regenerate if input files (BUCK, .bzl, manifests, patches) "
@@ -3070,6 +3079,7 @@ def main():  # noqa: PLR0912, PLR0915
             getdeps_graph,
             args.scratch_path,
             args.cache_url,
+            cache_upload=args.cache_upload,
             sai_impl=args.sai_impl,
         )
     else:
