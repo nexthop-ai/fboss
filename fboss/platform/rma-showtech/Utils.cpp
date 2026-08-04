@@ -448,6 +448,15 @@ void Utils::printCrashDetails() {
     printFileIfPresent(crashDir + "/bad_update/old_state");
     printFileIfPresent(crashDir + "/bad_update/new_state");
   }
+
+  const std::string warmBootDir = "/dev/shm/fboss/warm_boot";
+  if (std::filesystem::is_directory(warmBootDir)) {
+    std::cout << "#### FBOSS Warm Boot State ####" << std::endl;
+    std::cout << platformUtils_
+                     .execCommand(fmt::format("ls -lha {}", warmBootDir))
+                     .second
+              << std::endl;
+  }
 }
 
 void Utils::printSystemdDetails() {
