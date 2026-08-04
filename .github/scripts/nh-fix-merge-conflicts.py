@@ -228,9 +228,72 @@ def parse_conflict_block(lines: List[str], start_idx: int) -> Optional[Tuple[int
     return (start_idx, ours_lines, theirs_lines, end_marker)
 
 
-def resolve_conflict(ours_lines: List[str], theirs_lines: List[str], repo_root: Path, base_dir: Path, file_format: FileFormat) -> Optional[List[str]]:
+def collect_context_paths(above_lines: List[str], below_lines: List[str], below_start: int, file_format: FileFormat) -> Set[str]:
+    """
+    Collect file paths from the contiguous path-line runs surrounding a
+    conflict: walking backwards through already-emitted lines and forwards
+    through the remaining input. The walks stop at the first non-path line
+    (a list boundary), so the result never crosses into a neighboring
+    target's list. Sibling conflict blocks are stepped over without counting
+    their contents (they get their own resolution pass) — unless the block
+    itself contains a structural line, in which case it straddles a list
+    boundary and the walk stops there too.
+    """
+    def _is_marker(line: str) -> bool:
+        return line.startswith(('<<<<<<<', '|||||||', '=======', '>>>>>>>'))
+
+    def _block_is_all_paths(lines: List[str], start: int, end: int) -> bool:
+        """True if every non-marker line in lines[start:end+1] is a path line."""
+        return all(
+            _is_marker(lines[k]) or is_file_path_line(lines[k], file_format)
+            for k in range(start, end + 1)
+        )
+
+    context: Set[str] = set()
+    j = len(above_lines) - 1
+    while j >= 0:
+        if above_lines[j].startswith('>>>>>>>'):
+            # Step over a sibling conflict block without counting its contents
+            # as context; it gets its own resolution pass. If the block holds
+            # any structural (non-path) line, it straddles a list boundary —
+            # stop rather than leak the neighboring list into the context.
+            k = j
+            while k >= 0 and not above_lines[k].startswith('<<<<<<<'):
+                k -= 1
+            if k < 0 or not _block_is_all_paths(above_lines, k, j):
+                break
+            j = k - 1
+            continue
+        if not is_file_path_line(above_lines[j], file_format):
+            break
+        context |= extract_file_paths([above_lines[j]], file_format)
+        j -= 1
+    j = below_start
+    while j < len(below_lines):
+        if below_lines[j].startswith('<<<<<<<'):
+            k = j
+            while k < len(below_lines) and not below_lines[k].startswith('>>>>>>>'):
+                k += 1
+            if k >= len(below_lines) or not _block_is_all_paths(below_lines, j, k):
+                break
+            j = k + 1
+            continue
+        if not is_file_path_line(below_lines[j], file_format):
+            break
+        context |= extract_file_paths([below_lines[j]], file_format)
+        j += 1
+    return context
+
+
+def resolve_conflict(ours_lines: List[str], theirs_lines: List[str], repo_root: Path, base_dir: Path, file_format: FileFormat, context_paths: Optional[Set[str]] = None) -> Optional[List[str]]:
     """
     Resolve a conflict by taking the union of file paths.
+
+    Paths in context_paths (entries already present elsewhere in the enclosing
+    list) are dropped from the union: when internal and upstream carry the same
+    entries at different positions, git emits paired one-sided conflict hunks,
+    and a per-hunk union would keep both copies. CMake/Buck silently dedup
+    sources, so such duplicates survive builds unnoticed.
 
     Returns the resolved lines, or None if the conflict can't be auto-resolved.
     """
@@ -249,8 +312,10 @@ def resolve_conflict(ours_lines: List[str], theirs_lines: List[str], repo_root: 
     if file_format == FileFormat.BUCK:
         ours_annotations = extract_buck_path_annotations(ours_lines)
 
-    # Take the union
+    # Take the union, minus entries the enclosing list already has
     all_paths = ours_paths | theirs_paths
+    if context_paths:
+        all_paths -= context_paths
 
     # Filter out non-existent files
     existing_paths = {path for path in all_paths if file_exists(path, repo_root, base_dir)}
@@ -323,7 +388,8 @@ def process_file(filepath: Path, repo_root: Path, file_format: FileFormat) -> bo
             result = parse_conflict_block(lines, i)
             if result:
                 start_idx, ours_lines, theirs_lines, end_idx = result
-                resolved = resolve_conflict(ours_lines, theirs_lines, repo_root, base_dir, file_format)
+                context_paths = collect_context_paths(new_lines, lines, end_idx + 1, file_format)
+                resolved = resolve_conflict(ours_lines, theirs_lines, repo_root, base_dir, file_format, context_paths)
 
                 if resolved is not None:
                     # Replace the conflict with the resolved version
@@ -410,6 +476,60 @@ def find_files_with_conflicts(repo_root: Path) -> List[Tuple[Path, FileFormat]]:
     return files_with_conflicts
 
 
+def dedupe_file_lists(repo_root: Path) -> List[Path]:
+    """
+    Drop exact duplicate entries within each contiguous run of file-path lines
+    (i.e. within one source list) of every cmake/BUCK build file.
+
+    Conflict-hunk union is not the only way a sync merge mints duplicates: a
+    clean git merge also keeps both copies when internal and upstream add the
+    same entry at nearby-but-different positions in non-overlapping hunks.
+    CMake and Buck silently tolerate duplicate sources, so nothing downstream
+    ever fails. Files still containing conflict markers are skipped.
+
+    Returns the list of modified files.
+    """
+    candidates: List[Tuple[Path, FileFormat]] = []
+    cmake_dir = repo_root / 'cmake'
+    if cmake_dir.exists():
+        candidates += [(f, FileFormat.CMAKE) for f in sorted(cmake_dir.glob('*.cmake'))]
+    for buck_file in sorted(repo_root.rglob('BUCK')):
+        if any(part.startswith('.') or part in ['build', 'tmp_bld_dir'] for part in buck_file.parts):
+            continue
+        candidates.append((buck_file, FileFormat.BUCK))
+
+    changed: List[Path] = []
+    for filepath, file_format in candidates:
+        try:
+            with open(filepath, 'r') as fh:
+                lines = fh.readlines()
+        except (OSError, UnicodeDecodeError):
+            continue
+        if any(line.startswith('<<<<<<<') for line in lines):
+            continue
+        out_lines: List[str] = []
+        seen: Set[str] = set()
+        modified = False
+        for line in lines:
+            if is_file_path_line(line, file_format) and line.strip():
+                paths = extract_file_paths([line], file_format)
+                if paths and paths <= seen:
+                    modified = True
+                    print(f"  ✓ Dropped duplicate {next(iter(paths))} from {filepath.relative_to(repo_root)}")
+                    continue
+                seen |= paths
+            else:
+                # Non-path line = list boundary; entries may legitimately
+                # repeat across different targets, so reset the run.
+                seen = set()
+            out_lines.append(line)
+        if modified:
+            with open(filepath, 'w') as fh:
+                fh.writelines(out_lines)
+            changed.append(filepath)
+    return changed
+
+
 def main():
     # Find repository root
     repo_root = Path(__file__).resolve().parent.parent.parent
@@ -419,6 +539,10 @@ def main():
 
     if not files_with_conflicts:
         print("No merge conflicts found in CMake, BUCK, or C++ files.")
+        deduped = dedupe_file_lists(repo_root)
+        if deduped:
+            subprocess.run(['git', 'add'] + [str(f) for f in deduped], check=True)
+            print(f"Deduplicated file lists in {len(deduped)} file(s).")
         return
 
     # Group by file type for reporting
@@ -448,14 +572,20 @@ def main():
         if process_file(filepath, repo_root, file_format):
             fully_resolved_files.append(filepath)
 
-    # Stage fully resolved files
-    if fully_resolved_files:
-        print(f"\nStaging {len(fully_resolved_files)} fully resolved file(s)...")
-        subprocess.run(['git', 'add'] + [str(f) for f in fully_resolved_files], check=True)
-        for filepath in fully_resolved_files:
+    # Clean-merge dedup pass: a merge can duplicate list entries without any
+    # conflict, so sweep all build files (skips ones still holding markers).
+    print("\nDeduplicating file lists...")
+    deduped = dedupe_file_lists(repo_root)
+
+    # Stage fully resolved and deduplicated files
+    to_stage = fully_resolved_files + [f for f in deduped if f not in fully_resolved_files]
+    if to_stage:
+        print(f"\nStaging {len(to_stage)} file(s)...")
+        subprocess.run(['git', 'add'] + [str(f) for f in to_stage], check=True)
+        for filepath in to_stage:
             print(f"  ✓ Staged {filepath.relative_to(repo_root)}")
 
-    print(f"\nDone! Resolved conflicts in {len(fully_resolved_files)} file(s).")
+    print(f"\nDone! Resolved conflicts in {len(fully_resolved_files)} file(s), deduplicated {len(deduped)} file(s).")
 
 
 if __name__ == '__main__':
