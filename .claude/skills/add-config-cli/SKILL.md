@@ -529,9 +529,10 @@ states (see NOS-5734 work log). Before anything else, verify:
    Note: `weutil --json` may emit a different schema — if
    `fboss_hw_agent@0` crashes in `PlatformProductInfo::parse`, this is likely
    the cause.
-5. `sudo chgrp -R wheel /etc/coop && sudo chmod -R g+w /etc/coop` — required
-   for `ConfigSession` to write to the session config without needing to run
-   tests as root with `sudo`. Prefer running tests as non-root.
+5. No need to run as `root` — `/etc/coop` ships group-writable by the
+   `switching` group, and your user is expected to be a member of it (`id`
+   should list `switching`; `netops` is by default). Prefer running tests
+   as non-root.
 6. `/tmp/fboss2-dev-new show interface` succeeds without `Connection refused`.
 
 Build + copy + run. **Two target gotchas worth calling out up front**:
