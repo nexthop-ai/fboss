@@ -28,6 +28,14 @@ if [[ -z ${BUNDLE_PATH} || ${BUNDLE_PATH} != /opt/fboss/logs/run_test/*.zip ]]; 
 fi
 
 mkdir -p log_bundle
+
+# The bundle is created by run_test.py under sudo, so the containing
+# directory and the file are root-owned; `nh dvc scp` authenticates as an
+# unprivileged user, so the download only works if both are world-readable.
+# A typical umask gives that, but it is not guaranteed -- force it instead
+# of depending on it.
+nh dvc ssh "$DUT" -c "sudo chmod a+rx '$(dirname "${BUNDLE_PATH}")' && sudo chmod a+r '${BUNDLE_PATH}'" 2>/dev/null || true
+
 if nh dvc scp "$DUT":"${BUNDLE_PATH}" log_bundle/; then
   echo "Fetched $(basename "${BUNDLE_PATH}") ($(du -h log_bundle/* | cut -f1))"
 else

@@ -211,28 +211,38 @@ jobs:
             echo "::endgroup::"
 
             echo "::group::[$DUT] Copy integration test binary and libraries"
+            # `nh dvc scp` authenticates as an unprivileged user, so it cannot
+            # write directly into root-owned /opt/fboss/bin or /opt/fboss/pr_lib.
+            # Stage in /tmp (sticky, world-writable) and move into place with
+            # sudo over ssh, same pattern as the run_scripts overlay below.
+            #
             # run_test.py resolves the bare binary name via $PATH, so the test
             # binary must live in /opt/fboss/bin.
-            if ! nh dvc scp fboss_pkg/bin/fboss2_integration_test "$DUT":/opt/fboss/bin/; then
+            if ! nh dvc scp fboss_pkg/bin/fboss2_integration_test "$DUT":/tmp/; then
               echo "::warning::Failed to copy fboss2_integration_test, trying next DUT"
               nh tb release "$DUT" || true
               echo "::endgroup::"
               continue
             fi
-            if ! nh dvc scp fboss_pkg/bin/fboss2-dev "$DUT":/opt/fboss/bin/; then
+            if ! nh dvc scp fboss_pkg/bin/fboss2-dev "$DUT":/tmp/; then
               echo "::warning::Failed to copy fboss2-dev, trying next DUT"
               nh tb release "$DUT" || true
               echo "::endgroup::"
               continue
             fi
-            # `nh dvc scp` connects as root, so a `~/` target lands in /root
-            # while the runner's ssh session has a different HOME and would not
-            # find the libraries. Use a path that does not depend on which user
-            # either side authenticates as.
-            nh dvc ssh "$DUT" -c 'sudo mkdir -p /opt/fboss/pr_lib' || true
+            if ! nh dvc ssh "$DUT" -c 'sudo mv /tmp/fboss2_integration_test /tmp/fboss2-dev /opt/fboss/bin/'; then
+              echo "::warning::Failed to install integration test binaries, trying next DUT"
+              nh tb release "$DUT" || true
+              echo "::endgroup::"
+              continue
+            fi
+            # Use a path that does not depend on which user either side
+            # authenticates as, rather than `~/` (HOME differs per user).
+            nh dvc ssh "$DUT" -c 'sudo mkdir -p /opt/fboss/pr_lib && mkdir -p /tmp/pr_lib_stage' || true
             for lib in fboss_pkg/lib/*; do
-              [ -f "$lib" ] && nh dvc scp "$lib" "$DUT":/opt/fboss/pr_lib/ || true
+              [ -f "$lib" ] && nh dvc scp "$lib" "$DUT":/tmp/pr_lib_stage/ || true
             done
+            nh dvc ssh "$DUT" -c 'sudo mv /tmp/pr_lib_stage/* /opt/fboss/pr_lib/ 2>/dev/null; rm -rf /tmp/pr_lib_stage' || true
             echo "::endgroup::"
 
             echo "::group::[$DUT] Copy test runner scripts"
@@ -247,10 +257,9 @@ jobs:
               echo "::endgroup::"
               continue
             fi
-            # /opt/fboss/bin is root-owned and `nh dvc ssh` lands as an
-            # unprivileged user, so the extraction needs sudo. So does the
-            # cleanup: `nh dvc scp` transfers as root, which leaves a
-            # root-owned tarball in sticky /tmp.
+            # /opt/fboss/bin is root-owned and `nh dvc ssh`/`nh dvc scp` both
+            # land as an unprivileged user, so the extraction needs sudo. So
+            # does the cleanup, regardless of who owns the tarball in sticky /tmp.
             # --no-same-owner keeps the extracted files root-owned instead of
             # inheriting the CI runner's uid from the archive.
             if ! nh dvc ssh "$DUT" -c 'sudo tar --no-same-owner -C /opt/fboss/bin -xzf /tmp/run_scripts.tgz && sudo rm -f /tmp/run_scripts.tgz'; then
