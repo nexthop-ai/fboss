@@ -11,10 +11,8 @@ add_executable(fboss2_integration_test
   fboss/cli/fboss2/test/integration_test/ConfigAdminDistanceTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigAclRuleTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigArpTest.cpp
-  fboss/cli/fboss2/test/integration_test/ConfigHostnameTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigConcurrentSessionsTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigHostnameTest.cpp
-  fboss/cli/fboss2/test/integration_test/ConfigIcmpV4UnavailableSrcAddrTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigCoppTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigDhcpSourceOverrideTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigIcmpV4UnavailableSrcAddrTest.cpp
@@ -33,7 +31,6 @@ add_executable(fboss2_integration_test
   fboss/cli/fboss2/test/integration_test/ConfigInterfaceFlowControlTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigInterfaceLldpExpectedValueTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigInterfaceLoopbackModeTest.cpp
-  fboss/cli/fboss2/test/integration_test/ConfigInterfaceProfileTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigInterfaceTypeTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigQosDefaultQueueConfigTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigQosPolicyMapTest.cpp
