@@ -1,6 +1,6 @@
 ---
 name: upstream-pr
-description: Send an internal Nexthop FBOSS PR upstream to facebook/fboss. Identifies the head branch from the internal PR, creates an upstream branch from upstream/main on the public fork (nexthop-ai/fboss), cherry-picks the PR's commits, runs `nh-fix-merge-conflicts.py` for the cmake/BUCK file-list conflicts and resolves the rest by hand, transiently cherry-picks `bazel-build` for build+test, drops it via rebase, sanitizes commit + PR text (NOS-XXXX prefixes, DUT names, internal stack lists), pushes to `nexthop-ai`, opens the upstream PR with the `[Nexthop]` (or `[Nexthop][fboss2-dev]`) prefix, then updates the tracking spreadsheet, comments back on the internal PR, and flips its `Upstream required` flag to No so internal automation doesn't try to re-upstream.
+description: Send an internal Nexthop FBOSS PR upstream to facebook/fboss. Identifies the head branch from the internal PR, creates an upstream branch from upstream/main on the public fork (nexthop-ai/fboss), cherry-picks the PR's commits, runs `nh-fix-merge-conflicts.py` for the cmake/BUCK file-list conflicts and resolves the rest by hand, transiently overlays the NH cmake CI harness (`overlay_nh_harness` from `.github/scripts/sync-lib.sh`) for build+test, drops it before pushing, sanitizes commit + PR text (NOS-XXXX prefixes, DUT names, internal stack lists), pushes to `nexthop-ai`, opens the upstream PR with the `[Nexthop]` (or `[Nexthop][fboss2-dev]`) prefix, then updates the tracking spreadsheet, comments back on the internal PR, and flips its `Upstream required` flag to No so internal automation doesn't try to re-upstream.
 when_to_use: |
   User asks to upstream an internal FBOSS PR — typical phrasings:
   "upstream PR #N", "send PR N upstream", "publish PR N to facebook/fboss".
@@ -77,22 +77,22 @@ Match by branch name (the upstream branch name will be the internal
 head branch with the `<user>.` prefix dropped, e.g. `benoit.copp-cpuqueues`
 → `copp-cpuqueues`) or by title keyword. If anything matches, stop.
 
-### 1c. Working tree clean + remotes fresh + infra branches present
+### 1c. Working tree clean + remotes fresh + infra present
 
 ```bash
 git status --porcelain        # only untracked files OK; no M/D/A
 git fetch upstream
 git fetch origin
 git fetch nexthop-ai
-git ls-remote nexthop-ai bazel-build
-git ls-remote origin benoit.blaze
 git show origin/main:.github/scripts/nh-fix-merge-conflicts.py >/dev/null
+git show origin/main:.github/scripts/sync-lib.sh >/dev/null
 ```
 
-`bazel-build` lives on `nexthop-ai`, **not** `origin` (it's
-upstream-bound infra). `benoit.blaze` lives on `origin` (Nexthop-only
-overrides for the build env). The merge-conflict script is checked in
-on `origin/main` but *must not* be committed onto our upstream branch.
+Both scripts are checked in on `origin/main` but *must not* be
+committed onto our upstream branch. (`sync-lib.sh` provides the
+`overlay_nh_harness` helper used in §4; the `rebase-upstream-pr.yml`
+workflow uses the same helper to *rebase* existing upstream PRs —
+this skill covers the *initial* creation.)
 
 ## 2. Identify head branch + commit range
 
@@ -220,54 +220,56 @@ rmdir .github/scripts 2>/dev/null
 `.github/scripts/nh-fix-merge-conflicts.py` exists on `origin/main`
 but **not** on `upstream/main` — committing it upstream would leak it.
 
-## 4. Bazel cherry-pick for build/test
+## 4. Overlay the NH cmake harness for build/test
 
-The OSS upstream tree builds with cmake + BUCK; Bazel exists on the
-`bazel-build` branch but isn't merged. Bring it in transiently:
-
-```bash
-git cherry-pick bazel-build
-git show origin/benoit.blaze:fboss/oss/scripts/build-helper.py >fboss/oss/scripts/build-helper.py
-git show origin/benoit.blaze:fboss/oss/scripts/fboss-build.env >fboss/oss/scripts/fboss-build.env
-git add fboss/oss/scripts/build-helper.py
-git commit --amend --no-edit
-```
-
-Notes:
-- `fboss/oss/scripts/fboss-build.env` is **in `.gitignore`** — it lands
-  in the working tree but `git status` won't show it. That's fine; it
-  has to be on disk for `bazel.sh` to pick it up.
-- Pre-commit's `ruff-format` will reformat `build-helper.py` on the
-  amend. The commit aborts; re-`git add` and `git commit --amend
-  --no-edit` once more to absorb the formatter's changes.
-
-## 5. Build + test
-
-For fboss2-dev CLI work (the typical case — confirmed if §1a found
-spreadsheet rows for the PR):
+**Upstream branches cannot be built with our Bazel build** — it is
+internal to Nexthop. Upstream trees build with the cmake harness,
+which must be overlaid on top of the bare upstream tree. Use the
+library functions in `.github/scripts/sync-lib.sh` directly:
 
 ```bash
-./fboss/oss/scripts/bazel.sh build //fboss/cli/...
-./fboss/oss/scripts/bazel.sh test //fboss/cli/...
+source <(git show origin/main:.github/scripts/sync-lib.sh)
+stable_tarball=$(materialize_stable_tarball \
+    "$(git rev-list -1 upstream/main -- fboss/oss/stable_commits)")
+overlay_nh_harness origin/main "$stable_tarball" \
+    "CI: build-test upstream branch $BRANCH with NH harness (do not merge)"
 ```
 
-For non-CLI work, build/test `//fboss/...` instead.
+`sync-lib.sh` installs its own `echo_info`/`echo_debug`/`echo_error`
+defaults, so nothing needs to be defined before sourcing it.
+
+This creates **one temporary do-not-merge commit** with the harness
+(`.github`, `fboss/oss/{docker,scripts,stable_commits}`, `fboss-sim`,
+our getdeps fork, dep pins from the stable tarball) plus cherry-picks
+of internal-only test fixes. All of it gets dropped in §6.
+
+## 5. Build + test (cmake harness via CI)
+
+Push the harness-overlaid branch to `origin` (private-fboss) as a
+throwaway test branch and run the CI cmake build against it — the same
+gate `rebase-upstream-pr.yml` uses:
+
+```bash
+git push -u origin HEAD:refs/heads/<user>.upstream-test.$BRANCH
+gh workflow run build-and-test.yml -R nexthop-ai/private-fboss \
+    --ref <user>.upstream-test.$BRANCH -f use_clang=true
+```
+
+The build is slow (getdeps + full cmake build); poll the run with
+`gh run list -R nexthop-ai/private-fboss -w build-and-test.yml`.
 
 If anything fails, fix it and commit each fix as a *temporary* commit
-on top of the bazel-build commit. We'll absorb them in §6.
+on top of the harness commit. We'll absorb them in §6. Delete the test
+branch from `origin` once done.
 
-Use `run_in_background` for `bazel.sh build` (~2 minutes cold,
-seconds-to-tens-of-seconds warm with sccache) so you can do other prep
-work in parallel.
-
-## 6. Drop bazel-build, fold any fixups into the PR commit
+## 6. Drop the harness commit, fold any fixups into the PR commit
 
 Branch state at this point:
 ```
 HEAD     fixup-N (temp; possibly zero of these)
          …
          fixup-1
-         bazel-build (cherry-picked + amended)
+         NH-harness overlay commit (do not merge)
          <PR commit, conflict-resolved>
 upstream/main
 ```
@@ -279,8 +281,8 @@ to the PR commit's SHA:
 git reset --hard <PR-commit-SHA>
 ```
 
-If there are fixups, an interactive rebase: drop `bazel-build`, mark
-each fixup as `fixup` under the PR commit:
+If there are fixups, an interactive rebase: drop the harness overlay
+commit, mark each fixup as `fixup` under the PR commit:
 
 ```bash
 git rebase -i upstream/main
@@ -288,7 +290,7 @@ git rebase -i upstream/main
 # pick   <PR-commit>
 # fixup  <fixup-1>
 # fixup  <fixup-2>
-# (delete the bazel-build line)
+# (delete the NH-harness overlay line and the internal-fix cherry-picks)
 ```
 
 End state: exactly one commit on top of `upstream/main`.
@@ -543,11 +545,13 @@ gh pr view $PR --repo nexthop-ai/private-fboss --json labels   # should be []
   the PR's actual base branch as the lower bound (`origin/<baseRefName>..<head>`),
   otherwise you get parent-stack commits that are already upstream
   (or trying to be).
-- **`fboss-build.env` is gitignored.** After overlaying it from
-  `benoit.blaze`, `git status` shows nothing — that's fine, the file
-  exists on disk and `bazel.sh` picks it up. Don't try to `git add` it.
-- **Pre-commit reformats `build-helper.py` during the bazel-build
-  amend.** The amend appears to fail; re-stage and re-amend.
+- **Never try `bazel.sh build` on an upstream branch.** It can't work
+  — the Bazel build needs `BUCK`-file annotations that only exist
+  internally, and the old `bazel-build` fork branch is deleted. Use
+  the cmake harness overlay (§4/§5).
+- **The NH harness commit and internal-fix cherry-picks must never
+  reach the upstream PR.** Drop them all in §6 and re-check with
+  `git log upstream/main..HEAD` — exactly one commit.
 - **`git cherry-pick --continue` strips `#`-prefixed lines.** Restore
   with `git commit --amend -n -C <orig-sha>`. Diff against the
   original after every conflicted `--continue`.

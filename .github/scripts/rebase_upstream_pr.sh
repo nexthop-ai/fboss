@@ -25,9 +25,6 @@
 
 set -euo pipefail
 
-DEBUG=${DEBUG:-1}
-INFO=${INFO:-1}
-
 PR=${1:?"upstream PR number required"}
 REBASE_ONTO=${2:-}
 RESUME_FROM_WIP=${3:-false}
@@ -40,95 +37,17 @@ upstream_base_branch="main"
 nh_repo_branch=${GITHUB_REF_NAME:-main}
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
-echo_debug() { ((DEBUG)) && echo "🐞 DEBUG: $*" || true; }
-echo_info() { ((INFO)) && echo "💡 INFO:  $*" || true; }
-echo_error() { echo "💥 ERROR:  $*" >&2; }
-
 emit() {
   # emit <key> <value>  — write a workflow output (no-op when run locally)
   [[ -n ${GITHUB_OUTPUT:-} ]] && echo "$1=$2" >>"$GITHUB_OUTPUT" || true
 }
 
+# shellcheck source=sync-lib.sh
+source "${BASH_SOURCE%/*}/sync-lib.sh"
+
 rebase_in_progress() {
   [[ -d $(git rev-parse --git-path rebase-merge 2>/dev/null) ]] ||
     [[ -d $(git rev-parse --git-path rebase-apply 2>/dev/null) ]]
-}
-
-# The stable tarball pins an fboss sha1 together with the dependency shas and
-# manifests it was validated with; they must be used as a set. Materialize the
-# tarball from the given commit into a temp file so the same copy that names
-# the rebase target also supplies the dep pins during the overlay.
-materialize_stable_tarball() {
-  local ref=$1 out
-  out=$(mktemp --suffix=.tar.gz)
-  git show "$ref:fboss/oss/stable_commits/latest_stable_hashes.tar.gz" >"$out"
-  # Some revisions store a pointer file naming the real tarball.
-  if ! gzip -t "$out" 2>/dev/null; then
-    git show "$ref:fboss/oss/stable_commits/$(cat "$out")" >"$out"
-  fi
-  echo "$out"
-}
-
-# Extract the stable commit SHA from a materialized tarball. Mirrors
-# .github/scripts/sync_upstream.sh (lines ~104-123).
-get_stable_commit() {
-  tar -xzOf "$1" --wildcards '*/fboss-rev.txt' | sed -n 's/^Subproject commit //p'
-}
-
-# Materialize our resolver from $nh_repo_branch (the upstream tree doesn't have
-# it), run it, then remove the untracked copy so it never lands in a pushed
-# commit.
-run_conflict_resolver() {
-  mkdir -p .github/scripts
-  git show "$nh_repo_branch:.github/scripts/nh-fix-merge-conflicts.py" \
-    >.github/scripts/nh-fix-merge-conflicts.py
-  chmod 755 .github/scripts/nh-fix-merge-conflicts.py
-  python3 .github/scripts/nh-fix-merge-conflicts.py || true
-  rm -f .github/scripts/nh-fix-merge-conflicts.py
-}
-
-# Overlay our internal CI harness onto the clean rebase (bare upstream trees have
-# none of it) as one extra commit, so the pushed branch is build-test-ready without
-# a second round trip through the public fork.
-#
-# This rm's/recreates .github, which contains this very script -- that's fine:
-# Linux keeps this process's already-open fd on the script pointing at the old
-# (now unlinked) inode, so bash keeps executing the original content regardless
-# of what `git checkout` writes to that path afterward.
-overlay_nh_harness() {
-  local p
-  # From build/fbcode_builder take only our getdeps fork (S3 cache, fetcher,
-  # hashed install dirs); manifests, patches, and CMake helpers stay at the
-  # rebase target's versions.
-  for p in .github fboss/oss/docker fboss/oss/scripts fboss-sim fboss/oss/stable_commits \
-    build/fbcode_builder/getdeps.py build/fbcode_builder/getdeps; do
-    rm -rf "$p"
-    git checkout "$nh_repo_branch" -- "$p"
-  done
-  # Restore the manifests and github_hashes shas from the same tarball that
-  # named the rebase target, so the dep pins are exactly the set the stable
-  # commit was validated with.
-  rm -rf build/deps/github_hashes build/fbcode_builder/manifests
-  tar xzf "$stable_tarball" --wildcards \
-    'build/deps/github_hashes/*' 'build/fbcode_builder/manifests/*'
-  # docker-build.py's use_stable_hashes() re-extracts the pins from the tree's
-  # tarball at container start; put the same tarball in the tree so that
-  # re-extraction can't reintroduce a stale set.
-  cp "$stable_tarball" fboss/oss/stable_commits/latest_stable_hashes.tar.gz
-  git add -A
-  git commit --no-verify -m "CI: build-test upstream PR ${PR} with NH harness (do not merge)"
-  # Internal fixes the pure-upstream tree needs but that were never upstreamed.
-  # Applied after rebased_sha capture, so they never reach the real PR branch:
-  #   d09a2fbf: fake SAI initializes FakePort members; unfixed agents SEGV (#621)
-  #   c7d40884: distro_cli docker test self-skips when docker is absent
-  local fix
-  for fix in d09a2fbfe633fedbac25bd083e75cf2fa8122bad c7d40884e67522873e44206e6ac238c8e76a4751; do
-    git cherry-pick -x "$fix" || {
-      echo_error "cherry-pick of internal fix $fix failed; resolve or drop it"
-      git cherry-pick --abort || true
-      exit 1
-    }
-  done
 }
 
 # ─── 1. Remotes ─────────────────────────────────────────────────────────────
@@ -308,7 +227,8 @@ git diff --stat "$target" "$rebased_sha"
 git diff "$target" "$rebased_sha"
 
 echo_info "Overlaying NH CI harness onto the clean rebase"
-overlay_nh_harness
+overlay_nh_harness "$nh_repo_branch" "$stable_tarball" \
+  "CI: build-test upstream PR ${PR} with NH harness (do not merge)"
 
 echo_info "Pushing rebase + NH harness to private-fboss:$test_branch"
 git push --force origin "HEAD:refs/heads/$test_branch"

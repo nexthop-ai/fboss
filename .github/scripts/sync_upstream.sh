@@ -8,17 +8,9 @@
 
 set -euo pipefail
 
-DEBUG=${DEBUG:-1}
-INFO=${INFO:-1}
-
 base_branch="main"
 upstream_base_branch="main"
 upstream_repo="facebook/fboss"
-
-# ─── Helpers ──────────────────────────────────────────────────────────────────
-echo_debug() { ((DEBUG)) && echo "🐞 DEBUG: $*"; }
-echo_info() { ((INFO)) && echo "💡 INFO:  $*"; }
-echo_error() { echo "💥 ERROR:  $*" >&2; }
 
 # shellcheck source=sync-lib.sh
 source "${BASH_SOURCE%/*}/sync-lib.sh"
