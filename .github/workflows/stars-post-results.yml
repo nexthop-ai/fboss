@@ -1,0 +1,34 @@
+name: Post CI Results to STARS
+
+# Thin workflow_run listener that posts failed CI runs to STARS via nh's
+# shared reusable (same pattern as private-sonic-buildimage).
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'Workflow run ID to post results for (from a failed CI run)'
+        required: true
+        type: string
+  workflow_run:
+    # Listed by name (workflow_run has no wildcards); keep sorted. "Monobuild"
+    # is omitted: nh's monobuild.reusable.yml already posts to STARS inline.
+    workflows:
+      - "Bazel Build"
+      - "PR Validation"
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  post:
+    # Only spin up a runner for failed runs; workflow_dispatch always runs.
+    if: >-
+      github.event_name == 'workflow_dispatch'
+      || github.event.workflow_run.conclusion == 'failure'
+    uses: nexthop-ai/nh/.github/workflows/stars-post-results.reusable.yml@main
+    with:
+      run_id: ${{ github.event.inputs.run_id || github.event.workflow_run.id }}
+    secrets: inherit
