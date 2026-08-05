@@ -46,7 +46,7 @@ jobs:
   enqueue-tide:
     needs: monobuild
     if: ${{ needs.monobuild.result == 'success' && needs.monobuild.outputs.build_id != '' }}
-    runs-on: cloudstack-ubuntu24-small
+    runs-on: cloudstack-ubuntu24-micro
     name: Enqueue Image to Tide
     # Tide now schedules the nightly integration tests from the enqueued image.
     # Enqueue failures emit a ::warning:: but don't fail the nightly build, so a
@@ -95,7 +95,7 @@ jobs:
           done
 
   notify-slack-on-failure:
-    runs-on: cloudstack-ubuntu24-small
+    runs-on: cloudstack-ubuntu24-micro
     needs: [build-and-test-clang, monobuild]
     if: failure()
     # `actions: read` is required for `gh api .../actions/runs/.../jobs`
