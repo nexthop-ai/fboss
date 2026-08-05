@@ -140,7 +140,7 @@ jobs:
     name: Create PR for conflicts
     needs: sync-upstream
     if: needs.sync-upstream.outputs.push_direct == 'false' && needs.sync-upstream.outputs.sync_branch != ''
-    runs-on: cloudstack-ubuntu24-small
+    runs-on: cloudstack-ubuntu24-micro
     outputs:
       pr_created: ${{ steps.create-pr.outputs.pr_created }}
       pr_url: ${{ steps.create-pr.outputs.pr_url }}
@@ -220,7 +220,7 @@ jobs:
     name: Notify Slack (Success)
     needs: [sync-upstream, push-to-main]
     if: success()
-    runs-on: cloudstack-ubuntu24-small
+    runs-on: cloudstack-ubuntu24-micro
     steps:
       - name: Send Slack notification
         uses: slackapi/slack-github-action@v3.0.3
@@ -243,7 +243,7 @@ jobs:
       (needs.build-and-test.result == 'failure' ||
        needs.monobuild.result == 'failure' ||
        needs.smoke-tests.result == 'failure')
-    runs-on: cloudstack-ubuntu24-small
+    runs-on: cloudstack-ubuntu24-micro
     outputs:
       pr_created: ${{ steps.create-pr.outputs.pr_created }}
       pr_url: ${{ steps.create-pr.outputs.pr_url }}
@@ -335,7 +335,7 @@ jobs:
     name: Notify Slack (Sync Gate Failed)
     needs: [sync-upstream, build-and-test, monobuild, smoke-tests, create-pr-build-failure]
     if: always() && needs.create-pr-build-failure.outputs.pr_created == 'true'
-    runs-on: cloudstack-ubuntu24-small
+    runs-on: cloudstack-ubuntu24-micro
     steps:
       - name: Send Slack notification
         uses: slackapi/slack-github-action@v3.0.3
@@ -352,7 +352,7 @@ jobs:
     name: Notify Slack (PR Created)
     needs: [sync-upstream, create-pr]
     if: needs.create-pr.outputs.pr_created == 'true'
-    runs-on: cloudstack-ubuntu24-small
+    runs-on: cloudstack-ubuntu24-micro
     steps:
       - name: Send Slack notification
         uses: slackapi/slack-github-action@v3.0.3
