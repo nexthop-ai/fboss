@@ -22,7 +22,7 @@ concurrency:
 jobs:
   trigger:
     name: POST /v1/artifact-jobs
-    runs-on: cloudstack-ubuntu24-small
+    runs-on: cloudstack-ubuntu24-micro
     steps:
       - name: Trigger TCS (prod + staging)
         continue-on-error: true
