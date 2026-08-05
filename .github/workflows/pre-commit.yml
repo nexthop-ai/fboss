@@ -7,7 +7,7 @@ on:
 
 jobs:
   pre-commit:
-    runs-on: cloudstack-ubuntu24-small
+    runs-on: cloudstack-ubuntu24-micro
     steps:
       - uses: actions/checkout@v7
         with:
