@@ -152,7 +152,7 @@ while [[ $rc -ne 0 ]] && rebase_in_progress; do
     break
   fi
 
-  run_conflict_resolver
+  run_conflict_resolver "$nh_repo_branch"
 
   if git diff --name-only --diff-filter=U | grep -q .; then
     # The resolver couldn't fully resolve this step. Stage everything (including

@@ -106,6 +106,21 @@ get_stable_commit() {
   tar -xzOf "$1" --wildcards '*/fboss-rev.txt' | sed -n 's/^Subproject commit //p'
 }
 
+# Materialize our resolver from <harness_ref> (a bare upstream tree doesn't
+# have it), run it against the conflicts in the working tree, then remove the
+# untracked copy so it never lands in a pushed commit.
+#
+# Usage: run_conflict_resolver <harness_ref>
+run_conflict_resolver() {
+  local harness_ref=$1
+  mkdir -p .github/scripts
+  git show "$harness_ref:.github/scripts/nh-fix-merge-conflicts.py" \
+    >.github/scripts/nh-fix-merge-conflicts.py
+  chmod 755 .github/scripts/nh-fix-merge-conflicts.py
+  python3 .github/scripts/nh-fix-merge-conflicts.py || true
+  rm -f .github/scripts/nh-fix-merge-conflicts.py
+}
+
 # Overlay our internal CI harness onto a bare upstream tree (which has none of
 # it) as one extra commit, so the branch is build-test-ready with the cmake
 # harness. Then cherry-pick internal-only fixes the pure-upstream tree needs
