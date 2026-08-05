@@ -1,0 +1,307 @@
+name: FBOSS CLI Integration Test
+run-name: FBOSS CLI Integration Test
+
+on:
+  # Reusable workflow - called by PR Validation after build completes
+  workflow_call:
+  # Manual trigger: picks one random available DUT across all FBOSS platforms
+  workflow_dispatch:
+
+jobs:
+  detect-cli-changes:
+    runs-on: cloudstack-ubuntu24-small
+    outputs:
+      cli_changed: ${{ steps.detect.outputs.cli_changed }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Detect fboss/cli changes
+        id: detect
+        run: |
+          # Manual dispatch always runs
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "Manual workflow_dispatch - running integration tests"
+            echo "cli_changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Only run for pull_request events with fboss/cli changes
+          if [[ "${{ github.event_name }}" != "pull_request" ]]; then
+            echo "Non-PR event (${GITHUB_EVENT_NAME}), skipping integration tests"
+            echo "cli_changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          echo "Base SHA: $BASE_SHA"
+          echo "Head SHA: $HEAD_SHA"
+
+          git diff --name-only "$BASE_SHA"..."$HEAD_SHA" > /tmp/changed_files.txt || true
+
+          # The test plumbing itself (this workflow, the scripts it runs on the
+          # DUT, the run_scripts overlaid onto the DUT) must run the suite too,
+          # otherwise a broken DUT setup step ships unnoticed.
+          if grep -qE '^fboss/cli/|^\.github/workflows/integration_test\.yml$|^\.github/scripts/|^fboss/oss/scripts/run_scripts/' /tmp/changed_files.txt; then
+            echo "Detected CLI or integration-test plumbing changes - integration tests will run"
+            echo "cli_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No CLI or integration-test plumbing changes - skipping integration tests"
+            echo "cli_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  Integration-Test:
+    needs: detect-cli-changes
+    if: needs.detect-cli-changes.outputs.cli_changed == 'true'
+    # Informational only: DUT flakiness/availability must not block the PR.
+    # continue-on-error lives here (not on the reusable-workflow caller in
+    # pr-validation.yml, where GHA rejects it).
+    continue-on-error: true
+    runs-on: cloudstack-ubuntu24-small
+    # Concurrency control: only one integration test at a time to avoid DUT conflicts
+    concurrency:
+      group: integration-test-dut
+      cancel-in-progress: false
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v6
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::867344435357:role/GitHubActions-EC2-Role
+          aws-region: us-east-2
+          role-duration-seconds: 14400 # 4 hours timeout
+          output-env-credentials: true
+
+      - name: Setup NHTools
+        uses: nexthop-ai/nh/.github/actions/install-nhtools@main
+        with:
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+
+      - name: Download FBOSS packages from PR Validation
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # When called via workflow_call (PR Validation, Rebase Upstream PR),
+          # the build job uploaded fboss_cli_bins in this very run — grab it
+          # directly. The SHA-based lookup below only works for commits that
+          # had a PR Validation run, which rebased test branches never do.
+          if gh run download "${{ github.run_id }}" -n fboss_cli_bins --dir ./; then
+            echo "Downloaded fboss_cli_bins from current run ${{ github.run_id }}"
+            exit 0
+          fi
+
+          # Standalone workflow_dispatch: no build in this run — find the
+          # PR Validation run for the appropriate commit instead.
+          HEAD_SHA="${{ github.sha }}"
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          fi
+
+          bash .github/scripts/download_fboss_artifacts.sh "${HEAD_SHA}"
+
+      - name: Extract FBOSS package
+        run: |
+          mkdir -p fboss_pkg
+          tar --zstd -xf ./fboss_cli_bins.tar.zst -C fboss_pkg
+
+      - name: Find stable image builds
+        id: stable_builds
+        run: |
+          if ! BUILDS_JSON=$(python3 .github/scripts/find_stable_image.py); then
+            # Infra, not a test result: an empty build map makes Prepare DUT
+            # skip every candidate and end with dut_ready=false.
+            echo "::warning::Could not resolve stable image builds — skipping integration tests."
+            BUILDS_JSON='{}'
+          fi
+          echo "Stable image builds: $BUILDS_JSON"
+          echo "builds_json=$BUILDS_JSON" >> "$GITHUB_OUTPUT"
+
+      - name: Find DUT candidates
+        id: find_duts
+        run: |
+          set -e
+          CANDIDATES=$(python3 .github/scripts/find_dut.py --count 3 || echo "")
+          if [ -z "$CANDIDATES" ]; then
+            # Infra, not a test result: warn and skip instead of failing the PR.
+            echo "::warning::No healthy FBOSS DUTs available — skipping integration tests."
+            echo "candidates=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "DUT candidates: $CANDIDATES"
+          echo "candidates=$(echo "$CANDIDATES" | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare DUT
+        id: prepare_dut
+        run: |
+          BUILDS_JSON='${{ steps.stable_builds.outputs.builds_json }}'
+
+          for DUT in ${{ steps.find_duts.outputs.candidates }}; do
+
+            echo "::group::[$DUT] Claim"
+            if ! nh tb claim "$DUT"; then
+              echo "::warning::Could not claim $DUT, trying next"
+              echo "::endgroup::"
+              continue
+            fi
+            echo "::endgroup::"
+
+            echo "::group::[$DUT] Resolve build_id"
+            # Strip trailing digits from DUT name (gold411 -> gold), then
+            # find the stage key starting with that base (gold_fboss).
+            dut_base=$(echo "${DUT,,}" | sed 's/[0-9]*$//')
+            BUILD_ID=$(echo "$BUILDS_JSON" | jq -r --arg base "$dut_base" \
+              '[to_entries[] | select(.key | startswith($base)) | .value][0] // empty' \
+              2>/dev/null || echo "")
+            if [ -z "$BUILD_ID" ]; then
+              echo "::warning::No stable build found for $DUT, skipping"
+              nh tb release "$DUT" || true
+              echo "::endgroup::"
+              continue
+            fi
+            echo "Resolved build_id=$BUILD_ID for $DUT"
+            echo "::endgroup::"
+
+            echo "::group::[$DUT] Prepare"
+            PREPARE_CMD=(nh tb prepare --env fboss --build-id "$BUILD_ID" "$DUT")
+            if [[ "$DUT" != gold* ]]; then
+              PREPARE_CMD=(env NH_ENABLE_VPN_TUNNEL=1 "${PREPARE_CMD[@]}")
+            fi
+            if ! "${PREPARE_CMD[@]}"; then
+              echo "::warning::Prepare failed, trying next DUT"
+              nh tb release "$DUT" || true
+              echo "::endgroup::"
+              continue
+            fi
+            echo "::endgroup::"
+
+            echo "::group::[$DUT] Check agent services"
+            DEADLINE=$(( $(date +%s) + 40 ))
+            INTERVALS=(10 20)
+            IDX=0
+            ALL_ACTIVE=false
+            while [ "$(date +%s)" -lt "$DEADLINE" ]; do
+              ALL_ACTIVE=true
+              for SVC in fboss_sw_agent fboss_hw_agent@0 fboss_init; do
+                STATUS=$(nh dvc ssh "$DUT" -c "systemctl is-active ${SVC}.service" 2>/dev/null || echo "inactive")
+                echo "  $SVC: $STATUS"
+                [ "$STATUS" != "active" ] && ALL_ACTIVE=false
+              done
+              if [ "$ALL_ACTIVE" = "true" ]; then
+                break
+              fi
+              REMAINING=$(( DEADLINE - $(date +%s) ))
+              [ "$REMAINING" -le 0 ] && break
+              WAIT=${INTERVALS[$IDX]:-20}
+              IDX=$(( IDX + 1 ))
+              WAIT=$(( WAIT < REMAINING ? WAIT : REMAINING ))
+              echo "  agents not ready, retrying in ${WAIT}s (remaining: ${REMAINING}s)..."
+              sleep "$WAIT"
+            done
+            if [ "$ALL_ACTIVE" = "false" ]; then
+              echo "::warning::One or more agent services not active after 2 min, trying next DUT"
+              nh tb release "$DUT" || true
+              echo "::endgroup::"
+              continue
+            fi
+            echo "::endgroup::"
+
+            echo "::group::[$DUT] Copy integration test binary and libraries"
+            # run_test.py resolves the bare binary name via $PATH, so the test
+            # binary must live in /opt/fboss/bin.
+            if ! nh dvc scp fboss_pkg/bin/fboss2_integration_test "$DUT":/opt/fboss/bin/; then
+              echo "::warning::Failed to copy fboss2_integration_test, trying next DUT"
+              nh tb release "$DUT" || true
+              echo "::endgroup::"
+              continue
+            fi
+            if ! nh dvc scp fboss_pkg/bin/fboss2-dev "$DUT":/opt/fboss/bin/; then
+              echo "::warning::Failed to copy fboss2-dev, trying next DUT"
+              nh tb release "$DUT" || true
+              echo "::endgroup::"
+              continue
+            fi
+            # `nh dvc scp` connects as root, so a `~/` target lands in /root
+            # while the runner's ssh session has a different HOME and would not
+            # find the libraries. Use a path that does not depend on which user
+            # either side authenticates as.
+            nh dvc ssh "$DUT" -c 'sudo mkdir -p /opt/fboss/pr_lib' || true
+            for lib in fboss_pkg/lib/*; do
+              [ -f "$lib" ] && nh dvc scp "$lib" "$DUT":/opt/fboss/pr_lib/ || true
+            done
+            echo "::endgroup::"
+
+            echo "::group::[$DUT] Copy test runner scripts"
+            # The DUT image carries the run_scripts from the last stable
+            # build; overlay this PR's copy so runner changes are tested too.
+            tar -C fboss/oss/scripts/run_scripts \
+              --exclude=__pycache__ --exclude=unittests \
+              -czf run_scripts.tgz .
+            if ! nh dvc scp run_scripts.tgz "$DUT":/tmp/; then
+              echo "::warning::Failed to copy run_scripts, trying next DUT"
+              nh tb release "$DUT" || true
+              echo "::endgroup::"
+              continue
+            fi
+            # /opt/fboss/bin is root-owned and `nh dvc ssh` lands as an
+            # unprivileged user, so the extraction needs sudo. So does the
+            # cleanup: `nh dvc scp` transfers as root, which leaves a
+            # root-owned tarball in sticky /tmp.
+            # --no-same-owner keeps the extracted files root-owned instead of
+            # inheriting the CI runner's uid from the archive.
+            if ! nh dvc ssh "$DUT" -c 'sudo tar --no-same-owner -C /opt/fboss/bin -xzf /tmp/run_scripts.tgz && sudo rm -f /tmp/run_scripts.tgz'; then
+              echo "::warning::Failed to extract run_scripts, trying next DUT"
+              nh tb release "$DUT" || true
+              echo "::endgroup::"
+              continue
+            fi
+            echo "::endgroup::"
+
+            echo "dut_name=$DUT" >> "$GITHUB_OUTPUT"
+            echo "dut_ready=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          done
+
+          # Infra, not a test result: warn and skip instead of failing the PR.
+          # A warning alone is easy to miss on an otherwise green job, so say it
+          # in the run summary too: a setup bug that fails every DUT candidate
+          # otherwise reads as a pass.
+          echo "::warning::No DUT could be claimed and prepared — skipping integration tests."
+          echo ":warning: **Integration tests DID NOT RUN** — no DUT could be claimed and prepared (see the Prepare DUT step)." >> "$GITHUB_STEP_SUMMARY"
+          echo "dut_ready=false" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Run integration tests
+        id: run_tests
+        if: steps.prepare_dut.outputs.dut_ready == 'true'
+        run: .github/scripts/run_integration_test.sh "${{ steps.prepare_dut.outputs.dut_name }}"
+
+      - name: Publish test log and timing summary
+        if: always() && steps.prepare_dut.outputs.dut_ready == 'true'
+        run: .github/scripts/publish_test_summary.sh "${{ steps.prepare_dut.outputs.dut_name }}"
+
+      - name: Collect wedge agent logs
+        if: always() && steps.prepare_dut.outputs.dut_ready == 'true'
+        run: .github/scripts/collect_agent_logs.sh "${{ steps.prepare_dut.outputs.dut_name }}"
+
+      - name: Collect log bundle
+        if: always() && steps.prepare_dut.outputs.dut_ready == 'true'
+        run: .github/scripts/collect_log_bundle.sh "${{ steps.prepare_dut.outputs.dut_name }}"
+
+      - name: Upload log bundle
+        if: always() && steps.prepare_dut.outputs.dut_ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fboss2-integration-log-bundle
+          path: log_bundle/*.zip
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Release DUT
+        if: always() && steps.prepare_dut.outputs.dut_ready == 'true'
+        run: |
+          nh tb release "${{ steps.prepare_dut.outputs.dut_name }}"

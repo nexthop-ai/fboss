@@ -1,10 +1,25 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
 /**
+<<<<<<< HEAD
  * End-to-end test for `fboss2-dev delete dhcp relay-source-override ipv4`:
  * set an override, commit, delete it, commit, verify it is gone from the
  * running config. Per-field behaviour and argument validation are covered
  * by the CmdDeleteDhcpTest unit tests.
+=======
+ * End-to-end test for `fboss2-dev delete dhcp relay-source-override ipv4`.
+ *
+ * Exercises the full stack once: program an override via `config dhcp ...`,
+ * commit (HITLESS), delete it via `delete dhcp ...`, commit, and verify the
+ * field is gone from the running config. The four override fields share one
+ * code path (removeDhcpSourceOverride); per-field behaviour, argument
+ * validation, and the delete-of-unset error are covered by the
+ * CmdDeleteDhcpTest unit tests.
+ *
+ * relay-source-override ipv4 is the combination that runs unconditionally:
+ * reply-source-override requires an IP matching a configured interface, so
+ * reply tests would have to skip on DUTs with no L3 configuration.
+>>>>>>> bc7a21189f (NOS-6571: fboss2 config protocol bgp global attributes (#1132))
  */
 
 #include <folly/logging/xlog.h>

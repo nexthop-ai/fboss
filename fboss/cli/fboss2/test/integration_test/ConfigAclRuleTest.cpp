@@ -20,12 +20,15 @@
  *
  * The suite relies on the ACL table group shipped in the DUT's agent config
  * as-is. Mainstream platforms (e.g. montblanc/TH5) ship AclTable1 with an
- * empty `qualifiers` list, which SAI expands to the full ASIC-supported
- * qualifier set at table-create time — so entries matching
- * srcIp/dstIp/dscp/ttl/L4-ports/tcp-flags/etc. are accepted without declaring
- * qualifiers or restarting the agent. `config acl rule` edits only ACL
- * entries, which apply hitlessly (no table recreate). Tests skip cleanly on a
- * DUT whose config has no aclTableGroups AclTable to target.
+ * empty `qualifiers` list, which the agent expands to a hardcoded per-ASIC
+ * default set (SaiAclTableManager::getSupportedQualifierSet) at table-create
+ * time — so entries matching srcIp/dstIp/dscp/ttl/L4-ports/tcp-flags/etc. are
+ * accepted without declaring qualifiers or restarting the agent. Fields NOT
+ * in that default set (ETHER_TYPE and OUTER_VLAN on Broadcom, see the
+ * DISABLED_SetEtherType/DISABLED_SetVlan note below) cannot be exercised this
+ * way. `config acl rule` edits only ACL entries, which apply hitlessly (no
+ * table recreate). Tests skip cleanly on a DUT whose config has no
+ * aclTableGroups AclTable to target.
  *
  * Per-test TearDown best-effort deletes the test rule so each test starts
  * from a clean table. The rule itself is created on demand by `config acl
@@ -343,14 +346,24 @@ TEST_F(ConfigAclRuleTest, SetDestinationMac) {
   });
 }
 
-TEST_F(ConfigAclRuleTest, SetEtherType) {
+// DISABLED: an empty `qualifiers` list does NOT expand to the full
+// ASIC-supported set — SaiAclTableManager::getSupportedQualifierSet() returns
+// a hardcoded per-ASIC default, and the Broadcom set omits ETHER_TYPE (added
+// only for Tomahawk6) and OUTER_VLAN (never; TH5 table create breaks with it,
+// CS00012342272). On the NH4010F/TH5 CI DUTs the table is therefore created
+// without these fields; committing an entry that uses them makes brcm-sai
+// reject create_acl_entry, SaiApi::create throws SaiApiError, and the hw
+// agent terminates (SIGABRT) — the commit is lost and both agents cold-boot.
+// Re-enable once the agent rejects unsupported qualifiers gracefully or the
+// CI platform's table supports these fields.
+TEST_F(ConfigAclRuleTest, DISABLED_SetEtherType) {
   // EtherType::IPv4 = 0x0800
   runSet("ethertype", {"ipv4"}, [](auto& e) {
     EXPECT_EQ(e["etherType"].asInt(), 0x0800);
   });
 }
 
-TEST_F(ConfigAclRuleTest, SetVlan) {
+TEST_F(ConfigAclRuleTest, DISABLED_SetVlan) {
   runSet("vlan", {"100"}, [](auto& e) { EXPECT_EQ(e["vlanID"].asInt(), 100); });
 }
 

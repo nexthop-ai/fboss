@@ -13,12 +13,22 @@ oncall("fboss_oss")
 #
 # Unlike the Python-based CLI tests, these C++ tests directly invoke the CLI
 # library code rather than spawning a subprocess.
+<<<<<<< HEAD
+=======
+# bazelify: extra_dep = //fboss/cli/fboss2:cmd-list-config-impl-oss
+# bazelify: extra_dep = //neteng/fboss/bgp/if:bgp_thrift
+>>>>>>> bc7a21189f (NOS-6571: fboss2 config protocol bgp global attributes (#1132))
 cpp_binary(
     name = "fboss2_integration_test",
     srcs = [
         "ConfigAclRuleTest.cpp",
         "ConfigAdminDistanceTest.cpp",
         "ConfigArpTest.cpp",
+<<<<<<< HEAD
+=======
+        "ConfigBgpGlobalTest.cpp",
+        "ConfigBgpSessionTest.cpp",
+>>>>>>> bc7a21189f (NOS-6571: fboss2 config protocol bgp global attributes (#1132))
         "ConfigConcurrentSessionsTest.cpp",
         "ConfigCoppTest.cpp",
         "ConfigDhcpSourceOverrideTest.cpp",
@@ -41,15 +51,27 @@ cpp_binary(
         "ConfigPfcTest.cpp",
         "ConfigPortQueueConfigTest.cpp",
         "ConfigPtpTest.cpp",
+<<<<<<< HEAD
         "ConfigQosDefaultPolicyTest.cpp",
         "ConfigQosDefaultQueueConfigTest.cpp",
         "ConfigQosPolicyMapTest.cpp",
         "ConfigSessionClearTest.cpp",
+=======
+        "ConfigReloadTest.cpp",
+        "ConfigQosDefaultQueueConfigTest.cpp",
+        "ConfigQosPolicyMapTest.cpp",
+        "ConfigSessionClearTest.cpp",
+        "ConfigCoppCpuTrafficPolicyTest.cpp",
+>>>>>>> bc7a21189f (NOS-6571: fboss2 config protocol bgp global attributes (#1132))
         "ConfigVlanCreateTest.cpp",
         "ConfigVlanDefaultTest.cpp",
         "ConfigVlanPortTaggingModeTest.cpp",
         "ConfigVlanStaticMacTest.cpp",
         "ConfigVlanSwitchportAccessTest.cpp",
+<<<<<<< HEAD
+=======
+        "DeleteArpTest.cpp",
+>>>>>>> bc7a21189f (NOS-6571: fboss2 config protocol bgp global attributes (#1132))
         "DeleteDhcpSourceOverrideTest.cpp",
         "DeleteInterfaceIpv6NdpTest.cpp",
         "DeleteInterfaceTest.cpp",

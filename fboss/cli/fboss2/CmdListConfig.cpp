@@ -39,16 +39,6 @@
 #include "fboss/cli/fboss2/commands/config/protocol/CmdConfigProtocol.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/CmdConfigProtocolBgp.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobal.h"
-#include "fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalClusterId.h"
-#include "fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalConfedAsn.h"
-#include "fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalHoldTime.h"
-#include "fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalLocalAsn.h"
-#include "fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalNetwork6Add.h"
-#include "fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalRouterId.h"
-#include "fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalSwitchLimitMaxGoldenVips.h"
-#include "fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalSwitchLimitOverloadProtectionMode.h"
-#include "fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalSwitchLimitPrefixLimit.h"
-#include "fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalSwitchLimitTotalPathLimit.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/peer-group/CmdConfigProtocolBgpPeerGroup.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/peer-group/CmdConfigProtocolBgpPeerGroupConfedPeer.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/peer-group/CmdConfigProtocolBgpPeerGroupDescription.h"
@@ -131,6 +121,13 @@
 #include "fboss/cli/fboss2/commands/delete/acl/CmdDeleteAcl.h"
 #include "fboss/cli/fboss2/commands/delete/acl/rule/CmdDeleteAclRule.h"
 #include "fboss/cli/fboss2/commands/delete/config/CmdDeleteConfig.h"
+<<<<<<< HEAD
+=======
+#include "fboss/cli/fboss2/commands/delete/copp/CmdDeleteCopp.h"
+#include "fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/CmdDeleteCoppCpuTrafficPolicy.h"
+#include "fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/match/CmdDeleteCoppCpuTrafficPolicyMatch.h"
+#include "fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/match/action/CmdDeleteCoppCpuTrafficPolicyMatchAction.h"
+>>>>>>> bc7a21189f (NOS-6571: fboss2 config protocol bgp global attributes (#1132))
 #include "fboss/cli/fboss2/commands/delete/dhcp/CmdDeleteDhcp.h"
 #include "fboss/cli/fboss2/commands/delete/dhcp/relay_source_override/CmdDeleteDhcpRelaySourceOverride.h"
 #include "fboss/cli/fboss2/commands/delete/dhcp/reply_source_override/CmdDeleteDhcpReplySourceOverride.h"
@@ -385,91 +382,14 @@ const CommandTree& kConfigCommandTree() {
                   {
                       {
                           "global",
-                          "Configure BGP global settings",
+                          "Configure BGP global settings: <attribute> <value> "
+                          "(router-id, local-asn, hold-time, confed-asn, "
+                          "count-confeds-in-as-path-len, "
+                          "graceful-restart-time, rib-allocated-path-ids, "
+                          "network6, switch-limit[-total-path|"
+                          "-max-golden-vips|-overload-protection-mode])",
                           commandHandler<CmdConfigProtocolBgpGlobal>,
                           argRegistrar<CmdConfigProtocolBgpGlobalTraits>,
-                          {
-                              {
-                                  "router-id",
-                                  "Set BGP router identifier",
-                                  commandHandler<
-                                      CmdConfigProtocolBgpGlobalRouterId>,
-                                  argRegistrar<
-                                      CmdConfigProtocolBgpGlobalRouterIdTraits>,
-                              },
-                              {
-                                  "local-asn",
-                                  "Set local AS number",
-                                  commandHandler<
-                                      CmdConfigProtocolBgpGlobalLocalAsn>,
-                                  argRegistrar<
-                                      CmdConfigProtocolBgpGlobalLocalAsnTraits>,
-                              },
-                              {
-                                  "hold-time",
-                                  "Set BGP hold time in seconds",
-                                  commandHandler<
-                                      CmdConfigProtocolBgpGlobalHoldTime>,
-                                  argRegistrar<
-                                      CmdConfigProtocolBgpGlobalHoldTimeTraits>,
-                              },
-                              {
-                                  "confed-asn",
-                                  "Set BGP confederation AS number",
-                                  commandHandler<
-                                      CmdConfigProtocolBgpGlobalConfedAsn>,
-                                  argRegistrar<
-                                      CmdConfigProtocolBgpGlobalConfedAsnTraits>,
-                              },
-                              {
-                                  "cluster-id",
-                                  "Set route reflector cluster ID",
-                                  commandHandler<
-                                      CmdConfigProtocolBgpGlobalClusterId>,
-                                  argRegistrar<
-                                      CmdConfigProtocolBgpGlobalClusterIdTraits>,
-                              },
-                              {
-                                  "network6",
-                                  "Add IPv6 network to advertise",
-                                  commandHandler<
-                                      CmdConfigProtocolBgpGlobalNetwork6Add>,
-                                  argRegistrar<
-                                      CmdConfigProtocolBgpGlobalNetwork6AddTraits>,
-                              },
-                              {
-                                  "switch-limit",
-                                  "Set switch limit prefix-limit",
-                                  commandHandler<
-                                      CmdConfigProtocolBgpGlobalSwitchLimitPrefixLimit>,
-                                  argRegistrar<
-                                      CmdConfigProtocolBgpGlobalSwitchLimitPrefixLimitTraits>,
-                              },
-                              {
-                                  "switch-limit-total-path",
-                                  "Set switch limit total-path-limit",
-                                  commandHandler<
-                                      CmdConfigProtocolBgpGlobalSwitchLimitTotalPathLimit>,
-                                  argRegistrar<
-                                      CmdConfigProtocolBgpGlobalSwitchLimitTotalPathLimitTraits>,
-                              },
-                              {
-                                  "switch-limit-max-golden-vips",
-                                  "Set switch limit max-golden-vips",
-                                  commandHandler<
-                                      CmdConfigProtocolBgpGlobalSwitchLimitMaxGoldenVips>,
-                                  argRegistrar<
-                                      CmdConfigProtocolBgpGlobalSwitchLimitMaxGoldenVipsTraits>,
-                              },
-                              {
-                                  "switch-limit-overload-protection-mode",
-                                  "Set switch limit overload-protection-mode",
-                                  commandHandler<
-                                      CmdConfigProtocolBgpGlobalSwitchLimitOverloadProtectionMode>,
-                                  argRegistrar<
-                                      CmdConfigProtocolBgpGlobalSwitchLimitOverloadProtectionModeTraits>,
-                              },
-                          },
                       },
                       {
                           "peer-group",
@@ -1162,6 +1082,29 @@ const CommandTree& kConfigCommandTree() {
           "Remove DHCP source-override settings",
           commandHandler<CmdDeleteDhcp>,
           argRegistrar<CmdDeleteDhcpTraits>,
+<<<<<<< HEAD
+=======
+          {{
+               "relay-source-override",
+               "Remove source IP override for DHCP relay packets (ipv4|ipv6)",
+               commandHandler<CmdDeleteDhcpRelaySourceOverride>,
+               argRegistrar<CmdDeleteDhcpRelaySourceOverrideTraits>,
+           },
+           {
+               "reply-source-override",
+               "Remove source IP override for DHCP reply packets (ipv4|ipv6)",
+               commandHandler<CmdDeleteDhcpReplySourceOverride>,
+               argRegistrar<CmdDeleteDhcpReplySourceOverrideTraits>,
+           }},
+      },
+
+      {
+          "delete",
+          "copp",
+          "Delete COPP (Control Plane Policing) configuration",
+          commandHandler<CmdDeleteCopp>,
+          argRegistrar<CmdDeleteCoppTraits>,
+>>>>>>> bc7a21189f (NOS-6571: fboss2 config protocol bgp global attributes (#1132))
           {{
                "relay-source-override",
                "Remove source IP override for DHCP relay packets (ipv4|ipv6)",

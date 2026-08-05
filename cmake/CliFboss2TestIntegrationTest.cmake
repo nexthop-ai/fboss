@@ -11,9 +11,13 @@ add_executable(fboss2_integration_test
   fboss/cli/fboss2/test/integration_test/ConfigAdminDistanceTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigAclRuleTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigArpTest.cpp
+<<<<<<< HEAD
+=======
+  fboss/cli/fboss2/test/integration_test/ConfigBgpGlobalTest.cpp
+  fboss/cli/fboss2/test/integration_test/ConfigBgpSessionTest.cpp
+>>>>>>> bc7a21189f (NOS-6571: fboss2 config protocol bgp global attributes (#1132))
   fboss/cli/fboss2/test/integration_test/ConfigConcurrentSessionsTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigHostnameTest.cpp
-  fboss/cli/fboss2/test/integration_test/ConfigIcmpV4UnavailableSrcAddrTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigCoppTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigDhcpSourceOverrideTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigInterfaceDescriptionTest.cpp
@@ -42,6 +46,10 @@ add_executable(fboss2_integration_test
   fboss/cli/fboss2/test/integration_test/ConfigVlanPortTaggingModeTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigVlanStaticMacTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigVlanSwitchportAccessTest.cpp
+<<<<<<< HEAD
+=======
+  fboss/cli/fboss2/test/integration_test/DeleteArpTest.cpp
+>>>>>>> bc7a21189f (NOS-6571: fboss2 config protocol bgp global attributes (#1132))
   fboss/cli/fboss2/test/integration_test/DeleteDhcpSourceOverrideTest.cpp
   fboss/cli/fboss2/test/integration_test/DeleteInterfaceIpv6NdpTest.cpp
   fboss/cli/fboss2/test/integration_test/DeleteVlanTest.cpp

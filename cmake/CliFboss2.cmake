@@ -869,32 +869,13 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/mac/aging_time/CmdConfigMacAgingTime.h
   fboss/cli/fboss2/commands/config/protocol/CmdConfigProtocol.cpp
   fboss/cli/fboss2/commands/config/protocol/CmdConfigProtocol.h
+  fboss/cli/fboss2/commands/config/protocol/bgp/BgpCliValueParsers.h
   fboss/cli/fboss2/commands/config/protocol/bgp/BgpConfigSession.cpp
   fboss/cli/fboss2/commands/config/protocol/bgp/BgpConfigSession.h
   fboss/cli/fboss2/commands/config/protocol/bgp/CmdConfigProtocolBgp.cpp
   fboss/cli/fboss2/commands/config/protocol/bgp/CmdConfigProtocolBgp.h
   fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobal.cpp
   fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobal.h
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalClusterId.cpp
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalClusterId.h
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalConfedAsn.cpp
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalConfedAsn.h
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalHoldTime.cpp
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalHoldTime.h
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalLocalAsn.cpp
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalLocalAsn.h
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalNetwork6Add.cpp
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalNetwork6Add.h
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalRouterId.cpp
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalRouterId.h
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalSwitchLimitMaxGoldenVips.cpp
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalSwitchLimitMaxGoldenVips.h
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalSwitchLimitOverloadProtectionMode.cpp
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalSwitchLimitOverloadProtectionMode.h
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalSwitchLimitPrefixLimit.cpp
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalSwitchLimitPrefixLimit.h
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalSwitchLimitTotalPathLimit.cpp
-  fboss/cli/fboss2/commands/config/protocol/bgp/global/CmdConfigProtocolBgpGlobalSwitchLimitTotalPathLimit.h
   fboss/cli/fboss2/commands/config/protocol/bgp/peer-group/CmdConfigProtocolBgpPeerGroup.cpp
   fboss/cli/fboss2/commands/config/protocol/bgp/peer-group/CmdConfigProtocolBgpPeerGroup.h
   fboss/cli/fboss2/commands/config/protocol/bgp/peer-group/CmdConfigProtocolBgpPeerGroupConfedPeer.cpp
@@ -1064,6 +1045,19 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/delete/acl/CmdDeleteAcl.h
   fboss/cli/fboss2/commands/delete/acl/rule/CmdDeleteAclRule.cpp
   fboss/cli/fboss2/commands/delete/acl/rule/CmdDeleteAclRule.h
+<<<<<<< HEAD
+=======
+  fboss/cli/fboss2/commands/delete/arp/CmdDeleteArp.cpp
+  fboss/cli/fboss2/commands/delete/arp/CmdDeleteArp.h
+  fboss/cli/fboss2/commands/delete/copp/CmdDeleteCopp.cpp
+  fboss/cli/fboss2/commands/delete/copp/CmdDeleteCopp.h
+  fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/CmdDeleteCoppCpuTrafficPolicy.cpp
+  fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/CmdDeleteCoppCpuTrafficPolicy.h
+  fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/match/CmdDeleteCoppCpuTrafficPolicyMatch.cpp
+  fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/match/CmdDeleteCoppCpuTrafficPolicyMatch.h
+  fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/match/action/CmdDeleteCoppCpuTrafficPolicyMatchAction.cpp
+  fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/match/action/CmdDeleteCoppCpuTrafficPolicyMatchAction.h
+>>>>>>> bc7a21189f (NOS-6571: fboss2 config protocol bgp global attributes (#1132))
   fboss/cli/fboss2/commands/delete/dhcp/CmdDeleteDhcp.cpp
   fboss/cli/fboss2/commands/delete/dhcp/CmdDeleteDhcp.h
   fboss/cli/fboss2/commands/delete/dhcp/relay_source_override/CmdDeleteDhcpRelaySourceOverride.cpp
@@ -1082,6 +1076,13 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/delete/protocol/static/CmdDeleteProtocolStatic.h
   fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.cpp
   fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.h
+<<<<<<< HEAD
+=======
+  fboss/cli/fboss2/commands/delete/qos/CmdDeleteQos.cpp
+  fboss/cli/fboss2/commands/delete/qos/CmdDeleteQos.h
+  fboss/cli/fboss2/commands/delete/qos/default_queue_config/CmdDeleteQosDefaultQueueConfig.cpp
+  fboss/cli/fboss2/commands/delete/qos/default_queue_config/CmdDeleteQosDefaultQueueConfig.h
+>>>>>>> bc7a21189f (NOS-6571: fboss2 config protocol bgp global attributes (#1132))
   fboss/cli/fboss2/commands/delete/tunnel/CmdDeleteTunnel.cpp
   fboss/cli/fboss2/commands/delete/tunnel/CmdDeleteTunnel.h
   fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/CmdDeleteTunnelIpInIp.cpp

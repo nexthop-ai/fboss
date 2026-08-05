@@ -1,0 +1,66 @@
+name: Bazel Build
+run-name: Bazel Build (experimental)
+
+on:
+  workflow_dispatch:
+    inputs:
+      sai_version:
+        description: "SAI version to build against"
+        required: false
+        default: "1.16.1"
+        type: string
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SAI_VERSION: ${{ inputs.sai_version || '1.16.1' }}
+  GETDEPS_CACHE_URL: "http://bucket.internal.nexthop.ai:7480/image-stash/getdeps-cache"
+  GETDEPS_CACHE_UPLOAD: "1"
+
+permissions:
+  contents: read
+
+jobs:
+  bazel-build:
+    if: github.repository_owner == 'nexthop-ai'
+    runs-on: cloudstack-ubuntu24-large
+    steps:
+      - name: Check out repository code
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+
+      - name: Set up HTTP proxy
+        uses: nexthop-ai/nh/.github/actions/http-proxy@main
+
+      - name: Build FBOSS Docker image (with registry cache)
+        uses: ./.github/actions/fboss-builder-image
+
+      - name: Start FBOSS build container
+        run: ./fboss/oss/scripts/nhfboss-docker-enter.py
+
+      - name: Build FBOSS with Bazel
+        run: |
+          docker exec \
+            -e SAI_VERSION=${{ env.SAI_VERSION }} \
+            -e GETDEPS_CACHE_URL=${{ env.GETDEPS_CACHE_URL }} \
+            -e GETDEPS_CACHE_UPLOAD=${{ env.GETDEPS_CACHE_UPLOAD }} \
+            FBOSS_build_${USER} fboss/oss/scripts/bazel.sh build --remote_upload_local_results=true --keep_going //fboss/...
+
+      - name: Collect sccache statistics
+        if: always()
+        run: |
+          docker exec FBOSS_build_${USER} sccache -s || true
+
+      - name: Run Bazel tests
+        run: |
+          docker exec \
+            -e SAI_VERSION=${{ env.SAI_VERSION }} \
+            -e GETDEPS_CACHE_URL=${{ env.GETDEPS_CACHE_URL }} \
+            -e GETDEPS_CACHE_UPLOAD=${{ env.GETDEPS_CACHE_UPLOAD }} \
+            FBOSS_build_${USER} fboss/oss/scripts/bazel.sh test --remote_upload_local_results=true --keep_going --test_output=errors //fboss/...
+
+      - name: Run bazelify unit tests
+        run: |
+          docker exec FBOSS_build_${USER} python3 -m pytest fboss/oss/scripts/test_bazelify.py fboss/oss/scripts/test_cached_get_deps.py -v

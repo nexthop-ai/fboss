@@ -41,9 +41,18 @@ cpp_unittest(
         "CmdDeleteAclRuleTest.cpp",
         "CmdDeleteConfigInterfaceTest.cpp",
         "CmdDeleteDhcpTest.cpp",
+<<<<<<< HEAD
         "CmdDeleteInterfaceIpv6NdpTest.cpp",
         "CmdDeleteInterfaceTest.cpp",
         "CmdDeleteQosDefaultPolicyTest.cpp",
+=======
+        "CmdDeleteVlanTest.cpp",
+        "CmdDeleteInterfaceIpv6NdpTest.cpp",
+        "CmdDeleteInterfaceTest.cpp",
+        "CmdDeleteTunnelIpInIpTest.cpp",
+        "ConfigSessionSystemdTest.cpp",
+        "CmdDeleteCoppCpuTrafficPolicyMatchActionTest.cpp",
+>>>>>>> bc7a21189f (NOS-6571: fboss2 config protocol bgp global attributes (#1132))
         "CmdDeleteQosDefaultQueueConfigTest.cpp",
         "CmdDeleteTunnelIpInIpTest.cpp",
         "CmdDeleteVlanTest.cpp",

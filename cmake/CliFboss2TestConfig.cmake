@@ -8,10 +8,8 @@ add_executable(fboss2_cmd_config_test
   fboss/cli/fboss2/test/config/CmdConfigAppliedInfoTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigAclRuleTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigArpTest.cpp
-  fboss/cli/fboss2/test/config/CmdConfigIcmpV4UnavailableSrcAddrTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigCoppTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigDhcpTest.cpp
-  fboss/cli/fboss2/test/config/CmdConfigHostnameTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigHistoryTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigInterfaceIpv6NdpTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
@@ -39,6 +37,11 @@ add_executable(fboss2_cmd_config_test
   fboss/cli/fboss2/test/config/CmdDeleteAclRuleTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteConfigInterfaceTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteDhcpTest.cpp
+<<<<<<< HEAD
+=======
+  fboss/cli/fboss2/test/config/CmdDeleteVlanTest.cpp
+  fboss/cli/fboss2/test/config/CmdDeleteCoppCpuTrafficPolicyMatchActionTest.cpp
+>>>>>>> bc7a21189f (NOS-6571: fboss2 config protocol bgp global attributes (#1132))
   fboss/cli/fboss2/test/config/CmdDeleteInterfaceIpv6NdpTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteInterfaceTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteQosDefaultQueueConfigTest.cpp
