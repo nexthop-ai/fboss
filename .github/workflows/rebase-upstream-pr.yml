@@ -42,7 +42,7 @@ jobs:
   rebase:
     name: Rebase PR
     if: github.repository_owner == 'nexthop-ai'
-    runs-on: cloudstack-ubuntu24-micro
+    runs-on: k8s-micro
     outputs:
       pr_branch: ${{ steps.rebase.outputs.pr_branch }}
       author_user: ${{ steps.rebase.outputs.author_user }}
@@ -110,7 +110,7 @@ jobs:
     name: Update PR branch
     needs: [rebase, build-and-test]
     if: needs.build-and-test.result == 'success'
-    runs-on: cloudstack-ubuntu24-micro
+    runs-on: k8s-micro
     steps:
       - name: Checkout
         uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
@@ -143,7 +143,7 @@ jobs:
     name: Cleanup test branch
     needs: [rebase, update-pr]
     if: always() && needs.rebase.outputs.has_conflicts == 'false'
-    runs-on: cloudstack-ubuntu24-micro
+    runs-on: k8s-micro
     steps:
       - name: Checkout
         uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
@@ -172,7 +172,7 @@ jobs:
     name: Notify author (PR updated)
     needs: [rebase, update-pr]
     if: needs.update-pr.result == 'success'
-    runs-on: cloudstack-ubuntu24-micro
+    runs-on: k8s-nano
     steps:
       - name: DM author on Slack (channel fallback)
         env:
@@ -217,7 +217,7 @@ jobs:
     name: Notify @mabel (conflicts)
     needs: rebase
     if: needs.rebase.outputs.has_conflicts == 'true'
-    runs-on: cloudstack-ubuntu24-micro
+    runs-on: k8s-nano
     steps:
       - name: Prompt @mabel to resolve conflicts
         env:
@@ -239,7 +239,7 @@ jobs:
     name: Notify @mabel (build/test failed)
     needs: [rebase, build-and-test]
     if: always() && needs.rebase.outputs.has_conflicts == 'false' && needs.build-and-test.result == 'failure'
-    runs-on: cloudstack-ubuntu24-micro
+    runs-on: k8s-nano
     steps:
       - name: Prompt @mabel to investigate failure
         env:
@@ -260,7 +260,7 @@ jobs:
     name: Notify @mabel (dropped commits)
     needs: rebase
     if: needs.rebase.outputs.dropped_commits == 'true'
-    runs-on: cloudstack-ubuntu24-micro
+    runs-on: k8s-nano
     steps:
       - name: Warn @mabel about dropped commits
         env:

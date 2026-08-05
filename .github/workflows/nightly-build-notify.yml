@@ -31,7 +31,7 @@ permissions:
 
 jobs:
   notify-startup-failure:
-    runs-on: cloudstack-ubuntu24-micro
+    runs-on: k8s-nano
     # Alert on any non-success conclusion EXCEPT `failure` (already handled by
     # the Nightly Build's in-run notify-slack-on-failure job) — this catches
     # startup_failure, timed_out, cancelled, etc.

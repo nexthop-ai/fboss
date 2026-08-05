@@ -14,7 +14,7 @@ jobs:
     name: Resync sync PR
     # Only run on PR comments containing /resync
     if: github.event.issue.pull_request && contains(github.event.comment.body, '/resync')
-    runs-on: cloudstack-ubuntu24-micro
+    runs-on: k8s-micro
     steps:
       - name: Get PR details
         id: pr-details
