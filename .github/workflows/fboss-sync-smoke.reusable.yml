@@ -35,7 +35,7 @@ on:
 jobs:
   schedule-all:
     name: Schedule pools
-    runs-on: cloudstack-ubuntu24-small
+    runs-on: cloudstack-ubuntu24-micro
     timeout-minutes: 30
     permissions:
       id-token: write
