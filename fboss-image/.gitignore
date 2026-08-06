@@ -1,6 +1,7 @@
 distro_infra/parts/ipxe/ipxe
 distro_infra/parts/ipxe/ipxev4.efi
 distro_infra/parts/ipxe/ipxev6.efi
+distro_infra/.docker
 image_builder/logs
 image_builder/output
 kernel/dist
