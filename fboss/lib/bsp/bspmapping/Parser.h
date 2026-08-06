@@ -24,8 +24,6 @@ inline constexpr folly::StringPiece kPortMappingNh4220fCsv{
     "Nh4220f_BspMapping.csv"};
 inline constexpr folly::StringPiece kPortMappingLeh800bclsCsv{
     "Leh800bcls_BspMapping.csv"};
-inline constexpr folly::StringPiece kPortMappingM4062nhpCsv{
-    "M4062nhp_BspMapping.csv"};
 
 class Parser {
  public:

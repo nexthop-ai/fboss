@@ -167,7 +167,7 @@
               "deviceName": "port_led",
               "csrOffsetCalc": "0x60",
               "numPorts": 8,
-              "ledPerPort": 2,
+              "ledPerPort": 1,
               "startPort": 33
             },
             {
@@ -175,7 +175,7 @@
               "deviceName": "port_led",
               "csrOffsetCalc": "0x64",
               "numPorts": 8,
-              "ledPerPort": 2,
+              "ledPerPort": 1,
               "startPort": 41
             },
             {
@@ -183,7 +183,7 @@
               "deviceName": "port_led",
               "csrOffsetCalc": "0x68",
               "numPorts": 8,
-              "ledPerPort": 2,
+              "ledPerPort": 1,
               "startPort": 49
             },
             {
@@ -191,7 +191,7 @@
               "deviceName": "port_led",
               "csrOffsetCalc": "0x6c",
               "numPorts": 8,
-              "ledPerPort": 2,
+              "ledPerPort": 1,
               "startPort": 57
             },
             {
@@ -199,7 +199,7 @@
               "deviceName": "port_led",
               "csrOffsetCalc": "0x70",
               "numPorts": 8,
-              "ledPerPort": 2,
+              "ledPerPort": 1,
               "startPort": 65
             },
             {
@@ -207,7 +207,7 @@
               "deviceName": "port_led",
               "csrOffsetCalc": "0x74",
               "numPorts": 8,
-              "ledPerPort": 2,
+              "ledPerPort": 1,
               "startPort": 73
             },
             {
@@ -215,7 +215,7 @@
               "deviceName": "port_led",
               "csrOffsetCalc": "0x78",
               "numPorts": 8,
-              "ledPerPort": 2,
+              "ledPerPort": 1,
               "startPort": 81
             },
             {
@@ -223,7 +223,7 @@
               "deviceName": "port_led",
               "csrOffsetCalc": "0x7c",
               "numPorts": 8,
-              "ledPerPort": 2,
+              "ledPerPort": 1,
               "startPort": 89
             },
             {
@@ -231,7 +231,7 @@
               "deviceName": "mgmt_qsfp_led",
               "csrOffsetCalc": "0x9c",
               "numPorts": 1,
-              "ledPerPort": 2,
+              "ledPerPort": 1,
               "lanesPerPort": 4,
               "startPort": 129
             }
@@ -298,7 +298,7 @@
               "deviceName": "port_led",
               "csrOffsetCalc": "0x90",
               "numPorts": 8,
-              "ledPerPort": 2,
+              "ledPerPort": 1,
               "startPort": 1
             },
             {
@@ -306,7 +306,7 @@
               "deviceName": "port_led",
               "csrOffsetCalc": "0x94",
               "numPorts": 8,
-              "ledPerPort": 2,
+              "ledPerPort": 1,
               "startPort": 9
             },
             {
@@ -314,7 +314,7 @@
               "deviceName": "port_led",
               "csrOffsetCalc": "0x98",
               "numPorts": 8,
-              "ledPerPort": 2,
+              "ledPerPort": 1,
               "startPort": 17
             },
             {
@@ -322,7 +322,7 @@
               "deviceName": "port_led",
               "csrOffsetCalc": "0x9c",
               "numPorts": 8,
-              "ledPerPort": 2,
+              "ledPerPort": 1,
               "startPort": 25
             },
             {
@@ -330,7 +330,7 @@
               "deviceName": "port_led",
               "csrOffsetCalc": "0x80",
               "numPorts": 8,
-              "ledPerPort": 2,
+              "ledPerPort": 1,
               "startPort": 97
             },
             {
@@ -338,7 +338,7 @@
               "deviceName": "port_led",
               "csrOffsetCalc": "0x84",
               "numPorts": 8,
-              "ledPerPort": 2,
+              "ledPerPort": 1,
               "startPort": 105
             },
             {
@@ -346,7 +346,7 @@
               "deviceName": "port_led",
               "csrOffsetCalc": "0x88",
               "numPorts": 8,
-              "ledPerPort": 2,
+              "ledPerPort": 1,
               "startPort": 113
             },
             {
@@ -354,7 +354,7 @@
               "deviceName": "port_led",
               "csrOffsetCalc": "0x8c",
               "numPorts": 8,
-              "ledPerPort": 2,
+              "ledPerPort": 1,
               "startPort": 121
             }
           ],
@@ -364,28 +364,7 @@
               "deviceName": "xcvr_ctrl",
               "csrOffsetCalc": "0x0",
               "startPort": 1,
-              "numPorts": 32
-            },
-            {
-              "pmUnitScopedNamePrefix": "OSFP",
-              "deviceName": "xcvr_ctrl",
-              "csrOffsetCalc": "0x0",
-              "startPort": 33,
-              "numPorts": 32
-            },
-            {
-              "pmUnitScopedNamePrefix": "OSFP",
-              "deviceName": "xcvr_ctrl",
-              "csrOffsetCalc": "0x0",
-              "startPort": 65,
-              "numPorts": 32
-            },
-            {
-              "pmUnitScopedNamePrefix": "OSFP",
-              "deviceName": "xcvr_ctrl",
-              "csrOffsetCalc": "0x0",
-              "startPort": 97,
-              "numPorts": 32
+              "numPorts": 128
             }
           ],
           "infoRomConfigs": [
