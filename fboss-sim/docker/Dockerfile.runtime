@@ -4,6 +4,9 @@
 
 FROM quay.io/centos/centos:stream9
 
+# Nexthop-only: prefer Nexthop's CentOS/EPEL mirror during construction
+COPY fboss/oss/docker/local_mirror.repo* /etc/yum.repos.d/
+
 # Install all runtime dependencies in a single layer
 # - epel-release: provides EPEL repository for jemalloc
 # - systemd: provides systemctl for service management
@@ -24,7 +27,7 @@ RUN dnf install -y \
     jemalloc \
     jq \
     sudo \
-    && dnf clean all && rm -rf /var/cache/dnf
+    && dnf clean all && rm -rf /var/cache/dnf /etc/yum.repos.d/local_mirror.repo
 
 # Create FBOSS directories
 RUN mkdir -p \
