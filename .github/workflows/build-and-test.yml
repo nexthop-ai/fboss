@@ -314,14 +314,68 @@ jobs:
             -e SAI_IMPL=fake \
             -e NHFBOSS_COMPILE_JOBS=${{ env.NHFBOSS_COMPILE_JOBS }} \
             -e NHFBOSS_LINK_JOBS=${{ env.NHFBOSS_LINK_JOBS }} \
-            FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss2_targets
+            FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss2_targets --cmake-target fsdb
 
       - name: Collect fboss-sim artifacts (inside CentOS build container)
         # ldd must resolve CentOS libs, so collect inside the build container.
         run: docker exec FBOSS_build_${USER} python3 fboss-sim/scripts/fboss-sim-docker-package.py --collect-only
 
+      # bgpd comes from the monorepo. Best effort throughout: any failure here
+      # drops BGP from the image rather than failing the job.
+      - name: Check out nh for the bgpd RPM
+        id: nh-checkout
+        continue-on-error: true
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          repository: nexthop-ai/nh
+          ref: main
+          path: nh
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          submodules: true
+          submodule-list: "BGP fboss"
+
+      # bgpd builds against fboss's stable hashes, so it must be built against
+      # the same fboss as the image or the thrift ABI can skew (see #1242).
+      - name: Pin nh's fboss submodule to this PR
+        id: nh-fboss-pin
+        if: steps.nh-checkout.outcome == 'success'
+        continue-on-error: true
+        env:
+          FBOSS_SHA: ${{ inputs.ref || (github.event_name == 'pull_request' && github.event.pull_request.head.sha) || github.sha }}
+        run: |
+          git -C nh/fboss fetch --depth 1 origin "$FBOSS_SHA"
+          git -C nh/fboss checkout --detach FETCH_HEAD
+
+      - uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86 # 0.19.0
+        if: steps.nh-fboss-pin.outcome == 'success'
+        continue-on-error: true
+        with:
+          bazelisk-cache: true
+
+      # Normally a remote-cache hit: Monobuild builds this target on every
+      # fboss PR. The timeout caps a cold miss, which compiles bgp++ outright.
+      - name: Build the bgpd RPM (//BGP:distro_bgpd.rpm)
+        id: bgpd-rpm
+        if: steps.nh-fboss-pin.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 30
+        run: |
+          (cd nh && bazel build //BGP:distro_bgpd.rpm)
+          mkdir -p .build_dir/downloads
+          cp nh/bazel-bin/BGP/distro_bgpd.rpm .build_dir/downloads/
+
+      # .build_dir is .dockerignore'd; nh/ is not, and must not reach the
+      # Docker build context.
+      - name: Drop the nh checkout before the image build
+        if: always() && steps.nh-checkout.outcome == 'success'
+        run: rm -rf nh
+
       - name: Build fboss-sim runtime image (host has the Docker daemon)
-        run: python3 fboss-sim/scripts/fboss-sim-docker-package.py --build-only
+        run: |
+          if [ ! -f .build_dir/downloads/distro_bgpd.rpm ]; then
+            echo "::warning::no bgpd RPM built; fboss-sim image will not include BGP"
+          fi
+          python3 fboss-sim/scripts/fboss-sim-docker-package.py --build-only
 
       - name: Start fboss-sim runtime container
         run: python3 fboss-sim/scripts/fboss-sim-docker-run.py

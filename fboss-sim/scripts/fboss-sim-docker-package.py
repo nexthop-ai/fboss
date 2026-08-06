@@ -44,7 +44,13 @@ REQUIRED_BINARIES = [
     "fboss2",
     "fboss2-dev",
     "fboss2_integration_test",
+    "fsdb",
 ]
+
+# bgp++ (bgpd) RPM, the same artifact the distro image installs. Optional, and
+# never produced here: this script only stages an RPM that is already on disk,
+# at --bgpd-rpm or .build_dir/downloads/. Absent → image without BGP.
+BGPD_RPM_NAME = "distro_bgpd.rpm"
 
 # Upstream facebook/fboss cmake names the fake-SAI agents with a "-fake" suffix;
 # Nexthop's fork renames them to "-sai_impl" (cmake/AgentPlatformsSai.cmake) so
@@ -305,6 +311,36 @@ def copy_artifacts(
     print(f"\n  ✓ Build artifacts ready in {dest_dir}")
 
 
+def stage_bgpd_rpm(repo_path: Path, dest_dir: Path, rpm_override: "str | None") -> None:
+    """Stage the bgp++ RPM into tmp_build_dir/bgpd/ if one is present.
+
+    Sources: --bgpd-rpm path, else the .build_dir/downloads/ cache. Producing
+    the RPM is somebody else's job — whoever builds it stages it at one of
+    those two paths. Absent → empty bgpd/ dir → the Dockerfile's bgpd layer is
+    a no-op.
+    """
+    bgpd_dir = dest_dir / "bgpd"
+    bgpd_dir.mkdir(parents=True, exist_ok=True)
+    target = bgpd_dir / BGPD_RPM_NAME
+
+    if rpm_override:
+        src = Path(rpm_override)
+        if not src.is_file():
+            print(f"❌ Error: --bgpd-rpm not found: {src}")
+            sys.exit(1)
+        shutil.copy2(src, target)
+        print(f"  ✓ Using provided bgpd RPM: {src}")
+        return
+
+    cache = repo_path / ".build_dir" / "downloads" / BGPD_RPM_NAME
+    if cache.is_file():
+        shutil.copy2(cache, target)
+        print(f"  ✓ Using staged bgpd RPM: {cache}")
+        return
+
+    print(f"  ⏭  No bgpd RPM at {cache}; building the image without BGP")
+
+
 def build_runtime_image(repo_path: Path) -> int:
     """Build the runtime Docker image.
 
@@ -399,6 +435,17 @@ def main():
         action="store_true",
         help="Source binaries from bazel-bin/ (--sai fake build) instead of .build_dir/",
     )
+    bgpd_group = parser.add_mutually_exclusive_group()
+    bgpd_group.add_argument(
+        "--bgpd-rpm",
+        metavar="PATH",
+        help=f"Use this bgpd RPM instead of .build_dir/downloads/{BGPD_RPM_NAME}",
+    )
+    bgpd_group.add_argument(
+        "--no-bgpd",
+        action="store_true",
+        help="Build the image without the bgpd (bgp++) routing daemon",
+    )
     args = parser.parse_args()
 
     print("=" * 60)
@@ -450,6 +497,13 @@ def main():
         print(f"\n❌ Error: {dest_dir} not found.")
         print("   Run the `--collect-only` phase first (in a CentOS-9 environment).")
         sys.exit(1)
+
+    if args.no_bgpd:
+        # Empty bgpd/ dir keeps the Dockerfile's unconditional COPY a no-op.
+        (dest_dir / "bgpd").mkdir(parents=True, exist_ok=True)
+        print("\n⏭  Skipping bgpd (--no-bgpd)")
+    else:
+        stage_bgpd_rpm(repo_path, dest_dir, args.bgpd_rpm)
 
     try:
         ret = build_runtime_image(repo_path)

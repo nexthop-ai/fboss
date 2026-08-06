@@ -23,6 +23,8 @@ jobs:
     with:
       sai_version: "1.16.1"
       use_clang: true
+    # The fboss-sim step checks out nh to build the bgpd RPM, which needs a PAT.
+    secrets: inherit
 
   # Runs on real hardware after the build (sim CLI test runs inline in the
   # build job). Informational only: continue-on-error so DUT flakiness/

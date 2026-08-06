@@ -52,6 +52,8 @@ jobs:
       sai_version: "1.16.1"
       use_clang: true
       ref: ${{ needs.sync-upstream.outputs.sync_branch }}
+    # The fboss-sim step checks out nh to build the bgpd RPM, which needs a PAT.
+    secrets: inherit
 
   # Build the full nh image with the candidate fboss SHA so the smoke tests
   # exercise an image that actually contains the upstream changes being synced.
