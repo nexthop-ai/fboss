@@ -120,7 +120,12 @@ _SAI_DISABLE_SERVICES = ["fboss_sw_agent", "fboss_hw_agent@0", "qsfp_service"]
 TEST_DISABLE_SERVICES = {
     # qsfp_hw_test has its own qsfp_service and must own the xcvr i2c bus, but
     # the prod qsfp_service and led_service both poll it
-    SUB_ARG_QSFP_HW_TEST: ["qsfp_service", "led_service"],
+    SUB_ARG_QSFP_HW_TEST: [
+        "qsfp_service",
+        "led_service",
+        "fboss_sw_agent",
+        "fboss_hw_agent@0",
+    ],
     SUB_ARG_BSP_HW_TEST: ["fan_service", "qsfp_service", "led_service"],
     SUB_ARG_PLATFORM_MANAGER_HW_TEST: [
         "platform_manager",
