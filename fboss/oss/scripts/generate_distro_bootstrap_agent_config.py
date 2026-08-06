@@ -56,9 +56,30 @@ PROFILE_SPEED: dict[int, int] = {
 
 OPTICAL_PROFILES = {1, 3, 8, 9, 10, 23, 25, 26, 37, 38, 39, 42, 47, 54, 55, 56, 63, 64}
 
-CORE_TYPE_TO_ASIC: dict[str, int] = {"TH5_NIF": 13, "J3_NIF": 15, "TH6_NIF": 18}
+CORE_TYPE_TO_ASIC: dict[str, int] = {
+    "TH5_NIF": 13,
+    "J3_NIF": 15,
+    "TH6_NIF": 18,
+    "G200": 20,
+}
 
 DEFAULT_ASIC_TYPE = 13
+
+# Platforms whose ASIC cannot be inferred: no materialized HW test config, and a
+# core type shared with a different ASIC (nh5010f and blackwolf800banw are both
+# Q4D_NIF, but are Qumran3D and Qumran4D respectively).
+PLATFORM_ASIC_TYPE: dict[str, int] = {"nh5010f": 27}
+
+# Jericho2/3/4 and the Qumran parts derived from them accept only VOQ. Ramon is
+# DNX too but is FABRIC, so it is deliberately absent.
+VOQ_ASIC_TYPES = {11, 14, 23, 24, 27}
+
+SWITCH_TYPE_NPU = 0
+SWITCH_TYPE_VOQ = 2
+
+# G202X (asicType 20) only has 8 CPU queues; queue 9 crashes SAI on trap install.
+HIGH_PRIO_CPU_QUEUE_BY_ASIC: dict[int, int] = {20: 7}
+DEFAULT_HIGH_PRIO_CPU_QUEUE = 9
 
 # FBOSS derives the kernel routing table ID by subtracting a type-specific
 # constant from the intfID (2000 for port-based interfaces).  We start intfIDs
@@ -183,6 +204,19 @@ def _load_asic_config(
         return {}
 
 
+def _load_switch_info(source: pathlib.Path | None) -> dict:
+    """Return the first switchIdToSwitchInfo entry from a materialized JSON."""
+    if source is None or source.suffix in (".yml", ".yaml"):
+        return {}
+
+    with source.open() as fh:
+        data = json.load(fh)
+    info = data.get("sw", {}).get("switchSettings", {}).get("switchIdToSwitchInfo", {})
+    if not info:
+        return {}
+    return info[sorted(info)[0]]
+
+
 def _read_csv(path: pathlib.Path) -> list[dict[str, str]]:
     with path.open(newline="") as fh:
         return list(csv.DictReader(fh))
@@ -245,15 +279,15 @@ def _build_cpu_queues() -> list[dict]:
     ]
 
 
-def _build_cpu_traffic_policy() -> dict:
+def _build_cpu_traffic_policy(high_prio_queue_id: int = 9) -> dict:
     return {
         "rxReasonToQueueOrderedList": [
-            {"rxReason": 8, "queueId": 9},
-            {"rxReason": 1, "queueId": 9},
-            {"rxReason": 10, "queueId": 9},
-            {"rxReason": 11, "queueId": 9},
-            {"rxReason": 12, "queueId": 9},
-            {"rxReason": 13, "queueId": 9},
+            {"rxReason": 8, "queueId": high_prio_queue_id},
+            {"rxReason": 1, "queueId": high_prio_queue_id},
+            {"rxReason": 10, "queueId": high_prio_queue_id},
+            {"rxReason": 11, "queueId": high_prio_queue_id},
+            {"rxReason": 12, "queueId": high_prio_queue_id},
+            {"rxReason": 13, "queueId": high_prio_queue_id},
             {"rxReason": 9, "queueId": 2},
             {"rxReason": 7, "queueId": 2},
             {"rxReason": 2, "queueId": 2},
@@ -359,8 +393,35 @@ def generate_config(
 
     ppm_rows = _read_csv(ppm_path)
     static_rows = _read_csv(static_path)
-    asic_type = _detect_asic_type(static_rows)
     selected_rows = _select_primary_ports(ppm_rows)
+
+    # The materialized HW test config is authoritative for switch info; the CSV
+    # core types only cover NPUs listed in CORE_TYPE_TO_ASIC.
+    script_path = pathlib.Path(__file__).resolve()
+    if asic_config_source is None:
+        asic_config_source = _find_hw_test_config(codename, script_path)
+    switch_info = _load_switch_info(asic_config_source)
+    if "asicType" in switch_info:
+        asic_type = switch_info["asicType"]
+    elif codename in PLATFORM_ASIC_TYPE:
+        asic_type = PLATFORM_ASIC_TYPE[codename]
+    else:
+        asic_type = _detect_asic_type(static_rows)
+    switch_type = switch_info.get(
+        "switchType",
+        SWITCH_TYPE_VOQ if asic_type in VOQ_ASIC_TYPES else SWITCH_TYPE_NPU,
+    )
+    connection_handle = switch_info.get("connectionHandle")
+
+    switch_id_to_switch_info = {
+        "switchType": switch_type,
+        "asicType": asic_type,
+        "switchIndex": 0,
+        "portIdRange": {"minimum": 0, "maximum": 2047},
+    }
+    if connection_handle is not None:
+        switch_id_to_switch_info["connectionHandle"] = connection_handle
+    switch_id_to_switch_info["firmwareNameToFirmwareInfo"] = {}
 
     # Build port and interface lists
     ports = []
@@ -484,7 +545,9 @@ def generate_config(
         "aggregatePorts": [],
         "sFlowCollectors": [],
         "cpuQueues": _build_cpu_queues(),
-        "cpuTrafficPolicy": _build_cpu_traffic_policy(),
+        "cpuTrafficPolicy": _build_cpu_traffic_policy(
+            HIGH_PRIO_CPU_QUEUE_BY_ASIC.get(asic_type, DEFAULT_HIGH_PRIO_CPU_QUEUE)
+        ),
         "loadBalancers": _build_load_balancers(),
         "mirrors": [],
         "trafficCounters": [],
@@ -503,18 +566,10 @@ def generate_config(
             "maxRouteCounterIDs": 0,
             "blockNeighbors": [],
             "macAddrsToBlock": [],
-            "switchType": 0,
+            "switchType": switch_type,
             "exactMatchTableConfigs": [],
             "switchDrainState": 0,
-            "switchIdToSwitchInfo": {
-                "0": {
-                    "switchType": 0,
-                    "asicType": asic_type,
-                    "switchIndex": 0,
-                    "portIdRange": {"minimum": 0, "maximum": 2047},
-                    "firmwareNameToFirmwareInfo": {},
-                }
-            },
+            "switchIdToSwitchInfo": {"0": switch_id_to_switch_info},
             "vendorMacOuis": [],
             "metaMacOuis": [],
             "needL2EntryForNeighbor": True,
@@ -525,7 +580,6 @@ def generate_config(
     }
 
     # Platform section — ASIC config from materialized HW test config
-    script_path = pathlib.Path(__file__).resolve()
     asic_common = _load_asic_config(asic_config_source, codename, script_path)
 
     return {

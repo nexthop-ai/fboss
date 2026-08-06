@@ -1,4 +1,5 @@
 load("@rules_shell//shell:sh_library.bzl", "sh_library")
+load("//fboss:bootstrap_agent_configs.bzl", "register_bootstrap_agent_config_tests")
 load("//fboss:fboss_build_types.bzl", "FREE_UP_DISK_IN_CI_CMD", "LOAD_FBOSS_BUILDER_CMD", "delete_build_products_in_ci", "fboss_unit_test")
 load("//bazel_lib:heavy_genrule.bzl", "heavy_genrule")
 load("//bazel_lib:upload_artifact.bzl", "upload_build_artifact")
@@ -133,6 +134,9 @@ fboss_unit_test(name = "switch_test", tags = ["disabled", "not-for-ci"]) # Fails
 fboss_unit_test(name = "thrift_node_tests", tags = ["not-for-ci"])
 fboss_unit_test(name = "weutil_crc16_ccitt_test", tags = ["not-for-ci"])
 fboss_unit_test(name = "weutil_fboss_eeprom_interface_test", tags = ["not-for-ci"])
+
+# Checks committed agent.conf files against the generator. See bootstrap_agent_configs.bzl.
+register_bootstrap_agent_config_tests()
 
 heavy_genrule(
     name = "distro_kernel_6.11",
