@@ -1,0 +1,241 @@
+name: Nightly Build (branch)
+run-name: Nightly Build - Full FBOSS (${{ inputs.branch }})
+
+# Per-branch body of the Nightly Build
+#
+# The `branch` input is passed as monobuild's build_branch so each matrix
+# entry's nexis-buildrunner build is labelled with its own branch (rather than
+# github.ref_name, which is the fboss default branch for a scheduled run and
+# would collapse every entry onto the same label). The Tide enqueue below uses
+# the same branch, so nexis and Tide stay consistent.
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        description: "Branch to build — used both as the nh.git branch for monobuild and the fboss checkout ref for build-and-test."
+        required: true
+        type: string
+
+jobs:
+  build-and-test-clang:
+    uses: ./.github/workflows/build-and-test.yml
+    with:
+      sai_version: "1.16.1"
+      use_clang: true
+      ref: ${{ inputs.branch }}
+    # The fboss-sim step checks out nh to build the bgpd RPM, which needs a PAT.
+    secrets: inherit
+
+  monobuild:
+    permissions:
+      id-token: write
+      contents: read
+      actions: read
+    uses: nexthop-ai/nh/.github/workflows/monobuild.reusable.yml@main
+    with:
+      submodule: fboss
+      nh_branch: ${{ inputs.branch }}
+      build_branch: ${{ inputs.branch }}
+      use-nh-ci-app: true
+      extra_tags: only-for-nightly
+    secrets:
+      GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+      NH_CI_APP_PRIVATE_KEY: ${{ secrets.NH_CI_APP_PRIVATE_KEY }}
+      VAULT_ROLE_ID: ${{ secrets.VAULT_ROLE_ID }}
+      VAULT_SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
+
+  enqueue-tide:
+    needs: monobuild
+    if: ${{ needs.monobuild.result == 'success' && needs.monobuild.outputs.build_id != '' }}
+    runs-on: k8s-nano
+    name: Enqueue Image to Tide
+    # Tide now schedules the nightly integration tests from the enqueued image.
+    # Enqueue failures emit a ::warning:: but don't fail the nightly build, so a
+    # transient enqueue/transport error doesn't red an otherwise-good build.
+    continue-on-error: true
+    steps:
+      - name: Enqueue image to Tide
+        run: |
+          BUILD_ID="${{ needs.monobuild.outputs.build_id }}"
+          BRANCH="${{ inputs.branch }}"
+          ORGANIZATION="${{ github.repository_owner }}"
+          # Tide indexes images by the bare GitHub repo name (the build-artifact repo,
+          # e.g. "private-fboss"). `github.repository` is "<org>/<repo>", so strip the
+          # org prefix with basename.
+          REPO="$(basename "${{ github.repository }}")"
+
+          echo "Enqueueing build_id=$BUILD_ID branch=$BRANCH organization=$ORGANIZATION repo=$REPO nos=fboss to Tide"
+          # Build the JSON body with jq so values are properly escaped.
+          BODY=$(jq -nc \
+            --argjson build_id "$BUILD_ID" \
+            --arg branch "$BRANCH" \
+            --arg organization "$ORGANIZATION" \
+            --arg repo "$REPO" \
+            '{build_id: $build_id, branch: $branch, organization: $organization, repo: $repo, nos: "fboss"}')
+
+          # Enqueue to both prod and staging Tide. Each POST is independent; a
+          # non-202 from either emits a warning but never fails the build, and a
+          # down/slow endpoint can't hang the job (connect/max timeouts).
+          for TIDE_URL in \
+            "http://tide.sw.internal.nexthop.ai" \
+            "http://tide.k8s-staging.us-west-1.nexthop.ai"; do
+            echo "POST $TIDE_URL/v1/images"
+            HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" \
+              --connect-timeout 10 --max-time 30 \
+              -X POST "$TIDE_URL/v1/images" \
+              -H "Content-Type: application/json" \
+              -d "$BODY" \
+              || echo "000")
+
+            echo "Response (HTTP $HTTP_STATUS):"
+            cat response.json 2>/dev/null || echo "(no response body)"
+
+            if [ "$HTTP_STATUS" != "202" ]; then
+              echo "::warning::Tide enqueue to $TIDE_URL failed with HTTP $HTTP_STATUS"
+            fi
+          done
+
+  notify-slack-on-failure:
+    runs-on: k8s-nano
+    needs: [build-and-test-clang, monobuild]
+    if: failure()
+    # `actions: read` is required for `gh api .../actions/runs/.../jobs`
+    # below; without it the default GITHUB_TOKEN gets a 403 and the error
+    # body leaks into the Slack message as the "failed job name".
+    permissions:
+      actions: read
+    steps:
+      - name: Determine which builds failed and collect test failures
+        id: check-failures
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ inputs.branch }}
+        run: |
+          CLANG_RESULT="${{ needs.build-and-test-clang.result }}"
+          CLANG_FAILED_TESTS="${{ needs.build-and-test-clang.outputs.failed_tests }}"
+          CLANG_FAILED_COUNT="${{ needs.build-and-test-clang.outputs.failed_test_count }}"
+          MONOBUILD_RESULT="${{ needs.monobuild.result }}"
+
+          # Determine which top-level jobs failed
+          FAILED=""
+          [[ "$CLANG_RESULT" == "failure" ]] && FAILED="Clang build"
+          [[ "$MONOBUILD_RESULT" == "failure" ]] && FAILED="${FAILED:+$FAILED, }Monobuild"
+
+          # Query the GitHub Actions API to identify the specific failed job
+          # name(s), so the Slack message can name the actual failed job (e.g. a
+          # matrix variant) rather than only an aggregate `needs.*.result`.
+          #
+          # On any failure (e.g. missing `actions: read`), discard stdout so
+          # an error body like `{"message":"Resource not accessible…"}` never
+          # ends up rendered as a "failed job name" in the Slack message.
+          JOBS_API_OUT=$(mktemp)
+          if gh api \
+              "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs" \
+              --paginate \
+              -q '.jobs[] | select(.conclusion == "failure") | .name' \
+              >"$JOBS_API_OUT" 2>/dev/null; then
+            FAILED_JOB_NAMES=$(cat "$JOBS_API_OUT")
+          else
+            echo "::warning::Failed to query workflow jobs API; failed job names will not be listed."
+            FAILED_JOB_NAMES=""
+          fi
+          rm -f "$JOBS_API_OUT"
+
+          # All branches in the matrix share one github.run_id, so the jobs API
+          # returns failures from every branch. Scope to this branch's jobs —
+          # their names carry the matrix prefix "Nightly (<branch>) / ...".
+          # Fall back to the unscoped list if the prefix filter finds nothing
+          # (e.g. an unexpected job-name format), so we never drop actionable info.
+          if [[ -n "$FAILED_JOB_NAMES" ]]; then
+            SCOPED_JOB_NAMES=$(grep -F "($BRANCH)" <<< "$FAILED_JOB_NAMES" || true)
+            [[ -n "$SCOPED_JOB_NAMES" ]] && FAILED_JOB_NAMES="$SCOPED_JOB_NAMES"
+          fi
+
+          if [[ -z "$FAILED" && -n "$FAILED_JOB_NAMES" ]]; then
+            # Fallback: no known needs failed but the API reports failures.
+            FAILED="Unknown"
+          fi
+
+          if [[ -n "$FAILED" ]]; then
+            echo "failed_builds=$FAILED" >> "$GITHUB_OUTPUT"
+            echo "emoji=:x:" >> "$GITHUB_OUTPUT"
+          else
+            echo "failed_builds=Unknown" >> "$GITHUB_OUTPUT"
+            echo "emoji=:warning:" >> "$GITHUB_OUTPUT"
+          fi
+
+          # Build test failure details (show max 5 inline, full list in workflow logs)
+          format_failures() {
+            local label="$1" count="$2" tests="$3"
+            local details="" shown=0
+            if [[ -n "$tests" ]]; then
+              details="*${label} (${count:-?} failed):* "
+              while IFS= read -r test && [[ $shown -lt 5 ]]; do
+                [[ -n "$test" ]] && details+="\`$test\` " && ((shown++))
+              done <<< "$tests"
+              [[ "${count:-0}" -gt 5 ]] && details+="_(+$((count - 5)) more)_"
+            fi
+            echo "$details"
+          }
+
+          test_details=""
+          [[ "$CLANG_RESULT" == "failure" ]] && test_details+=$(format_failures "Clang" "$CLANG_FAILED_COUNT" "$CLANG_FAILED_TESTS")
+
+          # If we don't have test-level failures, surface the specific failed
+          # job names from the API query so the Slack message is actionable
+          # rather than the misleading "no test results available".
+          if [[ -z "$test_details" ]]; then
+            if [[ -n "$FAILED_JOB_NAMES" ]]; then
+              test_details="*Failed jobs:*"$'\n'
+              while IFS= read -r job; do
+                [[ -n "$job" ]] && test_details+="• \`$job\`"$'\n'
+              done <<< "$FAILED_JOB_NAMES"
+            else
+              test_details="Build or infrastructure failure (no test results available)"
+            fi
+          fi
+
+          echo "test_details<<EOF" >> "$GITHUB_OUTPUT"
+          echo -e "$test_details" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v3.0.3
+        with:
+          webhook-type: incoming-webhook
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          payload: |
+            {
+              "text": "${{ steps.check-failures.outputs.emoji }} Nightly Build Failed [${{ inputs.branch }}]: ${{ steps.check-failures.outputs.failed_builds }}",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "${{ steps.check-failures.outputs.emoji }} Nightly Build Failed"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Branch:* `${{ inputs.branch }}`\n*Failed:* ${{ steps.check-failures.outputs.failed_builds }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ${{ toJson(steps.check-failures.outputs.test_details) }}
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow Run>"
+                  }
+                }
+              ]
+            }

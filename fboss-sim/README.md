@@ -39,6 +39,35 @@ docker exec <build-container> python3 \
 python3 fboss-sim/scripts/fboss-sim-docker-package.py --build-only
 ```
 
+## BGP (bgpd / bgp++)
+
+The image can include the bgp++ routing daemon — the same RPM the distro image
+installs. Inclusion is optional: the packager never builds or downloads
+anything, it stages an RPM only if one is already on disk, and otherwise builds
+the image without BGP. When an RPM is present, `Dockerfile.runtime` unpacks it
+with `rpm2cpio` — `/usr/sbin/bgpd`, its config (`/etc/coop/bgpcpp.conf`, where
+`fboss2 config session` promotes BGP commits) and `bgpd.service`, which
+`setup-container.sh` enables when `/usr/sbin/bgpd` exists. `fsdb` is always
+packaged and enabled, since bgpd publishes its config/RIB state to FSDB.
+
+To include BGP, put an RPM at `.build_dir/downloads/distro_bgpd.rpm` (or pass
+`--bgpd-rpm PATH`) before the `--build-only` phase. Producing it is out of
+scope for this script — inside Nexthop it comes from the monorepo build,
+`bazel build //BGP:distro_bgpd.rpm`, whose output lands in
+`<nh-root>/bazel-bin/BGP/`; CI does the same and stages it for the packager.
+
+- `--bgpd-rpm PATH` uses an RPM from anywhere else — a CI artifact, a distro
+  build, a copy off a device.
+- `--no-bgpd` skips BGP even when an RPM is staged.
+- bgpd retries its FSDB and FibService (`fboss_sw_agent`) connections
+  internally, so service start order doesn't matter.
+
+```bash
+# Check BGP status inside the container
+docker exec fboss_sim_runtime_${USER} systemctl status bgpd fsdb
+docker exec fboss_sim_runtime_${USER} /opt/fboss/bin/fboss2 show bgp summary
+```
+
 ## Agent Modes
 
 **Split mode** (default): `fboss_sw_agent` + `fboss_hw_agent@0` run as separate systemd services.
@@ -120,7 +149,9 @@ get no non-loopback IPv6 → Thrift servers bind to `0.0.0.0` only → hw_agent'
 | `fboss2` | FBOSS CLI |
 | `fboss2-dev` | FBOSS dev CLI |
 | `fboss2_integration_test` | CLI integration test suite |
+| `fsdb` | FBOSS state database (BGP publishes config/RIB state here) |
 | `setup_fboss_env` | Environment setup helper |
+| `bgpd_cpp` | Meta bgp++ routing daemon (prebuilt, optional; `/usr/sbin/bgpd_cpp`) |
 
 ## Container Capabilities
 

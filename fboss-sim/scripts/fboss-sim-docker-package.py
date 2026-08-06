@@ -41,8 +41,54 @@ REQUIRED_BINARIES = [
     "fboss2",
     "fboss2-dev",
     "fboss2_integration_test",
+    "fsdb",
 ]
 
+<<<<<<< HEAD
+=======
+# bgp++ (bgpd) RPM, the same artifact the distro image installs. Optional, and
+# never produced here: this script only stages an RPM that is already on disk,
+# at --bgpd-rpm or .build_dir/downloads/. Absent → image without BGP.
+BGPD_RPM_NAME = "distro_bgpd.rpm"
+
+# Upstream facebook/fboss cmake names the fake-SAI agents with a "-fake" suffix;
+# Nexthop's fork renames them to "-sai_impl" (cmake/AgentPlatformsSai.cmake) so
+# fake and real builds drop identically-named binaries at the /opt/fboss/bin/
+# paths the systemd units reference. When we build a rebased *upstream* PR, the
+# NH CI harness overlay carries this packaging script but not that cmake rename,
+# so the agents come out as "-fake". Accept either name and always install under
+# the canonical "-sai_impl" name the runtime units expect.
+BINARY_ALIASES = {
+    "wedge_agent-sai_impl": ["wedge_agent-fake"],
+    "fboss_hw_agent-sai_impl": ["fboss_hw_agent-fake"],
+}
+
+
+def resolve_binary(build_dir: Path, name: str) -> "Path | None":
+    """Return the source path for a required binary, honoring known aliases.
+
+    Prefers the canonical name; falls back to alternate names some build
+    configurations emit (e.g. upstream's "-fake" fake-SAI suffix).
+    """
+    for candidate in (name, *BINARY_ALIASES.get(name, [])):
+        path = build_dir / candidate
+        if path.exists():
+            return path
+    return None
+
+
+# bazel-bin-relative paths for each required binary.
+# Must match the cc_binary target locations produced by bazelify.
+BAZEL_BINARY_PATHS = {
+    "wedge_agent-sai_impl":   "fboss/agent/platforms/sai/wedge_agent-sai_impl",
+    "fboss_hw_agent-sai_impl": "fboss/agent/platforms/sai/fboss_hw_agent-sai_impl",
+    "fboss_sw_agent":          "fboss/agent/fboss_sw_agent",
+    "fboss2":                  "fboss/cli/fboss2/fboss2",
+    "fboss2-dev":              "fboss/cli/fboss2/fboss2-dev",
+    "fboss2_integration_test": "fboss/cli/fboss2/test/integration_test/fboss2_integration_test",
+}
+
+>>>>>>> 25a6d635e2 (NOS-10708: fboss-sim: package fsdb and the source-built bgpd RPM (#1325))
 # Libraries to exclude from collection — these are provided by the base OS image
 # (CentOS Stream 9) and must NOT be overridden with host versions (Ubuntu).
 # Mixing glibc-family libs across OS versions causes GLIBC_ABI_* version errors.
@@ -265,6 +311,36 @@ def copy_artifacts(
     print(f"\n  ✓ Build artifacts ready in {dest_dir}")
 
 
+def stage_bgpd_rpm(repo_path: Path, dest_dir: Path, rpm_override: "str | None") -> None:
+    """Stage the bgp++ RPM into tmp_build_dir/bgpd/ if one is present.
+
+    Sources: --bgpd-rpm path, else the .build_dir/downloads/ cache. Producing
+    the RPM is somebody else's job — whoever builds it stages it at one of
+    those two paths. Absent → empty bgpd/ dir → the Dockerfile's bgpd layer is
+    a no-op.
+    """
+    bgpd_dir = dest_dir / "bgpd"
+    bgpd_dir.mkdir(parents=True, exist_ok=True)
+    target = bgpd_dir / BGPD_RPM_NAME
+
+    if rpm_override:
+        src = Path(rpm_override)
+        if not src.is_file():
+            print(f"❌ Error: --bgpd-rpm not found: {src}")
+            sys.exit(1)
+        shutil.copy2(src, target)
+        print(f"  ✓ Using provided bgpd RPM: {src}")
+        return
+
+    cache = repo_path / ".build_dir" / "downloads" / BGPD_RPM_NAME
+    if cache.is_file():
+        shutil.copy2(cache, target)
+        print(f"  ✓ Using staged bgpd RPM: {cache}")
+        return
+
+    print(f"  ⏭  No bgpd RPM at {cache}; building the image without BGP")
+
+
 def build_runtime_image(repo_path: Path) -> int:
     """Build the runtime Docker image."""
     image_tag = f"{DEFAULT_IMAGE_NAME}:latest"
@@ -317,6 +393,25 @@ def main():
         action="store_true",
         help="Only docker build the image from an existing tmp_build_dir/ (no collect)",
     )
+<<<<<<< HEAD
+=======
+    parser.add_argument(
+        "--bazel",
+        action="store_true",
+        help="Source binaries from bazel-bin/ (--sai fake build) instead of .build_dir/",
+    )
+    bgpd_group = parser.add_mutually_exclusive_group()
+    bgpd_group.add_argument(
+        "--bgpd-rpm",
+        metavar="PATH",
+        help=f"Use this bgpd RPM instead of .build_dir/downloads/{BGPD_RPM_NAME}",
+    )
+    bgpd_group.add_argument(
+        "--no-bgpd",
+        action="store_true",
+        help="Build the image without the bgpd (bgp++) routing daemon",
+    )
+>>>>>>> 25a6d635e2 (NOS-10708: fboss-sim: package fsdb and the source-built bgpd RPM (#1325))
     args = parser.parse_args()
 
     print("=" * 60)
@@ -350,6 +445,13 @@ def main():
         print(f"\n❌ Error: {dest_dir} not found.")
         print("   Run the `--collect-only` phase first (in a CentOS-9 environment).")
         sys.exit(1)
+
+    if args.no_bgpd:
+        # Empty bgpd/ dir keeps the Dockerfile's unconditional COPY a no-op.
+        (dest_dir / "bgpd").mkdir(parents=True, exist_ok=True)
+        print("\n⏭  Skipping bgpd (--no-bgpd)")
+    else:
+        stage_bgpd_rpm(repo_path, dest_dir, args.bgpd_rpm)
 
     try:
         ret = build_runtime_image(repo_path)

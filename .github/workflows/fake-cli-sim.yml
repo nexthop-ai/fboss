@@ -26,18 +26,26 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v6
 
+<<<<<<< HEAD:.github/workflows/fake-cli-sim.yml
       # Build the fake-SAI agents and the fboss2 CLI / integration-test targets
       # into <workspace>/.build_dir (the getdeps scratch dir that
       # fboss-sim-docker-package.py reads). This also produces the CentOS
       # fboss_image:latest used for the collect step below. --target may be
       # repeated to build several targets sequentially into one scratch dir.
       - name: Build fake-SAI agent + fboss2 targets
+=======
+      # Build the fake-SAI agents, fboss2 targets, and fsdb into
+      # <workspace>/.build_dir (read by fboss-sim-docker-package.py). Also
+      # produces the CentOS fboss_image_<user>:latest used by the collect step.
+      - name: Build fake-SAI agent + fboss2 + fsdb targets
+>>>>>>> 25a6d635e2 (NOS-10708: fboss-sim: package fsdb and the source-built bgpd RPM (#1325)):.github/workflows/fboss-sim.yml
         run: >
           sudo
           ./fboss/oss/scripts/docker-build.py
           --scratch-path ${{ github.workspace }}/.build_dir
           --target fboss_fake_agent_targets
           --target fboss2_targets
+          --target fsdb
           --no-docker-output
           --local
           --env-var BUILD_SAI_FAKE

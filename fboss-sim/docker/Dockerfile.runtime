@@ -13,6 +13,8 @@ FROM quay.io/centos/centos:stream9
 # - jq: JSON processor for config manipulation
 # - vim, git: development/debugging tools
 # - sudo: privilege escalation for runtime tooling/scripts
+# - cpio: unpack the bgpd RPM
+# - diffutils: /usr/bin/diff, invoked by `fboss2 config session diff`
 RUN dnf install -y \
     epel-release \
     && dnf install -y \
@@ -24,7 +26,13 @@ RUN dnf install -y \
     jemalloc \
     jq \
     sudo \
+<<<<<<< HEAD
     && dnf clean all && rm -rf /var/cache/dnf
+=======
+    cpio \
+    diffutils \
+    && dnf clean all && rm -rf /var/cache/dnf /etc/yum.repos.d/local_mirror.repo
+>>>>>>> 25a6d635e2 (NOS-10708: fboss-sim: package fsdb and the source-built bgpd RPM (#1325))
 
 # Create FBOSS directories
 RUN mkdir -p \
@@ -71,8 +79,20 @@ RUN echo "/opt/fboss/lib" > /etc/ld.so.conf.d/fboss.conf && ldconfig
 # Layer 2: Share configs and platform data (rarely change)
 COPY tmp_build_dir/share/ /opt/fboss/share/
 
-# Layer 3: All FBOSS binaries (7 required binaries pre-filtered by fboss-sim-docker-package.py)
-# Includes: wedge_agent-sai_impl, fboss_sw_agent, fboss_hw_agent-sai_impl, fboss2, fboss2-dev, fboss2_integration_test, setup_fboss_env
+# Layer 2.5: bgpd — the same bgp++ RPM the distro image installs, staged by
+# fboss-sim-docker-package.py and unpacked rather than rpm-installed: the
+# payload is just /usr/sbin/bgpd, the systemd unit and
+# /etc/coop/bgpcpp.conf, the spec sets AutoReqProv: no, and setup-container.sh
+# already owns unit enablement (the spec's %post does the same on a real box).
+# /etc/coop/bgpcpp.conf is where fboss2 config sessions promote BGP commits.
+# tmp_build_dir/bgpd/ empty (no RPM) → this layer is a no-op.
+COPY tmp_build_dir/bgpd/ /tmp/bgpd/
+RUN if [ -f /tmp/bgpd/distro_bgpd.rpm ]; then \
+        rpm2cpio /tmp/bgpd/distro_bgpd.rpm | (cd / && cpio -idm); \
+    fi && rm -rf /tmp/bgpd
+
+# Layer 3: All FBOSS binaries (8 required binaries pre-filtered by fboss-sim-docker-package.py)
+# Includes: wedge_agent-sai_impl, fboss_sw_agent, fboss_hw_agent-sai_impl, fboss2, fboss2-dev, fboss2_integration_test, fsdb, setup_fboss_env
 COPY tmp_build_dir/bin/ /opt/fboss/bin/
 
 # Run container setup script

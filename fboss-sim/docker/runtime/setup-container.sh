@@ -76,7 +76,22 @@ else
   exit 1
 fi
 
-# 7. Mask monolithic agent service (can be unmasked at runtime with switch-agent-mode.sh)
+# 7. Enable fsdb (always) and bgpd (only when packaged), matching the distro
+# image's service set. bgpd retries its FSDB/FibService connections, so no
+# unit ordering is needed.
+echo "→ Enabling fsdb service..."
+ln -sf /usr/lib/systemd/system/fsdb.service \
+  /etc/systemd/system/multi-user.target.wants/fsdb.service
+
+if [ -x /usr/sbin/bgpd ]; then
+  echo "→ Enabling bgpd service..."
+  ln -sf /usr/lib/systemd/system/bgpd.service \
+    /etc/systemd/system/multi-user.target.wants/bgpd.service
+else
+  echo "→ bgpd not packaged; skipping bgpd service enablement"
+fi
+
+# 8. Mask monolithic agent service (can be unmasked at runtime with switch-agent-mode.sh)
 echo "→ Masking monolithic agent service..."
 systemctl mask wedge_agent.service || true
 
@@ -93,4 +108,10 @@ echo "  - Split mode: ENABLED (fboss_sw_agent + fboss_hw_agent)"
 echo "  - Monolithic mode: DISABLED (masked, use switch-agent-mode.sh to enable)"
 echo "  - Memory allocator: jemalloc (via LD_PRELOAD)"
 echo "  - Multi-switch flag: ENABLED (via /etc/coop/agent.conf)"
+echo "  - FSDB: ENABLED"
+if [ -x /usr/sbin/bgpd ]; then
+  echo "  - bgpd (bgp++): ENABLED"
+else
+  echo "  - bgpd (bgp++): NOT PACKAGED"
+fi
 echo ""

@@ -1,0 +1,367 @@
+name: Sync Upstream Stable Commits
+
+on:
+  # Check for upstream changes periodically
+  schedule:
+    # Run every 4 hours at :42 (6 times per day)
+    - cron: "42 */4 * * *"
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  sync-upstream:
+    name: Sync with upstream stable commits
+    runs-on: cloudstack-ubuntu24-small
+    outputs:
+      sync_branch: ${{ steps.sync.outputs.sync_branch }}
+      stable_commit: ${{ steps.sync.outputs.stable_commit }}
+      submodule_commit: ${{ steps.sync.outputs.submodule_commit }}
+      push_direct: ${{ steps.sync.outputs.push_direct }}
+      conflicting_files: ${{ steps.sync.outputs.conflicting_files }}
+    steps:
+      - name: Checkout repository
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "rabbit-nexthop"
+          git config --global user.email "rabbit@nexthop.ai"
+          git config --global merge.conflictstyle zdiff3
+          git config --global diff.algorithm histogram
+
+      - name: Run sync script
+        id: sync
+        run: |
+          .github/scripts/sync_upstream.sh
+
+      - name: Push sync branch for testing
+        if: steps.sync.outputs.sync_branch != ''
+        run: |
+          git push --set-upstream origin ${{ steps.sync.outputs.sync_branch }}
+
+  # Run build and tests on the sync branch before merging (no conflicts case)
+  build-and-test:
+    name: Build and Test
+    needs: sync-upstream
+    if: needs.sync-upstream.outputs.push_direct == 'true'
+    uses: ./.github/workflows/build-and-test.yml
+    with:
+      sai_version: "1.16.1"
+      use_clang: true
+      ref: ${{ needs.sync-upstream.outputs.sync_branch }}
+    # The fboss-sim step checks out nh to build the bgpd RPM, which needs a PAT.
+    secrets: inherit
+
+  # Build the full nh image with the candidate fboss SHA so the smoke tests
+  # exercise an image that actually contains the upstream changes being synced.
+  monobuild:
+    name: Monobuild (candidate fboss)
+    # Independent of build-and-test: monobuild builds the full nh image; the
+    # two run in parallel after sync-upstream.
+    needs: sync-upstream
+    if: needs.sync-upstream.outputs.push_direct == 'true'
+    permissions:
+      id-token: write
+      contents: read
+      actions: read
+    uses: nexthop-ai/nh/.github/workflows/monobuild.reusable.yml@main
+    with:
+      submodule: fboss
+      nh_branch: main
+      submodule_commit: ${{ needs.sync-upstream.outputs.submodule_commit }}
+      use-nh-ci-app: true
+    secrets:
+      GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+      NH_CI_APP_PRIVATE_KEY: ${{ secrets.NH_CI_APP_PRIVATE_KEY }}
+      VAULT_ROLE_ID: ${{ secrets.VAULT_ROLE_ID }}
+      VAULT_SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
+
+  # Schedule smoke tests against the candidate image and block until results
+  # are available (or timeout_minutes elapses, which fails the job).
+  smoke-tests:
+    name: Smoke Tests
+    needs: monobuild
+    if: needs.monobuild.result == 'success' && needs.monobuild.outputs.build_id != ''
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/fboss-sync-smoke.reusable.yml
+    with:
+      build_id: ${{ needs.monobuild.outputs.build_id }}
+      timeout_minutes: 240
+    secrets:
+      GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+      AWS_NEXIS_BUILDRUNNER_SSH_KEY: ${{ secrets.AWS_NEXIS_BUILDRUNNER_SSH_KEY }}
+      AZURE_NEXIS_BUILDRUNNER_SSH_KEY: ${{ secrets.AZURE_NEXIS_BUILDRUNNER_SSH_KEY }}
+      NEXIS_BUILDRUNNER_TASKRABBIT_SSH_KEY: ${{ secrets.NEXIS_BUILDRUNNER_TASKRABBIT_SSH_KEY }}
+
+  push-to-main:
+    name: Push to main
+    needs: [sync-upstream, build-and-test, monobuild, smoke-tests]
+    if: needs.sync-upstream.outputs.push_direct == 'true'
+    runs-on: cloudstack-ubuntu24-small
+    steps:
+      - name: Checkout repository
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.sync-upstream.outputs.sync_branch }}
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "rabbit-nexthop"
+          git config --global user.email "rabbit@nexthop.ai"
+
+      - name: Merge to main and push
+        run: |
+          git checkout main
+          git pull origin main
+          git merge --ff-only ${{ needs.sync-upstream.outputs.sync_branch }} || \
+            git merge --no-edit ${{ needs.sync-upstream.outputs.sync_branch }}
+
+          # Try to push, retry once if main moved due to concurrent PR merge
+          if ! git push origin main; then
+            echo "⚠️ Push failed, likely due to concurrent merge. Retrying..."
+            git fetch origin main
+            git reset --hard origin/main
+            git merge --no-edit ${{ needs.sync-upstream.outputs.sync_branch }}
+            git push origin main
+          fi
+          echo "✅ Successfully pushed sync to main"
+
+      - name: Delete sync branch
+        run: |
+          git push origin --delete ${{ needs.sync-upstream.outputs.sync_branch }} || true
+
+  # Create PR for manual conflict resolution
+  create-pr:
+    name: Create PR for conflicts
+    needs: sync-upstream
+    if: needs.sync-upstream.outputs.push_direct == 'false' && needs.sync-upstream.outputs.sync_branch != ''
+    runs-on: k8s-micro
+    outputs:
+      pr_created: ${{ steps.create-pr.outputs.pr_created }}
+      pr_url: ${{ steps.create-pr.outputs.pr_url }}
+    steps:
+      - name: Checkout repository
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          ref: ${{ needs.sync-upstream.outputs.sync_branch }}
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+
+      - name: Check for existing sync PR
+        id: check-existing-pr
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          NEW_STABLE_COMMIT: ${{ needs.sync-upstream.outputs.stable_commit }}
+        run: |
+          title='[sync] Sync with upstream stable commit'
+          existing_pr=$(gh pr list --state open --search "$title" --json number,title,body --jq '.[] | select(.title == "'"$title"'") | {number, body}' | head -1)
+          if [[ -n "$existing_pr" ]]; then
+            pr_number=$(echo "$existing_pr" | jq -r '.number')
+            pr_commit=$(echo "$existing_pr" | jq -r '.body' | grep -oP '(?<=\*\*Stable Commit:\*\* `)[a-f0-9]+(?=`)' || true)
+            echo "existing_pr=$pr_number" >> "$GITHUB_OUTPUT"
+            echo "⚠️ Sync PR #$pr_number already exists (commit: $pr_commit), skipping PR creation"
+
+            if [[ -n "$pr_commit" && "$pr_commit" != "$NEW_STABLE_COMMIT" ]]; then
+              gh pr comment "$pr_number" \
+                --body "⚠️ A newer stable commit is available: $NEW_STABLE_COMMIT, if not much work has been done yet on this sync, considering closing this PR so that a new one can be created automatically."
+            fi
+            # Delete the sync branch if the PR already exists
+            git push origin --delete ${{ needs.sync-upstream.outputs.sync_branch }} || true
+          else
+            echo "existing_pr=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create PR
+        id: create-pr
+        if: steps.check-existing-pr.outputs.existing_pr == ''
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          PR_BODY="This PR syncs private-fboss with upstream stable commit.
+
+          **Stable Commit:** \`${{ needs.sync-upstream.outputs.stable_commit }}\`
+
+          ⚠️ **Manual conflict resolution required**
+
+          The following files have conflicts that need to be resolved:
+          $(echo "${{ needs.sync-upstream.outputs.conflicting_files }}" | sed 's/^/- [ ] /')
+
+          Please resolve these conflicts and merge when ready.
+
+          NHCI: clang-tidy=warn-only"
+
+          PR_URL=$(gh pr create \
+            --title "[sync] Sync with upstream stable commit" \
+            --body "$PR_BODY" \
+            --base main \
+            --head ${{ needs.sync-upstream.outputs.sync_branch }} \
+            --assignee benoit-nexthop \
+            --assignee travisb-nexthop \
+            --assignee hillol-nexthop)
+          echo "PR created: $PR_URL"
+
+          echo "pr_created=true" >> "$GITHUB_OUTPUT"
+          echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Add merge guard review thread
+        if: steps.create-pr.outputs.pr_created == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          PR_URL: ${{ steps.create-pr.outputs.pr_url }}
+        run: |
+          .github/scripts/add_sync_merge_guard.sh "$PR_URL"
+
+  # Slack notification: sync merged successfully
+  notify-sync-success:
+    name: Notify Slack (Success)
+    needs: [sync-upstream, push-to-main]
+    if: success()
+    runs-on: k8s-nano
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v3.0.3
+        with:
+          webhook-type: incoming-webhook
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          payload: |
+            {
+              "text": ":white_check_mark: Successfully synced and merged upstream commit `${{ needs.sync-upstream.outputs.stable_commit }}` to main. (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|workflow run>)"
+            }
+
+  # Create PR when build/test fails (so someone can fix the build failure)
+  create-pr-build-failure:
+    name: Create PR for build failure
+    needs: [sync-upstream, build-and-test, monobuild, smoke-tests]
+    if: >-
+      always() &&
+      needs.sync-upstream.outputs.push_direct == 'true' &&
+      needs.sync-upstream.outputs.sync_branch != '' &&
+      (needs.build-and-test.result == 'failure' ||
+       needs.monobuild.result == 'failure' ||
+       needs.smoke-tests.result == 'failure')
+    runs-on: k8s-micro
+    outputs:
+      pr_created: ${{ steps.create-pr.outputs.pr_created }}
+      pr_url: ${{ steps.create-pr.outputs.pr_url }}
+    steps:
+      - name: Checkout repository
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          ref: ${{ needs.sync-upstream.outputs.sync_branch }}
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+
+      - name: Check for existing sync PR
+        id: check-existing-pr
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          title='[sync] Sync with upstream stable commit'
+          existing_pr=$(gh pr list --state open --search "$title" --json number,title --jq '.[] | select(.title == "'"$title"'") | .number' | head -1)
+          if [[ -n "$existing_pr" ]]; then
+            echo "existing_pr=$existing_pr" >> "$GITHUB_OUTPUT"
+            echo "⚠️ Sync PR #$existing_pr already exists, skipping PR creation"
+            # Delete the sync branch since a PR already exists
+            git push origin --delete ${{ needs.sync-upstream.outputs.sync_branch }} || true
+          else
+            echo "existing_pr=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Collect failure details
+        id: failures
+        if: steps.check-existing-pr.outputs.existing_pr == ''
+        run: |
+          FAILED_TESTS="${{ needs.build-and-test.outputs.failed_tests }}"
+          FAILED_COUNT="${{ needs.build-and-test.outputs.failed_test_count }}"
+
+          details=""
+          if [[ -n "$FAILED_TESTS" ]]; then
+            details="Failed tests (${FAILED_COUNT:-?}):"$'\n'
+            while IFS= read -r test; do
+              [[ -n "$test" ]] && details+="- \`$test\`"$'\n'
+            done <<< "$FAILED_TESTS"
+          else
+            details="Build or infrastructure failure (no test results available)"
+          fi
+
+          echo "details<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$details" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Create PR
+        id: create-pr
+        if: steps.check-existing-pr.outputs.existing_pr == ''
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          FAILURE_DETAILS: ${{ steps.failures.outputs.details }}
+        run: |
+          PR_BODY="This PR syncs private-fboss with upstream stable commit.
+
+          **Stable Commit:** \`${{ needs.sync-upstream.outputs.stable_commit }}\`
+
+          :x: **Build/test failed — manual fix required**
+
+          ${FAILURE_DETAILS}
+
+          See the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for full logs.
+
+          NHCI: clang-tidy=warn-only"
+
+          PR_URL=$(gh pr create \
+            --title "[sync] Sync with upstream stable commit" \
+            --body "$PR_BODY" \
+            --base main \
+            --head ${{ needs.sync-upstream.outputs.sync_branch }} \
+            --assignee benoit-nexthop \
+            --draft)
+          echo "PR created: $PR_URL"
+
+          echo "pr_created=true" >> "$GITHUB_OUTPUT"
+          echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Add merge guard review thread
+        if: steps.create-pr.outputs.pr_created == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          PR_URL: ${{ steps.create-pr.outputs.pr_url }}
+        run: |
+          .github/scripts/add_sync_merge_guard.sh "$PR_URL"
+
+  # Slack notification: build/test failed, PR created
+  notify-build-failure:
+    name: Notify Slack (Sync Gate Failed)
+    needs: [sync-upstream, build-and-test, monobuild, smoke-tests, create-pr-build-failure]
+    if: always() && needs.create-pr-build-failure.outputs.pr_created == 'true'
+    runs-on: k8s-nano
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v3.0.3
+        with:
+          webhook-type: incoming-webhook
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          payload: |
+            {
+              "text": ":x: Sync pre-merge check failed for upstream commit `${{ needs.sync-upstream.outputs.stable_commit }}`. A <${{ needs.create-pr-build-failure.outputs.pr_url }}|sync PR> has been created and requires a manual fix. (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|workflow run>)"
+            }
+
+  # Slack notification: PR created for conflict resolution
+  notify-pr-created:
+    name: Notify Slack (PR Created)
+    needs: [sync-upstream, create-pr]
+    if: needs.create-pr.outputs.pr_created == 'true'
+    runs-on: k8s-nano
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v3.0.3
+        with:
+          webhook-type: incoming-webhook
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          payload: |
+            {
+              "text": ":warning: Upstream sync has conflicts. A <${{ needs.create-pr.outputs.pr_url }}|sync PR> has been created and requires manual conflict resolution. (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|workflow run>)"
+            }

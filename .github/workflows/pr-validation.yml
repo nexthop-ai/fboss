@@ -1,0 +1,35 @@
+name: PR Validation
+run-name: PR Validation - Build and Test
+
+on:
+  merge_group:
+  # Allow manually triggering the workflow
+  workflow_dispatch:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  id-token: write  # Required for aws-actions/configure-aws-credentials (OIDC to assume AWS role)
+  contents: read
+  pull-requests: write
+  actions: read  # Required for gh run list used by integration_test workflow
+
+jobs:
+  build-and-test-clang:
+    uses: ./.github/workflows/build-and-test.yml
+    with:
+      sai_version: "1.16.1"
+      use_clang: true
+    # The fboss-sim step checks out nh to build the bgpd RPM, which needs a PAT.
+    secrets: inherit
+
+  # Runs on real hardware after the build (sim CLI test runs inline in the
+  # build job). Informational only: continue-on-error so DUT flakiness/
+  # availability does not block the PR.
+  cli-integration-test:
+    needs: build-and-test-clang
+    uses: ./.github/workflows/integration_test.yml
+    secrets: inherit
