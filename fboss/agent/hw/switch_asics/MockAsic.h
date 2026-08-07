@@ -174,7 +174,7 @@ class MockAsic : public HwAsic {
     return HwAsic::AsicVendor::ASIC_VENDOR_MOCK;
   }
   uint32_t getNumCores() const override {
-    return 0;
+    return 1;
   }
   bool scalingFactorBasedDynamicThresholdSupported() const override {
     return true;
@@ -231,7 +231,7 @@ class MockAsic : public HwAsic {
     };
   }
   uint32_t getNumMemoryBuffers() const override {
-    return 0;
+    return 1;
   }
   int getMidPriCpuQueueId() const override {
     return 2;

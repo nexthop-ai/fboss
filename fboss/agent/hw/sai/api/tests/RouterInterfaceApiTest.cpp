@@ -258,3 +258,31 @@ TEST_F(RouterInterfaceApiTest, formatPortRouterInterfaceAttributes) {
   SaiPortRouterInterfaceTraits::Attributes::Mtu m{9000};
   EXPECT_EQ("Mtu: 9000", fmt::format("{}", m));
 }
+
+TEST_F(RouterInterfaceApiTest, getStats) {
+  auto rifId = createRouterInterface();
+  auto stats = routerInterfaceApi->getStats<SaiVlanRouterInterfaceTraits>(
+      rifId, SAI_STATS_MODE_READ);
+  EXPECT_EQ(
+      stats.size(), SaiVlanRouterInterfaceTraits::CounterIdsToRead.size());
+}
+
+TEST_F(RouterInterfaceApiTest, getStatsReadAndClear) {
+  auto rifId = createRouterInterface();
+  // An explicit counter-id list with a non-default mode drives the _ext stats
+  // path (get_router_interface_stats_ext).
+  auto stats = routerInterfaceApi->getStats<SaiVlanRouterInterfaceTraits>(
+      rifId,
+      {SAI_ROUTER_INTERFACE_STAT_IN_OCTETS,
+       SAI_ROUTER_INTERFACE_STAT_IN_PACKETS},
+      SAI_STATS_MODE_READ_AND_CLEAR);
+  EXPECT_EQ(stats.size(), 2);
+}
+
+TEST_F(RouterInterfaceApiTest, clearStats) {
+  auto rifId = createRouterInterface();
+  routerInterfaceApi->clearStats<SaiVlanRouterInterfaceTraits>(
+      rifId,
+      {SAI_ROUTER_INTERFACE_STAT_IN_OCTETS,
+       SAI_ROUTER_INTERFACE_STAT_IN_PACKETS});
+}

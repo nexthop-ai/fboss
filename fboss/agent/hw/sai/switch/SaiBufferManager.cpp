@@ -10,6 +10,8 @@
 
 #include "fboss/agent/hw/sai/switch/SaiBufferManager.h"
 
+#include <algorithm>
+
 #include "fboss/agent/AgentFeatures.h"
 #include "fboss/agent/FbossError.h"
 #include "fboss/agent/Platform.h"
@@ -1198,9 +1200,13 @@ SaiBufferManager::getEgressPortBufferProfiles(
 // of all cores/ITMs/buffers. Divide by the appropriate count to get the
 // per-unit configured size.
 uint64_t SaiBufferManager::getIngressPoolDivisor() const {
-  return platform_->getAsic()->getSwitchType() == cfg::SwitchType::VOQ
+  const uint64_t divisor =
+      platform_->getAsic()->getSwitchType() == cfg::SwitchType::VOQ
       ? platform_->getAsic()->getNumCores()
       : platform_->getAsic()->getNumMemoryBuffers();
+  // This value is a divisor of the configured pool size; a zero count
+  // (e.g. an under-specified fake/mock ASIC) would fault. Clamp to one.
+  return std::max<uint64_t>(1, divisor);
 }
 
 uint64_t SaiBufferManager::getConfiguredHeadroomPoolSizeBytes() const {

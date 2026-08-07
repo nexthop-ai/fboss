@@ -179,7 +179,7 @@ class FakeAsic : public HwAsic {
     return 128;
   }
   uint32_t getNumCores() const override {
-    return 0;
+    return 1;
   }
   bool scalingFactorBasedDynamicThresholdSupported() const override {
     return true;
@@ -235,7 +235,7 @@ class FakeAsic : public HwAsic {
     };
   }
   uint32_t getNumMemoryBuffers() const override {
-    return 0;
+    return 1;
   }
   int getMidPriCpuQueueId() const override {
     return 2;
