@@ -122,13 +122,23 @@ log "Build FBOSS with Fake SAI (fboss_fake_agent_targets)"
 docker exec -e SAI_IMPL=fake "$BUILD_CTR" \
   ./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss_fake_agent_targets
 
-log "Build FBOSS with Fake SAI (fboss2_targets)"
+# fsdb is packaged and enabled unconditionally by the runtime image (bgpd
+# publishes its config/RIB state to it), so the packager's binary check fails
+# without it. Matches the CI step's target list.
+log "Build FBOSS with Fake SAI (fboss2_targets + fsdb)"
 docker exec -e SAI_IMPL=fake "$BUILD_CTR" \
-  ./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss2_targets
+  ./fboss/oss/scripts/nhfboss-build.sh --cmake-target fboss2_targets --cmake-target fsdb
 
 # --- Stage 5: fboss-sim runtime ----------------------------------------------
-log "Build fboss-sim runtime image"
-python3 fboss-sim/scripts/fboss-sim-docker-package.py
+# Two-phase, as CI does: ldd must resolve CentOS libs, so collect runs inside
+# the build container; the docker build runs on the host, where the daemon is.
+# Collecting on an Ubuntu host silently packages host libs and the agent then
+# dies with undefined-symbol errors.
+log "Collect fboss-sim artifacts (inside the build container)"
+docker exec "$BUILD_CTR" python3 fboss-sim/scripts/fboss-sim-docker-package.py --collect-only
+
+log "Build fboss-sim runtime image (host)"
+python3 fboss-sim/scripts/fboss-sim-docker-package.py --build-only
 
 log "Start fboss-sim runtime container"
 python3 fboss-sim/scripts/fboss-sim-docker-run.py
