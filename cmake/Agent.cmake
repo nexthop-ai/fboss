@@ -288,6 +288,14 @@ target_link_libraries(hw_switch_thrift_client_table
   FBThrift::thriftcpp2
 )
 
+add_library(init_hook_registry
+  fboss/agent/InitHookRegistry.cpp
+)
+
+target_link_libraries(init_hook_registry
+  Folly::folly
+)
+
 add_library(core
   fboss/agent/AclNexthopHandler.cpp
   fboss/agent/ApplyThriftConfig.cpp
@@ -385,6 +393,7 @@ target_link_libraries(
 )
 
 set(core_libs
+  init_hook_registry
   agent_config_cpp2
   switchinfo_utils
   stats
@@ -673,6 +682,7 @@ add_library(hwagent-main
 target_link_libraries(hwagent-main
   agent_features
   fboss_common_init
+  init_hook_registry
   platform_base
   fboss_common_cpp2
   restart_time_tracker
@@ -941,3 +951,17 @@ target_link_libraries(validate_state_update
   stats
   ${GTEST}
 )
+
+# Unit test for the init-hook registry contract. InitHookRegistry.cpp lives
+# in the standalone `init_hook_registry` library.
+add_executable(init_hook_registry_test
+  fboss/agent/test/InitHookRegistryTest.cpp
+)
+
+target_link_libraries(init_hook_registry_test
+  init_hook_registry
+  ${GTEST}
+  ${LIBGMOCK_LIBRARIES}
+)
+
+gtest_discover_tests(init_hook_registry_test)

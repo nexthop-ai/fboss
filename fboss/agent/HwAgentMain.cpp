@@ -12,6 +12,7 @@
 #include <fb303/ServiceData.h>
 #include <folly/logging/Init.h>
 #include <folly/logging/xlog.h>
+#include "fboss/agent/InitHookRegistry.h"
 #ifndef IS_OSS
 #include "common/fb303/cpp/DefaultControl.h"
 #endif
@@ -167,6 +168,7 @@ int hwAgentMain(
   //  setOption().
   fb303::fbData->setUseOptionsAsFlags(true);
   auto config = fbossCommonInit(argc, argv, true /*useBitsflowAclFileSuffix*/);
+  InitHookRegistry::runPreSaiInitHooks();
 
   if (FLAGS_thrift_test_utils_thrift_handler || FLAGS_hw_agent_for_testing) {
     config = getConfigFileForTesting(FLAGS_switchIndex);

@@ -9,6 +9,7 @@
  */
 #include "fboss/agent/SwSwitch.h"
 #include <optional>
+#include "fboss/agent/InitHookRegistry.h"
 
 #include "fboss/agent/AgentConfig.h"
 #include "fboss/agent/AgentDirectoryUtil.h"
@@ -1694,6 +1695,8 @@ void SwSwitch::initialConfigApplied(
   // Start FSDB state syncer post initial config applied. FSDB state
   // syncer will do a full sync upon connection establishment to FSDB
   runFsdbSyncFunction([](auto& syncer) { syncer->start(); });
+  // Runs PostConfigApplied hooks; see InitHookRegistry.h for the contract.
+  InitHookRegistry::runPostConfigAppliedHooks(this);
 }
 
 void SwSwitch::logRouteUpdates(
