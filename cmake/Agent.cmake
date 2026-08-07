@@ -367,6 +367,7 @@ add_library(core
   fboss/agent/TeFlowNexthopHandler.cpp
   fboss/agent/TunIntf.cpp
   fboss/agent/TunManager.cpp
+  cfboss/dataplane/KernelRouteSyncer.cpp
   cfboss/dataplane/VethIpInstaller.cpp
   cfboss/dataplane/VethPacketBackend.cpp
   cfboss/dataplane/NetlinkUtils.cpp
