@@ -136,6 +136,7 @@
 #include "fboss/cli/fboss2/commands/delete/interface/CmdDeleteInterface.h"
 #include "fboss/cli/fboss2/commands/delete/interface/ipv6/CmdDeleteInterfaceIpv6.h"
 #include "fboss/cli/fboss2/commands/delete/interface/ipv6/ndp/CmdDeleteInterfaceIpv6Ndp.h"
+#include "fboss/cli/fboss2/commands/delete/load_balancing/CmdDeleteLoadBalancing.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/CmdDeleteProtocol.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/static/CmdDeleteProtocolStatic.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.h"
@@ -1176,6 +1177,56 @@ const CommandTree& kConfigCommandTree() {
            }},
       },
 
+<<<<<<< HEAD
+=======
+      {
+          "delete",
+          "copp",
+          "Delete COPP (Control Plane Policing) configuration",
+          commandHandler<CmdDeleteCopp>,
+          argRegistrar<CmdDeleteCoppTraits>,
+          {{
+              "cpu-traffic-policy",
+              "Delete CPU traffic policy configuration",
+              commandHandler<CmdDeleteCoppCpuTrafficPolicy>,
+              argRegistrar<CmdDeleteCoppCpuTrafficPolicyTraits>,
+              {{
+                  "match",
+                  "Target a named ACL matcher entry in cpuTrafficPolicy.trafficPolicy.matchToAction",
+                  commandHandler<CmdDeleteCoppCpuTrafficPolicyMatch>,
+                  argRegistrar<CmdDeleteCoppCpuTrafficPolicyMatchTraits>,
+                  {{
+                      "action",
+                      "Delete a CPU-plane action (send-to-queue, counter, set-tc, user-defined-trap) from the matcher",
+                      commandHandler<CmdDeleteCoppCpuTrafficPolicyMatchAction>,
+                      argRegistrar<
+                          CmdDeleteCoppCpuTrafficPolicyMatchActionTraits>,
+                  }},
+              }},
+          }},
+      },
+
+      {
+          "delete",
+          "load-balancing",
+          "Delete load-balancing (ECMP/LAG) configuration",
+          commandHandler<CmdDeleteLoadBalancing>,
+          argRegistrar<CmdDeleteLoadBalancingTraits>,
+          {{
+               "ecmp",
+               "Delete the ECMP load-balancer configuration",
+               commandHandler<CmdDeleteLoadBalancingEcmp>,
+               argRegistrar<CmdDeleteLoadBalancingEcmpTraits>,
+           },
+           {
+               "lag",
+               "Delete the LAG load-balancer configuration",
+               commandHandler<CmdDeleteLoadBalancingLag>,
+               argRegistrar<CmdDeleteLoadBalancingLagTraits>,
+           }},
+      },
+
+>>>>>>> f7269cfa4c (NOS-6213: Add fboss2-dev delete load-balancing subcommands (#1618))
       {"delete",
        "tunnel",
        "Delete (reset to default) tunnel settings",

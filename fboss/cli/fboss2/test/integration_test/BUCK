@@ -53,6 +53,11 @@ cpp_binary(
         "DeleteArpTest.cpp",
         "DeleteDhcpSourceOverrideTest.cpp",
         "DeleteInterfaceIpv6NdpTest.cpp",
+<<<<<<< HEAD
+=======
+        "DeleteLoadBalancingTest.cpp",
+        "DeleteVlanTest.cpp",
+>>>>>>> f7269cfa4c (NOS-6213: Add fboss2-dev delete load-balancing subcommands (#1618))
         "DeleteInterfaceTest.cpp",
         "DeleteVlanTest.cpp",
         "Fboss2IntegrationTest.cpp",

@@ -42,7 +42,12 @@ add_executable(fboss2_cmd_config_test
   fboss/cli/fboss2/test/config/CmdDeleteDhcpTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteInterfaceIpv6NdpTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteInterfaceTest.cpp
+<<<<<<< HEAD
   fboss/cli/fboss2/test/config/CmdDeleteQosQueueConfigTest.cpp
+=======
+  fboss/cli/fboss2/test/config/CmdDeleteLoadBalancingTest.cpp
+  fboss/cli/fboss2/test/config/CmdDeleteQosDefaultQueueConfigTest.cpp
+>>>>>>> f7269cfa4c (NOS-6213: Add fboss2-dev delete load-balancing subcommands (#1618))
   fboss/cli/fboss2/test/config/CmdDeleteTunnelIpInIpTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteVlanTest.cpp
   fboss/cli/fboss2/test/config/ConfigSessionSystemdTest.cpp

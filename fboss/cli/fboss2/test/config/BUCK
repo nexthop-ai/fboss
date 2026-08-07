@@ -44,8 +44,12 @@ cpp_unittest(
         "CmdDeleteDhcpTest.cpp",
         "CmdDeleteInterfaceIpv6NdpTest.cpp",
         "CmdDeleteInterfaceTest.cpp",
+<<<<<<< HEAD
         "CmdDeleteQosDefaultPolicyTest.cpp",
         "CmdDeleteQosQueueConfigTest.cpp",
+=======
+        "CmdDeleteLoadBalancingTest.cpp",
+>>>>>>> f7269cfa4c (NOS-6213: Add fboss2-dev delete load-balancing subcommands (#1618))
         "CmdDeleteTunnelIpInIpTest.cpp",
         "CmdDeleteVlanTest.cpp",
         "ConfigSessionSystemdTest.cpp",
