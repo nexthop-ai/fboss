@@ -9,6 +9,7 @@
  */
 #include "fboss/agent/hw/sai/fake/FakeSaiSwitch.h"
 #include "fboss/agent/hw/sai/fake/FakeSai.h"
+#include "fboss/agent/hw/sai/fake/FakeSaiPacketBackend.h"
 
 using facebook::fboss::FakeSai;
 
@@ -247,9 +248,7 @@ sai_status_t set_switch_attribute_fn(
     case SAI_SWITCH_ATTR_EXT_FAKE_LED:
     case SAI_SWITCH_ATTR_EXT_FAKE_LED_RESET:
       return sw.setLed(attr);
-    case SAI_SWITCH_ATTR_PORT_STATE_CHANGE_NOTIFY:
     case SAI_SWITCH_ATTR_FDB_EVENT_NOTIFY:
-    case SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY:
     case SAI_SWITCH_ATTR_TAM_EVENT_NOTIFY:
     case SAI_SWITCH_ATTR_QUEUE_PFC_DEADLOCK_NOTIFY:
     case SAI_SWITCH_ATTR_SWITCH_ASIC_SDK_HEALTH_EVENT_NOTIFY:
@@ -324,6 +323,28 @@ sai_status_t set_switch_attribute_fn(
     case SAI_SWITCH_ATTR_TAM_OBJECT_ID:
       sw.setTamObjectId(attr->value.oid);
       break;
+    case SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY: {
+      auto cb =
+          reinterpret_cast<sai_packet_event_notification_fn>(attr->value.ptr);
+      facebook::fboss::FakeSaiPacketBackendRegistry::get()->setRxCallback(
+          switch_id, cb);
+      break;
+    }
+    case SAI_SWITCH_ATTR_PORT_STATE_CHANGE_NOTIFY: {
+      auto cb = reinterpret_cast<sai_port_state_change_notification_fn>(
+          attr->value.ptr);
+      auto backend = facebook::fboss::FakeSaiPacketBackendRegistry::get();
+      backend->setPortStateCallback(cb);
+      // Catch up: re-bind every port FakeSai already knows about, so the
+      // backend's oid->lane map is populated even when the SAI client wires
+      // up the callback after ports are already created (warm boot, split-
+      // agent restart).
+      auto fs = FakeSai::getInstance();
+      for (const auto& [oid, port] : fs->portManager.map()) {
+        backend->onPortCreated(oid, port.lanes);
+      }
+      break;
+    }
     case SAI_SWITCH_ATTR_PORT_PTP_MODE:
       // TODO: implement if required
       break;

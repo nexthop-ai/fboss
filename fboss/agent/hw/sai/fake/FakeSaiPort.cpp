@@ -10,6 +10,7 @@
 #include "fboss/agent/hw/sai/fake/FakeSaiPort.h"
 #include "fboss/agent/hw/sai/api/fake/saifakeextensions.h"
 #include "fboss/agent/hw/sai/fake/FakeSai.h"
+#include "fboss/agent/hw/sai/fake/FakeSaiPacketBackend.h"
 
 #include <optional>
 
@@ -462,10 +463,13 @@ sai_status_t create_port_fn(
     port.fabricSystemPort = fabricSystemPort.value();
   }
 
+  facebook::fboss::FakeSaiPacketBackendRegistry::get()->onPortCreated(
+      *port_id, lanes);
   return SAI_STATUS_SUCCESS;
 }
 
 sai_status_t remove_port_fn(sai_object_id_t port_id) {
+  facebook::fboss::FakeSaiPacketBackendRegistry::get()->onPortRemoved(port_id);
   if (FakeSai::getInstance()->getCpuPort() == port_id) {
     // ignore removing CPU port
     return SAI_STATUS_SUCCESS;
@@ -491,6 +495,15 @@ sai_status_t set_port_attribute_fn(
   switch (attr->id) {
     case SAI_PORT_ATTR_ADMIN_STATE:
       port.adminState = attr->value.booldata;
+      if (attr->value.booldata) {
+        // Warm-boot-safe entry: create_port_fn is not called on warm boot,
+        // so bind through the admin-state-up path to keep the backend's
+        // oid -> lane map in sync.
+        facebook::fboss::FakeSaiPacketBackendRegistry::get()->onPortCreated(
+            port_id, port.lanes);
+      }
+      facebook::fboss::FakeSaiPacketBackendRegistry::get()->onAdminStateChange(
+          port_id, attr->value.booldata);
       break;
     case SAI_PORT_ATTR_HW_LANE_LIST: {
       auto& lanes = port.lanes;
@@ -1309,14 +1322,15 @@ sai_status_t get_port_attribute_fn(
 }
 
 sai_status_t get_port_stats_fn(
-    sai_object_id_t /*port*/,
+    sai_object_id_t port,
     uint32_t num_of_counters,
-    const sai_stat_id_t* /*counter_ids*/,
+    const sai_stat_id_t* counter_ids,
     uint64_t* counters) {
-  for (auto i = 0; i < num_of_counters; ++i) {
-    counters[i] = 0;
-  }
-  return SAI_STATUS_SUCCESS;
+  // Default backend's getPortStats() zero-fills (preserves the pre-existing
+  // behavior every FakeSai unit test relies on). Backends with real I/O can
+  // surface actual values.
+  return facebook::fboss::FakeSaiPacketBackendRegistry::get()->getPortStats(
+      port, num_of_counters, counter_ids, counters);
 }
 
 /*

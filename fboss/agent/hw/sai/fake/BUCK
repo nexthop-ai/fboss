@@ -27,6 +27,7 @@ cpp_library(
         "FakeSaiNextHop.cpp",
         "FakeSaiNextHopGroup.cpp",
         "FakeSaiObject.cpp",
+        "FakeSaiPacketBackend.cpp",
         "FakeSaiPort.cpp",
         "FakeSaiQosMap.cpp",
         "FakeSaiQueue.cpp",

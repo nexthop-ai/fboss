@@ -9,6 +9,7 @@
  */
 #include "fboss/agent/hw/sai/fake/FakeSaiHostif.h"
 #include "fboss/agent/hw/sai/fake/FakeSai.h"
+#include "fboss/agent/hw/sai/fake/FakeSaiPacketBackend.h"
 
 #include <folly/logging/xlog.h>
 #include <optional>
@@ -20,11 +21,11 @@ using facebook::fboss::FakeSai;
 
 sai_status_t send_hostif_fn(
     sai_object_id_t /* switch_id */,
-    sai_size_t /* buffer_size */,
-    const void* /* buffer */,
+    sai_size_t buffer_size,
+    const void* buffer,
     uint32_t attr_count,
     const sai_attribute_t* attr_list) {
-  sai_object_id_t tx_port;
+  sai_object_id_t tx_port = 0;
   sai_hostif_tx_type_t tx_type;
   sai_uint8_t queueId = 0;
   std::optional<int32_t> packetType;
@@ -50,6 +51,8 @@ sai_status_t send_hostif_fn(
     XLOG(DBG2) << " packet type: " << packetType.value();
   }
 
+  facebook::fboss::FakeSaiPacketBackendRegistry::get()->tx(
+      tx_port, buffer_size, buffer);
   return SAI_STATUS_SUCCESS;
 }
 
