@@ -3301,9 +3301,18 @@ CmisModule::getAppSelCodeForSpeed(
           currentApplication);
       // Make sure the datapath is initialized, otherwise initialize it before
       // returning. The port's lanes live in one bank; use an intra-bank mask.
+      // The hardware DPDeinit register is checked alongside the in-memory
+      // pending mask: ensureTransceiverReadyLocked latches DPDeinit on every
+      // lane while the module is in low power, and this is where those lanes
+      // get released when the desired application already matches the
+      // module's default.
       const uint8_t bank = laneToBank(startHostLane);
       uint8_t hostLaneMask = laneMask(laneInBank(startHostLane), numHostLanes);
-      if (datapathResetPendingMask_[bank] & hostLaneMask) {
+      uint8_t dpDeinitReg = 0;
+      if (!flatMem_) {
+        readCmisField(CmisField::DATA_PATH_DEINIT, &dpDeinitReg, false, bank);
+      }
+      if ((datapathResetPendingMask_[bank] | dpDeinitReg) & hostLaneMask) {
         resetDataPathWithFunc(portName, std::nullopt, hostLaneMask, bank);
         datapathResetPendingMask_[bank] &= ~hostLaneMask;
         QSFP_LOG(INFO, this) << fmt::format(
@@ -4088,6 +4097,45 @@ int16_t CmisModule::getChannelNumFromFrequency(
   return channelNum;
 }
 
+void CmisModule::latchAllDataPathDeinitLocked() {
+  for (uint8_t bank = 0; bank < getMaxNumBanks(); ++bank) {
+    uint8_t dpDeinit = kFullDataPathDeInitMask;
+    writeCmisField(CmisField::DATA_PATH_DEINIT, &dpDeinit, false, bank);
+  }
+}
+
+/*
+ * preventAutonomousDatapathInitLocked
+ *
+ * A module fresh out of reset or newly inserted boots with DPDeinit=00h, so
+ * per CMIS 5.0 8.8.1 every data path auto-initializes on the power-on default
+ * (unprogrammed) application once the module reaches ModuleReady. On a fully
+ * populated chassis the PREPARE step of the programming ladder can land after
+ * the module gets there on its own, so latch DPDeinit at first contact, while
+ * the module is still booting; ensureTransceiverReadyLocked latches again
+ * before releasing low power, and programming performs the one controlled
+ * initialization. A module already in ModuleReady at discovery - e.g. live
+ * modules found on a qsfp_service restart - is in service and is not touched.
+ */
+void CmisModule::preventAutonomousDatapathInitLocked() {
+  if (!customizationSupported() || flatMem_) {
+    return;
+  }
+  // Best effort: a failure here only means the module keeps its power-on
+  // default behaviour, and the PREPARE step latches again anyway.
+  try {
+    if (isModuleInReadyState()) {
+      return;
+    }
+    QSFP_LOG(INFO, this)
+        << "Module discovered before reaching ModuleReady; latching DPDeinit";
+    latchAllDataPathDeinitLocked();
+  } catch (const std::exception& ex) {
+    QSFP_LOG(WARNING, this)
+        << "Could not latch DPDeinit at discovery: " << ex.what();
+  }
+}
+
 /*
  * ensureTransceiverReadyLocked
  *
@@ -4137,6 +4185,21 @@ bool CmisModule::ensureTransceiverReadyLocked(bool hasTunableOpticsConfig) {
   // needs some time to converge its state machine
 
   setModuleLowPowerModeLocked();
+
+  // CMIS 5.0 8.8.1: "By default, all Data Paths will begin initializing when
+  // the Module State reaches ModuleReady. The host can prevent this
+  // auto-initialization behavior by setting all DPDeinit bits while the module
+  // is in the ModuleLowPwr state." Latch DPDeinit on every lane now, while the
+  // module is in low power, so that releasing low power cannot bring the link
+  // up on the module's power-on default (unprogrammed) application before
+  // programTransceiver applies the AppSel and SI settings (per the
+  // host-configured start-up flow in Appendix D.1.3, step 6). Without this,
+  // modules following the D.1.1 hardware-initialization default train the
+  // link once on their defaults and flap again when programming re-initializes
+  // the data path.
+  if (!flatMem_) {
+    latchAllDataPathDeinitLocked();
+  }
 
   if (isTunableOptics()) {
     QSFP_LOG(INFO, this) << fmt::format(

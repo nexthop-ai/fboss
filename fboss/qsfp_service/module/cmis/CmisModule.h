@@ -442,6 +442,8 @@ class CmisModule : public QsfpModule {
   virtual bool ensureTransceiverReadyLocked(
       bool hasTunableOpticsConfig) override;
 
+  void preventAutonomousDatapathInitLocked() override;
+
   /*
    * Based on identifier, sets whether the upper memory of the module is flat
    * or paged.
@@ -875,6 +877,14 @@ class CmisModule : public QsfpModule {
       uint8_t* data,
       bool skipBankAndPageChange = false,
       std::optional<uint8_t> bank = std::nullopt);
+
+  /*
+   * Set every DPDeinit bit in every bank so that no data path initializes
+   * until programming clears them (CMIS 5.0 8.8.1). Only meaningful while the
+   * module has not yet reached ModuleReady; the bits are evaluated when it
+   * gets there.
+   */
+  void latchAllDataPathDeinitLocked();
 
   /* Read the maximum number of CMIS banks supported by the module from Lower
    * Page 00h byte 70 and cache it in maxNumBanks_. The register holds the bank

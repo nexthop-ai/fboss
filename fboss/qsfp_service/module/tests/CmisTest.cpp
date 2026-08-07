@@ -45,6 +45,13 @@ class MockCmisModule : public CmisModule {
   MOCK_METHOD0(getModuleStateChanged, bool());
   MOCK_METHOD1(ensureTransceiverReadyLocked, bool(bool));
 
+  // Delegate for tests that need the real power-up sequence rather than the
+  // mocked default; drive it through the public, lock-taking
+  // readyTransceiver().
+  bool realEnsureTransceiverReadyLocked(bool hasTunableOpticsConfig) {
+    return CmisModule::ensureTransceiverReadyLocked(hasTunableOpticsConfig);
+  }
+
   using CmisModule::configuredHostLanes;
   using CmisModule::configuredMediaLanes;
   using CmisModule::configureRxConsActHoldOffTimer;
@@ -477,6 +484,258 @@ TEST_F(CmisTest, cpoMultiPortDatapathProgram) {
         << "lane " << lane << " (unprogrammed bank) should be unchanged";
     EXPECT_NE(hostLaneSignals[lane].cmisLaneState(), CmisLaneState::ACTIVATED)
         << "lane " << lane << " should not be ACTIVATED";
+  }
+}
+
+namespace {
+
+// Read one byte from the fake EEPROM the way a host would: select the bank and
+// page, then read. Uses the fake directly so no state-machine refresh is
+// involved.
+uint8_t
+readFakeByte(TransceiverImpl* impl, uint8_t page, uint8_t bank, int offset) {
+  uint8_t bankSelect = bank;
+  TransceiverAccessParameter bankParam(
+      TransceiverAccessParameter::ADDR_QSFP, 126, 1);
+  impl->writeTransceiver(bankParam, &bankSelect, 0, 0);
+  uint8_t pageSelect = page;
+  TransceiverAccessParameter pageParam(
+      TransceiverAccessParameter::ADDR_QSFP, 127, 1);
+  impl->writeTransceiver(pageParam, &pageSelect, 0, 0);
+  uint8_t value = 0;
+  TransceiverAccessParameter readParam(
+      TransceiverAccessParameter::ADDR_QSFP, offset, 1);
+  impl->readTransceiver(readParam, &value, 0);
+  return value;
+}
+
+// Assert every lane of a bank's DATA_PATH_STATE (page 11h, bytes 128-131, two
+// lanes per byte) is in the given CMIS lane state nibble.
+void expectAllLanesInState(
+    TransceiverImpl* impl,
+    uint8_t bank,
+    uint8_t expectedNibble,
+    const std::string& what) {
+  for (int byteIdx = 0; byteIdx < 4; ++byteIdx) {
+    uint8_t stateByte = readFakeByte(impl, 0x11, bank, 128 + byteIdx);
+    EXPECT_EQ(stateByte & 0xF, expectedNibble)
+        << what << ": bank " << int(bank) << " byte " << byteIdx;
+    EXPECT_EQ((stateByte >> 4) & 0xF, expectedNibble)
+        << what << ": bank " << int(bank) << " byte " << byteIdx;
+  }
+}
+
+constexpr uint8_t kCmisLaneDeactivated = 0x1;
+constexpr uint8_t kCmisLaneActivated = 0x4;
+
+} // namespace
+
+// A module discovered before it reaches ModuleReady (fresh reset, new
+// insertion) has DPDeinit latched at first contact, so it cannot
+// auto-initialize its data paths on power-on defaults while the programming
+// ladder catches up.
+TEST_F(CmisTest, discoveryParksDatapathWhenModuleNotReady) {
+  // This CPO fixture reports module state 0x00 (not ready) and 4 banks.
+  auto xcvr = overrideCmisModule<CmisCpo6P4TDrTransceiver>(
+      TransceiverID(0), TransceiverModuleIdentifier::CPO);
+  ASSERT_EQ(xcvr->getMaxNumBanks(), 4);
+  auto* fakeImpl = static_cast<FakeTransceiverImpl*>(qsfpImpls_.back().get());
+
+  // The discovery refresh inside overrideCmisModule latched every bank.
+  std::set<uint8_t> parkedBanks;
+  for (const auto& entry : fakeImpl->writeLog()) {
+    if (entry.page == 0x10 && entry.offset == 128 && entry.value == 0xFF) {
+      parkedBanks.insert(entry.bank);
+    }
+  }
+  EXPECT_EQ(parkedBanks.size(), 4);
+  for (uint8_t bank = 0; bank < 4; ++bank) {
+    EXPECT_EQ(readFakeByte(fakeImpl, 0x10, bank, 128), 0xFF)
+        << "bank " << int(bank);
+    expectAllLanesInState(
+        fakeImpl, bank, kCmisLaneDeactivated, "parked at discovery");
+  }
+}
+
+// A module that is already in ModuleReady at discovery - live modules found
+// when qsfp_service restarts - is never touched by the discovery latch.
+TEST_F(CmisTest, discoveryLeavesReadyModuleAlone) {
+  // Fixture reports module state READY (byte 3 = 0x07).
+  auto xcvr = overrideCmisModule<Cmis400GLr4Transceiver>(TransceiverID(0));
+  (void)xcvr;
+  auto* fakeImpl = static_cast<FakeTransceiverImpl*>(qsfpImpls_.back().get());
+  for (const auto& entry : fakeImpl->writeLog()) {
+    EXPECT_FALSE(entry.page == 0x10 && entry.offset == 128)
+        << "DPDeinit written for a module that was already in service";
+  }
+}
+
+// ensureTransceiverReadyLocked must latch DPDeinit on every lane of every bank
+// while the module is still in low power, so that releasing low power cannot
+// bring the link up on the module's power-on default application (CMIS 5.0
+// 8.8.1). Asserts the exact write order on byte 26 around the park.
+TEST_F(CmisTest, prepareParksDatapathBeforeReleasingLowPower) {
+  auto xcvr = overrideCmisModule<CmisCpo6P4TDrReadyTransceiver>(
+      TransceiverID(0), TransceiverModuleIdentifier::CPO);
+  ASSERT_EQ(xcvr->getMaxNumBanks(), 4);
+  auto* fakeImpl = static_cast<FakeTransceiverImpl*>(qsfpImpls_.back().get());
+
+  // The fixture's byte 26 is 0x60 (low power), so the power-up branch runs.
+  ON_CALL(*xcvr, ensureTransceiverReadyLocked(testing::_))
+      .WillByDefault([xcvr](bool hasTunableOpticsConfig) {
+        return xcvr->realEnsureTransceiverReadyLocked(hasTunableOpticsConfig);
+      });
+  fakeImpl->clearWriteLog();
+  // First power-up pass parks the datapath and releases low power; the module
+  // needs another cycle to converge, so this returns false.
+  EXPECT_FALSE(xcvr->readyTransceiver(false));
+
+  // Byte 26 order: low power asserted (0x60), then released (0x20), with the
+  // full-mask DPDeinit write to every bank strictly in between.
+  const auto& log = fakeImpl->writeLog();
+  std::vector<size_t> byte26Writes;
+  std::map<uint8_t, size_t> dpDeinitWrites;
+  for (size_t i = 0; i < log.size(); ++i) {
+    if (log[i].page == -1 && log[i].offset == 26) {
+      byte26Writes.push_back(i);
+    }
+    if (log[i].page == 0x10 && log[i].offset == 128) {
+      dpDeinitWrites[log[i].bank] = i;
+    }
+  }
+  ASSERT_EQ(byte26Writes.size(), 2);
+  EXPECT_EQ(log[byte26Writes[0]].value, 0x60);
+  EXPECT_EQ(log[byte26Writes[1]].value, 0x20);
+  ASSERT_EQ(dpDeinitWrites.size(), 4);
+  for (const auto& [bank, idx] : dpDeinitWrites) {
+    EXPECT_EQ(log[idx].value, 0xFF) << "bank " << int(bank);
+    EXPECT_GT(idx, byte26Writes[0]) << "bank " << int(bank);
+    EXPECT_LT(idx, byte26Writes[1]) << "bank " << int(bank);
+  }
+
+  // Every lane of every bank is deactivated: the module cannot train before
+  // programTransceiver initializes the datapath it configured.
+  for (uint8_t bank = 0; bank < 4; ++bank) {
+    EXPECT_EQ(readFakeByte(fakeImpl, 0x10, bank, 128), 0xFF);
+    expectAllLanesInState(
+        fakeImpl, bank, kCmisLaneDeactivated, "parked after prepare");
+  }
+}
+
+// A parked module whose power-on default application already matches the
+// configured one takes the "speed matches, doing nothing" branch of
+// getAppSelCodeForSpeed. The hardware DPDeinit register - not just the
+// in-memory pending mask, which is empty on a freshly created module - must
+// gate the datapath release, otherwise the port stays down forever.
+TEST_F(CmisTest, parkedDatapathReleasedOnAppSelMatch) {
+  auto xcvr = overrideCmisModule<CmisCpo6P4TDrReadyTransceiver>(
+      TransceiverID(0), TransceiverModuleIdentifier::CPO);
+  auto* fakeImpl = static_cast<FakeTransceiverImpl*>(qsfpImpls_.back().get());
+  ON_CALL(*xcvr, ensureTransceiverReadyLocked(testing::_))
+      .WillByDefault([xcvr](bool hasTunableOpticsConfig) {
+        return xcvr->realEnsureTransceiverReadyLocked(hasTunableOpticsConfig);
+      });
+  EXPECT_FALSE(xcvr->readyTransceiver(false));
+  ASSERT_EQ(readFakeByte(fakeImpl, 0x10, 0, 128), 0xFF);
+
+  // PREPARE leaves the cache dirty; the state machine always refreshes
+  // before PROGRAM, so do the same before programming.
+  transceiverManager_->refreshStateMachines();
+
+  // The fixture comes up in the per-bank 2x800G-DR4 application, so an 800G
+  // 4-lane port matches one instance of the current application and no AppSel
+  // reprogram happens. The release mask comes from the matched application's
+  // host lane count, so it covers exactly the port's four lanes.
+  ProgramTransceiverState programTcvrState;
+  TransceiverPortState portState;
+  portState.portName = "eth1/1/1";
+  portState.startHostLane = 0;
+  portState.speed = cfg::PortSpeed::EIGHTHUNDREDG;
+  portState.numHostLanes = 4;
+  programTcvrState.ports.emplace(portState.portName, portState);
+  fakeImpl->clearWriteLog();
+  xcvr->programTransceiver(programTcvrState, false);
+
+  // No AppSel was staged (page 10h byte 145): the match branch really ran.
+  for (const auto& entry : fakeImpl->writeLog()) {
+    EXPECT_FALSE(entry.page == 0x10 && entry.offset == 145)
+        << "AppSel reprogram staged; test no longer covers the match branch";
+  }
+  // ... and the port's parked lanes were still released and activated. Lanes
+  // 4-7 (the bank's other application instance) and the other banks stay
+  // parked.
+  EXPECT_EQ(readFakeByte(fakeImpl, 0x10, 0, 128), 0xF0);
+  for (int byteIdx = 0; byteIdx < 2; ++byteIdx) {
+    uint8_t stateByte = readFakeByte(fakeImpl, 0x11, 0, 128 + byteIdx);
+    EXPECT_EQ(stateByte & 0xF, kCmisLaneActivated) << "byte " << byteIdx;
+    EXPECT_EQ((stateByte >> 4) & 0xF, kCmisLaneActivated) << "byte " << byteIdx;
+  }
+  for (int byteIdx = 2; byteIdx < 4; ++byteIdx) {
+    uint8_t stateByte = readFakeByte(fakeImpl, 0x11, 0, 128 + byteIdx);
+    EXPECT_EQ(stateByte & 0xF, kCmisLaneDeactivated) << "byte " << byteIdx;
+    EXPECT_EQ((stateByte >> 4) & 0xF, kCmisLaneDeactivated)
+        << "byte " << byteIdx;
+  }
+  for (uint8_t bank = 1; bank < 4; ++bank) {
+    EXPECT_EQ(readFakeByte(fakeImpl, 0x10, bank, 128), 0xFF);
+  }
+}
+
+// When the configured application differs from the module default, the normal
+// AppSel reprogram path releases exactly the port's parked lanes; lanes of
+// other ports and banks stay parked until they are programmed.
+TEST_F(CmisTest, parkedDatapathReleasedOnAppSelChange) {
+  auto xcvr = overrideCmisModule<CmisCpo6P4TDrReadyTransceiver>(
+      TransceiverID(0), TransceiverModuleIdentifier::CPO);
+  auto* fakeImpl = static_cast<FakeTransceiverImpl*>(qsfpImpls_.back().get());
+  ON_CALL(*xcvr, ensureTransceiverReadyLocked(testing::_))
+      .WillByDefault([xcvr](bool hasTunableOpticsConfig) {
+        return xcvr->realEnsureTransceiverReadyLocked(hasTunableOpticsConfig);
+      });
+  EXPECT_FALSE(xcvr->readyTransceiver(false));
+
+  // PREPARE leaves the cache dirty; the state machine always refreshes
+  // before PROGRAM, so do the same before programming.
+  transceiverManager_->refreshStateMachines();
+
+  // 400G on 4 lanes forces a real AppSel reprogram on this fixture.
+  ProgramTransceiverState programTcvrState;
+  TransceiverPortState portState;
+  portState.portName = "eth1/1/1";
+  portState.startHostLane = 0;
+  portState.speed = cfg::PortSpeed::FOURHUNDREDG;
+  portState.numHostLanes = 4;
+  programTcvrState.ports.emplace(portState.portName, portState);
+  xcvr->programTransceiver(programTcvrState, false);
+
+  // The port's four lanes are released; the bank's other four lanes and the
+  // other banks remain parked.
+  EXPECT_EQ(readFakeByte(fakeImpl, 0x10, 0, 128), 0xF0);
+  uint8_t bank0States = readFakeByte(fakeImpl, 0x11, 0, 128);
+  EXPECT_EQ(bank0States & 0xF, kCmisLaneActivated);
+  for (uint8_t bank = 1; bank < 4; ++bank) {
+    EXPECT_EQ(readFakeByte(fakeImpl, 0x10, bank, 128), 0xFF);
+  }
+}
+
+// A module already in high power (steady state, warm boot) takes the early
+// return: no power-mode or DPDeinit writes at all.
+TEST_F(CmisTest, parkSkippedWhenAlreadyHighPower) {
+  auto xcvr = overrideCmisModule<Cmis400GLr4Transceiver>(TransceiverID(0));
+  auto* fakeImpl = static_cast<FakeTransceiverImpl*>(qsfpImpls_.back().get());
+  ON_CALL(*xcvr, ensureTransceiverReadyLocked(testing::_))
+      .WillByDefault([xcvr](bool hasTunableOpticsConfig) {
+        return xcvr->realEnsureTransceiverReadyLocked(hasTunableOpticsConfig);
+      });
+
+  // Fixture byte 26 is already 0x20 (high power) and the module is READY.
+  fakeImpl->clearWriteLog();
+  EXPECT_TRUE(xcvr->readyTransceiver(false));
+  for (const auto& entry : fakeImpl->writeLog()) {
+    EXPECT_FALSE(entry.page == -1 && entry.offset == 26)
+        << "unexpected power-mode write";
+    EXPECT_FALSE(entry.page == 0x10 && entry.offset == 128)
+        << "unexpected DPDeinit write";
   }
 }
 

@@ -140,6 +140,12 @@ int FakeTransceiverImpl::writeTransceiver(
   auto dataAddress = *(param.i2cAddress);
   auto offset = param.offset;
   auto len = param.len;
+  writeLog_.push_back(
+      WriteLogEntry{
+          offset < QsfpModule::MAX_QSFP_PAGE_SIZE ? -1 : page_,
+          selectedBank_,
+          offset,
+          *fieldValue});
   if (offset == 127) {
     page_ = *fieldValue;
   }

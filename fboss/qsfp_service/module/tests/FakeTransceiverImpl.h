@@ -55,6 +55,23 @@ class FakeTransceiverImpl : public TransceiverImpl {
     return it == upperPageWriteCounts_.end() ? 0 : it->second;
   }
 
+  // Chronological record of every register write, so tests can assert write
+  // ordering (e.g. that DPDeinit is latched between the low-power set and
+  // release on byte 26). Lower-page writes record page -1; upper-page writes
+  // record the page and bank selected at the time of the write.
+  struct WriteLogEntry {
+    int page; // -1 for lower-page writes
+    uint8_t bank; // bank selected at the time of the write
+    int offset; // raw parameter offset (upper-page writes are >= 128)
+    uint8_t value; // first byte written
+  };
+  const std::vector<WriteLogEntry>& writeLog() const {
+    return writeLog_;
+  }
+  void clearWriteLog() {
+    writeLog_.clear();
+  }
+
  protected:
   // Provide distinct EEPROM contents for a specific (bank, page) so multi-bank
   // (CPO) reads can be exercised. When the bank-select register (byte 126) is
@@ -76,6 +93,7 @@ class FakeTransceiverImpl : public TransceiverImpl {
   // Write counts keyed by (page, offset within the upper page)
   std::map<std::pair<int, int>, int> upperPageWriteCounts_;
   std::map<uint8_t, std::array<uint8_t, 128>> lowerPages_;
+  std::vector<WriteLogEntry> writeLog_;
   TransceiverManager* tcvrManager_;
 };
 

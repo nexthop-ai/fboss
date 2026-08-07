@@ -11,7 +11,12 @@
 
 #include "fboss/agent/AgentConfig.h"
 
+#include <folly/String.h>
 #include <folly/logging/xlog.h>
+#include <chrono>
+#include <optional>
+#include <set>
+#include <thread>
 #include "fboss/lib/CommonUtils.h"
 #include "fboss/qsfp_service/module/QsfpModule.h"
 #include "fboss/qsfp_service/module/cmis/CmisFieldInfo.h"
@@ -90,6 +95,65 @@ class HwTransceiverResetTest : public HwTransceiverTest {
     }
 
     return true;
+  }
+
+  // Read `length` bytes from a transceiver register (optionally on an upper
+  // page) over the service's register-read path. Returns std::nullopt when the
+  // read is not valid (e.g. the module is still out of the map after a reset).
+  std::optional<std::vector<uint8_t>> readRegister(
+      int32_t tcvrId,
+      int offset,
+      int length = 1,
+      std::optional<int> page = std::nullopt) {
+    auto wedgeManager = getHwQsfpEnsemble()->getWedgeManager();
+    ReadRequest request;
+    request.ids() = std::vector<int32_t>{tcvrId};
+    TransceiverIOParameters params;
+    params.offset() = offset;
+    params.length() = length;
+    if (page.has_value()) {
+      params.page() = *page;
+    }
+    request.parameter() = params;
+    std::map<int32_t, ReadResponse> response;
+    wedgeManager->readTransceiverRegister(
+        response, std::make_unique<ReadRequest>(request));
+    auto it = response.find(tcvrId);
+    if (it == response.end() || !folly::copy(it->second.valid().value())) {
+      return std::nullopt;
+    }
+    const auto& data = it->second.data().value();
+    return std::vector<uint8_t>(data.data(), data.data() + length);
+  }
+
+  // Present optical CMIS transceivers from the cabled set: the modules whose
+  // datapath parking behavior these tests exercise.
+  std::vector<int32_t> getOpticalCmisTransceivers() {
+    auto wedgeManager = getHwQsfpEnsemble()->getWedgeManager();
+    std::map<int32_t, TransceiverInfo> transceivers;
+    wedgeManager->getTransceiversInfo(
+        transceivers, getExpectedLegacyTransceiverIds());
+    std::vector<int32_t> cmisTcvrs;
+    for (const auto& [id, info] : transceivers) {
+      auto& tcvrState = apache::thrift::can_throw(*info.tcvrState());
+      if (!*tcvrState.present()) {
+        continue;
+      }
+      auto transmitterTech = *tcvrState.cable().value_or({}).transmitterTech();
+      auto mgmtInterface = apache::thrift::can_throw(
+          *tcvrState.transceiverManagementInterface());
+      if (mgmtInterface == TransceiverManagementInterface::CMIS &&
+          transmitterTech != TransmitterTechnology::COPPER) {
+        cmisTcvrs.push_back(id);
+      }
+    }
+    return cmisTcvrs;
+  }
+
+  static bool isProgrammedOrLater(TransceiverStateMachineState state) {
+    return state == TransceiverStateMachineState::TRANSCEIVER_PROGRAMMED ||
+        state == TransceiverStateMachineState::ACTIVE ||
+        state == TransceiverStateMachineState::INACTIVE;
   }
 };
 
@@ -552,4 +616,150 @@ TEST_F(HwTransceiverResetTest, verifyHardResetAction) {
 
   waitTillCabledTcvrProgrammed();
 }
+
+// After a hard reset, no data path may reach Activated before the service has
+// programmed the transceiver. CMIS power-on defaults (DPDeinit=00h) let a
+// module initialize its data path autonomously on the default application
+// (CMIS 5.0 8.8.1 / D.1.1); ensureTransceiverReadyLocked latches DPDeinit
+// while the module is in low power to prevent exactly that. On an unfixed
+// service, modules that follow the hardware-initialization default show
+// Activated lanes here while the state machine is still programming.
+TEST_F(HwTransceiverResetTest, datapathHeldDownAcrossHardReset) {
+  addVerifiedProductionFeatures(
+      {qsfp_production_features::QsfpProductionFeature::TRANSCEIVER_RESET});
+  addTestedTransceivers(getExpectedTransceivers());
+
+  auto wedgeManager = getHwQsfpEnsemble()->getWedgeManager();
+  auto qsfpServiceHandler = getHwQsfpEnsemble()->getQsfpServiceHandler();
+  auto cmisTcvrs = getOpticalCmisTransceivers();
+  if (cmisTcvrs.empty()) {
+    XLOG(INFO) << "No optical CMIS transceivers cabled; nothing to verify";
+    return;
+  }
+
+  // Ports stay enabled but down while the modules recover, mirroring a reset
+  // issued on a running system.
+  qsfpServiceHandler->setOverrideAgentPortStatusForTesting(
+      false /* up */, true /* enabled */);
+
+  std::vector<std::string> portNames;
+  for (auto tcvrId : cmisTcvrs) {
+    auto portsSet = wedgeManager->getPortNames(TransceiverID(tcvrId));
+    std::copy(portsSet.begin(), portsSet.end(), std::back_inserter(portNames));
+  }
+  wedgeManager->resetTransceiver(
+      std::make_unique<std::vector<std::string>>(portNames),
+      ResetType::HARD_RESET,
+      ResetAction::RESET_THEN_CLEAR);
+
+  // Drive refreshes ourselves and sample the data path states between each,
+  // failing on any lane that reaches Activated before its transceiver is
+  // programmed.
+  constexpr uint8_t kCmisLaneActivated = 0x4;
+  std::set<int32_t> pending(cmisTcvrs.begin(), cmisTcvrs.end());
+  for (int attempt = 0; attempt < 60 && !pending.empty(); ++attempt) {
+    qsfpServiceHandler->refreshStateMachines();
+    for (auto it = pending.begin(); it != pending.end();) {
+      auto tcvrId = *it;
+      auto state = wedgeManager->getCurrentState(TransceiverID(tcvrId));
+      if (isProgrammedOrLater(state)) {
+        it = pending.erase(it);
+        continue;
+      }
+      // Page 11h bytes 128-131: DATA_PATH_STATE, two lanes per byte. The read
+      // is invalid while the module is still out of the map; that is fine.
+      if (auto laneStates = readRegister(tcvrId, 128, 4, 0x11)) {
+        for (auto stateByte : *laneStates) {
+          EXPECT_NE(stateByte & 0xF, kCmisLaneActivated)
+              << "Transceiver " << tcvrId
+              << " activated a data path before being programmed";
+          EXPECT_NE((stateByte >> 4) & 0xF, kCmisLaneActivated)
+              << "Transceiver " << tcvrId
+              << " activated a data path before being programmed";
+        }
+      }
+      ++it;
+    }
+    /* sleep override */
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  }
+  EXPECT_TRUE(pending.empty())
+      << folly::join(",", pending) << " never reached a programmed state";
+
+  // Leave the system in the normal steady state.
+  qsfpServiceHandler->setOverrideAgentPortStatusForTesting(
+      true /* up */, true /* enabled */);
+  waitTillCabledTcvrProgrammed();
+}
+
+// Between the power-up step (PREPARE) and programming (PROGRAM), a freshly
+// reset module must sit in high power with every data path lane latched in
+// DPDeinit: powered, dark, and waiting for the host - not running its
+// power-on default application.
+TEST_F(HwTransceiverResetTest, parkLatchedBetweenPrepareAndProgram) {
+  addVerifiedProductionFeatures(
+      {qsfp_production_features::QsfpProductionFeature::TRANSCEIVER_RESET});
+  addTestedTransceivers(getExpectedTransceivers());
+
+  auto wedgeManager = getHwQsfpEnsemble()->getWedgeManager();
+  auto qsfpServiceHandler = getHwQsfpEnsemble()->getQsfpServiceHandler();
+  auto cmisTcvrs = getOpticalCmisTransceivers();
+  if (cmisTcvrs.empty()) {
+    XLOG(INFO) << "No optical CMIS transceivers cabled; nothing to verify";
+    return;
+  }
+
+  qsfpServiceHandler->setOverrideAgentPortStatusForTesting(
+      false /* up */, true /* enabled */);
+
+  std::vector<std::string> portNames;
+  for (auto tcvrId : cmisTcvrs) {
+    auto portsSet = wedgeManager->getPortNames(TransceiverID(tcvrId));
+    std::copy(portsSet.begin(), portsSet.end(), std::back_inserter(portNames));
+  }
+  wedgeManager->resetTransceiver(
+      std::make_unique<std::vector<std::string>>(portNames),
+      ResetType::HARD_RESET,
+      ResetAction::RESET_THEN_CLEAR);
+
+  // Step the state machines one refresh at a time and verify the parked
+  // contract the first time each transceiver shows up as TRANSCEIVER_READY:
+  // byte 26 released to 0x20 and every DPDeinit bit still latched.
+  std::set<int32_t> pendingReadyCheck(cmisTcvrs.begin(), cmisTcvrs.end());
+  std::set<int32_t> pendingProgrammed(cmisTcvrs.begin(), cmisTcvrs.end());
+  for (int attempt = 0; attempt < 60 &&
+       !(pendingReadyCheck.empty() && pendingProgrammed.empty());
+       ++attempt) {
+    qsfpServiceHandler->refreshStateMachines();
+    for (auto tcvrId : cmisTcvrs) {
+      auto state = wedgeManager->getCurrentState(TransceiverID(tcvrId));
+      if (state == TransceiverStateMachineState::TRANSCEIVER_READY &&
+          pendingReadyCheck.count(tcvrId)) {
+        auto moduleControl = readRegister(tcvrId, 26);
+        auto dpDeinit = readRegister(tcvrId, 128, 1, 0x10);
+        if (moduleControl && dpDeinit) {
+          EXPECT_EQ((*moduleControl)[0], 0x20)
+              << "Transceiver " << tcvrId << " not released to high power";
+          EXPECT_EQ((*dpDeinit)[0], 0xFF)
+              << "Transceiver " << tcvrId
+              << " DPDeinit not latched while waiting for programming";
+          pendingReadyCheck.erase(tcvrId);
+        }
+      }
+      if (isProgrammedOrLater(state) && pendingProgrammed.count(tcvrId)) {
+        pendingProgrammed.erase(tcvrId);
+        pendingReadyCheck.erase(tcvrId);
+      }
+    }
+    /* sleep override */
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  }
+  EXPECT_TRUE(pendingProgrammed.empty()) << folly::join(",", pendingProgrammed)
+                                         << " never reached a programmed state";
+
+  qsfpServiceHandler->setOverrideAgentPortStatusForTesting(
+      true /* up */, true /* enabled */);
+  waitTillCabledTcvrProgrammed();
+}
+
 } // namespace facebook::fboss

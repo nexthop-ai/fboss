@@ -1013,6 +1013,9 @@ void QsfpModule::refreshLocked() {
       // above is a no-op. Need to figure out a way to avoid this call in that
       // case
       updateQsfpData(false);
+      // A just-reset or newly inserted module is still walking its own state
+      // machine; keep its data paths down until programming brings them up.
+      preventAutonomousDatapathInitLocked();
     }
   }
 

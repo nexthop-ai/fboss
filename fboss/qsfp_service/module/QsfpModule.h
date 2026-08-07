@@ -418,6 +418,14 @@ class QsfpModule : public Transceiver {
   virtual bool ensureTransceiverReadyLocked(bool hasTunableOpticsConfig) = 0;
 
   /*
+   * Hook for module types that can stop a still-booting module from
+   * autonomously initializing its data paths before this service has
+   * programmed it. Called after the full data refresh of a present module
+   * (fresh reset or new insertion). Default: no-op.
+   */
+  virtual void preventAutonomousDatapathInitLocked() {}
+
+  /*
    * This function returns a pointer to the value in the static cached
    * data after checking the length fits. The thread needs to have the lock
    * before calling this function.
