@@ -1662,4 +1662,9 @@ endif()
 # FBOSS Image Builder distro_cli tests
 # cFBOSS stubs: defined when BUILD_CFBOSS=ON; CfbossStubs.cmake returns early otherwise.
 include(${CMAKE_CURRENT_SOURCE_DIR}/cfboss/cmake/CfbossStubs.cmake)
+# cFBOSS dataplane library: defines cfboss_dataplane (PortMap, VethPacketBackend,
+# VethIpInstaller, KernelRouteSyncer, registration TU) and links it with
+# --whole-archive into fboss_sw_agent and fboss_hw_agent-sai_impl. Gated on
+# BUILD_CFBOSS so distro builds skip it entirely.
+include(${CMAKE_CURRENT_SOURCE_DIR}/cfboss/cmake/CfbossDataplane.cmake)
 include(cmake/FbossImageDistroCliTests.cmake)
