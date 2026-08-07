@@ -176,6 +176,7 @@ _DUT_MARKER_DIR = f"{_FBOSS_ROOT_ON_DUT}/.deployed"
 _HW_TEST_CONFIG_NAME: dict[str, str] = {
     "minipack3": "montblanc",
     "nhbw800f": "wedge800bact",
+    "nhcw800f": "wedge800cact",
     "nh4215f": "m4062nhp",
 }
 
@@ -184,6 +185,7 @@ _LINK_QSFP_TEST_CONFIG_NAME: dict[str, str] = {
     "minipack3": "montblanc",
     "nh4215f": "m4062nhp",
     "nhbw800f": "wedge800bact",
+    "nhcw800f": "wedge800cact",
 }
 
 # Default CREDO_SDK_VERSION in fboss/lib/phy/CredoSdkVersion.h. qsfp_bench keys
@@ -202,6 +204,7 @@ _SAI_KNOWN_BAD_KEY: dict[str, str] = {
     "wedge800bnhp": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
     "nhbw800f": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
     "wedge800cact": "leaba/25.11.4210/25.11.4210/graphene202x",
+    "nhcw800f": "leaba/25.11.4210/25.11.4210/graphene202x",
     "nh4010f": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
     "nh4215f": "brcm/14.2.0.0_odp/14.2.0.0_odp/tomahawk6",
     "nh4220f": "brcm/14.2.0.0_odp/14.2.0.0_odp/tomahawk6",
@@ -996,6 +999,7 @@ class SaiAgentTestRunner(BaseHwTestRunner):
             "wedge800bnhp": "tomahawk5",
             "nhbw800f": "tomahawk5",
             "wedge800cact": "g202x",
+            "nhcw800f": "g202x",
             "nh4010f": "tomahawk5",
             "nh4215f": "tomahawk6",
             "nh4220f": "tomahawk6",
