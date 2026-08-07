@@ -10,12 +10,16 @@
 
 #include "fboss/agent/hw/sai/fake/FakeSaiPacketBackend.h"
 
+#include <folly/CppAttributes.h>
+
 #include <atomic>
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <thread>
+#include <utility>
 #include <vector>
 
 struct nl_sock;
@@ -25,6 +29,28 @@ class PortMap;
 }
 
 namespace facebook::fboss {
+
+// Injectable seam over the two host-facing syscall surfaces the veth backend
+// depends on: opening an AF_PACKET socket bound to a veth (needs CAP_NET_RAW)
+// and reading a per-interface counter from sysfs. The production seam performs
+// the real syscalls; unit tests substitute a fake so the concurrent RX and
+// stats paths can run without privilege or real interfaces.
+class VethSyscalls {
+ public:
+  virtual ~VethSyscalls() = default;
+
+  // Open a packet socket bound to `ifname`, returning {fd, ifindex}. Throws
+  // std::runtime_error on failure (any partial fd is closed before throwing).
+  virtual std::pair<int, int> openPacketSocket(const std::string& ifname) = 0;
+
+  // Read /sys/class/net/<veth>/statistics/<stat>; 0 on any failure.
+  virtual uint64_t readInterfaceStat(
+      const std::string& veth,
+      const std::string& stat) = 0;
+};
+
+// The production seam: real socket()/ioctl()/bind() and sysfs reads.
+std::shared_ptr<VethSyscalls> makeDefaultVethSyscalls();
 
 /**
  * FakeSai packet backend that moves real packets across kernel veth
@@ -45,7 +71,11 @@ namespace facebook::fboss {
  */
 class VethPacketBackend : public FakeSaiPacketBackend {
  public:
-  explicit VethPacketBackend(std::shared_ptr<const cfboss::PortMap> portMap);
+  // `syscalls` is the host-syscall seam; defaults to the real implementation.
+  // Tests inject a fake to hand out pollable stand-in fds and canned counters.
+  explicit VethPacketBackend(
+      std::shared_ptr<const cfboss::PortMap> portMap,
+      std::shared_ptr<VethSyscalls> syscalls = makeDefaultVethSyscalls());
   ~VethPacketBackend() override;
 
   sai_status_t tx(
@@ -79,20 +109,52 @@ class VethPacketBackend : public FakeSaiPacketBackend {
       const sai_stat_id_t* counter_ids,
       uint64_t* counters) override;
 
+  // Called from the rtnetlink subscription callback (a free function in an
+  // anonymous namespace) when an RTM_NEWLINK / RTM_DELLINK arrives. Maps
+  // ifindex -> veth via ifindexToVeth_, then fires the SAI port-state
+  // callback if the up/down state actually changed. Public because the
+  // free-function callback cannot access private members.
+  void onKernelLinkEvent(int ifindex, bool isUp);
+
  private:
+  // Owns an AF_PACKET fd with an RAII destructor, so a throwing constructor
+  // closes every already opened fd via ~VethSocket rather than leaking it
+  // (the backend dtor never runs on a failed ctor); threads started before
+  // the throw are joined by the constructor's catch block before members are
+  // destroyed. Non-copyable and non-movable: constructed in place in
+  // sockets_ and never relocated, so RX threads' raw pointers stay valid.
+  // The dtor is defined out-of-line in the .cpp so <unistd.h> need not leak
+  // into this header.
   struct VethSocket {
+    VethSocket() = default;
+    VethSocket(int fd, int ifindex, std::string name);
+    ~VethSocket();
+    VethSocket(const VethSocket&) = delete;
+    VethSocket& operator=(const VethSocket&) = delete;
+    VethSocket(VethSocket&&) = delete;
+    VethSocket& operator=(VethSocket&&) = delete;
+
     int fd{-1};
     int ifindex{0};
     std::string name;
+    // SAI port OID bound to this veth, or 0 when no port is bound (the veth
+    // exists from construction; its port is created later and may be
+    // removed). Mutable + atomic so the RX loop reads it lock-free per
+    // packet while onPortCreated/onPortRemoved write it under mutex_.
+    mutable std::atomic<sai_object_id_t> oid_{0};
   };
 
   void rxLoop(const VethSocket* sock);
-  const VethSocket* socketForVeth(const std::string& veth) const;
+  const VethSocket* FOLLY_NULLABLE socketForVeth(const std::string& veth) const;
 
   std::shared_ptr<const cfboss::PortMap> portMap_;
 
-  // veth name -> socket. Built at construction; immutable thereafter so
-  // RX threads can hold raw pointers into it without locking.
+  // Host-syscall seam (socket open + sysfs stat reads). Injected for tests.
+  std::shared_ptr<VethSyscalls> syscalls_;
+
+  // veth name -> socket. The map is built at construction and never changes
+  // structurally, so RX threads hold raw pointers into it without locking;
+  // only each socket's atomic oid_ is mutated at runtime.
   std::map<std::string, VethSocket> sockets_;
 
   // Guards the runtime maps + the registered callbacks.
@@ -106,23 +168,49 @@ class VethPacketBackend : public FakeSaiPacketBackend {
   // config-side lock.
   alignas(64) std::mutex rxDeliveryMutex_;
 
-  std::map<sai_object_id_t, std::string> oidToVeth_;
-  std::map<std::string, sai_object_id_t> vethToOid_;
+  // SAI port OID -> its veth socket, so TX / admin-state / stats resolve the
+  // socket directly rather than going OID -> veth-name -> socket. Guarded by
+  // mutex_; pointers are stable because sockets_ never relocates. The reverse
+  // direction is VethSocket::oid_, cached on each socket.
+  std::map<sai_object_id_t, const VethSocket*> oidToSocket_;
   sai_object_id_t rxSwitchId_{0};
   sai_packet_event_notification_fn rxCallback_{nullptr};
   sai_port_state_change_notification_fn portStateCallback_{nullptr};
 
-  // Fires PORT_OPER_STATUS_UP for `oid` if portStateCallback_ is set.
-  // Called with mutex_ held.
-  void notifyPortUpLocked(sai_object_id_t oid);
+  // Fires PORT_OPER_STATUS_{UP,DOWN} for `oid` via `cb`. MUST be called with
+  // mutex_ released: `cb` is an external SAI notification callback and firing
+  // it under the non-recursive mutex_ is a re-entrancy/deadlock hazard.
+  // Callers snapshot the callback pointer + target oid under the lock, drop
+  // the lock, then invoke this (mirrors how rxLoop copies rxCallback_ under
+  // the lock and delivers outside it). Unlike RX delivery, port-state
+  // delivery needs no serialization mutex: LinkChangeEventQueueType is
+  // multi-producer, unlike the single-producer Rx queue that
+  // rxDeliveryMutex_ guards.
+  void notifyPortStateUnlocked(
+      sai_port_state_change_notification_fn cb,
+      sai_object_id_t oid,
+      bool isUp);
+
+  // Background thread subscribed to rtnetlink RTNLGRP_LINK group. Receives
+  // RTM_NEWLINK / RTM_DELLINK messages on actual kernel link transitions and
+  // dispatches PORT_OPER_STATUS_DOWN/UP from ifi_flags & IFF_UP (the kernel
+  // administrative link state) without polling.
+  void linkStateSubscribeLoop();
+
+  // Re-read every owned veth's current IFF_UP flag via SIOCGIFFLAGS and feed
+  // it through onKernelLinkEvent (which suppresses non-transitions). Called
+  // after an rtnl receive overflow (NLE_NOMEM), when a link event may have
+  // been dropped and lastLinkUp_ may have diverged from the kernel.
+  void resyncLinkStates();
 
   // Helper used by onAdminStateChange: open/cache the write-side netlink
   // socket used to issue RTM_NEWLINK with IFF_UP/down. Returns nullptr on
   // failure (admin-state writes silently fail rather than crash).
-  ::nl_sock* getAdminWriteSocket();
+  ::nl_sock* FOLLY_NULLABLE getAdminWriteSocket();
 
   std::atomic<bool> stopThreads_{false};
   std::vector<std::thread> rxThreads_;
+  std::thread linkStateSubThread_;
 
   // Cached netlink socket for issuing admin-state writes (RTM_NEWLINK with
   // IFF_UP set/cleared). Lazily opened on first call to onAdminStateChange.
@@ -130,6 +218,15 @@ class VethPacketBackend : public FakeSaiPacketBackend {
   // from multiple threads.
   std::mutex adminSockMutex_;
   ::nl_sock* adminWriteSock_{nullptr};
+
+  // veth name -> last seen up/down state, used by the netlink subscription
+  // loop to suppress duplicate notifications. Guarded by mutex_.
+  std::map<std::string, bool> lastLinkUp_;
+
+  // ifindex -> veth name, populated from sockets_ at construction time.
+  // Used by the netlink subscription loop to map RTM_NEWLINK ifindex back
+  // to the cfboss-owned veth set. Immutable after construction; no lock.
+  std::map<int, std::string> ifindexToVeth_;
 };
 
 } // namespace facebook::fboss
