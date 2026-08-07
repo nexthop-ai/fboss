@@ -14,10 +14,9 @@ inputs:
     description: "Scheduler priority (0-100, higher = more important)"
     required: false
     default: "50"
-  target_testbeds:
-    description: "Comma-separated testbed names or regex patterns"
-    required: false
-    default: ""
+  product:
+    description: "Product SKU or codename the scheduler resolves to a testbed (e.g. NH-4010-F)"
+    required: true
   tests:
     description: "Comma-separated list of specific test file paths. Empty -> --all-eligible-tests."
     required: false
@@ -37,7 +36,7 @@ runs:
       env:
         BUILD_ID: ${{ inputs.build_id }}
         PRIORITY: ${{ inputs.priority }}
-        TARGET_TESTBEDS: ${{ inputs.target_testbeds }}
+        PRODUCT: ${{ inputs.product }}
         TESTS: ${{ inputs.tests }}
       run: |
         CMD="nh te schedule"
@@ -52,9 +51,8 @@ runs:
           CMD="$CMD --all-eligible-tests"
         fi
 
-        if [ -n "$TARGET_TESTBEDS" ]; then
-          CMD="$CMD --target-testbeds $TARGET_TESTBEDS"
-        fi
+        CMD="$CMD --product $PRODUCT"
+        CMD="$CMD --department software"
 
         exit_code=0
         output=$($CMD 2>&1) || exit_code=$?

@@ -80,7 +80,7 @@ jobs:
         with:
           build_id: ${{ inputs.build_id }}
           priority: 100
-          target_testbeds: "gold[2-9].*"
+          product: "GoldenEagle320"
           tests: ${{ steps.smoke.outputs.tests }}
 
       - name: Schedule Wedge800B
@@ -89,7 +89,7 @@ jobs:
         with:
           build_id: ${{ inputs.build_id }}
           priority: 100
-          target_testbeds: "wdg10.*"
+          product: "WEDGE800BACT"
           tests: ${{ steps.smoke.outputs.tests }}
 
       - name: Schedule Wedge800C
@@ -98,7 +98,7 @@ jobs:
         with:
           build_id: ${{ inputs.build_id }}
           priority: 100
-          target_testbeds: "wdg15.*"
+          product: "WEDGE800CACT"
           tests: ${{ steps.smoke.outputs.tests }}
 
       - name: Schedule Minipack3
@@ -107,7 +107,7 @@ jobs:
         with:
           build_id: ${{ inputs.build_id }}
           priority: 100
-          target_testbeds: "fboss.*"
+          product: "MINIPACK3"
           tests: ${{ steps.smoke.outputs.tests }}
 
       - name: Schedule Crowned Eagle
@@ -116,7 +116,7 @@ jobs:
         with:
           build_id: ${{ inputs.build_id }}
           priority: 100
-          target_testbeds: "crow.*"
+          product: "CrownedEagle"
           tests: ${{ steps.smoke.outputs.tests }}
 
       - name: Schedule Steller Eagle
@@ -125,7 +125,7 @@ jobs:
         with:
           build_id: ${{ inputs.build_id }}
           priority: 100
-          target_testbeds: "stlr.*"
+          product: "StellerEagle"
           tests: ${{ steps.smoke.outputs.tests }}
 
       - name: Aggregate batch IDs into JSON
