@@ -131,6 +131,7 @@
 #include "fboss/cli/fboss2/commands/delete/interface/CmdDeleteInterface.h"
 #include "fboss/cli/fboss2/commands/delete/interface/ipv6/CmdDeleteInterfaceIpv6.h"
 #include "fboss/cli/fboss2/commands/delete/interface/ipv6/ndp/CmdDeleteInterfaceIpv6Ndp.h"
+#include "fboss/cli/fboss2/commands/delete/load_balancing/CmdDeleteLoadBalancing.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/CmdDeleteProtocol.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/static/CmdDeleteProtocolStatic.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.h"
@@ -1117,6 +1118,26 @@ const CommandTree& kConfigCommandTree() {
                   }},
               }},
           }},
+      },
+
+      {
+          "delete",
+          "load-balancing",
+          "Delete load-balancing (ECMP/LAG) configuration",
+          commandHandler<CmdDeleteLoadBalancing>,
+          argRegistrar<CmdDeleteLoadBalancingTraits>,
+          {{
+               "ecmp",
+               "Delete the ECMP load-balancer configuration",
+               commandHandler<CmdDeleteLoadBalancingEcmp>,
+               argRegistrar<CmdDeleteLoadBalancingEcmpTraits>,
+           },
+           {
+               "lag",
+               "Delete the LAG load-balancer configuration",
+               commandHandler<CmdDeleteLoadBalancingLag>,
+               argRegistrar<CmdDeleteLoadBalancingLagTraits>,
+           }},
       },
 
       {"delete",
