@@ -1,4 +1,5 @@
 load("@rules_shell//shell:sh_library.bzl", "sh_library")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//fboss:bootstrap_agent_configs.bzl", "register_bootstrap_agent_config_tests")
 load("//fboss:fboss_build_types.bzl", "FREE_UP_DISK_IN_CI_CMD", "LOAD_FBOSS_BUILDER_CMD", "delete_build_products_in_ci", "fboss_unit_test")
 load("//bazel_lib:heavy_genrule.bzl", "heavy_genrule")
@@ -830,6 +831,28 @@ heavy_genrule(
         "fboss/fboss-image/distro_cli/.artifacts",
     ]),
     tags = ["no-sandbox"],
+)
+
+sh_test(
+    name = "cfboss_dataplane_test",
+    srcs = ["cfboss/tests/run_cfboss_dataplane_test.sh"],
+    data = [
+        ":cfboss-image.tar.xz",
+        "cfboss/scripts/run_cfboss.sh",
+        "cfboss/tests/validate_dataplane.sh",
+    ],
+    size = "enormous",
+    # exclusive: the test claims a fixed-name container and mutates that
+    # container's netns, so it must not run concurrently with other tests.
+    # No spawn-strategy tag (local/no-sandbox): the CI's allowed test
+    # strategies are remote/worker/linux-sandbox/processwrapper-sandbox only,
+    # so a strategy-forcing tag leaves the spawn unrunnable — and none is
+    # needed, since the host docker daemon is reachable from linux-sandbox
+    # (the unittest-* targets drive docker the same way).
+    tags = [
+        "exclusive",
+        "requires-network",
+    ],
 )
 
 upload_build_artifact("nh-fboss-broadcom-xgs.iso", extra_tags = ["only-for-nightly"])
