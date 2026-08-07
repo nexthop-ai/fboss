@@ -425,6 +425,9 @@ if [ "$BUILD_TARGET" = "cfboss" ]; then
   mkdir -p /etc/fboss
   echo "cfboss" >/etc/fboss/platform
   systemctl disable NetworkManager.service || true
+  # Enable the veth-bootstrap oneshot; systemctl creates the
+  # multi-user.target.wants symlink in the image.
+  systemctl enable fboss-create-veths.service || true
 else
   # NM ignores profiles that are world-readable
   chmod 600 /etc/NetworkManager/system-connections/*.nmconnection
@@ -503,8 +506,9 @@ if [ -f /var/tmp/after_pkgs_execute_file.json ]; then
   fi
 fi
 
-# Clean up, remove jq if we installed it
-if [ "$JQ_INSTALLED" = true ]; then
+# Clean up, remove jq if we installed it. cFBOSS images must keep it:
+# fboss-create-veths.sh parses the port map with jq on every boot.
+if [ "$JQ_INSTALLED" = true ] && [ "$BUILD_TARGET" != "cfboss" ]; then
   dnf remove -y jq
 fi
 

@@ -1,0 +1,14 @@
+[Unit]
+Description=Create cFBOSS veth pairs from /etc/fboss/cfboss/port_map.json
+DefaultDependencies=no
+After=systemd-tmpfiles-setup.service local-fs.target
+Before=fboss_init.service network-online.target
+ConditionPathExists=/etc/fboss/cfboss/port_map.json
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/fboss-create-veths.sh
+
+[Install]
+WantedBy=multi-user.target

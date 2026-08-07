@@ -367,6 +367,7 @@ add_library(core
   fboss/agent/TeFlowNexthopHandler.cpp
   fboss/agent/TunIntf.cpp
   fboss/agent/TunManager.cpp
+  cfboss/dataplane/PortMap.cpp
   fboss/agent/ndp/IPv6RouteAdvertiser.cpp
   fboss/agent/oss/PacketLogger.cpp
   fboss/agent/oss/RouteUpdateLogger.cpp
