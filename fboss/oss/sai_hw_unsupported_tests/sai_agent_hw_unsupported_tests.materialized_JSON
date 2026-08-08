@@ -4872,6 +4872,24 @@
         },
         {
           "test_name_regex": "AgentHwLinkDebounceTest.*$"
+        },
+        {
+          "test_name_regex": "AgentPfcTest.verifyPfcCounters$"
+        },
+        {
+          "test_name_regex": "AgentTrafficPfcGenTest.verifyBufferPoolWatermarks$"
+        },
+        {
+          "test_name_regex": "AgentTrafficPfcGenTest.verifyIngressPriorityGroupWatermarks$"
+        },
+        {
+          "test_name_regex": "AgentTrafficPfcTest.verifyPfcWithZeroGlobalHeadRoomCfg$"
+        },
+        {
+          "test_name_regex": "AgentTrafficPfcZeroPgHeadroomTest.verifyPfcWithZeroPgHeadRoomCfg$"
+        },
+        {
+          "test_name_regex": "AgentTrafficPfcZeroPgHeadroomTest.verifyWithScaleCfgInCongestionDrops$"
         }
     ],
     "leaba/25.11.4210/25.11.4210/graphene202x/multi_switch": [
@@ -4958,6 +4976,24 @@
         },
         {
           "test_name_regex": "AgentHwLinkDebounceTest.*$"
+        },
+        {
+          "test_name_regex": "AgentPfcTest.verifyPfcCounters$"
+        },
+        {
+          "test_name_regex": "AgentTrafficPfcGenTest.verifyBufferPoolWatermarks$"
+        },
+        {
+          "test_name_regex": "AgentTrafficPfcGenTest.verifyIngressPriorityGroupWatermarks$"
+        },
+        {
+          "test_name_regex": "AgentTrafficPfcTest.verifyPfcWithZeroGlobalHeadRoomCfg$"
+        },
+        {
+          "test_name_regex": "AgentTrafficPfcZeroPgHeadroomTest.verifyPfcWithZeroPgHeadRoomCfg$"
+        },
+        {
+          "test_name_regex": "AgentTrafficPfcZeroPgHeadroomTest.verifyWithScaleCfgInCongestionDrops$"
         }
     ],
     "leaba/25.5.4210/25.5.4210/graphene200/mono": [
