@@ -17,6 +17,7 @@ jobs:
       matrix:
         branch:
           - main
+          - nh-fboss-cefe-eft2
     permissions:
       id-token: write
       contents: read
