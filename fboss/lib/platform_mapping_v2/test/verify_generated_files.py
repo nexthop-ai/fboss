@@ -7,10 +7,7 @@ import sys
 import unittest
 from typing import ClassVar
 
-from fboss.lib.platform_mapping_v2.gen import (
-    generate_platform_mappings,
-    INPUT_DIR,
-)
+from fboss.lib.platform_mapping_v2.gen import generate_platform_mappings, INPUT_DIR
 
 
 class TestVerifyPlatformMappingGeneratedFiles(unittest.TestCase):
@@ -58,6 +55,7 @@ class TestVerifyPlatformMappingGeneratedFiles(unittest.TestCase):
             "wedge800bact",
             "wedge800bnhp",
             "wedge800cact",
+            "wedge800cnhp",
             "blackwolf800banw",
             "j4sim",
             "icecube800banw",
@@ -103,8 +101,7 @@ class TestVerifyPlatformMappingGeneratedFiles(unittest.TestCase):
                         os.rmdir(dir_path)
                     except OSError as e:
                         print(
-                            f"Failed to delete {dir_path}. Reason: {e}",
-                            file=sys.stderr,
+                            f"Failed to delete {dir_path}. Reason: {e}", file=sys.stderr
                         )
 
     def _generate_all_oss_platform_mappings_in_tmp(self) -> None:
@@ -163,9 +160,7 @@ class TestVerifyPlatformMappingGeneratedFiles(unittest.TestCase):
         gen_files = self._get_relative_files(self._TMP_GENERATED_DIR)
 
         self.assertEqual(
-            ref_files,
-            gen_files,
-            "Fbcode and tmp generated files don't match",
+            ref_files, gen_files, "Fbcode and tmp generated files don't match"
         )
 
         for filename in ref_files:
