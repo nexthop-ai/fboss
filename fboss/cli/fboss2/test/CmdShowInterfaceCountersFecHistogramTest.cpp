@@ -46,9 +46,9 @@ TEST_F(
 
   EXPECT_CALL(getQsfpService(), getPortMediaInterface(_)).Times(0);
   EXPECT_CALL(getQsfpService(), getSymbolErrorHistogram(_, _))
-      .WillOnce(Invoke([](CdbDatapathSymErrHistogram& symErr, auto&&) {
+      .WillOnce([](CdbDatapathSymErrHistogram& symErr, auto&&) {
         symErr = makeSymErr(1, 4);
-      }));
+      });
 
   auto model = CmdShowInterfaceCountersFecHistogram().queryClient(
       localhost(), {"eth1/1/1"}, lineDirection);
@@ -68,9 +68,9 @@ TEST_F(
   setupMockedAgentServer();
 
   EXPECT_CALL(getQsfpService(), getSymbolErrorHistogram(_, _))
-      .WillOnce(Invoke([](CdbDatapathSymErrHistogram& symErr, auto&&) {
+      .WillOnce([](CdbDatapathSymErrHistogram& symErr, auto&&) {
         symErr = makeSymErr(1, 4);
-      }));
+      });
 
   auto model = CmdShowInterfaceCountersFecHistogram().queryClient(
       localhost(), {"eth1/1/1"}, systemDirection);
@@ -89,14 +89,14 @@ TEST_F(
       {"eth1/2/1", MediaInterfaceCode::CWDM4_100G}};
 
   EXPECT_CALL(getQsfpService(), getPortMediaInterface(_))
-      .WillOnce(Invoke([&](std::map<std::string, MediaInterfaceCode>& out) {
+      .WillOnce([&](std::map<std::string, MediaInterfaceCode>& out) {
         out = mediaInterfaces;
-      }));
+      });
   EXPECT_CALL(getQsfpService(), getSymbolErrorHistogram(_, _))
       .Times(2)
-      .WillRepeatedly(Invoke([](CdbDatapathSymErrHistogram& symErr, auto&&) {
+      .WillRepeatedly([](CdbDatapathSymErrHistogram& symErr, auto&&) {
         symErr = makeSymErr(2, 5);
-      }));
+      });
 
   auto model = CmdShowInterfaceCountersFecHistogram().queryClient(
       localhost(), {}, lineDirection);
@@ -120,17 +120,17 @@ TEST_F(
       {"eth1/2/1", MediaInterfaceCode::CWDM4_100G}};
 
   EXPECT_CALL(getQsfpService(), getPortMediaInterface(_))
-      .WillOnce(Invoke([&](std::map<std::string, MediaInterfaceCode>& out) {
+      .WillOnce([&](std::map<std::string, MediaInterfaceCode>& out) {
         out = mediaInterfaces;
-      }));
+      });
   EXPECT_CALL(getQsfpService(), getSymbolErrorHistogram(_, _))
       .WillRepeatedly(
-          Invoke([](CdbDatapathSymErrHistogram& symErr, const auto& portName) {
+          [](CdbDatapathSymErrHistogram& symErr, const auto& portName) {
             if (*portName == "eth1/1/1") {
               throw thrift::FbossBaseError("CDB command unsupported");
             }
             symErr = makeSymErr(3, 6);
-          }));
+          });
 
   auto model = CmdShowInterfaceCountersFecHistogram().queryClient(
       localhost(), {}, lineDirection);
@@ -150,9 +150,7 @@ TEST_F(
   setupMockedAgentServer();
 
   EXPECT_CALL(getQsfpService(), getPortMediaInterface(_))
-      .WillOnce(Invoke([](std::map<std::string, MediaInterfaceCode>&) {
-        throw thrift::FbossBaseError("qsfp_service internal error");
-      }));
+      .WillOnce(Throw(thrift::FbossBaseError("qsfp_service internal error")));
   EXPECT_CALL(getQsfpService(), getSymbolErrorHistogram(_, _)).Times(0);
 
   auto model = CmdShowInterfaceCountersFecHistogram().queryClient(
@@ -167,9 +165,7 @@ TEST_F(
   setupMockedAgentServer();
 
   EXPECT_CALL(getQsfpService(), getSymbolErrorHistogram(_, _))
-      .WillOnce(Invoke([](CdbDatapathSymErrHistogram&, auto&&) {
-        throw thrift::FbossBaseError("no transceiver on port");
-      }));
+      .WillOnce(Throw(thrift::FbossBaseError("no transceiver on port")));
 
   testing::internal::CaptureStderr();
   auto model = CmdShowInterfaceCountersFecHistogram().queryClient(
