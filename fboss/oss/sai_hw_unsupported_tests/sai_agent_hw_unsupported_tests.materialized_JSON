@@ -4838,6 +4838,9 @@
           "test_name_regex": "AgentFlowletBcmTest.*$"
         },
         {
+          "test_name_regex": "AgentHostPrefixRouteScaleTest.hostPrefixScaleTest$"
+        },
+        {
           "test_name_regex": "AgentIngressBufferPoolTest.validateIngressPoolParamChange$"
         },
         {
@@ -4940,6 +4943,9 @@
         },
         {
           "test_name_regex": "AgentFlowletBcmTest.*$"
+        },
+        {
+          "test_name_regex": "AgentHostPrefixRouteScaleTest.hostPrefixScaleTest$"
         },
         {
           "test_name_regex": "AgentIngressBufferPoolTest.validateIngressPoolParamChange$"
