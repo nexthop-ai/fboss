@@ -66,6 +66,90 @@ def _print_deprecation_banner(lines: list[str]) -> None:
     print(f"{border}{_RESET}\n", flush=True)
 
 
+<<<<<<< HEAD
+=======
+def _wipe_agent_warmboot_state(services: list[str]) -> None:
+    """Wipe warm_boot state whenever the agents are stopped or restarted.
+
+    fboss_*_agent gracefulExit() writes can_warm_boot for the sw switch and
+    can_warm_boot_<idx> for each hw switch, alongside the serialized
+    sai_adapter_state/switch_state blobs they refer to. Wipe the whole dir
+    rather than individual markers so both agents agree on boot type: a
+    partial clear leaves one agent cold-booting while the other warm-boots
+    against state the first no longer owns, which is what cold_boot_agents()
+    goes out of its way to avoid.
+    """
+    if not any(
+        s.startswith("fboss_sw_agent") or s.startswith("fboss_hw_agent")
+        for s in services
+    ):
+        return
+    subprocess.run(
+        ["rm", "-rf", f"{FBOSS_AGENT_VOLATILE_STATE_DIR}/warm_boot"], check=False
+    )
+
+
+def disable_services(test_name: str):
+    if test_name in TEST_DISABLE_SERVICES:
+        services = TEST_DISABLE_SERVICES[test_name]
+        print(f"Stopping services: {', '.join(services)}", flush=True)
+        subprocess.run(["systemctl", "mask", *services], check=False)
+        subprocess.run(["systemctl", "stop", *services], check=False)
+        time.sleep(2)
+        # Wipe so the next test binary cold-boots instead of crashing on
+        # missing agent.conf.
+        _wipe_agent_warmboot_state(services)
+        print("Services stopped", flush=True)
+
+
+def _wait_for_devmap(timeout_s: int = 30) -> None:
+    # platform_manager rebuilds /run/devmap/ asynchronously after restart.
+    # Poll until sensors and xcvrs dirs are non-empty so dependent services
+    # (qsfp_service, sensor_service) don't start against missing symlinks.
+    deadline = time.time() + timeout_s
+    while time.time() < deadline:
+        if all(
+            os.path.isdir(d) and os.listdir(d)
+            for d in ("/run/devmap/sensors", "/run/devmap/xcvrs")
+        ):
+            return
+        time.sleep(1)
+    print(
+        "Warning: /run/devmap not fully repopulated after platform_manager restart",
+        flush=True,
+    )
+
+
+def enable_services(test_name: str):
+    if test_name not in TEST_DISABLE_SERVICES:
+        return
+    services = TEST_DISABLE_SERVICES[test_name]
+    # The test binary's own agents left warm-boot state behind; clear it before
+    # anything below can restart them, so the production agents cold-boot
+    # rather than warm-booting onto SAI objects they never created.
+    _wipe_agent_warmboot_state(services)
+
+    print(f"Restarting services: {', '.join(services)}", flush=True)
+    subprocess.run(
+        ["systemctl", "unmask", *services], check=False, stderr=subprocess.DEVNULL
+    )
+
+    if test_name == SUB_ARG_BSP_HW_TEST:
+        print("Restarting platform_manager to rebuild /run/devmap/", flush=True)
+        subprocess.run(["systemctl", "restart", "platform_manager"], check=False)
+        _wait_for_devmap()
+
+    for service in services:
+        subprocess.Popen(
+            ["systemctl", "restart", service],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+
+    print("Services restart initiated", flush=True)
+
+
+>>>>>>> ffaeed855b (NOS-8262: fixing warm boot cleanup after test (#1624))
 class TestRunner(abc.ABC):
     WARMBOOT_SETUP_OPTION = "--setup-for-warmboot"
     COLDBOOT_PREFIX = "cold_boot."
