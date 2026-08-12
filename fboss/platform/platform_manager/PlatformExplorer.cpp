@@ -259,7 +259,7 @@ void PlatformExplorer::exploreSlot(
 
   // If PresenceDetection is specified, proceed further only if the presence
   // condition is satisfied
-  if (const auto presenceDetection = slotConfig.presenceDetection()) {
+  if (auto presenceDetection = slotConfig.presenceDetection()) {
     PresenceInfo presenceInfo;
     presenceInfo.presenceDetection() = *presenceDetection;
     presenceInfo.isPresent() = false;
@@ -564,56 +564,17 @@ void PlatformExplorer::exploreI2cDevices(
               errMsg);
         }
       }
-      if (i2cDeviceConfig.pca9548Mode().has_value()) {
-        int32_t modeValue = *i2cDeviceConfig.pca9548Mode();
-
-        auto i2cDevicePath = i2cExplorer_.getDeviceI2cPath(busNum, devAddr);
-        XLOG(INFO) << "Setting idle-state for PCA9548 to " << modeValue
-                   << " at " << i2cDevicePath;
-
-        try {
-          if (modeValue < -2) {
-            throw std::invalid_argument(
-                fmt::format(
-                    "Invalid pca9548Mode value: {}. Allowed values are -2, -1, or >= 0.",
-                    modeValue));
+      if (i2cDeviceConfig.postCreateSysfsValues()) {
+        for (const auto& sv : *i2cDeviceConfig.postCreateSysfsValues()) {
+          auto path =
+              i2cExplorer_.getDeviceI2cPath(busNum, devAddr) + "/" + *sv.attr();
+          if (!platformFsUtils_->writeStringToSysfs(*sv.value(), path)) {
+            explorationSummary_.addError(
+                ExplorationErrorType::I2C_CONFIG_FAILED,
+                slotPath,
+                *i2cDeviceConfig.pmUnitScopedName(),
+                fmt::format("failed writing {} to {}", *sv.value(), path));
           }
-          std::string idleStatePath = i2cDevicePath + "/idle_state";
-          std::ofstream ofs(idleStatePath);
-          if (!ofs.is_open()) {
-            throw std::runtime_error(
-                fmt::format("Failed to open {} for writing", idleStatePath));
-          }
-
-          ofs << modeValue;
-
-          ofs.flush();
-
-          if (ofs.fail()) {
-            throw std::runtime_error(
-                fmt::format(
-                    "Failed to write value '{}' to {}",
-                    modeValue,
-                    idleStatePath));
-          }
-          ofs.close();
-          XLOG(INFO) << "Successfully set PCA9548 idle-state to " << modeValue
-                     << " via " << idleStatePath;
-
-        } catch (const std::exception& e) {
-          auto errMsg = fmt::format(
-              "Failed to set idle-state for PCA9548 (mode: {}) {} in {}. Error: {}",
-              modeValue,
-              *i2cDeviceConfig.pmUnitScopedName(),
-              slotPath,
-              e.what());
-          XLOG(ERR) << errMsg;
-
-          explorationSummary_.addError(
-              ExplorationErrorType::I2C_CONFIG_FAILED,
-              slotPath,
-              *i2cDeviceConfig.pmUnitScopedName(),
-              errMsg);
         }
       }
       if (i2cDeviceConfig.cpldSysfsAttrs() &&
@@ -794,7 +755,12 @@ void PlatformExplorer::explorePciDevices(
         *pciDeviceConfig.miscCtrlConfigs(),
         ExplorationErrorType::PCI_SUB_DEVICE_CREATE_MISC_CTRL,
         [&](const auto& miscCtrlConfig) {
-          pciExplorer_.createFpgaIpBlock(pciDevice, miscCtrlConfig, instId++);
+          auto miscCtrlSysfsPath = pciExplorer_.createFpgaIpBlock(
+              pciDevice, miscCtrlConfig, instId++);
+          dataStore_.updateSysfsPath(
+              Utils().createDevicePath(
+                  slotPath, *miscCtrlConfig.pmUnitScopedName()),
+              miscCtrlSysfsPath);
         });
     createPciSubDevices(
         slotPath,
@@ -815,6 +781,17 @@ void PlatformExplorer::explorePciDevices(
               Utils().createDevicePath(
                   slotPath, *mdioBusConfig.pmUnitScopedName()),
               mdioBusSysfsPath);
+        });
+    createPciSubDevices(
+        slotPath,
+        Utils::createRtmCtrlConfigs(pciDeviceConfig),
+        ExplorationErrorType::PCI_SUB_DEVICE_CREATE_RTM_CTRL,
+        [&](const auto& rtmCtrlConfig) {
+          auto devicePath = Utils().createDevicePath(
+              slotPath, *rtmCtrlConfig.fpgaIpBlockConfig()->pmUnitScopedName());
+          auto rtmCtrlSysfsPath =
+              pciExplorer_.createRtmCtrl(pciDevice, rtmCtrlConfig, instId++);
+          dataStore_.updateSysfsPath(devicePath, rtmCtrlSysfsPath);
         });
   }
 }
@@ -884,6 +861,11 @@ void PlatformExplorer::createDeviceSymLink(
             devicePathResolver_.resolvePciSubDevCharDevPath(devicePath);
       }
       if (mdioBusName.starts_with("mdio_bus_ctrl")) {
+        targetPath = devicePathResolver_.resolvePciSubDevSysfsPath(devicePath);
+      }
+    } else if (linkParentPath.string() == "/run/devmap/rtms") {
+      auto rtmName = linkPath.substr(linkParentPath.string().length() + 1);
+      if (rtmName.starts_with("rtm_ctrl")) {
         targetPath = devicePathResolver_.resolvePciSubDevSysfsPath(devicePath);
       }
     } else {

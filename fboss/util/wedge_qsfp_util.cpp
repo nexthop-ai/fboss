@@ -18,6 +18,7 @@
 
 #include "fboss/qsfp_service/if/gen-cpp2/qsfp_service_config_types.h"
 
+#include <fmt/format.h>
 #include <folly/Conv.h>
 #include <folly/Exception.h>
 #include <folly/FileUtil.h>
@@ -45,7 +46,6 @@
 #include "fboss/lib/bsp/BspGenericSystemContainer.h"
 #include "fboss/lib/bsp/BspIOBus.h"
 #include "fboss/lib/bsp/BspTransceiverApi.h"
-#include "fboss/lib/bsp/icecube800banw/Icecube800banwBspPlatformMapping.h"
 #include "fboss/lib/bsp/icecube800bc/Icecube800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/icetea800bc/Icetea800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/janga800bic/Janga800bicBspPlatformMapping.h"
@@ -597,6 +597,27 @@ TransceiverManagementInterface getModuleTypeDirect(
   }
 
   return QsfpModule::getTransceiverManagementInterface(moduleId, port);
+}
+
+/*
+ * This function returns the major number of the CMIS revision the module
+ * complies with, by reading the register 1 directly from module. The upper
+ * nibble of that byte is the major number. Returns 0 on a read error, which
+ * keeps the legacy behavior of writing the MSA password during f/w upgrade.
+ */
+uint8_t getCmisMajorRevisionDirect(TransceiverI2CApi* bus, unsigned int port) {
+  uint8_t revisionCompliance = 0;
+  try {
+    bus->moduleRead(
+        port,
+        {TransceiverAccessParameter::ADDR_QSFP, 1, 1},
+        &revisionCompliance);
+  } catch (const I2cError&) {
+    fprintf(
+        stderr, "QSFP %d: could not read the CMIS revision compliance\n", port);
+    return 0;
+  }
+  return revisionCompliance >> 4;
 }
 
 /*
@@ -1323,7 +1344,7 @@ DOMDataUnion getDOMDataUnionI2CBus(
     return sffModule->getDOMDataUnion();
   } else {
     throw std::runtime_error(
-        folly::sformat(
+        fmt::format(
             "Unknown transceiver management interface: {}.",
             static_cast<int>(mgmtInterface)));
   }
@@ -3195,7 +3216,10 @@ bool cliModulefirmwareUpgrade(
   auto fbossFwObj = std::make_unique<FbossFirmware>(firmwareAttr);
 
   auto fwUpgradeObj = std::make_unique<CmisFirmwareUpgrader>(
-      qsfpImpl.get(), port, fbossFwObj.get());
+      qsfpImpl.get(),
+      port,
+      fbossFwObj.get(),
+      getCmisMajorRevisionDirect(i2cInfo.bus, port));
 
   // Do the standalone upgrade in the same process as wedge_qsfp_util
   bool ret = fwUpgradeObj->cmisModuleFirmwareUpgrade();
@@ -3356,7 +3380,10 @@ void fwUpgradeThreadHandler(
         i2cInfo.transceiverManager,
         /*logBuffer*/ nullptr);
     auto fwUpgradeObj = std::make_unique<CmisFirmwareUpgrader>(
-        qsfpImpl.get(), module, fbossFwObj.get());
+        qsfpImpl.get(),
+        module,
+        fbossFwObj.get(),
+        getCmisMajorRevisionDirect(i2cInfo.bus, module));
 
     // Do the upgrade in this thread
     bool ret = fwUpgradeObj->cmisModuleFirmwareUpgrade();
@@ -4710,14 +4737,9 @@ std::pair<std::unique_ptr<TransceiverI2CApi>, int> getTransceiverAPI() {
               .get();
       auto ioBus = std::make_unique<BspIOBus>(systemContainer);
       return std::make_pair(std::move(ioBus), 0);
-    } else if (FLAGS_platform == "icecube800banw") {
-      auto systemContainer =
-          BspGenericSystemContainer<
-              Icecube800banwBspPlatformMapping>::getInstance()
-              .get();
-      auto ioBus = std::make_unique<BspIOBus>(systemContainer);
-      return std::make_pair(std::move(ioBus), 0);
-    } else if (FLAGS_platform == "icecube800bc") {
+    } else if (
+        FLAGS_platform == "icecube800bc" ||
+        FLAGS_platform == "icecube800banw") {
       auto systemContainer = BspGenericSystemContainer<
                                  Icecube800bcBspPlatformMapping>::getInstance()
                                  .get();
@@ -4815,13 +4837,9 @@ std::pair<std::unique_ptr<TransceiverI2CApi>, int> getTransceiverAPI() {
             .get();
     auto ioBus = std::make_unique<BspIOBus>(systemContainer);
     return std::make_pair(std::move(ioBus), 0);
-  } else if (mode == PlatformType::PLATFORM_ICECUBE800BANW) {
-    auto systemContainer = BspGenericSystemContainer<
-                               Icecube800banwBspPlatformMapping>::getInstance()
-                               .get();
-    auto ioBus = std::make_unique<BspIOBus>(systemContainer);
-    return std::make_pair(std::move(ioBus), 0);
-  } else if (mode == PlatformType::PLATFORM_ICECUBE800BC) {
+  } else if (
+      mode == PlatformType::PLATFORM_ICECUBE800BC ||
+      mode == PlatformType::PLATFORM_ICECUBE800BANW) {
     auto systemContainer =
         BspGenericSystemContainer<Icecube800bcBspPlatformMapping>::getInstance()
             .get();
@@ -4988,13 +5006,9 @@ getTransceiverPlatformAPI(TransceiverI2CApi* i2cBus) {
             .get();
     return std::make_pair(
         std::make_unique<BspTransceiverApi>(systemContainer), 0);
-  } else if (mode == PlatformType::PLATFORM_ICECUBE800BANW) {
-    auto systemContainer = BspGenericSystemContainer<
-                               Icecube800banwBspPlatformMapping>::getInstance()
-                               .get();
-    return std::make_pair(
-        std::make_unique<BspTransceiverApi>(systemContainer), 0);
-  } else if (mode == PlatformType::PLATFORM_ICECUBE800BC) {
+  } else if (
+      mode == PlatformType::PLATFORM_ICECUBE800BC ||
+      mode == PlatformType::PLATFORM_ICECUBE800BANW) {
     auto systemContainer =
         BspGenericSystemContainer<Icecube800bcBspPlatformMapping>::getInstance()
             .get();

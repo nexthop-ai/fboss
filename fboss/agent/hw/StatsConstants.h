@@ -73,6 +73,14 @@ inline folly::StringPiece constexpr kInSrv6MySidDiscards() {
   return "in_srv6_mysid_discards";
 }
 
+inline folly::StringPiece constexpr kLinkDownDebounceRetriggerCount() {
+  return "link_down_debounce_retrigger_count";
+}
+
+inline folly::StringPiece constexpr kLinkUpDebounceRetriggerCount() {
+  return "link_up_debounce_retrigger_count";
+}
+
 inline folly::StringPiece constexpr kInDroppedPkts() {
   return "in_dropped_pkts";
 }
@@ -358,5 +366,45 @@ inline folly::StringPiece constexpr kOutDiscardsSll() {
 
 inline folly::StringPiece constexpr kOutDiscardsHll() {
   return "out_discards_headroom_lifetime_limit";
+}
+
+// UEC Link Layer Retry counters (UE Spec 1.0.2 section 5.1). Exported only on
+// LLR-capable ASICs (Tomahawk Ultra). The remaining LLR counters in HwPortStats
+// (the control-ordered-set handshake counters and expected_seq_good) are kept
+// in the FSDB stats tree but intentionally not exported to fb303/ODS.
+inline folly::StringPiece constexpr kLlrTxOk() {
+  return "llr_tx_ok";
+}
+
+inline folly::StringPiece constexpr kLlrRxOk() {
+  return "llr_rx_ok";
+}
+
+inline folly::StringPiece constexpr kLlrTxReplay() {
+  return "llr_tx_replay";
+}
+
+inline folly::StringPiece constexpr kLlrRxReplay() {
+  return "llr_rx_replay";
+}
+
+inline folly::StringPiece constexpr kLlrRxMissingSeq() {
+  return "llr_rx_missing_seq";
+}
+
+inline folly::StringPiece constexpr kLlrRxDuplicateSeq() {
+  return "llr_rx_duplicate_seq";
+}
+
+inline folly::StringPiece constexpr kLlrRxAckNackSeqError() {
+  return "llr_rx_ack_nack_seq_error";
+}
+
+inline folly::StringPiece constexpr kLlrRxExpectedSeqPoisoned() {
+  return "llr_rx_expected_seq_poisoned";
+}
+
+inline folly::StringPiece constexpr kLlrRxExpectedSeqBad() {
+  return "llr_rx_expected_seq_bad";
 }
 } // namespace facebook::fboss

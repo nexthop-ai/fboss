@@ -5,6 +5,8 @@
 
 DEFINE_bool(enable_lacp, false, "Run LACP in agent");
 
+DEFINE_int32(switchIndex, 0, "Switch Index for Asic");
+
 DEFINE_bool(janga_test, false, "Enable Janga test fixture platform mapping");
 
 DEFINE_bool(test_fixture, false, "Enable test fixture platform mapping");
@@ -432,11 +434,6 @@ DEFINE_bool(
     "Initiate neighbor solicitation for static neighbors");
 
 DEFINE_bool(
-    arp_static_neighbor,
-    false,
-    "Initiate ARP request for static neighbors");
-
-DEFINE_bool(
     dsf_single_stage_r128_f40_e16_8k_sys_ports,
     false,
     "Allow upto 8K system ports on single stage DSF (default=6144)");
@@ -575,6 +572,11 @@ DEFINE_bool(
     false,
     "Enables montblanc platform mapping with 4x200G on odd ports and 6x100G on even ports");
 
+DEFINE_bool(
+    montblanc_precoding,
+    false,
+    "Enables montblanc platform mapping with precoding on downlinks, used by VR200 (San Miguel) racks");
+
 DEFINE_bool(can_warm_boot, true, "Enable/disable warm boot functionality");
 
 DEFINE_string(
@@ -621,3 +623,17 @@ DEFINE_bool(
     enable_port_cl72_retry,
     false,
     "Enable CL72 link training retry on the switch (XGS, BRCM SDK >= 14.2 only)");
+
+DEFINE_bool(
+    enable_remote_intf_route_reconcile,
+    false,
+    "Reconcile remote interface routes (RIB/FIB drift) on VOQ-switch warmboot");
+
+DEFINE_string(
+    bcm_sdk_log_file,
+    "",
+    "If set, path to a Broadcom SDK SOC/diag command file (e.g. containing "
+    "'debug bcm stat verbose'). When set, the sai_preinit_cmd_file and "
+    "sai_postinit_cmd_file SOC properties are added to the SDK config pointing "
+    "to this file, so the SDK runs the commands at init time. Used to enable "
+    "native BCM SDK debug logging (analogous to --enable_sai_log for SAI).");

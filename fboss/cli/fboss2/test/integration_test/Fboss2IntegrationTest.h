@@ -88,29 +88,21 @@ class Fboss2IntegrationTest : public ::testing::Test {
    *   getSwConfigField<int>("arpTimeoutSeconds")
    *   getSwConfigField<bool>("enableLldp")
    *   getSwConfigField<std::string>("loadBalancerPoolName")
+   *   getSwConfigField<std::string>("optionalField", "default")
    */
   template <typename T>
   T getSwConfigField(const std::string& field) const {
-    auto config = getRunningConfig();
-    if (!config.isObject() || !config.count("sw")) {
-      throw std::runtime_error("Running config missing 'sw' object");
-    }
-    const auto& sw = config["sw"];
-    if (!sw.isObject() || !sw.count(field)) {
+    auto result = getSwConfigFieldOpt<T>(field);
+    if (!result) {
       throw std::runtime_error(
           "Running config 'sw' missing field '" + field + "'");
     }
-    if constexpr (std::is_same_v<T, bool>) {
-      return sw[field].asBool();
-    } else if constexpr (std::is_integral_v<T>) {
-      return static_cast<T>(sw[field].asInt());
-    } else if constexpr (std::is_same_v<T, std::string>) {
-      return sw[field].asString();
-    } else if constexpr (std::is_same_v<T, double>) {
-      return sw[field].asDouble();
-    } else {
-      static_assert(!sizeof(T), "Unsupported type for getSwConfigField");
-    }
+    return std::move(*result);
+  }
+
+  template <typename T>
+  T getSwConfigField(const std::string& field, T defaultValue) const {
+    return getSwConfigFieldOpt<T>(field).value_or(std::move(defaultValue));
   }
 
   /**
@@ -213,18 +205,24 @@ class Fboss2IntegrationTest : public ::testing::Test {
   std::map<std::string, Interface> getAllInterfaces() const;
 
   /**
-   * Pick an ethernet interface for testing.
+   * Pick a random INTERFACE_PORT for testing and return its name.
    *
-   * Interfaces whose status indicates they are up are strongly preferred — if
-   * at least one matches, a random one is returned. If none are up, a random
-   * interface from all ethernet candidates is returned. An "ethernet
-   * candidate" is any interface whose name starts with "eth" and has
-   * VLAN > 1. Throws if no candidates exist.
+   * Candidates come from the agent's getAllPortInfo() and are restricted to
+   * INTERFACE_PORT ports, so the returned port is always L3-resolvable via
+   * getInterfaceIdForPort(). (Other port types such as MANAGEMENT_PORT may
+   * carry a virtual L3 interface whose member ports the agent omits from
+   * getAllInterfaces(), which would break port->interface lookups.) Ports that
+   * are operationally up are strongly preferred — if at least one is up, a
+   * random up port is chosen; otherwise a random INTERFACE_PORT is chosen.
+   * Throws if no INTERFACE_PORT exists.
    *
    * The selection is randomized (thread-local mt19937) to reduce the chance
    * of piling test load onto the same port across back-to-back runs.
+   *
+   * Callers that need the full Interface object (vlan/addresses/description)
+   * should pass the returned name to getInterfaceInfo().
    */
-  Interface findFirstEthInterface() const;
+  std::string getRandomInterfacePortName() const;
 
   /**
    * Find the first ethernet interface that has a non-zero MTU reported by
@@ -396,6 +394,45 @@ class Fboss2IntegrationTest : public ::testing::Test {
       std::chrono::seconds timeout = std::chrono::seconds(120)) const;
 
   /**
+   * Bounds of the VLAN ID window tests may create in. See pickUnusedVlanId().
+   */
+  static constexpr int kTestVlanMin = 2000;
+  static constexpr int kTestVlanMax = 2099;
+
+  /**
+   * Pick a VLAN ID that is unused in the running config and safe to create on
+   * any platform. Returns 0 if nothing is available (caller should GTEST_SKIP).
+   *
+   * Creating a VLAN also creates a backing cfg::Interface, and TunManager
+   * gives every L3 interface its own Linux routing table. On platforms without
+   * enable_1to1_intf_route_table_mapping only tables 1-253 exist, and an
+   * interface that maps outside that range aborts the agent unrecoverably
+   * (T284228086).
+   *
+   * Rather than reproduce TunManager's mapping here, the window is kept narrow
+   * enough that the answer is the same however the agent is configured: the
+   * 2000 interface range starts at table 1, so [2000, 2099] can only ever
+   * consume tables 1-100 — well inside 1-253, and clear of the tables the
+   * 3000 (101+) and 4000 (201+) ranges use. Under
+   * enable_1to1_intf_route_table_mapping the same IDs map to tables 2000-2099,
+   * which are equally fine.
+   *
+   * Candidates are also rejected when the ID is already in use as an intfID by
+   * a different VLAN — VlanManager would then allocate 5000 + vlanId instead,
+   * which is out of range under both mappings.
+   */
+  int pickUnusedVlanId() const;
+
+  /**
+   * Remove a VLAN and its backing interface from the running config and
+   * commit. A no-op when the VLAN is not present.
+   *
+   * Tests that create a VLAN must call this, otherwise the TUN interface the
+   * agent created for it survives in the kernel across agent restarts.
+   */
+  void deleteVlanIfPresent(int vlanId) const;
+
+  /**
    * Ensure a VLAN + backing cfg::Interface exists in the staged config, then
    * return that interface's intfID for use as the IP-in-IP tunnel underlay.
    *
@@ -404,9 +441,9 @@ class Fboss2IntegrationTest : public ::testing::Test {
    * a barebone interface are inserted via VlanManager, the staged config is
    * persisted, and the new intfID is returned.
    *
-   * The VLAN ID 3998 is reserved for tunnel-test use.
+   * Defaults to a VLAN chosen by pickUnusedVlanId().
    */
-  int ensureUnderlayIntfId(int vlanId = 3998) const;
+  int ensureUnderlayIntfId(std::optional<int> vlanId = std::nullopt) const;
 
   /**
    * Return the first IPv6 address (without prefix length) configured on the
@@ -418,6 +455,30 @@ class Fboss2IntegrationTest : public ::testing::Test {
   std::string findIpv6OnIntf(int intfId) const;
 
  private:
+  template <typename T>
+  std::optional<T> getSwConfigFieldOpt(const std::string& field) const {
+    auto config = getRunningConfig();
+    if (!config.isObject() || !config.count("sw")) {
+      return std::nullopt;
+    }
+    const auto& sw = config["sw"];
+    if (!sw.isObject() || !sw.count(field)) {
+      return std::nullopt;
+    }
+    if constexpr (std::is_same_v<T, bool>) {
+      return sw[field].asBool();
+    } else if constexpr (std::is_integral_v<T>) {
+      return static_cast<T>(sw[field].asInt());
+    } else if constexpr (std::is_same_v<T, std::string>) {
+      return sw[field].asString();
+    } else if constexpr (std::is_same_v<T, double>) {
+      return sw[field].asDouble();
+    } else {
+      static_assert(!sizeof(T), "Unsupported type for getSwConfigField");
+    }
+    return std::nullopt;
+  }
+
   Interface parseInterfaceJson(const folly::dynamic& data) const;
 
   /**

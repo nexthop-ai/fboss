@@ -13,6 +13,7 @@ cpp_library(
         "FsdbTestClients.h",
     ],
     deps = [
+        "fbsource//third-party/fmt:fmt",
         "fbsource//third-party/googletest:gtest",
         "//folly:utility",
         "//thrift/lib/cpp2/op:get",
@@ -32,6 +33,7 @@ cpp_library(
 cpp_unittest(
     name = "fsdb_pub_sub_tests",
     srcs = [
+        "FsdbAddPatchSubscriptionPathsTest.cpp",
         "FsdbPubSubManagerTest.cpp",
         "FsdbPubSubTest.cpp",
         "FsdbPublisherTest.cpp",
@@ -39,10 +41,12 @@ cpp_unittest(
     ],
     network_access = network_access_utils.all(),
     deps = [
+        "fbsource//third-party/fmt:fmt",
         ":fsdb_test_clients",
         "//fb303:service_data",
         "//fboss/fsdb/client:fsdb_pub_sub",
         "//fboss/fsdb/client:fsdb_stream_client",
+        "//fboss/fsdb/if:fsdb-cpp2-services",
         "//fboss/fsdb/if:fsdb_model",
         "//fboss/fsdb/oper:extended_path_builder",
         "//fboss/fsdb/oper:subscription_manager",

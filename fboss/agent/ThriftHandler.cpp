@@ -69,6 +69,7 @@
 #include "fboss/lib/phy/gen-cpp2/prbs_types.h"
 
 #include <fb303/ServiceData.h>
+#include <fmt/format.h>
 #include <folly/IPAddressV4.h>
 #include <folly/IPAddressV6.h>
 #include <folly/Range.h>
@@ -748,8 +749,15 @@ void validateLinkLocalNextHopInterfaces(
   for (const auto& nhop : nextHops) {
     const auto& address = toIPAddress(*nhop.address());
     auto ifName = apache::thrift::get_pointer(nhop.address()->ifName());
-    if (!ifName || !address.isV6() || !address.isLinkLocal()) {
+    if (!ifName) {
       continue;
+    }
+    if (!(address.isV6() && address.isLinkLocal())) {
+      throw FbossError(
+          "Interface ",
+          *ifName,
+          " associated with a non link-local next hop ",
+          address.str());
     }
     auto intfID = utility::getIDFromTunIntfName(*ifName);
     if (!state->getInterfaces()->getNodeIf(intfID)) {
@@ -1614,7 +1622,7 @@ void ThriftHandler::patchCurrentStateJSONForPaths(
   };
 
   sw_->updateState(
-      folly::sformat("Update state by patchCurrentStateJSONForPaths: "),
+      fmt::format("Update state by patchCurrentStateJSONForPaths: "),
       std::move(updateDsfStateFn));
 }
 
@@ -1722,6 +1730,22 @@ void ThriftHandler::setInterfacesPrbs(
     auto stateCopy = std::make_unique<prbs::InterfacePrbsState>(*state);
     setInterfacePrbs(std::move(portNamePtr), component, std::move(stateCopy));
   }
+}
+
+void ThriftHandler::addAdjacencyFrr(
+    std::unique_ptr<FrrProtectedObject>,
+    std::unique_ptr<std::vector<NextHopThrift>>) {
+  ensureConfigured(__func__);
+
+  // TODO add support
+  throw FbossError("addAdjacencyFrr Not supported");
+}
+
+void ThriftHandler::deleteAdjacencyFrr(std::unique_ptr<FrrProtectedObject>) {
+  ensureConfigured(__func__);
+
+  // TODO add support
+  throw FbossError("deleteAdjacencyFrr Not supported");
 }
 
 void ThriftHandler::clearPortPrbsStats(
@@ -2579,18 +2603,6 @@ int32_t ThriftHandler::flushNeighborEntry(
       }
     }
 
-    // Check if ARP static neighbor is enabled
-    if (FLAGS_arp_static_neighbor) {
-      XLOG(DBG4) << "ThriftHandler::flushNeighborEntry - Entry flushed for "
-                 << parsedIP.str()
-                 << ", checking for interfaces that need ARP request";
-
-      if (parsedIP.isV4()) {
-        sw_->sendArpRequestForConfiguredInterfaces(
-            "ARP entry clear", parsedIP.asV4());
-      }
-    }
-
     return result;
   } catch (...) {
     throw FbossError(
@@ -3304,10 +3316,22 @@ void ThriftHandler::getTeFlowTableDetails(
   throw FbossError("getTeFlowTableDetails is deprecated");
 }
 
+void ThriftHandler::addNamedNextHopGroups(
+    std::unique_ptr<std::vector<NextHopGroup>> nextHopGroups) {
+  auto log = LOG_THRIFT_CALL_WITH_STATS(DBG1, sw_->stats());
+  addNamedNextHopGroupsImpl(__func__, std::move(nextHopGroups));
+}
+
 void ThriftHandler::addOrUpdateNamedNextHopGroups(
     std::unique_ptr<std::vector<NextHopGroup>> nextHopGroups) {
   auto log = LOG_THRIFT_CALL_WITH_STATS(DBG1, sw_->stats());
-  ensureConfigured(__func__);
+  addNamedNextHopGroupsImpl(__func__, std::move(nextHopGroups));
+}
+
+void ThriftHandler::addNamedNextHopGroupsImpl(
+    folly::StringPiece function,
+    std::unique_ptr<std::vector<NextHopGroup>> nextHopGroups) {
+  ensureConfigured(function);
 
   auto* rib = sw_->getRib();
   if (!rib) {
@@ -3315,11 +3339,14 @@ void ThriftHandler::addOrUpdateNamedNextHopGroups(
   }
 
   /*
-   * Named NHG are associated with counters in HW. SAI impls
-   * reject counters with label length > 31 characters. So
-   * restrict it here.
+   * Named NHG are associated with counters in HW. The base SAI counter label
+   * holds 31 characters; with FLAGS_srv6 the extended label attribute allows up
+   * to 255. Restrict the group name to the corresponding limit here.
    */
   static constexpr size_t kMaxGroupNameLen = 31;
+  static constexpr size_t kMaxExtendedGroupNameLen = 255;
+  auto maxGroupNameLen =
+      FLAGS_srv6 ? kMaxExtendedGroupNameLen : kMaxGroupNameLen;
   auto defaultSrv6TunnelId = getDefaultSrv6TunnelId(sw_->getConfig());
   auto state = sw_->getState();
   std::vector<std::pair<std::string, RouteNextHopSet>> groups;
@@ -3327,10 +3354,10 @@ void ThriftHandler::addOrUpdateNamedNextHopGroups(
     if (!group.name().has_value() || group.name()->empty()) {
       throw FbossError("Named next-hop group must have a name");
     }
-    if (group.name()->size() > kMaxGroupNameLen) {
+    if (group.name()->size() > maxGroupNameLen) {
       throw FbossError(
           "Named next-hop group name exceeds max length of ",
-          kMaxGroupNameLen,
+          maxGroupNameLen,
           " characters: ",
           *group.name());
     }

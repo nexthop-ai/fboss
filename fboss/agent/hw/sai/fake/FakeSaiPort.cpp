@@ -184,12 +184,12 @@ sai_status_t create_port_fn(
         break;
       case SAI_PORT_ATTR_INGRESS_SAMPLE_MIRROR_SESSION: {
         for (int j = 0; j < attr_list[i].value.objlist.count; ++j) {
-          ingressMirrorList.push_back(attr_list[i].value.objlist.list[j]);
+          ingressSampleMirrorList.push_back(attr_list[i].value.objlist.list[j]);
         }
       } break;
       case SAI_PORT_ATTR_EGRESS_SAMPLE_MIRROR_SESSION: {
         for (int j = 0; j < attr_list[i].value.objlist.count; ++j) {
-          egressMirrorList.push_back(attr_list[i].value.objlist.list[j]);
+          egressSampleMirrorList.push_back(attr_list[i].value.objlist.list[j]);
         }
       } break;
       case SAI_PORT_ATTR_PRBS_POLYNOMIAL:
@@ -805,6 +805,17 @@ sai_status_t set_port_attribute_fn(
       port.fabricIsolate = attr->value.booldata;
       break;
 #endif
+#if SAI_API_VERSION >= SAI_VERSION(1, 18, 0)
+    case SAI_PORT_ATTR_LLR_MODE_LOCAL:
+      port.llrModeLocal = attr->value.booldata;
+      break;
+    case SAI_PORT_ATTR_LLR_MODE_REMOTE:
+      port.llrModeRemote = attr->value.booldata;
+      break;
+    case SAI_PORT_ATTR_LLR_PROFILE:
+      port.llrProfile = attr->value.oid;
+      break;
+#endif
 #if SAI_API_VERSION >= SAI_VERSION(1, 10, 2)
     case SAI_PORT_ATTR_PFC_TC_DLD_INTERVAL: {
       std::vector<sai_map_t> pfcTcDldInterval{};
@@ -1197,6 +1208,23 @@ sai_status_t get_port_attribute_fn(
         attr->value.booldata = port.fabricIsolate;
         break;
 #endif
+#if SAI_API_VERSION >= SAI_VERSION(1, 18, 0)
+      case SAI_PORT_ATTR_LLR_MODE_LOCAL:
+        attr->value.booldata = port.llrModeLocal;
+        break;
+      case SAI_PORT_ATTR_LLR_MODE_REMOTE:
+        attr->value.booldata = port.llrModeRemote;
+        break;
+      case SAI_PORT_ATTR_LLR_PROFILE:
+        attr->value.oid = port.llrProfile;
+        break;
+      case SAI_PORT_ATTR_LLR_TX_STATUS:
+        attr->value.s32 = port.llrTxStatus;
+        break;
+      case SAI_PORT_ATTR_LLR_RX_STATUS:
+        attr->value.s32 = port.llrRxStatus;
+        break;
+#endif
 #if SAI_API_VERSION >= SAI_VERSION(1, 10, 2)
       case SAI_PORT_ATTR_PFC_TC_DLD_INTERVAL:
         if (port.pfcTcDldInterval.has_value()) {
@@ -1482,6 +1510,27 @@ sai_status_t set_port_serdes_attribute_fn(
           attr->value.s32list.list,
           attr->value.s32list.count);
       if (!checkLanes(portSerdes.rxReach)) {
+        return SAI_STATUS_INVALID_ATTRIBUTE_0;
+      }
+      break;
+
+    // The vendor extensions alias the standard precoding attributes
+    case SAI_PORT_SERDES_ATTR_EXT_FAKE_TRANSMIT_PRECODING_STATE:
+      fillVec(
+          portSerdes.txPrecoding,
+          attr->value.s32list.list,
+          attr->value.s32list.count);
+      if (!checkLanes(portSerdes.txPrecoding)) {
+        return SAI_STATUS_INVALID_ATTRIBUTE_0;
+      }
+      break;
+
+    case SAI_PORT_SERDES_ATTR_EXT_FAKE_RECEIVE_PRECODING_STATE:
+      fillVec(
+          portSerdes.rxPrecoding,
+          attr->value.s32list.list,
+          attr->value.s32list.count);
+      if (!checkLanes(portSerdes.rxPrecoding)) {
         return SAI_STATUS_INVALID_ATTRIBUTE_0;
       }
       break;
@@ -1946,6 +1995,24 @@ sai_status_t get_port_serdes_attribute_fn(
         }
         copyVecToList(portSerdes.rxReach, attr_list[i].value.s32list);
         break;
+      case SAI_PORT_SERDES_ATTR_EXT_FAKE_TRANSMIT_PRECODING_STATE:
+        if (!checkListSize(
+                attr_list[i].value.s32list, portSerdes.txPrecoding)) {
+          attr_list[i].value.s32list.count =
+              static_cast<uint32_t>(portSerdes.txPrecoding.size());
+          return SAI_STATUS_BUFFER_OVERFLOW;
+        }
+        copyVecToList(portSerdes.txPrecoding, attr_list[i].value.s32list);
+        break;
+      case SAI_PORT_SERDES_ATTR_EXT_FAKE_RECEIVE_PRECODING_STATE:
+        if (!checkListSize(
+                attr_list[i].value.s32list, portSerdes.rxPrecoding)) {
+          attr_list[i].value.s32list.count =
+              static_cast<uint32_t>(portSerdes.rxPrecoding.size());
+          return SAI_STATUS_BUFFER_OVERFLOW;
+        }
+        copyVecToList(portSerdes.rxPrecoding, attr_list[i].value.s32list);
+        break;
       case SAI_PORT_SERDES_ATTR_EXT_FAKE_RX_CTLE_CODE:
         if (!checkListSize(attr_list[i].value.s32list, portSerdes.rxCtlCode)) {
           attr_list[i].value.s32list.count = portSerdes.rxCtlCode.size();
@@ -2379,6 +2446,167 @@ sai_status_t get_port_connector_attribute_fn(
   return SAI_STATUS_SUCCESS;
 }
 
+#if SAI_API_VERSION >= SAI_VERSION(1, 18, 0)
+sai_status_t create_port_llr_profile_fn(
+    sai_object_id_t* port_llr_profile_id,
+    sai_object_id_t /*switch_id*/,
+    uint32_t attr_count,
+    const sai_attribute_t* attr_list) {
+  auto fs = FakeSai::getInstance();
+  sai_uint32_t outstandingFramesMax = 0;
+  sai_uint32_t outstandingBytesMax = 0;
+  sai_uint32_t replayTimerMax = 0;
+  sai_uint8_t replayCountMax = 0;
+  sai_uint32_t pcsLostTimeout = 0;
+  sai_uint32_t dataAgeTimeout = 0;
+  sai_int32_t initLlrFrameAction = 0;
+  sai_int32_t flushLlrFrameAction = 0;
+  bool reInitOnFlush = false;
+  sai_uint16_t ctlosTargetSpacing = 0;
+  for (uint32_t i = 0; i < attr_count; ++i) {
+    switch (attr_list[i].id) {
+      case SAI_PORT_LLR_PROFILE_ATTR_OUTSTANDING_FRAMES_MAX:
+        outstandingFramesMax = attr_list[i].value.u32;
+        break;
+      case SAI_PORT_LLR_PROFILE_ATTR_OUTSTANDING_BYTES_MAX:
+        outstandingBytesMax = attr_list[i].value.u32;
+        break;
+      case SAI_PORT_LLR_PROFILE_ATTR_REPLAY_TIMER_MAX:
+        replayTimerMax = attr_list[i].value.u32;
+        break;
+      case SAI_PORT_LLR_PROFILE_ATTR_REPLAY_COUNT_MAX:
+        replayCountMax = attr_list[i].value.u8;
+        break;
+      case SAI_PORT_LLR_PROFILE_ATTR_PCS_LOST_TIMEOUT:
+        pcsLostTimeout = attr_list[i].value.u32;
+        break;
+      case SAI_PORT_LLR_PROFILE_ATTR_DATA_AGE_TIMEOUT:
+        dataAgeTimeout = attr_list[i].value.u32;
+        break;
+      case SAI_PORT_LLR_PROFILE_ATTR_INIT_LLR_FRAME_ACTION:
+        initLlrFrameAction = attr_list[i].value.s32;
+        break;
+      case SAI_PORT_LLR_PROFILE_ATTR_FLUSH_LLR_FRAME_ACTION:
+        flushLlrFrameAction = attr_list[i].value.s32;
+        break;
+      case SAI_PORT_LLR_PROFILE_ATTR_RE_INIT_ON_FLUSH:
+        reInitOnFlush = attr_list[i].value.booldata;
+        break;
+      case SAI_PORT_LLR_PROFILE_ATTR_CTLOS_TARGET_SPACING:
+        ctlosTargetSpacing = attr_list[i].value.u16;
+        break;
+      default:
+        return SAI_STATUS_INVALID_PARAMETER;
+    }
+  }
+  *port_llr_profile_id = fs->portLlrProfileManager.create(
+      outstandingFramesMax,
+      outstandingBytesMax,
+      replayTimerMax,
+      replayCountMax,
+      pcsLostTimeout,
+      dataAgeTimeout,
+      initLlrFrameAction,
+      flushLlrFrameAction,
+      reInitOnFlush,
+      ctlosTargetSpacing);
+  return SAI_STATUS_SUCCESS;
+}
+
+sai_status_t remove_port_llr_profile_fn(sai_object_id_t port_llr_profile_id) {
+  auto fs = FakeSai::getInstance();
+  fs->portLlrProfileManager.remove(port_llr_profile_id);
+  return SAI_STATUS_SUCCESS;
+}
+
+sai_status_t set_port_llr_profile_attribute_fn(
+    sai_object_id_t port_llr_profile_id,
+    const sai_attribute_t* attr) {
+  auto fs = FakeSai::getInstance();
+  auto& profile = fs->portLlrProfileManager.get(port_llr_profile_id);
+  switch (attr->id) {
+    case SAI_PORT_LLR_PROFILE_ATTR_OUTSTANDING_FRAMES_MAX:
+      profile.outstandingFramesMax = attr->value.u32;
+      break;
+    case SAI_PORT_LLR_PROFILE_ATTR_OUTSTANDING_BYTES_MAX:
+      profile.outstandingBytesMax = attr->value.u32;
+      break;
+    case SAI_PORT_LLR_PROFILE_ATTR_REPLAY_TIMER_MAX:
+      profile.replayTimerMax = attr->value.u32;
+      break;
+    case SAI_PORT_LLR_PROFILE_ATTR_REPLAY_COUNT_MAX:
+      profile.replayCountMax = attr->value.u8;
+      break;
+    case SAI_PORT_LLR_PROFILE_ATTR_PCS_LOST_TIMEOUT:
+      profile.pcsLostTimeout = attr->value.u32;
+      break;
+    case SAI_PORT_LLR_PROFILE_ATTR_DATA_AGE_TIMEOUT:
+      profile.dataAgeTimeout = attr->value.u32;
+      break;
+    case SAI_PORT_LLR_PROFILE_ATTR_INIT_LLR_FRAME_ACTION:
+      profile.initLlrFrameAction = attr->value.s32;
+      break;
+    case SAI_PORT_LLR_PROFILE_ATTR_FLUSH_LLR_FRAME_ACTION:
+      profile.flushLlrFrameAction = attr->value.s32;
+      break;
+    case SAI_PORT_LLR_PROFILE_ATTR_RE_INIT_ON_FLUSH:
+      profile.reInitOnFlush = attr->value.booldata;
+      break;
+    case SAI_PORT_LLR_PROFILE_ATTR_CTLOS_TARGET_SPACING:
+      profile.ctlosTargetSpacing = attr->value.u16;
+      break;
+    default:
+      return SAI_STATUS_INVALID_PARAMETER;
+  }
+  return SAI_STATUS_SUCCESS;
+}
+
+sai_status_t get_port_llr_profile_attribute_fn(
+    sai_object_id_t port_llr_profile_id,
+    uint32_t attr_count,
+    sai_attribute_t* attr_list) {
+  auto fs = FakeSai::getInstance();
+  auto& profile = fs->portLlrProfileManager.get(port_llr_profile_id);
+  for (uint32_t i = 0; i < attr_count; ++i) {
+    switch (attr_list[i].id) {
+      case SAI_PORT_LLR_PROFILE_ATTR_OUTSTANDING_FRAMES_MAX:
+        attr_list[i].value.u32 = profile.outstandingFramesMax;
+        break;
+      case SAI_PORT_LLR_PROFILE_ATTR_OUTSTANDING_BYTES_MAX:
+        attr_list[i].value.u32 = profile.outstandingBytesMax;
+        break;
+      case SAI_PORT_LLR_PROFILE_ATTR_REPLAY_TIMER_MAX:
+        attr_list[i].value.u32 = profile.replayTimerMax;
+        break;
+      case SAI_PORT_LLR_PROFILE_ATTR_REPLAY_COUNT_MAX:
+        attr_list[i].value.u8 = profile.replayCountMax;
+        break;
+      case SAI_PORT_LLR_PROFILE_ATTR_PCS_LOST_TIMEOUT:
+        attr_list[i].value.u32 = profile.pcsLostTimeout;
+        break;
+      case SAI_PORT_LLR_PROFILE_ATTR_DATA_AGE_TIMEOUT:
+        attr_list[i].value.u32 = profile.dataAgeTimeout;
+        break;
+      case SAI_PORT_LLR_PROFILE_ATTR_INIT_LLR_FRAME_ACTION:
+        attr_list[i].value.s32 = profile.initLlrFrameAction;
+        break;
+      case SAI_PORT_LLR_PROFILE_ATTR_FLUSH_LLR_FRAME_ACTION:
+        attr_list[i].value.s32 = profile.flushLlrFrameAction;
+        break;
+      case SAI_PORT_LLR_PROFILE_ATTR_RE_INIT_ON_FLUSH:
+        attr_list[i].value.booldata = profile.reInitOnFlush;
+        break;
+      case SAI_PORT_LLR_PROFILE_ATTR_CTLOS_TARGET_SPACING:
+        attr_list[i].value.u16 = profile.ctlosTargetSpacing;
+        break;
+      default:
+        return SAI_STATUS_INVALID_PARAMETER;
+    }
+  }
+  return SAI_STATUS_SUCCESS;
+}
+#endif
+
 namespace facebook::fboss {
 
 static sai_port_api_t _port_api;
@@ -2399,6 +2627,12 @@ void populate_port_api(sai_port_api_t** port_api) {
   _port_api.remove_port_connector = &remove_port_connector_fn;
   _port_api.set_port_connector_attribute = &set_port_connector_attribute_fn;
   _port_api.get_port_connector_attribute = &get_port_connector_attribute_fn;
+#if SAI_API_VERSION >= SAI_VERSION(1, 18, 0)
+  _port_api.create_port_llr_profile = &create_port_llr_profile_fn;
+  _port_api.remove_port_llr_profile = &remove_port_llr_profile_fn;
+  _port_api.set_port_llr_profile_attribute = &set_port_llr_profile_attribute_fn;
+  _port_api.get_port_llr_profile_attribute = &get_port_llr_profile_attribute_fn;
+#endif
   *port_api = &_port_api;
 }
 

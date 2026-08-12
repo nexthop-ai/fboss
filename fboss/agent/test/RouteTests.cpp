@@ -21,6 +21,7 @@
 #include "fboss/agent/AddressUtil.h"
 #include "fboss/agent/if/gen-cpp2/common_types.h"
 
+#include <fmt/format.h>
 #include <gtest/gtest.h>
 #include <optional>
 #include <set>
@@ -2354,9 +2355,9 @@ class StaticRoutesTest : public RouteTest {
                                         int prefixStartIdx) {
       staticRouteNoNhops.resize(2);
       staticRouteNoNhops[0].prefix() =
-          folly::sformat("240{}::/64", prefixStartIdx);
+          fmt::format("240{}::/64", prefixStartIdx);
       staticRouteNoNhops[1].prefix() =
-          folly::sformat("30.30.{}.0/24", prefixStartIdx);
+          fmt::format("30.30.{}.0/24", prefixStartIdx);
     };
     // Add v4/v6 static routes to CPU/NULL
     insertStaticNoNhopRoutes(*config.staticRoutesToCPU(), 1);
@@ -2394,7 +2395,7 @@ class UcmpTest : public RouteTest {
     ASSERT_NE(nullptr, state);
     for (const auto& nnhs : networkAndNextHops) {
       folly::IPAddress net = nnhs.first;
-      auto pfx = folly::sformat("{}/{}", net.str(), mask);
+      auto pfx = fmt::format("{}/{}", net.str(), mask);
       auto r = this->findRoute4(state, rid_, pfx);
       EXPECT_RESOLVED(r);
       EXPECT_FALSE(r->isConnected());
@@ -2897,6 +2898,51 @@ TEST_F(RouteTest, invalidRouteWeights) {
       ClientID(0),
       RouteNextHopEntry(nexthops, DISTANCE));
   EXPECT_THROW(u1.program(), FbossError);
+}
+
+TEST_F(RouteTest, routePruneFpf) {
+  // enable_capacity_pruning is the master switch; enable_fpf_capacity_pruning
+  // selects the FPF (per-STSW) behavior. The latter is captured when the
+  // normalizer is constructed during program(), so set it up front.
+  FLAGS_enable_capacity_pruning = true;
+  FLAGS_enable_fpf_capacity_pruning = true;
+  auto u1 = this->sw_->getRouteUpdater();
+
+  RouteV4::Prefix prefix10{IPAddressV4("10.10.10.0"), 24};
+  NetworkTopologyInformation topologyInfo;
+  topologyInfo.spine_id() = 0;
+  // 4 local nexthops toward the STSW exceed the STSW->remote GTSW capacity
+  // (remote_rack_capacity = 3) => 1 path is oversubscribed and should be pruned
+  topologyInfo.remote_rack_capacity() = 3;
+
+  RouteNextHopSet nexthops1;
+  nexthops1.emplace(
+      makeResolvedNextHop(InterfaceID(1), "1.1.1.1", 1, topologyInfo));
+  nexthops1.emplace(
+      makeResolvedNextHop(InterfaceID(2), "2.2.2.1", 1, topologyInfo));
+  nexthops1.emplace(
+      makeResolvedNextHop(InterfaceID(3), "3.3.3.1", 1, topologyInfo));
+  nexthops1.emplace(
+      makeResolvedNextHop(InterfaceID(4), "4.4.4.1", 1, topologyInfo));
+
+  u1.addRoute(
+      kRid0,
+      IPAddress("10.10.10.0"),
+      24,
+      ClientID(0),
+      RouteNextHopEntry(nexthops1, DISTANCE));
+  u1.program();
+
+  auto pruneState = this->sw_->getState();
+  auto rt10 = this->findRoute4(pruneState, kRid0, prefix10);
+  int numPrunedPaths = 0;
+  for (auto& nhop : getNextHops(pruneState, rt10->getForwardInfo())) {
+    if (nhop.adjustedWeight().has_value() && *nhop.adjustedWeight() == 0) {
+      numPrunedPaths++;
+    }
+  }
+  EXPECT_EQ(numPrunedPaths, 1);
+  FLAGS_enable_fpf_capacity_pruning = false;
 }
 
 TEST_F(RouteTest, addRouteWithSingleSrv6NextHop) {

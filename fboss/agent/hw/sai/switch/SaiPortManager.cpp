@@ -37,7 +37,9 @@
 
 #include <folly/logging/xlog.h>
 
+#include <algorithm>
 #include <chrono>
+#include <limits>
 
 #include <fmt/ranges.h>
 
@@ -67,6 +69,40 @@ namespace {
 void setUninitializedStatsToZero(long& counter) {
   counter =
       counter == hardware_stats_constants::STAT_UNINITIALIZED() ? 0 : counter;
+}
+
+[[maybe_unused]] void
+setUnsignedCounter(long& counter, uint64_t value, const char* counterName) {
+  constexpr auto kMaxCounterValue =
+      static_cast<uint64_t>(std::numeric_limits<int64_t>::max());
+  if (value > kMaxCounterValue) {
+    XLOG_EVERY_MS(ERR, 60000)
+        << "Saturating " << counterName << " counter value " << value
+        << " to the maximum signed 64-bit value";
+    counter = std::numeric_limits<int64_t>::max();
+    return;
+  }
+  counter = static_cast<int64_t>(value);
+}
+
+[[maybe_unused]] void accumulateUnsignedCounter(
+    long& counter,
+    uint64_t value,
+    const char* counterName) {
+  constexpr auto kMaxCounterValue =
+      static_cast<uint64_t>(std::numeric_limits<int64_t>::max());
+  setUninitializedStatsToZero(counter);
+  // A residual negative value would wrap to a huge unsigned count
+  const auto currentValue =
+      static_cast<uint64_t>(std::max<int64_t>(counter, 0));
+  if (value > kMaxCounterValue - currentValue) {
+    XLOG_EVERY_MS(ERR, 60000)
+        << counterName << " counter would overflow adding " << value << " to "
+        << currentValue << ", saturating to the maximum signed 64-bit value";
+    counter = std::numeric_limits<int64_t>::max();
+    return;
+  }
+  counter = static_cast<int64_t>(currentValue + value);
 }
 
 uint16_t getPriorityFromPfcPktCounterId(sai_stat_id_t counterId) {
@@ -188,6 +224,7 @@ void fillHwPortStats(
     const SaiPlatform* platform,
     const cfg::PortType& portType,
     bool updateFecStats,
+    [[maybe_unused]] bool updateLlrStats,
     bool rxPfcDurationStatsEnabled,
     bool txPfcDurationStatsEnabled) {
   // TODO fill these in when we have debug counter support in SAI
@@ -319,7 +356,116 @@ void fillHwPortStats(
 #if SAI_API_VERSION >= SAI_VERSION(1, 13, 0)
       case SAI_PORT_STAT_IF_IN_FEC_CORRECTED_BITS:
         if (updateFecStats) {
-          hwPortStats.fecCorrectedBits_() = value;
+          setUnsignedCounter(
+              *hwPortStats.fecCorrectedBits_(), value, "FEC corrected bits");
+        }
+        break;
+      case SAI_PORT_STAT_IF_IN_FEC_SYMBOL_ERRORS:
+        if (updateFecStats) {
+          // This counter is clear-on-read, so accumulate into a monotonic
+          // software counter.
+          accumulateUnsignedCounter(
+              *hwPortStats.fecCorrectedSymbols_(),
+              value,
+              "FEC corrected symbols");
+        }
+        break;
+#endif
+#if SAI_API_VERSION >= SAI_VERSION(1, 18, 0)
+      // LLR cases are gated on updateLlrStats (a successful isolated read), the
+      // same way FEC cases are gated on updateFecStats, so a
+      // failed/NOT_SUPPORTED LLR read does not publish stale or empty counters.
+      case SAI_PORT_STAT_LLR_TX_OK:
+        if (updateLlrStats) {
+          hwPortStats.llrTxOk_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_TX_REPLAY:
+        if (updateLlrStats) {
+          hwPortStats.llrTxReplay_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_RX_OK:
+        if (updateLlrStats) {
+          hwPortStats.llrRxOk_() = value;
+        }
+        break;
+      // LLR_RX_BAD, LLR_TX_DISCARD, LLR_TX_POISONED and LLR_RX_POISONED have no
+      // SDK backing on TU1 and are not fetched (see PortApi::llrStats, Broadcom
+      // CS00012472055), so there is intentionally no case for them here.
+      case SAI_PORT_STAT_LLR_RX_MISSING_SEQ:
+        if (updateLlrStats) {
+          hwPortStats.llrRxMissingSeq_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_RX_DUPLICATE_SEQ:
+        if (updateLlrStats) {
+          hwPortStats.llrRxDuplicateSeq_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_RX_ACK_NACK_SEQ_ERROR:
+        if (updateLlrStats) {
+          hwPortStats.llrRxAckNackSeqError_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_RX_REPLAY:
+        if (updateLlrStats) {
+          hwPortStats.llrRxReplay_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_TX_INIT_CTL_OS:
+        if (updateLlrStats) {
+          hwPortStats.llrTxInitCtlOs_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_TX_INIT_ECHO_CTL_OS:
+        if (updateLlrStats) {
+          hwPortStats.llrTxInitEchoCtlOs_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_TX_ACK_CTL_OS:
+        if (updateLlrStats) {
+          hwPortStats.llrTxAckCtlOs_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_TX_NACK_CTL_OS:
+        if (updateLlrStats) {
+          hwPortStats.llrTxNackCtlOs_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_RX_INIT_CTL_OS:
+        if (updateLlrStats) {
+          hwPortStats.llrRxInitCtlOs_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_RX_INIT_ECHO_CTL_OS:
+        if (updateLlrStats) {
+          hwPortStats.llrRxInitEchoCtlOs_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_RX_ACK_CTL_OS:
+        if (updateLlrStats) {
+          hwPortStats.llrRxAckCtlOs_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_RX_NACK_CTL_OS:
+        if (updateLlrStats) {
+          hwPortStats.llrRxNackCtlOs_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_RX_EXPECTED_SEQ_GOOD:
+        if (updateLlrStats) {
+          hwPortStats.llrRxExpectedSeqGood_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_RX_EXPECTED_SEQ_POISONED:
+        if (updateLlrStats) {
+          hwPortStats.llrRxExpectedSeqPoisoned_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_RX_EXPECTED_SEQ_BAD:
+        if (updateLlrStats) {
+          hwPortStats.llrRxExpectedSeqBad_() = value;
         }
         break;
 #endif
@@ -646,8 +792,6 @@ TransmitterTechnology fromSaiMediaType(sai_port_media_type_t saiMediaType) {
     case cfg::AsicType::ASIC_TYPE_EBRO:
     case cfg::AsicType::ASIC_TYPE_P200:
     case cfg::AsicType::ASIC_TYPE_YUBA:
-    case cfg::AsicType::ASIC_TYPE_CHENAB:
-    case cfg::AsicType::ASIC_TYPE_CHENAB2:
     case cfg::AsicType::ASIC_TYPE_JERICHO2:
     case cfg::AsicType::ASIC_TYPE_RAMON:
     case cfg::AsicType::ASIC_TYPE_GARONNE:
@@ -659,6 +803,8 @@ TransmitterTechnology fromSaiMediaType(sai_port_media_type_t saiMediaType) {
     case cfg::AsicType::ASIC_TYPE_TOMAHAWK6:
     case cfg::AsicType::ASIC_TYPE_QUMRAN4D:
     case cfg::AsicType::ASIC_TYPE_JERICHO4:
+    case cfg::AsicType::ASIC_TYPE_CHENAB:
+    case cfg::AsicType::ASIC_TYPE_CHENAB2:
       return 0;
     // The below value of 110 was from FR4 optics and assumed to be used
     // everywhere. This assumption does not hold anymore.
@@ -2142,7 +2288,7 @@ bool SaiPortManager::fecStatsSupported(PortID portId) const {
       utility::isReedSolomonFec(getFECMode(portId));
 }
 
-bool SaiPortManager::fecCorrectedBitsSupported(PortID portId) const {
+bool SaiPortManager::fecCorrectedCounterSupported(PortID portId) const {
   if ((platform_->getAsic()->getAsicType() ==
            cfg::AsicType::ASIC_TYPE_TOMAHAWK5 ||
        platform_->getAsic()->getAsicType() ==
@@ -2153,14 +2299,27 @@ bool SaiPortManager::fecCorrectedBitsSupported(PortID portId) const {
     return false;
 #endif
   }
-  if (platform_->getAsic()->isSupported(
-          HwAsic::Feature::SAI_FEC_CORRECTED_BITS) &&
+  if ((platform_->getAsic()->isSupported(
+           HwAsic::Feature::SAI_FEC_CORRECTED_BITS) ||
+       platform_->getAsic()->isSupported(
+           HwAsic::Feature::SAI_FEC_SYMBOL_ERRORS)) &&
       utility::isReedSolomonFec(getFECMode(portId))) {
 #if SAI_API_VERSION >= SAI_VERSION(1, 13, 0)
     return true;
 #endif
   }
   return false;
+}
+
+bool SaiPortManager::fecCorrectedBitsSupported(PortID portId) const {
+  return fecCorrectedCounterSupported(portId) &&
+      platform_->getAsic()->isSupported(
+          HwAsic::Feature::SAI_FEC_CORRECTED_BITS);
+}
+
+bool SaiPortManager::fecCorrectedSymbolsSupported(PortID portId) const {
+  return fecCorrectedCounterSupported(portId) &&
+      platform_->getAsic()->isSupported(HwAsic::Feature::SAI_FEC_SYMBOL_ERRORS);
 }
 
 bool SaiPortManager::rxFrequencyRPMSupported() const {
@@ -2430,6 +2589,17 @@ const std::vector<sai_stat_id_t>& SaiPortManager::getSupportedPfcDurationStats(
 }
 #endif
 
+bool SaiPortManager::isLinkDebounceRetriggerCounterSupported(
+    [[maybe_unused]] const HwAsic* asic) {
+#if defined(TAJO_SDK_VERSION_25_5_4210) || \
+    defined(TAJO_SDK_VERSION_26_2_4210) || \
+    (defined(TAJO_SDK_GTE_26_5) && !defined(TAJO_SDK_VERSION_26_5_5211))
+  return asic->isSupported(HwAsic::Feature::PORT_DEBOUNCE);
+#else
+  return false;
+#endif
+}
+
 void SaiPortManager::updateStats(
     PortID portId,
     bool updateWatermarks,
@@ -2517,19 +2687,19 @@ void SaiPortManager::updateStats(
       (now.count() - lastFecReadTimeIt->second) >=
           FLAGS_fec_counters_update_interval_s) {
     bool fecCollectionSucceeded = true;
-    if (fecStatsSupported(portId)) {
-      fecCollectionSucceeded &= collectStats(
-          {SAI_PORT_STAT_IF_IN_FEC_CORRECTABLE_FRAMES,
-           SAI_PORT_STAT_IF_IN_FEC_NOT_CORRECTABLE_FRAMES},
-          SAI_STATS_MODE_READ_AND_CLEAR,
-          "FEC correctable/uncorrectable frames");
-    }
 #if SAI_API_VERSION >= SAI_VERSION(1, 13, 0)
+    std::vector<sai_stat_id_t> correctedFecCounters;
     if (fecCorrectedBitsSupported(portId)) {
+      correctedFecCounters.push_back(SAI_PORT_STAT_IF_IN_FEC_CORRECTED_BITS);
+    }
+    if (fecCorrectedSymbolsSupported(portId)) {
+      correctedFecCounters.push_back(SAI_PORT_STAT_IF_IN_FEC_SYMBOL_ERRORS);
+    }
+    if (!correctedFecCounters.empty()) {
       fecCollectionSucceeded &= collectStats(
-          {SAI_PORT_STAT_IF_IN_FEC_CORRECTED_BITS},
+          correctedFecCounters,
           SAI_STATS_MODE_READ,
-          "FEC corrected bits");
+          "FEC corrected bits and symbols");
     }
 #endif
 #if SAI_API_VERSION >= SAI_VERSION(1, 11, 0)
@@ -2550,11 +2720,37 @@ void SaiPortManager::updateStats(
           fecCodewordsToRead, SAI_STATS_MODE_READ, "FEC codeword errors");
     }
 #endif
+    // Keep this last. READ_AND_CLEAR clears every counter in the same hardware
+    // group, not just the ones named here -- on Nvidia all the FEC counters
+    // share the PHY layer group, so clearing first would zero the corrected
+    // bits/symbols counters before we read them.
+    if (fecStatsSupported(portId)) {
+      fecCollectionSucceeded &= collectStats(
+          {SAI_PORT_STAT_IF_IN_FEC_CORRECTABLE_FRAMES,
+           SAI_PORT_STAT_IF_IN_FEC_NOT_CORRECTABLE_FRAMES},
+          SAI_STATS_MODE_READ_AND_CLEAR,
+          "FEC correctable/uncorrectable frames");
+    }
     if (fecCollectionSucceeded) {
       lastFecCounterReadTime_[portId] = now.count();
       updateFecStats = true;
     }
   }
+  bool updateLlrStats = false;
+#if SAI_API_VERSION >= SAI_VERSION(1, 18, 0)
+  // LLR counters are collected in their own isolated read (not bundled with the
+  // basic port counters) so that on a drop whose SDK does not yet implement the
+  // LLR stat reads, the NOT_SUPPORTED failure is confined to this call and does
+  // not drop every other port counter. Only ports with an LLR profile bound
+  // request them. Gate the fill on a successful read (like FEC) so a failed
+  // read does not publish stale/empty LLR counters.
+  if (handle->llrProfile &&
+      platform_->getAsic()->isSupported(
+          HwAsic::Feature::LINK_LAYER_RETRANSMISSION)) {
+    updateLlrStats = collectStats(
+        SaiPortTraits::llrStats(), SAI_STATS_MODE_READ, "LLR port counters");
+  }
+#endif
   const auto& counters = handle->port->getStats();
   fillHwPortStats(
       counters,
@@ -2563,6 +2759,7 @@ void SaiPortManager::updateStats(
       platform_,
       portType,
       updateFecStats,
+      updateLlrStats,
       handle->rxPfcDurationStatsEnabled,
       handle->txPfcDurationStatsEnabled);
   std::vector<utility::CounterPrevAndCur> toSubtractFromInDiscardsRaw = {
@@ -2595,6 +2792,47 @@ void SaiPortManager::updateStats(
     curPortStats.logicalPortId() = *logicalPortId;
   }
 
+#if defined(TAJO_SDK_VERSION_25_5_4210) || \
+    defined(TAJO_SDK_VERSION_26_2_4210) || \
+    (defined(TAJO_SDK_GTE_26_5) && !defined(TAJO_SDK_VERSION_26_5_5211))
+  if (isLinkDebounceRetriggerCounterSupported(platform_->getAsic())) {
+    auto& portApi = SaiApiTable::getInstance()->portApi();
+    auto adapterKey = handle->port->adapterKey();
+    const auto& portAttrs = handle->port->attributes();
+    // Some ASICs clear the retrigger counters on read. Accumulate those so
+    // HwPortStats always reports a monotonic count, as we do for FEC errors.
+    auto retriggerCountClearOnRead =
+        platform_->getAsic()->isPortDebounceRetriggerCountClearOnRead();
+    auto storeRetriggerCount = [retriggerCountClearOnRead](
+                                   auto&& stat, int64_t value) {
+      stat =
+          retriggerCountClearOnRead && stat.has_value() ? *stat + value : value;
+    };
+    // Only read the retrigger counts for ports that actually have a debounce
+    // hold timer configured.
+    auto downPeriod = std::get<
+        std::optional<SaiPortTraits::Attributes::LinkDownDebouncePeriodMs>>(
+        portAttrs);
+    if (downPeriod.has_value() && downPeriod->value() > 0) {
+      storeRetriggerCount(
+          curPortStats.linkDownDebounceRetriggerCount_(),
+          portApi.getAttribute(
+              adapterKey,
+              SaiPortTraits::Attributes::LinkDownDebounceRetriggerCount{}));
+    }
+    auto upPeriod = std::get<
+        std::optional<SaiPortTraits::Attributes::LinkUpDebouncePeriodMs>>(
+        portAttrs);
+    if (upPeriod.has_value() && upPeriod->value() > 0) {
+      storeRetriggerCount(
+          curPortStats.linkUpDebounceRetriggerCount_(),
+          portApi.getAttribute(
+              adapterKey,
+              SaiPortTraits::Attributes::LinkUpDebounceRetriggerCount{}));
+    }
+  }
+#endif
+
   if (platform_->getAsic()->isSupported(
           HwAsic::Feature::MAC_TRANSMIT_DATA_QUEUE_WATERMARK)) {
     updateFabricMacTransmitQueueStuck(portId, curPortStats, prevPortStats);
@@ -2603,7 +2841,8 @@ void SaiPortManager::updateStats(
   if (updateCableLengths && isPortUp(portId) &&
       (portType == cfg::PortType::FABRIC_PORT ||
        portType == cfg::PortType::HYPER_PORT_MEMBER
-#if defined(BRCM_SAI_SDK_DNX_GTE_14_0) || defined(BRCM_SAI_SDK_GTE_13_0)
+#if defined(BRCM_SAI_SDK_DNX_GTE_14_0) || defined(BRCM_SAI_SDK_GTE_13_0) || \
+    defined(CHENAB_SAI_SDK)
        || portType == cfg::PortType::INTERFACE_PORT
 #endif
        ) &&
@@ -2639,7 +2878,8 @@ void SaiPortManager::updateStats(
         !curPortStats.cableLengthMeters().has_value()) {
       try {
 #if (defined(BRCM_SAI_SDK_DNX_GTE_11_0) && defined(BRCM_SAI_SDK_DNX)) || \
-    (defined(BRCM_SAI_SDK_GTE_13_0) && defined(BRCM_SAI_SDK_XGS))
+    (defined(BRCM_SAI_SDK_GTE_13_0) && defined(BRCM_SAI_SDK_XGS)) ||     \
+    defined(CHENAB_SAI_SDK)
         int32_t cablePropogationDelayNS =
             SaiApiTable::getInstance()->portApi().getAttribute(
                 handle->port->adapterKey(),
@@ -2757,6 +2997,7 @@ void SaiPortManager::clearInterfacePhyCounters(const PortID& portId) {
   auto curPortStats = portStatItr->second->portStats();
   curPortStats.fecCorrectableErrors() = 0;
   curPortStats.fecUncorrectableErrors() = 0;
+  curPortStats.fecCorrectedSymbols_() = 0;
 
   portStatItr->second->clearStat(kFecCorrectable());
   portStatItr->second->clearStat(kFecUncorrectable());
@@ -3623,6 +3864,37 @@ std::vector<phy::SerdesParameters> SaiPortManager::getSerdesParameters(
           std::vector<sai_uint32_t>(numPmdLanes)},
       [](auto& param, auto val) { param.tpChn0() = val; });
 
+#if defined(BRCM_SAI_SDK_GTE_13_0)
+  if (platform_->getAsic()->isSupported(HwAsic::Feature::SAI_SERDES_RX_REACH)) {
+    getSerdesParam(
+        "RxReach",
+        SaiPortSerdesTraits::Attributes::RxReach{
+            std::vector<sai_int32_t>(numPmdLanes)},
+        [swPortID](auto& param, auto val) {
+          if (val == SAI_PORT_SERDES_REACH_MODE_NR) {
+            param.rxReach() = phy::RxReach::RX_NORMAL_REACH;
+          } else if (val == SAI_PORT_SERDES_REACH_MODE_ER) {
+            param.rxReach() = phy::RxReach::RX_EXTENDED_REACH;
+          } else {
+            XLOG_EVERY_MS(WARNING, 10000)
+                << "Port " << swPortID << " lane " << *param.lane()
+                << ": leaving rxReach unset for unknown SAI reach mode " << val;
+          }
+        });
+  }
+#endif
+
+#if defined(BRCM_SAI_SDK_GTE_13_0) || SAI_API_VERSION >= SAI_VERSION(1, 14, 0)
+  if (platform_->getAsic()->isSupported(
+          HwAsic::Feature::SAI_SERDES_PRECODING)) {
+    getSerdesParam(
+        "RxPrecoding",
+        SaiPortSerdesTraits::Attributes::RxPrecodingAttr{
+            std::vector<sai_int32_t>(numPmdLanes)},
+        [](auto& param, auto val) { param.rxPrecoding() = val; });
+  }
+#endif
+
   return serdesParams;
 }
 
@@ -3694,6 +3966,17 @@ std::vector<phy::TxSettings> SaiPortManager::getTxSettings(
       SaiPortSerdesTraits::Attributes::TxFirPost3{
           std::vector<sai_uint32_t>(numPmdLanes)},
       [](auto& param, auto val) { param.post3() = static_cast<int16_t>(val); });
+
+#if defined(BRCM_SAI_SDK_GTE_13_0) || SAI_API_VERSION >= SAI_VERSION(1, 14, 0)
+  if (platform_->getAsic()->isSupported(
+          HwAsic::Feature::SAI_SERDES_PRECODING)) {
+    getTxParam(
+        "TxPrecoding",
+        SaiPortSerdesTraits::Attributes::TxPrecodingAttr{
+            std::vector<sai_int32_t>(numPmdLanes)},
+        [](auto& param, auto val) { param.precoding() = val; });
+  }
+#endif
 
   return txSettings;
 }

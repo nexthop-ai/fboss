@@ -3,6 +3,7 @@ package "facebook.com/fboss/cli"
 namespace cpp2 facebook.fboss.cli
 
 include "fboss/agent/if/common.thrift"
+include "configerator/structs/neteng/bgp_policy/thrift/nsf_policy.thrift"
 
 struct ShowRouteModel {
   1: list<RouteEntry> routeEntries;
@@ -10,6 +11,7 @@ struct ShowRouteModel {
 
 struct ShowRouteDetailsModel {
   1: list<RouteDetailEntry> routeEntries;
+  2: optional nsf_policy.NsfTeWeightEncoding nsfTeWeightEncoding;
 }
 
 struct ShowRouteSummaryModel {
@@ -35,6 +37,7 @@ struct NextHopInfo {
   6: optional common.NetworkTopologyInformation topologyInfo;
   7: optional list<string> srv6SegmentList;
   8: optional i32 cost;
+  9: bool isBackup = false;
 }
 
 struct ClientAndNextHops {

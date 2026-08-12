@@ -858,6 +858,40 @@ TEST_F(ThriftTest, addUnicastRouteWithNonexistentLinkLocalInterfaceThrows) {
       FbossError);
 }
 
+TEST_F(ThriftTest, addUnicastRouteWithLinkLocalInterfaceSucceeds) {
+  ThriftHandler handler(sw_);
+  auto route = std::make_unique<UnicastRoute>();
+  route->dest() = ipPrefix("2001:db8::/64");
+  route->adminDistance() = AdminDistance::OPENR;
+
+  NextHopThrift nexthop;
+  nexthop.address() = toBinaryAddress(IPAddress("fe80:face:b00c::1"));
+  nexthop.address()->ifName() = "fboss1";
+  nexthop.weight() = ECMP_WEIGHT;
+  route->nextHops()->push_back(std::move(nexthop));
+
+  EXPECT_NO_THROW(handler.addUnicastRoute(
+      static_cast<int16_t>(ClientID::OPENR), std::move(route)));
+}
+
+TEST_F(ThriftTest, addUnicastRouteWithNonLinkLocalInterfaceThrows) {
+  ThriftHandler handler(sw_);
+  auto route = std::make_unique<UnicastRoute>();
+  route->dest() = ipPrefix("2001:db8::/64");
+  route->adminDistance() = AdminDistance::OPENR;
+
+  NextHopThrift nexthop;
+  nexthop.address() = toBinaryAddress(IPAddress("2001:db8::1"));
+  nexthop.address()->ifName() = "fboss1";
+  nexthop.weight() = ECMP_WEIGHT;
+  route->nextHops()->push_back(std::move(nexthop));
+
+  EXPECT_THROW(
+      handler.addUnicastRoute(
+          static_cast<int16_t>(ClientID::OPENR), std::move(route)),
+      FbossError);
+}
+
 // Test for the ThriftHandler::syncFib method
 TYPED_TEST(ThriftTestAllSwitchTypes, multipleClientSyncFib) {
   if (this->isFabric()) {
@@ -3493,6 +3527,23 @@ TEST_F(NamedNextHopGroupThriftTest, addAndGetNextHopGroup) {
   handler.addOrUpdateNamedNextHopGroups(std::move(groups));
 
   // Get group by name filter
+  std::vector<NextHopGroup> result;
+  auto nameFilter = std::make_unique<std::vector<std::string>>();
+  nameFilter->push_back("group1");
+  handler.getNamedNextHopGroups(result, std::move(nameFilter));
+  ASSERT_EQ(result.size(), 1);
+  EXPECT_EQ(*result[0].name(), "group1");
+  EXPECT_EQ(result[0].nexthops()->size(), 2);
+}
+
+TEST_F(NamedNextHopGroupThriftTest, addNamedNextHopGroups) {
+  ThriftHandler handler(sw_);
+
+  auto groups = std::make_unique<std::vector<NextHopGroup>>();
+  groups->push_back(makeGroup(
+      "group1", {"2401:db00:2110:3001::2", "2401:db00:2110:3001::3"}));
+  handler.addNamedNextHopGroups(std::move(groups));
+
   std::vector<NextHopGroup> result;
   auto nameFilter = std::make_unique<std::vector<std::string>>();
   nameFilter->push_back("group1");

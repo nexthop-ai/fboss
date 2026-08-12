@@ -12,7 +12,6 @@ namespace py3 neteng.fboss
 namespace py.asyncio neteng.fboss.asyncio.link_test_production_features
 namespace cpp2 facebook.fboss.link_test_production_features
 namespace go neteng.fboss.link_test_production_features
-namespace php fboss_link_test_production_features
 
 enum LinkTestProductionFeature {
   L1_LINK_TEST = 0,
@@ -25,7 +24,7 @@ enum LinkTestProductionFeature {
   TRAFFIC_FORWARDING = 3,
   IPHY_DIAGS = 4,
   XPHY_DIAGS = 5,
-  FEC = 6,
+  IPHY_FEC_INJECT = 6,
   PRBS = 7,
   LACP = 8,
   MAC_LEARNING = 9,
@@ -40,4 +39,5 @@ enum LinkTestProductionFeature {
   REMEDIATION = 18,
   TRANSCEIVER_TX_RX_LATCHES = 19,
   VDM = 20,
+  IPHY_FEC_COUNTERS = 21,
 }

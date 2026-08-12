@@ -135,7 +135,10 @@ add_library(remote_intf_route_auditor
 target_link_libraries(remote_intf_route_auditor
   Folly::folly
   fib_helpers
+  fib_updater
+  standalone_rib
   state
+  stats
   voq_utils
 )
 
@@ -409,6 +412,7 @@ set(core_libs
   route_update_wrapper
   fib_updater
   network_to_route_map
+  remote_intf_route_auditor
   standalone_rib
   state
   state_utils
@@ -812,6 +816,7 @@ target_link_libraries(fboss_sw_agent
   handler
   -Wl,--whole-archive
   setup_thrift_prod
+  thrift_service_client
   -Wl,--no-whole-archive
 )
 

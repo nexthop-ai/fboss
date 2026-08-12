@@ -58,6 +58,7 @@ constexpr int kLowerPage = -1;
 class CdbCommandBlock {
  public:
   static constexpr uint8_t kCdbLplMemoryLength = 120;
+  static constexpr uint8_t kCdbFwDnldStartMaxHeaderLen = 112;
 
   // Constructor to initialize data block from 0
   explicit CdbCommandBlock(
@@ -113,10 +114,15 @@ class CdbCommandBlock {
   // FLAGS_cdb_command_timeout_usec.
   // cdbCmdCompleteFlagSupported enables polling the CdbCmdCompleteFlag1 before
   // reading command status.
+  // delayAfterFwDownloadCompleteSec, when non-zero, is how long to wait after
+  // issuing Firmware Download Complete and before polling for its status. It
+  // is added on top of the command timeout rather than spent out of it. Kept
+  // in whole seconds, and as uint32_t so it feeds sleep() without narrowing.
   bool cmisRunCdbCommand(
       TransceiverImpl* bus,
       std::optional<uint64_t> overrideTimeoutUsec = std::nullopt,
-      bool cdbCmdCompleteFlagSupported = false);
+      bool cdbCmdCompleteFlagSupported = false,
+      uint32_t delayAfterFwDownloadCompleteSec = 0);
   // Provide response data to caller
   uint8_t getResponseData(uint8_t** pResponse);
 
@@ -219,7 +225,7 @@ class CdbCommandBlock {
       struct {
         uint32_t cdbImageSize; // Reg 136-139
         uint32_t reserved;
-        uint8_t cdbImageHeader[112]; // Reg 144-255
+        uint8_t cdbImageHeader[kCdbFwDnldStartMaxHeaderLen]; // Reg 144-255
       } cdbFwDnldStartData;
 
       struct {

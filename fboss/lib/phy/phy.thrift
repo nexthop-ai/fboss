@@ -6,7 +6,6 @@ namespace py3 neteng.fboss.phy
 namespace py.asyncio neteng.fboss.asyncio.phy
 namespace cpp2 facebook.fboss.phy
 namespace go neteng.fboss.phy
-namespace php fboss_phy
 
 include "fboss/agent/switch_config.thrift"
 include "fboss/qsfp_service/if/transceiver.thrift"
@@ -15,7 +14,12 @@ include "fboss/agent/if/fboss.thrift"
 include "fboss/lib/phy/prbs.thrift"
 include "fboss/lib/if/io_stats.thrift"
 include "thrift/annotation/thrift.thrift"
+include "thrift/annotation/hack.thrift"
 
+@hack.NamePrefix{prefix = "fboss_phy_"}
+@hack.LegacyAlwaysIncludeNamePrefixInProcessor
+@hack.LegacyOmitPrefixInNameString
+@hack.ConstantsClass{name = "fboss_phy_CONSTANTS"}
 @thrift.AllowLegacyMissingUris
 package;
 
@@ -551,6 +555,8 @@ struct SerdesParameters {
   17: optional i32 rxEqP2;
   18: optional i32 rxPfLfq;
   19: optional i32 rxPfHfq;
+  20: optional RxReach rxReach;
+  21: optional i32 rxPrecoding;
 }
 
 struct LaneState {
@@ -598,6 +604,7 @@ struct PhyState {
 struct PhyStats {
   1: optional PhySideStats system;
   2: PhySideStats line;
+  // On FBOSS, this gets incremented when we see state changes in the linkscan callback
   3: optional i64 linkFlapCount;
   9: io_stats.IOStats ioStats;
   10: i32 timeCollected;

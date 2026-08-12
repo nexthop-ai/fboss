@@ -371,6 +371,10 @@ class SwitchStats : public boost::noncopyable, public ThriftCallDurationLogger {
     linkStateChange_.addValue(1);
   }
 
+  void linkFault(int64_t increment) {
+    linkFault_.addValue(increment);
+  }
+
   void linkActiveStateChange() {
     linkActiveStateChange_.addValue(1);
   }
@@ -693,6 +697,12 @@ class SwitchStats : public boost::noncopyable, public ThriftCallDurationLogger {
   }
   int64_t getWarmbootRemoteIntfRoutesInconsistency() const {
     return getCumulativeValue(warmbootRemoteIntfRoutesInconsistency_);
+  }
+  void warmbootRemoteIntfRoutesReconcileError(int64_t count) {
+    warmbootRemoteIntfRoutesReconcileError_.addValue(count);
+  }
+  int64_t getWarmbootRemoteIntfRoutesReconcileError() const {
+    return getCumulativeValue(warmbootRemoteIntfRoutesReconcileError_);
   }
 
   void switchReachabilityInconsistencyDetected(int16_t switchIndex) {
@@ -1102,6 +1112,12 @@ class SwitchStats : public boost::noncopyable, public ThriftCallDurationLogger {
   TLTimeseries linkStateChange_;
 
   /**
+   * Link flaps plus debounce retriggers suppressed by the port debounce
+   * hold timers
+   */
+  TLTimeseries linkFault_;
+
+  /**
    * Link state active/inactive change count
    */
   TLTimeseries linkActiveStateChange_;
@@ -1190,6 +1206,7 @@ class SwitchStats : public boost::noncopyable, public ThriftCallDurationLogger {
   TLTimeseries dsfGrExpired_;
   TLTimeseries dsfUpdateFailed_;
   TLTimeseries warmbootRemoteIntfRoutesInconsistency_;
+  TLTimeseries warmbootRemoteIntfRoutesReconcileError_;
   TLTimeseries hiPriPktsReceived_;
   TLTimeseries midPriPktsReceived_;
   TLTimeseries loPriPktsReceived_;

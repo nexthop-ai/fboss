@@ -30,7 +30,6 @@ include "thrift/annotation/thrift.thrift"
 @thrift.AllowLegacyMissingUris
 package;
 
-namespace php fboss
 namespace py neteng.fboss.bgp_thrift
 namespace py.asyncio neteng.fboss.asyncio.bgp_thrift
 namespace py3 neteng.fboss
@@ -211,6 +210,44 @@ struct TBgpSessionDetail {
    */
   36: optional bool ttl_security_enabled;
   37: optional i32 ttl_security_hops;
+  /*
+   * Data-plane per-message-type PDUs actually written to / read from the peer's
+   * socket. Source of truth: SessionManager (I/O) thread.
+   */
+  38: i64 socket_tx_open_msgs;
+  39: i64 socket_tx_update_msgs;
+  40: i64 socket_tx_keepalive_msgs;
+  41: i64 socket_tx_notification_msgs;
+  42: i64 socket_tx_route_refresh_msgs;
+  43: i64 socket_tx_eor_msgs;
+  44: i64 socket_rx_open_msgs;
+  45: i64 socket_rx_update_msgs;
+  46: i64 socket_rx_keepalive_msgs;
+  47: i64 socket_rx_notification_msgs;
+  48: i64 socket_rx_route_refresh_msgs;
+  49: i64 socket_rx_eor_msgs;
+  /*
+   * Control-plane per-message-type PDUs generated / consumed by PeerManager
+   * (AdjRib). The AdjRib layer only produces/consumes UPDATE and EoR PDUs.
+   * These converge with the socket-layer counters above for cross-module
+   * (control vs socket) validation, e.g. the health validator:
+   *   adjrib_sent_update_msgs <-> socket_tx_update_msgs
+   *   adjrib_sent_eor_msgs    <-> socket_tx_eor_msgs
+   *   adjrib_recv_update_msgs <-> socket_rx_update_msgs
+   *   adjrib_recv_eor_msgs    <-> socket_rx_eor_msgs
+   * adjrib_sent/recv_update_msgs mirror the legacy top-level
+   * TBgpSession.sent/recv_update_msgs, which are kept for existing consumers.
+   */
+  50: i64 adjrib_sent_update_msgs;
+  51: i64 adjrib_sent_eor_msgs;
+  52: i64 adjrib_recv_update_msgs;
+  53: i64 adjrib_recv_eor_msgs;
+  /**
+   * True when this peer receives IPv4-unicast routes as RFC 4271 classic NLRI +
+   * NEXT_HOP (attr 3) instead of MP_REACH_NLRI -- i.e. it advertised no MP-EXT
+   * capability. Derived from the AdjRib update-group key.
+   */
+  54: bool legacy_v4_nlri_encoding;
 }
 
 /**
@@ -239,6 +276,11 @@ struct TBgpSession {
   16: i64 reset_time;
   17: i64 num_resets;
   18: string last_reset_reason;
+  // DEPRECATED: prefer the per-message-type control-plane counters
+  // TBgpSessionDetail.adjrib_sent_update_msgs / adjrib_recv_update_msgs, which
+  // are grouped with the socket_* counters for cross-module validation. These
+  // top-level fields are retained for existing consumers (show bgp summary,
+  // NOWA/NetRCA) and should not be used in new code.
   19: i64 sent_update_msgs;
   20: i64 recv_update_msgs;
   /*
@@ -362,6 +404,13 @@ struct TUpdateGroupKey {
 
   /* Whether peer has per-peer egress policy override. */
   17: bool peer_override;
+
+  /*
+   * Whether IPv4-unicast announcements to this group use RFC 4271 classic NLRI
+   * + NEXT_HOP (for peers that advertised no MP-EXT capability) instead of
+   * MP_REACH_NLRI.
+   */
+  18: bool legacy_v4_nlri_encoding;
 }
 
 /**
@@ -383,11 +432,19 @@ struct TUpdateGroupStats {
   /* Number of times lazy clone was invoked for detached peers. */
   5: i64 lazy_clone_events;
 
-  /* Cumulative count of IPv4 announcement prefixes sent (monotonic counter). */
-  6: i64 total_sent_announcements_ipv4;
+  /**
+   * Cumulative count of IPv4 UPDATE announcement PDUs sent by this group
+   * (monotonic counter, one bump per BgpUpdate2, NOT per prefix). Mirrors the
+   * per-peer TBgpSessionDetail.sent_update_announcements_ipv4.
+   */
+  6: i64 total_sent_announcement_msgs_ipv4;
 
-  /* Cumulative count of IPv6 announcement prefixes sent (monotonic counter). */
-  7: i64 total_sent_announcements_ipv6;
+  /**
+   * Cumulative count of IPv6 UPDATE announcement PDUs sent by this group
+   * (monotonic counter, one bump per BgpUpdate2, NOT per prefix). Mirrors the
+   * per-peer TBgpSessionDetail.sent_update_announcements_ipv6.
+   */
+  7: i64 total_sent_announcement_msgs_ipv6;
 
   /* Number of IPv4 update messages sent by this group. */
   8: i64 group_update_messages_ipv4;
@@ -395,8 +452,11 @@ struct TUpdateGroupStats {
   /* Number of IPv6 update messages sent by this group. */
   9: i64 group_update_messages_ipv6;
 
-  /* Number of withdrawals sent by this group. */
-  10: i64 group_withdrawals;
+  /**
+   * Cumulative count of withdrawal UPDATE PDUs sent by this group (monotonic
+   * counter, one bump per BgpUpdate2, NOT per prefix).
+   */
+  10: i64 total_sent_withdrawal_msgs;
 
   /* Total queue wait time (ms) across all sync peers in the group. */
   11: i64 group_total_queue_wait_ms;
@@ -604,12 +664,45 @@ struct TBgpLocalConfig {
 }
 
 /**
- * Nexthop information for a prefix
+ * Nexthop information for a prefix.
+ *
+ * Fields 1-3 back the compact list view (`show bgpcpp nexthopinfo`). Fields
+ * 4-8 carry the extra detail surfaced by the per-nexthop "zoom" view
+ * (`show bgpcpp nexthopinfo <ipAddr>`).
  */
 struct TNexthopInfo {
   1: bgp_attr.TIpPrefix next_hop;
   2: bool is_reachable;
   3: optional i32 igp_cost;
+  // Whether the nexthop is directly connected; unset = unknown.
+  4: optional bool is_connected;
+  // Whether the nexthop is eligible for best-path selection (may differ from
+  // is_reachable: a reachable nexthop without an IGP cost can still be
+  // selectable under FBOSS semantics).
+  5: bool is_resolved_for_selection;
+  // Number of routes/prefixes currently depending on this nexthop.
+  6: i64 route_count;
+  // Seconds since reachability last changed; unset ("-") = never resolved,
+  // i.e. no resolution has ever been received from the underlying system.
+  7: optional i64 last_reachability_change_age_s;
+  // Seconds since the IGP cost last changed; unset ("-") = never resolved.
+  8: optional i64 last_igp_cost_change_age_s;
+}
+
+/**
+ * CLI result wrapper for `show bgpcpp nexthopinfo`, so the renderer stays a pure
+ * function of its input rather than depending on out-of-band view-mode state on
+ * the command object.
+ *
+ * detailed = false: compact list of every nexthop-cache entry (no argument).
+ * detailed = true : per-nexthop "zoom" view for the specifically queried IP(s).
+ * queried_nexthops is index-parallel to entries in detailed mode, so a cache
+ * miss can be reported against the exact address the operator asked for.
+ */
+struct TNexthopInfoQueryResult {
+  1: bool detailed;
+  2: list<TNexthopInfo> entries;
+  3: list<string> queried_nexthops;
 }
 
 /**
@@ -695,6 +788,60 @@ struct TAttributeStats {
   6: double avg_as_path_len;
   7: double avg_cluster_list_len;
   8: double avg_topology_info_len;
+
+  /**
+   * Live size of each DeDuplicator<T>, i.e. how many DISTINCT values of that
+   * type the daemon is currently storing. Read straight from
+   * `DeDuplicator::size()`, so these are O(1) and, unlike fields 1-8, cost
+   * nothing to produce -- they do not require walking the RIB.
+   *
+   * Six SEPARATE collections. They nest by containment, but each one counts
+   * distinct values at ITS OWN level:
+   *
+   *   L1  dedup_bgp_path        BgpPathC       = attrs pointer + nexthop
+   *                                              + topologyInfo
+   *   L2    dedup_bgp_attributes  BgpAttributesC = the attribute bundle L1
+   *                                              points at; no nexthop
+   *   L3      dedup_as_path / dedup_communities / dedup_cluster_list /
+   *           dedup_ext_communities, held BY the bundle as deduplicated
+   *           POINTERS, so each is counted once here however many bundles
+   *           reference it.
+   *
+   * A LEVEL IS NOT THE SUM OF THE LEVEL BELOW IT, in either direction. L2
+   * counts distinct COMBINATIONS: A as_paths x C community sets can reach A*C
+   * bundles, far above the L3 sum, while pairing them 1:1 gives max(A, C),
+   * below it. `BgpAttributesC` also carries med / isMedSet / localPref /
+   * atomicAggregate / aggregator / originatorId / weight, none of which have a
+   * deduplicator -- bundles differing only in MED add L2 entries and no L3
+   * entries at all.
+   *
+   * Nor does L1 bound L2: many paths differing only in nexthop share one
+   * bundle, while bundles interned by transient or egress objects that never
+   * become a stored BgpPath have no L1 entry. Either can exceed the other.
+   *
+   * Each field is named after the deduplicator it reports, so the name says
+   * which level it belongs to. NOTE for anyone correlating with fb303: the L2
+   * bundle count is published there as
+   * `bgpcpp.deduplicated_attributes.total`. That counter name is kept for
+   * continuity, but "total" is a misnomer -- it is the bundle count, never a
+   * sum -- so it is deliberately NOT reproduced in this API.
+   *
+   * CAVEAT on dedup_bgp_path: `AdjRibEntry::setPreIn` and `setPostAttr` route
+   * through DeDuplicatedBgpPath; `setPreOut` stores its path verbatim. In the
+   * announce path that is not a gap -- preOut is handed the RIB best-entry
+   * path, which reached the RIB as an already-interned postAttr -- but an
+   * egress path that minted its own BgpPath would go uncounted here. See
+   * AdjRibEntryTest for the pinned behaviour.
+   */
+  // L1
+  9: optional i64 dedup_bgp_path;
+  // L2
+  10: optional i64 dedup_bgp_attributes;
+  // L3
+  11: optional i64 dedup_as_path;
+  12: optional i64 dedup_communities;
+  13: optional i64 dedup_cluster_list;
+  14: optional i64 dedup_ext_communities;
 }
 
 /**
@@ -1456,6 +1603,56 @@ service TBgpService extends fb303.FacebookService {
   TRibSummary getRibSummary(1: bgp_attr.TBgpAfi afi);
 
   /**
+   * Dump the current BGP RIB in canonical (deduplicated) form -- the same
+   * content as getRibEntries(), encoded as a single TCanonicalRibState (shared
+   * attr / path / peer pools + per-prefix entries) for a far smaller payload.
+   *
+   * @param afi - The afi to dump RIB for
+   */
+  bgp_route_types.TCanonicalRibState getRibEntriesCanonical(
+    1: bgp_attr.TBgpAfi afi,
+  );
+
+  /**
+   * Get a single prefix from the RIB in canonical (deduplicated) form.
+   *
+   * @param prefix - The string representation of the prefix to get
+   */
+  bgp_route_types.TCanonicalRibState getRibPrefixCanonical(1: string prefix);
+
+  /**
+   * Fetch routes in the RIB matching communities in canonical form.
+   * Only paths matching at least one community are returned (match-any logic).
+   *
+   * @param afi - ipv4 or ipv6
+   * @param community_ids - List of community strings (ASN:NN or integer or well-known)
+   */
+  bgp_route_types.TCanonicalRibState getRibEntriesForCommunitiesCanonical(
+    1: bgp_attr.TBgpAfi afi,
+    2: list<string> community_ids,
+  );
+
+  /**
+   * Fetch routes in the RIB matching a single community in canonical form.
+   *
+   * @param afi - ipv4 or ipv6
+   * @param community_id - Community string (ASN:NN or integer or well-known)
+   */
+  bgp_route_types.TCanonicalRibState getRibEntriesForCommunityCanonical(
+    1: bgp_attr.TBgpAfi afi,
+    2: string community_id,
+  );
+
+  /**
+   * Get RIB entries for subprefixes in canonical (deduplicated) form.
+   *
+   * @param prefix - The string representation of the parent prefix
+   */
+  bgp_route_types.TCanonicalRibState getRibSubprefixesCanonical(
+    1: string prefix,
+  );
+
+  /**
    * Dump the current Shadow RIB (prefixes learned from the RIB)
    *
    * Though both getRibEntries and getShadowRibEntries provide so
@@ -1477,7 +1674,25 @@ service TBgpService extends fb303.FacebookService {
    */
   list<bgp_route_types.TRibEntry> getShadowRibEntries(1: bgp_attr.TBgpAfi afi);
 
+  /**
+   * Dump the current Shadow RIB in canonical (deduplicated) form.
+   *
+   * @param afi - The afi to dump Shadow RIB for
+   */
+  bgp_route_types.TCanonicalRibState getShadowRibEntriesCanonical(
+    1: bgp_attr.TBgpAfi afi,
+  );
+
   list<bgp_route_types.TRibEntry> getChangeListEntries(1: bgp_attr.TBgpAfi afi);
+
+  /**
+   * Dump the current ChangeList in canonical (deduplicated) form.
+   *
+   * @param afi - The afi to dump ChangeList for
+   */
+  bgp_route_types.TCanonicalRibState getChangeListEntriesCanonical(
+    1: bgp_attr.TBgpAfi afi,
+  );
 
   /**
    * Dump the current BGP RIB (prefixes learned from others)
@@ -1493,7 +1708,7 @@ service TBgpService extends fb303.FacebookService {
    * passed community are filtered out (even though those might be part of
    * bestpath or ecmp/ucmp paths).
    *
-   * @param afi - ipv4 or ipv6 or both
+   * @param afi - ipv4 or ipv6
    *
    * @param string - The string represents ASN:NN (both 16bits) value or
    *                 an integer (32bits) representing community.
@@ -1511,7 +1726,7 @@ service TBgpService extends fb303.FacebookService {
    * the local-rib are returned, i.e. route's paths which does not match
    * passed community are filtered out (even though those might be part of
    * bestpath or ecmp/ucmp paths).
-   * @param afi - ipv4 or ipv6 or both
+   * @param afi - ipv4 or ipv6
    *
    * @param list<string> - The string represents ASN:NN (both 16bits) value or
    *                       an integer (32bits) representing community.
@@ -1593,8 +1808,17 @@ service TBgpService extends fb303.FacebookService {
 
   /**
    * Clear PathSelectionPolicy.
+   * Note: When CPS FILE_MODE is active, this operation is silently skipped.
    */
   void clearPathSelectionPolicy();
+
+  /**
+   * [Path Selection Policy - File Mode]
+   * Refresh CPS policy from the local artifact file.
+   * Reads CpsPolicyArtifact, syncs dryrun mode, and applies policy if
+   * dryrun=false (FILE_MODE).
+   */
+  TResult setCpsPolicyFromFile();
 
   /**
    * Get the active path selection criteria for the given prefixes.
@@ -1864,6 +2088,15 @@ service TBgpService extends fb303.FacebookService {
   TNexthopInfo getNexthopInfoForNexthop(1: string prefix);
 
   /**
+   * Get nexthop information for the given nexthops. If the list is empty,
+   * returns nexthop info for ALL entries currently in the nexthop cache.
+   *
+   * @param nexthops: nexthop IP addresses to query; empty = all cache entries
+   * @returns: list of TNexthopInfo, one per matching nexthop-cache entry
+   */
+  list<TNexthopInfo> getNexthopInfos(1: list<string> nexthops);
+
+  /**
    * [Profiler]
    *
    * Start/Stop BGP Profiler
@@ -1896,6 +2129,17 @@ service TBgpService extends fb303.FacebookService {
    * Resets all counters and histograms.
    */
   void clearProfilerStats();
+
+  /**
+   * [Debug] Reset per-peer cumulative BGP message counters in BOTH directions:
+   * socket tx/rx counts (SessionManager), AdjRib sent/recv message counts,
+   * update-group sent counts, and their fb303 keys. Live prefix gauges are not
+   * affected.
+   *
+   * `peers` selects which peers to clear, by IP address; an empty list clears
+   * every peer.
+   */
+  void clearCounters(1: list<string> peers);
 
   /**
    * [Telemetry]

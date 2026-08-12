@@ -54,6 +54,16 @@ SaiPortSerdesTraits::Attributes::AttributeRxReachWrapper::operator()() {
   return std::nullopt;
 }
 
+std::optional<sai_attr_id_t> SaiPortSerdesTraits::Attributes::
+    AttributeTransmitPrecodingStateWrapper::operator()() {
+  return std::nullopt;
+}
+
+std::optional<sai_attr_id_t> SaiPortSerdesTraits::Attributes::
+    AttributeReceivePrecodingStateWrapper::operator()() {
+  return std::nullopt;
+}
+
 std::optional<sai_attr_id_t>
 SaiPortSerdesTraits::Attributes::AttributeDcoWrapper::operator()() {
   return std::nullopt;
@@ -421,7 +431,11 @@ SaiPortTraits::Attributes::AttributePfcPauseDurationOverride::operator()() {
 
 std::optional<sai_attr_id_t>
 SaiPortTraits::Attributes::AttributeCablePropagationDelayMeasure::operator()() {
+#if defined(CHENAB_SAI_SDK_GTE_2511_36)
+  return SAI_PORT_ATTR_CABLE_PROPAGATION_DELAY_MEASURE;
+#else
   return std::nullopt;
+#endif
 }
 
 std::optional<sai_attr_id_t>
@@ -431,6 +445,16 @@ SaiPortTraits::Attributes::AttributeLinkUpDebouncePeriodMs::operator()() {
 
 std::optional<sai_attr_id_t>
 SaiPortTraits::Attributes::AttributeLinkDownDebouncePeriodMs::operator()() {
+  return std::nullopt;
+}
+
+std::optional<sai_attr_id_t>
+SaiPortTraits::Attributes::AttributeLinkUpDebounceRetriggerCount::operator()() {
+  return std::nullopt;
+}
+
+std::optional<sai_attr_id_t> SaiPortTraits::Attributes::
+    AttributeLinkDownDebounceRetriggerCount::operator()() {
   return std::nullopt;
 }
 

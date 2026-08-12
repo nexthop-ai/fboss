@@ -117,8 +117,8 @@ if (NOT $ENV{SAI_VERSION} EQUAL "")
   message(STATUS "ENV SAI_VERSION is set")
   set (SAI_VERSION $ENV{SAI_VERSION})
 else()
-  message(STATUS "ENV SAI_VERSION is not set, using default:1.16.3")
-  set (SAI_VERSION "1.16.3")
+  message(STATUS "ENV SAI_VERSION is not set, using default:1.18.1")
+  set (SAI_VERSION "1.18.1")
 endif()
 
 option(BUILD_SAI_FAKE_LINK_TEST "Building of SAI Fake Link Test binaries" OFF)
@@ -903,6 +903,7 @@ add_fbthrift_cpp_library(
 
 add_library(link_qsfp_test_port_info_utils
   fboss/lib/if/LinkQsfpTestPortInfoUtils.cpp
+  fboss/lib/if/oss/LinkQsfpTestMachineInfo.cpp
 )
 
 target_link_libraries(link_qsfp_test_port_info_utils
@@ -1436,6 +1437,7 @@ add_dependencies(fboss_platform_services
   weutil
   data_corral_service
   reboot_cause_finder
+  watchdog_util
   # Utilities
   sensor_service_client
   fixmyfboss
@@ -1576,8 +1578,8 @@ add_dependencies(fboss_fake_agent_targets
   fboss_agent_thrift_libs
   fboss_sw_agent
   sai_replayer-fake
-  wedge_agent-fake
-  fboss_hw_agent-fake
+  wedge_agent-sai_impl
+  fboss_hw_agent-sai_impl
 )
 
 add_custom_target(fboss_fake_agent_test_targets)

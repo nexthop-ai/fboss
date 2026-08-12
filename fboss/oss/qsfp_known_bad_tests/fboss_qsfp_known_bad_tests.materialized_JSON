@@ -169,9 +169,6 @@
           "test_name_regex": "HwXphyPortInfoTest.*$"
         },
         {
-          "test_name_regex": "HwXphyPortReprogramTest.ProgramRemoveReprogramCycle$"
-        },
-        {
           "test_name_regex": "HwXphyPrbsStatsCollectionTest.*$"
         },
         {
@@ -182,6 +179,9 @@
         },
         {
           "test_name_regex": "warm_boot.HwStateMachineTest.CheckAgentConfigChanged$"
+        },
+        {
+          "test_name_regex": "warm_boot.HwXphyPortReprogramTest.ProgramRemoveReprogramCycle$"
         }
     ],
     "elbert_2x16Q_6x8DD/physdk-credo-1.2.8/credo-1.2.8": [
@@ -253,9 +253,6 @@
           "test_name_regex": "HwXphyPortInfoTest.*$"
         },
         {
-          "test_name_regex": "HwXphyPortReprogramTest.ProgramRemoveReprogramCycle$"
-        },
-        {
           "test_name_regex": "HwXphyPrbsStatsCollectionTest.*$"
         },
         {
@@ -266,6 +263,9 @@
         },
         {
           "test_name_regex": "warm_boot.HwStateMachineTest.CheckAgentConfigChanged$"
+        },
+        {
+          "test_name_regex": "warm_boot.HwXphyPortReprogramTest.ProgramRemoveReprogramCycle$"
         }
     ],
     "elbert_5x16Q_3x8DD/physdk-credo-1.2.8/credo-1.2.8": [
@@ -558,6 +558,108 @@
         },
         {
           "test_name_regex": "OpticsFwUpgradeTest.*$"
+        }
+    ],
+    "ladakh800bcls/physdk-credo-0.7.2/credo-0.7.2": [
+        {
+          "test_name_regex": "DummyTest.*$"
+        },
+        {
+          "test_name_regex": "HwTransceiverConfigValidationTest.validateAllActiveTransceivers$"
+        },
+        {
+          "test_name_regex": "HwXphyPortReprogramTest.ProgramRemoveReprogramCycle$"
+        },
+        {
+          "test_name_regex": "OpticsFwUpgradeTest.*$"
+        },
+        {
+          "test_name_regex": "warm_boot.*$"
+        }
+    ],
+    "ladakh800bcls/physdk-credo-0.9.0/credo-0.9.0": [
+        {
+          "test_name_regex": "DummyTest.*$"
+        },
+        {
+          "test_name_regex": "HwTransceiverConfigValidationTest.validateAllActiveTransceivers$"
+        },
+        {
+          "test_name_regex": "HwXphyPortReprogramTest.ProgramRemoveReprogramCycle$"
+        },
+        {
+          "test_name_regex": "OpticsFwUpgradeTest.*$"
+        },
+        {
+          "test_name_regex": "warm_boot.*$"
+        }
+    ],
+    "ladakh800bcls/physdk-credo-1.2.8/credo-1.2.8": [
+        {
+          "test_name_regex": "DummyTest.*$"
+        },
+        {
+          "test_name_regex": "HwTransceiverConfigValidationTest.validateAllActiveTransceivers$"
+        },
+        {
+          "test_name_regex": "HwXphyPortReprogramTest.ProgramRemoveReprogramCycle$"
+        },
+        {
+          "test_name_regex": "OpticsFwUpgradeTest.*$"
+        },
+        {
+          "test_name_regex": "warm_boot.*$"
+        }
+    ],
+    "leh800bcls/physdk-credo-0.7.2/credo-0.7.2": [
+        {
+          "test_name_regex": "DummyTest.*$"
+        },
+        {
+          "test_name_regex": "HwTransceiverConfigValidationTest.validateAllActiveTransceivers$"
+        },
+        {
+          "test_name_regex": "HwXphyPortReprogramTest.ProgramRemoveReprogramCycle$"
+        },
+        {
+          "test_name_regex": "OpticsFwUpgradeTest.*$"
+        },
+        {
+          "test_name_regex": "warm_boot.*$"
+        }
+    ],
+    "leh800bcls/physdk-credo-0.9.0/credo-0.9.0": [
+        {
+          "test_name_regex": "DummyTest.*$"
+        },
+        {
+          "test_name_regex": "HwTransceiverConfigValidationTest.validateAllActiveTransceivers$"
+        },
+        {
+          "test_name_regex": "HwXphyPortReprogramTest.ProgramRemoveReprogramCycle$"
+        },
+        {
+          "test_name_regex": "OpticsFwUpgradeTest.*$"
+        },
+        {
+          "test_name_regex": "warm_boot.*$"
+        }
+    ],
+    "leh800bcls/physdk-credo-1.2.8/credo-1.2.8": [
+        {
+          "test_name_regex": "DummyTest.*$"
+        },
+        {
+          "test_name_regex": "HwTransceiverConfigValidationTest.validateAllActiveTransceivers$"
+        },
+        {
+          "test_name_regex": "HwXphyPortReprogramTest.ProgramRemoveReprogramCycle$"
+        },
+        {
+          "test_name_regex": "OpticsFwUpgradeTest.*$"
+        },
+        {
+          "test_name_regex": "warm_boot.*$"
         }
     ],
     "meru400bfu/physdk-credo-0.7.2/credo-0.7.2": [

@@ -7,6 +7,8 @@
  *  of patent rights can be found in the PATENTS file in the same directory.
  *
  */
+#include <fmt/format.h>
+
 #include "fboss/lib/CommonUtils.h"
 #include "fboss/qsfp_service/StatsPublisher.h"
 #include "fboss/qsfp_service/platforms/wedge/WedgeManager.h"
@@ -20,10 +22,32 @@ namespace facebook::fboss {
 TEST_F(HwTest, publishStats) {
   addVerifiedProductionFeatures(
       {qsfp_production_features::QsfpProductionFeature::STATS_COLLECTION});
-  StatsPublisher publisher(getHwQsfpEnsemble()->getWedgeManager());
+  auto* phyManager = getHwQsfpEnsemble()->getPhyManager();
+  StatsPublisher publisher(getHwQsfpEnsemble()->getWedgeManager(), phyManager);
   publisher.init();
   publisher.publishStats(nullptr, 0);
   getHwQsfpEnsemble()->getWedgeManager()->publishI2cTransactionStats();
+
+  // A PhyManager is constructed for every platform of an XPHY capable family,
+  // but the XPHYs themselves only exist on the PIMs that carry them, so having
+  // a PhyManager does not imply having XPHYs to report counters for.
+  if (!phyManager || phyManager->getNumXphys() == 0) {
+    return;
+  }
+  // Where XPHYs do exist, publishStats must export their MDIO IO counters. The
+  // PhyManager is owned by PortManager in Port Manager mode and by
+  // TransceiverManager otherwise, so this also guards against the counters
+  // silently disappearing in one of the two modes.
+  auto counterKeys = fb303::fbData->getCounterKeys();
+  EXPECT_TRUE(
+      std::any_of(
+          counterKeys.begin(),
+          counterKeys.end(),
+          [](const auto& key) {
+            return key.starts_with("qsfp.pim") &&
+                key.find(".mdioReadTotal") != std::string::npos;
+          }))
+      << "no qsfp.pim<N>.xphy<M>.mdioReadTotal counter published to fb303";
 }
 
 namespace {
@@ -43,7 +67,7 @@ int getSleepSeconds(PlatformType platformMode) {
 
 template <typename IOStatsType>
 std::string ioStatsString(const IOStatsType& stats) {
-  return folly::sformat(
+  return fmt::format(
       "numReadAttempted = {}, numReadFailed = {}, numWriteAttempted = {}, numWriteFailed = {}, readDownTime = {}, writeDownTime = {}",
       stats.get_numReadAttempted(),
       stats.get_numReadFailed(),

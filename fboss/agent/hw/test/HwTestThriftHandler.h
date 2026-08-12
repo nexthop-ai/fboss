@@ -115,6 +115,10 @@ class HwTestThriftHandler : public AgentHwTestCtrlSvIf {
       ::std::vector<::facebook::fboss::utility::PortInfo>& portInfos,
       std::unique_ptr<::std::vector<::std::int32_t>> portIds) override;
 
+  void getPortLlrInfo(
+      ::facebook::fboss::utility::PortLlrInfo& portLlrInfo,
+      int32_t port) override;
+
   bool verifyPortLedStatus(int portId, bool status) override;
   bool verifyPGSettings(int portId, bool pfcEnabled) override;
   void getAggPortInfo(
@@ -257,6 +261,12 @@ class HwTestThriftHandler : public AgentHwTestCtrlSvIf {
   void getMatchingLogMessages(
       std::vector<std::string>& out,
       std::unique_ptr<std::string> substring) override;
+
+  void getFb303RegexCounters(
+      std::map<std::string, int64_t>& counters,
+      std::unique_ptr<std::string> regex) override;
+
+  int64_t getFb303Counter(std::unique_ptr<std::string> key) override;
 
  private:
   HwSwitch* hwSwitch_;

@@ -8,6 +8,7 @@
 #include <folly/io/IOBuf.h>
 #include <folly/io/async/EventBase.h>
 #include <folly/logging/xlog.h>
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <string>
@@ -54,7 +55,7 @@ constexpr uint8_t kPageSelectByteOffset = 127;
 constexpr int kUsecBetweenPowerModeFlap = 100000;
 constexpr int kUsecBetweenLaneInit = 10000;
 constexpr int kUsecVdmLatchHold = 100000;
-constexpr int kUsecDiagSelectLatchWait = 200000;
+constexpr int kUsecDiagSelectLatchWaitPrbs = 200000;
 constexpr int kUsecAfterAppProgramming = 500000;
 constexpr int kUsecDatapathStateUpdateTime = 10000000; // 10 seconds
 constexpr int kUsecDatapathStatePollTime = 500000; // 500 ms
@@ -95,13 +96,6 @@ namespace facebook {
 namespace fboss {
 
 using namespace facebook::fboss::phy;
-
-enum DiagnosticFeatureEncoding {
-  NONE = 0x0,
-  BER = 0x1,
-  SNR = 0x6,
-  LATCHED_BER = 0x11,
-};
 
 // VDM Config pages: 20h (Group 1), 21h (Group 2), 22h (Group 3), 23h (Group 4)
 constexpr std::array<CmisField, 4> kVdmConfPages = {
@@ -686,6 +680,16 @@ bool isBankedPage(CmisPages page) {
       page != CmisPages::PAGE01 && page != CmisPages::PAGE02 &&
       page != CmisPages::PAGE04;
 }
+
+/* Decode ModuleState out of Lower Page 00h byte 3. The state is bits 1-3;
+ * bits 4-7 are reserved and some modules do populate them, so they have to be
+ * masked off rather than merely shifted past. Every reader of byte 3 must go
+ * through here - this decode used to be open-coded per call site, and the
+ * copies drifted apart. */
+CmisModuleState moduleStateFromStatusByte(uint8_t statusByte) {
+  return static_cast<CmisModuleState>(
+      (statusByte & MODULE_STATUS_MASK) >> MODULE_STATUS_BITSHIFT);
+}
 } // namespace
 
 void CmisModule::cacheMaxNumBanks() {
@@ -713,6 +717,13 @@ void CmisModule::cacheMaxNumBanks() {
   page25_.assign(numBanks, {});
   page26_.assign(numBanks, {});
   page27_.assign(numBanks, {});
+}
+
+void CmisModule::cacheCmisRevision() {
+  uint8_t revision = getSettingsValue(CmisField::REVISION_COMPLIANCE);
+  cmisRevision_ = std::make_pair(
+      static_cast<uint8_t>(revision >> 4),
+      static_cast<uint8_t>(revision & 0xf));
 }
 
 void CmisModule::selectPageAndBank(int dataPage, std::optional<uint8_t> bank) {
@@ -977,7 +988,7 @@ std::optional<uint16_t> CmisModule::fetchFwBuildNumberFromCdb() {
 ModuleStatus CmisModule::getModuleStatus() {
   ModuleStatus moduleStatus;
   moduleStatus.cmisModuleState() =
-      (CmisModuleState)(getSettingsValue(CmisField::MODULE_STATE) >> 1);
+      moduleStateFromStatusByte(getSettingsValue(CmisField::MODULE_STATE));
   moduleStatus.fwStatus() = getFwStatus();
   moduleStatus.cmisStateChanged() = getModuleStateChanged();
   return moduleStatus;
@@ -1478,8 +1489,7 @@ bool CmisModule::isModuleInReadyState() {
   uint8_t moduleStatus;
   readCmisField(CmisField::MODULE_STATE, &moduleStatus);
   const bool isReady =
-      ((CmisModuleState)((moduleStatus & MODULE_STATUS_MASK) >>
-                         MODULE_STATUS_BITSHIFT) == CmisModuleState::READY);
+      moduleStateFromStatusByte(moduleStatus) == CmisModuleState::READY;
 
   if (isReady) {
     QSFP_LOG(INFO, this) << "isModuleInReadyState: Module is in READY state";
@@ -1650,15 +1660,21 @@ bool CmisModule::getSensorsPerChanInfo(std::vector<Channel>& channels) {
         getChannelFlags(CmisField::TX_PWR_FLAG, channel);
   }
 
+  // AEC modules don't support rx/tx power monitoring
+  const bool isAec = isAecModule();
+
   for (int channel = 0; channel < numMediaLanes(); channel++) {
     const uint8_t* data =
         getLaneValuePtr(CmisField::CHANNEL_RX_PWR, channel, 2);
     uint16_t value = data[0] << 8 | data[1];
     auto pwr = CmisFieldInfo::getPwr(value); // This is in mW
+    // TODO: we should probably make rxPwr optional as well
     channels.at(channel).sensors()->rxPwr()->value() = pwr;
-    Sensor rxDbm;
-    rxDbm.value() = mwToDb(pwr);
-    channels.at(channel).sensors()->rxPwrdBm() = rxDbm;
+    if (!isAec) {
+      Sensor rxDbm;
+      rxDbm.value() = mwToDb(pwr);
+      channels.at(channel).sensors()->rxPwrdBm() = rxDbm;
+    }
   }
 
   // For Tx bias, take care of multiplier. The multiplier is module-level
@@ -1682,10 +1698,13 @@ bool CmisModule::getSensorsPerChanInfo(std::vector<Channel>& channels) {
         getLaneValuePtr(CmisField::CHANNEL_TX_PWR, channel, 2);
     uint16_t value = data[0] << 8 | data[1];
     auto pwr = CmisFieldInfo::getPwr(value); // This is in mW
+    // TODO: we should probably make txPwr optional as well
     channels.at(channel).sensors()->txPwr()->value() = pwr;
-    Sensor txDbm;
-    txDbm.value() = mwToDb(pwr);
-    channels.at(channel).sensors()->txPwrdBm() = txDbm;
+    if (!isAec) {
+      Sensor txDbm;
+      txDbm.value() = mwToDb(pwr);
+      channels.at(channel).sensors()->txPwrdBm() = txDbm;
+    }
   }
 
   for (int channel = 0; channel < numMediaLanes(); channel++) {
@@ -1864,6 +1883,11 @@ CmisModule::getCdbSymbolErrorHistogramLocked(
   auto ret = commandBlockBuf.cmisRunCdbCommand(qsfpImpl_);
   if (ret && commandBlockBuf.getCdbRlplLength() >= 1) {
     int numBins = commandBlockBuf.getCdbLplFlatMemory()[0];
+    // Clamp numBins to prevent OOB read: each bin reads kCdbSymErrHistBinSize
+    // bytes from the fixed 120-byte LPL buffer (first byte is numBins itself).
+    numBins = std::min(
+        numBins,
+        (CdbCommandBlock::kCdbLplMemoryLength - 1) / kCdbSymErrHistBinSize);
     for (auto bin = 0; bin < numBins; bin++) {
       SymErrHistogramBin binHistData;
       binHistData.nbitSymbolErrorMax() = f16ToDouble(
@@ -2519,23 +2543,18 @@ void CmisModule::readSnrDiagPageLocked(BankedPage& dest) {
   // Page 14h is a multiplexed diagnostic page; DIAG_SEL selects which feature
   // (SNR vs BER) its data region reflects. DIAG_SEL lives on the banked page
   // itself, so it must be written under each bank's selection before the read.
-  uint8_t diagFeature = static_cast<uint8_t>(DiagnosticFeatureEncoding::SNR);
   // dest is pre-sized to getMaxNumBanks() (>= 1) by cacheMaxNumBanks().
   uint8_t numBanks = getMaxNumBanks();
   if (numBanks <= 1) {
     // Single-bank module: legacy behavior, no bank-select write.
-    writeCmisField(CmisField::DIAG_SEL, &diagFeature);
+    setDiagSel(DiagnosticFeatureEncoding::SNR);
     readCmisField(CmisField::PAGE_UPPER14H, dest.at(0).data());
   } else {
     // Multi-bank: select SNR and read 14h for each bank. Bank 0 is done last so
     // the module is left selected on bank 0 for the subsequent bank-agnostic
     // reads (VDM).
     for (int bank = numBanks - 1; bank >= 0; --bank) {
-      writeCmisField(
-          CmisField::DIAG_SEL,
-          &diagFeature,
-          /*skipBankAndPageChange=*/false,
-          bank);
+      setDiagSel(DiagnosticFeatureEncoding::SNR, bank);
       readCmisField(
           CmisField::PAGE_UPPER14H,
           dest.at(bank).data(),
@@ -2543,6 +2562,34 @@ void CmisModule::readSnrDiagPageLocked(BankedPage& dest) {
           bank);
     }
   }
+}
+
+int CmisModule::getDiagSelLatchWaitUsec() const {
+  const auto partNumber = getQsfpString(CmisField::PART_NUMBER);
+  return std::find(
+             kSlowDiagSelectPartNumbers.begin(),
+             kSlowDiagSelectPartNumbers.end(),
+             partNumber) != kSlowDiagSelectPartNumbers.end()
+      ? kUsecDiagSelectLatchWaitSlow
+      : kUsecDiagSelectLatchWait;
+}
+
+void CmisModule::setDiagSel(
+    DiagnosticFeatureEncoding diagSel,
+    std::optional<uint8_t> bank,
+    std::optional<int> latchWaitUsec) {
+  uint8_t desired = static_cast<uint8_t>(diagSel);
+  uint8_t current = 0;
+  readCmisField(
+      CmisField::DIAG_SEL, &current, /*skipBankAndPageChange=*/false, bank);
+  if (current == desired) {
+    return;
+  }
+  writeCmisField(
+      CmisField::DIAG_SEL, &desired, /*skipBankAndPageChange=*/false, bank);
+  /* sleep override */
+  usleep(
+      latchWaitUsec.has_value() ? *latchWaitUsec : getDiagSelLatchWaitUsec());
 }
 
 /*
@@ -2655,6 +2702,7 @@ void CmisModule::updateQsfpData(bool allPages) {
     dirty_ = false;
     setQsfpFlatMem();
     cacheMaxNumBanks();
+    cacheCmisRevision();
 
     readCmisField(CmisField::PAGE_UPPER00H, page0_);
     if (!flatMem_) {
@@ -2668,9 +2716,8 @@ void CmisModule::updateQsfpData(bool allPages) {
         readCmisField(CmisField::PAGE_UPPER12H, page12_);
       }
 
-      bool isReady =
-          ((CmisModuleState)(getSettingsValue(CmisField::MODULE_STATE) >> 1) ==
-           CmisModuleState::READY);
+      bool isReady = moduleStateFromStatusByte(getSettingsValue(
+                         CmisField::MODULE_STATE)) == CmisModuleState::READY;
       if (isReady) {
         readSnrDiagPageLocked(page14_);
         updateVdmCacheLocked();
@@ -5025,19 +5072,17 @@ phy::PrbsStats CmisModule::getPortPrbsStatsSideLocked(
     uint8_t checkerLockMask;
     readCmisField(lockField, &checkerLockMask, false, bankArg);
 
-    uint8_t diagSel = DiagnosticFeatureEncoding::BER;
-    writeCmisField(CmisField::DIAG_SEL, &diagSel, false, bankArg);
-    /* sleep override */
-    usleep(kUsecDiagSelectLatchWait);
+    setDiagSel(
+        DiagnosticFeatureEncoding::BER, bankArg, kUsecDiagSelectLatchWaitPrbs);
     std::array<uint8_t, 16> laneBerList{};
     readCmisField(berField, laneBerList.data(), false, bankArg);
 
     std::array<uint8_t, 16> laneSnrList{};
     if (snrSupported) {
-      diagSel = DiagnosticFeatureEncoding::SNR;
-      writeCmisField(CmisField::DIAG_SEL, &diagSel, false, bankArg);
-      /* sleep override */
-      usleep(kUsecDiagSelectLatchWait);
+      setDiagSel(
+          DiagnosticFeatureEncoding::SNR,
+          bankArg,
+          kUsecDiagSelectLatchWaitPrbs);
       readCmisField(snrField, laneSnrList.data(), false, bankArg);
     }
 
@@ -5616,6 +5661,7 @@ bool CmisModule::upgradeFirmwareLockedImpl(FbossFirmware* fbossFw) const {
       qsfpImpl_,
       getID(),
       fbossFw,
+      getCmisRevision().first,
       cachedCdbWriteDelayUsec_.value_or(POST_I2C_WRITE_DELAY_CDB_US));
 
   bool ret = fwUpgradeObj->cmisModuleFirmwareUpgrade();

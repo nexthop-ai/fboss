@@ -1,6 +1,5 @@
 namespace cpp2 facebook.fboss
 namespace go neteng.fboss.ctrl
-namespace php fboss
 namespace py neteng.fboss.ctrl
 namespace py3 neteng.fboss
 namespace py.asyncio neteng.fboss.asyncio.ctrl
@@ -21,7 +20,12 @@ include "fboss/lib/phy/prbs.thrift"
 include "fboss/agent/hw/hardware_stats.thrift"
 include "thrift/annotation/python.thrift"
 include "thrift/annotation/thrift.thrift"
+include "thrift/annotation/hack.thrift"
 
+@hack.NamePrefix{prefix = "fboss_"}
+@hack.LegacyAlwaysIncludeNamePrefixInProcessor
+@hack.LegacyOmitPrefixInNameString
+@hack.ConstantsClass{name = "fboss_CONSTANTS"}
 @thrift.AllowLegacyMissingUris
 package;
 
@@ -890,6 +894,16 @@ struct FirmwareInfo {
   3: FirmwareFuncStatus funcStatus;
 }
 
+/*
+ * Fast ReRoute (FRR) object to protect.
+ * For RBB, the object is identified by uA mySID for the LAG.
+ * For BBF, the object is identified by adjacency SID label for the LAG.
+ */
+union FrrProtectedObject {
+  1: Address.IPPrefix mySid;
+  2: mpls.MplsLabel mplsLabel;
+}
+
 service FbossCtrl extends phy.FbossCommonPhyCtrl {
   /*
    * Retrieve up-to-date counters from the hardware, and publish all
@@ -1430,6 +1444,14 @@ service FbossCtrl extends phy.FbossCommonPhyCtrl {
   /*
    * API to add named next hop groups, named next hop group with same name will be replaced
    */
+  void addNamedNextHopGroups(
+    1: list<common.NextHopGroup> nextHopGroups,
+  ) throws (1: fboss.FbossBaseError error);
+
+  /*
+   * API to add named next hop groups, named next hop group with same name will be replaced
+   * Deprecated. Use addNamedNextHopGroups.
+   */
   void addOrUpdateNamedNextHopGroups(
     1: list<common.NextHopGroup> nextHopGroups,
   ) throws (1: fboss.FbossBaseError error);
@@ -1485,14 +1507,14 @@ service FbossCtrl extends phy.FbossCommonPhyCtrl {
   /*
    * Add one or multiple traffic redirection policy objects.
    */
-  void addOrUpdatePolicies(1: list<common.Policy> policy) throws (
+  void addPolicies(1: list<common.Policy> policy) throws (
     1: fboss.FbossBaseError error,
   );
 
   /*
    * Remove one or multiple traffic redirection policy objects.
    */
-  void removePolicies(1: list<string> policyName) throws (
+  void deletePolicies(1: list<string> policyName) throws (
     1: fboss.FbossBaseError error,
   );
 
@@ -1655,6 +1677,37 @@ service FbossCtrl extends phy.FbossCommonPhyCtrl {
     2: phy.PortComponent component,
     3: prbs.InterfacePrbsState state,
   ) throws (1: fboss.FbossBaseError error);
+
+  /*
+   * Add Adjacency FRR to protect an object with given backup nexthops.
+   * If the protected object already exists, replaces its backup nexthops.
+   *
+   * FrrProtectedObject is a union. Fill either uA mySID or MPLS label to
+   * protect.
+   *
+   * Number of backup nexthops in the list:
+   *  = 0: throws Error
+   *  = 1: single backup
+   *  > 1: ECMP of backups
+   */
+  void addAdjacencyFrr(
+    1: FrrProtectedObject protectedObject,
+    2: list<common.NextHopThrift> backupNextHops,
+  ) throws (1: fboss.FbossBaseError error);
+
+  /*
+   * Delete Adjacency FRR.
+   *
+   * protectedObject:
+   *  non-existing (never added by addAdjacencyFrr): throws error
+   *  existing: removes FRR protection
+   *
+   * FrrProtectedObject is a union. Fill either protected uA mySID or MPLS
+   * label.
+   */
+  void deleteAdjacencyFrr(1: FrrProtectedObject protectedObject) throws (
+    1: fboss.FbossBaseError error,
+  );
 }
 
 service NeighborListenerClient extends fb303.FacebookService {

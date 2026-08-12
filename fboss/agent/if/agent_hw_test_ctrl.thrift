@@ -1,6 +1,5 @@
 namespace cpp2 facebook.fboss.utility
 namespace go neteng.fboss.agent_hw_test_ctrl
-namespace php fboss
 namespace py neteng.fboss.agent_hw_test_ctrl
 namespace py3 neteng.fboss
 namespace py.asyncio neteng.fboss.asyncio.agent_hw_test_ctrl
@@ -40,6 +39,18 @@ struct RouteInfo {
 
 struct PortInfo {
   1: i32 loopbackMode;
+}
+
+// HW-side view of a port's UEC LLR binding (UE Spec 1.0.2 section 5.1).
+// profileId is sourced from the SaiPortManager's port handle (the create-time
+// adapter key), not from a port getAttribute -- the port-side LLR getters can
+// return NOT_SUPPORTED and silently default on current SDK drops. The frame
+// actions are read back from the profile object itself.
+struct PortLlrInfo {
+  1: bool hasProfile;
+  2: i64 profileId;
+  3: switch_config.LlrFrameAction initFrameAction;
+  4: switch_config.LlrFrameAction flushFrameAction;
 }
 
 struct AggPortInfo {
@@ -138,6 +149,7 @@ service AgentHwTestCtrl {
 
   // port utils
   list<PortInfo> getPortInfo(1: list<i32> portIds);
+  PortLlrInfo getPortLlrInfo(1: i32 port);
   bool verifyPortLedStatus(1: i32 port, 2: bool status);
   bool verifyPGSettings(1: i32 port, 2: bool pfcEnabled);
 
@@ -240,4 +252,8 @@ service AgentHwTestCtrl {
   // installLogCapture() must be called before the log is emitted.
   void installLogCapture();
   list<string> getMatchingLogMessages(1: string substring);
+
+  // fb303 cross-process utils for multi-switch testing
+  map<string, i64> getFb303RegexCounters(1: string regex);
+  i64 getFb303Counter(1: string key);
 }

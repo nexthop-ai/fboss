@@ -31,6 +31,7 @@ thrift_library(
     thrift_srcs = {"BgpStructs.thrift": None},
     deps = [
         "//common/network/if:if",
+        "//thrift/annotation:hack",
     ],
 )
 
@@ -55,6 +56,7 @@ thrift_library(
     deps = [
         ":bgp-structs",
         "//common/network/if:if",
+        "//thrift/annotation:hack",
     ],
 )
 
@@ -113,6 +115,7 @@ thrift_library(
     deps = [
         "//configerator/structs/neteng/bgp_policy/thrift:rib_policy",
         "//configerator/structs/neteng/fboss/bgp/if:bgp_attr",
+        "//configerator/structs/neteng/fboss/thrift:common",
         "//thrift/annotation:cpp",
         "//thrift/annotation:thrift",
     ],

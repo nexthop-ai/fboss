@@ -82,6 +82,7 @@ class MockFbossCtrlAgent : public apache::thrift::ServiceHandler<FbossCtrl> {
   MOCK_METHOD(void, stopPktCapture, (std::unique_ptr<std::string>));
   MOCK_METHOD(void, getAllPortInfo, (PortInfoMap));
   MOCK_METHOD(void, getProductInfo, (ProductInfo&));
+  MOCK_METHOD(BootType, getBootType, ());
   MOCK_METHOD(
       void,
       getAllCpuPortStats,
@@ -146,6 +147,11 @@ class MockFbossCtrlAgent : public apache::thrift::ServiceHandler<FbossCtrl> {
   using InterfaceDetailMap =
       std::map<int32_t, facebook::fboss::InterfaceDetail>&;
   MOCK_METHOD(void, getAllInterfaces, (InterfaceDetailMap));
+  MOCK_METHOD(void, getNextHopGroups, (std::vector<NextHopGroup>&));
+  MOCK_METHOD(
+      void,
+      getNamedNextHopGroups,
+      (std::vector<NextHopGroup>&, std::unique_ptr<std::vector<std::string>>));
 };
 
 class MockFbossHwCtrlAgent
@@ -155,6 +161,7 @@ class MockFbossHwCtrlAgent
   using Ports = std::unique_ptr<std::vector<int32_t>>;
 
   MOCK_METHOD(void, getProgrammedState, (SwitchState));
+  MOCK_METHOD(BootType, getBootType, ());
   MOCK_METHOD(void, triggerCableLengthMeasurement, (Ports));
 };
 
@@ -175,6 +182,12 @@ class MockFbossQsfpService
   MOCK_METHOD2(
       getAllPortSupportedProfiles,
       void(std::map<std::string, std::vector<cfg::PortProfileID>>&, bool));
+  MOCK_METHOD2(
+      getSymbolErrorHistogram,
+      void(CdbDatapathSymErrHistogram&, std::unique_ptr<std::string>));
+  MOCK_METHOD1(
+      getPortMediaInterface,
+      void(std::map<std::string, MediaInterfaceCode>&));
 };
 
 #ifdef IS_OSS

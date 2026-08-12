@@ -396,6 +396,43 @@ TEST_F(CmdConfigInterfaceTestFixture, queryClientSetsMtu) {
   }
 }
 
+// Regression test: ip-address/ipv6-address must persist the session config
+// to disk. A missing `changed = true` in the ip-address branch used to skip
+// saveConfig() while still reporting success (so `config session diff`
+// showed no changes).
+TEST_F(CmdConfigInterfaceTestFixture, queryClientIpAddressesPersistedToDisk) {
+  setupTestableConfigSession(
+      cmdPrefix_, "eth1/1/1 ip-address 10.0.0.1/31 ipv6-address cafe::1/127");
+  auto cmd = CmdConfigInterface();
+  InterfacesConfig config(
+      {"eth1/1/1", "ip-address", "10.0.0.1/31", "ipv6-address", "cafe::1/127"});
+
+  auto result = cmd.queryClient(localhost(), config);
+
+  EXPECT_THAT(result, HasSubstr("Successfully configured"));
+  EXPECT_THAT(result, HasSubstr("ip-address=10.0.0.1/31"));
+  EXPECT_THAT(result, HasSubstr("ipv6-address=cafe::1/127"));
+
+  // Verify the addresses were added to the in-memory config
+  auto& session = ConfigSession::getInstance();
+  auto& intfs = *session.getAgentConfig().sw()->interfaces();
+  for (const auto& intf : intfs) {
+    if (*intf.name() == "eth1/1/1") {
+      EXPECT_THAT(
+          *intf.ipAddresses(),
+          UnorderedElementsAre("10.0.0.1/31", "cafe::1/127"));
+    } else {
+      EXPECT_THAT(*intf.ipAddresses(), IsEmpty());
+    }
+  }
+
+  // Verify the session config was persisted to disk (i.e. saveConfig() ran)
+  ASSERT_TRUE(std::filesystem::exists(getSessionConfigPath()));
+  auto sessionContent = readFile(getSessionConfigPath());
+  EXPECT_THAT(sessionContent, HasSubstr("10.0.0.1/31"));
+  EXPECT_THAT(sessionContent, HasSubstr("cafe::1/127"));
+}
+
 // Test setting both description and MTU
 TEST_F(CmdConfigInterfaceTestFixture, queryClientSetsBothAttributes) {
   setupTestableConfigSession(
@@ -1776,6 +1813,27 @@ TEST_F(
   }
 }
 
+// A subsuming profile change escalates the action level to AGENT_COLDBOOT so
+// the CLI commits it as an agent coldboot instead of a hitless reloadConfig
+// (T281221621).
+TEST_F(ApplyProfileSubsumeTestFixture, subsumeEscalatesToColdboot) {
+  setupTestableConfigSession(
+      "config interface", "eth1/1/1 profile PROFILE_400G_8_PAM4_RS544X2N");
+  auto validator = makeSubsumeValidator();
+  auto& swConfig = *ConfigSession::getInstance().getAgentConfig().sw();
+  utils::InterfaceList interfaces({"eth1/1/1"});
+
+  cli::ConfigActionLevel actionLevel = cli::ConfigActionLevel::HITLESS;
+  applyProfileImpl(
+      validator,
+      swConfig,
+      interfaces,
+      "PROFILE_400G_8_PAM4_RS544X2N",
+      &actionLevel);
+
+  EXPECT_EQ(actionLevel, cli::ConfigActionLevel::AGENT_COLDBOOT);
+}
+
 // ============================================================================
 // applyProfileImpl pending-port (creation) tests
 // ============================================================================
@@ -1869,6 +1927,22 @@ TEST_F(CreatePendingInterfacePortsTestFixture, createsSupportedInterfacePort) {
   EXPECT_EQ(config.interfaces()->size(), 1);
 }
 
+// Creating a port removes nothing, so the action level stays HITLESS (no
+// coldboot needed; the commit remains a hitless reloadConfig). See T281221621.
+TEST_F(CreatePendingInterfacePortsTestFixture, createStaysHitless) {
+  setupTestableConfigSession();
+  auto validator = makePendingValidator();
+  cfg::SwitchConfig config;
+  utils::InterfaceList interfaces(
+      std::vector<std::string>{"eth1/1/1"}, /*allowMissing*/ true);
+
+  cli::ConfigActionLevel actionLevel = cli::ConfigActionLevel::HITLESS;
+  applyProfileImpl(
+      validator, config, interfaces, "PROFILE_100G_4_NRZ_CL91", &actionLevel);
+
+  EXPECT_EQ(actionLevel, cli::ConfigActionLevel::HITLESS);
+}
+
 // A pending non-INTERFACE_PORT (e.g. FABRIC_PORT) cannot be created.
 TEST_F(CreatePendingInterfacePortsTestFixture, throwsOnNonInterfacePort) {
   setupTestableConfigSession();
@@ -1959,6 +2033,396 @@ TEST_F(
           validator, config, interfaces, "PROFILE_100G_4_NRZ_CL91"),
       std::invalid_argument);
   EXPECT_EQ(config, before);
+}
+
+// ============================================================================
+// lookup-class tests
+// ============================================================================
+
+// Test valid config with port + lookup-class is parsed as an attribute pair
+TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigValidPortAndLookupClass) {
+  setupTestableConfigSession();
+  InterfacesConfig config({"eth1/1/1", "lookup-class", "10"});
+  EXPECT_EQ(config.getInterfaces().size(), 1);
+  EXPECT_TRUE(config.hasAttributes());
+  ASSERT_EQ(config.getAttributes().size(), 1);
+  EXPECT_EQ(config.getAttributes()[0].first, "lookup-class");
+  EXPECT_EQ(config.getAttributes()[0].second, "10");
+}
+
+// Test setting a valid lookup-class replaces lookupClasses with [id]
+TEST_F(CmdConfigInterfaceTestFixture, queryClientSetsLookupClass) {
+  setupTestableConfigSession(cmdPrefix_, "eth1/1/1 lookup-class 10");
+  auto cmd = CmdConfigInterface();
+  InterfacesConfig config({"eth1/1/1", "lookup-class", "10"});
+
+  auto result = cmd.queryClient(localhost(), config);
+
+  EXPECT_THAT(result, HasSubstr("Successfully configured"));
+  EXPECT_THAT(result, HasSubstr("eth1/1/1"));
+  EXPECT_THAT(result, HasSubstr("lookup-class=10"));
+
+  auto& session = ConfigSession::getInstance();
+  auto& ports = *session.getAgentConfig().sw()->ports();
+  for (const auto& port : ports) {
+    if (*port.name() == "eth1/1/1") {
+      ASSERT_EQ(port.lookupClasses()->size(), 1);
+      EXPECT_EQ(
+          port.lookupClasses()->at(0),
+          cfg::AclLookupClass::CLASS_QUEUE_PER_HOST_QUEUE_0);
+    } else {
+      // Other ports should be untouched.
+      EXPECT_TRUE(port.lookupClasses()->empty());
+    }
+  }
+}
+
+// Test comma-separated list sets the full lookupClasses pool
+TEST_F(CmdConfigInterfaceTestFixture, queryClientSetsLookupClassList) {
+  setupTestableConfigSession(
+      cmdPrefix_, "eth1/1/1 lookup-class 10,11,12,13,14");
+  auto cmd = CmdConfigInterface();
+  InterfacesConfig config({"eth1/1/1", "lookup-class", "10,11,12,13,14"});
+
+  auto result = cmd.queryClient(localhost(), config);
+
+  EXPECT_THAT(result, HasSubstr("Successfully configured"));
+  EXPECT_THAT(result, HasSubstr("lookup-class=10,11,12,13,14"));
+
+  auto& ports = *ConfigSession::getInstance().getAgentConfig().sw()->ports();
+  for (const auto& port : ports) {
+    if (*port.name() == "eth1/1/1") {
+      ASSERT_EQ(port.lookupClasses()->size(), 5);
+      EXPECT_EQ(
+          port.lookupClasses()->at(0),
+          cfg::AclLookupClass::CLASS_QUEUE_PER_HOST_QUEUE_0);
+      EXPECT_EQ(
+          port.lookupClasses()->at(1),
+          cfg::AclLookupClass::CLASS_QUEUE_PER_HOST_QUEUE_1);
+      EXPECT_EQ(
+          port.lookupClasses()->at(2),
+          cfg::AclLookupClass::CLASS_QUEUE_PER_HOST_QUEUE_2);
+      EXPECT_EQ(
+          port.lookupClasses()->at(3),
+          cfg::AclLookupClass::CLASS_QUEUE_PER_HOST_QUEUE_3);
+      EXPECT_EQ(
+          port.lookupClasses()->at(4),
+          cfg::AclLookupClass::CLASS_QUEUE_PER_HOST_QUEUE_4);
+    } else {
+      EXPECT_TRUE(port.lookupClasses()->empty());
+    }
+  }
+}
+
+TEST_F(
+    CmdConfigInterfaceTestFixture,
+    interfaceConfigValidPortAndLookupClassList) {
+  setupTestableConfigSession();
+  InterfacesConfig config({"eth1/1/1", "lookup-class", "10,11,12"});
+  ASSERT_EQ(config.getAttributes().size(), 1);
+  EXPECT_EQ(config.getAttributes()[0].second, "10,11,12");
+}
+
+// Test that setting a new lookup-class replaces any pre-existing list
+TEST_F(CmdConfigInterfaceTestFixture, queryClientLookupClassReplacesList) {
+  auto cmd = CmdConfigInterface();
+
+  setupTestableConfigSession(cmdPrefix_, "eth1/1/1 lookup-class 10,11");
+  cmd.queryClient(
+      localhost(), InterfacesConfig({"eth1/1/1", "lookup-class", "10,11"}));
+
+  setupTestableConfigSession(cmdPrefix_, "eth1/1/1 lookup-class 12,13,14");
+  cmd.queryClient(
+      localhost(), InterfacesConfig({"eth1/1/1", "lookup-class", "12,13,14"}));
+
+  auto& session = ConfigSession::getInstance();
+  auto& ports = *session.getAgentConfig().sw()->ports();
+  for (const auto& port : ports) {
+    if (*port.name() == "eth1/1/1") {
+      ASSERT_EQ(port.lookupClasses()->size(), 3);
+      EXPECT_EQ(
+          port.lookupClasses()->at(0),
+          cfg::AclLookupClass::CLASS_QUEUE_PER_HOST_QUEUE_2);
+      EXPECT_EQ(
+          port.lookupClasses()->at(1),
+          cfg::AclLookupClass::CLASS_QUEUE_PER_HOST_QUEUE_3);
+      EXPECT_EQ(
+          port.lookupClasses()->at(2),
+          cfg::AclLookupClass::CLASS_QUEUE_PER_HOST_QUEUE_4);
+    }
+  }
+}
+
+// Test setting lookup-class on multiple interfaces
+TEST_F(CmdConfigInterfaceTestFixture, queryClientLookupClassMultiPort) {
+  setupTestableConfigSession(cmdPrefix_, "eth1/1/1 eth1/2/1 lookup-class 12");
+  auto cmd = CmdConfigInterface();
+  InterfacesConfig config({"eth1/1/1", "eth1/2/1", "lookup-class", "12"});
+
+  auto result = cmd.queryClient(localhost(), config);
+
+  EXPECT_THAT(result, HasSubstr("Successfully configured"));
+  EXPECT_THAT(result, HasSubstr("eth1/1/1"));
+  EXPECT_THAT(result, HasSubstr("eth1/2/1"));
+
+  auto& session = ConfigSession::getInstance();
+  auto& ports = *session.getAgentConfig().sw()->ports();
+  for (const auto& port : ports) {
+    ASSERT_EQ(port.lookupClasses()->size(), 1);
+    EXPECT_EQ(
+        port.lookupClasses()->at(0),
+        cfg::AclLookupClass::CLASS_QUEUE_PER_HOST_QUEUE_2);
+  }
+}
+
+// Test a class name (case-insensitive) is accepted in place of a numeric id
+TEST_F(CmdConfigInterfaceTestFixture, queryClientLookupClassByName) {
+  setupTestableConfigSession(
+      cmdPrefix_, "eth1/1/1 lookup-class class_queue_per_host_queue_0");
+  auto cmd = CmdConfigInterface();
+  InterfacesConfig config(
+      {"eth1/1/1", "lookup-class", "class_queue_per_host_queue_0"});
+
+  auto result = cmd.queryClient(localhost(), config);
+
+  EXPECT_THAT(result, HasSubstr("Successfully configured"));
+
+  auto& session = ConfigSession::getInstance();
+  auto& ports = *session.getAgentConfig().sw()->ports();
+  for (const auto& port : ports) {
+    if (*port.name() == "eth1/1/1") {
+      ASSERT_EQ(port.lookupClasses()->size(), 1);
+      EXPECT_EQ(
+          port.lookupClasses()->at(0),
+          cfg::AclLookupClass::CLASS_QUEUE_PER_HOST_QUEUE_0);
+    }
+  }
+}
+
+// Test an agent-reserved class id (valid enum member, not queue-per-host)
+// is rejected
+TEST_F(CmdConfigInterfaceTestFixture, queryClientLookupClassRejectsReserved) {
+  setupTestableConfigSession();
+  auto cmd = CmdConfigInterface();
+  // 9 is CLASS_DROP, reserved for the agent's blocked-neighbor feature.
+  InterfacesConfig config({"eth1/1/1", "lookup-class", "9"});
+
+  try {
+    cmd.queryClient(localhost(), config);
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_THAT(e.what(), HasSubstr("reserved for agent use"));
+    EXPECT_THAT(e.what(), HasSubstr("CLASS_DROP"));
+  }
+}
+
+// Test non-integer lookup-class value throws
+TEST_F(CmdConfigInterfaceTestFixture, queryClientLookupClassNonNumeric) {
+  setupTestableConfigSession();
+  auto cmd = CmdConfigInterface();
+  InterfacesConfig config({"eth1/1/1", "lookup-class", "abc"});
+
+  try {
+    cmd.queryClient(localhost(), config);
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_THAT(e.what(), HasSubstr("Invalid lookup-class value"));
+    EXPECT_THAT(e.what(), HasSubstr("abc"));
+  }
+}
+
+// Test an integer that is not a valid AclLookupClass enum value throws
+TEST_F(CmdConfigInterfaceTestFixture, queryClientLookupClassInvalidEnum) {
+  setupTestableConfigSession();
+  auto cmd = CmdConfigInterface();
+  // 999 is not a member of AclLookupClass.
+  InterfacesConfig config({"eth1/1/1", "lookup-class", "999"});
+
+  try {
+    cmd.queryClient(localhost(), config);
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_THAT(e.what(), HasSubstr("Invalid lookup-class value"));
+    EXPECT_THAT(e.what(), HasSubstr("Valid values"));
+  }
+}
+
+TEST_F(CmdConfigInterfaceTestFixture, queryClientLookupClassRejectsDuplicate) {
+  setupTestableConfigSession();
+  auto cmd = CmdConfigInterface();
+  InterfacesConfig config({"eth1/1/1", "lookup-class", "10,11,10"});
+
+  try {
+    cmd.queryClient(localhost(), config);
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_THAT(e.what(), HasSubstr("duplicate id"));
+  }
+
+  // The list is fully parsed before any port is mutated, so a rejected list
+  // must leave lookupClasses empty — the valid prefix "10" is not applied.
+  auto& ports = *ConfigSession::getInstance().getAgentConfig().sw()->ports();
+  for (const auto& port : ports) {
+    EXPECT_TRUE(port.lookupClasses()->empty());
+  }
+}
+
+TEST_F(CmdConfigInterfaceTestFixture, queryClientLookupClassRejectsEmptySlot) {
+  setupTestableConfigSession();
+  auto cmd = CmdConfigInterface();
+  InterfacesConfig config({"eth1/1/1", "lookup-class", "10,,11"});
+
+  try {
+    cmd.queryClient(localhost(), config);
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_THAT(e.what(), HasSubstr("empty id"));
+  }
+}
+
+TEST_F(CmdConfigInterfaceTestFixture, queryClientLookupClassRejectsBadInList) {
+  setupTestableConfigSession();
+  auto cmd = CmdConfigInterface();
+  InterfacesConfig config({"eth1/1/1", "lookup-class", "10,999"});
+
+  try {
+    cmd.queryClient(localhost(), config);
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_THAT(e.what(), HasSubstr("Invalid lookup-class value"));
+    EXPECT_THAT(e.what(), HasSubstr("Valid values"));
+  }
+
+  // The list is fully parsed before any port is mutated, so a rejected list
+  // must leave lookupClasses empty — the valid prefix "10" is not applied.
+  auto& ports = *ConfigSession::getInstance().getAgentConfig().sw()->ports();
+  for (const auto& port : ports) {
+    EXPECT_TRUE(port.lookupClasses()->empty());
+  }
+}
+
+// ============================================================================
+// queue-config attribute
+// ============================================================================
+
+// Needs its own seed: portQueueConfigs entries to bind to, and a port that
+// starts out already bound so the clear path is reachable.
+class QueueConfigAttrTestFixture : public CmdConfigTestBase {
+ public:
+  QueueConfigAttrTestFixture()
+      : CmdConfigTestBase(
+            "fboss_ifqc_attr_test_%%%%-%%%%-%%%%-%%%%",
+            R"({
+  "sw": {
+    "ports": [
+      {
+        "logicalID": 1,
+        "name": "eth1/1/1",
+        "state": 2,
+        "speed": 100000,
+        "ingressVlan": 1,
+        "portQueueConfigName": "rsw_queues"
+      },
+      {
+        "logicalID": 2,
+        "name": "eth1/2/1",
+        "state": 2,
+        "speed": 100000,
+        "ingressVlan": 1
+      }
+    ],
+    "portQueueConfigs": {
+      "rsw_queues": [
+        {"id": 0, "streamType": 1, "weight": 1, "scheduling": 5}
+      ]
+    }
+  }
+})") {}
+
+ protected:
+  static const cfg::Port* findPort(const std::string& name) {
+    const auto& ports =
+        *ConfigSession::getInstance().getAgentConfig().sw()->ports();
+    for (const auto& port : ports) {
+      if (*port.name() == name) {
+        return &port;
+      }
+    }
+    return nullptr;
+  }
+
+  std::string configure(const std::vector<std::string>& args) {
+    auto cmd = CmdConfigInterface();
+    return cmd.queryClient(localhost(), InterfacesConfig(args));
+  }
+};
+
+TEST_F(QueueConfigAttrTestFixture, bindsNamedQueueConfig) {
+  setupTestableConfigSession();
+  auto result = configure({"eth1/2/1", "queue-config", "rsw_queues"});
+
+  EXPECT_THAT(result, ::testing::HasSubstr("queue-config=rsw_queues"));
+  const auto* port = findPort("eth1/2/1");
+  ASSERT_NE(port, nullptr);
+  ASSERT_TRUE(port->portQueueConfigName().has_value());
+  EXPECT_EQ(*port->portQueueConfigName(), "rsw_queues");
+}
+
+// `default` is not a portQueueConfigs entry; per Port::portQueueConfigName's
+// contract an unset field already resolves to defaultPortQueues, so selecting
+// it clears the override rather than writing an unresolvable name.
+TEST_F(QueueConfigAttrTestFixture, defaultClearsExistingBinding) {
+  setupTestableConfigSession();
+  ASSERT_TRUE(findPort("eth1/1/1")->portQueueConfigName().has_value());
+
+  configure({"eth1/1/1", "queue-config", "default"});
+
+  EXPECT_FALSE(findPort("eth1/1/1")->portQueueConfigName().has_value());
+}
+
+TEST_F(QueueConfigAttrTestFixture, defaultOnUnboundPortIsNoOp) {
+  setupTestableConfigSession();
+  EXPECT_NO_THROW(configure({"eth1/2/1", "queue-config", "default"}));
+  EXPECT_FALSE(findPort("eth1/2/1")->portQueueConfigName().has_value());
+}
+
+// A named config must exist before it can be bound; `default` bypasses this
+// check because it never has a portQueueConfigs entry to find.
+TEST_F(QueueConfigAttrTestFixture, unknownNameThrows) {
+  setupTestableConfigSession();
+  try {
+    configure({"eth1/1/1", "queue-config", "no_such_config"});
+    FAIL() << "expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_THAT(e.what(), ::testing::HasSubstr("no_such_config"));
+    EXPECT_THAT(e.what(), ::testing::HasSubstr("does not exist"));
+  }
+  // The failed bind must leave the previously-bound port alone.
+  EXPECT_EQ(*findPort("eth1/1/1")->portQueueConfigName(), "rsw_queues");
+}
+
+TEST_F(QueueConfigAttrTestFixture, invalidNameThrows) {
+  setupTestableConfigSession();
+  EXPECT_THROW(
+      configure({"eth1/1/1", "queue-config", "9bad"}), std::invalid_argument);
+}
+
+// The payoff of folding this into the attribute model: queue-config composes
+// with other attributes in a single command, which the old standalone
+// subcommand could not do.
+TEST_F(QueueConfigAttrTestFixture, composesWithOtherAttributes) {
+  setupTestableConfigSession();
+  auto result = configure(
+      {"eth1/2/1", "description", "uplink", "queue-config", "rsw_queues"});
+
+  EXPECT_THAT(result, ::testing::HasSubstr("queue-config=rsw_queues"));
+  EXPECT_THAT(result, ::testing::HasSubstr("description"));
+
+  const auto* port = findPort("eth1/2/1");
+  ASSERT_NE(port, nullptr);
+  ASSERT_TRUE(port->portQueueConfigName().has_value());
+  EXPECT_EQ(*port->portQueueConfigName(), "rsw_queues");
+  EXPECT_EQ(*port->description(), "uplink");
 }
 
 } // namespace facebook::fboss

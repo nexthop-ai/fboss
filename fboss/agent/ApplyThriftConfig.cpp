@@ -10,6 +10,7 @@
 #include "fboss/agent/ApplyThriftConfig.h"
 
 #include <fboss/thrift_cow/nodes/ThriftMapNode-inl.h>
+#include <fmt/format.h>
 #include <folly/FileUtil.h>
 #include <folly/gen/Base.h>
 #include <memory>
@@ -523,6 +524,9 @@ class ThriftConfigApplier {
   bool isPortFlowletConfigUnchanged(
       std::shared_ptr<PortFlowletCfg> newPortFlowletCfg,
       const shared_ptr<Port>& port);
+  bool isLlrConfigUnchanged(
+      std::shared_ptr<LlrConfig> newLlrConfig,
+      const shared_ptr<Port>& port);
   void checkPortQueueAQMValid(
       const std::vector<cfg::ActiveQueueManagement>& aqms);
   std::shared_ptr<AggregatePortMap> updateAggregatePorts();
@@ -711,6 +715,10 @@ class ThriftConfigApplier {
   std::shared_ptr<PortFlowletCfg> createPortFlowletConfig(
       const std::string& id,
       const cfg::PortFlowletConfig& config);
+  shared_ptr<MultiSwitchLlrConfigMap> updateLlrConfigs(bool* changed);
+  std::shared_ptr<LlrConfig> createLlrConfig(
+      const std::string& id,
+      const cfg::LlrConfig& config);
 
   uint32_t generateDeterministicSeed(cfg::LoadBalancerID id);
 
@@ -784,6 +792,15 @@ shared_ptr<SwitchState> ThriftConfigApplier::run() {
         updatePortFlowletConfigs(&portFlowletConfigChanged);
     if (portFlowletConfigChanged) {
       new_->resetPortFlowletCfgs(newPortFlowletCfg);
+      changed = true;
+    }
+  }
+
+  {
+    bool llrConfigChanged = false;
+    auto newLlrCfg = updateLlrConfigs(&llrConfigChanged);
+    if (llrConfigChanged) {
+      new_->resetLlrConfigs(newLlrCfg);
       changed = true;
     }
   }
@@ -1386,7 +1403,7 @@ void ThriftConfigApplier::processUpdatedDsfNodes() {
         //    rcy<pim_id>/<npu_id>/<npu_core>
         // pmi_id is always 1 for Recycle port.
         // npu_id = switchIndex + 1 (switchIndex strarts at 0)
-        return folly::sformat(
+        return fmt::format(
             "{}:rcy1/{}/{}", node->getName(), switchIndex + 1, asicCore);
       };
   auto isLocal = [localSwitchIds](const std::shared_ptr<DsfNode>& node) {
@@ -2134,7 +2151,7 @@ ThriftConfigApplier::updateFabricLinkMonitoringSystemPorts(
         }
       }
       sysPort->setName(
-          folly::sformat("{}:{}", *dsfNode.name(), port.second->getName()));
+          fmt::format("{}:{}", *dsfNode.name(), port.second->getName()));
       sysPort->setNumVoqs(getLocalPortNumVoqs(
           port.second->getPortType(), port.second->getScope()));
       sysPort->setSpeedMbps(static_cast<int>(port.second->getSpeed()));
@@ -2182,8 +2199,7 @@ shared_ptr<SystemPortMap> ThriftConfigApplier::updateSystemPorts(
           switchSettings->getSwitchIdToSwitchInfo(),
           switchId));
       sysPort->setSwitchId(SwitchID(switchId));
-      sysPort->setName(
-          folly::sformat("{}:{}", nodeName, port.second->getName()));
+      sysPort->setName(fmt::format("{}:{}", nodeName, port.second->getName()));
       auto platformPort =
           platformMapping_->getPlatformPort(port.second->getID());
       CHECK(platformPort.mapping()->attachedCoreId().has_value());
@@ -2636,6 +2652,24 @@ bool ThriftConfigApplier::isPortFlowletConfigUnchanged(
   // contents changed in the port flowlet cfg
   if (oldPortFlowletCfg && newPortFlowletCfg) {
     if (*oldPortFlowletCfg != *newPortFlowletCfg) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool ThriftConfigApplier::isLlrConfigUnchanged(
+    std::shared_ptr<LlrConfig> newLlrConfig,
+    const shared_ptr<Port>& port) {
+  std::shared_ptr<LlrConfig> oldLlrConfig{nullptr};
+  if (port->getLlrConfig().has_value()) {
+    oldLlrConfig = port->getLlrConfig().value();
+  }
+  if ((newLlrConfig && !oldLlrConfig) || (!newLlrConfig && oldLlrConfig)) {
+    return false;
+  }
+  if (oldLlrConfig && newLlrConfig) {
+    if (*oldLlrConfig != *newLlrConfig) {
       return false;
     }
   }
@@ -3108,6 +3142,49 @@ shared_ptr<Port> ThriftConfigApplier::updatePort(
         isPortFlowletConfigUnchanged(portFlowletCfg, orig);
   }
 
+  bool llrConfigUnchanged = true;
+  auto newLlrConfigName = std::optional<cfg::LlrConfigName>();
+  std::shared_ptr<LlrConfig> llrConfig;
+  if (portConf->llrConfigName().has_value()) {
+    newLlrConfigName = portConf->llrConfigName().value();
+    // Loud rejection: LLR is only meaningful on ASICs that support it (UE Spec
+    // section 5.1; Tomahawk Ultra only today). Reject at config time rather
+    // than silently ignoring so state and hardware never diverge.
+    const auto portSwitchIds =
+        scopeResolver_.scope(PortID(*portConf->logicalID())).switchIds();
+    for (auto switchId : portSwitchIds) {
+      if (!hwAsicTable_->isFeatureSupported(
+              switchId, HwAsic::Feature::LINK_LAYER_RETRANSMISSION)) {
+        throw FbossError(
+            "Port ",
+            orig->getID(),
+            " has LLR config name: ",
+            *newLlrConfigName,
+            " but its ASIC does not support LINK_LAYER_RETRANSMISSION");
+      }
+    }
+    if (auto llrConfigs = cfg_->llrConfigs()) {
+      auto it = llrConfigs->find(newLlrConfigName.value());
+      if (it == llrConfigs->end()) {
+        throw FbossError(
+            "Port LLR config name: ",
+            *newLlrConfigName,
+            " does not exist in LlrConfig map");
+      }
+    }
+    auto llrConfigMap = new_->getLlrConfigs();
+    llrConfig = llrConfigMap->getNodeIf(*newLlrConfigName);
+    if (!llrConfig) {
+      throw FbossError(
+          "Port:",
+          orig->getID(),
+          " but LLR config name: ",
+          *newLlrConfigName,
+          " doesn't exist in the LLR config map.");
+    }
+    llrConfigUnchanged = isLlrConfigUnchanged(llrConfig, orig);
+  }
+
   auto newFabricLinkMonSwitchId = getFabricLinkMonitoringPortSwitchId(
       PortID(*portConf->logicalID()),
       *portConf->portType(),
@@ -3137,6 +3214,7 @@ shared_ptr<Port> ThriftConfigApplier::updatePort(
       *portConf->drainState() == orig->getPortDrainState() &&
       portFlowletConfigUnchanged &&
       newFlowletConfigName == orig->getFlowletConfigName() &&
+      llrConfigUnchanged && newLlrConfigName == orig->getLlrConfigName() &&
       *portConf->conditionalEntropyRehash() ==
           orig->getConditionalEntropyRehash() &&
       portConf->selfHealingECMPLagEnable().value_or(false) ==
@@ -3219,6 +3297,8 @@ shared_ptr<Port> ThriftConfigApplier::updatePort(
   newPort->setPortDrainState(*portConf->drainState());
   newPort->setFlowletConfigName(newFlowletConfigName);
   newPort->setPortFlowletConfig(portFlowletCfg);
+  newPort->setLlrConfigName(newLlrConfigName);
+  newPort->setLlrConfig(llrConfig);
   newPort->setScope(*portConf->scope());
   newPort->setConditionalEntropyRehash(*portConf->conditionalEntropyRehash());
   newPort->setPortSwitchId(newFabricLinkMonSwitchId);
@@ -4379,6 +4459,10 @@ void ThriftConfigApplier::checkAcl(const cfg::AclEntry* config) const {
       throw FbossError("l4DstPort and l4DstPortRange cannot both be set");
     }
   }
+  if (config->dstIp() && (config->dstIpV6Word3() || config->dstIpV6Word2())) {
+    throw FbossError(
+        "dstIp cannot be combined with dstIpV6Word3 or dstIpV6Word2");
+  }
   if (config->icmpCode() && !config->icmpType()) {
     throw FbossError("icmp type must be set when icmp code is set");
   }
@@ -4444,6 +4528,12 @@ shared_ptr<AclEntry> ThriftConfigApplier::createAcl(
   }
   if (auto dstIp = config->dstIp()) {
     newAcl->setDstIp(IPAddress::createNetwork(*dstIp));
+  }
+  if (auto dstIpV6Word3 = config->dstIpV6Word3()) {
+    newAcl->setDstIpV6Word3(*dstIpV6Word3);
+  }
+  if (auto dstIpV6Word2 = config->dstIpV6Word2()) {
+    newAcl->setDstIpV6Word2(*dstIpV6Word2);
   }
   if (auto proto = config->proto()) {
     newAcl->setProto(*proto);
@@ -4757,9 +4847,6 @@ shared_ptr<Interface> ThriftConfigApplier::createInterface(
   if (config->desiredPeerAddressIPv6().has_value()) {
     intf->setDesiredPeerAddressIPv6(config->desiredPeerAddressIPv6().value());
   }
-  if (config->desiredPeerAddressIPv4().has_value()) {
-    intf->setDesiredPeerAddressIPv4(config->desiredPeerAddressIPv4().value());
-  }
   return intf;
 }
 
@@ -4804,13 +4891,11 @@ shared_ptr<Interface> ThriftConfigApplier::updateInterface(
     return true;
   };
 
-  bool changedDesiredPeer = desiredPeerChanged(
-                                config->desiredPeerName(),
-                                orig->getDesiredPeerName()) ||
-      desiredPeerChanged(config->desiredPeerAddressIPv6(),
-                         orig->getDesiredPeerAddressIPv6()) ||
-      desiredPeerChanged(config->desiredPeerAddressIPv4(),
-                         orig->getDesiredPeerAddressIPv4());
+  bool changedDesiredPeer =
+      desiredPeerChanged(
+          config->desiredPeerName(), orig->getDesiredPeerName()) ||
+      desiredPeerChanged(
+          config->desiredPeerAddressIPv6(), orig->getDesiredPeerAddressIPv6());
 
   if (orig->getRouterID() == RouterID(*config->routerID()) &&
       (orig->getVlanIDHelper() == VlanID(*config->vlanID())) &&
@@ -4854,10 +4939,6 @@ shared_ptr<Interface> ThriftConfigApplier::updateInterface(
   if (config->desiredPeerAddressIPv6().has_value()) {
     newIntf->setDesiredPeerAddressIPv6(
         config->desiredPeerAddressIPv6().value());
-  }
-  if (config->desiredPeerAddressIPv4().has_value()) {
-    newIntf->setDesiredPeerAddressIPv4(
-        config->desiredPeerAddressIPv4().value());
   }
 
   return newIntf;
@@ -5054,6 +5135,39 @@ ThriftConfigApplier::createFlowletSwitchingConfig(
     newFlowletSwitchingConfig->setMaxArsVirtualGroups(
         *config.maxArsVirtualGroups());
   }
+  if (config.standbySwitchingMode()) {
+    // Distinct switching modes keep the standby and primary ARS objects from
+    // collapsing into a single SaiStore entry.
+    if (*config.standbySwitchingMode() == *config.switchingMode()) {
+      throw FbossError(
+          "standbySwitchingMode must differ from switchingMode, both are ",
+          apache::thrift::util::enumNameSafe(*config.switchingMode()));
+    }
+    if (!config.standbyInactivityIntervalUsecs()) {
+      throw FbossError(
+          "standbySwitchingMode is set but standbyInactivityIntervalUsecs "
+          "is missing");
+    }
+    if (!config.standbyFlowletTableSize()) {
+      throw FbossError(
+          "standbySwitchingMode is set but standbyFlowletTableSize is missing");
+    }
+    newFlowletSwitchingConfig->setStandbySwitchingMode(
+        *config.standbySwitchingMode());
+    newFlowletSwitchingConfig->setStandbyInactivityIntervalUsecs(
+        *config.standbyInactivityIntervalUsecs());
+    newFlowletSwitchingConfig->setStandbyFlowletTableSize(
+        *config.standbyFlowletTableSize());
+  } else if (
+      config.standbyInactivityIntervalUsecs() ||
+      config.standbyFlowletTableSize()) {
+    throw FbossError(
+        "standbyInactivityIntervalUsecs and standbyFlowletTableSize require "
+        "standbySwitchingMode to be set");
+  }
+  if (config.sourcePortPrune()) {
+    newFlowletSwitchingConfig->setSourcePortPrune(*config.sourcePortPrune());
+  }
   return newFlowletSwitchingConfig;
 }
 
@@ -5120,6 +5234,152 @@ std::shared_ptr<PortFlowletCfg> ThriftConfigApplier::createPortFlowletConfig(
   portFlowletCfg->setLoadWeight(*portFlowletConfig.loadWeight());
   portFlowletCfg->setQueueWeight(*portFlowletConfig.queueWeight());
   return portFlowletCfg;
+}
+
+shared_ptr<MultiSwitchLlrConfigMap> ThriftConfigApplier::updateLlrConfigs(
+    bool* changed) {
+  *changed = false;
+  auto origLlrConfigs = orig_->getLlrConfigs();
+  LlrConfigMap::NodeContainer newLlrConfigMap;
+  auto newCfgedLlrConfigs = cfg_->llrConfigs();
+
+  if (!newCfgedLlrConfigs && !origLlrConfigs->numNodes()) {
+    return nullptr;
+  }
+  if (!newCfgedLlrConfigs && origLlrConfigs->numNodes()) {
+    // old cfg exists but new one doesn't
+    *changed = true;
+    return std::make_shared<MultiSwitchLlrConfigMap>();
+  }
+  if (newCfgedLlrConfigs && !origLlrConfigs->numNodes()) {
+    *changed = true;
+  }
+  if (origLlrConfigs->numNodes() != (*newCfgedLlrConfigs).size()) {
+    *changed = true;
+  }
+  for (auto& llrConfig : *newCfgedLlrConfigs) {
+    auto newLlrConfig = createLlrConfig(llrConfig.first, llrConfig.second);
+    auto origLlrConfig = origLlrConfigs->getNodeIf(llrConfig.first);
+    if (!origLlrConfig || (*origLlrConfig != *newLlrConfig)) {
+      *changed = true;
+    }
+    newLlrConfigMap.emplace(std::make_pair(llrConfig.first, newLlrConfig));
+  }
+
+  if (*changed) {
+    auto llrConfigMap =
+        std::make_shared<LlrConfigMap>(std::move(newLlrConfigMap));
+    return toMultiSwitchMap<MultiSwitchLlrConfigMap>(
+        llrConfigMap, scopeResolver_);
+  }
+  return nullptr;
+}
+
+static void validateLlrConfig(
+    const std::string& id,
+    const cfg::LlrConfig& llrConfig) {
+  // LlrConfig thrift fields are signed (thrift has no unsigned type) but have
+  // tighter UE Spec 1.0.2 Table 5-9 ranges than their SAI attribute widths.
+  // Reject out-of-range values loudly here instead of silently wrapping when
+  // narrowed in SaiPortManager::programLlr, or failing later at SAI profile
+  // create.
+  auto checkRange =
+      [&id](const char* field, int64_t value, int64_t minVal, int64_t maxVal) {
+        if (value < minVal || value > maxVal) {
+          throw FbossError(
+              "LlrConfig \"",
+              id,
+              "\": ",
+              field,
+              "=",
+              value,
+              " is out of range [",
+              minVal,
+              ", ",
+              maxVal,
+              "]");
+        }
+      };
+  // Bounds are the UE Spec 1.0.2 Table 5-9 limits (ASIC-agnostic). Several are
+  // tighter than the underlying SAI attribute width -- e.g. replay_timer_max
+  // and ctlos_target_spacing map to u32/u16 SAI attrs but the spec caps them
+  // lower -- so we enforce the spec value, not the register width.
+  constexpr int64_t kOutstandingFramesMin = 0;
+  // outstanding_seq_max: spec absolute max 524288 (inclusive), i.e. half the
+  // 2^20 sequence-number space. Implementations may support a lower max, which
+  // is enforced at profile-bind time, not here.
+  constexpr int64_t kOutstandingFramesMax = 524288;
+  // outstanding_data_max: sized to the link bandwidth-delay product; the spec
+  // gives no ceiling beyond the u32 register width.
+  constexpr int64_t kOutstandingBytesMin = 0;
+  constexpr int64_t kOutstandingBytesMax = std::numeric_limits<uint32_t>::max();
+  // replay_timer_max: 16-bit nanosecond value.
+  constexpr int64_t kReplayTimerMinNs = 0;
+  constexpr int64_t kReplayTimerMaxNs = 65535;
+  // replay_ct_max: u8 count; 255 means "no maximum".
+  constexpr int64_t kReplayCountMin = 0;
+  constexpr int64_t kReplayCountMax = 255;
+  // pcs_lost_timeout / data_age_timeout: 32-bit nanosecond values; the spec
+  // ceiling is the full u32 range (~4.29 s).
+  constexpr int64_t kTimeoutMinNs = 0;
+  constexpr int64_t kTimeoutMaxNs = std::numeric_limits<uint32_t>::max();
+  // ctlos_target_spacing: valid range in bytes.
+  constexpr int64_t kCtlosTargetSpacingMin = 400;
+  constexpr int64_t kCtlosTargetSpacingMax = 16384;
+
+  checkRange(
+      "outstandingFramesMax",
+      *llrConfig.outstandingFramesMax(),
+      kOutstandingFramesMin,
+      kOutstandingFramesMax);
+  checkRange(
+      "outstandingBytesMax",
+      *llrConfig.outstandingBytesMax(),
+      kOutstandingBytesMin,
+      kOutstandingBytesMax);
+  checkRange(
+      "replayTimerMax",
+      *llrConfig.replayTimerMax(),
+      kReplayTimerMinNs,
+      kReplayTimerMaxNs);
+  checkRange(
+      "replayCountMax",
+      *llrConfig.replayCountMax(),
+      kReplayCountMin,
+      kReplayCountMax);
+  checkRange(
+      "pcsLostTimeout",
+      *llrConfig.pcsLostTimeout(),
+      kTimeoutMinNs,
+      kTimeoutMaxNs);
+  checkRange(
+      "dataAgeTimeout",
+      *llrConfig.dataAgeTimeout(),
+      kTimeoutMinNs,
+      kTimeoutMaxNs);
+  checkRange(
+      "ctlosTargetSpacing",
+      *llrConfig.ctlosTargetSpacing(),
+      kCtlosTargetSpacingMin,
+      kCtlosTargetSpacingMax);
+}
+
+std::shared_ptr<LlrConfig> ThriftConfigApplier::createLlrConfig(
+    const std::string& id,
+    const cfg::LlrConfig& llrConfig) {
+  validateLlrConfig(id, llrConfig);
+  auto cfg = std::make_shared<LlrConfig>(id);
+  cfg->setOutstandingFramesMax(*llrConfig.outstandingFramesMax());
+  cfg->setOutstandingBytesMax(*llrConfig.outstandingBytesMax());
+  cfg->setReplayTimerMax(*llrConfig.replayTimerMax());
+  cfg->setReplayCountMax(*llrConfig.replayCountMax());
+  cfg->setPcsLostTimeout(*llrConfig.pcsLostTimeout());
+  cfg->setDataAgeTimeout(*llrConfig.dataAgeTimeout());
+  cfg->setInitFrameAction(*llrConfig.initFrameAction());
+  cfg->setFlushFrameAction(*llrConfig.flushFrameAction());
+  cfg->setReInitOnFlush(*llrConfig.reInitOnFlush());
+  cfg->setCtlosTargetSpacing(*llrConfig.ctlosTargetSpacing());
+  return cfg;
 }
 
 shared_ptr<MultiSwitchBufferPoolCfgMap>
@@ -6760,21 +7020,32 @@ shared_ptr<Srv6Tunnel> ThriftConfigApplier::createSrv6Tunnel(
   if (config.dstIp().has_value()) {
     tunnel->setDstIP(folly::IPAddress(*config.dstIp()));
   }
-  if (tunnel->getType() != TunnelType::SRV6_ENCAP) {
+  auto type = tunnel->getType();
+  if (type == TunnelType::SRV6_ENCAP) {
+    if (!tunnel->getSrcIP()) {
+      throw FbossError(
+          "Src IP not set for: ", tunnel->getID(), ", SRv6 encap tunnel");
+    }
+    if (tunnel->getDstIP()) {
+      throw FbossError(
+          "DST IP set for: ",
+          tunnel->getID(),
+          ", must not be set for tunnels of type SRv6 encap tunnel");
+    }
+  } else if (type == TunnelType::SRV6_DECAP) {
+    // SRv6 decap tunnel carries only decap QoS modes; src/dst IP must not be
+    // set.
+    if (tunnel->getSrcIP() || tunnel->getDstIP()) {
+      throw FbossError(
+          "Src/DST IP set for: ",
+          tunnel->getID(),
+          ", must not be set for tunnels of type SRv6 decap tunnel");
+    }
+  } else {
     throw FbossError(
         "Unsupported tunnel type for: ",
         tunnel->getID(),
-        ", only SRV6_ENCAP is supported");
-  }
-  if (!tunnel->getSrcIP()) {
-    throw FbossError(
-        "Src IP not set for: ", tunnel->getID(), ", SRv6 encap tunnel");
-  }
-  if (tunnel->getDstIP()) {
-    throw FbossError(
-        "DST IP set for: ",
-        tunnel->getID(),
-        ", must not be set for tunnels of type SRv6 encap tunnel");
+        ", only SRV6_ENCAP and SRV6_DECAP are supported");
   }
   return tunnel;
 }

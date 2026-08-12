@@ -68,6 +68,16 @@ SaiPortSerdesTraits::Attributes::AttributeRxReachWrapper::operator()() {
   return std::nullopt;
 }
 
+std::optional<sai_attr_id_t> SaiPortSerdesTraits::Attributes::
+    AttributeTransmitPrecodingStateWrapper::operator()() {
+  return std::nullopt;
+}
+
+std::optional<sai_attr_id_t> SaiPortSerdesTraits::Attributes::
+    AttributeReceivePrecodingStateWrapper::operator()() {
+  return std::nullopt;
+}
+
 std::optional<sai_attr_id_t>
 SaiPortSerdesTraits::Attributes::AttributeDcoWrapper::operator()() {
   return std::nullopt;
@@ -458,6 +468,28 @@ std::optional<sai_attr_id_t>
 SaiPortTraits::Attributes::AttributeLinkDownDebouncePeriodMs::operator()() {
 #if defined(TAJO_SDK_GTE_26_2) || defined(TAJO_SDK_VERSION_25_5_4210)
   return SAI_PORT_ATTR_LINK_DOWN_DEBOUNCE_PERIOD_MILLISECONDS;
+#else
+  return std::nullopt;
+#endif
+}
+
+std::optional<sai_attr_id_t>
+SaiPortTraits::Attributes::AttributeLinkUpDebounceRetriggerCount::operator()() {
+#if defined(TAJO_SDK_VERSION_25_5_4210) || \
+    defined(TAJO_SDK_VERSION_26_2_4210) || \
+    (defined(TAJO_SDK_GTE_26_5) && !defined(TAJO_SDK_VERSION_26_5_5211))
+  return SAI_PORT_ATTR_LINK_UP_DEBOUNCE_RETRIGGER_COUNT;
+#else
+  return std::nullopt;
+#endif
+}
+
+std::optional<sai_attr_id_t> SaiPortTraits::Attributes::
+    AttributeLinkDownDebounceRetriggerCount::operator()() {
+#if defined(TAJO_SDK_VERSION_25_5_4210) || \
+    defined(TAJO_SDK_VERSION_26_2_4210) || \
+    (defined(TAJO_SDK_GTE_26_5) && !defined(TAJO_SDK_VERSION_26_5_5211))
+  return SAI_PORT_ATTR_LINK_DOWN_DEBOUNCE_RETRIGGER_COUNT;
 #else
   return std::nullopt;
 #endif

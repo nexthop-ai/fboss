@@ -45,7 +45,7 @@ class Tomahawk6Asic : public BroadcomXgsAsic {
     return 420;
   }
   uint32_t getNumCellsAvailable(PlatformType /*platformType*/) const override {
-    return 616994;
+    return 629986;
   }
   uint32_t getSaiPhysicalLaneId(
       PlatformType platformType,
@@ -113,6 +113,9 @@ class Tomahawk6Asic : public BroadcomXgsAsic {
   }
   std::optional<uint32_t> getMaxNdpTableSize() const override {
     return 8192;
+  }
+  std::optional<uint32_t> getMaxRoutes() const override {
+    return 125000;
   }
   std::optional<uint32_t> getMaxArsGroups() const override;
   std::optional<uint32_t> getArsBaseIndex() const override;

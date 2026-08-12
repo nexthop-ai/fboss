@@ -19,6 +19,7 @@
 #endif
 
 #include "configerator/structs/neteng/bgp_policy/thrift/gen-cpp2/bgp_policy_types.h" // NOLINT(misc-include-cleaner)
+#include "configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h"
 #include "fboss/agent/AddressUtil.h"
 #include "fboss/cli/fboss2/CmdLocalOptions.h"
 #include "fboss/cli/fboss2/commands/show/bgp/CmdShowUtils.h"
@@ -34,6 +35,7 @@
 #include "neteng/fboss/bgp/if/gen-cpp2/TBgpService.h"
 #include "neteng/fboss/bgp/if/gen-cpp2/bgp_thrift_types.h"
 #include "thrift/lib/cpp/util/EnumUtils.h"
+#include "thrift/lib/cpp2/protocol/Serializer.h"
 
 namespace facebook::fboss {
 using namespace neteng::fboss::bgp::thrift;
@@ -64,6 +66,63 @@ using facebook::neteng::fboss::bgp::thrift::TBgpAddPathNegotiated;
 using facebook::neteng::fboss::bgp::thrift::TBgpService;
 using facebook::neteng::fboss::bgp::thrift::TBgpSessionDetail;
 using neteng::fboss::bgp::thrift::TBgpPeerState;
+
+std::optional<facebook::bgp::bgp_policy::BgpPolicies> getRunningBgpPolicies(
+    const HostInfo& hostInfo) {
+  auto client = utils::createClient<Client<TBgpService>>(hostInfo);
+  std::string policyConfigJson;
+  try {
+    client->sync_getPolicyConfig(policyConfigJson);
+    if (!policyConfigJson.empty()) {
+      auto policyConfig = apache::thrift::SimpleJSONSerializer::deserialize<
+          facebook::bgp::thrift::BgpPolicyConfig>(policyConfigJson);
+      return policyConfig.policies().to_optional();
+    }
+  } catch (const std::exception& ex) {
+    XLOGF(DBG2, "Standalone BGP policy config unavailable: {}", ex.what());
+  }
+
+  try {
+    facebook::bgp::thrift::BgpConfig bgpConfig;
+    client->sync_getRunningConfigStruct(bgpConfig);
+    return bgpConfig.policies().to_optional();
+  } catch (const std::exception& ex) {
+    XLOGF(
+        WARN, "BGP policy config unavailable from both sources: {}", ex.what());
+    return std::nullopt;
+  }
+}
+
+std::optional<facebook::bgp::nsf_policy::NsfTeWeightEncoding>
+getNsfTeWeightEncoding(const facebook::bgp::bgp_policy::BgpPolicies& policies) {
+  // A switch's running BGP policy is guaranteed to carry at most one GAR NSF TE
+  // weight encoding scheme, so the first supported encoding we encounter is the
+  // definitive switch-wide scheme; we can safely return on the first match.
+  for (const auto& statement : *policies.bgp_policy_statements()) {
+    for (const auto& term : *statement.policy_entries()) {
+      for (const auto& action : *term.policy_action_entries()) {
+        if (!action.lbw_ext_community_action().has_value() ||
+            !action.lbw_ext_community_action()->encoding_scheme().has_value()) {
+          continue;
+        }
+        const auto& encoding =
+            *action.lbw_ext_community_action()->encoding_scheme();
+        switch (encoding.getType()) {
+          case facebook::bgp::nsf_policy::NsfTeWeightEncoding::Type::
+              fpf_l2_encoding:
+          case facebook::bgp::nsf_policy::NsfTeWeightEncoding::Type::
+              l2_encoding:
+            return encoding;
+          // Intentionally no default: listing every variant makes -Wswitch-enum
+          // flag any newly added encoding scheme so this switch is revisited.
+          case facebook::bgp::nsf_policy::NsfTeWeightEncoding::Type::__EMPTY__:
+            break;
+        }
+      }
+    }
+  }
+  return std::nullopt;
+}
 
 const std::string printCommunities(
     const std::vector<TBgpCommunity>& peer_communities,
@@ -377,6 +436,10 @@ void printBgpCapabilities(const TBgpSessionDetail& details, std::ostream& out) {
   if (folly::copy(details.ipv6_unicast().value())) {
     out << "    Multiprotocol IPv6 Unicast: negotiated" << std::endl;
   }
+  if (folly::copy(details.legacy_v4_nlri_encoding().value())) {
+    out << "    Legacy v4 NLRI encoding (RFC 4271 classic NLRI + NEXT_HOP): yes"
+        << std::endl;
+  }
   if (folly::copy(details.rr_client().value())) {
     out << "    Route Refresh: advertised" << std::endl;
   }
@@ -393,6 +456,110 @@ void printBgpCapabilities(const TBgpSessionDetail& details, std::ostream& out) {
   } else {
     out << "    Graceful Restart: NOT sent" << std::endl;
   }
+}
+
+void printBgpPrefixTelemetry(
+    const TBgpSession& neighbor,
+    const TBgpSessionDetail& details,
+    std::ostream& out) {
+  // Prefix-level telemetry: the current advertised/received prefix gauges plus
+  // the cumulative announcement/withdrawal counts (per AFI where tracked).
+  // "Accepted" applies only to the current-gauge row; cumulative rows show "-".
+  const std::string kNa = "-";
+  Table table;
+  table.setHeader({"Prefix Telemetry", "Sent", "Rcvd", "Accepted"});
+  table.addRow(
+      {"Current prefixes",
+       folly::to<std::string>(*neighbor.postpolicy_sent_prefix_count()),
+       folly::to<std::string>(*neighbor.prepolicy_rcvd_prefix_count()),
+       folly::to<std::string>(*neighbor.postpolicy_rcvd_prefix_count())});
+  table.addRow(
+      {"Announcements IPv4",
+       folly::to<std::string>(*details.sent_update_announcements_ipv4()),
+       folly::to<std::string>(*details.recv_update_announcements_ipv4()),
+       kNa});
+  table.addRow(
+      {"Announcements IPv6",
+       folly::to<std::string>(*details.sent_update_announcements_ipv6()),
+       folly::to<std::string>(*details.recv_update_announcements_ipv6()),
+       kNa});
+  table.addRow(
+      {"Withdrawals",
+       folly::to<std::string>(*details.sent_update_withdrawals()),
+       folly::to<std::string>(*details.recv_update_withdrawals()),
+       kNa});
+  out << table << std::endl;
+}
+
+void printBgpMessageCounters(
+    const TBgpSessionDetail& details,
+    std::ostream& out) {
+  // Per-message-type PDU counters for both layers: data-plane (socket, the
+  // SessionManager I/O thread) and control-plane (AdjRib / PeerManager). They
+  // converge for cross-module validation, and `clear bgp egress-counters` /
+  // `clear bgp ingress-counters` zero them for debugging. AdjRib only
+  // produces/consumes UPDATE and EoR PDUs, so the other types show "-" there.
+
+  // Only render when there is something to show, so idle peers stay
+  // uncluttered. A clear zeroes one direction at a time, so the other
+  // direction's non-zero counters keep the table visible for verifying the
+  // clear.
+  const bool anyCounter = *details.socket_tx_open_msgs() ||
+      *details.socket_tx_update_msgs() || *details.socket_tx_keepalive_msgs() ||
+      *details.socket_tx_notification_msgs() ||
+      *details.socket_tx_route_refresh_msgs() ||
+      *details.socket_tx_eor_msgs() || *details.socket_rx_open_msgs() ||
+      *details.socket_rx_update_msgs() || *details.socket_rx_keepalive_msgs() ||
+      *details.socket_rx_notification_msgs() ||
+      *details.socket_rx_route_refresh_msgs() ||
+      *details.socket_rx_eor_msgs() || *details.adjrib_sent_update_msgs() ||
+      *details.adjrib_sent_eor_msgs() || *details.adjrib_recv_update_msgs() ||
+      *details.adjrib_recv_eor_msgs();
+  if (!anyCounter) {
+    return;
+  }
+
+  const std::string kNa = "-";
+  Table table;
+  table.setHeader(
+      {"Message Type", "Socket Tx", "Socket Rx", "AdjRib Sent", "AdjRib Recv"});
+  table.addRow(
+      {"open",
+       folly::to<std::string>(*details.socket_tx_open_msgs()),
+       folly::to<std::string>(*details.socket_rx_open_msgs()),
+       kNa,
+       kNa});
+  table.addRow(
+      {"update",
+       folly::to<std::string>(*details.socket_tx_update_msgs()),
+       folly::to<std::string>(*details.socket_rx_update_msgs()),
+       folly::to<std::string>(*details.adjrib_sent_update_msgs()),
+       folly::to<std::string>(*details.adjrib_recv_update_msgs())});
+  table.addRow(
+      {"keepalive",
+       folly::to<std::string>(*details.socket_tx_keepalive_msgs()),
+       folly::to<std::string>(*details.socket_rx_keepalive_msgs()),
+       kNa,
+       kNa});
+  table.addRow(
+      {"notification",
+       folly::to<std::string>(*details.socket_tx_notification_msgs()),
+       folly::to<std::string>(*details.socket_rx_notification_msgs()),
+       kNa,
+       kNa});
+  table.addRow(
+      {"route-refresh",
+       folly::to<std::string>(*details.socket_tx_route_refresh_msgs()),
+       folly::to<std::string>(*details.socket_rx_route_refresh_msgs()),
+       kNa,
+       kNa});
+  table.addRow(
+      {"end-of-rib",
+       folly::to<std::string>(*details.socket_tx_eor_msgs()),
+       folly::to<std::string>(*details.socket_rx_eor_msgs()),
+       folly::to<std::string>(*details.adjrib_sent_eor_msgs()),
+       folly::to<std::string>(*details.adjrib_recv_eor_msgs())});
+  out << table << std::endl;
 }
 
 void printAddPathCapability(

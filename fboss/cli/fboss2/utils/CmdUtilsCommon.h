@@ -32,6 +32,14 @@ namespace facebook::fboss::utils {
 constexpr int kMtuMin = 68;
 constexpr int kMtuMax = 9416;
 
+// 802.1Q VLAN id bounds. 0 and 4095 are reserved.
+constexpr int32_t kVlanIdMin = 1;
+constexpr int32_t kVlanIdMax = 4094;
+
+// Queue-id ceiling shared by the qos config/delete commands. Arbitrary but
+// high; the true maximum is ASIC-dependent.
+constexpr int16_t kMaxQueueId = 128;
+
 struct LocalOption {
   std::string name;
   std::string helpMsg;

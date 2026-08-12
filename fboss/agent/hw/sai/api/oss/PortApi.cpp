@@ -52,6 +52,16 @@ SaiPortSerdesTraits::Attributes::AttributeRxReachWrapper::operator()() {
   return std::nullopt;
 }
 
+std::optional<sai_attr_id_t> SaiPortSerdesTraits::Attributes::
+    AttributeTransmitPrecodingStateWrapper::operator()() {
+  return std::nullopt;
+}
+
+std::optional<sai_attr_id_t> SaiPortSerdesTraits::Attributes::
+    AttributeReceivePrecodingStateWrapper::operator()() {
+  return std::nullopt;
+}
+
 std::optional<sai_attr_id_t>
 SaiPortSerdesTraits::Attributes::AttributeDcoWrapper::operator()() {
   return std::nullopt;
@@ -435,6 +445,16 @@ SaiPortTraits::Attributes::AttributeLinkUpDebouncePeriodMs::operator()() {
 
 std::optional<sai_attr_id_t>
 SaiPortTraits::Attributes::AttributeLinkDownDebouncePeriodMs::operator()() {
+  return std::nullopt;
+}
+
+std::optional<sai_attr_id_t>
+SaiPortTraits::Attributes::AttributeLinkUpDebounceRetriggerCount::operator()() {
+  return std::nullopt;
+}
+
+std::optional<sai_attr_id_t> SaiPortTraits::Attributes::
+    AttributeLinkDownDebounceRetriggerCount::operator()() {
   return std::nullopt;
 }
 
