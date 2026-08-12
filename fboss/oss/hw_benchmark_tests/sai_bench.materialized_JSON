@@ -2847,6 +2847,10 @@
         {
           "test_name_regex": "RxSlowPathBenchmark",
           "reason": "Temporary addition to known bad, needs more debugging"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollection",
+          "reason": "Flowlet/ARS not supported on G202X (graphene202x)"
         }
     ],
     "leaba/25.11.4210/graphene202x/mono": [
@@ -2897,6 +2901,10 @@
         {
           "test_name_regex": "RxSlowPathBenchmark",
           "reason": "Temporary addition to known bad, needs more debugging"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollection",
+          "reason": "Flowlet/ARS not supported on G202X (graphene202x)"
         }
     ],
     "leaba/25.11.4210/graphene202x/multi_switch": [
@@ -2947,6 +2955,10 @@
         {
           "test_name_regex": "RxSlowPathBenchmark",
           "reason": "Temporary addition to known bad, needs more debugging"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollection",
+          "reason": "Flowlet/ARS not supported on G202X (graphene202x)"
         }
     ],
     "leaba/25.5.4210/gibraltar": [
