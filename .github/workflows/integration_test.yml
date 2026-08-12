@@ -243,6 +243,29 @@ jobs:
               [ -f "$lib" ] && nh dvc scp "$lib" "$DUT":/tmp/pr_lib_stage/ || true
             done
             nh dvc ssh "$DUT" -c 'sudo mv /tmp/pr_lib_stage/* /opt/fboss/pr_lib/ 2>/dev/null; rm -rf /tmp/pr_lib_stage' || true
+
+            # Make the PR-built binaries resolve the PR-built libraries.
+            # run_test.py prepends /opt/fboss/lib{,64} to whatever
+            # LD_LIBRARY_PATH it inherits, so /opt/fboss/pr_lib is only ever
+            # reached for sonames the stable image does not also provide -- for
+            # the rest the binary silently gets the image's older copy, which is
+            # fatal once a dependency's ABI moves (a PR-built binary loading the
+            # image's libfolly aborts inside F14 on the first rehash).
+            #
+            # A wrapper per binary rather than a directory earlier on the search
+            # path: /opt/fboss/lib{,64} are searched by everything on the DUT,
+            # including the agent, and the agent comes from the stable image and
+            # must keep resolving the libraries it was built against.
+            for b in fboss2_integration_test fboss2-dev; do
+              printf '%s\n' \
+                '#!/bin/sh' \
+                "exec env LD_LIBRARY_PATH=/opt/fboss/pr_lib:\${LD_LIBRARY_PATH:-} /opt/fboss/bin/$b.real \"\$@\"" \
+                > "/tmp/$b.wrapper"
+              nh dvc scp "/tmp/$b.wrapper" "$DUT":/tmp/ || true
+              # Guarded so a retry against an already-prepared DUT does not
+              # move the wrapper on top of the real binary.
+              nh dvc ssh "$DUT" -c "[ -f /opt/fboss/bin/$b.real ] || sudo mv /opt/fboss/bin/$b /opt/fboss/bin/$b.real; sudo mv /tmp/$b.wrapper /opt/fboss/bin/$b; sudo chmod 0755 /opt/fboss/bin/$b" || true
+            done
             echo "::endgroup::"
 
             echo "::group::[$DUT] Copy test runner scripts"

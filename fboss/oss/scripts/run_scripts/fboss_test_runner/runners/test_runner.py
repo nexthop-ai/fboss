@@ -50,6 +50,7 @@ from fboss_test_runner.constants import (
     OPT_ARG_SETUP_WB,
     OPT_ARG_SIMULATOR,
     OPT_ARG_SKIP_KNOWN_BAD_TESTS,
+    OPT_ARG_SWITCH_ID_FOR_TESTING,
     OPT_ARG_TEST_RUN_TIMEOUT,
     OPT_KNOWN_BAD_TESTS_FILE,
     OPT_UNSUPPORTED_TESTS_FILE,
@@ -335,6 +336,12 @@ class TestRunner(abc.ABC):
             help="Specify test run timeout in seconds",
         )
         sub_parser.add_argument(
+            OPT_ARG_SWITCH_ID_FOR_TESTING,
+            type=int,
+            default=None,
+            help="Specify switch ID for testing on multi-NPU/multi-switch platforms",
+        )
+        sub_parser.add_argument(
             OPT_ARG_NUM_WARMBOOT_ITERATIONS,
             type=int,
             default=1,
@@ -442,6 +449,10 @@ class TestRunner(abc.ABC):
         ]
         if args.fruid_path is not None:
             run_cmd.append("--fruid_filepath=" + args.fruid_path)
+        if getattr(args, "switch_id_for_testing", None) is not None:
+            run_cmd.append(
+                f"{OPT_ARG_SWITCH_ID_FOR_TESTING}={args.switch_id_for_testing}"
+            )
         run_cmd += self._get_test_run_args(conf_file)
         run_cmd += self._get_common_gflags()
 
@@ -1215,6 +1226,8 @@ class TestRunner(abc.ABC):
             )
         tests_to_run = self._get_tests_to_run()
         tests_to_run = self._filter_tests(tests_to_run)
+        # Sort the tests to run to match internal test infra behavior
+        tests_to_run = sorted(tests_to_run)
 
         # Check if tests need to be run or only listed
         if (

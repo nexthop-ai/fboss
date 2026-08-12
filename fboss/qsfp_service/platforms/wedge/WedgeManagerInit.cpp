@@ -11,7 +11,6 @@
 
 #include "fboss/agent/platforms/common/PlatformMappingUtils.h"
 #include "fboss/lib/bsp/BspGenericSystemContainer.h"
-#include "fboss/lib/bsp/icecube800banw/Icecube800banwBspPlatformMapping.h"
 #include "fboss/lib/bsp/icecube800bc/Icecube800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/icetea800bc/Icetea800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/janga800bic/Janga800bicBspPlatformMapping.h"
@@ -39,7 +38,6 @@
 #include "fboss/qsfp_service/platforms/wedge/Wedge100Manager.h"
 #include "fboss/qsfp_service/platforms/wedge/Wedge400CManager.h"
 #include "fboss/qsfp_service/platforms/wedge/Wedge400Manager.h"
-#include "fboss/qsfp_service/platforms/wedge/Wedge40Manager.h"
 
 #include "fboss/lib/CommonFileUtils.h"
 
@@ -120,12 +118,8 @@ std::unique_ptr<WedgeManager> createWedgeManager(
           MontblancBspPlatformMapping,
           PlatformType::PLATFORM_MONTBLANC>(
           platformMapping, qsfpServiceThreads);
-    case PlatformType::PLATFORM_ICECUBE800BANW:
-      return createBspWedgeManager<
-          Icecube800banwBspPlatformMapping,
-          PlatformType::PLATFORM_ICECUBE800BANW>(
-          platformMapping, qsfpServiceThreads);
     case PlatformType::PLATFORM_ICECUBE800BC:
+    case PlatformType::PLATFORM_ICECUBE800BANW:
       return createBspWedgeManager<
           Icecube800bcBspPlatformMapping,
           PlatformType::PLATFORM_ICECUBE800BC>(
@@ -214,8 +208,7 @@ std::unique_ptr<WedgeManager> createWedgeManager(
           PlatformType::PLATFORM_LEH800BCLS>(
           platformMapping, qsfpServiceThreads);
     default:
-      return std::make_unique<Wedge40Manager>(
-          platformMapping, qsfpServiceThreads);
+      throw FbossError("Unsupported platform type");
   }
 }
 

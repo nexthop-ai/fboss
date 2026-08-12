@@ -26,7 +26,7 @@ jobs:
             DEPTH=$(( DEPTH + 50 ))
             git fetch --deepen=$DEPTH --no-tags origin ${{ github.base_ref }} ${{ github.head_ref }}
           done
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.9" # pre-commit-hooks requires Python 3.9+
       - name: Determine base ref for pre-commit

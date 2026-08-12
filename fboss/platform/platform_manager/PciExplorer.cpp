@@ -246,6 +246,9 @@ std::vector<uint16_t> PciExplorer::createI2cAdapter(
     uint32_t instanceId) {
   auto auxData = getAuxData(*i2cAdapterConfig.fpgaIpBlockConfig(), instanceId);
   auxData.i2c_data.num_channels = *i2cAdapterConfig.numberOfAdapters();
+  if (i2cAdapterConfig.busFreqHz().has_value()) {
+    auxData.i2c_data.bus_freq_hz = *i2cAdapterConfig.busFreqHz();
+  }
   create(pciDevice, *i2cAdapterConfig.fpgaIpBlockConfig(), auxData);
   return getI2cAdapterBusNums(pciDevice, i2cAdapterConfig, instanceId);
 }
@@ -805,7 +808,7 @@ std::string PciExplorer::getXcvrCtrlSysfsPath(
 }
 
 std::string PciExplorer::getMdioBusSysfsPath(
-    const PciDevice& pciDevice,
+    const PciDevice& /* pciDevice */,
     const FpgaIpBlockConfig& fpgaIpBlockConfig,
     uint32_t instanceId) {
   const auto mdioBusSysfsPath = "/sys/class/mdio_bus";

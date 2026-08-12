@@ -1,6 +1,5 @@
 namespace cpp2 facebook.fboss
 namespace go neteng.fboss.ctrl
-namespace php fboss
 namespace py neteng.fboss.ctrl
 namespace py3 neteng.fboss
 namespace py.asyncio neteng.fboss.asyncio.ctrl
@@ -21,7 +20,12 @@ include "fboss/lib/phy/prbs.thrift"
 include "fboss/agent/hw/hardware_stats.thrift"
 include "thrift/annotation/python.thrift"
 include "thrift/annotation/thrift.thrift"
+include "thrift/annotation/hack.thrift"
 
+@hack.NamePrefix{prefix = "fboss_"}
+@hack.LegacyAlwaysIncludeNamePrefixInProcessor
+@hack.LegacyOmitPrefixInNameString
+@hack.ConstantsClass{name = "fboss_CONSTANTS"}
 @thrift.AllowLegacyMissingUris
 package;
 
@@ -1441,6 +1445,14 @@ service FbossCtrl extends phy.FbossCommonPhyCtrl {
   /*
    * API to add named next hop groups, named next hop group with same name will be replaced
    */
+  void addNamedNextHopGroups(
+    1: list<common.NextHopGroup> nextHopGroups,
+  ) throws (1: fboss.FbossBaseError error);
+
+  /*
+   * API to add named next hop groups, named next hop group with same name will be replaced
+   * Deprecated. Use addNamedNextHopGroups.
+   */
   void addOrUpdateNamedNextHopGroups(
     1: list<common.NextHopGroup> nextHopGroups,
   ) throws (1: fboss.FbossBaseError error);
@@ -1496,14 +1508,14 @@ service FbossCtrl extends phy.FbossCommonPhyCtrl {
   /*
    * Add one or multiple traffic redirection policy objects.
    */
-  void addOrUpdatePolicies(1: list<common.Policy> policy) throws (
+  void addPolicies(1: list<common.Policy> policy) throws (
     1: fboss.FbossBaseError error,
   );
 
   /*
    * Remove one or multiple traffic redirection policy objects.
    */
-  void removePolicies(1: list<string> policyName) throws (
+  void deletePolicies(1: list<string> policyName) throws (
     1: fboss.FbossBaseError error,
   );
 
@@ -1685,7 +1697,7 @@ service FbossCtrl extends phy.FbossCommonPhyCtrl {
   ) throws (1: fboss.FbossBaseError error);
 
   /*
-   * Remove Adjacency FRR.
+   * Delete Adjacency FRR.
    *
    * protectedObject:
    *  non-existing (never added by addAdjacencyFrr): throws error
@@ -1694,7 +1706,7 @@ service FbossCtrl extends phy.FbossCommonPhyCtrl {
    * FrrProtectedObject is a union. Fill either protected uA mySID or MPLS
    * label.
    */
-  void removeAdjacencyFrr(1: FrrProtectedObject protectedObject) throws (
+  void deleteAdjacencyFrr(1: FrrProtectedObject protectedObject) throws (
     1: fboss.FbossBaseError error,
   );
 }

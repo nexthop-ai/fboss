@@ -108,7 +108,10 @@ typedef enum _sai_switch_extensions_attr_t {
   SAI_SWITCH_ATTR_MODULE_ID_TO_CREDIT_REQUEST_PROFILE_PARAM_LIST,
   SAI_SWITCH_ATTR_TRIGGER_SIMULATED_ECC_CORRECTABLE_ERROR,
   SAI_SWITCH_ATTR_TRIGGER_SIMULATED_ECC_UNCORRECTABLE_ERROR,
+// Upstreamed into the SAI spec as of 1.17.0; use the standard definition there.
+#if SAI_API_VERSION < SAI_VERSION(1, 17, 0)
   SAI_SWITCH_ATTR_DEFAULT_CPU_EGRESS_BUFFER_POOL,
+#endif
   SAI_SWITCH_ATTR_TECH_SUPPORT_TYPE,
   SAI_SWITCH_ATTR_MODULE_ID_FABRIC_PORT_LIST,
   SAI_SWITCH_ATTR_LOCAL_SYSTEM_PORT_ID_RANGE_LIST,
@@ -148,7 +151,10 @@ typedef enum _sai_port_extensions_attr_t {
   SAI_PORT_ATTR_RX_LANE_SQUELCH_ENABLE,
   SAI_PORT_ATTR_FDR_ENABLE,
   SAI_PORT_ATTR_CRC_ERROR_TOKEN_DETECT,
+// Upstreamed into the SAI spec as of 1.18.0; use the standard definition there.
+#if SAI_API_VERSION < SAI_VERSION(1, 18, 0)
   SAI_PORT_ATTR_PORT_PG_PKT_DROP_STATUS,
+#endif
   SAI_PORT_ATTR_FABRIC_SYSTEM_PORT,
   SAI_PORT_ATTR_RESET_QUEUE_CREDIT_BALANCE,
   SAI_PORT_ATTR_PFC_MONITOR_DIRECTION,
@@ -166,6 +172,10 @@ typedef enum _sai_buffer_pool_extensions_attr_t {
   SAI_BUFFER_POOL_ATTR_RESERVED_BUFFER_SIZE =
       SAI_BUFFER_POOL_ATTR_CUSTOM_RANGE_START,
 } sai_buffer_pool_extensions_attr_t;
+
+typedef enum _sai_counter_extensions_attr_t {
+  SAI_COUNTER_ATTR_EXT_LABEL_EXTENDED = SAI_COUNTER_ATTR_CUSTOM_RANGE_START,
+} sai_counter_extensions_attr_t;
 
 typedef enum _sai_next_hop_group_extensions_attr_t {
   SAI_NEXT_HOP_GROUP_ATTR_ARS_NEXT_HOP_GROUP_META_DATA =

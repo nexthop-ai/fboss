@@ -120,29 +120,11 @@ target_link_libraries(montblanc_bsp
   FBThrift::thriftcpp2
 )
 
-add_library(icecube800banw_bsp
-  fboss/lib/bsp/icecube800banw/Icecube800banwBspPlatformMapping.cpp
-)
-
-target_link_libraries(icecube800banw_bsp
-  bsp_platform_mapping
-  FBThrift::thriftcpp2
-)
-
 add_library(icecube800bc_bsp
   fboss/lib/bsp/icecube800bc/Icecube800bcBspPlatformMapping.cpp
 )
 
 target_link_libraries(icecube800bc_bsp
-  bsp_platform_mapping
-  FBThrift::thriftcpp2
-)
-
-add_library(m4062nhp_bsp
-  fboss/lib/bsp/m4062nhp/M4062nhpBspPlatformMapping.cpp
-)
-
-target_link_libraries(m4062nhp_bsp
   bsp_platform_mapping
   FBThrift::thriftcpp2
 )
@@ -287,6 +269,16 @@ target_link_libraries(saintpaul_bsp
   FBThrift::thriftcpp2
 )
 
+add_library(m4062nhp_bsp
+  fboss/lib/bsp/m4062nhp/M4062nhpBspPlatformMapping.cpp
+)
+
+target_link_libraries(m4062nhp_bsp
+  bsp_platform_mapping
+  bsp_platform_mapping_cpp2
+  FBThrift::thriftcpp2
+)
+
 add_library(qsfp_bsp_core
   fboss/lib/bsp/BspGenericSystemContainer.cpp
   fboss/lib/bsp/BspIOBus.cpp
@@ -316,7 +308,6 @@ target_link_libraries(qsfp_bsp_core
   meru800bia_bsp
   meru800bfa_bsp
   montblanc_bsp
-  icecube800banw_bsp
   icecube800bc_bsp
   m4062nhp_bsp
   icetea800bc_bsp

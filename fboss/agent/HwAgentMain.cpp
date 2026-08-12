@@ -14,9 +14,11 @@
 #include <folly/logging/LoggerDB.h>
 #include <folly/logging/xlog.h>
 #include <gflags/gflags.h>
+#include "fboss/agent/AgentConfig.h"
 #include "fboss/agent/InitHookRegistry.h"
 #ifndef IS_OSS
 #include "common/fb303/cpp/DefaultControl.h"
+#include "common/fb303/cpp/DefaultMonitor.h"
 #endif
 #ifdef IS_OSS
 #include "common/fb303/cpp/FacebookBase2.h"
@@ -252,6 +254,8 @@ int hwAgentMain(
       {FLAGS_hwagent_port_base + FLAGS_switchIndex},
       true /*setupSSL*/);
 #ifndef IS_OSS
+  server->setMonitoringInterface(
+      std::make_shared<facebook::fb303::DefaultMonitor>());
   server->setControlInterface(
       std::make_shared<facebook::fb303::DefaultControl>());
 #endif

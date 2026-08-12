@@ -48,7 +48,9 @@ brcm)
     echo "SAI tarball not found at $tarball, fetching it..." >&2
     SAI_VERSION="$SAI_VERSION" bash "$SCRIPT_DIR/ensure-sai.sh"
   fi
-  npu_sai_impl_flag="--npu-sai-impl SAI_BRCM_IMPL --npu-sai-sdk-version $SAI_SDK_VERSION --npu-libsai-impl-tarball $tarball"
+  # Pin the OCP SAI headers explicitly: the upstream default (1.18.1) collides
+  # with the experimental headers in the Broadcom SAI implementation.
+  npu_sai_impl_flag="--npu-sai-impl SAI_BRCM_IMPL --npu-sai-sdk-version $SAI_SDK_VERSION --npu-libsai-impl-tarball $tarball --npu-sai-version ${LIBSAI_VERSION:-1.16.3}"
   ;;
 
 csco)

@@ -1,0 +1,142 @@
+/*
+ *  Copyright (c) 2004-present, Facebook, Inc.
+ *  All rights reserved.
+ *
+ *  This source code is licensed under the BSD-style license found in the
+ *  LICENSE file in the root directory of this source tree. An additional grant
+ *  of patent rights can be found in the PATENTS file in the same directory.
+ *
+ */
+
+#include "fboss/agent/platforms/sai/SaiPlatformInitImpl.h"
+
+#include "fboss/agent/platforms/sai/GenericSaiBcmPlatform.h"
+#include "fboss/agent/platforms/sai/SaiBcmDarwinPlatform.h"
+#include "fboss/agent/platforms/sai/SaiBcmDarwinPlatformPort.h"
+#include "fboss/agent/platforms/sai/SaiBcmElbertPlatform.h"
+#include "fboss/agent/platforms/sai/SaiBcmElbertPlatformPort.h"
+#include "fboss/agent/platforms/sai/SaiBcmFujiPlatform.h"
+#include "fboss/agent/platforms/sai/SaiBcmFujiPlatformPort.h"
+#include "fboss/agent/platforms/sai/SaiBcmMinipackPlatform.h"
+#include "fboss/agent/platforms/sai/SaiBcmMinipackPlatformPort.h"
+#include "fboss/agent/platforms/sai/SaiBcmPlatformPort.h"
+#include "fboss/agent/platforms/sai/SaiBcmWedge100Platform.h"
+#include "fboss/agent/platforms/sai/SaiBcmWedge100PlatformPort.h"
+#include "fboss/agent/platforms/sai/SaiBcmWedge400Platform.h"
+#include "fboss/agent/platforms/sai/SaiBcmWedge400PlatformPort.h"
+#include "fboss/agent/platforms/sai/SaiBcmYampPlatform.h"
+#include "fboss/agent/platforms/sai/SaiBcmYampPlatformPort.h"
+#include "fboss/agent/platforms/sai/SaiElbert8DDPhyPlatformPort.h"
+#include "fboss/agent/platforms/sai/SaiNh4010fPlatform.h"
+#include "fboss/agent/platforms/sai/SaiNh4010fPlatformPort.h"
+#include "fboss/agent/platforms/sai/SaiNh4220fPlatform.h"
+#include "fboss/agent/platforms/sai/SaiNh4220fPlatformPort.h"
+#include "fboss/agent/platforms/sai/SaiNh5010fPlatform.h"
+#include "fboss/agent/platforms/sai/SaiNh5010fPlatformPort.h"
+
+namespace facebook::fboss {
+
+std::unique_ptr<SaiPlatform> chooseSaiPlatformImpl(
+    std::unique_ptr<PlatformProductInfo>& productInfo,
+    folly::MacAddress localMac,
+    const std::string& platformMappingStr) {
+  const auto type = productInfo->getType();
+  if (type == PlatformType::PLATFORM_WEDGE100) {
+    return std::make_unique<SaiBcmWedge100Platform>(
+        std::move(productInfo), localMac, platformMappingStr);
+  }
+  if (type == PlatformType::PLATFORM_WEDGE400 ||
+      type == PlatformType::PLATFORM_WEDGE400_GRANDTETON) {
+    return std::make_unique<SaiBcmWedge400Platform>(
+        std::move(productInfo), type, localMac, platformMappingStr);
+  }
+  if (type == PlatformType::PLATFORM_DARWIN ||
+      type == PlatformType::PLATFORM_DARWIN48V) {
+    return std::make_unique<SaiBcmDarwinPlatform>(
+        std::move(productInfo), localMac, platformMappingStr);
+  }
+  if (type == PlatformType::PLATFORM_MINIPACK) {
+    return std::make_unique<SaiBcmMinipackPlatform>(
+        std::move(productInfo), localMac, platformMappingStr);
+  }
+  if (type == PlatformType::PLATFORM_YAMP) {
+    return std::make_unique<SaiBcmYampPlatform>(
+        std::move(productInfo), localMac, platformMappingStr);
+  }
+  if (type == PlatformType::PLATFORM_FUJI) {
+    return std::make_unique<SaiBcmFujiPlatform>(
+        std::move(productInfo), localMac, platformMappingStr);
+  }
+  if (type == PlatformType::PLATFORM_ELBERT) {
+    return std::make_unique<SaiBcmElbertPlatform>(
+        std::move(productInfo), localMac, platformMappingStr);
+  }
+  if (type == PlatformType::PLATFORM_NH4010F) {
+    return std::make_unique<SaiNh4010fPlatform>(
+        std::move(productInfo), localMac, platformMappingStr);
+  }
+  if (type == PlatformType::PLATFORM_NH4220F) {
+    return std::make_unique<SaiNh4220fPlatform>(
+        std::move(productInfo), localMac, platformMappingStr);
+  }
+  if (type == PlatformType::PLATFORM_NH5010F) {
+    return std::make_unique<SaiNh5010fPlatform>(
+        std::move(productInfo), localMac, platformMappingStr);
+  }
+  if (useGenericSaiBcmPlatform(type)) {
+    return createGenericSaiBcmPlatform(
+        std::move(productInfo), localMac, platformMappingStr);
+  }
+  return nullptr;
+}
+
+std::unique_ptr<SaiPlatformPort> createSaiPlatformPort(
+    const PortID& portId,
+    SaiPlatform* platform) {
+  const auto platformMode = platform->getType();
+  if (platformMode == PlatformType::PLATFORM_WEDGE100) {
+    return std::make_unique<SaiBcmWedge100PlatformPort>(portId, platform);
+  }
+  if (platformMode == PlatformType::PLATFORM_WEDGE400 ||
+      platformMode == PlatformType::PLATFORM_WEDGE400_GRANDTETON) {
+    return std::make_unique<SaiBcmWedge400PlatformPort>(portId, platform);
+  }
+  if (platformMode == PlatformType::PLATFORM_DARWIN ||
+      platformMode == PlatformType::PLATFORM_DARWIN48V) {
+    return std::make_unique<SaiBcmDarwinPlatformPort>(portId, platform);
+  }
+  if (platformMode == PlatformType::PLATFORM_MINIPACK) {
+    return std::make_unique<SaiBcmMinipackPlatformPort>(portId, platform);
+  }
+  if (useGenericSaiBcmPlatform(platformMode)) {
+    return std::make_unique<SaiBcmPlatformPort>(portId, platform);
+  }
+  if (platformMode == PlatformType::PLATFORM_YAMP) {
+    return std::make_unique<SaiBcmYampPlatformPort>(portId, platform);
+  }
+  if (platformMode == PlatformType::PLATFORM_FUJI) {
+    return std::make_unique<SaiBcmFujiPlatformPort>(portId, platform);
+  }
+  if (platformMode == PlatformType::PLATFORM_ELBERT) {
+    if (platform->getAsic()->getAsicType() ==
+        cfg::AsicType::ASIC_TYPE_ELBERT_8DD) {
+      return std::make_unique<SaiElbert8DDPhyPlatformPort>(portId, platform);
+    }
+    if (platform->getAsic()->getAsicType() ==
+        cfg::AsicType::ASIC_TYPE_TOMAHAWK4) {
+      return std::make_unique<SaiBcmElbertPlatformPort>(portId, platform);
+    }
+  }
+  if (platformMode == PlatformType::PLATFORM_NH4010F) {
+    return std::make_unique<SaiNh4010fPlatformPort>(portId, platform);
+  }
+  if (platformMode == PlatformType::PLATFORM_NH4220F) {
+    return std::make_unique<SaiNh4220fPlatformPort>(portId, platform);
+  }
+  if (platformMode == PlatformType::PLATFORM_NH5010F) {
+    return std::make_unique<SaiNh5010fPlatformPort>(portId, platform);
+  }
+  return nullptr;
+}
+
+} // namespace facebook::fboss

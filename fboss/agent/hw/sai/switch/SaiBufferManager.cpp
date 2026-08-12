@@ -30,8 +30,6 @@
 #include "fboss/agent/hw/switch_asics/Tomahawk6Asic.h"
 #include "fboss/agent/hw/switch_asics/TomahawkAsic.h"
 #include "fboss/agent/hw/switch_asics/TomahawkUltra1Asic.h"
-#include "fboss/agent/hw/switch_asics/Trident2Asic.h"
-#include "fboss/agent/platforms/sai/SaiBcmPlatform.h"
 #include "fboss/agent/platforms/sai/SaiPlatform.h"
 #include "fboss/agent/state/PortQueue.h"
 
@@ -83,20 +81,6 @@ uint64_t getSwitchEgressPoolAvailableSize(const SaiPlatform* platform) {
       switchId, SaiSwitchTraits::Attributes::EgressPoolAvailableSize{});
 }
 
-uint32_t getNumCellsAvailable(const SaiPlatform* platform) {
-  auto asic = platform->getAsic();
-  if (asic->getAsicType() == cfg::AsicType::ASIC_TYPE_TOMAHAWK) {
-    auto saiBcmPlatform = static_cast<const SaiBcmPlatform*>(platform);
-    return static_cast<const TomahawkAsic*>(asic)->getNumCellsAvailable(
-        platform->getType(),
-        saiBcmPlatform->getHwConfigValue(
-            TomahawkAsic::optimizedMqueueGuaranteeHwConfig()) != nullptr,
-        saiBcmPlatform->getHwConfigValue(
-            TomahawkAsic::optimizedMmuConfigOverrideHwConfig()) != nullptr);
-  }
-  return asic->getNumCellsAvailable(platform->getType());
-}
-
 void assertMaxBufferPoolSize(const SaiPlatform* platform) {
   auto saiSwitch = static_cast<SaiSwitch*>(platform->getHwSwitch());
   if (saiSwitch->getBootType() != BootType::COLD_BOOT) {
@@ -121,6 +105,7 @@ void assertMaxBufferPoolSize(const SaiPlatform* platform) {
     case cfg::AsicType::ASIC_TYPE_SANDIA_PHY:
     case cfg::AsicType::ASIC_TYPE_RAMON:
     case cfg::AsicType::ASIC_TYPE_RAMON3:
+    case cfg::AsicType::ASIC_TYPE_TRIDENT2:
     case cfg::AsicType::ASIC_TYPE_CHENAB:
     case cfg::AsicType::ASIC_TYPE_G202X:
     case cfg::AsicType::ASIC_TYPE_CHENAB2:
@@ -139,7 +124,6 @@ void assertMaxBufferPoolSize(const SaiPlatform* platform) {
     case cfg::AsicType::ASIC_TYPE_JERICHO4:
     case cfg::AsicType::ASIC_TYPE_QUMRAN3D:
     case cfg::AsicType::ASIC_TYPE_QUMRAN4D:
-    case cfg::AsicType::ASIC_TYPE_TRIDENT2:
       CHECK_EQ(maxEgressPoolSize, availableBuffer);
       break;
     case cfg::AsicType::ASIC_TYPE_TOMAHAWK3:
@@ -192,10 +176,6 @@ uint64_t SaiBufferManager::getMaxEgressPoolBytes(const SaiPlatform* platform) {
       return getNumCellsAvailable(platform) *
           static_cast<const TomahawkAsic*>(asic)->getMMUCellSize();
     }
-    case cfg::AsicType::ASIC_TYPE_TRIDENT2: {
-      return getNumCellsAvailable(platform) *
-          static_cast<const Trident2Asic*>(asic)->getMMUCellSize();
-    }
     case cfg::AsicType::ASIC_TYPE_TOMAHAWK3: {
       return getNumCellsAvailable(platform) *
           static_cast<const Tomahawk3Asic*>(asic)->getMMUCellSize();
@@ -231,6 +211,7 @@ uint64_t SaiBufferManager::getMaxEgressPoolBytes(const SaiPlatform* platform) {
       return SaiApiTable::getInstance()->switchApi().getAttribute(
           switchId, SaiSwitchTraits::Attributes::EgressPoolAvailableSize{});
     case cfg::AsicType::ASIC_TYPE_ELBERT_8DD:
+    case cfg::AsicType::ASIC_TYPE_TRIDENT2:
     case cfg::AsicType::ASIC_TYPE_AGERA3:
     case cfg::AsicType::ASIC_TYPE_SANDIA_PHY:
     case cfg::AsicType::ASIC_TYPE_RAMON:

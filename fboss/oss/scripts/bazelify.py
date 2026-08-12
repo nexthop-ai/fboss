@@ -137,6 +137,7 @@ FBSOURCE_THIRD_PARTY_MAP = {
     "fbsource//third-party/yaml-cpp": "@yaml_cpp//:yaml_cpp",
     "fbsource//third-party/range-v3": "@range_v3//:range_v3",
     "fbsource//third-party/exprtk": "@exprtk//:exprtk",
+    "fbsource//third-party/curl": "@libcurl//:libcurl",
     "fbsource//third-party/libpcap": None,
 }
 

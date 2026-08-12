@@ -381,7 +381,7 @@ void Utils::printLogs() {
     printServiceLogs(service);
   }
 
-  std::cout << "##### demsg Log #####" << std::endl;
+  std::cout << "##### dmesg Log #####" << std::endl;
   std::cout << execCommandWithLimit("dmesg").second << std::endl;
 
   std::cout << "##### Boot Console Log #####" << std::endl;
@@ -686,7 +686,8 @@ void Utils::printGpio(const Gpio& gpio) {
     std::cout << fmt::format(
         "line {:>3}:   {:<15} -> ", *line.lineIndex(), *line.name());
     try {
-      std::cout << GpiodLine(chip, *line.lineIndex(), *line.name()).getValue()
+      std::cout << GpiodLine(chip, *line.lineIndex(), *line.name())
+                       .getValuePreservingDirection()
                 << std::endl;
     } catch (const std::exception& e) {
       std::cout << fmt::format("Error: failed to read gpio line: {}", e.what())

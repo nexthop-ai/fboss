@@ -93,7 +93,6 @@ target_link_libraries(led_manager_lib
   log_thrift_call
   led_utils
   montblanc_bsp
-  icecube800banw_bsp
   icecube800bc_bsp
   m4062nhp_bsp
   icetea800bc_bsp
@@ -133,7 +132,6 @@ target_link_libraries(led_manager_lib
   leh800bcls_platform_mapping
   wedge400_fpga
   wedge400_platform_mapping
-  wedge800bact_platform_mapping
   wedge800cact_platform_mapping
   yamp_platform_mapping
   platform_mapping_utils

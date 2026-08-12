@@ -65,11 +65,18 @@ nh dvc ssh "$DUT" -c '
   # (e.g. "########## Coldboot test results (5/107): ...") is flushed to the
   # log as it prints. Without it, libc block-buffers stdout (the target is a
   # file, not a TTY) and buffered lines are LOST if the process is killed.
-  # LD_LIBRARY_PATH points at the directory the workflow copied the PR-built
-  # libraries into, so the PR-built test binary can resolve them (run_test.py
-  # prepends /opt/fboss/lib{,64} but preserves the inherited value). It is an
-  # absolute path rather than $HOME because the copy and the run do not
-  # necessarily authenticate as the same user.
+  # LD_LIBRARY_PATH names the directory the workflow copied the PR-built
+  # libraries into. This entry alone is not enough: run_test.py prepends
+  # /opt/fboss/lib{,64} to whatever it inherits, so for every soname the stable
+  # image also provides, the copy from that image is found first. The workflow
+  # therefore installs a wrapper around each PR-built binary that re-prepends
+  # this directory immediately before exec; the entry here just keeps it
+  # visible to anything the runner starts directly. It is an absolute path
+  # rather than $HOME because the copy and the run do not necessarily
+  # authenticate as the same user.
+  #
+  # Note: this whole block is a single-quoted argument to ssh, so no
+  # apostrophes.
   (
     sudo stdbuf -oL -eL env LD_LIBRARY_PATH="/opt/fboss/pr_lib:${LD_LIBRARY_PATH:-}" \
       python3 /opt/fboss/bin/run_test.py fboss2_integration \

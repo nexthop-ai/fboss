@@ -24,7 +24,9 @@ add_executable(fboss2_cmd_config_test
   fboss/cli/fboss2/test/config/CmdConfigLoadBalancingTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigPtpTransparentClockTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigQosBufferPoolTest.cpp
+  fboss/cli/fboss2/test/config/CmdConfigQosDefaultPolicyTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigQosDefaultQueueConfigTest.cpp
+  fboss/cli/fboss2/test/config/CmdDeleteQosDefaultPolicyTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigReloadTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigSessionClearTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigSessionCommitTest.cpp
@@ -42,13 +44,13 @@ add_executable(fboss2_cmd_config_test
   fboss/cli/fboss2/test/config/CmdDeleteBgpNeighborTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteConfigInterfaceTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteDhcpTest.cpp
-  fboss/cli/fboss2/test/config/CmdDeleteVlanTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteCoppCpuTrafficPolicyMatchActionTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteInterfaceIpv6NdpTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteInterfaceTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteLoadBalancingTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteQosDefaultQueueConfigTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteTunnelIpInIpTest.cpp
+  fboss/cli/fboss2/test/config/CmdDeleteVlanTest.cpp
   fboss/cli/fboss2/test/config/ConfigSessionSystemdTest.cpp
   fboss/cli/fboss2/test/config/ProfileValidationTest.cpp
 )

@@ -33,6 +33,7 @@ thrift_library(
     thrift_srcs = {"BgpStructs.thrift": None},
     deps = [
         "//common/network/if:if",
+        "//thrift/annotation:hack",
     ],
 )
 
@@ -57,6 +58,7 @@ thrift_library(
     deps = [
         ":bgp-structs",
         "//common/network/if:if",
+        "//thrift/annotation:hack",
     ],
 )
 

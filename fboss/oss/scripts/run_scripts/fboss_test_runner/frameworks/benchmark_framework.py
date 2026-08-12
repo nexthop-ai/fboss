@@ -37,6 +37,7 @@ class BenchmarkFramework:
 
     def __init__(self, suite: BenchmarkSuite) -> None:
         self.suite = suite
+        self._is_first_run = True
 
     # ---- config loading (generic; suite supplies path + key variants) --------
 
@@ -275,6 +276,30 @@ class BenchmarkFramework:
         """Run a single benchmark (selected via ``--bm_regex``) as its own
         process and return the parsed result."""
         display_name = benchmark_name or os.path.basename(binary_name)
+
+        is_multi_switch = getattr(args, "agent_run_mode", None) == "multi_switch" or (
+            hasattr(self.suite, "_is_multi_switch")
+            and self.suite._is_multi_switch(args)
+        )
+
+        if is_multi_switch:
+            # For multi_switch platforms, to isolate successive benchmarks, we reset
+            # the background agent daemon on successive runs (not on the very first run,
+            # as it was freshly launched by the outer setup() wrapper).
+            if getattr(self, "_is_first_run", True):
+                self._is_first_run = False
+            else:
+                try:
+                    self.suite.teardown(args)
+                    self.suite.setup(args)
+                except Exception as e:
+                    print(
+                        f"########## Failed to restart background agent environment for {display_name}: {e!s}"
+                    )
+                    return self._empty_benchmark_result(
+                        binary_name, benchmark_name, "FAILED"
+                    )
+
         print(f"########## Running benchmark: {display_name}", flush=True)
 
         run_cmd = self.suite.build_cmd(binary_name, args, benchmark_name)

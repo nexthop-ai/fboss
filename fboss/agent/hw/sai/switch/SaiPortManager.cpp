@@ -368,6 +368,61 @@ void fillHwPortStats(
           hwPortStats.llrRxReplay_() = value;
         }
         break;
+      case SAI_PORT_STAT_LLR_TX_INIT_CTL_OS:
+        if (updateLlrStats) {
+          hwPortStats.llrTxInitCtlOs_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_TX_INIT_ECHO_CTL_OS:
+        if (updateLlrStats) {
+          hwPortStats.llrTxInitEchoCtlOs_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_TX_ACK_CTL_OS:
+        if (updateLlrStats) {
+          hwPortStats.llrTxAckCtlOs_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_TX_NACK_CTL_OS:
+        if (updateLlrStats) {
+          hwPortStats.llrTxNackCtlOs_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_RX_INIT_CTL_OS:
+        if (updateLlrStats) {
+          hwPortStats.llrRxInitCtlOs_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_RX_INIT_ECHO_CTL_OS:
+        if (updateLlrStats) {
+          hwPortStats.llrRxInitEchoCtlOs_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_RX_ACK_CTL_OS:
+        if (updateLlrStats) {
+          hwPortStats.llrRxAckCtlOs_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_RX_NACK_CTL_OS:
+        if (updateLlrStats) {
+          hwPortStats.llrRxNackCtlOs_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_RX_EXPECTED_SEQ_GOOD:
+        if (updateLlrStats) {
+          hwPortStats.llrRxExpectedSeqGood_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_RX_EXPECTED_SEQ_POISONED:
+        if (updateLlrStats) {
+          hwPortStats.llrRxExpectedSeqPoisoned_() = value;
+        }
+        break;
+      case SAI_PORT_STAT_LLR_RX_EXPECTED_SEQ_BAD:
+        if (updateLlrStats) {
+          hwPortStats.llrRxExpectedSeqBad_() = value;
+        }
+        break;
 #endif
       case SAI_PORT_STAT_PFC_0_RX_PKTS:
       case SAI_PORT_STAT_PFC_1_RX_PKTS:
@@ -692,8 +747,6 @@ TransmitterTechnology fromSaiMediaType(sai_port_media_type_t saiMediaType) {
     case cfg::AsicType::ASIC_TYPE_EBRO:
     case cfg::AsicType::ASIC_TYPE_P200:
     case cfg::AsicType::ASIC_TYPE_YUBA:
-    case cfg::AsicType::ASIC_TYPE_CHENAB:
-    case cfg::AsicType::ASIC_TYPE_CHENAB2:
     case cfg::AsicType::ASIC_TYPE_JERICHO2:
     case cfg::AsicType::ASIC_TYPE_RAMON:
     case cfg::AsicType::ASIC_TYPE_GARONNE:
@@ -706,6 +759,8 @@ TransmitterTechnology fromSaiMediaType(sai_port_media_type_t saiMediaType) {
     case cfg::AsicType::ASIC_TYPE_QUMRAN3D:
     case cfg::AsicType::ASIC_TYPE_QUMRAN4D:
     case cfg::AsicType::ASIC_TYPE_JERICHO4:
+    case cfg::AsicType::ASIC_TYPE_CHENAB:
+    case cfg::AsicType::ASIC_TYPE_CHENAB2:
       return 0;
     // The below value of 110 was from FR4 optics and assumed to be used
     // everywhere. This assumption does not hold anymore.
@@ -2477,6 +2532,17 @@ const std::vector<sai_stat_id_t>& SaiPortManager::getSupportedPfcDurationStats(
 }
 #endif
 
+bool SaiPortManager::isLinkDebounceRetriggerCounterSupported(
+    [[maybe_unused]] const HwAsic* asic) {
+#if defined(TAJO_SDK_VERSION_25_5_4210) || \
+    defined(TAJO_SDK_VERSION_26_2_4210) || \
+    (defined(TAJO_SDK_GTE_26_5) && !defined(TAJO_SDK_VERSION_26_5_5211))
+  return asic->isSupported(HwAsic::Feature::PORT_DEBOUNCE);
+#else
+  return false;
+#endif
+}
+
 void SaiPortManager::updateStats(
     PortID portId,
     bool updateWatermarks,
@@ -2658,6 +2724,34 @@ void SaiPortManager::updateStats(
     curPortStats.logicalPortId() = *logicalPortId;
   }
 
+#if defined(TAJO_SDK_VERSION_25_5_4210) || \
+    defined(TAJO_SDK_VERSION_26_2_4210) || \
+    (defined(TAJO_SDK_GTE_26_5) && !defined(TAJO_SDK_VERSION_26_5_5211))
+  if (isLinkDebounceRetriggerCounterSupported(platform_->getAsic())) {
+    auto& portApi = SaiApiTable::getInstance()->portApi();
+    auto adapterKey = handle->port->adapterKey();
+    const auto& portAttrs = handle->port->attributes();
+    // Only read the retrigger counts for ports that actually have a debounce
+    // hold timer configured.
+    auto downPeriod = std::get<
+        std::optional<SaiPortTraits::Attributes::LinkDownDebouncePeriodMs>>(
+        portAttrs);
+    if (downPeriod.has_value() && downPeriod->value() > 0) {
+      curPortStats.linkDownDebounceRetriggerCount_() = portApi.getAttribute(
+          adapterKey,
+          SaiPortTraits::Attributes::LinkDownDebounceRetriggerCount{});
+    }
+    auto upPeriod = std::get<
+        std::optional<SaiPortTraits::Attributes::LinkUpDebouncePeriodMs>>(
+        portAttrs);
+    if (upPeriod.has_value() && upPeriod->value() > 0) {
+      curPortStats.linkUpDebounceRetriggerCount_() = portApi.getAttribute(
+          adapterKey,
+          SaiPortTraits::Attributes::LinkUpDebounceRetriggerCount{});
+    }
+  }
+#endif
+
   if (platform_->getAsic()->isSupported(
           HwAsic::Feature::MAC_TRANSMIT_DATA_QUEUE_WATERMARK)) {
     updateFabricMacTransmitQueueStuck(portId, curPortStats, prevPortStats);
@@ -2666,7 +2760,8 @@ void SaiPortManager::updateStats(
   if (updateCableLengths && isPortUp(portId) &&
       (portType == cfg::PortType::FABRIC_PORT ||
        portType == cfg::PortType::HYPER_PORT_MEMBER
-#if defined(BRCM_SAI_SDK_DNX_GTE_14_0) || defined(BRCM_SAI_SDK_GTE_13_0)
+#if defined(BRCM_SAI_SDK_DNX_GTE_14_0) || defined(BRCM_SAI_SDK_GTE_13_0) || \
+    defined(CHENAB_SAI_SDK)
        || portType == cfg::PortType::INTERFACE_PORT
 #endif
        ) &&
@@ -2702,7 +2797,8 @@ void SaiPortManager::updateStats(
         !curPortStats.cableLengthMeters().has_value()) {
       try {
 #if (defined(BRCM_SAI_SDK_DNX_GTE_11_0) && defined(BRCM_SAI_SDK_DNX)) || \
-    (defined(BRCM_SAI_SDK_GTE_13_0) && defined(BRCM_SAI_SDK_XGS))
+    (defined(BRCM_SAI_SDK_GTE_13_0) && defined(BRCM_SAI_SDK_XGS)) ||     \
+    defined(CHENAB_SAI_SDK)
         int32_t cablePropogationDelayNS =
             SaiApiTable::getInstance()->portApi().getAttribute(
                 handle->port->adapterKey(),

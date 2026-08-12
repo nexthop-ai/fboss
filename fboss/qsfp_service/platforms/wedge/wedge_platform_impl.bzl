@@ -17,7 +17,6 @@ def wedge_platform_impl():
             "GalaxyManager.cpp",
             "QsfpRestClient.cpp",
             "Wedge100Manager.cpp",
-            "Wedge40Manager.cpp",
             "Wedge400Manager.cpp",
             "Wedge400CManager.cpp",
             "WedgeManager.cpp",

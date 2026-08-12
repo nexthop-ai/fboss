@@ -30,7 +30,6 @@ include "thrift/annotation/thrift.thrift"
 @thrift.AllowLegacyMissingUris
 package;
 
-namespace php fboss
 namespace py neteng.fboss.bgp_thrift
 namespace py.asyncio neteng.fboss.asyncio.bgp_thrift
 namespace py3 neteng.fboss
@@ -211,6 +210,38 @@ struct TBgpSessionDetail {
    */
   36: optional bool ttl_security_enabled;
   37: optional i32 ttl_security_hops;
+  /*
+   * Data-plane per-message-type PDUs actually written to / read from the peer's
+   * socket. Source of truth: SessionManager (I/O) thread.
+   */
+  38: i64 socket_tx_open_msgs;
+  39: i64 socket_tx_update_msgs;
+  40: i64 socket_tx_keepalive_msgs;
+  41: i64 socket_tx_notification_msgs;
+  42: i64 socket_tx_route_refresh_msgs;
+  43: i64 socket_tx_eor_msgs;
+  44: i64 socket_rx_open_msgs;
+  45: i64 socket_rx_update_msgs;
+  46: i64 socket_rx_keepalive_msgs;
+  47: i64 socket_rx_notification_msgs;
+  48: i64 socket_rx_route_refresh_msgs;
+  49: i64 socket_rx_eor_msgs;
+  /*
+   * Control-plane per-message-type PDUs generated / consumed by PeerManager
+   * (AdjRib). The AdjRib layer only produces/consumes UPDATE and EoR PDUs.
+   * These converge with the socket-layer counters above for cross-module
+   * (control vs socket) validation, e.g. the health validator:
+   *   adjrib_sent_update_msgs <-> socket_tx_update_msgs
+   *   adjrib_sent_eor_msgs    <-> socket_tx_eor_msgs
+   *   adjrib_recv_update_msgs <-> socket_rx_update_msgs
+   *   adjrib_recv_eor_msgs    <-> socket_rx_eor_msgs
+   * adjrib_sent/recv_update_msgs mirror the legacy top-level
+   * TBgpSession.sent/recv_update_msgs, which are kept for existing consumers.
+   */
+  50: i64 adjrib_sent_update_msgs;
+  51: i64 adjrib_sent_eor_msgs;
+  52: i64 adjrib_recv_update_msgs;
+  53: i64 adjrib_recv_eor_msgs;
 }
 
 /**
@@ -239,6 +270,11 @@ struct TBgpSession {
   16: i64 reset_time;
   17: i64 num_resets;
   18: string last_reset_reason;
+  // DEPRECATED: prefer the per-message-type control-plane counters
+  // TBgpSessionDetail.adjrib_sent_update_msgs / adjrib_recv_update_msgs, which
+  // are grouped with the socket_* counters for cross-module validation. These
+  // top-level fields are retained for existing consumers (show bgp summary,
+  // NOWA/NetRCA) and should not be used in new code.
   19: i64 sent_update_msgs;
   20: i64 recv_update_msgs;
   /*
@@ -383,11 +419,19 @@ struct TUpdateGroupStats {
   /* Number of times lazy clone was invoked for detached peers. */
   5: i64 lazy_clone_events;
 
-  /* Cumulative count of IPv4 announcement prefixes sent (monotonic counter). */
-  6: i64 total_sent_announcements_ipv4;
+  /**
+   * Cumulative count of IPv4 UPDATE announcement PDUs sent by this group
+   * (monotonic counter, one bump per BgpUpdate2, NOT per prefix). Mirrors the
+   * per-peer TBgpSessionDetail.sent_update_announcements_ipv4.
+   */
+  6: i64 total_sent_announcement_msgs_ipv4;
 
-  /* Cumulative count of IPv6 announcement prefixes sent (monotonic counter). */
-  7: i64 total_sent_announcements_ipv6;
+  /**
+   * Cumulative count of IPv6 UPDATE announcement PDUs sent by this group
+   * (monotonic counter, one bump per BgpUpdate2, NOT per prefix). Mirrors the
+   * per-peer TBgpSessionDetail.sent_update_announcements_ipv6.
+   */
+  7: i64 total_sent_announcement_msgs_ipv6;
 
   /* Number of IPv4 update messages sent by this group. */
   8: i64 group_update_messages_ipv4;
@@ -395,8 +439,11 @@ struct TUpdateGroupStats {
   /* Number of IPv6 update messages sent by this group. */
   9: i64 group_update_messages_ipv6;
 
-  /* Number of withdrawals sent by this group. */
-  10: i64 group_withdrawals;
+  /**
+   * Cumulative count of withdrawal UPDATE PDUs sent by this group (monotonic
+   * counter, one bump per BgpUpdate2, NOT per prefix).
+   */
+  10: i64 total_sent_withdrawal_msgs;
 
   /* Total queue wait time (ms) across all sync peers in the group. */
   11: i64 group_total_queue_wait_ms;
@@ -604,12 +651,45 @@ struct TBgpLocalConfig {
 }
 
 /**
- * Nexthop information for a prefix
+ * Nexthop information for a prefix.
+ *
+ * Fields 1-3 back the compact list view (`show bgpcpp nexthopinfo`). Fields
+ * 4-8 carry the extra detail surfaced by the per-nexthop "zoom" view
+ * (`show bgpcpp nexthopinfo <ipAddr>`).
  */
 struct TNexthopInfo {
   1: bgp_attr.TIpPrefix next_hop;
   2: bool is_reachable;
   3: optional i32 igp_cost;
+  // Whether the nexthop is directly connected; unset = unknown.
+  4: optional bool is_connected;
+  // Whether the nexthop is eligible for best-path selection (may differ from
+  // is_reachable: a reachable nexthop without an IGP cost can still be
+  // selectable under FBOSS semantics).
+  5: bool is_resolved_for_selection;
+  // Number of routes/prefixes currently depending on this nexthop.
+  6: i64 route_count;
+  // Seconds since reachability last changed; unset ("-") = never resolved,
+  // i.e. no resolution has ever been received from the underlying system.
+  7: optional i64 last_reachability_change_age_s;
+  // Seconds since the IGP cost last changed; unset ("-") = never resolved.
+  8: optional i64 last_igp_cost_change_age_s;
+}
+
+/**
+ * CLI result wrapper for `show bgpcpp nexthopinfo`, so the renderer stays a pure
+ * function of its input rather than depending on out-of-band view-mode state on
+ * the command object.
+ *
+ * detailed = false: compact list of every nexthop-cache entry (no argument).
+ * detailed = true : per-nexthop "zoom" view for the specifically queried IP(s).
+ * queried_nexthops is index-parallel to entries in detailed mode, so a cache
+ * miss can be reported against the exact address the operator asked for.
+ */
+struct TNexthopInfoQueryResult {
+  1: bool detailed;
+  2: list<TNexthopInfo> entries;
+  3: list<string> queried_nexthops;
 }
 
 /**
@@ -1941,6 +2021,15 @@ service TBgpService extends fb303.FacebookService {
   TNexthopInfo getNexthopInfoForNexthop(1: string prefix);
 
   /**
+   * Get nexthop information for the given nexthops. If the list is empty,
+   * returns nexthop info for ALL entries currently in the nexthop cache.
+   *
+   * @param nexthops: nexthop IP addresses to query; empty = all cache entries
+   * @returns: list of TNexthopInfo, one per matching nexthop-cache entry
+   */
+  list<TNexthopInfo> getNexthopInfos(1: list<string> nexthops);
+
+  /**
    * [Profiler]
    *
    * Start/Stop BGP Profiler
@@ -1973,6 +2062,17 @@ service TBgpService extends fb303.FacebookService {
    * Resets all counters and histograms.
    */
   void clearProfilerStats();
+
+  /**
+   * [Debug] Reset per-peer cumulative BGP message counters in BOTH directions:
+   * socket tx/rx counts (SessionManager), AdjRib sent/recv message counts,
+   * update-group sent counts, and their fb303 keys. Live prefix gauges are not
+   * affected.
+   *
+   * `peers` selects which peers to clear, by IP address; an empty list clears
+   * every peer.
+   */
+  void clearCounters(1: list<string> peers);
 
   /**
    * [Telemetry]

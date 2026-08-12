@@ -28,8 +28,17 @@ def sai_platform_impl():
                 "BcmRequiredSymbols.cpp",
                 "wedge_agent.cpp",
                 "WedgeHwAgent.cpp",
+                # Exactly one chooseSaiPlatformImpl/createSaiPlatformPort
+                # definition may link; pick it per SAI flavor below.
+                "SaiPlatformInitBcm.cpp",
+                "SaiPlatformInitTajo.cpp",
+                "SaiPlatformInitYangra.cpp",
+                "SaiPlatformInitFake.cpp",
             ],
-        ) + native.glob(["oss/*.cpp"]),
+        ) + native.glob(["oss/*.cpp"]) + select({
+            "//fboss/agent/hw/sai:is_bcm": ["SaiPlatformInitBcm.cpp"],
+            "//fboss/agent/hw/sai:is_fake": ["SaiPlatformInitFake.cpp"],
+        }),
         hdrs = native.glob(["*.h"]),
         copts = _SAI_COPTS,
         deps = [
@@ -44,7 +53,6 @@ def sai_platform_impl():
             "//fboss/agent/platforms/common/galaxy:galaxy_platform_mapping",
             "//fboss/agent/platforms/common/minipack:minipack_platform_mapping",
             "//fboss/agent/platforms/common/wedge100:wedge100_platform_mapping",
-            "//fboss/agent/platforms/common/wedge40:wedge40_platform_mapping",
             "//fboss/agent/platforms/common/wedge400:wedge400_platform_mapping",
             "//fboss/agent/platforms/common/wedge400:wedge400_platform_utils",
             "//fboss/agent/platforms/common/wedge400c:wedge400c_platform_mapping",
@@ -64,7 +72,6 @@ def sai_platform_impl():
             "//fboss/agent/platforms/common/icetea800bc:icetea800bc_platform_mapping",
             "//fboss/agent/platforms/common/ladakh800bcls:ladakh800bcls_platform_mapping",
             "//fboss/agent/platforms/common/j4sim:j4sim_platform_mapping",
-            "//fboss/agent/platforms/common/wedge800bact:wedge800bact_platform_mapping",
             "//fboss/agent/platforms/common/wedge800cact:wedge800cact_platform_mapping",
             "//fboss/agent/platforms/common/yangra2:yangra2_platform_mapping",
             "//fboss/agent/platforms/common/utils:bcm_yaml_config",

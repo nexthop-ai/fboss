@@ -10,6 +10,9 @@
 #   SAI_VERSION=1.16.1 bash fboss/oss/scripts/ensure-sai.sh
 #
 # Set SAI_VERSION in the environment to override the default version.
+# Set LIBSAI_VERSION to override the OCP SAI headers version the build is
+# pinned to (defaults to 1.16.3, the newest spec compatible with the
+# Broadcom SAI implementation above).
 # To force a re-download without waiting for an S3 ETag change, delete the
 # ".etag" file in the same folder as the SAI tarball, e.g.
 #   rm /var/extras/sai/1.16.1/.etag
@@ -17,6 +20,7 @@
 set -euo pipefail
 
 sai_version="${SAI_VERSION:-1.16.1}"
+libsai_version="${LIBSAI_VERSION:-1.16.3}"
 s3_url="http://bucket.internal.nexthop.ai:7480/vol-shared/fboss/sai/libsai_impl-${sai_version}-fboss.tar.gz"
 cache_dir="/var/extras/sai/${sai_version}"
 tarball="${cache_dir}/libsai_impl.tar.gz"
@@ -25,6 +29,43 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/../../.." && pwd)"
 sai_impl_manifest="${repo_root}/build/fbcode_builder/manifests/sai_impl"
 fboss_manifest="${repo_root}/build/fbcode_builder/manifests/fboss"
+libsai_manifest="${repo_root}/build/fbcode_builder/manifests/libsai"
+
+# Pin the OCP SAI (libsai) headers to a version compatible with the Broadcom
+# SAI implementation. The checked-in manifest follows the upstream default
+# (1.18.1), whose mainlined serdes extension enums collide with the
+# experimental saiportextensions.h shipped in Broadcom SAI ${sai_version}, so
+# Broadcom builds must pass the older version explicitly. This runs on every
+# invocation: container start re-extracts latest_stable_hashes.tar.gz over
+# build/fbcode_builder/manifests/, restoring the upstream pin.
+declare -A libsai_sha256=(
+  ["1.16.1"]="cf65142d1a1286b5faa24c9ae61b3f955f04724d0bf5ef6e5679298353aa0871"
+  ["1.16.3"]="5c89cdb6b2e4f1b42ced6b78d43d06d22434ddbf423cdc551f7c2001f12e63d9"
+  ["1.18.1"]="84f2fbd6bf672abaefddfd78a28fec794e37477bf9702fbb56d7bd53ff930ba3"
+)
+if [ -z "${libsai_sha256[$libsai_version]:-}" ]; then
+  echo "ERROR: no sha256 known for LIBSAI_VERSION=${libsai_version}" >&2
+  exit 1
+fi
+if ! grep -q "^subdir = SAI-${libsai_version}$" "$libsai_manifest" 2>/dev/null; then
+  echo "Pinning libsai manifest to SAI ${libsai_version} for the Broadcom SAI build..." >&2
+  cat >"$libsai_manifest" <<EOF
+[manifest]
+name = libsai
+
+[download]
+url = https://github.com/opencomputeproject/SAI/archive/v${libsai_version}.tar.gz
+sha256 = ${libsai_sha256[$libsai_version]}
+
+[build]
+builder = nop
+subdir = SAI-${libsai_version}
+
+[install.files]
+inc = include
+experimental = experimental
+EOF
+fi
 
 # Quick HEAD request to detect upstream tarball updates (5 s timeout;
 # left empty and skipped when the S3 bucket is unreachable or returns no ETag).

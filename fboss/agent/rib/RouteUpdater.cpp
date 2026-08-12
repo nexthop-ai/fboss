@@ -575,7 +575,8 @@ struct NextHopCombinedWeightsKey {
         srv6SegmentList(nhop.srv6SegmentList()),
         tunnelType(nhop.tunnelType()),
         tunnelId(nhop.tunnelId()),
-        cost(nhop.cost()) {
+        cost(nhop.cost()),
+        role(nhop.role()) {
     /* "weightless" next hop, consider all attrs of L3 next hop except its
      * weight, this is used in computing number of required paths to next hop,
      * for correct programming of unequal cost multipath */
@@ -590,7 +591,8 @@ struct NextHopCombinedWeightsKey {
                srv6SegmentList,
                tunnelType,
                tunnelId,
-               cost) <
+               cost,
+               role) <
         std::tie(
                other.ip,
                other.intfId,
@@ -600,7 +602,8 @@ struct NextHopCombinedWeightsKey {
                other.srv6SegmentList,
                other.tunnelType,
                other.tunnelId,
-               other.cost);
+               other.cost,
+               other.role);
   }
   folly::IPAddress ip;
   InterfaceID intfId;
@@ -611,6 +614,7 @@ struct NextHopCombinedWeightsKey {
   std::optional<TunnelType> tunnelType;
   std::optional<std::string> tunnelId;
   std::optional<int64_t> cost;
+  NextHopRole role;
 };
 using NextHopCombinedWeights =
     boost::container::flat_map<NextHopCombinedWeightsKey, NextHopWeight>;
@@ -670,7 +674,8 @@ RouteNextHopSet mergeForwardInfosEcmp(
           fnh.srv6SegmentList(),
           fnh.tunnelType(),
           fnh.tunnelId(),
-          fnh.cost()));
+          fnh.cost(),
+          fnh.role()));
     }
   }
   return fwd;
@@ -754,7 +759,8 @@ RouteNextHopSet optimizeWeights(const NextHopCombinedWeights& cws) {
         cw.first.srv6SegmentList,
         cw.first.tunnelType,
         cw.first.tunnelId,
-        cw.first.cost));
+        cw.first.cost,
+        cw.first.role));
   }
   return fwd;
 }
@@ -856,6 +862,8 @@ void RibRouteUpdater::getFwdInfoFromNhop(
     const std::optional<TunnelType>& tunnelType,
     const std::optional<std::string>& tunnelId,
     const std::optional<int64_t>& cost,
+    NextHopRole role,
+    std::optional<RouteCounterID>* inheritedCounterID,
     RouteNextHopSet& fwd) {
   auto it = routes->longestMatch(nh, nh.bitCount());
   if (it == routes->end()) {
@@ -881,6 +889,10 @@ void RibRouteUpdater::getFwdInfoFromNhop(
 
   if (route->isResolved()) {
     const auto& fwdInfo = route->getForwardInfo();
+    if (const auto childCounterID = fwdInfo.getCounterID();
+        childCounterID && !*inheritedCounterID) {
+      *inheritedCounterID = childCounterID;
+    }
     if (fwdInfo.isDrop()) {
       *hasDrop = true;
     } else if (fwdInfo.isToCPU()) {
@@ -908,7 +920,8 @@ void RibRouteUpdater::getFwdInfoFromNhop(
             srv6Encap.segmentList,
             srv6Encap.tunnelType,
             srv6Encap.tunnelId,
-            cost));
+            cost,
+            role));
       } else {
         std::for_each(
             nhops.begin(),
@@ -920,7 +933,8 @@ void RibRouteUpdater::getFwdInfoFromNhop(
              &srv6SegmentList,
              &tunnelType,
              &tunnelId,
-             &cost](const auto& nhop) {
+             &cost,
+             role](const auto& nhop) {
               const auto srv6Encap =
                   resolveSrv6Encap(srv6SegmentList, tunnelType, tunnelId, nhop);
               fwd.insert(ResolvedNextHop(
@@ -936,13 +950,43 @@ void RibRouteUpdater::getFwdInfoFromNhop(
                   srv6Encap.segmentList,
                   srv6Encap.tunnelType,
                   srv6Encap.tunnelId,
-                  cost));
+                  cost,
+                  role));
             });
       }
     }
   }
 }
-
+/*
+ * Policy for inheriting next hop properties during resolution.
+ * --------------------------------------------------------------
+ *
+ * For all the cases below consider the following resolution
+ * DST via NHA
+ * NHA via NHB
+ * There are 3 types of properties to consider here
+ * 1. Encapsulation properties
+ * Examples of these are SidLists and Labels. Here
+ * we prefer the values from root next hops, but if not set
+ * we inherit them from the child next hops. E.g.
+ * DST via NHA via NHB (SidListX) results in DST via NHB (SidListX)
+ * DST via NHA (SidListY) via NHB (SidListX) results in DST via NHB (SidListY)
+ * The latter is actually ambiguous - but we have to resolve it one way,
+ * so we resolve in favor of the root.
+ * The reasoning here is that where ever the SidList is set, it actually
+ * dictates how the route to that next hop must manifest itself. Hence
+ * we inherit the encapsulation behaviors.
+ * TODO: Fix this for Labeled routes
+ * 2. Route Counters - We inherit the same way as 1. This is more
+ * a use case based decision. For recursive resolution is to also count
+ * traffic against recursively resolving route. We can make this customizable
+ * in the future.
+ * 3. Role (PRIMARY, BACKUP) - This is viewed as a policy decision and
+ * the root role carries all the way through. Taking our example
+ * from above
+ * DST via NHA (PRIMARY) via NHB (BACKUP) becomes DST -> NHB (PRIMARY)
+ * DST via NHA (BACKUP) via NHB (PRIMARY) becomes DST -> NHB (BACKUP)
+ */
 template <typename AddressT>
 std::shared_ptr<Route<AddressT>> RibRouteUpdater::resolveOne(
     typename NetworkToRouteMap<AddressT>::Iterator ritr) {
@@ -963,7 +1007,7 @@ std::shared_ptr<Route<AddressT>> RibRouteUpdater::resolveOne(
   const auto& bestEntryVal = *bestPair.second;
   const auto bestEntry = &bestEntryVal;
   const auto action = bestEntry->getAction();
-  const auto counterID = bestEntry->getCounterID();
+  auto counterID = bestEntry->getCounterID();
   const auto classID = bestEntry->getClassID();
   bool labelPopandLookup = false;
   if (action == RouteForwardAction::DROP) {
@@ -975,6 +1019,7 @@ std::shared_ptr<Route<AddressT>> RibRouteUpdater::resolveOne(
     // below stay correct once FLAGS_resolve_nexthops_from_id is on.
     const RouteNextHopSet bestEntryNhops =
         getClientNextHopsFromRib(nextHopIDManager_, *bestEntry);
+    std::optional<RouteCounterID> inheritedCounterID;
     auto fwItr = unresolvedToResolvedNhops_.find(bestEntryNhops);
     if (fwItr == unresolvedToResolvedNhops_.end()) {
       NextHopForwardInfos nhToFwds;
@@ -1024,6 +1069,8 @@ std::shared_ptr<Route<AddressT>> RibRouteUpdater::resolveOne(
               nh.tunnelType(),
               nh.tunnelId(),
               nh.cost(),
+              nh.role(),
+              &inheritedCounterID,
               nhToFwds[nh]);
         } else {
           CHECK(addr.isV6());
@@ -1039,6 +1086,8 @@ std::shared_ptr<Route<AddressT>> RibRouteUpdater::resolveOne(
               nh.tunnelType(),
               nh.tunnelId(),
               nh.cost(),
+              nh.role(),
+              &inheritedCounterID,
               nhToFwds[nh]);
         }
       }
@@ -1058,7 +1107,10 @@ std::shared_ptr<Route<AddressT>> RibRouteUpdater::resolveOne(
       }
 
       fwItr =
-          unresolvedToResolvedNhops_.insert({bestEntryNhops, std::move(nhSet)})
+          unresolvedToResolvedNhops_
+              .insert(
+                  {bestEntryNhops,
+                   ResolvedForwardInfo{std::move(nhSet), inheritedCounterID}})
               .first;
     } else {
       // This is done so that we dont miss updating label pop and lookup on
@@ -1073,7 +1125,13 @@ std::shared_ptr<Route<AddressT>> RibRouteUpdater::resolveOne(
         }
       }
     }
-    fwd = &(fwItr->second);
+    fwd = &fwItr->second.nextHops;
+    // A route can carry only one counter. Preserve an explicitly configured
+    // parent counter; otherwise inherit the first recursively resolved child
+    // counter and ignore counters on subsequent children.
+    if (!counterID) {
+      counterID = fwItr->second.counterID;
+    }
   }
 
   std::shared_ptr<Route<AddressT>> updatedRoute;

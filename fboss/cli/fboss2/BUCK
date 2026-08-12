@@ -122,6 +122,7 @@ cpp_library(
     # Different binaries (fboss2, fboss2-routing-protocol) provide their
     # own CmdList.cpp with different command trees.
     preferred_linkage = "static",
+    deps = [":fboss2-lib"],
     exported_deps = [
         ":cmd-global-options",
         ":cmd-list-header",  # @manual
@@ -299,8 +300,12 @@ cpp_library(
 # provides the full bgp/configerator thrift header closure).
 # bazelify: extra_dep = //neteng/fboss/bgp/if:bgp_thrift
 cpp_library(
+    # @autodeps-skip: CanonicalRibResolver.cpp is intentionally also compiled
+    # into fboss2-routing-protocol; inferring that binary as this library's
+    # provider would create a dependency cycle.
     name = "commands-show-bgp",
     headers = [
+        "commands/clear/facebook/bgp/counters/CmdClearBgpCounters.h",
         "commands/clear/facebook/bgp/profiler/CmdClearBgpProfiler.h",
         "commands/set/facebook/bgp/profiler/CmdSetBgpProfilerFilter.h",
         "commands/show/bgp/CanonicalRibResolver.h",
@@ -369,7 +374,9 @@ cpp_library(
         ":cmd-handler",
         ":cmd-show-utils",  # @manual
         ":table-utils",
+        "//configerator/structs/neteng/bgp_policy/thrift:bgp_policy-cpp2-types",
         "//configerator/structs/neteng/bgp_policy/thrift:rib_policy-cpp2-types",
+        "//configerator/structs/neteng/fboss/bgp:bgp_config-cpp2-types",
         "//configerator/structs/neteng/fboss/bgp/if:bgp_attr-cpp2-types",
         "//fboss/cli/fboss2/commands/show/bgp/summary:bgp_summary-cpp2-types",
         "//fboss/cli/fboss2/commands/show/bgp/table:bgp_table_summary-cpp2-types",
@@ -379,6 +386,7 @@ cpp_library(
         "//folly:network_address",
         "//folly:string",
         "//folly:subprocess",
+        "//folly/container:f14_hash",
         "//folly/json:dynamic",
         "//folly/logging:logging",
         "//neteng/fboss/bgp/cpp/rib:rib_dc",
@@ -389,6 +397,7 @@ cpp_library(
         "//servicerouter/common:tservice_router_exception",
         "//thrift/lib/cpp:thrift_exception",
         "//thrift/lib/cpp/util:enum_utils",
+        "//thrift/lib/cpp2/protocol:protocol",
     ],
 )
 
@@ -412,6 +421,9 @@ cpp_library(
 # target (it transitively provides the full bgp/configerator thrift closure).
 # bazelify: extra_dep = //neteng/fboss/bgp/if:bgp_thrift
 cpp_library(
+    # @autodeps-skip: CanonicalRibResolver.cpp is intentionally also compiled
+    # into fboss2-routing-protocol; inferring that binary as this library's
+    # provider would create a dependency cycle.
     name = "fboss2-lib",
     srcs = [
         "CmdHandlerImplBgp.cpp",
@@ -422,6 +434,7 @@ cpp_library(
         "commands/clear/CmdClearInterfaceCounters.cpp",
         "commands/clear/CmdClearNdp.cpp",
         "commands/clear/facebook/CmdClearMirror.cpp",
+        "commands/clear/facebook/bgp/counters/CmdClearBgpCounters.cpp",
         "commands/clear/facebook/bgp/ribpolicy/CmdClearBgpRibPolicy.cpp",
         "commands/clear/facebook/bgp/ribpolicy/CmdClearBgpRibPolicyCps.cpp",
         "commands/clear/facebook/bgp/ribpolicy/CmdClearBgpRibPolicyCrf.cpp",
@@ -652,6 +665,7 @@ cpp_library(
         "commands/clear/CmdClearInterfaceCounters.h",
         "commands/clear/CmdClearNdp.h",
         "commands/clear/facebook/CmdClearMirror.h",
+        "commands/clear/facebook/bgp/counters/CmdClearBgpCounters.h",
         "commands/clear/facebook/bgp/ribpolicy/CmdClearBgpRibPolicy.h",
         "commands/clear/facebook/bgp/ribpolicy/CmdClearBgpRibPolicyCps.h",
         "commands/clear/facebook/bgp/ribpolicy/CmdClearBgpRibPolicyCrf.h",
@@ -839,6 +853,7 @@ cpp_library(
         "utils/LoopbackUtils.h",
         "utils/clients/BmcClient.h",  # bazelify: exclude
     ],
+    deps = ["//folly/container:f14_hash"],
     exported_deps = [
         "fbsource//third-party/fmt:fmt",
         "fbsource//third-party/glog:glog",
@@ -1139,8 +1154,9 @@ cpp_library(
         "commands/config/ptp/CmdConfigPtp.cpp",
         "commands/config/ptp/transparent_clock/CmdConfigPtpTransparentClock.cpp",
         "commands/config/qos/CmdConfigQos.cpp",
-        "commands/config/qos/buffer_pool/CmdConfigQosBufferPool.cpp",
         "commands/config/qos/PortQueueConfigUtils.cpp",
+        "commands/config/qos/buffer_pool/CmdConfigQosBufferPool.cpp",
+        "commands/config/qos/default_policy/CmdConfigQosDefaultPolicy.cpp",
         "commands/config/qos/default_queue_config/CmdConfigQosDefaultQueueConfig.cpp",
         "commands/config/qos/policy/CmdConfigQosPolicy.cpp",
         "commands/config/qos/policy/CmdConfigQosPolicyMap.cpp",
@@ -1190,6 +1206,7 @@ cpp_library(
         "commands/delete/protocol/static/CmdDeleteProtocolStatic.cpp",
         "commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.cpp",
         "commands/delete/qos/CmdDeleteQos.cpp",
+        "commands/delete/qos/default_policy/CmdDeleteQosDefaultPolicy.cpp",
         "commands/delete/qos/default_queue_config/CmdDeleteQosDefaultQueueConfig.cpp",
         "commands/delete/tunnel/CmdDeleteTunnel.cpp",
         "commands/delete/tunnel/ip_in_ip/CmdDeleteTunnelIpInIp.cpp",
@@ -1264,8 +1281,9 @@ cpp_library(
         "commands/config/ptp/CmdConfigPtp.h",
         "commands/config/ptp/transparent_clock/CmdConfigPtpTransparentClock.h",
         "commands/config/qos/CmdConfigQos.h",
-        "commands/config/qos/buffer_pool/CmdConfigQosBufferPool.h",
         "commands/config/qos/PortQueueConfigUtils.h",
+        "commands/config/qos/buffer_pool/CmdConfigQosBufferPool.h",
+        "commands/config/qos/default_policy/CmdConfigQosDefaultPolicy.h",
         "commands/config/qos/default_queue_config/CmdConfigQosDefaultQueueConfig.h",
         "commands/config/qos/policy/CmdConfigQosPolicy.h",
         "commands/config/qos/policy/CmdConfigQosPolicyMap.h",
@@ -1315,6 +1333,7 @@ cpp_library(
         "commands/delete/protocol/static/CmdDeleteProtocolStatic.h",
         "commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.h",
         "commands/delete/qos/CmdDeleteQos.h",
+        "commands/delete/qos/default_policy/CmdDeleteQosDefaultPolicy.h",
         "commands/delete/qos/default_queue_config/CmdDeleteQosDefaultQueueConfig.h",
         "commands/delete/tunnel/CmdDeleteTunnel.h",
         "commands/delete/tunnel/ip_in_ip/CmdDeleteTunnelIpInIp.h",
@@ -1330,7 +1349,6 @@ cpp_library(
     ],
     deps = [
         "fbsource//third-party/glog:glog",
-        ":cmd-list-header",
         ":table-utils",
         "//common/network/if:if-cpp2-types",
         "//configerator/structs/neteng/fboss/bgp:bgp_config-cpp2-types",
@@ -1352,7 +1370,6 @@ cpp_library(
         "//folly/lang:assume",
         "//folly/logging:logging",
         "//thrift/lib/cpp/util:enum_utils",
-        "//thrift/lib/cpp2:field_ref",
         "//thrift/lib/cpp2/folly_dynamic:folly_dynamic",
         "//thrift/lib/cpp2/protocol:protocol",
     ],
@@ -1364,6 +1381,7 @@ cpp_library(
         ":cmd-handler",
         ":fboss2-lib",
         "//common/network/if:if-cpp2-types",
+        "//configerator/structs/neteng/fboss/bgp:bgp_config-cpp2-types",
         "//fboss/agent:agent_config-cpp2-types",
         "//fboss/agent:fboss-types",
         "//fboss/agent:platform_config-cpp2-types",
@@ -1374,6 +1392,7 @@ cpp_library(
         "//folly:network_address",
         "//folly:string",
         "//folly/json:dynamic",
+        "//thrift/lib/cpp2:field_ref",
     ],
 )
 
@@ -1408,6 +1427,7 @@ cpp_binary(
     srcs = [
         "CmdHandlerImplBgp.cpp",
         "Main.cpp",
+        "commands/clear/facebook/bgp/counters/CmdClearBgpCounters.cpp",
         "commands/clear/facebook/bgp/profiler/CmdClearBgpProfiler.cpp",
         "commands/set/facebook/bgp/profiler/CmdSetBgpProfilerFilter.cpp",
         "commands/show/bgp/CanonicalRibResolver.cpp",
@@ -1484,6 +1504,7 @@ cpp_binary(
         ":cmd-list-header",
         ":cmd-local-options",
         ":commands-show-bgp",  # @manual
+        ":safety-prompt-utils",
         ":table-utils",
         "//common/config:configerator",
         "//common/strings:string_util",
@@ -1505,6 +1526,7 @@ cpp_binary(
         "//folly:range",
         "//folly:string",
         "//folly:subprocess",
+        "//folly/container:f14_hash",
         "//folly/init:init",
         "//folly/json:dynamic",
         "//folly/logging:init",
@@ -1530,6 +1552,7 @@ cpp_binary(
         "//thrift/lib/cpp:thrift_exception",
         "//thrift/lib/cpp/util:enum_utils",
         "//thrift/lib/cpp2/folly_dynamic:folly_dynamic",
+        "//thrift/lib/cpp2/protocol:protocol",
     ],
     external_deps = [
         "CLI11",

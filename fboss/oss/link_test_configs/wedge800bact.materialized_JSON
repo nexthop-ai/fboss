@@ -9,6 +9,7 @@
     "enable_replayer": "true",
     "intf_nbr_tables": "true",
     "log_variable_name": "true",
+    "platform_descriptor_config_path": "/tmp/platform_descriptors/",
     "sai_configure_six_tap": "true",
     "verify_fib_nexthop_id_consistency": "true"
   },
@@ -239,7 +240,7 @@
         "parserType": 1,
         "routable": true,
         "ingressVlan": 2032,
-        "speed": 200000,
+        "speed": 100000,
         "name": "eth1/11/1",
         "description": "",
         "queues_DEPRECATED": [
@@ -258,7 +259,43 @@
         "lookupClasses": [
 
         ],
-        "profileID": 54,
+        "profileID": 56,
+        "portType": 0,
+        "expectedNeighborReachability": [
+
+        ],
+        "drainState": 0,
+        "scope": 0,
+        "conditionalEntropyRehash": false
+      },
+      {
+        "logicalID": 322,
+        "state": 2,
+        "minFrameSize": 64,
+        "maxFrameSize": 9412,
+        "parserType": 1,
+        "routable": true,
+        "ingressVlan": 2033,
+        "speed": 100000,
+        "name": "eth1/11/2",
+        "description": "",
+        "queues_DEPRECATED": [
+
+        ],
+        "pause": {
+          "tx": false,
+          "rx": false
+        },
+        "sFlowIngressRate": 0,
+        "sFlowEgressRate": 0,
+        "loopbackMode": 0,
+        "expectedLLDPValues": {
+          "2": "eth1/12/2"
+        },
+        "lookupClasses": [
+
+        ],
+        "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
 
@@ -275,7 +312,7 @@
         "parserType": 1,
         "routable": true,
         "ingressVlan": 2034,
-        "speed": 200000,
+        "speed": 100000,
         "name": "eth1/11/3",
         "description": "",
         "queues_DEPRECATED": [
@@ -294,7 +331,43 @@
         "lookupClasses": [
 
         ],
-        "profileID": 54,
+        "profileID": 56,
+        "portType": 0,
+        "expectedNeighborReachability": [
+
+        ],
+        "drainState": 0,
+        "scope": 0,
+        "conditionalEntropyRehash": false
+      },
+      {
+        "logicalID": 324,
+        "state": 2,
+        "minFrameSize": 64,
+        "maxFrameSize": 9412,
+        "parserType": 1,
+        "routable": true,
+        "ingressVlan": 2035,
+        "speed": 100000,
+        "name": "eth1/11/4",
+        "description": "",
+        "queues_DEPRECATED": [
+
+        ],
+        "pause": {
+          "tx": false,
+          "rx": false
+        },
+        "sFlowIngressRate": 0,
+        "sFlowEgressRate": 0,
+        "loopbackMode": 0,
+        "expectedLLDPValues": {
+          "2": "eth1/12/4"
+        },
+        "lookupClasses": [
+
+        ],
+        "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
 
@@ -311,7 +384,7 @@
         "parserType": 1,
         "routable": true,
         "ingressVlan": 2036,
-        "speed": 200000,
+        "speed": 100000,
         "name": "eth1/11/5",
         "description": "",
         "queues_DEPRECATED": [
@@ -330,7 +403,43 @@
         "lookupClasses": [
 
         ],
-        "profileID": 54,
+        "profileID": 56,
+        "portType": 0,
+        "expectedNeighborReachability": [
+
+        ],
+        "drainState": 0,
+        "scope": 0,
+        "conditionalEntropyRehash": false
+      },
+      {
+        "logicalID": 326,
+        "state": 2,
+        "minFrameSize": 64,
+        "maxFrameSize": 9412,
+        "parserType": 1,
+        "routable": true,
+        "ingressVlan": 2037,
+        "speed": 100000,
+        "name": "eth1/11/6",
+        "description": "",
+        "queues_DEPRECATED": [
+
+        ],
+        "pause": {
+          "tx": false,
+          "rx": false
+        },
+        "sFlowIngressRate": 0,
+        "sFlowEgressRate": 0,
+        "loopbackMode": 0,
+        "expectedLLDPValues": {
+          "2": "eth1/12/6"
+        },
+        "lookupClasses": [
+
+        ],
+        "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
 
@@ -347,7 +456,7 @@
         "parserType": 1,
         "routable": true,
         "ingressVlan": 2038,
-        "speed": 200000,
+        "speed": 100000,
         "name": "eth1/11/7",
         "description": "",
         "queues_DEPRECATED": [
@@ -366,7 +475,43 @@
         "lookupClasses": [
 
         ],
-        "profileID": 54,
+        "profileID": 56,
+        "portType": 0,
+        "expectedNeighborReachability": [
+
+        ],
+        "drainState": 0,
+        "scope": 0,
+        "conditionalEntropyRehash": false
+      },
+      {
+        "logicalID": 328,
+        "state": 2,
+        "minFrameSize": 64,
+        "maxFrameSize": 9412,
+        "parserType": 1,
+        "routable": true,
+        "ingressVlan": 2039,
+        "speed": 100000,
+        "name": "eth1/11/8",
+        "description": "",
+        "queues_DEPRECATED": [
+
+        ],
+        "pause": {
+          "tx": false,
+          "rx": false
+        },
+        "sFlowIngressRate": 0,
+        "sFlowEgressRate": 0,
+        "loopbackMode": 0,
+        "expectedLLDPValues": {
+          "2": "eth1/12/8"
+        },
+        "lookupClasses": [
+
+        ],
+        "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
 
@@ -383,7 +528,7 @@
         "parserType": 1,
         "routable": true,
         "ingressVlan": 2040,
-        "speed": 200000,
+        "speed": 100000,
         "name": "eth1/12/1",
         "description": "",
         "queues_DEPRECATED": [
@@ -402,7 +547,43 @@
         "lookupClasses": [
 
         ],
-        "profileID": 54,
+        "profileID": 56,
+        "portType": 0,
+        "expectedNeighborReachability": [
+
+        ],
+        "drainState": 0,
+        "scope": 0,
+        "conditionalEntropyRehash": false
+      },
+      {
+        "logicalID": 313,
+        "state": 2,
+        "minFrameSize": 64,
+        "maxFrameSize": 9412,
+        "parserType": 1,
+        "routable": true,
+        "ingressVlan": 2041,
+        "speed": 100000,
+        "name": "eth1/12/2",
+        "description": "",
+        "queues_DEPRECATED": [
+
+        ],
+        "pause": {
+          "tx": false,
+          "rx": false
+        },
+        "sFlowIngressRate": 0,
+        "sFlowEgressRate": 0,
+        "loopbackMode": 0,
+        "expectedLLDPValues": {
+          "2": "eth1/11/2"
+        },
+        "lookupClasses": [
+
+        ],
+        "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
 
@@ -419,7 +600,7 @@
         "parserType": 1,
         "routable": true,
         "ingressVlan": 2042,
-        "speed": 200000,
+        "speed": 100000,
         "name": "eth1/12/3",
         "description": "",
         "queues_DEPRECATED": [
@@ -438,7 +619,43 @@
         "lookupClasses": [
 
         ],
-        "profileID": 54,
+        "profileID": 56,
+        "portType": 0,
+        "expectedNeighborReachability": [
+
+        ],
+        "drainState": 0,
+        "scope": 0,
+        "conditionalEntropyRehash": false
+      },
+      {
+        "logicalID": 315,
+        "state": 2,
+        "minFrameSize": 64,
+        "maxFrameSize": 9412,
+        "parserType": 1,
+        "routable": true,
+        "ingressVlan": 2043,
+        "speed": 100000,
+        "name": "eth1/12/4",
+        "description": "",
+        "queues_DEPRECATED": [
+
+        ],
+        "pause": {
+          "tx": false,
+          "rx": false
+        },
+        "sFlowIngressRate": 0,
+        "sFlowEgressRate": 0,
+        "loopbackMode": 0,
+        "expectedLLDPValues": {
+          "2": "eth1/11/4"
+        },
+        "lookupClasses": [
+
+        ],
+        "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
 
@@ -455,7 +672,7 @@
         "parserType": 1,
         "routable": true,
         "ingressVlan": 2044,
-        "speed": 200000,
+        "speed": 100000,
         "name": "eth1/12/5",
         "description": "",
         "queues_DEPRECATED": [
@@ -474,7 +691,43 @@
         "lookupClasses": [
 
         ],
-        "profileID": 54,
+        "profileID": 56,
+        "portType": 0,
+        "expectedNeighborReachability": [
+
+        ],
+        "drainState": 0,
+        "scope": 0,
+        "conditionalEntropyRehash": false
+      },
+      {
+        "logicalID": 317,
+        "state": 2,
+        "minFrameSize": 64,
+        "maxFrameSize": 9412,
+        "parserType": 1,
+        "routable": true,
+        "ingressVlan": 2045,
+        "speed": 100000,
+        "name": "eth1/12/6",
+        "description": "",
+        "queues_DEPRECATED": [
+
+        ],
+        "pause": {
+          "tx": false,
+          "rx": false
+        },
+        "sFlowIngressRate": 0,
+        "sFlowEgressRate": 0,
+        "loopbackMode": 0,
+        "expectedLLDPValues": {
+          "2": "eth1/11/6"
+        },
+        "lookupClasses": [
+
+        ],
+        "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
 
@@ -491,7 +744,7 @@
         "parserType": 1,
         "routable": true,
         "ingressVlan": 2046,
-        "speed": 200000,
+        "speed": 100000,
         "name": "eth1/12/7",
         "description": "",
         "queues_DEPRECATED": [
@@ -988,15 +1241,15 @@
         "conditionalEntropyRehash": false
       },
       {
-        "logicalID": 36,
+        "logicalID": 320,
         "state": 2,
         "minFrameSize": 64,
         "maxFrameSize": 9412,
         "parserType": 1,
         "routable": true,
-        "ingressVlan": 2081,
+        "ingressVlan": 2047,
         "speed": 100000,
-        "name": "eth1/23/2",
+        "name": "eth1/12/8",
         "description": "",
         "queues_DEPRECATED": [
 
@@ -1009,7 +1262,7 @@
         "sFlowEgressRate": 0,
         "loopbackMode": 0,
         "expectedLLDPValues": {
-          "2": "eth1/27/2"
+          "2": "eth1/11/8"
         },
         "lookupClasses": [
 
@@ -1787,7 +2040,7 @@
         "parserType": 1,
         "routable": true,
         "ingressVlan": 4001,
-        "speed": 400000,
+        "speed": 800000,
         "name": "eth1/1/1",
         "description": "",
         "queues_DEPRECATED": [
@@ -1859,7 +2112,7 @@
         "parserType": 1,
         "routable": true,
         "ingressVlan": 4003,
-        "speed": 400000,
+        "speed": 800000,
         "name": "eth1/2/1",
         "description": "",
         "queues_DEPRECATED": [
@@ -2111,7 +2364,7 @@
         "parserType": 1,
         "routable": true,
         "ingressVlan": 4010,
-        "speed": 200000,
+        "speed": 400000,
         "name": "eth1/9/5",
         "description": "",
         "queues_DEPRECATED": [
@@ -2130,7 +2383,7 @@
         "lookupClasses": [
 
         ],
-        "profileID": 25,
+        "profileID": 38,
         "portType": 0,
         "expectedNeighborReachability": [
 
@@ -2183,7 +2436,7 @@
         "parserType": 1,
         "routable": true,
         "ingressVlan": 4012,
-        "speed": 200000,
+        "speed": 400000,
         "name": "eth1/10/5",
         "description": "",
         "queues_DEPRECATED": [
@@ -2202,7 +2455,7 @@
         "lookupClasses": [
 
         ],
-        "profileID": 25,
+        "profileID": 38,
         "portType": 0,
         "expectedNeighborReachability": [
 
@@ -2871,8 +3124,26 @@
         ]
       },
       {
+        "name": "vlan2033",
+        "id": 2033,
+        "recordStats": true,
+        "routable": true,
+        "ipAddresses": [
+
+        ]
+      },
+      {
         "name": "vlan2034",
         "id": 2034,
+        "recordStats": true,
+        "routable": true,
+        "ipAddresses": [
+
+        ]
+      },
+      {
+        "name": "vlan2035",
+        "id": 2035,
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
@@ -2889,8 +3160,26 @@
         ]
       },
       {
+        "name": "vlan2037",
+        "id": 2037,
+        "recordStats": true,
+        "routable": true,
+        "ipAddresses": [
+
+        ]
+      },
+      {
         "name": "vlan2038",
         "id": 2038,
+        "recordStats": true,
+        "routable": true,
+        "ipAddresses": [
+
+        ]
+      },
+      {
+        "name": "vlan2039",
+        "id": 2039,
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
@@ -2907,6 +3196,15 @@
         ]
       },
       {
+        "name": "vlan2041",
+        "id": 2041,
+        "recordStats": true,
+        "routable": true,
+        "ipAddresses": [
+
+        ]
+      },
+      {
         "name": "vlan2042",
         "id": 2042,
         "recordStats": true,
@@ -2916,8 +3214,26 @@
         ]
       },
       {
+        "name": "vlan2043",
+        "id": 2043,
+        "recordStats": true,
+        "routable": true,
+        "ipAddresses": [
+
+        ]
+      },
+      {
         "name": "vlan2044",
         "id": 2044,
+        "recordStats": true,
+        "routable": true,
+        "ipAddresses": [
+
+        ]
+      },
+      {
+        "name": "vlan2045",
+        "id": 2045,
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
@@ -3545,8 +3861,20 @@
         "emitTags": false
       },
       {
+        "vlanID": 2033,
+        "logicalPort": 322,
+        "spanningTreeState": 2,
+        "emitTags": false
+      },
+      {
         "vlanID": 2034,
         "logicalPort": 323,
+        "spanningTreeState": 2,
+        "emitTags": false
+      },
+      {
+        "vlanID": 2035,
+        "logicalPort": 324,
         "spanningTreeState": 2,
         "emitTags": false
       },
@@ -3557,8 +3885,20 @@
         "emitTags": false
       },
       {
+        "vlanID": 2037,
+        "logicalPort": 326,
+        "spanningTreeState": 2,
+        "emitTags": false
+      },
+      {
         "vlanID": 2038,
         "logicalPort": 327,
+        "spanningTreeState": 2,
+        "emitTags": false
+      },
+      {
+        "vlanID": 2039,
+        "logicalPort": 328,
         "spanningTreeState": 2,
         "emitTags": false
       },
@@ -3569,8 +3909,20 @@
         "emitTags": false
       },
       {
+        "vlanID": 2041,
+        "logicalPort": 313,
+        "spanningTreeState": 2,
+        "emitTags": false
+      },
+      {
         "vlanID": 2042,
         "logicalPort": 314,
+        "spanningTreeState": 2,
+        "emitTags": false
+      },
+      {
+        "vlanID": 2043,
+        "logicalPort": 315,
         "spanningTreeState": 2,
         "emitTags": false
       },
@@ -3581,212 +3933,20 @@
         "emitTags": false
       },
       {
+        "vlanID": 2045,
+        "logicalPort": 317,
+        "spanningTreeState": 2,
+        "emitTags": false
+      },
+      {
         "vlanID": 2046,
         "logicalPort": 319,
         "spanningTreeState": 2,
         "emitTags": false
       },
       {
-        "vlanID": 2048,
-        "logicalPort": 334,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2052,
-        "logicalPort": 338,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2056,
-        "logicalPort": 343,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2060,
-        "logicalPort": 347,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2064,
-        "logicalPort": 13,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2066,
-        "logicalPort": 15,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2068,
-        "logicalPort": 17,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2070,
-        "logicalPort": 19,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2072,
-        "logicalPort": 5,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2074,
-        "logicalPort": 7,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2076,
-        "logicalPort": 9,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2078,
-        "logicalPort": 11,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2080,
-        "logicalPort": 35,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2081,
-        "logicalPort": 36,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2082,
-        "logicalPort": 37,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2083,
-        "logicalPort": 38,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2084,
-        "logicalPort": 39,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2085,
-        "logicalPort": 40,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2086,
-        "logicalPort": 41,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2087,
-        "logicalPort": 42,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2088,
-        "logicalPort": 26,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2096,
-        "logicalPort": 57,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2097,
-        "logicalPort": 58,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2098,
-        "logicalPort": 59,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2099,
-        "logicalPort": 60,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2100,
-        "logicalPort": 61,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2101,
-        "logicalPort": 62,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2102,
-        "logicalPort": 63,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2103,
-        "logicalPort": 64,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2104,
-        "logicalPort": 48,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2112,
-        "logicalPort": 79,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2116,
-        "logicalPort": 83,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2120,
-        "logicalPort": 70,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 2124,
-        "logicalPort": 74,
+        "vlanID": 2047,
+        "logicalPort": 320,
         "spanningTreeState": 2,
         "emitTags": false
       },
@@ -3803,20 +3963,8 @@
         "emitTags": false
       },
       {
-        "vlanID": 4002,
-        "logicalPort": 267,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
         "vlanID": 4003,
         "logicalPort": 264,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 4004,
-        "logicalPort": 265,
         "spanningTreeState": 2,
         "emitTags": false
       },
@@ -3889,78 +4037,6 @@
       {
         "vlanID": 4016,
         "logicalPort": 333,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 4017,
-        "logicalPort": 3,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 4018,
-        "logicalPort": 4,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 4019,
-        "logicalPort": 1,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 4020,
-        "logicalPort": 2,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 4021,
-        "logicalPort": 24,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 4022,
-        "logicalPort": 25,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 4023,
-        "logicalPort": 22,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 4024,
-        "logicalPort": 23,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 4025,
-        "logicalPort": 46,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 4027,
-        "logicalPort": 44,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 4029,
-        "logicalPort": 68,
-        "spanningTreeState": 2,
-        "emitTags": false
-      },
-      {
-        "vlanID": 4031,
-        "logicalPort": 66,
         "spanningTreeState": 2,
         "emitTags": false
       }
@@ -4066,12 +4142,40 @@
         "scope": 0
       },
       {
+        "intfID": 2033,
+        "routerID": 0,
+        "vlanID": 2033,
+        "ipAddresses": [
+          "2407::/64",
+          "17.0.0.0/24"
+        ],
+        "mtu": 9000,
+        "isVirtual": false,
+        "isStateSyncDisabled": true,
+        "type": 1,
+        "scope": 0
+      },
+      {
         "intfID": 2034,
         "routerID": 0,
         "vlanID": 2034,
         "ipAddresses": [
-          "2407::/64",
-          "17.0.0.0/24"
+          "2408::/64",
+          "18.0.0.0/24"
+        ],
+        "mtu": 9000,
+        "isVirtual": false,
+        "isStateSyncDisabled": true,
+        "type": 1,
+        "scope": 0
+      },
+      {
+        "intfID": 2035,
+        "routerID": 0,
+        "vlanID": 2035,
+        "ipAddresses": [
+          "2409::/64",
+          "19.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4084,8 +4188,22 @@
         "routerID": 0,
         "vlanID": 2036,
         "ipAddresses": [
-          "2408::/64",
-          "18.0.0.0/24"
+          "2410::/64",
+          "20.0.0.0/24"
+        ],
+        "mtu": 9000,
+        "isVirtual": false,
+        "isStateSyncDisabled": true,
+        "type": 1,
+        "scope": 0
+      },
+      {
+        "intfID": 2037,
+        "routerID": 0,
+        "vlanID": 2037,
+        "ipAddresses": [
+          "2411::/64",
+          "21.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4098,8 +4216,22 @@
         "routerID": 0,
         "vlanID": 2038,
         "ipAddresses": [
-          "2409::/64",
-          "19.0.0.0/24"
+          "2412::/64",
+          "22.0.0.0/24"
+        ],
+        "mtu": 9000,
+        "isVirtual": false,
+        "isStateSyncDisabled": true,
+        "type": 1,
+        "scope": 0
+      },
+      {
+        "intfID": 2039,
+        "routerID": 0,
+        "vlanID": 2039,
+        "ipAddresses": [
+          "2413::/64",
+          "23.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4112,8 +4244,22 @@
         "routerID": 0,
         "vlanID": 2040,
         "ipAddresses": [
-          "2410::/64",
-          "20.0.0.0/24"
+          "2414::/64",
+          "24.0.0.0/24"
+        ],
+        "mtu": 9000,
+        "isVirtual": false,
+        "isStateSyncDisabled": true,
+        "type": 1,
+        "scope": 0
+      },
+      {
+        "intfID": 2041,
+        "routerID": 0,
+        "vlanID": 2041,
+        "ipAddresses": [
+          "2415::/64",
+          "25.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4126,8 +4272,22 @@
         "routerID": 0,
         "vlanID": 2042,
         "ipAddresses": [
-          "2411::/64",
-          "21.0.0.0/24"
+          "2416::/64",
+          "26.0.0.0/24"
+        ],
+        "mtu": 9000,
+        "isVirtual": false,
+        "isStateSyncDisabled": true,
+        "type": 1,
+        "scope": 0
+      },
+      {
+        "intfID": 2043,
+        "routerID": 0,
+        "vlanID": 2043,
+        "ipAddresses": [
+          "2417::/64",
+          "27.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4140,8 +4300,22 @@
         "routerID": 0,
         "vlanID": 2044,
         "ipAddresses": [
-          "2412::/64",
-          "22.0.0.0/24"
+          "2418::/64",
+          "28.0.0.0/24"
+        ],
+        "mtu": 9000,
+        "isVirtual": false,
+        "isStateSyncDisabled": true,
+        "type": 1,
+        "scope": 0
+      },
+      {
+        "intfID": 2045,
+        "routerID": 0,
+        "vlanID": 2045,
+        "ipAddresses": [
+          "2419::/64",
+          "29.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4154,104 +4328,6 @@
         "routerID": 0,
         "vlanID": 2046,
         "ipAddresses": [
-          "2413::/64",
-          "23.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2048,
-        "routerID": 0,
-        "vlanID": 2048,
-        "ipAddresses": [
-          "2414::/64",
-          "24.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2052,
-        "routerID": 0,
-        "vlanID": 2052,
-        "ipAddresses": [
-          "2415::/64",
-          "25.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2056,
-        "routerID": 0,
-        "vlanID": 2056,
-        "ipAddresses": [
-          "2416::/64",
-          "26.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2060,
-        "routerID": 0,
-        "vlanID": 2060,
-        "ipAddresses": [
-          "2417::/64",
-          "27.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2064,
-        "routerID": 0,
-        "vlanID": 2064,
-        "ipAddresses": [
-          "2418::/64",
-          "28.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2066,
-        "routerID": 0,
-        "vlanID": 2066,
-        "ipAddresses": [
-          "2419::/64",
-          "29.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2068,
-        "routerID": 0,
-        "vlanID": 2068,
-        "ipAddresses": [
           "2420::/64",
           "30.0.0.0/24"
         ],
@@ -4262,376 +4338,12 @@
         "scope": 0
       },
       {
-        "intfID": 2070,
+        "intfID": 2047,
         "routerID": 0,
-        "vlanID": 2070,
+        "vlanID": 2047,
         "ipAddresses": [
           "2421::/64",
           "31.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2072,
-        "routerID": 0,
-        "vlanID": 2072,
-        "ipAddresses": [
-          "2422::/64",
-          "32.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2074,
-        "routerID": 0,
-        "vlanID": 2074,
-        "ipAddresses": [
-          "2423::/64",
-          "33.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2076,
-        "routerID": 0,
-        "vlanID": 2076,
-        "ipAddresses": [
-          "2424::/64",
-          "34.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2078,
-        "routerID": 0,
-        "vlanID": 2078,
-        "ipAddresses": [
-          "2425::/64",
-          "35.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2080,
-        "routerID": 0,
-        "vlanID": 2080,
-        "ipAddresses": [
-          "2426::/64",
-          "36.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2081,
-        "routerID": 0,
-        "vlanID": 2081,
-        "ipAddresses": [
-          "2427::/64",
-          "37.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2082,
-        "routerID": 0,
-        "vlanID": 2082,
-        "ipAddresses": [
-          "2428::/64",
-          "38.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2083,
-        "routerID": 0,
-        "vlanID": 2083,
-        "ipAddresses": [
-          "2429::/64",
-          "39.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2084,
-        "routerID": 0,
-        "vlanID": 2084,
-        "ipAddresses": [
-          "2430::/64",
-          "40.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2085,
-        "routerID": 0,
-        "vlanID": 2085,
-        "ipAddresses": [
-          "2431::/64",
-          "41.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2086,
-        "routerID": 0,
-        "vlanID": 2086,
-        "ipAddresses": [
-          "2432::/64",
-          "42.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2087,
-        "routerID": 0,
-        "vlanID": 2087,
-        "ipAddresses": [
-          "2433::/64",
-          "43.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2088,
-        "routerID": 0,
-        "vlanID": 2088,
-        "ipAddresses": [
-          "2434::/64",
-          "44.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2096,
-        "routerID": 0,
-        "vlanID": 2096,
-        "ipAddresses": [
-          "2435::/64",
-          "45.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2097,
-        "routerID": 0,
-        "vlanID": 2097,
-        "ipAddresses": [
-          "2436::/64",
-          "46.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2098,
-        "routerID": 0,
-        "vlanID": 2098,
-        "ipAddresses": [
-          "2437::/64",
-          "47.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2099,
-        "routerID": 0,
-        "vlanID": 2099,
-        "ipAddresses": [
-          "2438::/64",
-          "48.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2100,
-        "routerID": 0,
-        "vlanID": 2100,
-        "ipAddresses": [
-          "2439::/64",
-          "49.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2101,
-        "routerID": 0,
-        "vlanID": 2101,
-        "ipAddresses": [
-          "2440::/64",
-          "50.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2102,
-        "routerID": 0,
-        "vlanID": 2102,
-        "ipAddresses": [
-          "2441::/64",
-          "51.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2103,
-        "routerID": 0,
-        "vlanID": 2103,
-        "ipAddresses": [
-          "2442::/64",
-          "52.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2104,
-        "routerID": 0,
-        "vlanID": 2104,
-        "ipAddresses": [
-          "2443::/64",
-          "53.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2112,
-        "routerID": 0,
-        "vlanID": 2112,
-        "ipAddresses": [
-          "2444::/64",
-          "54.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2116,
-        "routerID": 0,
-        "vlanID": 2116,
-        "ipAddresses": [
-          "2445::/64",
-          "55.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2120,
-        "routerID": 0,
-        "vlanID": 2120,
-        "ipAddresses": [
-          "2446::/64",
-          "56.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 2124,
-        "routerID": 0,
-        "vlanID": 2124,
-        "ipAddresses": [
-          "2447::/64",
-          "57.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4644,8 +4356,8 @@
         "routerID": 0,
         "vlanID": 2200,
         "ipAddresses": [
-          "2448::/64",
-          "58.0.0.0/24"
+          "2422::/64",
+          "32.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": true,
@@ -4658,22 +4370,8 @@
         "routerID": 0,
         "vlanID": 4001,
         "ipAddresses": [
-          "2449::/64",
-          "59.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 4002,
-        "routerID": 0,
-        "vlanID": 4002,
-        "ipAddresses": [
-          "2450::/64",
-          "60.0.0.0/24"
+          "2423::/64",
+          "33.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4686,22 +4384,8 @@
         "routerID": 0,
         "vlanID": 4003,
         "ipAddresses": [
-          "2451::/64",
-          "61.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 4004,
-        "routerID": 0,
-        "vlanID": 4004,
-        "ipAddresses": [
-          "2452::/64",
-          "62.0.0.0/24"
+          "2424::/64",
+          "34.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4714,8 +4398,8 @@
         "routerID": 0,
         "vlanID": 4005,
         "ipAddresses": [
-          "2453::/64",
-          "63.0.0.0/24"
+          "2425::/64",
+          "35.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4728,8 +4412,8 @@
         "routerID": 0,
         "vlanID": 4006,
         "ipAddresses": [
-          "2454::/64",
-          "64.0.0.0/24"
+          "2426::/64",
+          "36.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4742,8 +4426,8 @@
         "routerID": 0,
         "vlanID": 4007,
         "ipAddresses": [
-          "2455::/64",
-          "65.0.0.0/24"
+          "2427::/64",
+          "37.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4756,8 +4440,8 @@
         "routerID": 0,
         "vlanID": 4008,
         "ipAddresses": [
-          "2456::/64",
-          "66.0.0.0/24"
+          "2428::/64",
+          "38.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4770,8 +4454,8 @@
         "routerID": 0,
         "vlanID": 4009,
         "ipAddresses": [
-          "2457::/64",
-          "67.0.0.0/24"
+          "2429::/64",
+          "39.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4784,8 +4468,8 @@
         "routerID": 0,
         "vlanID": 4010,
         "ipAddresses": [
-          "2458::/64",
-          "68.0.0.0/24"
+          "2430::/64",
+          "40.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4798,8 +4482,8 @@
         "routerID": 0,
         "vlanID": 4011,
         "ipAddresses": [
-          "2459::/64",
-          "69.0.0.0/24"
+          "2431::/64",
+          "41.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4812,8 +4496,8 @@
         "routerID": 0,
         "vlanID": 4012,
         "ipAddresses": [
-          "2460::/64",
-          "70.0.0.0/24"
+          "2432::/64",
+          "42.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4826,8 +4510,8 @@
         "routerID": 0,
         "vlanID": 4013,
         "ipAddresses": [
-          "2461::/64",
-          "71.0.0.0/24"
+          "2433::/64",
+          "43.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4840,8 +4524,8 @@
         "routerID": 0,
         "vlanID": 4014,
         "ipAddresses": [
-          "2462::/64",
-          "72.0.0.0/24"
+          "2434::/64",
+          "44.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4854,8 +4538,8 @@
         "routerID": 0,
         "vlanID": 4015,
         "ipAddresses": [
-          "2463::/64",
-          "73.0.0.0/24"
+          "2435::/64",
+          "45.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -4868,176 +4552,8 @@
         "routerID": 0,
         "vlanID": 4016,
         "ipAddresses": [
-          "2464::/64",
-          "74.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 4017,
-        "routerID": 0,
-        "vlanID": 4017,
-        "ipAddresses": [
-          "2465::/64",
-          "75.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 4018,
-        "routerID": 0,
-        "vlanID": 4018,
-        "ipAddresses": [
-          "2466::/64",
-          "76.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 4019,
-        "routerID": 0,
-        "vlanID": 4019,
-        "ipAddresses": [
-          "2467::/64",
-          "77.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 4020,
-        "routerID": 0,
-        "vlanID": 4020,
-        "ipAddresses": [
-          "2468::/64",
-          "78.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 4021,
-        "routerID": 0,
-        "vlanID": 4021,
-        "ipAddresses": [
-          "2469::/64",
-          "79.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 4022,
-        "routerID": 0,
-        "vlanID": 4022,
-        "ipAddresses": [
-          "2470::/64",
-          "80.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 4023,
-        "routerID": 0,
-        "vlanID": 4023,
-        "ipAddresses": [
-          "2471::/64",
-          "81.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 4024,
-        "routerID": 0,
-        "vlanID": 4024,
-        "ipAddresses": [
-          "2472::/64",
-          "82.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 4025,
-        "routerID": 0,
-        "vlanID": 4025,
-        "ipAddresses": [
-          "2473::/64",
-          "83.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 4027,
-        "routerID": 0,
-        "vlanID": 4027,
-        "ipAddresses": [
-          "2474::/64",
-          "84.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 4029,
-        "routerID": 0,
-        "vlanID": 4029,
-        "ipAddresses": [
-          "2475::/64",
-          "85.0.0.0/24"
-        ],
-        "mtu": 9000,
-        "isVirtual": false,
-        "isStateSyncDisabled": true,
-        "type": 1,
-        "scope": 0
-      },
-      {
-        "intfID": 4031,
-        "routerID": 0,
-        "vlanID": 4031,
-        "ipAddresses": [
-          "2476::/64",
-          "86.0.0.0/24"
+          "2436::/64",
+          "46.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": false,
@@ -5050,8 +4566,8 @@
         "routerID": 0,
         "vlanID": 10,
         "ipAddresses": [
-          "2477::/64",
-          "87.0.0.0/24"
+          "2437::/64",
+          "47.0.0.0/24"
         ],
         "mtu": 9000,
         "isVirtual": true,
@@ -5074,7 +4590,7 @@
 
     ],
     "acls": [
-      
+
     ],
     "maxNeighborProbes": 300,
     "staleEntryInterval": 10,
@@ -5556,13 +5072,13 @@
               }
             ],
             "actionTypes": [
-              
+
             ],
             "qualifiers": [
-              
+
             ],
             "udfGroups": [
-              
+
             ]
           }
         ],

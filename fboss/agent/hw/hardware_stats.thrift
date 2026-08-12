@@ -3,12 +3,15 @@ namespace py neteng.fboss.hardware_stats
 namespace go neteng.fboss.hardware_stats
 namespace py3 neteng.fboss
 namespace py.asyncio neteng.fboss.asyncio.hardware_stats
-namespace php fboss_hw
 
 include "fboss/mka_service/if/mka_structs.thrift"
 include "thrift/annotation/cpp.thrift"
 include "thrift/annotation/thrift.thrift"
+include "thrift/annotation/hack.thrift"
 
+@hack.NamePrefix{prefix = "fboss_hw_"}
+@hack.LegacyOmitPrefixInNameString
+@hack.ConstantsClass{name = "fboss_hw_CONSTANTS"}
 @thrift.AllowLegacyMissingUris
 package;
 
@@ -133,6 +136,20 @@ struct HwPortStats {
   87: optional i64 llrRxReplay_;
   88: optional i64 linkDownDebounceRetriggerCount_;
   89: optional i64 linkUpDebounceRetriggerCount_;
+  90: optional i64 llrTxInitCtlOs_;
+  91: optional i64 llrTxInitEchoCtlOs_;
+  92: optional i64 llrTxAckCtlOs_;
+  93: optional i64 llrTxNackCtlOs_;
+  94: optional i64 llrRxInitCtlOs_;
+  95: optional i64 llrRxInitEchoCtlOs_;
+  96: optional i64 llrRxAckCtlOs_;
+  97: optional i64 llrRxNackCtlOs_;
+  98: optional i64 llrRxExpectedSeqGood_;
+  99: optional i64 llrRxExpectedSeqPoisoned_;
+  100: optional i64 llrRxExpectedSeqBad_;
+  // Link flaps plus debounce retriggers suppressed by the port debounce hold
+  // timers.
+  101: optional i64 linkFault_;
 }
 
 struct HwSysPortStats {

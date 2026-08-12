@@ -881,4 +881,11 @@ TEST_F(CmdShowTransceiverTestFixture, printOutputFreeFormNames) {
   EXPECT_GT(output.find("downlinks"), output.find("eth1/1/1"));
 }
 
+// CLI reference wiki hooks: a human description and a non-empty sample model.
+// Property checks only (no golden text).
+TEST_F(CmdShowTransceiverTestFixture, wikiDocHooks) {
+  EXPECT_FALSE(CmdShowTransceiverTraits::description().empty());
+  EXPECT_FALSE(CmdShowTransceiver::sampleModel().transceivers()->empty());
+}
+
 } // namespace facebook::fboss
