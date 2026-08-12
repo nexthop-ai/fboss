@@ -8,7 +8,7 @@
 namespace facebook::fboss::utility {
 
 void HwTestThriftHandler::updateFlowletStats() {
-  hwSwitch_->getHwFlowletStats();
+  throw FbossError("Flowlet stats are not supported in SaiSwitch.");
 }
 
 cfg::SwitchingMode HwTestThriftHandler::getFwdSwitchingMode(
