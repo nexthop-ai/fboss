@@ -414,7 +414,9 @@ std::vector<ConfigSession::ConfigDomain> ConfigSession::configDomains() const {
           getSystemConfigPath(), // /etc/coop/agent.conf (symlink, live read)
           getSystemConfigPath(), // symlink IS the system path for the agent
           kAgentGitRelPath, // symlink -> cli/agent.conf
-          cli::ConfigActionLevel::HITLESS, // rollback reloads the agent
+          // Rollback floor: reload the agent, unless a commit being undone
+          // recorded a higher level (see rolledBackActionLevels()).
+          cli::ConfigActionLevel::HITLESS,
       },
       ConfigDomain{
           cli::ServiceType::BGP,
@@ -1355,6 +1357,41 @@ void ConfigSession::rebase() {
   }
 }
 
+std::map<cli::ServiceType, cli::ConfigActionLevel>
+ConfigSession::rolledBackActionLevels(const std::string& resolvedSha) const {
+  std::map<cli::ServiceType, cli::ConfigActionLevel> levels;
+  for (const auto& commit : git_->log(getSystemMetadataPath())) {
+    if (commit.sha1 == resolvedSha) {
+      return levels;
+    }
+    try {
+      folly::dynamic json = folly::parseJson(
+          git_->fileAtRevision(commit.sha1, kMetadataGitRelPath));
+      cli::ConfigSessionMetadata metadata;
+      facebook::thrift::from_dynamic(
+          metadata,
+          json,
+          facebook::thrift::dynamic_format::PORTABLE,
+          facebook::thrift::format_adherence::LENIENT);
+      for (const auto& [service, level] : *metadata.action()) {
+        auto it = levels.find(service);
+        if (it == levels.end() ||
+            static_cast<int>(level) > static_cast<int>(it->second)) {
+          levels[service] = level;
+        }
+      }
+    } catch (const std::exception& ex) {
+      // A commit with unreadable metadata contributes nothing; the domain's
+      // default rollback action still applies as a floor.
+      LOG(WARNING) << "Failed to read metadata at revision "
+                   << Git::shortSha1(commit.sha1) << ": " << ex.what();
+    }
+  }
+  // resolvedSha never touched the metadata file (or predates it): every
+  // metadata-bearing commit was scanned, which is the conservative answer.
+  return levels;
+}
+
 std::string ConfigSession::rollback(const HostInfo& hostInfo) {
   // Find the previous commit using the metadata file's history. The metadata
   // (cli/cli_metadata.json) is committed by every config commit -- agent OR
@@ -1383,7 +1420,7 @@ std::string ConfigSession::rollback(
   // validates the revision (a bad ref throws here and propagates).
   std::string metadataPath = getSystemMetadataPath();
   std::string targetMetadataData =
-      git_->fileAtRevision(resolvedSha, "cli/cli_metadata.json");
+      git_->fileAtRevision(resolvedSha, kMetadataGitRelPath);
   std::string oldMetadataData;
   if (fs::exists(metadataPath)) {
     if (!folly::readFile(metadataPath.c_str(), oldMetadataData)) {
@@ -1412,6 +1449,47 @@ std::string ConfigSession::rollback(
     bool changed = !domainContentEqual(domain, target, oldPromoted);
     doms.push_back(
         {domain, std::move(target), std::move(oldPromoted), existed, changed});
+  }
+
+  // Reload/restart only the services whose config changed. Each starts at its
+  // domain's default rollback action level and is promoted to the highest
+  // level recorded by any commit being undone: undoing a change needs at least
+  // the action applying it did (e.g. a VLAN membership change cannot be
+  // applied with a hitless reload in either direction). Computed before any
+  // file is touched so a git failure here aborts cleanly.
+  auto recordedLevels = rolledBackActionLevels(resolvedSha);
+  std::map<cli::ServiceType, cli::ConfigActionLevel> actions;
+  for (const auto& dr : doms) {
+    if (!dr.changed) {
+      continue;
+    }
+    auto level = dr.domain.rollbackActionLevel;
+    auto it = recordedLevels.find(dr.domain.service);
+    if (it != recordedLevels.end() &&
+        static_cast<int>(it->second) > static_cast<int>(level)) {
+      level = it->second;
+    }
+    actions[dr.domain.service] = level;
+  }
+
+  // The rollback commit's metadata must record the actions IT applied, not the
+  // target commit's: a later rollback undoing this one crosses the same
+  // changes and reads this action map to pick its own level.
+  try {
+    folly::dynamic json = folly::parseJson(targetMetadataData);
+    cli::ConfigSessionMetadata metadata;
+    facebook::thrift::from_dynamic(
+        metadata,
+        json,
+        facebook::thrift::dynamic_format::PORTABLE,
+        facebook::thrift::format_adherence::LENIENT);
+    metadata.action() = actions;
+    targetMetadataData = folly::toPrettyJson(
+        facebook::thrift::to_dynamic(
+            metadata, facebook::thrift::dynamic_format::PORTABLE));
+  } catch (const std::exception& ex) {
+    LOG(WARNING) << "Failed to record rollback actions in metadata: "
+                 << ex.what();
   }
 
   // Always restore the metadata (it records the new rollback base). Promote
@@ -1444,15 +1522,6 @@ std::string ConfigSession::rollback(
   // Apply the rolled-back config - if this fails, restore prior state.
   std::string newCommitSha;
   try {
-    // Reload/restart only the services whose config changed, each at its
-    // domain's rollback action level (agent -> HITLESS reload, bgpd ->
-    // restart).
-    std::map<cli::ServiceType, cli::ConfigActionLevel> actions;
-    for (const auto& dr : doms) {
-      if (dr.changed) {
-        actions[dr.domain.service] = dr.domain.rollbackActionLevel;
-      }
-    }
     applyServiceActions(actions, hostInfo);
 
     std::string commitMessage = fmt::format(
