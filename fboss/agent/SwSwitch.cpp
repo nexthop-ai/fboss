@@ -1180,6 +1180,9 @@ void SwSwitch::updateStats() {
         portStat->inErrors(*hwPortStats.inErrors_(), portDrained, portActive);
         portStat->fecUncorrectableErrors(
             *hwPortStats.fecUncorrectableErrors(), portDrained, portActive);
+        portStat->linkDebounceRetriggers(
+            hwPortStats.linkDownDebounceRetriggerCount_().to_optional(),
+            hwPortStats.linkUpDebounceRetriggerCount_().to_optional());
       }
     }
   }

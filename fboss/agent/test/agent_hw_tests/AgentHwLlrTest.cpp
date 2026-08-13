@@ -1,6 +1,7 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
 #include "fboss/agent/hw/switch_asics/HwAsic.h"
+#include "fboss/agent/if/gen-cpp2/AgentHwTestCtrl.h"
 #include "fboss/agent/test/AgentHwTest.h"
 #include "fboss/agent/test/utils/ConfigUtils.h"
 
@@ -90,9 +91,9 @@ TEST_F(AgentHwLlrTest, verifyLlrConfig) {
           port->getLlrConfig().value()->getFlushFrameAction(),
           cfg::LlrFrameAction::BLOCK);
 
-      // Every TU-supported per-port LLR counter is collected into HwPortStats.
+      // Every TU1-supported per-port LLR counter is collected into HwPortStats.
       // Counters read 0 without induced traffic, but each must be present once
-      // LLR is bound. The 4 stats with no SDK backing on Tomahawk Ultra
+      // LLR is bound. The 4 stats with no SDK backing on Tomahawk Ultra 1
       // (RX_BAD, TX_DISCARD, TX_POISONED, RX_POISONED) are neither fetched nor
       // asserted (Broadcom CS00012472055).
       const auto& stats = portStats.at(portId);
@@ -115,6 +116,21 @@ TEST_F(AgentHwLlrTest, verifyLlrConfig) {
       EXPECT_TRUE(stats.llrRxExpectedSeqGood_().has_value());
       EXPECT_TRUE(stats.llrRxExpectedSeqPoisoned_().has_value());
       EXPECT_TRUE(stats.llrRxExpectedSeqBad_().has_value());
+
+      // Read the LLR binding back from hardware (via the HwAgent process, so
+      // this works in both mono and multi-switch). This confirms the SAI
+      // profile object still exists, is bound to the port, and carries the
+      // last-applied frame actions after the warm boot -- not just that the
+      // SwitchState intent survived.
+      auto switchId =
+          getAgentEnsemble()->scopeResolver().scope(portId).switchId();
+      auto client = getAgentEnsemble()->getHwAgentTestClient(switchId);
+      utility::PortLlrInfo llrInfo;
+      client->sync_getPortLlrInfo(llrInfo, portId);
+      EXPECT_TRUE(*llrInfo.hasProfile());
+      EXPECT_NE(*llrInfo.profileId(), 0);
+      EXPECT_EQ(*llrInfo.initFrameAction(), kInitActions.back());
+      EXPECT_EQ(*llrInfo.flushFrameAction(), cfg::LlrFrameAction::BLOCK);
     }
   };
   verifyAcrossWarmBoots(setup, verify);

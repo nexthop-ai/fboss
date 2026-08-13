@@ -191,6 +191,7 @@ cpp_unittest(
         "CmdShowProductTest.cpp",
         "CmdShowRouteDetailsTest.cpp",
         "CmdShowRouteSummaryTest.cpp",
+        "CmdShowRouteTest.cpp",
         "CmdShowSystemPortTest.cpp",
         "CmdShowTeFlowTest.cpp",
         "CmdShowTransceiverTest.cpp",  # bazelify: exclude

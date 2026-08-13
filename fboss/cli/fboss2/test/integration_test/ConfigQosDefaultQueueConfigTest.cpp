@@ -1,14 +1,60 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
 /**
+<<<<<<< HEAD
  * End-to-end tests for:
  *   fboss2-dev config qos default-queue-config <queue-id> <attr> <value> ...
  *   fboss2-dev delete qos default-queue-config <queue-id>
+||||||| d33cd384af
+ * End-to-end test for:
+ *   fboss2-dev config qos default-queue-config <queue-id> <attr> <value> ...
+ *   fboss2-dev delete qos default-queue-config <queue-id>
+=======
+ * End-to-end tests for the switch-wide default queue config:
+ *   fboss2-dev config qos queue-config default queue-id <id> <attr> <value> ...
+ *   fboss2-dev delete qos queue-config default [queue-id <id>]
+>>>>>>> a75ad2f54fd714ae4b006fc1f851e34f96df7b37
  *
+<<<<<<< HEAD
  * Reads the agent's live defaultPortQueues, modifies an existing queue's
  * weight, commits, verifies, and restores the original value. The delete
  * tests create a new queue entry, remove it again, and verify the running
  * config after each commit, leaving the device at its original config.
+||||||| d33cd384af
+ * One happy path, covering only what cannot be checked off-device: that a
+ * committed config session survives the agent restart and lands in the running
+ * config, and that delete takes it back out.
+ *
+ * Everything else already has coverage a layer down. Argument parsing,
+ * attribute handling and rejection of malformed input are unit tested in
+ * fboss/cli/fboss2/test/config/CmdConfigQosDefaultQueueConfigTest.cpp against a
+ * seeded ConfigSession; whether the agent accepts a given cfg::PortQueue is
+ * covered by fboss/agent/state/tests/PortQueueTests.cpp against the real
+ * ThriftConfigApplier. Neither needs a device.
+ *
+ * Both commands commit at ConfigActionLevel::AGENT_COLDBOOT, so each commit
+ * restarts the agent. Keep the test to the two restarts it already needs.
+=======
+ * `default` is the reserved queue-config name that targets
+ * SwitchConfig::defaultPortQueues rather than a portQueueConfigs entry; the
+ * named-config path is covered by ConfigPortQueueConfigTest.
+ *
+ * Each case configures one realistic queue shape rather than one queue with
+ * every attribute at once, so a failure names the scheduling discipline that
+ * broke instead of pointing at a single kitchen-sink queue. Only what cannot be
+ * checked off-device is covered here: that a committed config session survives
+ * the agent restart and lands in the running config.
+ *
+ * Everything else already has coverage a layer down. Argument parsing,
+ * attribute handling and rejection of malformed input are unit tested in
+ * fboss/cli/fboss2/test/config/CmdConfigQosQueueConfigTest.cpp against a
+ * seeded ConfigSession; whether the agent accepts a given cfg::PortQueue is
+ * covered by fboss/agent/state/tests/PortQueueTests.cpp against the real
+ * ThriftConfigApplier. Neither needs a device.
+ *
+ * Every commit restarts the agent, so each case commits once to apply and once
+ * to clean up, and no case programs more than one queue.
+>>>>>>> a75ad2f54fd714ae4b006fc1f851e34f96df7b37
  */
 
 #include <fmt/format.h>
@@ -16,22 +62,116 @@
 #include <folly/logging/xlog.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <optional>
 #include <set>
 #include <string>
+#include <vector>
 #include "fboss/cli/fboss2/test/integration_test/Fboss2IntegrationTest.h"
 
 using namespace facebook::fboss;
+
+namespace {
+// Enum values from switch_config.thrift
+constexpr int kSchedWrr = 0;
+constexpr int kSchedSp = 1;
+constexpr int kScalingTwo = 9;
+constexpr int kBehaviorEcn = 1;
+
+// defaultPortQueues applies to every port with no portQueueConfigName
+// override, so these cases deliberately stay away from the large MMU numbers
+// ConfigPortQueueConfigTest uses on a single bound interface -- the point is to
+// prove each attribute survives the CLI -> agent.conf -> ThriftConfigApplier
+// round trip, not to exercise buffer capacity fleet-wide. buffer-pool-name is
+// skipped because it would require creating a pool first.
+constexpr int kReservedBytes = 1024;
+constexpr int kWeight = 5;
+constexpr int kAqmMinLength = 40000;
+constexpr int kAqmMaxLength = 60000;
+constexpr int kAqmProbability = 100;
+} // namespace
 
 class ConfigQosDefaultQueueConfigTest : public Fboss2IntegrationTest {
  protected:
   void SetUp() override {
     Fboss2IntegrationTest::SetUp();
     discardSession();
+    baselineIds_ = defaultQueueIds(getRunningConfig());
   }
 
   void TearDown() override {
+    // Safety net: an assertion that fires mid-case skips the case's own
+    // cleanup, and the queue is already committed to the running config of a
+    // shared lab device. Remove it here so the next case (and the next run)
+    // starts from the baseline.
+    if (createdQueueId_.has_value()) {
+      XLOG(INFO) << "TearDown: removing leftover queue-id " << *createdQueueId_;
+      deleteQueueAndCommit(*createdQueueId_);
+    }
     discardSession();
     Fboss2IntegrationTest::TearDown();
+  }
+
+  /**
+   * Lowest queue id not already present in defaultPortQueues. Keeps each case
+   * independent of how many queues the ASIC already has configured, including
+   * none at all.
+   */
+  int pickUnusedQueueId() const {
+    int candidate = 0;
+    while (baselineIds_.count(candidate)) {
+      candidate++;
+    }
+    return candidate;
+  }
+
+  /**
+   * Configure `queueId` with `attrs` and commit. Records the id so TearDown can
+   * remove it even if the caller's assertions fail. Returns the queue as it
+   * appears in the agent's running config.
+   */
+  const folly::dynamic* configureAndCommit(
+      int queueId,
+      const std::vector<std::string>& attrs) {
+    std::vector<std::string> cmd = {
+        "config",
+        "qos",
+        "queue-config",
+        "default",
+        "queue-id",
+        std::to_string(queueId)};
+    cmd.insert(cmd.end(), attrs.begin(), attrs.end());
+
+    auto result = runCli(cmd);
+    EXPECT_EQ(result.exitCode, 0)
+        << "queue-id " << queueId << " failed: " << result.stderr;
+    if (result.exitCode != 0) {
+      return nullptr;
+    }
+    createdQueueId_ = queueId;
+
+    XLOG(INFO) << "Committing queue-id " << queueId << "...";
+    commitConfig();
+    waitForAgentReady();
+
+    runningConfig_ = getRunningConfig();
+    return findQueueById(runningConfig_, queueId);
+  }
+
+  void deleteQueueAndCommit(int queueId) {
+    discardSession();
+    auto del = runCli(
+        {"delete",
+         "qos",
+         "queue-config",
+         "default",
+         "queue-id",
+         std::to_string(queueId)});
+    EXPECT_EQ(del.exitCode, 0) << "CLI failed: " << del.stderr;
+    createdQueueId_.reset();
+
+    XLOG(INFO) << "Committing delete of queue-id " << queueId << "...";
+    commitConfig();
+    waitForAgentReady();
   }
 
   /**
@@ -77,8 +217,15 @@ class ConfigQosDefaultQueueConfigTest : public Fboss2IntegrationTest {
     }
     return ids;
   }
+
+  std::set<int> baselineIds_;
+  std::optional<int> createdQueueId_;
+  // Owns the storage the folly::dynamic* returned by configureAndCommit()
+  // points into.
+  folly::dynamic runningConfig_;
 };
 
+<<<<<<< HEAD
 TEST_F(ConfigQosDefaultQueueConfigTest, SetWeightOnDefaultQueue) {
   XLOG(INFO) << "ConfigQosDefaultQueueConfigTest::SetWeightOnDefaultQueue";
 
@@ -338,7 +485,24 @@ TEST_F(ConfigQosDefaultQueueConfigTest, AqmEcnAndEarlyDropCoexist) {
 
   auto config = getRunningConfig();
   auto ids = defaultQueueIds(config);
+||||||| d33cd384af
+// Create a queue entry, commit, verify the agent's running config, then delete
+// the entry and verify it is gone. Operating on an unused queue id keeps the
+// test independent of how many queues the ASIC already has configured,
+// including none at all.
+TEST_F(ConfigQosDefaultQueueConfigTest, CreateThenDeleteQueueEntry) {
+  auto config = getRunningConfig();
+  auto ids = defaultQueueIds(config);
+=======
+// Bulk traffic queue: shares bandwidth with its peers via weighted round robin.
+// `WRR` also exercises the short-name scheduling alias.
+TEST_F(ConfigQosDefaultQueueConfigTest, BulkTrafficQueueUsesWrrWeight) {
+  int queueId = pickUnusedQueueId();
+  const auto* q = configureAndCommit(
+      queueId, {"scheduling", "WRR", "weight", std::to_string(kWeight)});
+>>>>>>> a75ad2f54fd714ae4b006fc1f851e34f96df7b37
 
+<<<<<<< HEAD
   int candidateId = 0;
   while (ids.count(candidateId)) {
     candidateId++;
@@ -396,6 +560,121 @@ TEST_F(ConfigQosDefaultQueueConfigTest, AqmEcnAndEarlyDropCoexist) {
   ASSERT_TRUE(aqms.isArray());
   ASSERT_EQ(aqms.size(), 2)
       << "expected ECN and EARLY_DROP to coexist as two aqms entries";
+||||||| d33cd384af
+  int candidateId = 0;
+  while (ids.count(candidateId)) {
+    candidateId++;
+  }
+  XLOG(INFO) << "using candidate queue-id " << candidateId;
+
+  ASSERT_EQ(
+      runCli({"config",
+              "qos",
+              "default-queue-config",
+              std::to_string(candidateId),
+              "weight",
+              "2"})
+          .exitCode,
+      0);
+
+  XLOG(INFO) << "Committing create...";
+  commitConfig();
+  waitForAgentReady();
+
+  auto afterCreate = getRunningConfig();
+  const auto* q = findQueueById(afterCreate, candidateId);
+  ASSERT_NE(q, nullptr) << "created queue-id " << candidateId
+                        << " not in running config";
+  ASSERT_TRUE(q->count("weight"));
+  EXPECT_EQ((*q)["weight"].asInt(), 2);
+  XLOG(INFO) << "Create verified.";
+=======
+  ASSERT_NE(q, nullptr) << "queue-id " << queueId << " not in running config";
+  ASSERT_TRUE(q->count("scheduling"));
+  EXPECT_EQ((*q)["scheduling"].asInt(), kSchedWrr);
+  ASSERT_TRUE(q->count("weight"));
+  EXPECT_EQ((*q)["weight"].asInt(), kWeight);
+
+  deleteQueueAndCommit(queueId);
+}
+
+// Latency-sensitive traffic: drains ahead of every lower-priority queue. No
+// weight -- thrift ignores it for STRICT_PRIORITY.
+TEST_F(
+    ConfigQosDefaultQueueConfigTest,
+    PriorityTrafficQueueUsesStrictPriority) {
+  int queueId = pickUnusedQueueId();
+  const auto* q = configureAndCommit(queueId, {"scheduling", "SP"});
+
+  ASSERT_NE(q, nullptr) << "queue-id " << queueId << " not in running config";
+  ASSERT_TRUE(q->count("scheduling"));
+  EXPECT_EQ((*q)["scheduling"].asInt(), kSchedSp);
+
+  deleteQueueAndCommit(queueId);
+}
+
+// Loss-sensitive traffic: guaranteed buffer plus a dynamic shared threshold, so
+// a burst is absorbed rather than tail-dropped.
+TEST_F(ConfigQosDefaultQueueConfigTest, LossSensitiveQueueCarvesBuffer) {
+  int queueId = pickUnusedQueueId();
+  const auto* q = configureAndCommit(
+      queueId,
+      {"reserved-bytes",
+       std::to_string(kReservedBytes),
+       "scaling-factor",
+       "TWO"});
+
+  ASSERT_NE(q, nullptr) << "queue-id " << queueId << " not in running config";
+  ASSERT_TRUE(q->count("reservedBytes"));
+  EXPECT_EQ((*q)["reservedBytes"].asInt(), kReservedBytes);
+  ASSERT_TRUE(q->count("scalingFactor"));
+  EXPECT_EQ((*q)["scalingFactor"].asInt(), kScalingTwo);
+
+  deleteQueueAndCommit(queueId);
+}
+
+// ECN-capable traffic: mark Congestion Experienced on the way up the ramp
+// instead of dropping. active-queue-management must come last in the argv --
+// it consumes all remaining arguments.
+TEST_F(ConfigQosDefaultQueueConfigTest, CongestionSignallingQueueMarksEcn) {
+  int queueId = pickUnusedQueueId();
+  const auto* q = configureAndCommit(
+      queueId,
+      {"active-queue-management",
+       "congestion-behavior",
+       "ECN",
+       "detection",
+       "linear",
+       "minimum-length",
+       std::to_string(kAqmMinLength),
+       "maximum-length",
+       std::to_string(kAqmMaxLength),
+       "probability",
+       std::to_string(kAqmProbability)});
+
+  ASSERT_NE(q, nullptr) << "queue-id " << queueId << " not in running config";
+  ASSERT_TRUE(q->count("aqms"));
+  const auto& aqms = (*q)["aqms"];
+  ASSERT_TRUE(aqms.isArray());
+  ASSERT_FALSE(aqms.empty());
+  EXPECT_EQ(aqms[0]["behavior"].asInt(), kBehaviorEcn);
+  const auto& linear = aqms[0]["detection"]["linear"];
+  EXPECT_EQ(linear["minimumLength"].asInt(), kAqmMinLength);
+  EXPECT_EQ(linear["maximumLength"].asInt(), kAqmMaxLength);
+  EXPECT_EQ(linear["probability"].asInt(), kAqmProbability);
+
+  deleteQueueAndCommit(queueId);
+}
+
+// Delete takes the entry back out and leaves defaultPortQueues exactly as it
+// was found -- the one case that asserts on the post-delete state rather than
+// just cleaning up after itself.
+TEST_F(ConfigQosDefaultQueueConfigTest, DeleteRemovesQueueEntry) {
+  int queueId = pickUnusedQueueId();
+  ASSERT_NE(
+      configureAndCommit(queueId, {"weight", std::to_string(kWeight)}), nullptr)
+      << "queue-id " << queueId << " not in running config";
+>>>>>>> a75ad2f54fd714ae4b006fc1f851e34f96df7b37
 
   bool sawEcn = false, sawEarlyDrop = false;
   for (const auto& aqm : aqms) {
@@ -418,14 +697,43 @@ TEST_F(ConfigQosDefaultQueueConfigTest, AqmEcnAndEarlyDropCoexist) {
   // Restore: delete the entry this test created.
   discardSession();
   auto del = runCli(
+<<<<<<< HEAD
       {"delete", "qos", "default-queue-config", std::to_string(candidateId)});
   ASSERT_EQ(del.exitCode, 0) << "restore delete failed: " << del.stderr;
+||||||| d33cd384af
+      {"delete", "qos", "default-queue-config", std::to_string(candidateId)});
+  ASSERT_EQ(del.exitCode, 0) << "CLI failed: " << del.stderr;
+  EXPECT_THAT(del.stdout, ::testing::HasSubstr("Successfully deleted"));
+
+  XLOG(INFO) << "Committing delete...";
+=======
+      {"delete",
+       "qos",
+       "queue-config",
+       "default",
+       "queue-id",
+       std::to_string(queueId)});
+  ASSERT_EQ(del.exitCode, 0) << "CLI failed: " << del.stderr;
+  EXPECT_THAT(del.stdout, ::testing::HasSubstr("Successfully deleted"));
+  createdQueueId_.reset();
+
+  XLOG(INFO) << "Committing delete...";
+>>>>>>> a75ad2f54fd714ae4b006fc1f851e34f96df7b37
   commitConfig();
   waitForAgentReady();
 
+<<<<<<< HEAD
   auto restored = getRunningConfig();
   EXPECT_EQ(defaultQueueIds(restored), ids)
       << "defaultPortQueues ids differ from original after restore";
 
   XLOG(INFO) << "TEST PASSED";
+||||||| d33cd384af
+  EXPECT_EQ(defaultQueueIds(getRunningConfig()), ids)
+      << "defaultPortQueues ids differ from original after delete";
+  XLOG(INFO) << "Delete verified.";
+=======
+  EXPECT_EQ(defaultQueueIds(getRunningConfig()), baselineIds_)
+      << "defaultPortQueues ids differ from original after delete";
+>>>>>>> a75ad2f54fd714ae4b006fc1f851e34f96df7b37
 }

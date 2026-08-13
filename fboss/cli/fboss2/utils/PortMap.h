@@ -62,7 +62,6 @@ class PortMap {
    * @return The port name if found, std::nullopt otherwise
    */
   std::optional<std::string> getPortNameForInterface(
-      // @lint-ignore CLANGTIDY performance-unnecessary-value-param
       InterfaceID interfaceId) const;
 
   /**
@@ -97,7 +96,6 @@ class PortMap {
    * @param interfaceId The interface ID
    * @return true if the interface exists, false otherwise
    */
-  // @lint-ignore CLANGTIDY performance-unnecessary-value-param
   bool hasInterface(InterfaceID interfaceId) const;
 
   /**
@@ -128,7 +126,6 @@ class PortMap {
    * @param interfaceId The interface ID
    * @return Pointer to the Interface object if found, nullptr otherwise
    */
-  // @lint-ignore CLANGTIDY performance-unnecessary-value-param
   cfg::Interface* FOLLY_NULLABLE getInterface(InterfaceID interfaceId) const;
 
   /**
