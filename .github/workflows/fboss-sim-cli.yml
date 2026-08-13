@@ -1,0 +1,189 @@
+name: fboss-sim CLI
+run-name: Build & Test fboss-sim (Bazel)
+
+# Internal-CI counterpart of fboss-sim.yml (which is the upstream
+# facebook/fboss harness and must stay untouched). Builds the fboss-sim
+# runtime image from Bazel-built fake-SAI artifacts instead of the second
+# cmake configure/build pass build-and-test.yml used to run, then boots the
+# simulator and runs fboss2_integration_test against it.
+#
+# The Bazel build needs no vendor SDK (--sai fake) and no getdeps pre-pass:
+# dependencies are built lazily by getdeps_repository rules against the
+# shared getdeps cache, and compiles go through sccache, so a typical run is
+# dominated by link time rather than compilation.
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: "Git ref to checkout (branch, tag, or SHA)"
+        required: false
+        default: ""
+        type: string
+  # Allow manually triggering the workflow
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  # dorny/paths-filter reads the PR's changed-file list via the API.
+  pull-requests: read
+
+env:
+  GETDEPS_CACHE_URL: "http://bucket.internal.nexthop.ai:7480/image-stash/getdeps-cache"
+  GETDEPS_CACHE_UPLOAD: "1"
+  FBOSS_SIM_CACHE_REF: "container-registry.sw.internal.nexthop.ai/fboss-sim-runtime:buildcache"
+
+jobs:
+  fboss-sim-cli:
+    if: github.repository_owner == 'nexthop-ai'
+    runs-on: cloudstack-ubuntu24-large
+    steps:
+      - name: Set up HTTP proxy
+        uses: nexthop-ai/nh/.github/actions/http-proxy@main
+
+      - name: Check out repository code
+        uses: actions/checkout@v6
+        with:
+          # For PRs, checkout the actual PR head (not the synthetic merge commit)
+          ref: ${{ inputs.ref || (github.event_name == 'pull_request' && github.event.pull_request.head.sha) || github.ref }}
+
+      - name: Build FBOSS Docker image (with registry cache)
+        uses: ./.github/actions/fboss-builder-image
+
+      - name: Start FBOSS build container
+        run: ./fboss/oss/scripts/nhfboss-docker-enter.py
+
+      - name: Build fboss-sim binaries with Bazel (fake SAI)
+        run: |
+          docker exec \
+            -e GETDEPS_CACHE_URL=${{ env.GETDEPS_CACHE_URL }} \
+            -e GETDEPS_CACHE_UPLOAD=${{ env.GETDEPS_CACHE_UPLOAD }} \
+            FBOSS_build_${USER} fboss/oss/scripts/bazel.sh build --sai fake \
+            --remote_upload_local_results=true \
+            //fboss/agent/platforms/sai:wedge_agent-sai_impl \
+            //fboss/agent/platforms/sai:fboss_hw_agent-sai_impl \
+            //fboss/agent:fboss_sw_agent \
+            //fboss/fsdb/server:fsdb \
+            //fboss/cli/fboss2:fboss2 \
+            //fboss/cli/fboss2:fboss2-dev \
+            //fboss/cli/fboss2/test/integration_test:fboss2_integration_test
+
+      - name: Collect sccache statistics
+        if: always()
+        run: |
+          docker exec FBOSS_build_${USER} sccache -s || true
+
+      # ldd must resolve CentOS libs, so collect inside the build container.
+      # --bazel stages the binaries from bazel-bin/ (symlinks only resolve
+      # in-container) before the ldd/config collection.
+      - name: Collect fboss-sim artifacts (inside CentOS build container)
+        run: docker exec FBOSS_build_${USER} python3 fboss-sim/scripts/fboss-sim-docker-package.py --bazel --collect-only
+
+      # bgpd comes from the monorepo. Best effort throughout: any failure here
+      # drops BGP from the image rather than failing the job.
+      - name: Check out nh for the bgpd RPM
+        id: nh-checkout
+        continue-on-error: true
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          repository: nexthop-ai/nh
+          ref: main
+          path: nh
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          submodules: true
+          submodule-list: "BGP fboss"
+
+      # bgpd builds against fboss's stable hashes, so it must be built against
+      # the same fboss as the image or the thrift ABI can skew (see #1242).
+      - name: Pin nh's fboss submodule to this PR
+        id: nh-fboss-pin
+        if: steps.nh-checkout.outcome == 'success'
+        continue-on-error: true
+        env:
+          FBOSS_SHA: ${{ inputs.ref || (github.event_name == 'pull_request' && github.event.pull_request.head.sha) || github.sha }}
+        run: |
+          git -C nh/fboss fetch --depth 1 origin "$FBOSS_SHA"
+          git -C nh/fboss checkout --detach FETCH_HEAD
+
+      - uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86 # 0.19.0
+        if: steps.nh-fboss-pin.outcome == 'success'
+        continue-on-error: true
+        with:
+          bazelisk-cache: true
+
+      # Normally a remote-cache hit: Monobuild builds this target on every
+      # fboss PR. The timeout caps a cold miss, which compiles bgp++ outright.
+      - name: Build the bgpd RPM (//BGP:distro_bgpd.rpm)
+        id: bgpd-rpm
+        if: steps.nh-fboss-pin.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 30
+        run: |
+          (cd nh && bazel build //BGP:distro_bgpd.rpm)
+          mkdir -p .build_dir/downloads
+          cp nh/bazel-bin/BGP/distro_bgpd.rpm .build_dir/downloads/
+
+      # .build_dir is .dockerignore'd; nh/ is not, and must not reach the
+      # Docker build context.
+      - name: Drop the nh checkout before the image build
+        if: always() && steps.nh-checkout.outcome == 'success'
+        run: rm -rf nh
+
+      - name: Build fboss-sim runtime image (host has the Docker daemon)
+        run: |
+          if [ ! -f .build_dir/downloads/distro_bgpd.rpm ]; then
+            echo "::warning::no bgpd RPM built; fboss-sim image will not include BGP"
+          fi
+          python3 fboss-sim/scripts/fboss-sim-docker-package.py --build-only
+
+      - name: Start fboss-sim runtime container
+        run: python3 fboss-sim/scripts/fboss-sim-docker-run.py
+
+      - name: Wait for agent services to be ready
+        run: |
+          for i in $(seq 1 30); do
+            elapsed=$(( (i - 1) * 2 ))
+            if docker exec fboss_sim_runtime_${USER} /opt/fboss/bin/fboss2 show interface >/dev/null 2>&1; then
+              echo "✓ Agent ready after ${elapsed}s"
+              exit 0
+            fi
+            echo "  [${elapsed}s] not ready yet, retrying..."
+            sleep 2
+          done
+          echo "❌ Agent not ready after 60s"
+          docker exec fboss_sim_runtime_${USER} tail -n 50 /var/facebook/logs/fboss/wedge_agent.log || true
+          exit 1
+
+      - name: Detect changed files
+        id: changes
+        if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            cli:
+              - 'fboss/cli/**'
+
+      - name: Run fboss2 integration test
+        if: (github.event_name != 'pull_request' && github.event_name != 'merge_group') || steps.changes.outputs.cli == 'true'
+        run: |
+          docker exec fboss_sim_runtime_${USER} /opt/fboss/bin/fboss2_integration_test
+
+      # The cleanup step below destroys the runtime container, so on a
+      # readiness or integration-test failure capture both agents' journals,
+      # restart counts, and the crash stacks from wedge_agent.log while the
+      # container still exists.
+      - name: Dump fboss-sim agent diagnostics on failure
+        if: failure()
+        run: |
+          C=fboss_sim_runtime_${USER}
+          echo "=== systemctl status (restart counts) ==="
+          docker exec $C systemctl status fboss_sw_agent 'fboss_hw_agent@0' --no-pager -l || true
+          echo "=== journalctl fboss_hw_agent@0 ==="
+          docker exec $C journalctl -u 'fboss_hw_agent@0' --no-pager -n 300 || true
+          echo "=== journalctl fboss_sw_agent ==="
+          docker exec $C journalctl -u fboss_sw_agent --no-pager -n 100 || true
+          echo "=== wedge_agent.log crash stacks ==="
+          docker exec $C bash -c "grep -B5 -A40 'Aborted at\|Check failure' /var/facebook/logs/fboss/wedge_agent.log | tail -150" || true
+
+      # No docker cleanup steps: the GARM runners are single-use VMs, so the
+      # sim/build containers, images, and network die with the machine.

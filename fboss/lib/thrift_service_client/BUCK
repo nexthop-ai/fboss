@@ -3,6 +3,12 @@ load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")
 oncall("fboss_agent_push")
 
 # bazelify: add_src = oss/ThriftServiceClient.cpp
+# bazelify: link_whole
+# (link_whole: ConnectionOptions.cpp defines gflags — e.g.
+# fsdb_client_ssl_preferred — that the fboss-sim systemd units pass on agent
+# command lines. Nothing references its symbols from the hw agent's link
+# closure, so without alwayslink Bazel drops the object and the agent exits
+# with "unknown command line flag".)
 cpp_library(
     name = "thrift-service-client",
     srcs = [

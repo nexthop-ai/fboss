@@ -477,6 +477,36 @@ class TestFilterFiles(unittest.TestCase):
             self.assertIn("oss/Foo.cpp", content, "add_src file must be in srcs")
             self.assertIn("Foo.cpp", content, "original file must also be in srcs")
 
+    def test_link_whole_annotation_sets_alwayslink(self):
+        """# bazelify: link_whole should mark the generated cc_library
+        alwayslink, matching cmake's --whole-archive for libraries whose
+        gflags/registration objects nothing references directly."""
+        with TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            pkg = tmp_path / "fboss" / "mylib"
+            pkg.mkdir(parents=True)
+            (pkg / "Foo.cpp").touch()
+            (pkg / "BUCK").write_text(
+                'load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")\n'
+                'oncall("test")\n'
+                "# bazelify: link_whole\n"
+                "cpp_library(\n"
+                '    name = "mylib",\n'
+                '    srcs = ["Foo.cpp"],\n'
+                ")\n"
+            )
+
+            parser = BuckParser(str(tmp_path))
+            targets = parser.parse_all()
+            self.assertTrue(parser.all_targets["//fboss/mylib:mylib"].link_whole)
+
+            resolver = DepResolver({}, parser.all_targets, str(tmp_path))
+            generator = BuildFileGenerator(resolver, str(tmp_path))
+            generator.generate_all(targets)
+
+            content = (pkg / "BUILD.bazel").read_text()
+            self.assertIn("alwayslink = True", content)
+
     def test_deduplication(self):
         self._make_dir("fboss/agent")
         result = self.gen._filter_files(

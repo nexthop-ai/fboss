@@ -621,7 +621,17 @@ class BuckParser:
             thrift_cpp2_options=thrift_opts_str,
             cpp2_deps=self._extract_string_list(block, "cpp2_deps"),
             languages=self._extract_string_list(block, "languages"),
-            link_whole=self._extract_bool(block, "link_whole") or False,
+            # link_whole also honors a "# bazelify: link_whole" annotation:
+            # cmake links the agent binaries with --whole-archive, so gflags
+            # DEFINE_*/registration objects always land in the binary even
+            # when nothing references a symbol from them. Bazel's selective
+            # archive linking drops such objects unless the library is
+            # alwayslink; the annotation pins libraries whose flags are
+            # passed on service command lines (e.g. ConnectionOptions.cpp's
+            # fsdb_client_ssl_preferred) without editing the Meta-synced
+            # target body.
+            link_whole=self._extract_bool(block, "link_whole")
+            or bool(annotations.get("link_whole")),
             resources=self._extract_string_list(block, "resources"),
             size=self._extract_string(block, "size") or "",
             annotations=annotations,

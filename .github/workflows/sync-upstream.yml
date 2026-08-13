@@ -52,7 +52,18 @@ jobs:
       sai_version: "1.16.1"
       use_clang: true
       ref: ${{ needs.sync-upstream.outputs.sync_branch }}
-    # The fboss-sim step checks out nh to build the bgpd RPM, which needs a PAT.
+    secrets: inherit
+
+  # Bazel-built fboss-sim image + fboss2 integration test on the sync branch,
+  # in parallel with build-and-test. Checks out nh to build the bgpd RPM,
+  # which needs a PAT.
+  fboss-sim-cli:
+    name: fboss-sim CLI
+    needs: sync-upstream
+    if: needs.sync-upstream.outputs.push_direct == 'true'
+    uses: ./.github/workflows/fboss-sim-cli.yml
+    with:
+      ref: ${{ needs.sync-upstream.outputs.sync_branch }}
     secrets: inherit
 
   # Build the full nh image with the candidate fboss SHA so the smoke tests
@@ -100,7 +111,7 @@ jobs:
 
   push-to-main:
     name: Push to main
-    needs: [sync-upstream, build-and-test, monobuild, smoke-tests]
+    needs: [sync-upstream, build-and-test, fboss-sim-cli, monobuild, smoke-tests]
     if: needs.sync-upstream.outputs.push_direct == 'true'
     runs-on: cloudstack-ubuntu24-small
     steps:
@@ -237,12 +248,13 @@ jobs:
   # Create PR when build/test fails (so someone can fix the build failure)
   create-pr-build-failure:
     name: Create PR for build failure
-    needs: [sync-upstream, build-and-test, monobuild, smoke-tests]
+    needs: [sync-upstream, build-and-test, fboss-sim-cli, monobuild, smoke-tests]
     if: >-
       always() &&
       needs.sync-upstream.outputs.push_direct == 'true' &&
       needs.sync-upstream.outputs.sync_branch != '' &&
       (needs.build-and-test.result == 'failure' ||
+       needs.fboss-sim-cli.result == 'failure' ||
        needs.monobuild.result == 'failure' ||
        needs.smoke-tests.result == 'failure')
     runs-on: k8s-micro
@@ -335,7 +347,7 @@ jobs:
   # Slack notification: build/test failed, PR created
   notify-build-failure:
     name: Notify Slack (Sync Gate Failed)
-    needs: [sync-upstream, build-and-test, monobuild, smoke-tests, create-pr-build-failure]
+    needs: [sync-upstream, build-and-test, fboss-sim-cli, monobuild, smoke-tests, create-pr-build-failure]
     if: always() && needs.create-pr-build-failure.outputs.pr_created == 'true'
     runs-on: k8s-nano
     steps:

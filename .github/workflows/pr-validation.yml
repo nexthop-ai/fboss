@@ -23,7 +23,13 @@ jobs:
     with:
       sai_version: "1.16.1"
       use_clang: true
-    # The fboss-sim step checks out nh to build the bgpd RPM, which needs a PAT.
+    secrets: inherit
+
+  # Builds the fboss-sim runtime image from Bazel-built fake-SAI artifacts and
+  # runs fboss2_integration_test against it. Runs in parallel with the real-SAI
+  # build; checks out nh to build the bgpd RPM, which needs a PAT.
+  fboss-sim-cli:
+    uses: ./.github/workflows/fboss-sim-cli.yml
     secrets: inherit
 
   # Runs on real hardware after the build (sim CLI test runs inline in the

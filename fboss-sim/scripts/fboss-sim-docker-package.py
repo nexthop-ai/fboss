@@ -87,6 +87,7 @@ BAZEL_BINARY_PATHS = {
     "fboss2":                  "fboss/cli/fboss2/fboss2",
     "fboss2-dev":              "fboss/cli/fboss2/fboss2-dev",
     "fboss2_integration_test": "fboss/cli/fboss2/test/integration_test/fboss2_integration_test",
+    "fsdb":                    "fboss/fsdb/server/fsdb",
 }
 
 # Libraries to exclude from collection — these are provided by the base OS image

@@ -24,7 +24,14 @@ jobs:
       sai_version: "1.16.1"
       use_clang: true
       ref: ${{ inputs.branch }}
-    # The fboss-sim step checks out nh to build the bgpd RPM, which needs a PAT.
+    secrets: inherit
+
+  # Bazel-built fboss-sim image + fboss2 integration test, in parallel with
+  # the real-SAI build. Checks out nh to build the bgpd RPM, which needs a PAT.
+  fboss-sim-cli:
+    uses: ./.github/workflows/fboss-sim-cli.yml
+    with:
+      ref: ${{ inputs.branch }}
     secrets: inherit
 
   monobuild:
@@ -98,7 +105,7 @@ jobs:
 
   notify-slack-on-failure:
     runs-on: k8s-nano
-    needs: [build-and-test-clang, monobuild]
+    needs: [build-and-test-clang, fboss-sim-cli, monobuild]
     if: failure()
     # `actions: read` is required for `gh api .../actions/runs/.../jobs`
     # below; without it the default GITHUB_TOKEN gets a 403 and the error
@@ -115,11 +122,13 @@ jobs:
           CLANG_RESULT="${{ needs.build-and-test-clang.result }}"
           CLANG_FAILED_TESTS="${{ needs.build-and-test-clang.outputs.failed_tests }}"
           CLANG_FAILED_COUNT="${{ needs.build-and-test-clang.outputs.failed_test_count }}"
+          SIM_RESULT="${{ needs.fboss-sim-cli.result }}"
           MONOBUILD_RESULT="${{ needs.monobuild.result }}"
 
           # Determine which top-level jobs failed
           FAILED=""
           [[ "$CLANG_RESULT" == "failure" ]] && FAILED="Clang build"
+          [[ "$SIM_RESULT" == "failure" ]] && FAILED="${FAILED:+$FAILED, }fboss-sim"
           [[ "$MONOBUILD_RESULT" == "failure" ]] && FAILED="${FAILED:+$FAILED, }Monobuild"
 
           # Query the GitHub Actions API to identify the specific failed job
