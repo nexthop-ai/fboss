@@ -1420,17 +1420,11 @@ class LinkTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
             vlan_port=next(p for p in sw["vlanPorts"] if p["vlanID"] == template_vlan_id),
             interface=next(i for i in sw["interfaces"] if i.get("vlanID") == template_vlan_id),
         )
-        # Strip all ports sharing an xcvr slot with a cabled port (breakout siblings).
-        cabled_xcvr_prefixes = {
-            "/".join(n.split("/")[:2]) + "/"
-            for n in pairs
-        }
-        removed_names = {
-            p["name"]
-            for p in sw["ports"]
-            if p["name"] in pairs
-            or any(p["name"].startswith(pfx) for pfx in cabled_xcvr_prefixes)
-        }
+        # Strip all front-panel ports; uncabled ones left enabled would link up
+        # (e.g. toward a fanout) and their inDiscards fail warmbootIsHitLess.
+        # Non-front-panel ports (mgmt, and fabric/recycle on VOQ platforms)
+        # survive.
+        removed_names = {p["name"] for p in sw["ports"] if p["portType"] == 0}
         removed_vlans = {vlan_of[n] for n in removed_names if n in vlan_of}
         cabled_vlans = {vlan_of[n] for n in pairs if n in vlan_of}
         sw["ports"] = [p for p in sw["ports"] if p["name"] not in removed_names]
