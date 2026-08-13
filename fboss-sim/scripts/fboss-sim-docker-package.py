@@ -292,6 +292,7 @@ def copy_artifacts(
     oss_dir = repo_path / "fboss" / "oss"
     config_dirs = [
         "hw_test_configs",
+        "hw_bench_configs",
         "qsfp_test_configs",
         "link_test_configs",
         "hw_sanity_tests",

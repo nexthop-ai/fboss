@@ -117,37 +117,37 @@ source ./bin/setup_fboss_env
 
 # Run all benchmarks (mono mode is the default)
 ./bin/run_test.py benchmark \
---config /opt/fboss/share/hw_test_configs/montblanc.agent.materialized_JSON \
+--config /opt/fboss/share/hw_bench_configs/minipack.agent.materialized_JSON \
 --skip-known-bad-tests brcm/13.3.0.0_odp/tomahawk5 \
 --test-run-timeout 1800
 
 # Run all benchmarks against the multi-switch binary
 ./bin/run_test.py benchmark --agent-run-mode multi_switch \
---config /opt/fboss/share/hw_test_configs/montblanc.agent.materialized_JSON \
+--config /opt/fboss/share/hw_bench_configs/minipack.agent.materialized_JSON \
 --skip-known-bad-tests brcm/13.3.0.0_odp/tomahawk5 \
 --test-run-timeout 1800
 
 # Run only benchmarks listed in a user-provided file (one test name per line)
 ./bin/run_test.py benchmark \
---config /opt/fboss/share/hw_test_configs/montblanc.agent.materialized_JSON \
+--config /opt/fboss/share/hw_bench_configs/minipack.agent.materialized_JSON \
 --skip-known-bad-tests brcm/13.3.0.0_odp/tomahawk5 \
 --filter_file /path/to/my_benchmarks.conf
 
 # Run a single benchmark by name (regex match)
 ./bin/run_test.py benchmark \
---config /opt/fboss/share/hw_test_configs/montblanc.agent.materialized_JSON \
+--config /opt/fboss/share/hw_bench_configs/minipack.agent.materialized_JSON \
 --skip-known-bad-tests brcm/13.3.0.0_odp/tomahawk5 \
 --filter HwEcmpGroupShrink
 
 # Run all route scale benchmarks
 ./bin/run_test.py benchmark \
---config /opt/fboss/share/hw_test_configs/montblanc.agent.materialized_JSON \
+--config /opt/fboss/share/hw_bench_configs/minipack.agent.materialized_JSON \
 --skip-known-bad-tests brcm/13.3.0.0_odp/tomahawk5 \
 --filter ".*Route.*Benchmark"
 
 # List available benchmarks without running
 ./bin/run_test.py benchmark \
---config /opt/fboss/share/hw_test_configs/montblanc.agent.materialized_JSON \
+--config /opt/fboss/share/hw_bench_configs/minipack.agent.materialized_JSON \
 --list_tests
 ```
 
@@ -190,11 +190,11 @@ source ./bin/setup_fboss_env
 # Run a single benchmark (mono)
 ./bin/sai_all_benchmarks-sai_impl --json \
 --bm_regex "^HwEcmpGroupShrink$" \
---config ./share/hw_test_configs/<platform>.agent.materialized_JSON [--logging <level>]
+--config ./share/hw_bench_configs/<platform>.agent.materialized_JSON [--logging <level>]
 
 # Run a single benchmark (multi-switch)
 ./bin/sai_multi_switch_all_benchmarks-sai_impl --json \
 --multi_switch --hw_agent_for_testing \
 --bm_regex "^HwEcmpGroupShrink$" \
---config ./share/hw_test_configs/<platform>.agent.materialized_JSON [--logging <level>]
+--config ./share/hw_bench_configs/<platform>.agent.materialized_JSON [--logging <level>]
 ```

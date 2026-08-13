@@ -20,6 +20,7 @@ from tests.libs.test_runner.runner import (
     BaseHwTestRunner,
     BenchmarkTestRunner,
     BspTestRunner,
+    LinkTestRunner,
     PlatformTestRunner,
     QsfpBenchmarkTestRunner,
     QsfpTestRunner,
@@ -28,6 +29,7 @@ from tests.libs.test_runner.runner import (
     SmokeTestRunner,
     _STACK_FORWARDING,
     _STACK_PLATFORM,
+    _STACK_SHARE,
 )
 
 _FORWARDING_URL = "http://example/forwarding.tar.zst"
@@ -488,11 +490,23 @@ class TestRunnerManifests:
         assert BenchmarkTestRunner.STACK == _STACK_FORWARDING
         assert "bin/sai_all_benchmarks-sai_impl" in BenchmarkTestRunner.REQUIRED_PATHS
 
+    def test_only_benchmark_runner_ships_hw_bench_configs(self):
+        # test_args() reads it, and its entries for platforms without a
+        # benchmark-specific config are symlinks into ../hw_test_configs, so both
+        # dirs must ship. No other runner needs it.
+        for rel in ("share/hw_bench_configs/", "share/hw_test_configs/"):
+            assert rel in BenchmarkTestRunner.REQUIRED_PATHS
+        assert "share/hw_bench_configs/" not in _STACK_SHARE[_STACK_FORWARDING]
+        for cls in (SaiTestRunner, SaiAgentTestRunner, QsfpTestRunner, LinkTestRunner):
+            assert "share/hw_bench_configs/" not in cls.REQUIRED_PATHS
+
     def test_qsfp_benchmark_runner_has_a_deploy_manifest(self):
         assert QsfpBenchmarkTestRunner.STACK == _STACK_FORWARDING
         assert "bin/qsfp_hw_test_benchmark" in QsfpBenchmarkTestRunner.REQUIRED_PATHS
         # Must not inherit the SAI benchmark binary slice.
         assert "bin/sai_all_benchmarks-sai_impl" not in QsfpBenchmarkTestRunner.REQUIRED_PATHS
+        # QSFP benchmarks read qsfp_test_configs, not hw_bench_configs.
+        assert "share/hw_bench_configs/" not in QsfpBenchmarkTestRunner.REQUIRED_PATHS
 
     def test_forwarding_runners_route_to_forwarding_stack(self):
         for cls in (SaiTestRunner, SaiAgentTestRunner, BenchmarkTestRunner, QsfpBenchmarkTestRunner):

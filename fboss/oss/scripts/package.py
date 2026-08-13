@@ -103,6 +103,7 @@ FORWARDING_TEST_EXTRA = {
     / "fboss2_integration_unsupported_tests": "share/fboss2_integration_unsupported_tests",
     OSS_DIR / "hw_known_bad_tests": "share/hw_known_bad_tests",
     OSS_DIR / "hw_test_configs": "share/hw_test_configs",
+    OSS_DIR / "hw_bench_configs": "share/hw_bench_configs",
     OSS_DIR / "link_known_bad_tests": "share/link_known_bad_tests",
     OSS_DIR / "link_test_configs": "share/link_test_configs",
     OSS_DIR / "production_features": "share/production_features",

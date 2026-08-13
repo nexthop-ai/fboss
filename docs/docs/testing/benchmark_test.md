@@ -13,7 +13,7 @@ The runner discovers benchmarks from the binary via `--bm_list`, optionally pre-
 
 ## Setup
 
-Benchmarks run on a standalone DUT using the per-platform agent config under `fboss/oss/hw_test_configs`. Results are written to a CSV that includes timing (`benchmark_time_ps`) and, when a platform key is supplied, threshold validation (`threshold_status`).
+Benchmarks run on a standalone DUT using the per-platform agent config under `fboss/oss/hw_bench_configs`. Results are written to a CSV that includes timing (`benchmark_time_ps`) and, when a platform key is supplied, threshold validation (`threshold_status`).
 
 ## Test Cases
 
@@ -45,7 +45,7 @@ Benchmarks can run in either agent run mode:
     ```bash
     ./bin/run_test.py benchmark \
         --agent-run-mode multi_switch \
-        --config ./share/hw_test_configs/$CONFIG \
+        --config ./share/hw_bench_configs/$CONFIG \
         --skip-known-bad-tests "brcm/13.3.0.0_odp/tomahawk5" \
         --test-run-timeout 1800
     ```
@@ -55,7 +55,7 @@ Benchmarks can run in either agent run mode:
     ```bash
     ./bin/run_test.py benchmark \
         --agent-run-mode mono \
-        --config ./share/hw_test_configs/$CONFIG \
+        --config ./share/hw_bench_configs/$CONFIG \
         --skip-known-bad-tests "brcm/13.3.0.0_odp/tomahawk5" \
         --test-run-timeout 1800
     ```
@@ -69,7 +69,7 @@ Benchmarks can run in either agent run mode:
 
     ./bin/run_test.py benchmark \
         --agent-run-mode multi_switch \
-        --config ./share/hw_test_configs/$CONFIG \
+        --config ./share/hw_bench_configs/$CONFIG \
         --filter HwFswScaleRouteAddBenchmark
     ```
 

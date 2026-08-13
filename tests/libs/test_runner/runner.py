@@ -165,15 +165,17 @@ _HOST_CACHE_ROOT = _default_host_cache_root()
 _DUT_MARKER_DIR = f"{_FBOSS_ROOT_ON_DUT}/.deployed"
 
 # Map normalized HWSKU (from device DB model name) to FBOSS config codename
-# for hw_test_configs (SAI/agent tests). Only applies to SaiTestRunner and
-# SaiAgentTestRunner.
+# for the agent config a test passes via --config. Applies to SaiTestRunner,
+# SaiAgentTestRunner and BenchmarkTestRunner; the codename is the same in
+# hw_test_configs and hw_bench_configs, only the directory differs.
 #
 # Wedge800 naming: B/C = Broadcom/Cisco ASIC, ACT/NHP = Accton/Nexthop vendor.
 #
 # Sources of truth:
 #   - fboss/fboss/lib/platforms/PlatformProductInfo.cpp (model -> PlatformType)
-#   - fboss/fboss/oss/hw_test_configs/ (available config files)
-_HW_TEST_CONFIG_NAME: dict[str, str] = {
+#   - fboss/fboss/oss/hw_test_configs/ and fboss/fboss/oss/hw_bench_configs/
+#     (available config files)
+_SAI_AGENT_CONFIG_NAME: dict[str, str] = {
     "minipack3": "montblanc",
     "nhbw800f": "wedge800bact",
     "nhcw800f": "wedge800cact",
@@ -201,7 +203,6 @@ _QSFP_BENCH_PHY_SDK = "credo-0.7.2"
 _SAI_KNOWN_BAD_KEY: dict[str, str] = {
     "minipack3": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
     "wedge800bact": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
-    "wedge800bnhp": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
     "nhbw800f": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
     "wedge800cact": "leaba/25.11.4210/25.11.4210/graphene202x",
     "nhcw800f": "leaba/25.11.4210/25.11.4210/graphene202x",
@@ -959,7 +960,7 @@ class SaiTestRunner(BaseHwTestRunner):
     """Runner for SAI hardware tests."""
 
     def test_args(self, model: str) -> str:
-        config_name = _HW_TEST_CONFIG_NAME.get(model, model)
+        config_name = _SAI_AGENT_CONFIG_NAME.get(model, model)
         logger.info("model=%s hw_test_config=%s", model, config_name)
         return f"sai --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON{_sai_skip_known_bad(model)}"
     STACK = _STACK_FORWARDING
@@ -1008,7 +1009,7 @@ class SaiAgentTestRunner(BaseHwTestRunner):
         return f" --enable-production-features {key}" if key else ""
 
     def test_args(self, model: str) -> str:
-        config_name = _HW_TEST_CONFIG_NAME.get(model, model)
+        config_name = _SAI_AGENT_CONFIG_NAME.get(model, model)
         logger.info("model=%s hw_test_config=%s", model, config_name)
         return f"sai_agent --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON \
             {_sai_skip_known_bad(model)}{self._enable_production_features(model)}"
@@ -1699,12 +1700,19 @@ class BenchmarkTestRunner(BaseHwTestRunner):
 
     STACK = _STACK_FORWARDING
     BINARIES = ("bin/sai_all_benchmarks-sai_impl",)
-    REQUIRED_PATHS = (*BINARIES, *_STACK_SHARE[STACK])
+    # hw_bench_configs is not in _STACK_SHARE: this is the only runner that reads
+    # it, and a REQUIRED_PATHS entry resolving to nothing is fatal
+    # (_slice_members raises), so listing it stack-wide would fail every
+    # forwarding runner's deploy against a tarball predating its addition to
+    # package.py's FORWARDING_TEST_EXTRA. It must ship alongside hw_test_configs
+    # (from _STACK_SHARE): platforms with no benchmark-specific config have a
+    # symlink into ../hw_test_configs there.
+    REQUIRED_PATHS = (*BINARIES, *_STACK_SHARE[STACK], "share/hw_bench_configs/")
 
     def test_args(self, model: str) -> str:
-        config_name = _HW_TEST_CONFIG_NAME.get(model, model)
-        logger.info("model=%s hw_test_config=%s", model, config_name)
-        return f"benchmark --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON{_benchmark_skip_known_bad(model)}"
+        config_name = _SAI_AGENT_CONFIG_NAME.get(model, model)
+        logger.info("model=%s hw_bench_config=%s", model, config_name)
+        return f"benchmark --config ./share/hw_bench_configs/{config_name}.agent.materialized_JSON{_benchmark_skip_known_bad(model)}"
 
     # Benchmark binaries spin up their own agent (binds thrift port 5909, owns
     # the ASIC), so the production agents must be down first or the bind aborts

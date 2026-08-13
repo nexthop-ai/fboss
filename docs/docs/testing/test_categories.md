@@ -216,7 +216,7 @@ T1 Link tests scope is controlled by the known-bad and unsupported test files, s
 
 ```bash
 ./bin/run_test.py benchmark \
---config ./share/hw_test_configs/$CONFIG \
+--config ./share/hw_bench_configs/$CONFIG \
 --skip-known-bad-tests $KEY
 ```
 

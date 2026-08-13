@@ -223,13 +223,13 @@ SAI benchmarks are consolidated into two binaries — `sai_all_benchmarks-sai_im
 ```
 # Run all SAI benchmarks (--sai and mono are the defaults)
 ./bin/run_test.py benchmark --sai \
---config ./share/hw_test_configs/$CONFIG \
+--config ./share/hw_bench_configs/$CONFIG \
 --skip-known-bad-tests brcm/13.3.0.0_odp/tomahawk5 \
 --test-run-timeout 1800
 
 # Run SAI benchmarks with the multi-switch binary
 ./bin/run_test.py benchmark --sai --agent-run-mode multi_switch \
---config ./share/hw_test_configs/$CONFIG \
+--config ./share/hw_bench_configs/$CONFIG \
 --skip-known-bad-tests brcm/13.3.0.0_odp/tomahawk5 \
 --test-run-timeout 1800
 ```

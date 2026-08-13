@@ -57,9 +57,7 @@ class PackageFboss:
 
     # Project names and binaries we want packaged.
     # If unspecified, all binaries for a given project will be copied over.
-    NAME_TO_BINARIES: ClassVar[dict] = {
-        FBOSS: [],
-    }
+    NAME_TO_BINARIES: ClassVar[dict] = {FBOSS: []}
 
     def __init__(self):
         self.scratch_path = args.scratch_path
@@ -152,6 +150,9 @@ class PackageFboss:
 
     def _copy_configs(self, tmp_dir_name):
         hw_test_configs_path = self.get_fboss_subdirectory("fboss/oss/hw_test_configs")
+        hw_bench_configs_path = self.get_fboss_subdirectory(
+            "fboss/oss/hw_bench_configs"
+        )
         qsfp_test_configs_path = self.get_fboss_subdirectory(
             "fboss/oss/qsfp_test_configs"
         )
@@ -168,6 +169,11 @@ class PackageFboss:
         shutil.copytree(
             hw_test_configs_path,
             os.path.join(tmp_dir_name, PackageFboss.DATA, "hw_test_configs"),
+        )
+        print(f"Copying {hw_bench_configs_path} to {tmp_dir_name}")
+        shutil.copytree(
+            hw_bench_configs_path,
+            os.path.join(tmp_dir_name, PackageFboss.DATA, "hw_bench_configs"),
         )
         print(f"Copying {qsfp_test_configs_path} to {tmp_dir_name}")
         shutil.copytree(
@@ -192,8 +198,7 @@ class PackageFboss:
 
     def _copy_completion_scripts(self, tmp_dir_name):
         completion_src = os.path.join(
-            self.get_fboss_subdirectory("fboss/oss/scripts"),
-            "fboss2_completion.bash",
+            self.get_fboss_subdirectory("fboss/oss/scripts"), "fboss2_completion.bash"
         )
         # get_fboss_subdirectory prefers the getdeps source clone, which in a
         # default (non --local) build is pinned to a stable commit that may
@@ -201,8 +206,7 @@ class PackageFboss:
         # in the same commit, so fall back to the copy next to package-fboss.py.
         if not os.path.isfile(completion_src):
             completion_src = os.path.join(
-                os.path.dirname(os.path.abspath(__file__)),
-                "fboss2_completion.bash",
+                os.path.dirname(os.path.abspath(__file__)), "fboss2_completion.bash"
             )
         # The completion script is a non-critical convenience artifact; never
         # fail packaging if it is absent from an older checkout.
@@ -260,9 +264,7 @@ class PackageFboss:
         shutil.copytree(
             fboss2_integration_known_bad_tests_path,
             os.path.join(
-                tmp_dir_name,
-                PackageFboss.DATA,
-                "fboss2_integration_known_bad_tests",
+                tmp_dir_name, PackageFboss.DATA, "fboss2_integration_known_bad_tests"
             ),
         )
 
@@ -292,9 +294,7 @@ class PackageFboss:
         shutil.copytree(
             fboss2_integration_unsupported_tests_path,
             os.path.join(
-                tmp_dir_name,
-                PackageFboss.DATA,
-                "fboss2_integration_unsupported_tests",
+                tmp_dir_name, PackageFboss.DATA, "fboss2_integration_unsupported_tests"
             ),
         )
 

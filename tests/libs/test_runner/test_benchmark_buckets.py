@@ -23,6 +23,8 @@ from tests.libs.test_runner.filter_utils import (
 )
 from tests.libs.test_runner.runner import (
     _repo_dir,
+    _SAI_AGENT_CONFIG_NAME,
+    _SAI_KNOWN_BAD_KEY,
     BenchmarkTestRunner,
     QsfpBenchmarkTestRunner,
 )
@@ -101,6 +103,32 @@ def test_set_filters_is_inherited(runner_cls, tmp_path):
 
     assert runner.set_filters(str(src), "/home/netops/tests.conf") is True
     assert src.read_text().splitlines() == ["*Stats*", "-*Voq*"]
+
+
+@pytest.mark.parametrize(
+    ("model", "config_name"),
+    [
+        ("nhbw800f", "wedge800bact"),  # real benchmark config
+        ("minipack3", "montblanc"),  # symlink into hw_test_configs
+    ],
+)
+def test_bench_config_always_from_hw_bench_configs(model, config_name):
+    args = BenchmarkTestRunner().test_args(model)
+    assert f"./share/hw_bench_configs/{config_name}.agent.materialized_JSON" in args
+    assert "hw_test_configs" not in args
+
+
+def test_bench_config_exists_for_every_benchmarked_platform():
+    """test_args() names hw_bench_configs unconditionally, so a platform without
+    an entry there (real config or symlink) would fail on the DUT."""
+    bench_dir = _repo_dir(Path("fboss/oss/hw_bench_configs"))
+    models = set(_SAI_KNOWN_BAD_KEY) | set(_SAI_AGENT_CONFIG_NAME)
+    missing = sorted(
+        name
+        for name in (_SAI_AGENT_CONFIG_NAME.get(m, m) for m in models)
+        if not (bench_dir / f"{name}.agent.materialized_JSON").is_file()
+    )
+    assert not missing, f"no hw_bench_configs entry (add a symlink): {missing}"
 
 
 # ---- catch-all derivation ------------------------------------------------
