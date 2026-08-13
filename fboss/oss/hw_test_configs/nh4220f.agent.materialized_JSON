@@ -4,7 +4,7 @@
     "cleanup_probed_kernel_data": "true",
     "counter_refresh_interval": "0",
     "disable_neighbor_updates": "false",
-    "ecmp_width": "320",
+    "ecmp_width": "128",
     "enable_1to1_intf_route_table_mapping": "true",
     "enable_acl_table_group": "true",
     "enable_replayer": "true",
