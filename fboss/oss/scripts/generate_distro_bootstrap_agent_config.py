@@ -108,6 +108,8 @@ PLATFORM_CODENAME: dict[str, str] = {
     "blackkite": "nh4220f",
 }
 
+CODENAMES_REQUIRING_PLATFORM_DESCRIPTOR = {"wedge800bact"}
+
 
 def _resolve_codename(platform: str, platforms_dir: pathlib.Path | None = None) -> str:
     """Resolve a platform name to the FBOSS platform_mapping_v2 codename.
@@ -582,23 +584,29 @@ def generate_config(
     # Platform section — ASIC config from materialized HW test config
     asic_common = _load_asic_config(asic_config_source, codename, script_path)
 
+    default_command_line_args = {
+        "check_wb_handles": "true",
+        "cleanup_probed_kernel_data": "true",
+        "counter_refresh_interval": "0",
+        "disable_neighbor_updates": "false",
+        "ecmp_width": "320",
+        "enable_1to1_intf_route_table_mapping": "true",
+        "enable_acl_table_group": "true",
+        "enable_replayer": "true",
+        "log_variable_name": "true",
+        "multi_switch": "true",
+        "publish_state_to_fsdb": "true",
+        "publish_stats_to_fsdb": "true",
+        "sai_configure_six_tap": "true",
+        "use_full_dlb_scale": "true",
+    }
+    if codename in CODENAMES_REQUIRING_PLATFORM_DESCRIPTOR:
+        default_command_line_args["platform_descriptor_config_path"] = (
+            "/tmp/platform_descriptors/"
+        )
+
     return {
-        "defaultCommandLineArgs": {
-            "check_wb_handles": "true",
-            "cleanup_probed_kernel_data": "true",
-            "counter_refresh_interval": "0",
-            "disable_neighbor_updates": "false",
-            "ecmp_width": "320",
-            "enable_1to1_intf_route_table_mapping": "true",
-            "enable_acl_table_group": "true",
-            "enable_replayer": "true",
-            "log_variable_name": "true",
-            "multi_switch": "true",
-            "publish_state_to_fsdb": "true",
-            "publish_stats_to_fsdb": "true",
-            "sai_configure_six_tap": "true",
-            "use_full_dlb_scale": "true",
-        },
+        "defaultCommandLineArgs": dict(sorted(default_command_line_args.items())),
         "sw": sw,
         "platform": {"chip": {"asicConfig": {"common": asic_common}}},
     }

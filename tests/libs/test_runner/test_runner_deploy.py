@@ -274,14 +274,10 @@ class TestDeployArtifactsLocal:
         repo = tmp_path / "repo"
         oss = repo / "fboss" / "oss"
         # Every forwarding share dir a forwarding runner ships, so _slice_members
-        # resolves a complete tree. share/platform_descriptors is special-cased in
-        # _local_source_path (it lives outside fboss/oss/), so fake it there too.
+        # resolves a complete tree.
         for rel in runner_module._STACK_SHARE[runner_module._STACK_FORWARDING]:
             rel_clean = rel.rstrip("/")
-            if rel_clean == "share/platform_descriptors":
-                d = repo / "fboss" / "lib" / "platform_mapping_v2" / "generated_platform_mappings"
-            else:
-                d = oss / rel_clean[len("share/"):]
+            d = oss / rel_clean[len("share/"):]
             d.mkdir(parents=True, exist_ok=True)
             (d / "placeholder").write_text("cfg")
         build_fboss = tmp_path / "build" / "fboss"
@@ -343,14 +339,6 @@ class TestLocalSourcePath:
         with patch.object(type(runner), "_fboss_repo_root", staticmethod(lambda: tmp_path)):
             got = runner._local_source_path("share/hw_test_configs", "/build/fboss")
         assert got == str(tmp_path / "fboss" / "oss" / "hw_test_configs")
-
-    def test_platform_descriptors_maps_outside_oss(self, tmp_path):
-        runner = _make_runner(SaiTestRunner)
-        with patch.object(type(runner), "_fboss_repo_root", staticmethod(lambda: tmp_path)):
-            got = runner._local_source_path("share/platform_descriptors", "/build/fboss")
-        assert got == str(
-            tmp_path / "fboss" / "lib" / "platform_mapping_v2" / "generated_platform_mappings"
-        )
 
     def test_compiled_binary_maps_to_build_dir(self, tmp_path):
         runner = _make_runner(SaiTestRunner)

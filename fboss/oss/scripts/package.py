@@ -75,6 +75,7 @@ FORWARDING_EXTRA = {
     RUN_CONFIGS_DIR / "th3": "share/th3",
     RUN_CONFIGS_DIR / "th4": "share/th4",
     RUN_CONFIGS_DIR / "th5": "share/th5",
+    PLATFORM_MAPPING_DIR / "generated_platform_mappings": "share/platform_descriptors",
 }
 
 FORWARDING_LIBS = []
@@ -111,7 +112,6 @@ FORWARDING_TEST_EXTRA = {
     OSS_DIR / "qsfp_test_configs": "share/qsfp_test_configs",
     OSS_DIR / "qsfp_unsupported_tests": "share/qsfp_unsupported_tests",
     OSS_DIR / "sai_hw_unsupported_tests": "share/sai_hw_unsupported_tests",
-    PLATFORM_MAPPING_DIR / "generated_platform_mappings": "share/platform_descriptors",
     # sai_all_benchmarks-sai_impl ships in this tar (FORWARDING_TEST_BINARIES);
     # it needs sai_bench.materialized_JSON to prune known-bad/unsupported
     # benchmarks. Without it run_test.py runs unsupported cases and they crash.
