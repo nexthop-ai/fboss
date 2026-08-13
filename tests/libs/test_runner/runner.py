@@ -252,6 +252,44 @@ def _load_json_pairs(path: str | None) -> dict[str, str]:
     return pairs
 
 
+def _cage_of(port_name: str) -> str:
+    """Transceiver cage a port name belongs to: eth1/25/5 -> eth1/25."""
+    parts = port_name.split("/")
+    return "/".join(parts[:2]) if len(parts) >= 3 else port_name
+
+
+def _neighbor_pairs(ports: list[str], pairs: dict[str, str]) -> list[tuple[str, str]]:
+    """Resolve real neighbors for this pass's ports, once per cable.
+
+    Matched by cage, not port name: `pairs` only ever names lane 1, while
+    `ports` may include other lanes of the same cage. A cage with no usable
+    peer contributes nothing (caller keeps its self-pair); a matched cage
+    contributes only its first port, so a same-cage self-pair can't clobber it.
+    """
+    ports_by_cage: dict[str, list[str]] = {}
+    for port in ports:
+        ports_by_cage.setdefault(_cage_of(port), []).append(port)
+
+    peer_cage = {}
+    for port, peer in pairs.items():
+        a, z = _cage_of(port), _cage_of(peer)
+        if a != z:
+            peer_cage[a] = z
+
+    out: list[tuple[str, str]] = []
+    claimed: set[str] = set()
+    for cage, cage_ports in ports_by_cage.items():
+        peer = peer_cage.get(cage)
+        if peer is None or peer not in ports_by_cage:
+            continue
+        if cage in claimed or peer in claimed:
+            continue
+        claimed.add(cage)
+        claimed.add(peer)
+        out.append((cage_ports[0], ports_by_cage[peer][0]))
+    return out
+
+
 def _repo_dir(relative: Path) -> Path:
     for parent in Path(__file__).resolve().parents:
         if (parent / relative).is_dir():
@@ -1023,11 +1061,15 @@ class _CablingAwareRunnerMixin:
 
     _OPTICS_ONLY_FILTER_SUBSTRINGS: tuple[str, ...] = ()
     _PORTS_INFO_ENV_VAR = "TEST_PORTS_INFO"
+    _SNAKE_PAIRS_ENV_VAR = "TEST_SNAKE_PAIRS"
 
     def __init__(self):
         super().__init__()
         self._cached_base_config = None
         self._cached_port_map = None
+
+    def _load_snake_pairs(self) -> dict[str, str]:
+        return _load_json_pairs(os.getenv(self._SNAKE_PAIRS_ENV_VAR))
 
     def _load_base_config_and_port_map(self, base_config_dir: Path, config_name: str) -> tuple[dict, dict]:
         """Load and cache the base config JSON + platform-mapping port map.
@@ -1229,14 +1271,29 @@ class QsfpTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
         "verifyResetControl",
     )
 
-    def _build_cabled_config(self, base_config: dict, ports: list[str], port_map: dict) -> dict:
+    def _pair_profile_id(self, a_port: str, z_port: str, port_map: dict) -> int:
+        # Both ends of a pair get the same profile (HwPortUtils::getCabledPortsAndProfiles),
+        # so pick the narrower end rather than risk asking for more than one side supports.
+        a_info, z_info = port_map.get(a_port), port_map.get(z_port)
+        if not a_info or not z_info:
+            return self._FALLBACK_PROFILE_ID
+        return min(a_info, z_info, key=lambda info: info.speed).profile_id
+
+    def _build_cabled_config(self, base_config: dict, ports: list[str], port_map: dict, pairs: dict) -> dict:
         config = copy.deepcopy(base_config)
         cabled = []
         for port in ports:
             info = port_map.get(port)
             profile_id = info.profile_id if info else self._FALLBACK_PROFILE_ID
             cabled.append({"aPortName": port, "zPortName": port, "profileID": profile_id})
+        # Appended after every self-pair, on purpose: the hw test's neighbor map is
+        # keyed by transceiver id and last-write-wins, so a real pair must come after
+        # that transceiver's self-pair to actually take effect.
+        neighbors = _neighbor_pairs(ports, pairs)
+        for a, z in neighbors:
+            cabled.append({"aPortName": a, "zPortName": z, "profileID": self._pair_profile_id(a, z, port_map)})
         config["qsfpTestConfig"]["cabledPortPairs"] = cabled
+        logger.info("qsfp cabled pairs: %d neighbor pairs added for %d ports", len(neighbors), len(ports))
         # Skip discovery-time firmware upgrade: fails when fboss_firmware.yaml is missing.
         args = config.setdefault("defaultCommandLineArgs", {})
         args["firmware_upgrade_on_coldboot"] = "false"
@@ -1246,7 +1303,7 @@ class QsfpTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
     def _prepare_pass(self, model: str, ports: list[str]) -> None:
         config_name = _LINK_QSFP_TEST_CONFIG_NAME.get(model, model)
         base_config, port_map = self._load_base_config_and_port_map(self._BASE_CONFIG_DIR, config_name)
-        config = self._build_cabled_config(base_config, ports, port_map)
+        config = self._build_cabled_config(base_config, ports, port_map, self._load_snake_pairs())
         self._upload_generated_config(config)
 
     def test_args(self, model: str) -> str:
@@ -1285,7 +1342,6 @@ class LinkTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
     # the one port it tests. Matched against the generated class names.
     _BOTH_ENDS_TOKEN = "TCVR_L"
 
-    _SNAKE_PAIRS_ENV_VAR = "TEST_SNAKE_PAIRS"
     _BASE_CONFIG_DIR = Path("fboss/oss/link_test_configs")
     _REMOTE_CONFIG_PATH = "/home/netops/link_test_config.materialized_JSON"
     _SYSTEM_QSFP_CONFIG_PATH = "/etc/coop/qsfp.conf"
@@ -1309,9 +1365,6 @@ class LinkTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
     @classmethod
     def _media_token_in(cls, pattern: str) -> str | None:
         return next((token for token in cls._MEDIA_INTERFACE_TOKENS if token in pattern), None)
-
-    def _load_snake_pairs(self) -> dict[str, str]:
-        return _load_json_pairs(os.getenv(self._SNAKE_PAIRS_ENV_VAR))
 
     @classmethod
     def _media_cabled(
