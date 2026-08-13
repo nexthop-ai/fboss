@@ -237,18 +237,10 @@ class AgentHwPtpTcProvisionTests : public AgentHwTest {
 
 // Each port will be selected as Ingress port once and Egress port once.
 TEST_F(AgentHwPtpTcProvisionTests, VerifyPtpTcDelayRequest) {
-  std::vector<PortID> ports;
   std::vector<folly::MacAddress> nexthopMacs; // binding to ingress port
   std::vector<folly::IPAddressV6> dstIps; // binding to egress port
 
-  auto cfg = getAgentEnsemble()->getCurrentConfig();
-  // Test all enabled ports
-  for (auto& port : *cfg.ports()) {
-    if (port.state() == cfg::PortState::ENABLED &&
-        port.portType() == cfg::PortType::INTERFACE_PORT) {
-      ports.emplace_back(*port.logicalID());
-    }
-  }
+  auto ports = getAgentEnsemble()->masterLogicalInterfacePortIds();
   if (ports.size() < 2) {
     XLOG(WARNING) << "Only " << ports.size()
                   << " ports enabled, need at least 2 for PTP TC test,"
@@ -261,12 +253,11 @@ TEST_F(AgentHwPtpTcProvisionTests, VerifyPtpTcDelayRequest) {
   }
 
   XLOG(DBG0) << "Test " << ports.size() << " Ports for PTP TC test:";
-  for (auto& port : *cfg.ports()) {
-    if (port.state() == cfg::PortState::ENABLED &&
-        port.portType() == cfg::PortType::INTERFACE_PORT) {
-      XLOG(DBG0) << "  " << *port.name() << " (port " << *port.logicalID()
-                 << ") at " << static_cast<int>(*port.speed()) << " kbps";
-    }
+  for (const auto& portID : ports) {
+    auto port = getProgrammedState()->getPorts()->getNodeIf(portID);
+    XLOG(DBG0) << "  " << port->getName() << " (port "
+               << static_cast<int>(portID) << ") at "
+               << static_cast<int>(port->getSpeed()) << " kbps";
   }
 
   auto setup = [=, this]() {
