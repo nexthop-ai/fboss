@@ -118,6 +118,8 @@
 #include "fboss/cli/fboss2/commands/delete/qos/CmdDeleteQos.h"
 #include "fboss/cli/fboss2/commands/delete/qos/default_policy/CmdDeleteQosDefaultPolicy.h"
 #include "fboss/cli/fboss2/commands/delete/qos/default_queue_config/CmdDeleteQosDefaultQueueConfig.h"
+#include "fboss/cli/fboss2/commands/delete/qos/policy/CmdDeleteQosPolicy.h"
+#include "fboss/cli/fboss2/commands/delete/qos/policy/CmdDeleteQosPolicyMap.h"
 #include "fboss/cli/fboss2/commands/delete/tunnel/CmdDeleteTunnel.h"
 #include "fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/CmdDeleteTunnelIpInIp.h"
 #include "fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/decap/CmdDeleteTunnelIpInIpDecap.h"
@@ -821,6 +823,18 @@ const CommandTree& kConfigCommandTree() {
                "Remove a queue entry from the default port queue config",
                commandHandler<CmdDeleteQosDefaultQueueConfig>,
                argRegistrar<CmdDeleteQosDefaultQueueConfigTraits>,
+           },
+           {
+               "policy",
+               "Delete a QoS policy or one of its map entries",
+               commandHandler<CmdDeleteQosPolicy>,
+               argRegistrar<CmdDeleteQosPolicyTraits>,
+               {{
+                   "map",
+                   "Remove a QoS map entry (dscp, tc-to-queue)",
+                   commandHandler<CmdDeleteQosPolicyMap>,
+                   argRegistrar<CmdDeleteQosPolicyMapTraits>,
+               }},
            }},
       },
 

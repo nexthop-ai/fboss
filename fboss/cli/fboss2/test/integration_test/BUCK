@@ -62,6 +62,7 @@ cpp_binary(
         "DeleteDhcpSourceOverrideTest.cpp",
         "DeleteInterfaceIpv6NdpTest.cpp",
         "DeleteLoadBalancingTest.cpp",
+        "DeleteQosPolicyTest.cpp",
         "DeleteVlanTest.cpp",
         "DeleteInterfaceTest.cpp",
         "Fboss2IntegrationTest.cpp",

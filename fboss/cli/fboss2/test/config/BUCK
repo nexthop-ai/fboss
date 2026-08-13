@@ -52,12 +52,11 @@ cpp_unittest(
         "CmdDeleteTunnelIpInIpTest.cpp",
         "CmdDeleteVlanTest.cpp",
         "ConfigSessionSystemdTest.cpp",
-        "CmdConfigIpRouteTest.cpp",
-        "CmdDeleteConfigInterfaceTest.cpp",
         "CmdDeleteCoppCpuQueueTest.cpp",
         "CmdDeleteCoppCpuTrafficPolicyMatchActionTest.cpp",
         "CmdDeleteCoppReasonTest.cpp",
         "CmdDeleteQosDefaultQueueConfigTest.cpp",
+        "CmdDeleteQosPolicyTest.cpp",
         "ProfileValidationTest.cpp",
     ],
     headers = [
