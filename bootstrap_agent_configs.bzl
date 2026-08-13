@@ -4,7 +4,7 @@ load("@rules_shell//shell:sh_test.bzl", "sh_test")
 
 _SCRIPTS_DIR = "fboss/oss/scripts"
 _GENERATOR = _SCRIPTS_DIR + "/generate_distro_bootstrap_agent_config.py"
-_COMPARE_SCRIPT = _SCRIPTS_DIR + "/generated_files_identical.sh"
+_COMPARE_SCRIPT = "//bazel_lib:generated_files_identical"
 _REGISTRY_SCRIPT = _SCRIPTS_DIR + "/bootstrap_agent_config_registry.sh"
 _CONFIGS_DIR = _SCRIPTS_DIR + "/run_configs/default_configs"
 _PLATFORMS_DIR = "fboss/lib/platform_mapping_v2/platforms"
