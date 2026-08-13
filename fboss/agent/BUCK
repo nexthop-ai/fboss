@@ -1868,13 +1868,7 @@ cpp_library(
     undefined_symbols = True,
     deps = [
         ":hw_switch",
-<<<<<<< HEAD
-        ":hwagent",
         ":init_hook_registry",
-||||||| d33cd384af
-        ":hwagent",
-=======
->>>>>>> a75ad2f54fd714ae4b006fc1f851e34f96df7b37
         ":load_agent_config",
         ":split_agent_thrift_syncer",
         ":test_utils",

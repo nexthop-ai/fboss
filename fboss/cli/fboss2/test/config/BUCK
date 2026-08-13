@@ -56,7 +56,6 @@ cpp_unittest(
         "CmdDeleteCoppCpuQueueTest.cpp",
         "CmdDeleteCoppCpuTrafficPolicyMatchActionTest.cpp",
         "CmdDeleteCoppReasonTest.cpp",
-        "CmdDeleteQosDefaultQueueConfigTest.cpp",
         "CmdDeleteQosPolicyTest.cpp",
         "ProfileValidationTest.cpp",
     ],

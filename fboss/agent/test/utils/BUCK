@@ -61,13 +61,7 @@ cpp_library(
         "//fboss/agent:switch_config-cpp2-types",
         "//fboss/agent/hw/switch_asics:switch_asics",
         "//fboss/agent/state:state",
-<<<<<<< HEAD
         "//fboss/lib:common_utils",
-        "//fboss/agent/state:state_utils",
-||||||| d33cd384af
-        "//fboss/agent/state:state_utils",
-=======
->>>>>>> a75ad2f54fd714ae4b006fc1f851e34f96df7b37
     ],
 )
 

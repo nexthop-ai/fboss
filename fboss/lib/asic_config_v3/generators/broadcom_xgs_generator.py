@@ -5,15 +5,9 @@ import os
 from typing import Any
 
 import yaml
-<<<<<<< HEAD
 
-from fboss.lib.asic_config_v3.base_generator import BaseAsicConfigGenerator, MODULE_DIR
-||||||| d33cd384af
-from fboss.lib.asic_config_v3.base_generator import BaseAsicConfigGenerator, MODULE_DIR
-=======
 from fboss.lib.asic_config_v3.base_generator import BaseAsicConfigGenerator
 from fboss.lib.asic_config_v3.paths import AsicConfigPaths
->>>>>>> a75ad2f54fd714ae4b006fc1f851e34f96df7b37
 from fboss.lib.platform_mapping_v2.platform_mapping_v2 import PlatformMappingParser
 from fboss.lib.platform_mapping_v2.read_files_utils import read_all_vendor_data
 
@@ -82,19 +76,13 @@ class BroadcomXgsGenerator(BaseAsicConfigGenerator):
             self.ocp_sai_common = {"global": {}}
 
         vendor_sdk_common_path = os.path.join(
-            self.paths.asic_vendors_dir,
-            vendor,
-            self.ASIC_FAMILY,
-            "sdk_common.json",
+            self.paths.asic_vendors_dir, vendor, self.ASIC_FAMILY, "sdk_common.json"
         )
         with open(vendor_sdk_common_path) as f:
             self.vendor_sdk_common = json.load(f)
 
         vendor_sai_common_path = os.path.join(
-            self.paths.asic_vendors_dir,
-            vendor,
-            self.ASIC_FAMILY,
-            "sai_common.json",
+            self.paths.asic_vendors_dir, vendor, self.ASIC_FAMILY, "sai_common.json"
         )
         with open(vendor_sai_common_path) as f:
             self.vendor_sai_common = json.load(f)
