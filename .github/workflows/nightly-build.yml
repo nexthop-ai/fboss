@@ -22,6 +22,10 @@ jobs:
       id-token: write
       contents: read
       actions: read
+      # fboss-sim-cli.yml requests pull-requests: read for dorny/paths-filter.
+      # A nested reusable workflow can only narrow the caller's permissions, so
+      # omitting it here fails the whole run at startup.
+      pull-requests: read
     uses: ./.github/workflows/nightly-build-branch.reusable.yml
     with:
       branch: ${{ matrix.branch }}
