@@ -1030,6 +1030,8 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/delete/interface/ipv6/CmdDeleteInterfaceIpv6.h
   fboss/cli/fboss2/commands/delete/interface/ipv6/ndp/CmdDeleteInterfaceIpv6Ndp.cpp
   fboss/cli/fboss2/commands/delete/interface/ipv6/ndp/CmdDeleteInterfaceIpv6Ndp.h
+  fboss/cli/fboss2/commands/delete/interface/queuing_policy/CmdDeleteInterfaceQueuingPolicy.cpp
+  fboss/cli/fboss2/commands/delete/interface/queuing_policy/CmdDeleteInterfaceQueuingPolicy.h
   fboss/cli/fboss2/commands/delete/load_balancing/CmdDeleteLoadBalancing.cpp
   fboss/cli/fboss2/commands/delete/load_balancing/CmdDeleteLoadBalancing.h
   fboss/cli/fboss2/commands/delete/protocol/CmdDeleteProtocol.cpp

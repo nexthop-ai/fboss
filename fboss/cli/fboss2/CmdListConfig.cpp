@@ -109,6 +109,7 @@
 #include "fboss/cli/fboss2/commands/delete/interface/CmdDeleteInterface.h"
 #include "fboss/cli/fboss2/commands/delete/interface/ipv6/CmdDeleteInterfaceIpv6.h"
 #include "fboss/cli/fboss2/commands/delete/interface/ipv6/ndp/CmdDeleteInterfaceIpv6Ndp.h"
+#include "fboss/cli/fboss2/commands/delete/interface/queuing_policy/CmdDeleteInterfaceQueuingPolicy.h"
 #include "fboss/cli/fboss2/commands/delete/load_balancing/CmdDeleteLoadBalancing.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/CmdDeleteProtocol.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/bgp/CmdDeleteProtocolBgp.h"
@@ -793,17 +794,23 @@ const CommandTree& kConfigCommandTree() {
           commandHandler<CmdDeleteInterface>,
           argRegistrar<CmdDeleteInterfaceTraits>,
           {{
-              "ipv6",
-              "Delete (reset to default) IPv6 settings for interface",
-              commandHandler<CmdDeleteInterfaceIpv6>,
-              argTypeHandler<CmdDeleteInterfaceIpv6Traits>,
-              {{
-                  "ndp",
-                  "Reset IPv6 Neighbor Discovery (NDP/RA) settings to defaults",
-                  commandHandler<CmdDeleteInterfaceIpv6Ndp>,
-                  argRegistrar<CmdDeleteInterfaceIpv6NdpTraits>,
-              }},
-          }},
+               "ipv6",
+               "Delete (reset to default) IPv6 settings for interface",
+               commandHandler<CmdDeleteInterfaceIpv6>,
+               argTypeHandler<CmdDeleteInterfaceIpv6Traits>,
+               {{
+                   "ndp",
+                   "Reset IPv6 Neighbor Discovery (NDP/RA) settings to defaults",
+                   commandHandler<CmdDeleteInterfaceIpv6Ndp>,
+                   argRegistrar<CmdDeleteInterfaceIpv6NdpTraits>,
+               }},
+           },
+           {
+               "queuing-policy",
+               "Clear the interface's queuing policy (falls back to the default port queue config)",
+               commandHandler<CmdDeleteInterfaceQueuingPolicy>,
+               argTypeHandler<CmdDeleteInterfaceQueuingPolicyTraits>,
+           }},
       },
 
       {

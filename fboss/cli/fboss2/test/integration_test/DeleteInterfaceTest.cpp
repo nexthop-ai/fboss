@@ -14,6 +14,7 @@
  *  - The test must be run as root (or with appropriate permissions)
  */
 
+#include <folly/Conv.h>
 #include <folly/logging/xlog.h>
 #include <gtest/gtest.h>
 #include <string>
@@ -50,6 +51,41 @@ class DeleteInterfaceTest : public Fboss2IntegrationTest {
         << "Failed to set lldp-expected-value=" << value << ": "
         << result.stderr;
     commitConfig();
+  }
+
+  void setDescription(
+      const std::string& interfaceName,
+      const std::string& value) {
+    touched_.emplace_back(interfaceName, "description");
+    auto result =
+        runCli({"config", "interface", interfaceName, "description", value});
+    ASSERT_EQ(result.exitCode, 0)
+        << "Failed to set description=" << value << ": " << result.stderr;
+    commitConfig();
+  }
+
+  // Description of a port in the running config, or empty when unset.
+  std::string descriptionOf(const std::string& interfaceName) const {
+    auto config = getRunningConfig();
+    for (const auto& port : config["sw"]["ports"]) {
+      if (port.count("name") && port["name"].asString() == interfaceName) {
+        return port.count("description") ? port["description"].asString()
+                                         : std::string();
+      }
+    }
+    return {};
+  }
+
+  // mtu of the L3 interface belonging to a port, or 0 when unset.
+  int mtuOf(const std::string& interfaceName) const {
+    auto intfId = getInterfaceIdForPort(interfaceName);
+    auto config = getRunningConfig();
+    for (const auto& intf : config["sw"]["interfaces"]) {
+      if (intf.count("intfID") && intf["intfID"].asInt() == intfId) {
+        return intf.count("mtu") ? static_cast<int>(intf["mtu"].asInt()) : 0;
+      }
+    }
+    return 0;
   }
 
   void deleteInterfaceAttrs(
@@ -151,6 +187,52 @@ TEST_F(DeleteInterfaceTest, DeleteLldpExpectedValue) {
   XLOG(INFO)
       << "  lldp-expected-value deleted successfully (exit 0, config committed)";
   XLOG(INFO) << "TEST PASSED";
+}
+
+// ---------------------------------------------------------------------------
+// Test: set description and mtu, then delete both in one invocation.
+//
+// description lives on cfg::Port and mtu on cfg::Interface, so a single
+// command has to reach into both objects; covering them together exercises
+// each reset path plus the multi-attribute dispatch in one commit cycle.
+//
+// mtu is restored explicitly rather than through TearDown: TearDown deletes
+// attributes, which is the correct reset for loopback-mode and lldp (default
+// is absent) but not for mtu, which a real DUT sets to a non-default value.
+// ---------------------------------------------------------------------------
+
+TEST_F(DeleteInterfaceTest, DeleteDescriptionAndMtu) {
+  std::string ifName = getRandomInterfacePortName();
+  XLOG(INFO) << "Using interface: " << ifName;
+
+  const int originalMtu = mtuOf(ifName);
+  XLOG(INFO) << "  original mtu: " << originalMtu;
+
+  setDescription(ifName, "fboss2-it-description");
+  auto result = runCli({"config", "interface", ifName, "mtu", "9000"});
+  ASSERT_EQ(result.exitCode, 0) << result.stderr;
+  commitConfig();
+  ASSERT_EQ(descriptionOf(ifName), "fboss2-it-description");
+  ASSERT_EQ(mtuOf(ifName), 9000);
+
+  deleteInterfaceAttrs(ifName, {"description", "mtu"});
+  EXPECT_EQ(descriptionOf(ifName), std::string())
+      << "description should be absent from the running config after delete";
+  EXPECT_EQ(mtuOf(ifName), 0)
+      << "mtu should be absent from the running config after delete";
+
+  if (originalMtu != 0) {
+    XLOG(INFO) << "Restoring mtu " << originalMtu;
+    result = runCli(
+        {"config",
+         "interface",
+         ifName,
+         "mtu",
+         folly::to<std::string>(originalMtu)});
+    ASSERT_EQ(result.exitCode, 0) << result.stderr;
+    commitConfig();
+    EXPECT_EQ(mtuOf(ifName), originalMtu);
+  }
 }
 
 // ---------------------------------------------------------------------------
