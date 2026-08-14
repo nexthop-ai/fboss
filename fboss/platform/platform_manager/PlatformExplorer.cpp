@@ -2,6 +2,7 @@
 
 #include "fboss/platform/platform_manager/PlatformExplorer.h"
 
+#include <algorithm>
 #include <chrono>
 #include <exception>
 #include <filesystem>
@@ -152,12 +153,29 @@ PlatformExplorer::PlatformExplorer(
 void PlatformExplorer::explore() {
   XLOG(INFO) << "Exploring the platform";
   updatePmStatus(createPmStatus(ExplorationStatus::IN_PROGRESS));
+  // Must run before getBusNums(): bus resolution retries for a fixed window
+  // before throwing, so naming a bus this board does not enumerate costs the
+  // whole window and then fails exploration.
+  auto rootIdpromBusName = selectRootIdpromBusName();
+  auto i2cAdaptersFromCpu = *platformConfig_.i2cAdaptersFromCpu();
+  if (rootIdpromBusName) {
+    // Substitute rather than replace the list, so any other CPU buses the
+    // platform declares are unaffected by the IDPROM moving.
+    std::replace(
+        i2cAdaptersFromCpu.begin(),
+        i2cAdaptersFromCpu.end(),
+        *platformConfig_.slotTypeConfigs()
+             ->at(*platformConfig_.rootSlotType())
+             .idpromConfig()
+             ->busName(),
+        *rootIdpromBusName);
+  }
   for (const auto& [busName, busNum] :
-       i2cExplorer_.getBusNums(*platformConfig_.i2cAdaptersFromCpu())) {
+       i2cExplorer_.getBusNums(i2cAdaptersFromCpu)) {
     dataStore_.updateI2cBusNum(std::nullopt, busName, busNum);
   }
-  auto pmUnitName =
-      getPmUnitNameFromSlot(*platformConfig_.rootSlotType(), kRootSlotPath);
+  auto pmUnitName = getPmUnitNameFromSlot(
+      *platformConfig_.rootSlotType(), kRootSlotPath, rootIdpromBusName);
   CHECK(pmUnitName == *platformConfig_.rootPmUnitName());
   explorePmUnit(kRootSlotPath, *platformConfig_.rootPmUnitName());
   XLOG(INFO) << "Creating symbolic links ...";
@@ -317,9 +335,22 @@ void PlatformExplorer::exploreSlot(
   explorePmUnit(childSlotPath, *childPmUnitName);
 }
 
+std::optional<std::string> PlatformExplorer::selectRootIdpromBusName() const {
+  auto it =
+      platformConfig_.slotTypeConfigs()->find(*platformConfig_.rootSlotType());
+  if (it == platformConfig_.slotTypeConfigs()->end() ||
+      !it->second.idpromConfig() ||
+      !it->second.idpromConfig()->busNameSelector()) {
+    return std::nullopt;
+  }
+  return Utils().resolveBusNameSelector(
+      *it->second.idpromConfig()->busNameSelector());
+}
+
 std::optional<std::string> PlatformExplorer::getPmUnitNameFromSlot(
     const std::string& slotType,
-    const std::string& slotPath) {
+    const std::string& slotPath,
+    const std::optional<std::string>& idpromBusName) {
   auto slotTypeConfig = platformConfig_.slotTypeConfigs()->at(slotType);
   CHECK(slotTypeConfig.idpromConfig() || slotTypeConfig.pmUnitName());
   std::optional<std::string> pmUnitNameInEeprom{std::nullopt};
@@ -328,6 +359,9 @@ std::optional<std::string> PlatformExplorer::getPmUnitNameFromSlot(
   std::optional<int> respinVariantIndicatorInEeprom{std::nullopt};
   if (slotTypeConfig.idpromConfig()) {
     auto idpromConfig = *slotTypeConfig.idpromConfig();
+    if (idpromBusName) {
+      idpromConfig.busName() = *idpromBusName;
+    }
     auto eepromI2cBusNum =
         dataStore_.getI2cBusNum(slotPath, *idpromConfig.busName());
     std::string eepromPath;

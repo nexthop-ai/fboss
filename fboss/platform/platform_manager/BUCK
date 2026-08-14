@@ -265,6 +265,8 @@ cpp_library(
         "fbsource//third-party/re2:re2",
         ":platform_manager_config-cpp2-types",
         "//fboss/lib:gpiod_line",
+        "//folly:file_util",
+        "//folly:string",
         "//folly/logging:logging",
     ],
     exported_external_deps = [
