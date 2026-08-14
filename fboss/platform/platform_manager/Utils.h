@@ -38,6 +38,12 @@ class Utils {
   // Throws an exception when it fails to resolve CharDevicePath
   std::string resolveMdioBusCharDevPath(uint32_t instanceId);
 
+  // Resolve a BusNameSelector to a bus name. Returns std::nullopt when the
+  // file is unreadable or holds an unmapped value, so callers keep the bus
+  // name configured alongside the selector.
+  virtual std::optional<std::string> resolveBusNameSelector(
+      const BusNameSelector& selector) const;
+
   bool checkDeviceReadiness(
       std::function<bool()>&& isDeviceReadyFunc,
       const std::string& onWaitMsg,

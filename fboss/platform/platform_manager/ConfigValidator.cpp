@@ -393,6 +393,40 @@ bool ConfigValidator::isValidI2cAdaptersFromCpu(
   return true;
 }
 
+bool ConfigValidator::isValidBusNameSelector(
+    const BusNameSelector& selector,
+    const std::string& slotName) {
+  if (!selector.path()->starts_with("/")) {
+    XLOG(ERR) << fmt::format(
+        "busNameSelector path '{}' in SlotTypeConfig '{}' must be absolute",
+        *selector.path(),
+        slotName);
+    return false;
+  }
+  if (selector.valueToBusName()->empty()) {
+    XLOG(ERR) << fmt::format(
+        "busNameSelector in SlotTypeConfig '{}' has no valueToBusName entries",
+        slotName);
+    return false;
+  }
+  // Membership in i2cAdaptersFromCpu is deliberately not required: a selector
+  // exists precisely to name a bus the config does not list by default.
+  static const re2::RE2 kSupportedCpuBusNameRegex{"CPU_BUS@[0-3]"};
+  for (const auto& [value, busName] : *selector.valueToBusName()) {
+    if (!re2::RE2::FullMatch(busName, kSupportedCpuBusNameRegex) &&
+        !re2::RE2::FullMatch(busName, kIncomingBusRegex)) {
+      XLOG(ERR) << fmt::format(
+          "busNameSelector in SlotTypeConfig '{}' maps '{}' to '{}', which is "
+          "neither a CPU_BUS@N nor an INCOMING@N bus",
+          slotName,
+          value,
+          busName);
+      return false;
+    }
+  }
+  return true;
+}
+
 bool ConfigValidator::isValidI2cAdapterBlockConfig(
     const I2cAdapterBlockConfig& i2cAdapterBlockConfig) {
   if (i2cAdapterBlockConfig.pmUnitScopedNamePrefix()->empty()) {
@@ -1017,6 +1051,11 @@ bool ConfigValidator::isValid(const PlatformConfig& config) {
             slotName,
             index,
             *slotTypeConfig.numOutgoingI2cBuses());
+        return false;
+      }
+      if (slotTypeConfig.idpromConfig()->busNameSelector() &&
+          !isValidBusNameSelector(
+              *slotTypeConfig.idpromConfig()->busNameSelector(), slotName)) {
         return false;
       }
     }

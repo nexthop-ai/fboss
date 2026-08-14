@@ -7,6 +7,8 @@
 #include <filesystem>
 #include <stdexcept>
 
+#include <folly/FileUtil.h>
+#include <folly/String.h>
 #include <folly/logging/xlog.h>
 #include <re2/re2.h>
 
@@ -143,6 +145,31 @@ std::string Utils::resolveMdioBusCharDevPath(uint32_t instanceId) {
             charDevPath));
   }
   return charDevPath;
+}
+
+std::optional<std::string> Utils::resolveBusNameSelector(
+    const BusNameSelector& selector) const {
+  std::string value;
+  if (!folly::readFile(selector.path()->c_str(), value)) {
+    XLOG(ERR) << fmt::format(
+        "Could not read bus name selector {}", *selector.path());
+    return std::nullopt;
+  }
+  value = folly::trimWhitespace(value).str();
+  auto it = selector.valueToBusName()->find(value);
+  if (it == selector.valueToBusName()->end()) {
+    XLOG(ERR) << fmt::format(
+        "Unmapped bus name selector value '{}' from {}",
+        value,
+        *selector.path());
+    return std::nullopt;
+  }
+  XLOG(INFO) << fmt::format(
+      "Bus name selector {} = '{}' resolved to {}",
+      *selector.path(),
+      value,
+      it->second);
+  return it->second;
 }
 
 bool Utils::checkDeviceReadiness(

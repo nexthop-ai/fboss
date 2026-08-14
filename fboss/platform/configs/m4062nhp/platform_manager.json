@@ -9,8 +9,21 @@
       "idpromConfig": {
         "busName": "CPU_BUS@3",
         "address": "0x50",
+<<<<<<< HEAD
         "kernelDeviceName": "24c64"
       }
+=======
+        "kernelDeviceName": "24c64",
+        "busNameSelector": {
+          "path": "/sys/devices/platform/nh_board_rev/board_revision",
+          "valueToBusName": {
+            "1": "CPU_BUS@3",
+            "0": "CPU_BUS@0"
+          }
+        }
+      },
+      "pmUnitName": "SCM"
+>>>>>>> 74217d516d (NOS-8448: [platform_manager] select the Steller Eagle root IDPROM CPU bus at runtime (#1645))
     },
     "SMB_SLOT": {
       "numOutgoingI2cBuses": 0,
@@ -714,6 +727,7 @@
   "bspKmodsRpmName": "nexthop_bsp_kmods",
   "bspKmodsRpmVersion": "1.0.0-1",
   "nonBspKmodsToLoad": [
+    "nh_board_rev",
     "i2c_i801",
     "i2c_piix4",
     "spd5118",

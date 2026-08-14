@@ -82,10 +82,16 @@ class PlatformExplorer {
       const SlotConfig& slotConfig);
 
   // Get the PmUnit name which has been plugged in at the given slotPath,
-  // and the slot is of given slotType.
+  // and the slot is of given slotType. idpromBusName, when set, overrides the
+  // IDPROM bus name from the SlotTypeConfig.
   std::optional<std::string> getPmUnitNameFromSlot(
       const std::string& slotType,
-      const std::string& slotPath);
+      const std::string& slotPath,
+      const std::optional<std::string>& idpromBusName = std::nullopt);
+
+  // Resolve the root slot's IDPROM bus when its SlotTypeConfig declares a
+  // BusNameSelector. std::nullopt keeps the configured busName.
+  std::optional<std::string> selectRootIdpromBusName() const;
 
   // Explore the I2C devices in the PmUnit at the given SlotPath.
   void exploreI2cDevices(
