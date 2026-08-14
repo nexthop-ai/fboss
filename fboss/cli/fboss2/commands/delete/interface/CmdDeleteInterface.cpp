@@ -37,8 +37,7 @@ namespace {
 // config and delete commands cannot drift apart.
 const std::unordered_set<std::string> kValuelessDeleteAttributes = [] {
   std::unordered_set<std::string> attrs = {
-      "loopback-mode", "lookup-class", "queue-config"};
-      "description", "mtu"};
+      "description", "loopback-mode", "lookup-class", "mtu", "queue-config"};
   for (const auto& name : lldpAttrNames()) {
     attrs.insert(name);
   }
@@ -54,8 +53,8 @@ const std::unordered_set<std::string> kKnownDeleteAttributes = [] {
 }();
 
 const std::string kValidDeleteAttrs = fmt::format(
-    "loopback-mode, lookup-class, queue-config, {}, ip-address, ipv6-address,
-    description, mtu",
+    "description, loopback-mode, lookup-class, mtu, queue-config, {}, "
+    "ip-address, ipv6-address",
     folly::join(", ", lldpAttrNames()));
 
 } // namespace
@@ -209,9 +208,8 @@ CmdDeleteInterfaceTraits::RetType CmdDeleteInterface::queryClient(
                 folly::join(", ", missingNames)));
       }
     } else {
-      // Port-level valueless reset (loopback-mode, lookup-class, queue-config,
-      // description,
-      // lldp-expected-*).
+      // Port-level valueless reset (description, loopback-mode, lookup-class,
+      // queue-config, lldp-expected-*).
       std::vector<std::string> resetNames;
       std::vector<std::string> skippedNames;
       for (const utils::Intf& intf : interfaces) {
