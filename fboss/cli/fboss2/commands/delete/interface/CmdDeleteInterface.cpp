@@ -38,6 +38,7 @@ namespace {
 const std::unordered_set<std::string> kValuelessDeleteAttributes = [] {
   std::unordered_set<std::string> attrs = {
       "loopback-mode", "lookup-class", "queue-config"};
+      "description", "mtu"};
   for (const auto& name : lldpAttrNames()) {
     attrs.insert(name);
   }
@@ -53,7 +54,8 @@ const std::unordered_set<std::string> kKnownDeleteAttributes = [] {
 }();
 
 const std::string kValidDeleteAttrs = fmt::format(
-    "loopback-mode, lookup-class, queue-config, {}, ip-address, ipv6-address",
+    "loopback-mode, lookup-class, queue-config, {}, ip-address, ipv6-address,
+    description, mtu",
     folly::join(", ", lldpAttrNames()));
 
 } // namespace
@@ -177,8 +179,38 @@ CmdDeleteInterfaceTraits::RetType CmdDeleteInterface::queryClient(
                 "No interface config found for: {}",
                 folly::join(", ", missingNames)));
       }
+    } else if (attr == "mtu") {
+      // Interface-level reset: mtu is an optional field, and the agent falls
+      // back to Interface::kDefaultMtu when it is unset.
+      std::vector<std::string> resetNames;
+      std::vector<std::string> missingNames;
+      for (const utils::Intf& intf : interfaces) {
+        cfg::Interface* iface = intf.getInterface();
+        if (!iface) {
+          missingNames.push_back(intf.name());
+          continue;
+        }
+        if (iface->mtu().has_value()) {
+          iface->mtu().reset();
+          changed = true;
+        }
+        resetNames.push_back(intf.name());
+      }
+      if (!resetNames.empty()) {
+        results.push_back(
+            fmt::format(
+                "Successfully reset attribute 'mtu' for interface(s): {}",
+                folly::join(", ", resetNames)));
+      }
+      if (!missingNames.empty()) {
+        results.push_back(
+            fmt::format(
+                "No interface config found for: {}",
+                folly::join(", ", missingNames)));
+      }
     } else {
       // Port-level valueless reset (loopback-mode, lookup-class, queue-config,
+      // description,
       // lldp-expected-*).
       std::vector<std::string> resetNames;
       std::vector<std::string> skippedNames;
@@ -188,7 +220,12 @@ CmdDeleteInterfaceTraits::RetType CmdDeleteInterface::queryClient(
           skippedNames.push_back(intf.name());
           continue;
         }
-        if (attr == "loopback-mode") {
+        if (attr == "description") {
+          if (port->description().has_value()) {
+            port->description().reset();
+            changed = true;
+          }
+        } else if (attr == "loopback-mode") {
           if (*port->loopbackMode() != cfg::PortLoopbackMode::NONE) {
             port->loopbackMode() = cfg::PortLoopbackMode::NONE;
             changed = true;
