@@ -724,7 +724,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 2,
                 3,
@@ -2144,7 +2144,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 10,
                 11,
@@ -3564,7 +3564,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 19,
                 20,
@@ -4984,7 +4984,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 27,
                 28,
@@ -6404,7 +6404,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 37,
                 38,
@@ -7824,7 +7824,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 45,
                 46,
@@ -9244,7 +9244,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 55,
                 56,
@@ -10664,7 +10664,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 63,
                 64,
@@ -12084,7 +12084,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 73,
                 74,
@@ -13504,7 +13504,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 81,
                 82,
@@ -14924,7 +14924,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 91,
                 92,
@@ -16344,7 +16344,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 99,
                 100,
@@ -17764,7 +17764,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 109,
                 110,
@@ -19184,7 +19184,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 117,
                 118,
@@ -20604,7 +20604,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 127,
                 128,
@@ -22024,7 +22024,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 135,
                 136,
@@ -23444,7 +23444,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 145,
                 146,
@@ -24864,7 +24864,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 153,
                 154,
@@ -26284,7 +26284,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 163,
                 164,
@@ -27704,7 +27704,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 171,
                 172,
@@ -29124,7 +29124,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 181,
                 182,
@@ -30544,7 +30544,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 189,
                 190,
@@ -31964,7 +31964,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 199,
                 200,
@@ -33384,7 +33384,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 207,
                 208,
@@ -34804,7 +34804,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 217,
                 218,
@@ -36224,7 +36224,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 225,
                 226,
@@ -37644,7 +37644,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 235,
                 236,
@@ -39064,7 +39064,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 243,
                 244,
@@ -40484,7 +40484,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 253,
                 254,
@@ -41904,7 +41904,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 261,
                 262,
@@ -43324,7 +43324,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 271,
                 272,
@@ -44744,7 +44744,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 279,
                 280,
@@ -46164,7 +46164,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 289,
                 290,
@@ -47584,7 +47584,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 297,
                 298,
@@ -49004,7 +49004,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 307,
                 308,
@@ -50424,7 +50424,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 315,
                 316,
@@ -51844,7 +51844,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 325,
                 326,
@@ -53264,7 +53264,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 333,
                 334,
@@ -53967,6 +53967,51 @@ constexpr auto kJsonPlatformMappingStr = R"(
                     "id": {
                       "chip": "TRANSCEIVER-OSFP-slot1/chip39",
                       "lane": 7
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "340": {
+        "mapping": {
+          "id": 340,
+          "name": "eth1/65/1",
+          "controllingPort": 340,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-TH6_NIF-slot1/chip1/core64",
+                "lane": 2
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-QSFP28-slot1/chip65",
+                  "lane": 0
+                }
+              }
+            }
+          ],
+          "portType": 4,
+          "scope": 0
+        },
+        "supportedProfiles": {
+          "62": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-TH6_NIF-slot1/chip1/core64",
+                      "lane": 2
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-QSFP28-slot1/chip65",
+                      "lane": 0
                     }
                   }
                 ]
@@ -54684,7 +54729,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 343,
                 344,
@@ -56104,7 +56149,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 351,
                 352,
@@ -57524,7 +57569,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 361,
                 362,
@@ -58944,7 +58989,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 369,
                 370,
@@ -60364,7 +60409,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 379,
                 380,
@@ -61784,7 +61829,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 387,
                 388,
@@ -63204,7 +63249,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 397,
                 398,
@@ -64624,7 +64669,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 405,
                 406,
@@ -66044,7 +66089,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 415,
                 416,
@@ -67464,7 +67509,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 423,
                 424,
@@ -68884,7 +68929,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 433,
                 434,
@@ -70304,7 +70349,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 441,
                 442,
@@ -71724,7 +71769,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 451,
                 452,
@@ -73144,7 +73189,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 459,
                 460,
@@ -74564,7 +74609,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 469,
                 470,
@@ -75984,7 +76029,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 477,
                 478,
@@ -77404,7 +77449,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 487,
                 488,
@@ -78824,7 +78869,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 495,
                 496,
@@ -80244,7 +80289,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 505,
                 506,
@@ -81664,7 +81709,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 513,
                 514,
@@ -83084,7 +83129,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 523,
                 524,
@@ -84504,7 +84549,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 531,
                 532,
@@ -85924,7 +85969,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 541,
                 542,
@@ -87344,7 +87389,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 549,
                 550,
@@ -88047,6 +88092,51 @@ constexpr auto kJsonPlatformMappingStr = R"(
                     "id": {
                       "chip": "TRANSCEIVER-OSFP-slot1/chip63",
                       "lane": 7
+                    }
+                  }
+                ]
+              }
+          }
+        }
+    },
+    "556": {
+        "mapping": {
+          "id": 556,
+          "name": "eth1/66/1",
+          "controllingPort": 556,
+          "pins": [
+            {
+              "a": {
+                "chip": "NPU-TH6_NIF-slot1/chip1/core64",
+                "lane": 3
+              },
+              "z": {
+                "end": {
+                  "chip": "TRANSCEIVER-QSFP28-slot1/chip66",
+                  "lane": 0
+                }
+              }
+            }
+          ],
+          "portType": 4,
+          "scope": 0
+        },
+        "supportedProfiles": {
+          "62": {
+              "pins": {
+                "iphy": [
+                  {
+                    "id": {
+                      "chip": "NPU-TH6_NIF-slot1/chip1/core64",
+                      "lane": 3
+                    }
+                  }
+                ],
+                "transceiver": [
+                  {
+                    "id": {
+                      "chip": "TRANSCEIVER-QSFP28-slot1/chip66",
+                      "lane": 0
                     }
                   }
                 ]
@@ -88764,7 +88854,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 559,
                 560,
@@ -90184,7 +90274,7 @@ constexpr auto kJsonPlatformMappingStr = R"(
                 ]
               }
           },
-          "64": {
+          "66": {
               "subsumedPorts": [
                 567,
                 568,
@@ -91217,6 +91307,11 @@ constexpr auto kJsonPlatformMappingStr = R"(
       "physicalID": 63
     },
     {
+      "name": "NPU-TH6_NIF-slot1/chip1/core64",
+      "type": 1,
+      "physicalID": 64
+    },
+    {
       "name": "TRANSCEIVER-OSFP-slot1/chip1",
       "type": 3,
       "physicalID": 0
@@ -91535,12 +91630,22 @@ constexpr auto kJsonPlatformMappingStr = R"(
       "name": "TRANSCEIVER-OSFP-slot1/chip64",
       "type": 3,
       "physicalID": 63
+    },
+    {
+      "name": "TRANSCEIVER-QSFP28-slot1/chip65",
+      "type": 3,
+      "physicalID": 64
+    },
+    {
+      "name": "TRANSCEIVER-QSFP28-slot1/chip66",
+      "type": 3,
+      "physicalID": 65
     }
   ],
   "platformSupportedProfiles": [
     {
       "factor": {
-        "profileID": 64
+        "profileID": 66
       },
       "profile": {
         "speed": 1600000,
@@ -91655,6 +91760,21 @@ constexpr auto kJsonPlatformMappingStr = R"(
           "fec": 11,
           "medium": 2,
           "interfaceType": 3
+        }
+      }
+    },
+    {
+      "factor": {
+        "profileID": 62
+      },
+      "profile": {
+        "speed": 25000,
+        "iphy": {
+          "numLanes": 1,
+          "modulation": 1,
+          "fec": 528,
+          "medium": 2,
+          "interfaceType": 0
         }
       }
     },
