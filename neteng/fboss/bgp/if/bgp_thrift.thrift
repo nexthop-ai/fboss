@@ -242,6 +242,12 @@ struct TBgpSessionDetail {
   51: i64 adjrib_sent_eor_msgs;
   52: i64 adjrib_recv_update_msgs;
   53: i64 adjrib_recv_eor_msgs;
+  /**
+   * True when this peer receives IPv4-unicast routes as RFC 4271 classic NLRI +
+   * NEXT_HOP (attr 3) instead of MP_REACH_NLRI -- i.e. it advertised no MP-EXT
+   * capability. Derived from the AdjRib update-group key.
+   */
+  54: bool legacy_v4_nlri_encoding;
 }
 
 /**
@@ -398,6 +404,13 @@ struct TUpdateGroupKey {
 
   /* Whether peer has per-peer egress policy override. */
   17: bool peer_override;
+
+  /*
+   * Whether IPv4-unicast announcements to this group use RFC 4271 classic NLRI
+   * + NEXT_HOP (for peers that advertised no MP-EXT capability) instead of
+   * MP_REACH_NLRI.
+   */
+  18: bool legacy_v4_nlri_encoding;
 }
 
 /**

@@ -21,7 +21,6 @@
 #include "fboss/cli/fboss2/commands/config/dhcp/reply_source_override/CmdConfigDhcpReplySourceOverride.h"
 #include "fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
-#include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterfaceQueuingPolicy.h"
 #include "fboss/cli/fboss2/commands/config/interface/ipv6/CmdConfigInterfaceIpv6.h"
 #include "fboss/cli/fboss2/commands/config/interface/ipv6/ndp/CmdConfigInterfaceIpv6Ndp.h"
 #include "fboss/cli/fboss2/commands/config/interface/pfc_config/CmdConfigInterfacePfcConfig.h"
@@ -66,13 +65,12 @@
 #include "fboss/cli/fboss2/commands/config/qos/CmdConfigQos.h"
 #include "fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPool.h"
 #include "fboss/cli/fboss2/commands/config/qos/default_policy/CmdConfigQosDefaultPolicy.h"
-#include "fboss/cli/fboss2/commands/config/qos/default_queue_config/CmdConfigQosDefaultQueueConfig.h"
 #include "fboss/cli/fboss2/commands/config/qos/policy/CmdConfigQosPolicy.h"
 #include "fboss/cli/fboss2/commands/config/qos/policy/CmdConfigQosPolicyMap.h"
 #include "fboss/cli/fboss2/commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicy.h"
 #include "fboss/cli/fboss2/commands/config/qos/priority_group_policy/CmdConfigQosPriorityGroupPolicyGroupId.h"
-#include "fboss/cli/fboss2/commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicy.h"
-#include "fboss/cli/fboss2/commands/config/qos/queuing_policy/CmdConfigQosQueuingPolicyQueueId.h"
+#include "fboss/cli/fboss2/commands/config/qos/queue_config/CmdConfigQosQueueConfig.h"
+#include "fboss/cli/fboss2/commands/config/qos/queue_config/CmdConfigQosQueueConfigQueueId.h"
 #include "fboss/cli/fboss2/commands/config/rollback/CmdConfigRollback.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionClear.h"
 #include "fboss/cli/fboss2/commands/config/session/CmdConfigSessionCommit.h"
@@ -118,9 +116,10 @@
 #include "fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.h"
 #include "fboss/cli/fboss2/commands/delete/qos/CmdDeleteQos.h"
 #include "fboss/cli/fboss2/commands/delete/qos/default_policy/CmdDeleteQosDefaultPolicy.h"
-#include "fboss/cli/fboss2/commands/delete/qos/default_queue_config/CmdDeleteQosDefaultQueueConfig.h"
 #include "fboss/cli/fboss2/commands/delete/qos/policy/CmdDeleteQosPolicy.h"
 #include "fboss/cli/fboss2/commands/delete/qos/policy/CmdDeleteQosPolicyMap.h"
+#include "fboss/cli/fboss2/commands/delete/qos/queue_config/CmdDeleteQosQueueConfig.h"
+#include "fboss/cli/fboss2/commands/delete/qos/queue_config/CmdDeleteQosQueueConfigQueueId.h"
 #include "fboss/cli/fboss2/commands/delete/tunnel/CmdDeleteTunnel.h"
 #include "fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/CmdDeleteTunnelIpInIp.h"
 #include "fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/decap/CmdDeleteTunnelIpInIpDecap.h"
@@ -246,12 +245,6 @@ const CommandTree& kConfigCommandTree() {
                "Configure PFC settings for interface",
                commandHandler<CmdConfigInterfacePfcConfig>,
                argRegistrar<CmdConfigInterfacePfcConfigTraits>,
-           },
-           {
-               "queuing-policy",
-               "Set queuing policy for interface",
-               commandHandler<CmdConfigInterfaceQueuingPolicy>,
-               argRegistrar<CmdConfigInterfaceQueuingPolicyTraits>,
            },
            {
                "ipv6",
@@ -619,12 +612,6 @@ const CommandTree& kConfigCommandTree() {
                argRegistrar<CmdConfigQosDefaultPolicyTraits>,
            },
            {
-               "default-queue-config",
-               "Configure default port queue settings",
-               commandHandler<CmdConfigQosDefaultQueueConfig>,
-               argRegistrar<CmdConfigQosDefaultQueueConfigTraits>,
-           },
-           {
                "policy",
                "Configure QoS policy settings",
                commandHandler<CmdConfigQosPolicy>,
@@ -647,15 +634,15 @@ const CommandTree& kConfigCommandTree() {
                  argRegistrar<CmdConfigQosPriorityGroupPolicyGroupIdTraits>}},
            },
            {
-               "queuing-policy",
-               "Configure queuing policy settings",
-               commandHandler<CmdConfigQosQueuingPolicy>,
-               argRegistrar<CmdConfigQosQueuingPolicyTraits>,
+               "queue-config",
+               "Configure port queue settings for a named queue config, or for 'default' (the switch-wide default queues)",
+               commandHandler<CmdConfigQosQueueConfig>,
+               argRegistrar<CmdConfigQosQueueConfigTraits>,
                {{
                    "queue-id",
                    "Specify queue ID and attributes",
-                   commandHandler<CmdConfigQosQueuingPolicyQueueId>,
-                   argRegistrar<CmdConfigQosQueuingPolicyQueueIdTraits>,
+                   commandHandler<CmdConfigQosQueueConfigQueueId>,
+                   argRegistrar<CmdConfigQosQueueConfigQueueIdTraits>,
                }},
            }},
       },
@@ -826,10 +813,16 @@ const CommandTree& kConfigCommandTree() {
                argRegistrar<CmdDeleteQosDefaultPolicyTraits>,
            },
            {
-               "default-queue-config",
-               "Remove a queue entry from the default port queue config",
-               commandHandler<CmdDeleteQosDefaultQueueConfig>,
-               argRegistrar<CmdDeleteQosDefaultQueueConfigTraits>,
+               "queue-config",
+               "Remove a queue config, or 'default' to clear the switch-wide default queues",
+               commandHandler<CmdDeleteQosQueueConfig>,
+               argRegistrar<CmdDeleteQosQueueConfigTraits>,
+               {{
+                   "queue-id",
+                   "Remove only the given queue from the queue config",
+                   commandHandler<CmdDeleteQosQueueConfigQueueId>,
+                   argRegistrar<CmdDeleteQosQueueConfigQueueIdTraits>,
+               }},
            },
            {
                "policy",

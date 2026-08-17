@@ -5,6 +5,9 @@ oncall("fboss_agent_push")
 # bazelify: exclude-all
 
 cpp_binary(
+    # @autodeps-skip autodeps2 mis-resolves a CommonInit include to :fake_main (pulls
+    # emulation:main -> duplicate initializeBitsflow/setVersionInfo). CommonInit is
+    # provided via the main-bcm / monolithic_agent_initializer deps.
     name = "sim_ctrl",
     srcs = [
         "sim_ctrl.cpp",

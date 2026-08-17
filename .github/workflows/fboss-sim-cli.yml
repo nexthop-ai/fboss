@@ -127,7 +127,7 @@ jobs:
       # Docker build context.
       - name: Drop the nh checkout before the image build
         if: always() && steps.nh-checkout.outcome == 'success'
-        run: rm -rf nh
+        run: sudo rm -rf nh
 
       - name: Build fboss-sim runtime image (host has the Docker daemon)
         run: |
