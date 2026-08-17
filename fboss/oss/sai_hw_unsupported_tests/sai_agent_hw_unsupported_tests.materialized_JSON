@@ -4956,6 +4956,12 @@
           "test_name_regex": "AgentIngressBufferPoolTest.validateIngressPoolParamChange$"
         },
         {
+          "test_name_regex": "AgentRouteStatExtendedLabelTest.NamedNhgExtendedCounterLabel$"
+        },
+        {
+          "test_name_regex": "AgentRouteStatExtendedLabelTest.RouteCounterExtendedLabel$"
+        },
+        {
           "test_name_regex": "AgentSendPacketToMulticastQueueTest.SendPacketOutOfPortToMCQueue$"
         },
         {
@@ -5061,6 +5067,12 @@
         },
         {
           "test_name_regex": "AgentIngressBufferPoolTest.validateIngressPoolParamChange$"
+        },
+        {
+          "test_name_regex": "AgentRouteStatExtendedLabelTest.NamedNhgExtendedCounterLabel$"
+        },
+        {
+          "test_name_regex": "AgentRouteStatExtendedLabelTest.RouteCounterExtendedLabel$"
         },
         {
           "test_name_regex": "AgentSendPacketToMulticastQueueTest.SendPacketOutOfPortToMCQueue$"
