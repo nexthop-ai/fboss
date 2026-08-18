@@ -81,10 +81,9 @@ SWITCH_TYPE_VOQ = 2
 HIGH_PRIO_CPU_QUEUE_BY_ASIC: dict[int, int] = {20: 7}
 DEFAULT_HIGH_PRIO_CPU_QUEUE = 9
 
-# FBOSS derives the kernel routing table ID by subtracting a type-specific
-# constant from the intfID (2000 for port-based interfaces).  We start intfIDs
-# at INTF_ID_OFFSET + 1 so that routing table IDs begin at 1, avoiding
-# kernel-reserved IDs (0, 253, 254, 255).
+# intfIDs start at INTF_ID_OFFSET + 1. TunManager uses the intfID as the
+# kernel routing table ID (enable_1to1_intf_route_table_mapping), which must
+# avoid the kernel-reserved tables 0/253/254/255.
 INTF_ID_OFFSET = 2000
 
 # Map every supported --platform value to the FBOSS platform_mapping_v2
@@ -370,6 +369,108 @@ def _select_primary_ports(ppm_rows: list[dict[str, str]]) -> list[dict[str, str]
     return selected
 
 
+def _build_ports_vlans_interfaces(
+    selected_rows: list[dict[str, str]], is_npu: bool
+) -> tuple[list[dict], list[dict], list[dict], list[dict]]:
+    """Build the ports, per-port VLANs, vlanPorts and interfaces lists.
+
+    NPU: one VLAN + SVI per port (vlanID == intfID), default VLAN 4094 left
+    to the CPU. VOQ: port-based L3 interfaces (type=3).
+    """
+    ports = []
+    port_vlans = []
+    vlan_ports = []
+    interfaces = []
+
+    for idx, row in enumerate(selected_rows):
+        global_port_id = int(row.get("Global_PortID", "0").strip())
+        port_name = row.get("Port_Name", "").strip()
+        scope_str = row.get("Scope", "0").strip()
+        scope = int(scope_str) if scope_str.isdigit() else 0
+        profile_id, speed = _choose_profile(
+            row.get("Supported_Port_Profiles", "").strip()
+        )
+
+        # intfIDs are sequential in front-panel order (2001, 2002, ...); on
+        # NPU the per-port VLAN reuses the same ID.
+        intf_id = INTF_ID_OFFSET + idx + 1
+        ingress_vlan = intf_id if is_npu else 4094
+
+        ports.append(
+            {
+                "logicalID": global_port_id,
+                "name": port_name,
+                "state": 2,
+                "speed": speed,
+                "profileID": profile_id,
+                "minFrameSize": 64,
+                "maxFrameSize": 9412,
+                "parserType": 1,
+                "routable": True,
+                "ingressVlan": ingress_vlan,
+                "pause": {"rx": False, "tx": False},
+                "sFlowIngressRate": 0,
+                "sFlowEgressRate": 0,
+                "loopbackMode": 0,
+                "portType": 0,
+                "drainState": 0,
+                "scope": scope,
+                "conditionalEntropyRehash": False,
+            }
+        )
+
+        if is_npu:
+            # Names follow the CLI's VlanManager conventions ("Vlan<id>" /
+            # "fboss<id>") so CLI-created and bootstrap objects look alike.
+            port_vlans.append(
+                {
+                    "name": f"Vlan{ingress_vlan}",
+                    "id": ingress_vlan,
+                    "recordStats": True,
+                    "routable": True,
+                    "ipAddresses": [],
+                }
+            )
+            vlan_ports.append(
+                {
+                    "vlanID": ingress_vlan,
+                    "logicalPort": global_port_id,
+                    "spanningTreeState": 2,  # FORWARDING
+                    "emitTags": False,
+                }
+            )
+            interfaces.append(
+                {
+                    "intfID": intf_id,
+                    "routerID": 0,
+                    "vlanID": ingress_vlan,
+                    "name": f"fboss{ingress_vlan}",
+                    "ipAddresses": [],
+                    "mtu": 9412,
+                    "isVirtual": False,
+                    "isStateSyncDisabled": False,
+                    "type": 1,  # VLAN
+                    "scope": 0,
+                }
+            )
+        else:
+            interfaces.append(
+                {
+                    "intfID": intf_id,
+                    "routerID": 0,
+                    "portID": global_port_id,
+                    "ipAddresses": [],
+                    "mtu": 9412,
+                    "isVirtual": False,
+                    "isStateSyncDisabled": False,
+                    "type": 3,  # PORT
+                    "scope": 0,
+                }
+            )
+
+    return ports, port_vlans, vlan_ports, interfaces
+
+
 def generate_config(
     platform: str,
     platforms_dir: pathlib.Path,
@@ -377,7 +478,8 @@ def generate_config(
 ) -> dict:
     """Build and return the agent config dict.
 
-    Uses port-based L3 interfaces (type=3).
+    NPU platforms get one VLAN + SVI per port (type=1); VOQ platforms keep
+    port-based L3 interfaces (type=3).
     ASIC config is loaded from hw_test_configs/ materialized JSON by default.
     """
     codename = _resolve_codename(platform, platforms_dir)
@@ -425,58 +527,9 @@ def generate_config(
         switch_id_to_switch_info["connectionHandle"] = connection_handle
     switch_id_to_switch_info["firmwareNameToFirmwareInfo"] = {}
 
-    # Build port and interface lists
-    ports = []
-    interfaces = []
-
-    for idx, row in enumerate(selected_rows):
-        global_port_id = int(row.get("Global_PortID", "0").strip())
-        port_name = row.get("Port_Name", "").strip()
-        scope_str = row.get("Scope", "0").strip()
-        scope = int(scope_str) if scope_str.isdigit() else 0
-        profile_id, speed = _choose_profile(
-            row.get("Supported_Port_Profiles", "").strip()
-        )
-
-        ports.append(
-            {
-                "logicalID": global_port_id,
-                "name": port_name,
-                "state": 2,
-                "speed": speed,
-                "profileID": profile_id,
-                "minFrameSize": 64,
-                "maxFrameSize": 9412,
-                "parserType": 1,
-                "routable": True,
-                "ingressVlan": 4094,
-                "pause": {"rx": False, "tx": False},
-                "sFlowIngressRate": 0,
-                "sFlowEgressRate": 0,
-                "loopbackMode": 0,
-                "portType": 0,
-                "drainState": 0,
-                "scope": scope,
-                "conditionalEntropyRehash": False,
-            }
-        )
-
-        # intfIDs are sequential in front-panel order (2001, 2002, ...).
-        # FBOSS derives routing table ID = intfID - 2000, so tables start at 1.
-        intf_id = INTF_ID_OFFSET + idx + 1
-        interfaces.append(
-            {
-                "intfID": intf_id,
-                "routerID": 0,
-                "portID": global_port_id,
-                "ipAddresses": [],
-                "mtu": 9412,
-                "isVirtual": False,
-                "isStateSyncDisabled": False,
-                "type": 3,  # PORT
-                "scope": 0,
-            }
-        )
+    ports, port_vlans, vlan_ports, interfaces = _build_ports_vlans_interfaces(
+        selected_rows, is_npu=switch_type == SWITCH_TYPE_NPU
+    )
 
     # Loopback interface (VLAN-based, virtual, no physical port)
     interfaces.insert(
@@ -502,6 +555,7 @@ def generate_config(
             "routable": True,
             "ipAddresses": [],
         },
+        *port_vlans,
         {
             "name": "default",
             "id": 4094,
@@ -515,7 +569,7 @@ def generate_config(
         "version": 0,
         "ports": ports,
         "vlans": vlans,
-        "vlanPorts": [],
+        "vlanPorts": vlan_ports,
         "defaultVlan": 4094,
         "interfaces": interfaces,
         "arpTimeoutSeconds": 60,
