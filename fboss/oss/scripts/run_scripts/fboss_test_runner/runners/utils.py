@@ -6,6 +6,7 @@ import json
 import os
 import re
 import subprocess
+from collections.abc import Callable
 
 
 def test_matches_any_regex(test: str, regex_list: list[str]) -> bool:
@@ -92,3 +93,39 @@ def run_script(script_file: str) -> None:
     if not os.access(script_file, os.X_OK):
         raise Exception(f"Script file {script_file} is not executable")
     subprocess.run(script_file, check=True, shell=True)
+
+
+# Collect broad platform diagnostics. Only the non-disruptive details
+# are gathered (i.e. no --disruptive) so collecting diagnostics does not
+# further perturb the DUT under test.
+RMA_SHOWTECH_CMD = ["rma-showtech", "--details", "all"]
+RMA_SHOWTECH_TIMEOUT_S = 300
+RMA_SHOWTECH_BEGIN_MARKER = "########## BEGIN rma-showtech (test failed) ##########"
+RMA_SHOWTECH_END_MARKER = "########## END rma-showtech ##########"
+
+
+def collect_rma_showtech(
+    label: str,
+    capture: Callable[[list[str], int], tuple],
+    timeout_s: int = RMA_SHOWTECH_TIMEOUT_S,
+) -> None:
+    """Stream rma-showtech output to the run log on failure.
+
+    ``capture`` runs a command and tees its output to the log, returning a tuple
+    whose first two elements are ``(returncode, timed_out)``; each caller passes
+    its own so the diagnostics interleave with that runner's output. Never
+    raises -- collecting diagnostics must not mask the underlying failure.
+    """
+    print(f"{RMA_SHOWTECH_BEGIN_MARKER} for {label}", flush=True)
+    try:
+        returncode, timed_out = capture(list(RMA_SHOWTECH_CMD), timeout_s)[:2]
+        if timed_out:
+            print(f"rma-showtech timed out after {timeout_s}s", flush=True)
+        elif returncode != 0:
+            print(f"rma-showtech exited with code {returncode}", flush=True)
+    except FileNotFoundError:
+        print("rma-showtech binary not found; skipping diagnostics", flush=True)
+    except Exception as e:  # must not mask the test failure
+        print(f"Failed to run rma-showtech: {e}", flush=True)
+    finally:
+        print(RMA_SHOWTECH_END_MARKER, flush=True)

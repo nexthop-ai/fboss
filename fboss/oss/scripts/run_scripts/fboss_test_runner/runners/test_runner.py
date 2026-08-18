@@ -63,6 +63,7 @@ from fboss_test_runner.reporters.console_reporter import ConsoleReporter
 from fboss_test_runner.reporters.csv_reporter import CsvReporter
 from fboss_test_runner.result_types import GtestResult, GtestStatus, RunOutcome
 from fboss_test_runner.runners.utils import (
+    collect_rma_showtech,
     get_test_regexes_from_file,
     load_from_file,
     test_matches_any_regex,
@@ -669,27 +670,7 @@ class TestRunner(abc.ABC):
 
     def _collect_rma_showtech(self, test_to_run: str) -> None:
         """Stream rma-showtech output to the test log on test failure."""
-        # Collect broad platform diagnostics. Only the non-disruptive details
-        # are gathered (i.e. no --disruptive) so collecting diagnostics does not
-        # further perturb the DUT under test.
-        cmd = ["rma-showtech", "--details", "all"]
-        timeout_s = 300
-        begin_marker = "########## BEGIN rma-showtech (test failed) ##########"
-        end_marker = "########## END rma-showtech ##########"
-
-        print(f"{begin_marker} for {test_to_run}", flush=True)
-        try:
-            returncode, timed_out, _, _ = self._capture_subprocess(cmd, timeout_s)
-            if timed_out:
-                print(f"rma-showtech timed out after {timeout_s}s", flush=True)
-            elif returncode != 0:
-                print(f"rma-showtech exited with code {returncode}", flush=True)
-        except FileNotFoundError:
-            print("rma-showtech binary not found; skipping diagnostics", flush=True)
-        except Exception as e:  # must not mask the test failure
-            print(f"Failed to run rma-showtech: {e}", flush=True)
-        finally:
-            print(end_marker, flush=True)
+        collect_rma_showtech(test_to_run, self._capture_subprocess)
 
     @staticmethod
     def _port_in_use(port: int) -> bool:

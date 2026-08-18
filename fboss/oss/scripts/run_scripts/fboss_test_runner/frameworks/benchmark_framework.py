@@ -15,6 +15,7 @@ from fboss_test_runner.reporters.console_reporter import ConsoleReporter
 from fboss_test_runner.reporters.csv_reporter import CsvReporter
 from fboss_test_runner.result_types import BenchmarkResult
 from fboss_test_runner.runners.utils import (
+    collect_rma_showtech,
     get_test_regexes_from_file,
     load_from_file,
     test_matches_any_regex,
@@ -263,12 +264,53 @@ class BenchmarkFramework:
 
     @staticmethod
     def _read_stream(
-        stream: Iterable[str], lines_list: list[str], prefix: str = ""
+        stream: Iterable[str], lines_list: list[str] | None = None, prefix: str = ""
     ) -> None:
-        """Read lines from a stream, echo in real-time, and collect them."""
+        """Read lines from a stream, echo in real-time, and collect them.
+
+        ``lines_list`` may be None to echo without retaining the output, for
+        streams (e.g. diagnostics) that are only ever read back from the log.
+        """
         for line in stream:
             print(f"{prefix}{line}", end="", flush=True)
-            lines_list.append(line)
+            if lines_list is not None:
+                lines_list.append(line)
+
+    def _capture_subprocess(self, cmd: list[str], timeout: int) -> tuple[int, bool]:
+        """Run cmd, tee its output to the benchmark log in real time, and return
+        (returncode, timed_out).
+
+        Output is streamed via ``print`` rather than inherited fds so it
+        interleaves with the framework's own output instead of racing it.
+        """
+        process = subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        )
+        stdout_thread = threading.Thread(
+            target=self._read_stream, args=(process.stdout,)
+        )
+        stderr_thread = threading.Thread(
+            target=self._read_stream, args=(process.stderr, None, "[stderr] ")
+        )
+        stdout_thread.start()
+        stderr_thread.start()
+
+        timed_out = False
+        try:
+            returncode = process.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            returncode = process.wait()
+            timed_out = True
+        # Closed pipes unblock the reader threads; bound the join so a stuck
+        # thread cannot wedge the run.
+        stdout_thread.join(timeout=10)
+        stderr_thread.join(timeout=10)
+        return returncode, timed_out
+
+    def _collect_rma_showtech(self, benchmark_name: str) -> None:
+        """Stream rma-showtech output to the benchmark log on failure."""
+        collect_rma_showtech(benchmark_name, self._capture_subprocess)
 
     def _run_benchmark_binary(
         self, binary_name: str, args: Namespace, benchmark_name: str | None = None
@@ -496,6 +538,12 @@ class BenchmarkFramework:
                 result = self._run_benchmark_binary(
                     binary_path, args, benchmark_name=name
                 )
+                # On any non-OK outcome, collect platform diagnostics from the
+                # DUT and record them in the benchmark log, while the DUT is
+                # still in its failed state: before the next benchmark runs (and
+                # restarts the agent) and before the suite is torn down.
+                if result["test_status"] != "OK":
+                    self._collect_rma_showtech(name)
                 self._apply_threshold_check(result, platform_key, all_thresholds, args)
                 results.append(result)
             self._write_results_and_summary(

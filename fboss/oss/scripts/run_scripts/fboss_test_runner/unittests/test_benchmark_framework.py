@@ -469,3 +469,111 @@ def test_write_results_and_summary_exits_on_failure(framework, tmp_path):
     with pytest.raises(SystemExit) as exc:
         framework._write_results_and_summary([result])
     assert exc.value.code == 1
+
+
+# ---- rma-showtech diagnostics on failure ---------------------------------
+#
+# rma-showtech diagnostics collection on benchmark failure (the run() hook,
+# _collect_rma_showtech, and the _capture_subprocess it streams through).
+
+
+def _failed_result(name, status="FAILED"):
+    result = _ok_result(name)
+    result["test_status"] = status
+    return result
+
+
+def test_collect_rma_showtech_nondisruptive(framework):
+    """rma-showtech runs with '--details all' and without '--disruptive' so
+    diagnostics don't further perturb the DUT."""
+    with patch.object(
+        framework, "_capture_subprocess", return_value=(0, False)
+    ) as mock_capture:
+        framework._collect_rma_showtech("HwRouteBench")
+    mock_capture.assert_called_once()
+    cmd = mock_capture.call_args.args[0]
+    assert cmd == ["rma-showtech", "--details", "all"]
+    assert "--disruptive" not in cmd
+
+
+def test_collect_rma_showtech_missing_binary_does_not_raise(framework):
+    """A missing rma-showtech binary must not mask the underlying benchmark
+    failure."""
+    with patch.object(framework, "_capture_subprocess", side_effect=FileNotFoundError):
+        # Must not raise.
+        framework._collect_rma_showtech("HwRouteBench")
+
+
+@patch("subprocess.Popen")
+def test_capture_subprocess_streams_and_reports_timeout(mock_popen, framework, capsys):
+    """A hung rma-showtech is killed and reported as timed out, and its output
+    still reaches the log."""
+    proc = _mock_popen("diag line\n")
+    proc.wait.side_effect = [subprocess.TimeoutExpired("cmd", 300), -9]
+    mock_popen.return_value = proc
+    returncode, timed_out = framework._capture_subprocess(["rma-showtech"], 300)
+    assert timed_out
+    assert returncode == -9
+    proc.kill.assert_called_once()
+    assert "diag line" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("status", ["FAILED", "TIMEOUT"])
+@patch.object(BenchmarkFramework, "_write_results_and_summary")
+@patch.object(BenchmarkFramework, "_run_benchmark_binary")
+@patch.object(BenchmarkFramework, "_list_benchmarks")
+def test_run_collects_on_failure(
+    mock_list, mock_run, _mock_write, framework, bench_args, status
+):
+    """run() triggers rma-showtech collection on a non-OK outcome."""
+    mock_list.return_value = ["A"]
+    mock_run.return_value = _failed_result("A", status)
+    with patch.object(framework, "_collect_rma_showtech") as mock_collect:
+        framework.run(bench_args)
+    mock_collect.assert_called_once_with("A")
+
+
+@patch.object(BenchmarkFramework, "_write_results_and_summary")
+@patch.object(BenchmarkFramework, "_run_benchmark_binary")
+@patch.object(BenchmarkFramework, "_list_benchmarks")
+def test_run_no_collection_on_pass(
+    mock_list, mock_run, _mock_write, framework, bench_args
+):
+    """run() does not collect diagnostics when every benchmark passes."""
+    mock_list.return_value = ["A", "B"]
+    mock_run.return_value = _ok_result("A")
+    with patch.object(framework, "_collect_rma_showtech") as mock_collect:
+        framework.run(bench_args)
+    mock_collect.assert_not_called()
+
+
+@patch.object(BenchmarkFramework, "_write_results_and_summary")
+@patch.object(BenchmarkFramework, "_list_benchmarks")
+def test_run_collects_before_next_benchmark_and_teardown(
+    mock_list, _mock_write, suite, bench_args
+):
+    """Diagnostics for a failing benchmark are collected while the DUT is still
+    in its failed state: before the next benchmark runs and before teardown."""
+    mock_list.return_value = ["A", "B"]
+    framework = BenchmarkFramework(suite)
+    order = []
+
+    def fake_run(binary, args, benchmark_name=None):  # noqa: ARG001
+        order.append(f"run:{benchmark_name}")
+        if benchmark_name == "A":
+            return _failed_result("A")
+        return _ok_result(benchmark_name)
+
+    with (
+        patch.object(framework, "_run_benchmark_binary", side_effect=fake_run),
+        patch.object(
+            framework,
+            "_collect_rma_showtech",
+            side_effect=lambda name: order.append(f"showtech:{name}"),
+        ),
+        patch.object(
+            suite, "teardown", side_effect=lambda _args: order.append("teardown")
+        ),
+    ):
+        framework.run(bench_args)
+    assert order == ["run:A", "showtech:A", "run:B", "teardown"]
