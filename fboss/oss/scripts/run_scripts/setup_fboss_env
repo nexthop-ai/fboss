@@ -15,8 +15,15 @@ export FBOSS_KMODS=${FBOSS}/lib/modules
 export FBOSS_DATA=${FBOSS}/share
 
 # /tmp is wiped on reboot; re-link on every service start so
-# platform_descriptor_config_path resolves to the shipped bundle.
-[ -d "${FBOSS_DATA}/platform_descriptors" ] && ln -sfn "${FBOSS_DATA}/platform_descriptors" /tmp/platform_descriptors
+# platform_descriptor_config_path resolves to the shipped bundle. /tmp is
+# sticky, so replacing a link another user created fails with EPERM -- skip
+# the relink when the existing link is already correct, which is the common
+# case (root service starts first, then a user logs in).
+if [ -d "${FBOSS_DATA}/platform_descriptors" ] &&
+  [ "$(readlink /tmp/platform_descriptors 2>/dev/null)" != "${FBOSS_DATA}/platform_descriptors" ]; then
+  ln -sfnT "${FBOSS_DATA}/platform_descriptors" /tmp/platform_descriptors 2>/dev/null ||
+    echo "warning: cannot link /tmp/platform_descriptors -> ${FBOSS_DATA}/platform_descriptors" >&2
+fi
 
 export PATH=${FBOSS_BIN}${PATH:+:${PATH}}
 export LD_LIBRARY_PATH=${FBOSS_LIB}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}

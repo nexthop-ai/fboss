@@ -213,8 +213,17 @@ def _find_getdeps_libs(
 _SOURCE_DATE_EPOCH = int(os.environ.get("SOURCE_DATE_EPOCH") or 1)
 
 
-def _normalize_tarinfo(ti: tarfile.TarInfo) -> tarfile.TarInfo:
-    """Zero volatile metadata for reproducible archives."""
+# Build-system metadata that lives next to files we package wholesale (e.g.
+# generated_platform_mappings/BUCK). It has no business on a switch.
+_EXCLUDED_BASENAMES = frozenset(
+    {"BUCK", "TARGETS", "BUILD.bazel", "CMakeLists.txt", "OWNERS", "__pycache__"}
+)
+
+
+def _normalize_tarinfo(ti: tarfile.TarInfo) -> tarfile.TarInfo | None:
+    """Zero volatile metadata for reproducible archives; drop build metadata."""
+    if os.path.basename(ti.name) in _EXCLUDED_BASENAMES:
+        return None
     ti.mtime = _SOURCE_DATE_EPOCH
     ti.uid = ti.gid = 0
     ti.uname = ti.gname = ""
