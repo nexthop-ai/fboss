@@ -28,7 +28,7 @@
         "name": "eth1/3/1",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -41,12 +41,12 @@
           "2": "eth1/4/1"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 50,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -64,7 +64,7 @@
         "name": "eth1/4/1",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -77,12 +77,12 @@
           "2": "eth1/3/1"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 50,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -100,7 +100,7 @@
         "name": "eth1/7/1",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -113,12 +113,12 @@
           "2": "eth1/8/1"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 45,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -136,7 +136,7 @@
         "name": "eth1/7/5",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -149,12 +149,12 @@
           "2": "eth1/8/5"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 45,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -172,7 +172,7 @@
         "name": "eth1/8/1",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -185,12 +185,12 @@
           "2": "eth1/7/1"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 45,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -208,7 +208,7 @@
         "name": "eth1/8/5",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -221,12 +221,12 @@
           "2": "eth1/7/5"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 45,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -244,7 +244,7 @@
         "name": "eth1/11/1",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -257,12 +257,12 @@
           "2": "eth1/12/1"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -280,7 +280,7 @@
         "name": "eth1/11/2",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -293,12 +293,12 @@
           "2": "eth1/12/2"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -316,7 +316,7 @@
         "name": "eth1/11/3",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -329,12 +329,12 @@
           "2": "eth1/12/3"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -352,7 +352,7 @@
         "name": "eth1/11/4",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -365,12 +365,12 @@
           "2": "eth1/12/4"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -388,7 +388,7 @@
         "name": "eth1/11/5",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -401,12 +401,12 @@
           "2": "eth1/12/5"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -424,7 +424,7 @@
         "name": "eth1/11/6",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -437,12 +437,12 @@
           "2": "eth1/12/6"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -460,7 +460,7 @@
         "name": "eth1/11/7",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -473,12 +473,12 @@
           "2": "eth1/12/7"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -496,7 +496,7 @@
         "name": "eth1/11/8",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -509,12 +509,12 @@
           "2": "eth1/12/8"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -532,7 +532,7 @@
         "name": "eth1/12/1",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -545,12 +545,12 @@
           "2": "eth1/11/1"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -568,7 +568,7 @@
         "name": "eth1/12/2",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -581,12 +581,12 @@
           "2": "eth1/11/2"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -604,7 +604,7 @@
         "name": "eth1/12/3",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -617,12 +617,12 @@
           "2": "eth1/11/3"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -640,7 +640,7 @@
         "name": "eth1/12/4",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -653,12 +653,12 @@
           "2": "eth1/11/4"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -676,7 +676,7 @@
         "name": "eth1/12/5",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -689,12 +689,12 @@
           "2": "eth1/11/5"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -712,7 +712,7 @@
         "name": "eth1/12/6",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -725,12 +725,12 @@
           "2": "eth1/11/6"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -748,7 +748,7 @@
         "name": "eth1/12/7",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -761,480 +761,12 @@
           "2": "eth1/11/7"
         },
         "lookupClasses": [
-
-        ],
-        "profileID": 54,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 334,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2048,
-        "speed": 200000,
-        "name": "eth1/15/1",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/16/1"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 24,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 338,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2052,
-        "speed": 200000,
-        "name": "eth1/15/5",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/16/5"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 24,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 343,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2056,
-        "speed": 200000,
-        "name": "eth1/16/1",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/15/1"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 24,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 347,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2060,
-        "speed": 200000,
-        "name": "eth1/16/5",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/15/5"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 24,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 13,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2064,
-        "speed": 100000,
-        "name": "eth1/19/1",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/20/1"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 55,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 15,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2066,
-        "speed": 100000,
-        "name": "eth1/19/3",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/20/3"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 55,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 17,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2068,
-        "speed": 100000,
-        "name": "eth1/19/5",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/20/5"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 55,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 19,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2070,
-        "speed": 100000,
-        "name": "eth1/19/7",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/20/7"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 55,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 5,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2072,
-        "speed": 100000,
-        "name": "eth1/20/1",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/19/1"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 55,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 7,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2074,
-        "speed": 100000,
-        "name": "eth1/20/3",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/19/3"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 55,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 9,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2076,
-        "speed": 100000,
-        "name": "eth1/20/5",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/19/5"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 55,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 11,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2078,
-        "speed": 100000,
-        "name": "eth1/20/7",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/19/7"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 55,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 35,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2080,
-        "speed": 100000,
-        "name": "eth1/23/1",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/27/1"
-        },
-        "lookupClasses": [
-
+          
         ],
         "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -1252,7 +784,7 @@
         "name": "eth1/12/8",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -1265,732 +797,12 @@
           "2": "eth1/11/8"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 56,
         "portType": 0,
         "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 37,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2082,
-        "speed": 100000,
-        "name": "eth1/23/3",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/27/3"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 56,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 38,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2083,
-        "speed": 100000,
-        "name": "eth1/23/4",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/27/4"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 56,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 39,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2084,
-        "speed": 100000,
-        "name": "eth1/23/5",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/27/5"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 56,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 40,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2085,
-        "speed": 100000,
-        "name": "eth1/23/6",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/27/6"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 56,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 41,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2086,
-        "speed": 100000,
-        "name": "eth1/23/7",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/27/7"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 56,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 42,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2087,
-        "speed": 100000,
-        "name": "eth1/23/8",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/27/8"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 56,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 26,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2088,
-        "speed": 800000,
-        "name": "eth1/24/1",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/28/1"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 50,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 57,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2096,
-        "speed": 100000,
-        "name": "eth1/27/1",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/23/1"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 56,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 58,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2097,
-        "speed": 100000,
-        "name": "eth1/27/2",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/23/2"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 56,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 59,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2098,
-        "speed": 100000,
-        "name": "eth1/27/3",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/23/3"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 56,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 60,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2099,
-        "speed": 100000,
-        "name": "eth1/27/4",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/23/4"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 56,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 61,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2100,
-        "speed": 100000,
-        "name": "eth1/27/5",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/23/5"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 56,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 62,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2101,
-        "speed": 100000,
-        "name": "eth1/27/6",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/23/6"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 56,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 63,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2102,
-        "speed": 100000,
-        "name": "eth1/27/7",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/23/7"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 56,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 64,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2103,
-        "speed": 100000,
-        "name": "eth1/27/8",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/23/8"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 56,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 48,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2104,
-        "speed": 800000,
-        "name": "eth1/28/1",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/24/1"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 50,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 79,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2112,
-        "speed": 100000,
-        "name": "eth1/31/1",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/32/1"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 22,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 83,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2116,
-        "speed": 100000,
-        "name": "eth1/31/5",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/32/5"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 22,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 70,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2120,
-        "speed": 100000,
-        "name": "eth1/32/1",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/31/1"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 22,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 74,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 2124,
-        "speed": 100000,
-        "name": "eth1/32/5",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/31/5"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 22,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -2008,7 +820,7 @@
         "name": "eth1/33/1",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -2021,12 +833,12 @@
           "2": "eth1/33/1"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 23,
         "portType": 4,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -2044,7 +856,7 @@
         "name": "eth1/1/1",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -2057,48 +869,12 @@
           "2": "eth1/2/1"
         },
         "lookupClasses": [
-
+          
         ],
-        "profileID": 38,
+        "profileID": 39,
         "portType": 0,
         "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 267,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 4002,
-        "speed": 400000,
-        "name": "eth1/1/5",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/2/5"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 38,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -2116,7 +892,7 @@
         "name": "eth1/2/1",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -2129,48 +905,12 @@
           "2": "eth1/1/1"
         },
         "lookupClasses": [
-
+          
         ],
-        "profileID": 38,
+        "profileID": 39,
         "portType": 0,
         "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 265,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 4004,
-        "speed": 400000,
-        "name": "eth1/2/5",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/1/5"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 38,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -2188,7 +928,7 @@
         "name": "eth1/5/1",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -2201,12 +941,12 @@
           "2": "eth1/6/1"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 38,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -2224,7 +964,7 @@
         "name": "eth1/5/5",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -2237,12 +977,12 @@
           "2": "eth1/6/5"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 38,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -2260,7 +1000,7 @@
         "name": "eth1/6/1",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -2273,12 +1013,12 @@
           "2": "eth1/5/1"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 38,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -2296,7 +1036,7 @@
         "name": "eth1/6/5",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -2309,12 +1049,12 @@
           "2": "eth1/5/5"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 38,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -2332,7 +1072,7 @@
         "name": "eth1/9/1",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -2345,12 +1085,12 @@
           "2": "eth1/10/1"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 25,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -2368,7 +1108,7 @@
         "name": "eth1/9/5",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -2381,12 +1121,12 @@
           "2": "eth1/10/5"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 38,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -2404,7 +1144,7 @@
         "name": "eth1/10/1",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -2417,12 +1157,12 @@
           "2": "eth1/9/1"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 25,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -2440,7 +1180,7 @@
         "name": "eth1/10/5",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -2453,12 +1193,12 @@
           "2": "eth1/9/5"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 38,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -2476,7 +1216,7 @@
         "name": "eth1/13/1",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -2489,12 +1229,12 @@
           "2": "eth1/14/1"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 23,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -2512,7 +1252,7 @@
         "name": "eth1/13/5",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -2525,12 +1265,12 @@
           "2": "eth1/14/5"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 23,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -2548,7 +1288,7 @@
         "name": "eth1/14/1",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -2561,12 +1301,12 @@
           "2": "eth1/13/1"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 23,
         "portType": 0,
         "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -2584,7 +1324,7 @@
         "name": "eth1/14/5",
         "description": "",
         "queues_DEPRECATED": [
-
+          
         ],
         "pause": {
           "tx": false,
@@ -2597,444 +1337,12 @@
           "2": "eth1/13/5"
         },
         "lookupClasses": [
-
+          
         ],
         "profileID": 23,
         "portType": 0,
         "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 3,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 4017,
-        "speed": 400000,
-        "name": "eth1/17/1",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/18/1"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 38,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 4,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 4018,
-        "speed": 200000,
-        "name": "eth1/17/5",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/18/5"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 25,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 1,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 4019,
-        "speed": 400000,
-        "name": "eth1/18/1",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/17/1"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 38,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 2,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 4020,
-        "speed": 200000,
-        "name": "eth1/18/5",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/17/5"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 25,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 24,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 4021,
-        "speed": 200000,
-        "name": "eth1/21/1",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/22/1"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 25,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 25,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 4022,
-        "speed": 400000,
-        "name": "eth1/21/5",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/22/5"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 38,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 22,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 4023,
-        "speed": 200000,
-        "name": "eth1/22/1",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/21/1"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 25,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 23,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 4024,
-        "speed": 400000,
-        "name": "eth1/22/5",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/21/5"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 38,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 46,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 4025,
-        "speed": 800000,
-        "name": "eth1/25/1",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/26/1"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 39,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 44,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 4027,
-        "speed": 800000,
-        "name": "eth1/26/1",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/25/1"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 39,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 68,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 4029,
-        "speed": 800000,
-        "name": "eth1/29/1",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/30/1"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 39,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
-        ],
-        "drainState": 0,
-        "scope": 0,
-        "conditionalEntropyRehash": false
-      },
-      {
-        "logicalID": 66,
-        "state": 2,
-        "minFrameSize": 64,
-        "maxFrameSize": 9412,
-        "parserType": 1,
-        "routable": true,
-        "ingressVlan": 4031,
-        "speed": 800000,
-        "name": "eth1/30/1",
-        "description": "",
-        "queues_DEPRECATED": [
-
-        ],
-        "pause": {
-          "tx": false,
-          "rx": false
-        },
-        "sFlowIngressRate": 0,
-        "sFlowEgressRate": 0,
-        "loopbackMode": 0,
-        "expectedLLDPValues": {
-          "2": "eth1/29/1"
-        },
-        "lookupClasses": [
-
-        ],
-        "profileID": 39,
-        "portType": 0,
-        "expectedNeighborReachability": [
-
+          
         ],
         "drainState": 0,
         "scope": 0,
@@ -3048,7 +1356,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3057,7 +1365,7 @@
         "recordStats": true,
         "routable": false,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3066,7 +1374,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3075,7 +1383,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3084,7 +1392,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3093,7 +1401,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3102,7 +1410,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3111,7 +1419,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3120,7 +1428,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3129,7 +1437,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3138,7 +1446,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3147,7 +1455,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3156,7 +1464,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3165,7 +1473,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3174,7 +1482,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3183,7 +1491,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3192,7 +1500,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3201,7 +1509,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3210,7 +1518,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3219,7 +1527,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3228,7 +1536,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3237,7 +1545,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3246,313 +1554,16 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
-        "name": "vlan2048",
-        "id": 2048,
+        "name": "vlan2047",
+        "id": 2047,
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2052",
-        "id": 2052,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2056",
-        "id": 2056,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2060",
-        "id": 2060,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2064",
-        "id": 2064,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2066",
-        "id": 2066,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2068",
-        "id": 2068,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2070",
-        "id": 2070,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2072",
-        "id": 2072,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2074",
-        "id": 2074,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2076",
-        "id": 2076,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2078",
-        "id": 2078,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2080",
-        "id": 2080,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2081",
-        "id": 2081,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2082",
-        "id": 2082,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2083",
-        "id": 2083,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2084",
-        "id": 2084,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2085",
-        "id": 2085,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2086",
-        "id": 2086,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2087",
-        "id": 2087,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2088",
-        "id": 2088,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2096",
-        "id": 2096,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2097",
-        "id": 2097,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2098",
-        "id": 2098,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2099",
-        "id": 2099,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2100",
-        "id": 2100,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2101",
-        "id": 2101,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2102",
-        "id": 2102,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2103",
-        "id": 2103,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2104",
-        "id": 2104,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2112",
-        "id": 2112,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2116",
-        "id": 2116,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2120",
-        "id": 2120,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan2124",
-        "id": 2124,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3561,7 +1572,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3570,16 +1581,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan4002",
-        "id": 4002,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3588,16 +1590,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan4004",
-        "id": 4004,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3606,7 +1599,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3615,7 +1608,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3624,7 +1617,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3633,7 +1626,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3642,7 +1635,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3651,7 +1644,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3660,7 +1653,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3669,7 +1662,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3678,7 +1671,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3687,7 +1680,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3696,7 +1689,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
+          
         ]
       },
       {
@@ -3705,115 +1698,7 @@
         "recordStats": true,
         "routable": true,
         "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan4017",
-        "id": 4017,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan4018",
-        "id": 4018,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan4019",
-        "id": 4019,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan4020",
-        "id": 4020,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan4021",
-        "id": 4021,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan4022",
-        "id": 4022,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan4023",
-        "id": 4023,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan4024",
-        "id": 4024,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan4025",
-        "id": 4025,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan4027",
-        "id": 4027,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan4029",
-        "id": 4029,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
-        ]
-      },
-      {
-        "name": "vlan4031",
-        "id": 4031,
-        "recordStats": true,
-        "routable": true,
-        "ipAddresses": [
-
+          
         ]
       }
     ],
@@ -4581,21 +2466,21 @@
     "arpAgerInterval": 5,
     "proactiveArp": false,
     "staticRoutesWithNhops": [
-
+      
     ],
     "staticRoutesToNull": [
-
+      
     ],
     "staticRoutesToCPU": [
-
+      
     ],
     "acls": [
-
+      
     ],
     "maxNeighborProbes": 300,
     "staleEntryInterval": 10,
     "aggregatePorts": [
-
+      
     ],
     "clientIdToAdminDistance": {
       "0": 20,
@@ -4608,7 +2493,7 @@
       "800": 2
     },
     "sFlowCollectors": [
-
+      
     ],
     "cpuQueues": [
       {
@@ -4795,10 +2680,10 @@
             2
           ],
           "mplsFields": [
-
+            
           ],
           "udfGroups": [
-
+            
           ]
         },
         "algorithm": 1
@@ -4815,13 +2700,13 @@
             2
           ],
           "transportFields": [
-
+            
           ],
           "mplsFields": [
-
+            
           ],
           "udfGroups": [
-
+            
           ]
         },
         "algorithm": 1
@@ -4862,7 +2747,7 @@
       ]
     },
     "mirrors": [
-
+      
     ],
     "trafficCounters": [
       {
@@ -4902,25 +2787,25 @@
       }
     ],
     "qosPolicies": [
-
+      
     ],
     "defaultPortQueues": [
-
+      
     ],
     "staticMplsRoutesWithNhops": [
-
+      
     ],
     "staticMplsRoutesToNull": [
-
+      
     ],
     "staticMplsRoutesToCPU": [
-
+      
     ],
     "staticIp2MplsRoutes": [
-
+      
     ],
     "portQueueConfigs": {
-
+      
     },
     "switchSettings": {
       "l2LearningMode": 0,
@@ -4929,17 +2814,17 @@
       "l2AgeTimerSeconds": 300,
       "maxRouteCounterIDs_DEPRECATED": 0,
       "blockNeighbors": [
-
+        
       ],
       "macAddrsToBlock": [
-
+        
       ],
       "switchType": 0,
       "exactMatchTableConfigs": [
-
+        
       ],
       "switchIdToSwitchType_DEPRECATED": {
-
+        
       },
       "switchDrainState": 0,
       "switchIdToSwitchInfo": {
@@ -4952,15 +2837,15 @@
               "maximum": 2047
             },
             "firmwareNameToFirmwareInfo": {
-
+              
             }
         }
       },
       "vendorMacOuis": [
-
+        
       ],
       "metaMacOuis": [
-
+        
       ]
     },
     "sdkVersion": {
@@ -4968,10 +2853,10 @@
       "saiSdk": "sai"
     },
     "dsfNodes": {
-
+      
     },
     "defaultVoqConfig": [
-
+      
     ],
     "aclTableGroups": [
       {
@@ -5072,13 +2957,13 @@
               }
             ],
             "actionTypes": [
-
+              
             ],
             "qualifiers": [
-
+              
             ],
             "udfGroups": [
-
+              
             ]
           }
         ],
@@ -5086,7 +2971,7 @@
       }
     ],
     "mirrorOnDropReports": [
-
+      
     ]
   },
   "platform": {
@@ -5099,6 +2984,6 @@
     }
   },
   "thriftApiToRateLimitInQps": {
-
+    
   }
 }

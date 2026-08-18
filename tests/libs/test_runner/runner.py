@@ -1413,7 +1413,6 @@ class LinkTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
         name: str,
         vlan_id: int,
         template: _PortTemplate,
-        ip_addresses: list | None = None,
     ) -> dict:
         info = port_map.get(name)
         if info is None:
@@ -1431,6 +1430,7 @@ class LinkTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
                 "profileID": info.profile_id,
                 "ingressVlan": vlan_id,
                 "portType": 0,
+                "expectedLLDPValues": {},
             }
         )
         vlan = copy.deepcopy(template.vlan)
@@ -1438,7 +1438,18 @@ class LinkTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
         vlan_port = copy.deepcopy(template.vlan_port)
         vlan_port.update({"vlanID": vlan_id, "logicalPort": info.logical_id})
         intf = copy.deepcopy(template.interface)
-        intf.update({"intfID": vlan_id, "vlanID": vlan_id, "ipAddresses": ip_addresses or []})
+        # Synthesized, not inherited from the base config: the fboss ECMP helper
+        # skips IP-less interfaces, silently dropping the port from L3 tests.
+        intf.update(
+            {
+                "intfID": vlan_id,
+                "vlanID": vlan_id,
+                "ipAddresses": [
+                    f"2600:0:0:{vlan_id:x}::/64",
+                    f"100.{64 + (vlan_id >> 8)}.{vlan_id & 0xFF}.0/24",
+                ],
+            }
+        )
         sw["ports"].append(port)
         sw["vlans"].append(vlan)
         sw["vlanPorts"].append(vlan_port)
@@ -1455,8 +1466,6 @@ class LinkTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
         if not pairs:
             raise ValueError("refusing to generate link test config: no cabling pairs")
         sw = base_json["sw"]
-        vlan_of = {p["name"]: p["ingressVlan"] for p in sw["ports"]}
-        ips_of = {i.get("vlanID"): i.get("ipAddresses", []) for i in sw["interfaces"]}
         template_vlan_id = sw["ports"][0]["ingressVlan"]
         template = _PortTemplate(
             port=sw["ports"][0],
@@ -1464,28 +1473,45 @@ class LinkTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
             vlan_port=next(p for p in sw["vlanPorts"] if p["vlanID"] == template_vlan_id),
             interface=next(i for i in sw["interfaces"] if i.get("vlanID") == template_vlan_id),
         )
-        # Strip all front-panel ports; uncabled ones left enabled would link up
-        # (e.g. toward a fanout) and their inDiscards fail warmbootIsHitLess.
-        # Non-front-panel ports (mgmt, and fabric/recycle on VOQ platforms)
-        # survive.
-        removed_names = {p["name"] for p in sw["ports"] if p["portType"] == 0}
-        removed_vlans = {vlan_of[n] for n in removed_names if n in vlan_of}
-        cabled_vlans = {vlan_of[n] for n in pairs if n in vlan_of}
-        sw["ports"] = [p for p in sw["ports"] if p["name"] not in removed_names]
-        sw["vlans"] = [v for v in sw["vlans"] if v["id"] not in cabled_vlans]
-        sw["vlanPorts"] = [vp for vp in sw["vlanPorts"] if vp["vlanID"] not in removed_vlans]
-        sw["interfaces"] = [i for i in sw["interfaces"] if i.get("vlanID") not in cabled_vlans]
+        # Re-synthesize all front-panel ports from the platform mapping and
+        # netbox cabling; the base config contributes only non-port scaffolding
+        # and non-front-panel ports (mgmt, fabric/recycle).
+        sw["ports"] = [p for p in sw["ports"] if p["portType"] != 0]
+        kept_vlans = {p["ingressVlan"] for p in sw["ports"]} | {sw.get("defaultVlan")}
+        sw["vlans"] = [v for v in sw["vlans"] if v["id"] in kept_vlans]
+        sw["vlanPorts"] = [vp for vp in sw["vlanPorts"] if vp["vlanID"] in kept_vlans]
+        sw["interfaces"] = [
+            i for i in sw["interfaces"] if "vlanID" not in i or i["vlanID"] in kept_vlans
+        ]
         for port in sw["ports"]:
             port["expectedLLDPValues"] = {}
         used_vlans = {v["id"] for v in sw["vlans"]}
         # Allocate from the "type-1" interface band (2000-2251).
         free_vlans = (v for v in range(2000, 2252) if v not in used_vlans)
-        for name, peer in pairs.items():
-            port = cls._synthesize_port(
-                base_json, port_map, name, next(free_vlans), template,
-                ip_addresses=ips_of.get(vlan_of.get(name)),
-            )
-            port["expectedLLDPValues"] = {cls._LLDP_PORT_TAG: peer}
+        try:
+            for name, peer in pairs.items():
+                port = cls._synthesize_port(base_json, port_map, name, next(free_vlans), template)
+                port["expectedLLDPValues"] = {cls._LLDP_PORT_TAG: peer}
+            # The SDK exposes SAI port objects for every cage's default port
+            # regardless of config, and warmboot aborts on port objects the
+            # config doesn't claim. Cover every cage without a cabled pair
+            # with its controlling port, disabled so it never links up.
+            cabled_cages = {name.rsplit("/", 1)[0] for name in pairs}
+            kept_names = {p["name"] for p in sw["ports"]}
+            for name in sorted(port_map):
+                if (
+                    not name.startswith("eth")
+                    or not name.endswith("/1")
+                    or name.rsplit("/", 1)[0] in cabled_cages
+                    or name in kept_names
+                ):
+                    continue
+                port = cls._synthesize_port(base_json, port_map, name, next(free_vlans), template)
+                port["state"] = 1
+        except StopIteration:
+            raise ValueError(
+                "ran out of vlans in the 2000-2251 band while synthesizing ports"
+            ) from None
         return base_json
 
     def _stage_qsfp_config(self):
