@@ -1,6 +1,7 @@
 {
   "packages": [
      "chrony",
-     "podman-docker"
+     "podman-docker",
+     "tpm2-tools"
   ]
 }
