@@ -11,7 +11,6 @@
 #include "fboss/cli/fboss2/utils/InterfaceList.h"
 #include <folly/Conv.h>
 #include <folly/String.h>
-#include <optional>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -21,19 +20,6 @@
 #include "fboss/cli/fboss2/utils/PortMap.h"
 
 namespace facebook::fboss::utils {
-
-namespace {
-
-// Parse a purely-numeric name as an ID (port logical ID or interface ID).
-std::optional<int32_t> parseId(const std::string& name) {
-  auto result = folly::tryTo<int32_t>(name);
-  if (result.hasValue() && *result >= 0) {
-    return *result;
-  }
-  return std::nullopt;
-}
-
-} // namespace
 
 InterfaceList::InterfaceList(std::vector<std::string> names, bool allowMissing)
     : names_(std::move(names)) {
@@ -46,24 +32,12 @@ InterfaceList::InterfaceList(std::vector<std::string> names, bool allowMissing)
   for (const auto& name : names_) {
     Intf intf(name);
 
-    // First try to look up as a port name.  A purely-numeric name may also
-    // be a port logical ID; name lookups take precedence over ID lookups.
-    std::string portName = name;
-    if (!portMap.hasPort(portName)) {
-      auto id = parseId(name);
-      if (id) {
-        auto resolvedPortName = portMap.getPortNameForLogicalId(PortID(*id));
-        if (resolvedPortName) {
-          portName = *resolvedPortName;
-        }
-      }
-    }
-
-    cfg::Port* port = portMap.getPort(portName);
+    // First try to look up as a port name
+    cfg::Port* port = portMap.getPort(name);
     if (port) {
       intf.setPort(port);
       // Also try to get the associated interface
-      auto interfaceId = portMap.getInterfaceIdForPort(portName);
+      auto interfaceId = portMap.getInterfaceIdForPort(name);
       if (interfaceId) {
         cfg::Interface* interface = portMap.getInterface(*interfaceId);
         if (interface) {
@@ -75,8 +49,9 @@ InterfaceList::InterfaceList(std::vector<std::string> names, bool allowMissing)
       // interface ID.
       cfg::Interface* interface = portMap.getInterfaceByName(name);
       if (!interface) {
-        auto id = parseId(name);
-        if (id) {
+        // A purely-numeric name may be an interface ID.
+        auto id = folly::tryTo<int32_t>(name);
+        if (id.hasValue() && *id >= 0) {
           interface = portMap.getInterface(InterfaceID(*id));
         }
       }
