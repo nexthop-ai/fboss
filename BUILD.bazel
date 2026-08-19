@@ -21,6 +21,26 @@ filegroup(
     ]
 )
 
+# C++ sources whose TEST/TEST_F/... names the runner filters in tests/ select
+# over. Must stay in sync with SUITES in tests/check_test_filter_overlap.py;
+# that script fails if a configured suite scrapes zero test names.
+filegroup(
+    name = "hw_test_gtest_srcs",
+    visibility = ["//fboss/tests:__pkg__"],
+    srcs = glob([
+        "fboss/agent/test/agent_hw_tests/**/*.cpp",
+        "fboss/agent/test/agent_hw_tests/**/*.h",
+        "fboss/agent/test/link_tests/**/*.cpp",
+        "fboss/agent/test/link_tests/**/*.h",
+        "fboss/led_service/hw_test/**/*.cpp",
+        "fboss/led_service/hw_test/**/*.h",
+        "fboss/platform/**/*hw_test/**/*.cpp",
+        "fboss/platform/**/*hw_test/**/*.h",
+        "fboss/qsfp_service/test/hw_test/**/*.cpp",
+        "fboss/qsfp_service/test/hw_test/**/*.h",
+    ]),
+)
+
 # We explicitly place the intermediate build products into the
 # source tree to help incremental rebuild speed. This is both to make
 # incremental rebuild calculations faster, but also to avoid

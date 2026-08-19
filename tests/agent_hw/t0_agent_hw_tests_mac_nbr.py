@@ -3,6 +3,8 @@ test_context = {
         "*MacLearning*",
         "*MacSwLearning*",
         "*Neighbor*",
+        # Exclusion Criteria
+        "-*AgentCoppTest*",
     ],
 }
 

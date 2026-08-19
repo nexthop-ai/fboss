@@ -1,0 +1,16 @@
+load("@rules_python//python:defs.bzl", "py_test")
+
+# Runner filter lists live in this package; the gtest names they select over
+# come from //fboss:hw_test_gtest_srcs. Both are declared so bazel re-runs the
+# check when either side changes -- the script must not reach outside runfiles,
+# hence the explicit --repo-root.
+py_test(
+    name = "filter_overlap_test",
+    srcs = ["check_test_filter_overlap.py"],
+    main = "check_test_filter_overlap.py",
+    args = ["--repo-root=fboss"],
+    data = glob(
+        ["**/*.py"],
+        exclude = ["check_test_filter_overlap.py"],
+    ) + ["//fboss:hw_test_gtest_srcs"],
+)
