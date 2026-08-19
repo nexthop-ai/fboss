@@ -33,3 +33,24 @@ config_setting(
     flag_values = {":sai_impl": "fake"},
     visibility = ["//visibility:public"],
 )
+
+# Sources for the distro-stack genrules in the repo-root BUILD.bazel: their
+# glob(["fboss/agent/**"]) stops at this package boundary, so this subtree
+# must be exported explicitly to be part of those actions' inputs.
+filegroup(
+    name = "stack_srcs",
+    srcs = glob(
+        ["**"],
+        exclude = [
+            "**/*.swp",
+            "**/*.swo",
+            "**/*~",
+            "**/__pycache__/**",
+            "**/*.pyc",
+            "**/*.md",
+            "**/*.rst",
+            "**/README*",
+        ],
+    ),
+    visibility = ["//visibility:public"],
+)

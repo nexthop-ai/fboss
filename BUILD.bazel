@@ -66,7 +66,10 @@ heavy_genrule(
               "common/**",
               "docs/**",
               "fboss/**",
-    ]),
+    ]) + [
+        # See fboss_forwarding_stack_srcs.
+        "//fboss/fboss/agent/hw/sai:stack_srcs",
+    ],
     outs = [
         "fboss-fake-sai.tar.zst",
         "api_test",
@@ -271,7 +274,11 @@ filegroup(
         "**/*.md",
         "**/*.rst",
         "**/README*",
-    ]),
+    ]) + [
+        # glob() stops at package boundaries; pull in the hw/sai subpackage
+        # explicitly (monorepo-absolute label; this file only loads there).
+        "//fboss/fboss/agent/hw/sai:stack_srcs",
+    ],
 )
 
 # Committed image_builder sources (scripts, kiwi configs, rootfs templates)
