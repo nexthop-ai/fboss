@@ -104,6 +104,7 @@ SAI_ATTRIBUTE_NAME(Fdb, Metadata)
 template <>
 struct IsSaiEntryStruct<SaiFdbTraits::FdbEntry> : public std::true_type {};
 
+<<<<<<< HEAD
 struct SaiFdbFlushTraits {
   struct Attributes {
     using EnumType = sai_fdb_flush_attr_t;
@@ -113,6 +114,14 @@ struct SaiFdbFlushTraits {
         SaiAttribute<EnumType, SAI_FDB_FLUSH_ATTR_ENTRY_TYPE, sai_int32_t>;
   };
 };
+||||||| parent of 49bd33b03e (Dynamic FDB entries should be skipped during warm boot if aged out in h/w)
+=======
+// Dynamic FDB entries age out in hardware on their own, so an entry FBOSS
+// tracks - in the store, or in a warm boot state written moments earlier - may
+// already be gone from HW.
+template <>
+struct SaiObjectMayBeMissingInHw<SaiFdbTraits> : public std::true_type {};
+>>>>>>> 49bd33b03e (Dynamic FDB entries should be skipped during warm boot if aged out in h/w)
 
 class FdbApi : public SaiApi<FdbApi> {
  public:
