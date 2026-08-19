@@ -95,6 +95,7 @@ FORWARDING_TEST_BINARIES = [
     "sai_replayer-sai_impl",
     "sai_test-sai_impl",
     "sai_all_benchmarks-sai_impl",
+    "sai_multi_switch_all_benchmarks-sai_impl",
 ]
 
 FORWARDING_TEST_EXTRA = {
@@ -112,8 +113,9 @@ FORWARDING_TEST_EXTRA = {
     OSS_DIR / "qsfp_test_configs": "share/qsfp_test_configs",
     OSS_DIR / "qsfp_unsupported_tests": "share/qsfp_unsupported_tests",
     OSS_DIR / "sai_hw_unsupported_tests": "share/sai_hw_unsupported_tests",
-    # sai_all_benchmarks-sai_impl ships in this tar (FORWARDING_TEST_BINARIES);
-    # it needs sai_bench.materialized_JSON to prune known-bad/unsupported
+    # The sai_all_benchmarks-sai_impl / sai_multi_switch_all_benchmarks-sai_impl
+    # binaries ship in this tar (FORWARDING_TEST_BINARIES);
+    # they need sai_bench.materialized_JSON to prune known-bad/unsupported
     # benchmarks. Without it run_test.py runs unsupported cases and they crash.
     # Likewise, qsfp_hw_test_benchmark needs qsfp_bench.materialized_JSON.
     OSS_DIR / "hw_benchmark_tests": "share/hw_benchmark_tests",

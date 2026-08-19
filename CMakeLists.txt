@@ -1557,6 +1557,7 @@ if (SAI_IMPL OR BUILD_SAI_FAKE)
     if(BENCHMARK_INSTALL)
       add_dependencies(fboss_forwarding_stack
         sai_all_benchmarks-sai_impl
+        sai_multi_switch_all_benchmarks-sai_impl
         qsfp_hw_test_benchmark
       )
     endif()
