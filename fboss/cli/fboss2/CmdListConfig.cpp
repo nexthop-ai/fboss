@@ -24,6 +24,8 @@
 #include "fboss/cli/fboss2/commands/config/interface/ipv6/CmdConfigInterfaceIpv6.h"
 #include "fboss/cli/fboss2/commands/config/interface/ipv6/ndp/CmdConfigInterfaceIpv6Ndp.h"
 #include "fboss/cli/fboss2/commands/config/interface/pfc_config/CmdConfigInterfacePfcConfig.h"
+#include "fboss/cli/fboss2/commands/config/interface/sflow/CmdConfigInterfaceSflow.h"
+#include "fboss/cli/fboss2/commands/config/interface/sflow/sample_dest/CmdConfigInterfaceSflowSampleDest.h"
 #include "fboss/cli/fboss2/commands/config/interface/switchport/CmdConfigInterfaceSwitchport.h"
 #include "fboss/cli/fboss2/commands/config/interface/switchport/access/CmdConfigInterfaceSwitchportAccess.h"
 #include "fboss/cli/fboss2/commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.h"
@@ -108,6 +110,8 @@
 #include "fboss/cli/fboss2/commands/delete/interface/ipv6/CmdDeleteInterfaceIpv6.h"
 #include "fboss/cli/fboss2/commands/delete/interface/ipv6/ndp/CmdDeleteInterfaceIpv6Ndp.h"
 #include "fboss/cli/fboss2/commands/delete/interface/queuing_policy/CmdDeleteInterfaceQueuingPolicy.h"
+#include "fboss/cli/fboss2/commands/delete/interface/sflow/CmdDeleteInterfaceSflow.h"
+#include "fboss/cli/fboss2/commands/delete/interface/sflow/sample_dest/CmdDeleteInterfaceSflowSampleDest.h"
 #include "fboss/cli/fboss2/commands/delete/load_balancing/CmdDeleteLoadBalancing.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/CmdDeleteProtocol.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/bgp/CmdDeleteProtocolBgp.h"
@@ -256,6 +260,18 @@ const CommandTree& kConfigCommandTree() {
                    "Configure IPv6 Neighbor Discovery (NDP/RA) settings",
                    commandHandler<CmdConfigInterfaceIpv6Ndp>,
                    argRegistrar<CmdConfigInterfaceIpv6NdpTraits>,
+               }},
+           },
+           {
+               "sflow",
+               "Configure sFlow settings",
+               commandHandler<CmdConfigInterfaceSflow>,
+               argTypeHandler<CmdConfigInterfaceSflowTraits>,
+               {{
+                   "sample-dest",
+                   "Set the sFlow sample destination: <cpu|mirror>",
+                   commandHandler<CmdConfigInterfaceSflowSampleDest>,
+                   argRegistrar<CmdConfigInterfaceSflowSampleDestTraits>,
                }},
            },
            {
@@ -797,6 +813,18 @@ const CommandTree& kConfigCommandTree() {
                "Clear the interface's queuing policy (falls back to the default port queue config)",
                commandHandler<CmdDeleteInterfaceQueuingPolicy>,
                argTypeHandler<CmdDeleteInterfaceQueuingPolicyTraits>,
+           },
+           {
+               "sflow",
+               "Delete (reset to default) sFlow settings for interface",
+               commandHandler<CmdDeleteInterfaceSflow>,
+               argTypeHandler<CmdDeleteInterfaceSflowTraits>,
+               {{
+                   "sample-dest",
+                   "Clear the sFlow sample destination",
+                   commandHandler<CmdDeleteInterfaceSflowSampleDest>,
+                   argTypeHandler<CmdDeleteInterfaceSflowSampleDestTraits>,
+               }},
            }},
       },
 
