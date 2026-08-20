@@ -42,6 +42,8 @@ cpp_unittest(
         "CmdConfigVlanStaticMacTest.cpp",
         "CmdConfigVlanTest.cpp",
         "CmdDeleteAclRuleTest.cpp",
+        "CmdDeleteAdminDistanceTest.cpp",
+        "CmdDeleteIcmpV4UnavailableSrcAddrTest.cpp",
         "CmdDeleteArpTest.cpp",
         "CmdDeleteBgpNeighborTest.cpp",
         "CmdDeleteConfigInterfaceTest.cpp",
