@@ -101,18 +101,6 @@ class ConfigInterfaceProfileTest : public Fboss2IntegrationTest {
   }
 
   /**
-   * Golden Eagle (NH-4010-F, TH5-320): profile commits that create or remove
-   * ports crash fboss_sw_agent in the TH5 flexport recreate path (SAI
-   * create_port failure -> abort; see PR #707 root cause and the PR #917 note
-   * about the agent dying on the 800G->100G->800G restore). Profile changes
-   * that keep the port set intact are fine. Returns true if the caller should
-   * skip.
-   */
-  bool skipPortRecreateOnNh4010f() const {
-    return agentProductName().rfind("NH-4010-F", 0) == 0;
-  }
-
-  /**
    * Set a profile on an interface and commit the config.
    * Only commits if the CLI set succeeds (mirrors setInterfaceSpeed).
    */
@@ -380,10 +368,6 @@ TEST_F(ConfigInterfaceProfileTest, CreateStillSubsumedPortRejected) {
 // subport), then the freed subport is created -- both at the narrow profile.
 // This exercises the atomic existing-then-create ordering end to end.
 TEST_F(ConfigInterfaceProfileTest, CreateFreedPortSucceeds) {
-  if (skipPortRecreateOnNh4010f()) {
-    GTEST_SKIP() << "Port create/remove profile commits crash the agent on "
-                    "NH-4010-F (TH5 flexport recreate bug)";
-  }
   auto cand = findFreeableCandidate();
   if (!cand) {
     GTEST_SKIP()
@@ -430,10 +414,6 @@ TEST_F(ConfigInterfaceProfileTest, CreateFreedPortSucceeds) {
 // full L3 interface: the agent reports the new port at the profile and its
 // interface MTU reflects the requested value.
 TEST_F(ConfigInterfaceProfileTest, CreateFreedPortWithMtuInOneCommand) {
-  if (skipPortRecreateOnNh4010f()) {
-    GTEST_SKIP() << "Port create/remove profile commits crash the agent on "
-                    "NH-4010-F (TH5 flexport recreate bug)";
-  }
   auto cand = findFreeableCandidate();
   if (!cand) {
     GTEST_SKIP()
