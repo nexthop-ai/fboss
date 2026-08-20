@@ -25,6 +25,10 @@ FBOSS_WARMBOOT_DIR = f"{FBOSS_AGENT_VOLATILE_STATE_DIR}/warm_boot"
 
 _HW_AGENT_SERVICE_OSS = "fboss_hw_agent_oss@"
 
+# Match the production units (fboss_hw_agent@.service and
+# fboss_sw_agent.service both set MemoryMax=8G).
+_AGENT_MEMORY_MAX = "8G"
+
 
 def agent_can_warm_boot_file_path(switch_index: int | None = None) -> str:
     if switch_index is None:
@@ -49,9 +53,7 @@ def cleanup_hw_agent_service(switch_indexes: list[int]) -> None:
 
 
 def _manage_hw_agent_service(
-    switch_indexes: list[int],
-    is_start: bool,
-    service_name: str = _HW_AGENT_SERVICE_OSS,
+    switch_indexes: list[int], is_start: bool, service_name: str = _HW_AGENT_SERVICE_OSS
 ) -> list[int]:
     return_codes = []
     op_ing = "Starting" if is_start else "Stopping"
@@ -184,6 +186,7 @@ def _setup_hw_agent_service(
                 description="FBOSS HW Agent Service",
                 exec_start_cmd=exec_start_cmd,
                 syslog_identifier=f"{hw_agent_service_name}{switch_index}",
+                memory_max=_AGENT_MEMORY_MAX,
             ),
         )
         service_utils.write_rsyslog_conf(service_full_name)
@@ -248,8 +251,7 @@ def cleanup_sw_agent_service(
 
 
 def _manage_sw_agent_service(
-    is_start: bool,
-    sw_agent_service_name: str = SW_AGENT_SERVICE_PROD,
+    is_start: bool, sw_agent_service_name: str = SW_AGENT_SERVICE_PROD
 ) -> int:
     op = "start" if is_start else "stop"
     op_ing = "Starting" if is_start else "Stopping"
@@ -266,9 +268,7 @@ def _manage_sw_agent_service(
     return ret
 
 
-def cold_boot_sw_agent(
-    sw_agent_service_name: str = SW_AGENT_SERVICE_PROD,
-) -> int:
+def cold_boot_sw_agent(sw_agent_service_name: str = SW_AGENT_SERVICE_PROD) -> int:
     ret = _manage_sw_agent_service(False, sw_agent_service_name)
     if ret != 0:
         print("Error while stopping SW Agent for cold boot")
@@ -287,9 +287,7 @@ def cold_boot_sw_agent(
     return ret
 
 
-def warm_boot_sw_agent(
-    sw_agent_service_name: str = SW_AGENT_SERVICE_PROD,
-) -> int:
+def warm_boot_sw_agent(sw_agent_service_name: str = SW_AGENT_SERVICE_PROD) -> int:
     ret = _manage_sw_agent_service(False, sw_agent_service_name)
     if ret != 0:
         print("Error while stopping SW Agent for warm boot")
@@ -338,6 +336,7 @@ def _setup_sw_agent_service(
             description="FBOSS SW Agent Service",
             exec_start_cmd=exec_start_cmd,
             syslog_identifier=sw_agent_service_name,
+            memory_max=_AGENT_MEMORY_MAX,
         ),
     )
     subprocess.run(f"systemctl enable {unit_file_path}", check=False, shell=True)
