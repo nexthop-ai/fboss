@@ -9,6 +9,7 @@
  */
 
 #include <folly/IPAddress.h>
+#include <unordered_set>
 #include "fboss/agent/packet/PTPHeader.h"
 #include "fboss/agent/packet/PktFactory.h"
 #include "fboss/agent/test/AgentHwTest.h"
@@ -241,6 +242,15 @@ TEST_F(AgentHwPtpTcProvisionTests, VerifyPtpTcDelayRequest) {
   std::vector<folly::IPAddressV6> dstIps; // binding to egress port
 
   auto ports = getAgentEnsemble()->masterLogicalInterfacePortIds();
+  std::unordered_set<PortID> enabledPorts;
+  for (const auto& port : *getAgentEnsemble()->getCurrentConfig().ports()) {
+    if (*port.state() == cfg::PortState::ENABLED) {
+      enabledPorts.insert(PortID(*port.logicalID()));
+    }
+  }
+  std::erase_if(ports, [&enabledPorts](const PortID& port) {
+    return !enabledPorts.contains(port);
+  });
   if (ports.size() < 2) {
     XLOG(WARNING) << "Only " << ports.size()
                   << " ports enabled, need at least 2 for PTP TC test,"
