@@ -14,8 +14,10 @@
 
 #include <folly/logging/xlog.h>
 
+#ifndef IS_OSS
 #include "common/config/ConfigeratorConfig.h"
 #include "configerator/structs/fboss/fboss_platform/gen-cpp2/kernel_versions_types.h"
+#endif
 
 namespace facebook::fboss::platform::platform_checks {
 
@@ -47,6 +49,7 @@ CheckResult KernelVersionCheck::run() {
 
 std::optional<std::vector<std::string>>
 KernelVersionCheck::getSupportedKernelVersions() {
+#ifndef IS_OSS
   config::ConfigeratorConfig<::fboss::platform::KernelVersionsConfig> cfg(
       "fboss/fboss_platform/kernel_versions");
   auto cfgPtr = cfg.get();
@@ -54,6 +57,11 @@ KernelVersionCheck::getSupportedKernelVersions() {
     return std::nullopt;
   }
   return *cfgPtr->kernel_versions();
+#else
+  // Distro supports 6.4.3 and 6.11.1
+  return std::optional<std::vector<std::string>>(
+      {"6.4.3-1.fboss.el9.x86_64", "6.11.1-1.fboss.el9.x86_64"});
+#endif
 }
 
 } // namespace facebook::fboss::platform::platform_checks

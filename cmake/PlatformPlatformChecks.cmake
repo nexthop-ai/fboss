@@ -25,7 +25,7 @@ add_library(platform_checks
   fboss/platform/platform_checks/checks/MacAddressCheck.cpp
   fboss/platform/platform_checks/checks/PciDeviceCheck.cpp
   fboss/platform/platform_checks/checks/PowerResetCheck.cpp
-  # Not including KernelVersionCheck since it relies on internal tools
+  fboss/platform/platform_checks/checks/KernelVersionCheck.cpp
   fboss/platform/platform_checks/checks/i801SmbusTimeoutCheck.cpp
 )
 

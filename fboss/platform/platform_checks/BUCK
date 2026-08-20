@@ -36,7 +36,7 @@ cpp_library(
 cpp_library(
     name = "platform_checks",
     srcs = [
-        "checks/KernelVersionCheck.cpp",  # bazelify: exclude
+        "checks/KernelVersionCheck.cpp",
         "checks/MacAddressCheck.cpp",
         "checks/PciDeviceCheck.cpp",
         "checks/PowerResetCheck.cpp",
