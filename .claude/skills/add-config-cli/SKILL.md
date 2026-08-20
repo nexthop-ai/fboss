@@ -354,28 +354,39 @@ from those constants rather than raw strings.
 ### New files
 
 1. `fboss/cli/fboss2/commands/config/<area>/CmdConfig<Area>.h`
-   - Declare only the `class <Area>ConfigArgs`, the `CmdConfig<Area>Traits`
-     struct, and the `CmdConfig<Area>` handler. Do **not** put the valid-attrs
-     set or the attribute-name constants in the header — keep the header
-     free of implementation detail so changes to the valid-attrs list
-     don't force recompiles of every TU that includes the header.
+   - Declare the `class <Area>ConfigArgs`, the `CmdConfig<Area>Traits`
+     struct, and the `CmdConfig<Area>` handler. Keep implementation detail
+     out of the header; the exception is the attribute-name constants when
+     they must be shared with another command tree (e.g. `config arp` and
+     `delete arp` share a `namespace arp_attrs` of
+     `constexpr std::string_view` names plus a `kValidAttrs` array in the
+     header — see `CmdConfigArp.h`). If nothing else needs them, keep them
+     in the `.cpp`.
    - `class <Area>ConfigArgs : public utils::BaseObjectArgType<std::string>`
      with a `std::vector<std::string>` ctor that validates exactly 2 args,
      first ∈ valid set, second parses to a non-negative `int32_t` via
      `folly::to<int32_t>` (catch `folly::ConversionError`).
    - `struct CmdConfig<Area>Traits : public WriteCommandTraits` with
-     `ObjectArgTypeId = OBJECT_ARG_TYPE_<AREA>_CONFIG`,
-     `ObjectArgType = <Area>ConfigArgs`, `RetType = std::string`.
+     `ObjectArgType = <Area>ConfigArgs`, `RetType = std::string`, and a
+     `static void addCliArg(CLI::App& cmd, std::vector<std::string>& args)`
+     method that registers the positional via
+     `cmd.add_option("<area>_attr_value", args, "<help text>")`. This is
+     where the CLI11 registration lives now — there is no central enum or
+     switch to touch (config commands migrated off the old
+     `ObjectArgTypeId` mechanism in commit `5b534a2aad`). Chain
+     `->required()->expected(N)` when the arg count is fixed (see the
+     CLI11 pitfall in §8).
    - `class CmdConfig<Area> : public CmdHandler<CmdConfig<Area>, CmdConfig<Area>Traits>`
      declaring `queryClient(HostInfo, ObjectArgType)` + `printOutput(RetType)`.
 
 2. `fboss/cli/fboss2/commands/config/<area>/CmdConfig<Area>.cpp`
    - `#include "fboss/cli/fboss2/CmdHandler.cpp"` — important, this is how the
      template gets instantiated
-   - In an anonymous namespace at the top: one
-     `constexpr std::string_view k<Area>Attr<Name>` per CLI attribute name,
-     followed by `const std::set<std::string_view> k<Area>ValidAttrs = {...};`
-     built from those constants.
+   - The attribute-name constants and valid-attrs set (unless they had to
+     live in the header for sharing, per above): one
+     `constexpr std::string_view k<Area>Attr<Name>` per CLI attribute name
+     in an anonymous namespace, followed by a valid-attrs container built
+     from those constants.
    - `<Area>ConfigArgs` constructor body (use the constants for error
      messages + membership checks).
    - `queryClient()` body: get `ConfigSession::getInstance()`, dispatch on
@@ -418,9 +429,7 @@ from those constants rather than raw strings.
 
 | File | Change |
 |---|---|
-| `fboss/cli/fboss2/utils/CmdUtilsCommon.h` | Append `OBJECT_ARG_TYPE_<AREA>_CONFIG` to `ObjectArgTypeId` enum. |
-| `fboss/cli/fboss2/CmdSubcommands.cpp` | Add `case OBJECT_ARG_TYPE_<AREA>_CONFIG:` → `subCmd->add_option(...)` just before the `UNINITIALIZE/NONE` cases. |
-| `fboss/cli/fboss2/CmdListConfig.cpp` | Add `#include` alphabetically; add `{"config", "<area>", "…", commandHandler<CmdConfig<Area>>, argTypeHandler<CmdConfig<Area>Traits>}` to `kConfigCommandTree()` alphabetically. |
+| `fboss/cli/fboss2/CmdListConfig.cpp` | Add `#include` alphabetically; add `{"config", "<area>", "…", commandHandler<CmdConfig<Area>>, argRegistrar<CmdConfig<Area>Traits>}` to `kConfigCommandTree()` alphabetically. `argRegistrar<T>` dispatches to the Traits' `addCliArg` — do not use the legacy `argTypeHandler<T>` (that's the old `ObjectArgTypeId` path, still used only by not-yet-migrated non-config commands). |
 | `cmake/CliFboss2.cmake` | Add the two new source files to `fboss2_config_lib` (alphabetically). |
 | `fboss/cli/fboss2/BUCK` | Mirror the cmake additions into `srcs` and `headers` of `fboss2-config-lib`. |
 | `cmake/CliFboss2TestConfig.cmake` | Add unit test `.cpp` (alphabetically). |
@@ -689,9 +698,11 @@ acli jira workitem comment create --key "NOS-XXXX[,NOS-YYYY]" --body "<explanati
 
 ## 8. Pitfalls observed
 
-- **Forgetting to register the arg-type case** in `CmdSubcommands.cpp` — the
-  command tree registers fine but argument parsing silently no-ops. Always
-  add both the enum entry and the switch case.
+- **Forgetting `addCliArg` on the Traits (or wiring `argTypeHandler`
+  instead of `argRegistrar` in `CmdListConfig.cpp`)** — the command tree
+  registers fine but argument parsing silently no-ops.
+  `BaseCommandTraits::addCliArg` is a no-op default, so a Traits that
+  omits it compiles cleanly and just never receives its positional.
 - **Parent "branch" node must have a handler for depth to increment**
   (NOS-6184..NOS-6188). If the parent of your leaf commands in
   `CmdListConfig.cpp` has no `commandHandler`, `addCommandBranch()` does
@@ -706,9 +717,10 @@ acli jira workitem comment create --key "NOS-XXXX[,NOS-YYYY]" --body "<explanati
   the tree (NOS-6188). `config copp reason arp queue 0` broke because
   CLI11's `_valid_subcommand` recurses up the ancestor chain and matches
   "arp" against `config arp`, stealing it from reason's positional
-  option. The fix in `CmdSubcommands.cpp` is `->required()->expected(N)`
-  on the `add_option(...)` call, which makes `_parse_subcommand()` route
-  the token to `_parse_positional()` instead (CLI11 checks
+  option. The fix is `->required()->expected(N)` on the
+  `add_option(...)` chain in your Traits' `addCliArg`, which makes
+  `_parse_subcommand()` route the token to `_parse_positional()` instead
+  (CLI11 checks
   `_count_remaining_positionals(required=true) > 0` before doing the
   subcommand match). Apply whenever a positional arg's value space
   overlaps with subcommand names — especially protocol names like `arp`,
