@@ -56,6 +56,21 @@ class Fboss2IntegrationTest : public ::testing::Test {
 
   ~Fboss2IntegrationTest() override = default;
 
+  /**
+   * Suite-level config containment: before any test in a suite runs, record
+   * the /etc/coop git state as a baseline; after the whole suite finishes,
+   * roll the config back to that baseline (and heal the agents if the suite
+   * left them dead). This stops one suite's leftover config — including a
+   * config the hardware cannot apply, which crash-loops the agents — from
+   * failing every subsequent, innocent suite.
+   *
+   * Per-test isolation is intentionally NOT provided here; suites that need
+   * it keep using snapshotConfig()/restoreConfig() in their own
+   * SetUp/TearDown.
+   */
+  static void SetUpTestSuite();
+  static void TearDownTestSuite();
+
  protected:
   void SetUp() override;
   void TearDown() override;
@@ -426,14 +441,6 @@ class Fboss2IntegrationTest : public ::testing::Test {
       std::chrono::seconds timeout = std::chrono::seconds(120)) const;
 
   /**
-   * Dump systemd unit status and the tail of the agent log to stderr.
-   * Called from waitForAgentReady() on timeout so CI output captures why the
-   * agent never became reachable (otherwise we only see "connection refused"
-   * polls and have nothing to triage from).
-   */
-  void dumpAgentDiagnostics() const;
-
-  /**
    * Ensure a VLAN + backing cfg::Interface exists in the staged config, then
    * return that interface's intfID for use as the IP-in-IP tunnel underlay.
    *
@@ -481,11 +488,5 @@ class Fboss2IntegrationTest : public ::testing::Test {
   }
 
   Interface parseInterfaceJson(const folly::dynamic& data) const;
-
-  /**
-   * Execute a CLI command by parsing args and running the command.
-   * Captures stdout/stderr and returns the result.
-   */
-  Result executeCliCommand(const std::vector<std::string>& args) const;
 };
 } // namespace facebook::fboss
