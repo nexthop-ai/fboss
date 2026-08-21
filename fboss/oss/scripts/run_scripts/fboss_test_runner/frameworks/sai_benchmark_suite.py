@@ -72,6 +72,11 @@ class SaiBenchmarkSuite(BenchmarkSuite):
             if getattr(args, "num_npus", 1) > 1:
                 run_cmd.append("--multi_npu_platform_mapping")
         else:
+            # Platform agent configs may set multi_switch=true in
+            # defaultCommandLineArgs. The mono binary must not inherit it: the
+            # ensemble's LinkStateToggler would then wait for link events over
+            # IPC from a hw_agent this run never starts.
+            run_cmd.append("--multi_switch=false")
             run_cmd.append("--flexports")
             if getattr(args, "platform_mapping_override_path", None) is not None:
                 run_cmd.extend(

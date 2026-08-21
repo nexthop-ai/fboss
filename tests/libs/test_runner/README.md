@@ -23,6 +23,7 @@ build dir:
 | `FBOSS_BUILD_ID` | `--test-build-id` (Nexis) | cache/marker namespace for the Nexis path. (The local path derives its namespace from a fingerprint of the runner's uploaded sources — see [Local namespace](#local-namespace).) |
 | `DUT`, `DUTUSERNAME`, `DUTPASSWORD`, `HWSKU`, `TESTFILE` | testbed inventory | SSH/SCP to the DUT + drive `run_test.py` |
 | `TESTFILTER` | `--test-filter` (nhtests-run) | gtest-style expression for `run_test.py`  |
+| `FBOSS_AGENT_RUN_MODE` | `--agent-run-mode` (nhtests-run) | `BenchmarkTestRunner` only: `mono` or `multi_switch`, forwarded to `run_test.py`. Unset means `multi_switch`. See [Benchmark agent run mode](#benchmark-agent-run-mode) |
 
 The orchestrator resolves *which* source to use — explicit `--test-build-id` →
 local CMake build → build_id stamped on the running DUT — and forwards **only**
@@ -69,7 +70,7 @@ the production image already on the DUT (`/opt/fboss/bin/`).
 | `PlatformTestRunner` | platform | the 7 platform `*_hw_test` binaries | no `share/`; `run_test.py` from image |
 | `BspTestRunner` | platform | `bin/bsp_tests` | — |
 | `SmokeTestRunner` | forwarding | `bin/python_tests/agent_smoke.py`, `bin/python_tests/junit.py` | runs the script directly — no `run_test.py`, no `share/` |
-| `BenchmarkTestRunner` | forwarding | `bin/sai_all_benchmarks-sai_impl` | `share/hw_bench_configs/` |
+| `BenchmarkTestRunner` | forwarding | `bin/sai_all_benchmarks-sai_impl`, `bin/sai_multi_switch_all_benchmarks-sai_impl` | `share/hw_bench_configs/`; only one binary ships per run — see [Benchmark agent run mode](#benchmark-agent-run-mode) |
 
 All forwarding runners get the full forwarding `share/` tree from `_STACK_SHARE`
 (so `hw_benchmark_tests/sai_bench.materialized_JSON` is always present — the
@@ -79,6 +80,38 @@ For the **local** path, `_local_source_path` maps each deployed entry to its
 source: compiled binaries come from `<build_dir>/build/fboss/`, while `share/`
 configs come from the repo checkout (`fboss/oss/...`) — the same split
 `package.py` uses.
+
+## Benchmark agent run mode
+
+Benchmarks come in two binaries: `sai_all_benchmarks-sai_impl` runs the agent
+in-process (**mono**), `sai_multi_switch_all_benchmarks-sai_impl` splits it into a
+sw_agent and a hw_agent talking over IPC (**multi_switch**). Which one runs is
+chosen on the DUT by `run_test.py`'s `--agent-run-mode`; `BenchmarkTestRunner`
+just forwards `FBOSS_AGENT_RUN_MODE` into that flag.
+
+**The default is `multi_switch`**, both here (when the env var is unset) and in
+`nhtests-run --agent-run-mode`. The two are kept deliberately identical so that
+running this runner directly behaves the same as running it through nhtest —
+`mono` is deprecated and only reachable by asking for it explicitly.
+
+The mode also changes **what gets deployed**. The multi-switch binary postdates
+the mono one in the forwarding tarball, and `_slice_members` treats a
+`REQUIRED_PATHS` entry resolving to nothing as fatal — so a mono run against a
+tarball built before it shipped would fail on a binary that run never needed.
+`BenchmarkTestRunner.__init__` therefore drops the multi-switch binary from
+`REQUIRED_PATHS` on the *instance* when the mode isn't `multi_switch`. It's
+shadowed per-instance rather than filtered on the class so the class-level
+manifest cross-check (below) still sees both binaries.
+
+Now that `multi_switch` is the default, that carve-out only applies to an
+explicit `--agent-run-mode mono`: a default run against a forwarding tarball
+built before the multi-switch binary existed will fail at deploy time. Pass
+`mono` to deploy from such a tarball.
+
+One consequence for the DUT marker: the two modes pack different slices, so they
+hash differently, and `.deployed/BenchmarkTestRunner.sha` holds one sha per
+*runner*, not per mode. Alternating modes against the same DUT therefore
+redeploys each time — correct, just not free (the binaries are ~1 GB).
 
 ## Cache layout — runner host
 

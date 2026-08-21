@@ -202,9 +202,9 @@ void LinkStateToggler::portStateChangeImpl(
 bool LinkStateToggler::waitForPortEventsOrSkipIfAlreadyInState(
     const std::set<PortID>& ports,
     bool up) {
+  auto desiredOperState =
+      up ? PortFields::OperState::UP : PortFields::OperState::DOWN;
   if (!FLAGS_multi_switch) {
-    auto desiredOperState =
-        up ? PortFields::OperState::UP : PortFields::OperState::DOWN;
     std::unique_lock<std::mutex> lock{linkEventMutex_};
 
     // Drop ports that are already in the desired OperState from the wait set.
@@ -248,8 +248,24 @@ bool LinkStateToggler::waitForPortEventsOrSkipIfAlreadyInState(
               ->getPorts()
               ->getNodeIf(portId)
               ->getOperState(),
-          (up ? PortFields::OperState::UP : PortFields::OperState::DOWN));
+          desiredOperState);
     });
+    // Bail on the first port that never transitions. Continuing spends another
+    // full retry window on every remaining port, so the run surfaces only as an
+    // unattributable harness timeout instead of naming the port that failed.
+    auto port = ensemble_->getProgrammedState()->getPorts()->getNodeIf(portId);
+    if (port->getOperState() != desiredOperState) {
+      throw FbossError(
+          "Port ",
+          portId,
+          " did not reach oper ",
+          (up ? "UP" : "DOWN"),
+          " within the retry window. loopbackMode=",
+          apache::thrift::util::enumNameSafe(port->getLoopbackMode()),
+          ", multi_switch=",
+          FLAGS_multi_switch,
+          ". Abandoning the remaining ports in this batch.");
+    }
   }
   return true;
 }

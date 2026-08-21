@@ -53,6 +53,14 @@ def test_build_cmd_mono(suite, sai_args):
     assert "--flexports" in cmd
     assert "--enable_sai_log" in cmd
     assert "--multi_switch" not in cmd
+    # Explicitly off, so a platform agent config that sets multi_switch=true
+    # cannot flip the mono binary into the multi-switch code paths.
+    assert "--multi_switch=false" in cmd
+
+
+def test_build_cmd_multi_switch_not_disabled(suite, sai_args):
+    sai_args.agent_run_mode = "multi_switch"
+    assert "--multi_switch=false" not in suite.build_cmd("/bin/b", sai_args)
 
 
 def test_build_cmd_multi_switch(suite, sai_args):
