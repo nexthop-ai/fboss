@@ -44,3 +44,34 @@ target_link_libraries(fboss_hw_agent-sai_impl
   cfboss_dataplane
   -Wl,--no-whole-archive
 )
+
+# PortMap parser/validator unit test (gtest).
+add_executable(cfboss_port_map_test
+  cfboss/dataplane/test/PortMapTest.cpp
+)
+
+target_link_libraries(cfboss_port_map_test
+  cfboss_dataplane
+  ${GTEST}
+  ${LIBGMOCK_LIBRARIES}
+)
+
+# Point the shipped-config parse test at the in-tree port_map.json.
+target_compile_definitions(cfboss_port_map_test PRIVATE
+  CFBOSS_PORT_MAP_JSON="${CMAKE_CURRENT_SOURCE_DIR}/fboss-image/image_builder/templates/centos-09.0/root_files_cfboss/etc/fboss/cfboss/port_map.json"
+)
+
+gtest_discover_tests(cfboss_port_map_test)
+
+# VethPacketBackend unit test (gtest) — runs with no privilege or real interfaces.
+add_executable(cfboss_veth_packet_backend_test
+  cfboss/dataplane/test/VethPacketBackendTest.cpp
+)
+
+target_link_libraries(cfboss_veth_packet_backend_test
+  cfboss_dataplane
+  ${GTEST}
+  ${LIBGMOCK_LIBRARIES}
+)
+
+gtest_discover_tests(cfboss_veth_packet_backend_test)
