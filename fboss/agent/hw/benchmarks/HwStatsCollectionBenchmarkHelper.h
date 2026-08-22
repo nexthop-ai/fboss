@@ -118,11 +118,16 @@ inline void runStatsCollectionBenchmark(bool alwaysCollectVoqStats = false) {
     // 100 iterations.
     iterations = 100;
   } else if (ensemble->getSw()->getSwitchInfoTable().haveL3Switches()) {
-    if (checkSameAndGetAsicForTesting(
-            ensemble->getSw()->getHwAsicTable()->getL3Asics())
-            ->getAsicVendor() == HwAsic::AsicVendor::ASIC_VENDOR_CHENAB) {
+    auto l3Asic = checkSameAndGetAsicForTesting(
+        ensemble->getSw()->getHwAsicTable()->getL3Asics());
+    if (l3Asic->getAsicVendor() == HwAsic::AsicVendor::ASIC_VENDOR_CHENAB) {
       // TODO(Chenab): 10'000 iterations take 30 minutes on Chenab. Debug this
       // slowness
+      iterations = 1000;
+    } else if (l3Asic->getAsicType() == cfg::AsicType::ASIC_TYPE_TOMAHAWK6) {
+      // TODO(TH6): updateStats() measures around 120ms per call on TH6, so
+      // 10'000 iterations overrun the test runner's timeout. Sample less until
+      // that per-call cost is understood.
       iterations = 1000;
     }
   }
