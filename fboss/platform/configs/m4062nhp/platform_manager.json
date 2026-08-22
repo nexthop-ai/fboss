@@ -7,16 +7,7 @@
     "SCM_SLOT": {
       "numOutgoingI2cBuses": 10,
       "idpromConfig": {
-        "busName": "CPU_BUS@3",
-        "address": "0x50",
-        "kernelDeviceName": "24c64",
-        "busNameSelector": {
-          "path": "/sys/devices/platform/nh_board_rev/board_revision",
-          "valueToBusName": {
-            "1": "CPU_BUS@3",
-            "0": "CPU_BUS@0"
-          }
-        }
+        "sysfsPath": "/run/nexthop_bsp/eeproms/SCM_IDPROM"
       },
       "pmUnitName": "SCM"
     },
@@ -454,9 +445,7 @@
       ]
     }
   },
-  "i2cAdaptersFromCpu": [
-    "CPU_BUS@3"
-  ],
+  "i2cAdaptersFromCpu": [],
   "symbolicLinkToDevicePath": {
     "/run/devmap/eeproms/CHASSIS_EEPROM": "/[CHASSIS_EEPROM]",
     "/run/devmap/eeproms/SCM_EEPROM": "/[IDPROM]",

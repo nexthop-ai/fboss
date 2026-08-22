@@ -112,7 +112,10 @@ bool ConfigValidator::isValidSlotTypeConfig(
     XLOG(ERR) << "SlotTypeConfig must have either IDPROM or PmUnit name";
     return false;
   }
-  if (slotTypeConfig.idpromConfig()) {
+  // With sysfsPath the BSP instantiates the IDPROM, so there is no address for
+  // platform_manager to use.
+  if (slotTypeConfig.idpromConfig() &&
+      !slotTypeConfig.idpromConfig()->sysfsPath()) {
     try {
       I2cAddr(*slotTypeConfig.idpromConfig()->address());
     } catch (std::invalid_argument& e) {
@@ -393,36 +396,24 @@ bool ConfigValidator::isValidI2cAdaptersFromCpu(
   return true;
 }
 
-bool ConfigValidator::isValidBusNameSelector(
-    const BusNameSelector& selector,
+bool ConfigValidator::isValidIdpromSysfsPath(
+    const IdpromConfig& idpromConfig,
     const std::string& slotName) {
-  if (!selector.path()->starts_with("/")) {
+  if (!idpromConfig.sysfsPath()->starts_with("/")) {
     XLOG(ERR) << fmt::format(
-        "busNameSelector path '{}' in SlotTypeConfig '{}' must be absolute",
-        *selector.path(),
+        "IDPROM sysfsPath '{}' in SlotTypeConfig '{}' must be absolute",
+        *idpromConfig.sysfsPath(),
         slotName);
     return false;
   }
-  if (selector.valueToBusName()->empty()) {
+  // sysfsPath already makes the IDPROM's location revision independent, so
+  // pairing it with a bus is a sign the config means two different things.
+  if (!idpromConfig.busName()->empty()) {
     XLOG(ERR) << fmt::format(
-        "busNameSelector in SlotTypeConfig '{}' has no valueToBusName entries",
-        slotName);
+        "IDPROM in SlotTypeConfig '{}' sets both sysfsPath and busName '{}'",
+        slotName,
+        *idpromConfig.busName());
     return false;
-  }
-  // Membership in i2cAdaptersFromCpu is deliberately not required: a selector
-  // exists precisely to name a bus the config does not list by default.
-  static const re2::RE2 kSupportedCpuBusNameRegex{"CPU_BUS@[0-3]"};
-  for (const auto& [value, busName] : *selector.valueToBusName()) {
-    if (!re2::RE2::FullMatch(busName, kSupportedCpuBusNameRegex) &&
-        !re2::RE2::FullMatch(busName, kIncomingBusRegex)) {
-      XLOG(ERR) << fmt::format(
-          "busNameSelector in SlotTypeConfig '{}' maps '{}' to '{}', which is "
-          "neither a CPU_BUS@N nor an INCOMING@N bus",
-          slotName,
-          value,
-          busName);
-      return false;
-    }
   }
   return true;
 }
@@ -1025,9 +1016,14 @@ bool ConfigValidator::isValid(const PlatformConfig& config) {
       return false;
     }
     // Validate IDPROM busName is directly connected (no MUX/FPGA in between)
-    if (slotTypeConfig.idpromConfig()) {
+    if (slotTypeConfig.idpromConfig() &&
+        slotTypeConfig.idpromConfig()->sysfsPath()) {
+      if (!isValidIdpromSysfsPath(*slotTypeConfig.idpromConfig(), slotName)) {
+        return false;
+      }
+    } else if (slotTypeConfig.idpromConfig()) {
       const auto& busName = *slotTypeConfig.idpromConfig()->busName();
-      int index;
+      int index = 0;
       bool isIncomingBus =
           re2::RE2::FullMatch(busName, kIncomingBusRegex, &index);
       bool isCpuBus = std::find(
@@ -1051,11 +1047,6 @@ bool ConfigValidator::isValid(const PlatformConfig& config) {
             slotName,
             index,
             *slotTypeConfig.numOutgoingI2cBuses());
-        return false;
-      }
-      if (slotTypeConfig.idpromConfig()->busNameSelector() &&
-          !isValidBusNameSelector(
-              *slotTypeConfig.idpromConfig()->busNameSelector(), slotName)) {
         return false;
       }
     }

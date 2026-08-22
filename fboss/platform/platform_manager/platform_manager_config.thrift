@@ -310,19 +310,6 @@ struct EmbeddedSensorConfig {
   2: string sysfsPath;
 }
 
-// Selects a bus name at runtime from a value published before exploration
-// starts, for boards whose respins move a device between buses.
-//
-// `path`: Absolute path of the file holding the value. This is not a
-// DevicePath: no device has been explored when the root IDPROM is read, so the
-// DevicePath-based handles in platform_manager_presence.thrift cannot be used.
-//
-// `valueToBusName`: Maps the trimmed contents of `path` to a bus name.
-struct BusNameSelector {
-  1: string path;
-  2: map<string, string> valueToBusName;
-}
-
 // The IDPROM which contains information about the PmUnit.  The
 // PmUnitScopedName of the IDPROM device is always just "IDPROM".
 //
@@ -338,15 +325,15 @@ struct BusNameSelector {
 //
 // `offset`: The offset at which Meta V5 IDPROM format resides.
 //
-// `busNameSelector`: When set and resolvable, overrides `busName`. `busName`
-// stays the value used when the selector is absent, unreadable, or holds an
-// unmapped value.
+// `sysfsPath`: Absolute path of the IDPROM's i2c device directory, used
+// when the BSP resolves the IDPROM instead of using the other fields via
+// platform_manager.
 struct IdpromConfig {
   1: string busName;
   2: string address;
   3: string kernelDeviceName;
   4: i16 offset;
-  5: optional BusNameSelector busNameSelector;
+  6: optional string sysfsPath;
 }
 
 // Defines a generic IP block in the FPGA
