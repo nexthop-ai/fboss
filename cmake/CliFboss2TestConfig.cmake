@@ -9,6 +9,7 @@ add_executable(fboss2_cmd_config_test
   fboss/cli/fboss2/test/config/CmdConfigAclRuleTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigArpTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigBgpNeighborTest.cpp
+  fboss/cli/fboss2/test/config/CmdConfigBgpPeerGroupTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigCoppTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigDhcpTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigHistoryTest.cpp
@@ -45,6 +46,7 @@ add_executable(fboss2_cmd_config_test
   fboss/cli/fboss2/test/config/CmdDeleteIcmpV4UnavailableSrcAddrTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteArpTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteBgpNeighborTest.cpp
+  fboss/cli/fboss2/test/config/CmdDeleteBgpPeerGroupTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteConfigInterfaceTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteCoppCpuQueueTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteDhcpTest.cpp
