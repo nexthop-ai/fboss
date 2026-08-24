@@ -125,19 +125,6 @@ _STACK_SHARE: dict[str, tuple[str, ...]] = {
 _ENV_DEPLOY_ONLY = "FBOSS_DEPLOY_ONLY"
 _ENV_DEPLOY_ONLY_ON = "1"
 
-# Benchmark agent run mode, forwarded to run_test.py's --agent-run-mode. Set by
-# nhtests-run --agent-run-mode, which defaults to multi_switch and warns that
-# mono is deprecated. The unset fallback matches that default so a direct
-# invocation of this runner behaves the same as one driven by nhtest.
-_ENV_AGENT_RUN_MODE = "FBOSS_AGENT_RUN_MODE"
-_AGENT_RUN_MODE_MONO = "mono"
-_AGENT_RUN_MODE_MULTI = "multi_switch"
-_AGENT_RUN_MODE_DEFAULT = _AGENT_RUN_MODE_MULTI
-
-
-def _agent_run_mode() -> str:
-    return os.environ.get(_ENV_AGENT_RUN_MODE) or _AGENT_RUN_MODE_DEFAULT
-
 _FBOSS_ROOT_ON_DUT = "/opt/fboss"
 
 # Two caches amortize two different costs (see _deploy_artifacts).
@@ -1948,33 +1935,16 @@ class BenchmarkTestRunner(BaseHwTestRunner):
     # (from _STACK_SHARE): platforms with no benchmark-specific config have a
     # symlink into ../hw_test_configs there.
     REQUIRED_PATHS = (*BINARIES, *_STACK_SHARE[STACK], "share/hw_bench_configs/")
-    MULTI_SWITCH_BINARY = "bin/sai_multi_switch_all_benchmarks-sai_impl"
-
-    def __init__(self):
-        super().__init__()
-        # The multi-switch binary postdates the mono one in the forwarding
-        # tarball, and a REQUIRED_PATHS entry resolving to nothing is fatal
-        # (_slice_members raises). So drop it for mono runs, which keeps deploys
-        # working against tarballs built before it shipped. Only reachable via an
-        # explicit mono request now that multi_switch is the default. Shadowed
-        # per-instance rather than filtered on the class so class-level manifest
-        # checks still see the full set.
-        if _agent_run_mode() != _AGENT_RUN_MODE_MULTI:
-            self.REQUIRED_PATHS = tuple(
-                p for p in type(self).REQUIRED_PATHS if p != self.MULTI_SWITCH_BINARY
-            )
 
     def test_args(self, model: str) -> str:
         config_name = _SAI_AGENT_CONFIG_NAME.get(model, model)
-        agent_run_mode = _agent_run_mode()
         logger.info(
-            "model=%s hw_bench_config=%s agent_run_mode=%s",
+            "model=%s hw_bench_config=%s agent_run_mode=multi_switch",
             model,
             config_name,
-            agent_run_mode,
         )
         return (
-            f"benchmark --agent-run-mode {agent_run_mode}"
+            "benchmark --agent-run-mode multi_switch"
             f" --config ./share/hw_bench_configs/{config_name}"
             f".agent.materialized_JSON{_benchmark_skip_known_bad(model)}"
         )

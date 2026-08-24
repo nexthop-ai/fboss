@@ -118,6 +118,15 @@ def test_bench_config_always_from_hw_bench_configs(model, config_name):
     assert "hw_test_configs" not in args
 
 
+def test_benchmark_runner_pins_multi_switch(monkeypatch):
+    monkeypatch.setenv("FBOSS_AGENT_RUN_MODE", "mono")
+
+    args = BenchmarkTestRunner().test_args("nhbw800f")
+
+    assert "benchmark --agent-run-mode multi_switch" in args
+    assert "benchmark --agent-run-mode mono" not in args
+
+
 def test_bench_config_exists_for_every_benchmarked_platform():
     """test_args() names hw_bench_configs unconditionally, so a platform without
     an entry there (real config or symlink) would fail on the DUT."""
