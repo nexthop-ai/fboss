@@ -306,3 +306,25 @@ jobs:
             exit 1
           fi
           echo "✅ PR is based on latest sync commit"
+
+      - name: Check for merge and don't-merge markers
+        if: always()
+        run: |
+          rc=0
+          # Real anchored conflict markers. A bare row of `=` is a legitimate
+          # markdown/rst heading underline.
+          if git grep -nI -E '^(<{7}|>{7}|\|{7})( |$)' -- ':/'; then
+            echo "❌ Merge conflict markers found. Resolve the conflict and re-commit."
+            rc=1
+          fi
+          # DON'T-MERGE reminder sigils, anywhere on the line. Open-angle only:
+          # >>>> terminates nested C++ templates.
+          if git grep -nI -E '<{4,}' -- ':/' \
+               ':(top,exclude).github/scripts/nh-fix-merge-conflicts.py' \
+               ':(top,exclude).github/scripts/rebase_upstream_pr.sh' \
+               ':(top,exclude).github/scripts/reconcile-upstream-merges.py'; then
+            echo "❌ Leftover DON'T-MERGE marker found. Drop the reminder before merging."
+            rc=1
+          fi
+          if [ $rc -eq 0 ]; then echo "✅ No merge or don't-merge markers found"; fi
+          exit $rc
