@@ -64,11 +64,11 @@ def _base_config(port_names, mgmt=True, default_vlan=4094):
 # Two cabled cages (1, 2) and two uncabled cages (3, 4) with breakout subports.
 PAIRS = {"eth1/1/1": "eth1/2/1", "eth1/2/1": "eth1/1/1"}
 PORT_MAP = {
-    "eth1/1/1": _PortInfo(logical_id=301, profile_id=39, speed=400000),
-    "eth1/2/1": _PortInfo(logical_id=302, profile_id=39, speed=400000),
-    "eth1/3/1": _PortInfo(logical_id=303, profile_id=39, speed=800000),
-    "eth1/3/5": _PortInfo(logical_id=304, profile_id=38, speed=400000),
-    "eth1/4/1": _PortInfo(logical_id=305, profile_id=39, speed=800000),
+    "eth1/1/1": _PortInfo(logical_id=301, profile_id=39, speed=400000, profiles={39: 400000}),
+    "eth1/2/1": _PortInfo(logical_id=302, profile_id=39, speed=400000, profiles={39: 400000}),
+    "eth1/3/1": _PortInfo(logical_id=303, profile_id=39, speed=800000, profiles={39: 800000}),
+    "eth1/3/5": _PortInfo(logical_id=304, profile_id=38, speed=400000, profiles={38: 400000}),
+    "eth1/4/1": _PortInfo(logical_id=305, profile_id=39, speed=800000, profiles={39: 800000}),
 }
 
 
@@ -167,8 +167,8 @@ class TestOverlayCabling:
     def test_non_eth_mapping_ports_get_no_filler(self):
         base = _base_config(["eth1/9/1"])
         pm = dict(PORT_MAP)
-        pm["rcy1/1/1"] = _PortInfo(logical_id=400, profile_id=39, speed=800000)
-        pm["fab1/5/1"] = _PortInfo(logical_id=401, profile_id=39, speed=800000)
+        pm["rcy1/1/1"] = _PortInfo(logical_id=400, profile_id=39, speed=800000, profiles={39: 800000})
+        pm["fab1/5/1"] = _PortInfo(logical_id=401, profile_id=39, speed=800000, profiles={39: 800000})
         out = LinkTestRunner._overlay_cabling(base, PAIRS, pm)
         names = {p["name"] for p in out["sw"]["ports"]}
         assert "rcy1/1/1" not in names and "fab1/5/1" not in names
@@ -183,7 +183,7 @@ class TestOverlayCabling:
 
     def test_vlan_band_overflow_raises(self):
         big_map = {
-            f"eth1/{cage}/1": _PortInfo(logical_id=cage, profile_id=39, speed=800000)
+            f"eth1/{cage}/1": _PortInfo(logical_id=cage, profile_id=39, speed=800000, profiles={39: 800000})
             for cage in range(1, 300)
         }
         with pytest.raises(ValueError, match="ran out of vlans"):

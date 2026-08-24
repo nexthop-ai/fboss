@@ -73,8 +73,8 @@ class TestSetFiltersOverride:
 
 
 _PORTS_INFO = {
-    "eth1/1/1": {"is_copper": True},
-    "eth1/2/1": {"is_copper": False},
+    "eth1/1/1": {"media_technology": "PASSIVE_CU"},
+    "eth1/2/1": {"media_technology": "OPTICAL_SMF"},
 }
 
 
@@ -86,17 +86,17 @@ class TestSplitGtestFilter:
     into one pass with the wrong (or an empty) port set."""
 
     def test_pure_copper_safe_stays_one_expression(self):
-        copper, optics = LinkTestRunner._split_gtest_filter("*PortStatus*:*Vlan*")
+        copper, _, optics = LinkTestRunner._split_gtest_filter("*PortStatus*:*Vlan*")
         assert copper == "*PortStatus*:*Vlan*"
         assert optics == ""
 
     def test_pure_optics_only(self):
-        copper, optics = LinkTestRunner._split_gtest_filter("*verifyTxRxLatches*")
+        copper, _, optics = LinkTestRunner._split_gtest_filter("*verifyTxRxLatches*")
         assert copper == ""
         assert optics == "*verifyTxRxLatches*"
 
     def test_mixed_splits_and_shares_negative_suffix(self):
-        copper, optics = LinkTestRunner._split_gtest_filter(
+        copper, _, optics = LinkTestRunner._split_gtest_filter(
             "*PortStatus*:*verifyTxRxLatches*-*Foo*:*Bar*"
         )
         assert copper == "*PortStatus*-*Foo*:*Bar*"
@@ -105,12 +105,12 @@ class TestSplitGtestFilter:
     def test_negative_only_implies_wildcard_positive(self):
         # gtest treats a bare "-pattern" as "everything except pattern"; an
         # empty positive side here must not be read as "no tests selected".
-        copper, optics = LinkTestRunner._split_gtest_filter("-*verifyTxRxLatches*")
+        copper, _, optics = LinkTestRunner._split_gtest_filter("-*verifyTxRxLatches*")
         assert copper == "*-*verifyTxRxLatches*"
         assert optics == ""
 
     def test_qsfp_runner_uses_its_own_optics_only_substrings(self):
-        copper, optics = QsfpTestRunner._split_gtest_filter("*PortStatus*:*i2cStressWrite*")
+        copper, _, optics = QsfpTestRunner._split_gtest_filter("*PortStatus*:*i2cStressWrite*")
         assert copper == "*PortStatus*"
         assert optics == "*i2cStressWrite*"
 
@@ -181,7 +181,7 @@ class TestCablingAwareGtestFilterSplit:
     ):
         runner, cabling_path = _make_cabling_runner(
             runner_cls, tmp_path, optics_only_filter,
-            ports_info={"eth1/1/1": {"is_copper": True}},
+            ports_info={"eth1/1/1": {"media_technology": "PASSIVE_CU"}},
         )
 
         with patch.object(runner, "_prepare_pass") as prepare, \
@@ -273,7 +273,7 @@ _ASIC_TCVR_S = "*Prbs_ASIC*TCVR_S*{}*"
 
 
 def _optical(media):
-    return {"is_copper": False, "media_interface": media}
+    return {"media_technology": "OPTICAL_SMF", "media_interface": media}
 
 
 class TestMediaGate:
@@ -331,7 +331,7 @@ class TestMediaGate:
         assert skipped == [(_TCVR_L.format("FR4_2x400G"), "PRBS filter names no media interface")]
 
     def test_missing_media_interface_key_skips_as_unavailable(self, tmp_path, monkeypatch):
-        ports_info = {"eth1/25/1": {"is_copper": False}, "eth1/26/1": {"is_copper": False}}
+        ports_info = {"eth1/25/1": {"media_technology": "OPTICAL_SMF"}, "eth1/26/1": {"media_technology": "OPTICAL_SMF"}}
         result, _, execute_calls, skipped = _run_media_gated(
             tmp_path, monkeypatch,
             filters=[_TCVR_L.format("FR4_400G"), "*LinkTest*trafficRxTx*"],
@@ -372,8 +372,8 @@ class TestMediaGate:
         must still be skipped: being copper-safe, it would otherwise reach the main
         pass and abort the binary there."""
         ports_info = {
-            "eth1/25/1": {"is_copper": True, "media_interface": "CR8_800G"},
-            "eth1/26/1": {"is_copper": True, "media_interface": "CR8_800G"},
+            "eth1/25/1": {"media_technology": "PASSIVE_CU", "media_interface": "CR8_800G"},
+            "eth1/26/1": {"media_technology": "PASSIVE_CU", "media_interface": "CR8_800G"},
         }
         result, _, execute_calls, skipped = _run_media_gated(
             tmp_path, monkeypatch,
@@ -403,8 +403,8 @@ class TestMediaGate:
         """A CR code on a passive DAC is not in the optics port set, so the pattern
         is skipped rather than running against an empty port set and aborting."""
         ports_info = {
-            "eth1/25/1": {"is_copper": True, "media_interface": "CR8_800G"},
-            "eth1/26/1": {"is_copper": True, "media_interface": "CR8_800G"},
+            "eth1/25/1": {"media_technology": "PASSIVE_CU", "media_interface": "CR8_800G"},
+            "eth1/26/1": {"media_technology": "PASSIVE_CU", "media_interface": "CR8_800G"},
         }
         result, _, execute_calls, skipped = _run_media_gated(
             tmp_path, monkeypatch,

@@ -326,11 +326,55 @@ _PLATFORM_MAPPING_DIR = Path(
 # Link and QSFP hw test binaries have no support for profiles above 800G just yet.
 _MAX_PROFILE_SPEED_MBPS = 800_000
 
+_SWITCH_CONFIG_THRIFT = Path("fboss/agent/switch_config.thrift")
+
+
+@functools.lru_cache(maxsize=1)
+def _profile_medium_by_id() -> dict[int, str]:
+    """PortProfileID value -> "copper" | "optical", from the thrift enum names."""
+    path = _repo_dir(_SWITCH_CONFIG_THRIFT.parent) / _SWITCH_CONFIG_THRIFT.name
+    try:
+        text = path.read_text()
+    except OSError as e:
+        raise RuntimeError(f"Failed to read {path}: {e}") from e
+    media = {}
+    for name, value in re.findall(r"(PROFILE_\w+)\s*=\s*(\d+)", text):
+        if "_COPPER" in name:
+            media[int(value)] = "copper"
+        elif "_OPTICAL" in name:
+            media[int(value)] = "optical"
+    if not media:
+        raise RuntimeError(f"No PortProfileID entries parsed from {path}")
+    return media
+
+
+def _media_speed_mbps(media_interface: str | None) -> int | None:
+    """Per-leg speed from a media code name; profiles are per-port, so
+    FR4_2x400G -> 400000, not 800000."""
+    m = re.search(r"_(?:\d+x)?(\d+)G$", media_interface or "")
+    return int(m.group(1)) * 1000 if m else None
+
 
 class _PortInfo(NamedTuple):
     logical_id: int
     profile_id: int
     speed: int
+    # Supported profiles, {profileID: speed}.
+    profiles: dict[int, int]
+
+    def profile_for_medium(self, is_copper: bool | None, media_speed: int | None) -> int | None:
+        """Best profile for the cabled medium: prefer the module's media speed,
+        else max speed. None medium keeps the default pick; copper with no
+        copper profile returns None."""
+        if is_copper is None:
+            return self.profile_id
+        want = "copper" if is_copper else "optical"
+        medium = _profile_medium_by_id()
+        matching = [pid for pid in self.profiles if medium.get(pid) == want]
+        if matching:
+            speed_matching = [pid for pid in matching if self.profiles[pid] == media_speed]
+            return max(speed_matching or matching, key=lambda pid: self.profiles[pid])
+        return None if is_copper else self.profile_id
 
 
 class _PortTemplate(NamedTuple):
@@ -378,7 +422,9 @@ def _load_platform_mapping(config_name: str) -> dict[str, _PortInfo]:
         if not supported:
             continue
         gmax = max(supported, key=lambda pid: prof[pid])
-        index[name] = _PortInfo(entry["mapping"]["id"], gmax, prof[gmax])
+        index[name] = _PortInfo(
+            entry["mapping"]["id"], gmax, prof[gmax], {pid: prof[pid] for pid in supported}
+        )
     return index
 
 
@@ -1063,6 +1109,9 @@ class _CablingAwareRunnerMixin:
     """
 
     _OPTICS_ONLY_FILTER_SUBSTRINGS: tuple[str, ...] = ()
+    # Test cases verifying per-port media compliance; run only against
+    # _strict_eligible_ports().
+    _MEDIA_STRICT_FILTER_SUBSTRINGS: tuple[str, ...] = ()
     _PORTS_INFO_ENV_VAR = "TEST_PORTS_INFO"
     _SNAKE_PAIRS_ENV_VAR = "TEST_SNAKE_PAIRS"
 
@@ -1070,6 +1119,10 @@ class _CablingAwareRunnerMixin:
         super().__init__()
         self._cached_base_config = None
         self._cached_port_map = None
+        self._media_by_port: dict[str, str | None] = {}
+        self._media_tech_by_port: dict[str, str | None] = {}
+        self._transmitter_tech_by_port: dict[str, str | None] = {}
+        self._is_copper_by_port: dict[str, bool | None] = {}
 
     def _load_snake_pairs(self) -> dict[str, str]:
         return _load_json_pairs(os.getenv(self._SNAKE_PAIRS_ENV_VAR))
@@ -1095,10 +1148,14 @@ class _CablingAwareRunnerMixin:
         pass
 
     def _load_cabling(self, cabling_path: str) -> tuple[list[str], list[str], dict[str, str | None]]:
-        """Parse TEST_PORTS_INFO: {port: {"is_copper": bool | None, "media_interface": str | None}}.
+        """Parse TEST_PORTS_INFO: {port: {"media_technology", "transmitter_technology",
+        "media_interface"}}.
 
-        Returns (all_ports, optics_ports, media_by_port); unknown media type
-        counts toward all_ports but not optics_ports.
+        Returns (all_ports, optics_ports, media_by_port). Optics eligibility
+        (module with firmware/DSP) derives from media_technology; the
+        port-profile medium from transmitter_technology (COPPER covers DAC and
+        AEC), falling back to media_technology when a module reports UNKNOWN
+        (e.g. loopback plugs).
         """
         try:
             with open(cabling_path, encoding="utf-8") as f:
@@ -1106,8 +1163,25 @@ class _CablingAwareRunnerMixin:
         except (OSError, ValueError) as e:
             raise RuntimeError(f"Failed to load ports-info file {cabling_path}: {e}") from e
         all_ports = list(cabling)
-        optics_ports = [p for p, info in cabling.items() if info.get("is_copper") is False]
+        optics_ports = [
+            p
+            for p, info in cabling.items()
+            if info.get("media_technology") not in (None, "PASSIVE_CU")
+        ]
         media_by_port = {p: info.get("media_interface") for p, info in cabling.items()}
+        self._media_by_port = media_by_port
+        self._media_tech_by_port = {p: info.get("media_technology") for p, info in cabling.items()}
+        self._transmitter_tech_by_port = {
+            p: info.get("transmitter_technology") for p, info in cabling.items()
+        }
+        self._is_copper_by_port = {
+            p: (
+                tech == "COPPER"
+                if (tech := self._transmitter_tech_by_port[p]) in ("COPPER", "OPTICAL", "BACKPLANE")
+                else (info["media_technology"] == "PASSIVE_CU" if info.get("media_technology") else None)
+            )
+            for p, info in cabling.items()
+        }
         return all_ports, optics_ports, media_by_port
 
     def _gate_filters(
@@ -1118,14 +1192,23 @@ class _CablingAwareRunnerMixin:
         cabling can't satisfy."""
         return list(patterns), []
 
+    def _strict_eligible_ports(self, model: str, ports: list[str]) -> list[str]:  # noqa: ARG002
+        """Hook: ports the media-strict pass may verify. Base impl keeps all."""
+        return list(ports)
+
     @classmethod
-    def _split_filters(cls, filters: list[str]) -> tuple[list[str], list[str]]:
-        """Bucket filters by substring match against optics-only test names."""
-        copper_safe, optics_only = [], []
+    def _split_filters(cls, filters: list[str]) -> tuple[list[str], list[str], list[str]]:
+        """Bucket filters by substring match against optics-only and
+        media-strict test names."""
+        copper_safe, strict, optics_only = [], [], []
         for f in filters:
-            bucket = optics_only if any(s in f for s in cls._OPTICS_ONLY_FILTER_SUBSTRINGS) else copper_safe
-            bucket.append(f)
-        return copper_safe, optics_only
+            if any(s in f for s in cls._OPTICS_ONLY_FILTER_SUBSTRINGS):
+                optics_only.append(f)
+            elif any(s in f for s in cls._MEDIA_STRICT_FILTER_SUBSTRINGS):
+                strict.append(f)
+            else:
+                copper_safe.append(f)
+        return copper_safe, strict, optics_only
 
     @staticmethod
     def _parse_gtest_filter(expr: str) -> tuple[list[str], str]:
@@ -1144,21 +1227,20 @@ class _CablingAwareRunnerMixin:
         return patterns, suffix
 
     @classmethod
-    def _bucket_expressions(cls, patterns: list[str], suffix: str) -> tuple[str, str]:
+    def _bucket_expressions(cls, patterns: list[str], suffix: str) -> tuple[str, str, str]:
         """Bucket patterns, then rejoin each side into a --gtest_filter expression."""
-        copper_safe, optics_only = cls._split_filters(patterns)
-        copper_expr = ":".join(copper_safe) + suffix if copper_safe else ""
-        optics_expr = ":".join(optics_only) + suffix if optics_only else ""
-        return copper_expr, optics_expr
+        buckets = cls._split_filters(patterns)
+        return tuple(":".join(b) + suffix if b else "" for b in buckets)
 
     @classmethod
-    def _split_gtest_filter(cls, expr: str) -> tuple[str, str]:
-        """Split a single --gtest_filter expression into copper-safe/optics-only
-        sub-expressions, sharing the negative-pattern suffix.
+    def _split_gtest_filter(cls, expr: str) -> tuple[str, str, str]:
+        """Split a single --gtest_filter expression into
+        copper-safe/media-strict/optics-only sub-expressions, sharing the
+        negative-pattern suffix.
 
         Colon-separated positives are classified the same way _split_filters
-        buckets tc["filters"], so a mixed TESTFILTER runs as two passes against
-        the right port set each, instead of once against the wrong one.
+        buckets tc["filters"], so a mixed TESTFILTER runs as separate passes
+        against the right port set each, instead of once against the wrong one.
         """
         return cls._bucket_expressions(*cls._parse_gtest_filter(expr))
 
@@ -1188,13 +1270,27 @@ class _CablingAwareRunnerMixin:
 
         kept_patterns, skipped = self._gate_filters(patterns, media_by_port, optics_ports)
         if gtest_filter:
-            copper_bucket, optics_bucket = self._bucket_expressions(kept_patterns, suffix)
+            copper_bucket, strict_bucket, optics_bucket = self._bucket_expressions(kept_patterns, suffix)
         else:
-            copper_bucket, optics_bucket = self._split_filters(kept_patterns)
+            copper_bucket, strict_bucket, optics_bucket = self._split_filters(kept_patterns)
 
         passes = []  # list of (label, filter_value, ports)
         if copper_bucket:
             passes.append(("main", copper_bucket, all_ports))
+        if strict_bucket:
+            strict_ports = self._strict_eligible_ports(model, all_ports)
+            if strict_ports:
+                passes.append(("strict", strict_bucket, strict_ports))
+            else:
+                logger.info(
+                    "No ports with a verifiable media profile on this DUT; "
+                    "skipping media-strict tests: %s",
+                    strict_bucket,
+                )
+                skipped.extend(
+                    (pattern, "no ports with a verifiable media profile on this DUT")
+                    for pattern in ([strict_bucket] if gtest_filter else strict_bucket)
+                )
         if optics_bucket:
             if optics_ports:
                 passes.append(("optics", optics_bucket, optics_ports))
@@ -1274,21 +1370,80 @@ class QsfpTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
         "verifyResetControl",
     )
 
+    # These abort on modules whose self-reporting no profile can satisfy
+    # (e.g. loopback plugs); see _strict_unverifiable_reason().
+    _MEDIA_STRICT_FILTER_SUBSTRINGS = (
+        "CheckPortsProgrammed",
+        "CheckTransceiverRemoved",
+        "CheckAgentConfigChanged",
+        # Expects stateChanged == (transmitterTech != COPPER) on passive
+        # cables; fails on modules reporting UNKNOWN transmitter technology.
+        "resetTranscieverAndDetectStateChanged",
+    )
+
+    def _medium_profile(self, port: str, info: _PortInfo) -> int | None:
+        return info.profile_for_medium(
+            self._is_copper_by_port.get(port), _media_speed_mbps(self._media_by_port.get(port))
+        )
+
+    def _port_profile_id(self, port: str, port_map: dict) -> int:
+        """Medium- and speed-aware pick, falling back to max speed when no
+        profile matches the medium."""
+        info = port_map.get(port)
+        if not info:
+            return self._FALLBACK_PROFILE_ID
+        profile_id = self._medium_profile(port, info)
+        return profile_id if profile_id is not None else info.profile_id
+
+    def _strict_unverifiable_reason(self, port: str, port_map: dict) -> str | None:
+        """Why the media-strict verifiers cannot pass on this port, or None."""
+        info = port_map.get(port)
+        if not info:
+            return "port is not in the platform mapping"
+        is_copper = self._is_copper_by_port.get(port)
+        if is_copper is None:
+            return "module reports no usable medium information"
+        profile_id = self._medium_profile(port, info)
+        if profile_id is None:
+            return "copper cable but the platform mapping offers no copper profile"
+        media = self._media_by_port.get(port)
+        media_speed = _media_speed_mbps(media)
+        if media_speed is not None and media_speed != info.profiles[profile_id]:
+            return (
+                f"module media {media} ({media_speed} Mbps) does not match "
+                f"selected profile {profile_id} ({info.profiles[profile_id]} Mbps)"
+            )
+        if is_copper and self._transmitter_tech_by_port.get(port) == "UNKNOWN":
+            return "copper profile selected but module reports UNKNOWN transmitter technology"
+        return None
+
+    def _strict_eligible_ports(self, model: str, ports: list[str]) -> list[str]:
+        config_name = _LINK_QSFP_TEST_CONFIG_NAME.get(model, model)
+        _, port_map = self._load_base_config_and_port_map(self._BASE_CONFIG_DIR, config_name)
+        eligible = []
+        for port in ports:
+            reason = self._strict_unverifiable_reason(port, port_map)
+            if reason is None:
+                eligible.append(port)
+            else:
+                logger.warning("Excluding %s from the media-strict pass: %s", port, reason)
+        return eligible
+
     def _pair_profile_id(self, a_port: str, z_port: str, port_map: dict) -> int:
         # Both ends of a pair get the same profile (HwPortUtils::getCabledPortsAndProfiles),
         # so pick the narrower end rather than risk asking for more than one side supports.
-        a_info, z_info = port_map.get(a_port), port_map.get(z_port)
-        if not a_info or not z_info:
+        if not port_map.get(a_port) or not port_map.get(z_port):
             return self._FALLBACK_PROFILE_ID
-        return min(a_info, z_info, key=lambda info: info.speed).profile_id
+        narrow_port = min((a_port, z_port), key=lambda p: port_map[p].speed)
+        return self._port_profile_id(narrow_port, port_map)
 
     def _build_cabled_config(self, base_config: dict, ports: list[str], port_map: dict, pairs: dict) -> dict:
         config = copy.deepcopy(base_config)
         cabled = []
         for port in ports:
-            info = port_map.get(port)
-            profile_id = info.profile_id if info else self._FALLBACK_PROFILE_ID
-            cabled.append({"aPortName": port, "zPortName": port, "profileID": profile_id})
+            cabled.append(
+                {"aPortName": port, "zPortName": port, "profileID": self._port_profile_id(port, port_map)}
+            )
         # Appended after every self-pair, on purpose: the hw test's neighbor map is
         # keyed by transceiver id and last-write-wins, so a real pair must come after
         # that transceiver's self-pair to actually take effect.
