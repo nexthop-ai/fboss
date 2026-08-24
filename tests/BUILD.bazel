@@ -1,4 +1,8 @@
-load("@rules_python//python:defs.bzl", "py_test")
+load("@rules_python//python:defs.bzl", "py_library", "py_test")
+load("//bazel_lib:pytest.bzl", "run_all_pytests")
+
+# Test runner runs within the nhtests-run environment, use the same python libs
+_PIP = "@nhtools_itests_pip//"
 
 # Runner filter lists live in this package; the gtest names they select over
 # come from //fboss:hw_test_gtest_srcs. Both are declared so bazel re-runs the
@@ -7,10 +11,55 @@ load("@rules_python//python:defs.bzl", "py_test")
 py_test(
     name = "filter_overlap_test",
     srcs = ["check_test_filter_overlap.py"],
-    main = "check_test_filter_overlap.py",
     args = ["--repo-root=fboss"],
     data = glob(
         ["**/*.py"],
         exclude = ["check_test_filter_overlap.py"],
     ) + ["//fboss:hw_test_gtest_srcs"],
+    main = "check_test_filter_overlap.py",
+)
+
+# The runner under test, plus the tests.libs.device SSH/SCP helpers it imports
+# and the __init__ files that make `tests.libs.*` importable at all.
+py_library(
+    name = "test_runner",
+    srcs = [
+        "__init__.py",
+        "libs/__init__.py",
+        "libs/test_runner/filter_utils.py",
+        "libs/test_runner/runner.py",
+    ] + glob(["libs/device/*.py"]),
+    imports = [".."],
+    deps = [
+        _PIP + "paramiko",
+        _PIP + "pexpect",
+        _PIP + "scp",
+        _PIP + "waiting",
+    ],
+)
+
+run_all_pytests(
+    path = "libs/test_runner",
+    imports = [".."],
+    per_test_data = {
+        # Scrapes the upstream on-DUT runner package's runners/*.py for the
+        # binary names each runner's BINARIES mirrors.
+        "test_runner_deploy": ["//fboss:run_scripts_py"],
+        # The bucket modules are exec'd (not imported) to read their
+        # test_context, the hw_bench_configs check stats every benchmarked
+        # platform's config, and BenchmarkFramework is imported from the
+        # upstream on-DUT runner package -- so all three trees have to be in
+        # runfiles rather than just on the path.
+        "test_benchmark_buckets": [
+            "//fboss:hw_bench_configs",
+            "//fboss:run_scripts_py",
+        ] + glob([
+            "agent_hw/benchmarks/*.py",
+            "qsfp/*.py",
+        ]),
+    },
+    deps = [
+        ":test_runner",
+        _PIP + "pytest",
+    ],
 )

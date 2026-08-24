@@ -41,6 +41,18 @@ filegroup(
     ]),
 )
 
+filegroup(
+    name = "run_scripts_py",
+    visibility = ["//fboss/tests:__pkg__"],
+    srcs = glob(["fboss/oss/scripts/run_scripts/**/*.py"]),
+)
+
+filegroup(
+    name = "hw_bench_configs",
+    visibility = ["//fboss/tests:__pkg__"],
+    srcs = glob(["fboss/oss/hw_bench_configs/*"]),
+)
+
 # We explicitly place the intermediate build products into the
 # source tree to help incremental rebuild speed. This is both to make
 # incremental rebuild calculations faster, but also to avoid
