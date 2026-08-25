@@ -1,0 +1,10 @@
+{
+  "platformType": 999,
+  "productNamePrefixes": [
+    "NH-4010-F"
+  ],
+  "modeNames": [
+    "nh4010f"
+  ],
+  "asicType": 13
+}

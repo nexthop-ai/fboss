@@ -107,7 +107,7 @@ PLATFORM_CODENAME: dict[str, str] = {
     "blackkite": "nh4220f",
 }
 
-CODENAMES_REQUIRING_PLATFORM_DESCRIPTOR = {"wedge800bact"}
+CODENAMES_REQUIRING_PLATFORM_DESCRIPTOR = {"nh4010f", "wedge800bact"}
 
 
 def _resolve_codename(platform: str, platforms_dir: pathlib.Path | None = None) -> str:

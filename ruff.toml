@@ -38,6 +38,17 @@ ignore = [
 # Scripts may use print statements
 "**/scripts/*.py" = ["T201"]
 "**/oss/scripts/**/*.py" = ["T201"]
+# The platform_mapping_v2 CSV readers are vendored from upstream and predate
+# this config: they use UPPER_CASE locals plus a dynamically built `Column`
+# enum (N806), a nested helper whose parameter is named `map` (A002), and long
+# single-pass row parsers (PLR0912/PLR0915). Renaming or splitting them would
+# churn code that syncs from upstream.
+"**/platform_mapping_v2/read_files_utils.py" = [
+    "A002",
+    "N806",
+    "PLR0912",
+    "PLR0915",
+]
 
 [lint.isort]
 known-first-party = ["fboss"]

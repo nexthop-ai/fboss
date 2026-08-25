@@ -49,7 +49,6 @@ target_link_libraries(platform_mapping_utils
   m4062nhp_platform_mapping
   icetea800bc_platform_mapping
   tahansb800bc_platform_mapping
-  nh4010f_platform_mapping
   nh4220f_platform_mapping
   nh5010f_platform_mapping
   m4062nhp_platform_mapping

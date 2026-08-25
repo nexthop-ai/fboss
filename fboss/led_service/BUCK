@@ -143,7 +143,6 @@ cpp_library(
         "//fboss/agent/platforms/common/minipack3n:minipack3n_platform_mapping",
         "//fboss/agent/platforms/common/montblanc:montblanc_platform_mapping",
         "//fboss/agent/platforms/common/morgan800cc:morgan800cc_platform_mapping",
-        "//fboss/agent/platforms/common/nh4010f:nh4010f_platform_mapping",
         "//fboss/agent/platforms/common/nh4220f:nh4220f_platform_mapping",
         "//fboss/agent/platforms/common/nh5010f:nh5010f_platform_mapping",
         "//fboss/agent/platforms/common/m4062nhp:m4062nhp_platform_mapping",

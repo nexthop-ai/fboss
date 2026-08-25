@@ -50,7 +50,6 @@ target_link_libraries(qsfp_platforms_wedge
   m4062nhp_platform_mapping
   icetea800bc_platform_mapping
   tahansb800bc_platform_mapping
-  nh4010f_platform_mapping
   nh4220f_platform_mapping
   nh5010f_platform_mapping
   wedge800cact_platform_mapping

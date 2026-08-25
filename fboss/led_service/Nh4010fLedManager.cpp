@@ -1,7 +1,6 @@
 // (c) Nexthop Systems, Inc. and affiliates. Confidential and proprietary.
 
 #include "fboss/led_service/Nh4010fLedManager.h"
-#include "fboss/agent/platforms/common/nh4010f/Nh4010fPlatformMapping.h"
 #include "fboss/lib/bsp/nh4010f/Nh4010fBspPlatformMapping.h"
 
 namespace facebook::fboss {
@@ -13,7 +12,7 @@ namespace facebook::fboss {
  * Nh4010f platform
  */
 Nh4010fLedManager::Nh4010fLedManager() : BspLedManager() {
-  init<Nh4010fBspPlatformMapping, Nh4010fPlatformMapping>();
+  init<Nh4010fBspPlatformMapping>(PlatformType::PLATFORM_NH4010F);
   XLOG(INFO) << "Created Nh4010f BSP LED Manager";
 }
 

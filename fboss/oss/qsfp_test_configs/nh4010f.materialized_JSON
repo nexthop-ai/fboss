@@ -1,6 +1,7 @@
 {
   "defaultCommandLineArgs": {
-    "mode": "nh4010f"
+    "mode": "nh4010f",
+    "platform_descriptor_config_path": "/tmp/platform_descriptors/"
   },
   "transceiverConfigOverrides": [],
   "qsfpTestConfig": {

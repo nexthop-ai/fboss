@@ -38,7 +38,6 @@
 #include "fboss/agent/platforms/common/minipack3n/Minipack3NPlatformMapping.h"
 #include "fboss/agent/platforms/common/montblanc/MontblancPlatformMapping.h"
 #include "fboss/agent/platforms/common/morgan800cc/Morgan800ccPlatformMapping.h"
-#include "fboss/agent/platforms/common/nh4010f/Nh4010fPlatformMapping.h"
 #include "fboss/agent/platforms/common/nh4220f/Nh4220fPlatformMapping.h"
 #include "fboss/agent/platforms/common/nh5010f/Nh5010fPlatformMapping.h"
 #include "fboss/agent/platforms/common/saintpaul/SaintpaulPlatformMapping.h"
@@ -197,10 +196,6 @@ std::unique_ptr<PlatformMapping> initPlatformMapping(PlatformType type) {
       return platformMappingStr.empty()
           ? std::make_unique<Icecube800bcPlatformMapping>()
           : std::make_unique<Icecube800bcPlatformMapping>(platformMappingStr);
-    case PlatformType::PLATFORM_NH4010F:
-      return platformMappingStr.empty()
-          ? std::make_unique<Nh4010fPlatformMapping>()
-          : std::make_unique<Nh4010fPlatformMapping>(platformMappingStr);
     case PlatformType::PLATFORM_NH4220F:
       return platformMappingStr.empty()
           ? std::make_unique<Nh4220fPlatformMapping>()
@@ -213,6 +208,7 @@ std::unique_ptr<PlatformMapping> initPlatformMapping(PlatformType type) {
       return platformMappingStr.empty()
           ? std::make_unique<Icecube800banwPlatformMapping>()
           : std::make_unique<Icecube800banwPlatformMapping>(platformMappingStr);
+    case PlatformType::PLATFORM_NH4010F:
     case PlatformType::PLATFORM_WEDGE800BACT:
     case PlatformType::PLATFORM_WEDGE800BNHP:
       // Wedge800BACT/Wedge800BNHP no longer ship a compiled-in platform
