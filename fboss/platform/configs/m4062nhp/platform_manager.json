@@ -757,7 +757,6 @@
   "bspKmodsRpmName": "nexthop_bsp_kmods",
   "bspKmodsRpmVersion": "1.0.0-1",
   "nonBspKmodsToLoad": [
-    "nh_board_rev",
     "i2c_i801",
     "i2c_piix4",
     "spd5118",
