@@ -5,7 +5,6 @@
 #include <CLI/App.hpp>
 #include <CLI/Error.hpp>
 #include <fmt/format.h>
-#include <folly/FileUtil.h>
 #include <folly/String.h>
 #include <folly/Subprocess.h>
 #include <folly/init/Init.h>
@@ -50,7 +49,6 @@
 #include "fboss/cli/fboss2/CmdArgsLists.h"
 #include "fboss/cli/fboss2/commands/config/vlan/VlanManager.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
-#include "fboss/cli/fboss2/session/Git.h"
 #include "fboss/cli/fboss2/utils/CmdClientUtilsCommon.h"
 #include "fboss/cli/fboss2/utils/CmdInitUtils.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
@@ -63,32 +61,6 @@ namespace facebook::fboss {
 namespace {
 
 using Result = Fboss2IntegrationTest::Result;
-
-// Content of `gitRelPath` at `revision`, or "" when the path does not exist
-// at that revision (e.g. bgpcpp.conf before any BGP commit). Mirrors
-// ConfigSession's private fileAtRevisionOrEmpty(). Note Git::fileAtRevision
-// trims surrounding whitespace from the blob (its runGitCommand does), so
-// anything compared against this must be trimmed the same way.
-std::string fileAtRevisionOrEmpty(
-    const Git& git,
-    const std::string& revision,
-    const std::string& gitRelPath) {
-  try {
-    return git.fileAtRevision(revision, gitRelPath);
-  } catch (const std::exception&) {
-    return "";
-  }
-}
-
-// File content trimmed of surrounding whitespace, to be comparable with
-// fileAtRevisionOrEmpty() output (see above). "" when the file is missing.
-std::string readFileTrimmedOrEmpty(const std::string& path) {
-  std::string content;
-  if (!folly::readFile(path.c_str(), content)) {
-    return "";
-  }
-  return folly::trimWhitespace(content).str();
-}
 
 Result cliCommand(const std::vector<std::string>& args) {
   // CLI11 add_option() appends to the vector it's bound to rather than
@@ -184,8 +156,7 @@ void discardSessionImpl() {
 }
 
 // Like Fboss2IntegrationTest::waitForAgentReady() but returns false on
-// timeout instead of failing the test, so the suite teardown can pick a
-// recovery strategy instead of failing outright.
+// timeout instead of failing the test.
 bool agentResponsive(std::chrono::seconds timeout = std::chrono::seconds(120)) {
   // Poll-first: a responsive agent answers on the first iteration with no
   // sleep at all. When it isn't responsive (typically mid-restart after a
@@ -247,304 +218,7 @@ void dumpAgentDiagnostics() {
   std::cerr << "=== End agent diagnostics ===" << std::endl;
 }
 
-// Byte-compare every config domain's promoted file against its content at
-// `revision`; true when they all match (a file absent on disk matches
-// empty/absent content at the revision).
-bool domainsMatchRevision(ConfigSession& session, const std::string& revision) {
-  const auto& git = session.getGit();
-  for (const auto& domain : session.configDomains()) {
-    if (readFileTrimmedOrEmpty(domain.promotedPath) !=
-        fileAtRevisionOrEmpty(git, revision, domain.gitRelPath)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-// True when every currently-loaded FBOSS agent systemd unit (fboss_sw_agent,
-// fboss_hw_agent@N / fboss_hw_agent_oss@N, wedge_agent) is active. Waits up
-// to `grace` only while some unit is still "activating"; a unit in "failed"
-// (e.g. crash-looping on an unapplyable config) returns false immediately.
-// True when no agent units are found - the thrift probe is the authority.
-bool agentUnitsHealthy(std::chrono::seconds grace) {
-  // Discover the FBOSS agent units systemd currently has loaded. Failed and
-  // activating units are still "loaded", so a crash-looping hw_agent shows up
-  // here even while a healthy sw_agent keeps answering thrift.
-  auto listing = shellCommand(
-      {"/usr/bin/systemctl",
-       "list-units",
-       "--plain",
-       "--no-legend",
-       "fboss_sw_agent.service",
-       "fboss_hw_agent@*.service",
-       "fboss_hw_agent_oss@*.service",
-       "wedge_agent.service"});
-  std::vector<std::string> units;
-  std::vector<folly::StringPiece> lines;
-  folly::split('\n', listing.stdout, lines, /*ignoreEmpty=*/true);
-  for (auto line : lines) {
-    std::vector<folly::StringPiece> fields;
-    folly::split(' ', line, fields, /*ignoreEmpty=*/true);
-    if (!fields.empty()) {
-      units.emplace_back(fields[0].str());
-    }
-  }
-  if (units.empty()) {
-    // Nothing to check against — defer to the thrift probe.
-    XLOG(DBG2) << "No FBOSS agent systemd units found";
-    return true;
-  }
-
-  std::vector<std::string> cmd = {"/usr/bin/systemctl", "is-active"};
-  cmd.insert(cmd.end(), units.begin(), units.end());
-  auto deadline = std::chrono::steady_clock::now() + grace;
-  while (true) {
-    auto result = shellCommand(cmd);
-    std::vector<folly::StringPiece> states;
-    folly::split('\n', result.stdout, states, /*ignoreEmpty=*/true);
-    bool allActive = !states.empty();
-    bool anyActivating = false;
-    for (auto state : states) {
-      allActive = allActive && state == "active";
-      anyActivating = anyActivating || state == "activating";
-    }
-    if (allActive) {
-      return true;
-    }
-    if (!anyActivating || std::chrono::steady_clock::now() >= deadline) {
-      // A dead unit ("failed"/"inactive") will not recover on its own — no
-      // point burning the grace window on it.
-      XLOG(WARN) << "Agent units unhealthy: " << folly::join(", ", units)
-                 << " -> " << folly::join(", ", states);
-      return false;
-    }
-    // NOLINTNEXTLINE(facebook-hte-BadCall-sleep_for)
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-  }
-}
-
-// The hard restore path: rewrite the tracked config files at the baseline
-// revision, fix the daemon-facing symlinks, git-commit the restore, then
-// coldboot-restart the agents (offline `config reload coldboot`, which
-// reads the on-disk config and needs no live agent). Returns true when the
-// agent came back responsive.
-bool restoreBaselineHard(const std::string& baselineSha) {
-  XLOG(WARN) << "Hard-restoring config baseline " << Git::shortSha1(baselineSha)
-             << " (rewrite tracked files + coldboot agents)";
-  try {
-    auto& session =
-        ConfigSession::getInstance(ConfigSession::SessionInit::ReadOnly);
-    auto& git = session.getGit();
-    std::vector<std::string> commitFiles;
-    for (const auto& domain : session.configDomains()) {
-      auto target = fileAtRevisionOrEmpty(git, baselineSha, domain.gitRelPath);
-      if (readFileTrimmedOrEmpty(domain.promotedPath) == target) {
-        continue;
-      }
-      std::error_code ec;
-      if (target.empty()) {
-        // Absent at the baseline (e.g. a BGP config the suite introduced) —
-        // mirror rollback() semantics and remove it.
-        fs::remove(domain.promotedPath, ec);
-        fs::remove(domain.symlinkPath, ec);
-      } else {
-        folly::writeFileAtomic(domain.promotedPath, target);
-        // The daemons read through a stable symlink; a fresh device may still
-        // have a plain file (or nothing) there.
-        if (!fs::is_symlink(domain.symlinkPath, ec) ||
-            fs::read_symlink(domain.symlinkPath, ec) !=
-                fs::path(domain.symlinkTarget)) {
-          fs::remove(domain.symlinkPath, ec);
-          fs::create_symlink(domain.symlinkTarget, domain.symlinkPath, ec);
-          if (ec) {
-            throw std::runtime_error(
-                fmt::format(
-                    "Failed to create symlink {} -> {}: {}",
-                    domain.symlinkPath,
-                    domain.symlinkTarget,
-                    ec.message()));
-          }
-        }
-      }
-      commitFiles.push_back(domain.gitRelPath);
-    }
-    if (!commitFiles.empty()) {
-      git.commit(
-          commitFiles,
-          fmt::format(
-              "fboss2 integration test: hard restore of baseline {}",
-              Git::shortSha1(baselineSha)));
-    }
-  } catch (const std::exception& ex) {
-    XLOG(ERR) << "Hard restore of config baseline failed: " << ex.what();
-    return false;
-  }
-  discardSessionImpl();
-
-  // A crash-looping unit may sit in "failed" having exhausted its start
-  // limit; clear that so the restart below is allowed to run.
-  shellCommand({"/usr/bin/systemctl", "reset-failed"});
-
-  // `config reload coldboot` restarts the agents from the on-disk
-  // /etc/coop/agent.conf without needing a live agent (it derives the
-  // service topology from the config file, creates the coldboot markers and
-  // restarts hw agents before the sw agent).
-  XLOG(INFO) << "Running CLI command: config reload coldboot";
-  auto reload = cliCommand({"config", "reload", "coldboot"});
-  if (reload.exitCode != 0) {
-    XLOG(ERR) << "config reload coldboot failed: " << reload.stderr;
-    // Fall through: the restart may still be in flight; give the poll below
-    // the chance to see the agents come back.
-  }
-  // Cold boot takes ~90s+ on some ASICs; be generous.
-  return agentResponsive(std::chrono::seconds(300));
-}
-
-// Record the /etc/coop git HEAD as the suite baseline (see
-// Fboss2IntegrationTest::SetUpTestSuite). Initializes the git repo if needed
-// (a fresh ConfigSession does that), and first commits any uncommitted drift
-// in the tracked config files (e.g. the test runner copies a config through
-// the agent.conf symlink without committing) so the baseline sha reflects
-// what the agents are actually running. Returns "" when capture failed.
-std::string captureConfigBaseline() {
-  std::string baselineSha;
-  discardSessionImpl();
-  try {
-    // Constructing the session initializes the /etc/coop git repo if needed
-    // (seeding the initial commit from the live config). ReadOnly so no
-    // session gets staged under ~/.fboss2.
-    auto& session =
-        ConfigSession::getInstance(ConfigSession::SessionInit::ReadOnly);
-    auto& git = session.getGit();
-
-    // Commit any uncommitted drift in the tracked files first. The python
-    // test runner (and manual operators) copy configs through the
-    // /etc/coop/agent.conf symlink without committing, so HEAD can lag what
-    // the agents actually run; the baseline must be the running content.
-    std::vector<std::string> driftedFiles;
-    for (const auto& domain : session.configDomains()) {
-      if (!fs::exists(domain.promotedPath)) {
-        continue;
-      }
-      if (readFileTrimmedOrEmpty(domain.promotedPath) !=
-          fileAtRevisionOrEmpty(git, "HEAD", domain.gitRelPath)) {
-        driftedFiles.push_back(domain.gitRelPath);
-      }
-    }
-    if (!driftedFiles.empty()) {
-      XLOG(INFO) << "Committing uncommitted config drift in "
-                 << folly::join(", ", driftedFiles) << " as suite baseline";
-      try {
-        git.commit(
-            driftedFiles, "fboss2 integration test: suite baseline snapshot");
-      } catch (const std::exception& ex) {
-        // Fall back to HEAD as the baseline rather than running the suite
-        // with no baseline at all.
-        XLOG(WARN) << "Failed to commit config drift: " << ex.what();
-      }
-    }
-
-    baselineSha = git.getHead();
-    XLOG(INFO) << "Suite config baseline: " << Git::shortSha1(baselineSha);
-  } catch (const std::exception& ex) {
-    // Without a baseline the teardown restore is skipped; tests still run.
-    XLOG(WARN) << "Failed to capture config baseline: " << ex.what();
-  }
-  discardSessionImpl();
-  return baselineSha;
-}
-
-// Restore the /etc/coop config to the suite baseline recorded by
-// captureConfigBaseline() and make sure the agents are up and running it.
-// Fast path (nothing to do) when the config is unchanged and the agents are
-// healthy; soft path (`config rollback <sha>`) when the config drifted but
-// the agents can serve thrift; hard path (rewrite the tracked files at the
-// baseline revision + coldboot restart) when the agents are dead or the
-// soft path failed. Records a test failure if even the hard path cannot
-// bring the agents back.
-void restoreConfigBaseline(const std::string& baselineSha) {
-  if (baselineSha.empty()) {
-    XLOG(WARN) << "No config baseline captured; skipping suite restore";
-    return;
-  }
-  discardSessionImpl();
-
-  bool drifted = false;
-  try {
-    auto& session =
-        ConfigSession::getInstance(ConfigSession::SessionInit::ReadOnly);
-    auto& git = session.getGit();
-    drifted = git.getHead() != baselineSha ||
-        !domainsMatchRevision(session, baselineSha);
-  } catch (const std::exception& ex) {
-    // Can't even tell — treat as drifted and let the hard path sort it out.
-    XLOG(ERR) << "Failed to compare config against baseline: " << ex.what();
-    drifted = true;
-  }
-
-  bool restored = false;
-  if (!drifted) {
-    if (agentUnitsHealthy(std::chrono::seconds(60)) && agentResponsive()) {
-      return; // Fast path: config untouched, agents healthy.
-    }
-    // Config is intact but the suite left the agents dead (e.g. a commit
-    // crashed them and nothing brought them back). Heal via the hard path —
-    // rewriting identical files is harmless, the coldboot restart is the
-    // point.
-    XLOG(WARN) << "Config matches baseline but agents are unhealthy; "
-                  "coldboot-restarting agents";
-    restored = restoreBaselineHard(baselineSha);
-  } else {
-    XLOG(WARN) << "Test suite left the config off its baseline "
-               << Git::shortSha1(baselineSha) << "; restoring";
-    if (agentUnitsHealthy(std::chrono::seconds(60)) && agentResponsive()) {
-      // Soft path: agents are up, use the CLI's own rollback so the restore
-      // is applied at the right service-action level and leaves an
-      // auditable commit.
-      XLOG(INFO) << "Running CLI command: config rollback " << baselineSha;
-      auto result = cliCommand({"config", "rollback", baselineSha});
-      bool softOk = result.exitCode == 0 && agentResponsive();
-      if (softOk) {
-        try {
-          auto& session =
-              ConfigSession::getInstance(ConfigSession::SessionInit::ReadOnly);
-          softOk = domainsMatchRevision(session, baselineSha);
-        } catch (const std::exception&) {
-          softOk = false;
-        }
-      }
-      if (softOk) {
-        discardSessionImpl();
-        return;
-      }
-      XLOG(WARN) << "config rollback to baseline failed ("
-                 << folly::rtrimWhitespace(result.stderr)
-                 << "); falling back to hard restore";
-    }
-    restored = restoreBaselineHard(baselineSha);
-  }
-  discardSessionImpl();
-
-  if (!restored) {
-    dumpAgentDiagnostics();
-    ADD_FAILURE() << "Failed to restore the config baseline "
-                  << Git::shortSha1(baselineSha)
-                  << " after this suite; subsequent suites may fail spuriously";
-  }
-}
-
-// Baseline sha recorded by SetUpTestSuite for the suite currently running.
-std::string suiteBaselineSha;
-
 } // namespace
-
-void Fboss2IntegrationTest::SetUpTestSuite() {
-  suiteBaselineSha = captureConfigBaseline();
-}
-
-void Fboss2IntegrationTest::TearDownTestSuite() {
-  restoreConfigBaseline(suiteBaselineSha);
-}
 
 void Fboss2IntegrationTest::SetUp() {
   XLOG(INFO) << "Fboss2IntegrationTest::SetUp - starting CLI test";

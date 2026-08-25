@@ -56,21 +56,6 @@ class Fboss2IntegrationTest : public ::testing::Test {
 
   ~Fboss2IntegrationTest() override = default;
 
-  /**
-   * Suite-level config containment: before any test in a suite runs, record
-   * the /etc/coop git state as a baseline; after the whole suite finishes,
-   * roll the config back to that baseline (and heal the agents if the suite
-   * left them dead). This stops one suite's leftover config — including a
-   * config the hardware cannot apply, which crash-loops the agents — from
-   * failing every subsequent, innocent suite.
-   *
-   * Per-test isolation is intentionally NOT provided here; suites that need
-   * it keep using snapshotConfig()/restoreConfig() in their own
-   * SetUp/TearDown.
-   */
-  static void SetUpTestSuite();
-  static void TearDownTestSuite();
-
  protected:
   void SetUp() override;
   void TearDown() override;
