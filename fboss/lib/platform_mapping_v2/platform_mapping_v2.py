@@ -269,7 +269,7 @@ class PlatformMappingV2:
     def get_platform_port_map(self) -> Mapping[int, PlatformPortEntry]:
         return self.platform_mapping.ports
 
-    def get_port_id_to_port_assignment(self) -> Dict[int, PortAssignment]:
+    def get_port_id_to_port_assignment(self) -> dict[int, PortAssignment]:
         return {
             port_id: PortAssignment(
                 portName=entry.mapping.name,
@@ -341,8 +341,7 @@ class PlatformMappingV2:
             subsumed_names.update(existing_config.subsumedPortNames or [])
             subsumed_names.update(config.subsumedPortNames or [])
             merged_profiles[profile] = PlatformPortConfig(
-                pins=config.pins,
-                subsumedPortNames=sorted(subsumed_names) or None,
+                pins=config.pins, subsumedPortNames=sorted(subsumed_names) or None
             )
 
         return PlatformPortEntry(
@@ -391,8 +390,8 @@ class PlatformMappingV2:
         if not platform_mappings:
             raise ValueError("At least one platform mapping is required")
 
-        raw_ports: Dict[str, PlatformPortEntry] = {}
-        raw_overrides: List[PlatformPortConfigOverride] = []
+        raw_ports: dict[str, PlatformPortEntry] = {}
+        raw_overrides: list[PlatformPortConfigOverride] = []
         for platform_mapping in platform_mappings:
             id_to_name = {
                 port_id: entry.mapping.name
