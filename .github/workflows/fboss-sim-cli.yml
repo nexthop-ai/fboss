@@ -87,7 +87,10 @@ jobs:
         uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
         with:
           repository: nexthop-ai/nh
-          ref: main
+          # Nightly branches exist in nh by convention; building bgpd from
+          # nh's matching branch freezes the BGP pin and the Bazel harness,
+          # so the RPM stays a remote-cache hit.
+          ref: ${{ inputs.ref || 'main' }}
           path: nh
           token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
           submodules: true
