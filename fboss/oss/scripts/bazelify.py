@@ -2305,6 +2305,43 @@ class BuildFileGenerator:
                     headers.append(fname)
         return headers
 
+    @staticmethod
+    def _discover_package_headers(
+        pkg_dir: Path, srcs: list[str], hdrs: list[str]
+    ) -> None:
+        """Append the package's undeclared .h files to hdrs (in place).
+
+        FBOSS BUCK files rarely declare all headers - they rely on Buck's
+        auto-header behavior. For Bazel, every header a target compiles
+        against must be a declared input: not only to avoid "undeclared
+        inclusion" errors when sandboxed, but because the remote cache keys
+        actions on declared inputs only -- an undeclared header can change
+        while the .o files that include it are served stale from the cache
+        (seen as link failures against symbols a header no longer declares).
+        Discover headers from:
+        1. All .h files in dirs that contain source files listed in srcs
+        2. All .h files in the package root directory
+        """
+        hdrs_set = set(hdrs)
+        # Collect all subdirectories that contain source files
+        src_dirs = {"."}
+        for s in srcs:
+            if "/" in s:
+                src_dirs.add(str(Path(s).parent))
+        for src_dir in sorted(src_dirs):
+            scan_dir = pkg_dir / src_dir if src_dir != "." else pkg_dir
+            if not scan_dir.is_dir():
+                continue
+            for hdr_path in sorted(scan_dir.glob("*.h")):
+                h = str(hdr_path.relative_to(pkg_dir))
+                if (
+                    h not in hdrs_set
+                    and "/facebook/" not in h
+                    and not h.startswith("facebook/")
+                ):
+                    hdrs.append(h)
+                    hdrs_set.add(h)
+
     def _translate_cpp_library(self, target: BuckTarget) -> str | None:  # noqa: PLR0912, PLR0915
         """Translate cpp_library to cc_library."""
         srcs = self._filter_files(target.srcs, target.buck_path)
@@ -2341,30 +2378,7 @@ class BuildFileGenerator:
                         continue
                 srcs.append(src_path)
 
-        # FBOSS BUCK files rarely declare all headers - they rely on Buck's
-        # auto-header behavior. For Bazel, we need all .h files in hdrs to
-        # avoid "undeclared inclusion" errors. Discover headers from:
-        # 1. All .h files in dirs that contain source files listed in srcs
-        # 2. All .h files in the package root directory
-        hdrs_set = set(hdrs)
-        # Collect all subdirectories that contain source files
-        src_dirs = {"."}
-        for s in srcs:
-            if "/" in s:
-                src_dirs.add(str(Path(s).parent))
-        for src_dir in sorted(src_dirs):
-            scan_dir = pkg_dir / src_dir if src_dir != "." else pkg_dir
-            if not scan_dir.is_dir():
-                continue
-            for hdr_path in sorted(scan_dir.glob("*.h")):
-                h = str(hdr_path.relative_to(pkg_dir))
-                if (
-                    h not in hdrs_set
-                    and "/facebook/" not in h
-                    and not h.startswith("facebook/")
-                ):
-                    hdrs.append(h)
-                    hdrs_set.add(h)
+        self._discover_package_headers(pkg_dir, srcs, hdrs)
 
         # If all sources were facebook/ internal, check if it's header-only
         if not srcs and not hdrs and (target.srcs or target.headers):
@@ -2458,6 +2472,12 @@ class BuildFileGenerator:
                 f"{target.buck_path}:{target.name} (all sources are facebook/ internal)"
             )
             return None
+
+        # cc_binary has no hdrs attribute: declared and discovered package
+        # headers go into srcs so they are inputs of the compile actions.
+        hdrs = self._filter_files(target.headers, target.buck_path)
+        self._discover_package_headers(pkg_dir, srcs, hdrs)
+        srcs = srcs + [h for h in hdrs if h not in srcs]
 
         deps = self.resolver.resolve_all(target)
         copts = self._get_copts(target)
