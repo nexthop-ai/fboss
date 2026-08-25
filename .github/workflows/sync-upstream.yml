@@ -61,6 +61,9 @@ jobs:
     name: fboss-sim CLI
     needs: sync-upstream
     if: needs.sync-upstream.outputs.push_direct == 'true'
+    permissions:
+      contents: read
+      pull-requests: read
     uses: ./.github/workflows/fboss-sim-cli.yml
     with:
       ref: ${{ needs.sync-upstream.outputs.sync_branch }}
