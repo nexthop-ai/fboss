@@ -278,12 +278,8 @@ cpp_unittest(
         "//fboss/cli/fboss2/commands/show/systemport:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/teflow:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/transceiver:model-cpp2-types",
-<<<<<<< HEAD
-        "//fboss/platform/fan_service/if:fan_service-cpp2-types",
-||||||| a75ad2f54f
-=======
         "//fboss/lib/phy:phy-cpp2-types",
->>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
+        "//fboss/platform/fan_service/if:fan_service-cpp2-types",
         "//folly:dynamic",
         "//folly:file_util",
         "//folly:network_address",
