@@ -96,8 +96,7 @@ else
   exit 1
 fi
 
-<<<<<<< HEAD
-# 7. Enable fsdb (always) and bgpd (only when packaged), matching the distro
+# 8. Enable fsdb (always) and bgpd (only when packaged), matching the distro
 # image's service set. bgpd retries its FSDB/FibService connections, so no
 # unit ordering is needed.
 echo "→ Enabling fsdb service..."
@@ -112,11 +111,7 @@ else
   echo "→ bgpd not packaged; skipping bgpd service enablement"
 fi
 
-||||||| a75ad2f54f
-# 7. Mask monolithic agent service (can be unmasked at runtime with switch-agent-mode.sh)
-=======
->>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
-# 8. Mask monolithic agent service (can be unmasked at runtime with switch-agent-mode.sh)
+# 9. Mask monolithic agent service (can be unmasked at runtime with switch-agent-mode.sh)
 echo "→ Masking monolithic agent service..."
 systemctl mask wedge_agent.service || true
 
