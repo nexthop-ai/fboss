@@ -26,7 +26,9 @@ PROFILE_SPEED: dict[int, int] = {
     9: 200000,
     10: 400000,
     11: 10000,
+    12: 10000,
     14: 25000,
+    16: 25000,
     19: 50000,
     21: 50000,
     22: 100000,
@@ -34,6 +36,7 @@ PROFILE_SPEED: dict[int, int] = {
     24: 200000,
     25: 200000,
     26: 400000,
+    30: 25000,
     32: 400000,
     35: 400000,
     36: 53000,
@@ -45,16 +48,41 @@ PROFILE_SPEED: dict[int, int] = {
     43: 400000,
     45: 400000,
     47: 100000,
+    48: 50000,
     49: 100000,
     50: 800000,
     54: 800000,
     55: 800000,
     56: 800000,
+    62: 25000,
     63: 1600000,
     64: 1600000,
 }
 
-OPTICAL_PROFILES = {1, 3, 8, 9, 10, 23, 25, 26, 37, 38, 39, 42, 47, 54, 55, 56, 63, 64}
+OPTICAL_PROFILES = {
+    1,
+    3,
+    8,
+    9,
+    10,
+    12,
+    23,
+    25,
+    26,
+    30,
+    37,
+    38,
+    39,
+    42,
+    47,
+    48,
+    54,
+    55,
+    56,
+    62,
+    63,
+    64,
+}
 
 CORE_TYPE_TO_ASIC: dict[str, int] = {
     "TH5_NIF": 13,
@@ -76,6 +104,15 @@ VOQ_ASIC_TYPES = {11, 14, 23, 24, 27}
 
 SWITCH_TYPE_NPU = 0
 SWITCH_TYPE_VOQ = 2
+
+# switch_config.thrift PortType, as spelled in the Port_Type CSV column.
+PORT_TYPE_INTERFACE = "0"
+PORT_TYPE_MANAGEMENT = "4"
+
+# Shown in the Description column of "fboss2 show interface". These ports read
+# "down" with an empty cage, which is easily mistaken for the BMC/CPU
+# management NIC being down.
+MANAGEMENT_PORT_DESCRIPTION = "Management port (front-panel)"
 
 # G202X (asicType 20) only has 8 CPU queues; queue 9 crashes SAI on trap install.
 HIGH_PRIO_CPU_QUEUE_BY_ASIC: dict[int, int] = {20: 7}
@@ -354,19 +391,82 @@ def _port_name_sort_key(name: str) -> list[int | str]:
     return [int(tok) if tok.isdigit() else tok for tok in re.split(r"(\d+)", name)]
 
 
-def _select_primary_ports(ppm_rows: list[dict[str, str]]) -> list[dict[str, str]]:
-    """Filter to primary INTERFACE ports (ending in /1), sorted by front-panel order."""
+def _select_ports_of_type(
+    ppm_rows: list[dict[str, str]], port_type: str
+) -> list[dict[str, str]]:
+    """Filter to primary ports (ending in /1) of one type, in front-panel order."""
     selected = []
     for row in ppm_rows:
         port_name = row.get("Port_Name", "").strip()
         if (
-            row.get("Port_Type", "0").strip() == "0"
+            row.get("Port_Type", "0").strip() == port_type
             and _is_primary_port(port_name)
             and row.get("Supported_Port_Profiles", "").strip()
         ):
             selected.append(row)
     selected.sort(key=lambda r: _port_name_sort_key(r["Port_Name"].strip()))
     return selected
+
+
+def _select_primary_ports(ppm_rows: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Filter to primary INTERFACE ports (ending in /1), sorted by front-panel order."""
+    return _select_ports_of_type(ppm_rows, PORT_TYPE_INTERFACE)
+
+
+def _select_management_ports(ppm_rows: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Filter to the primary MANAGEMENT ports, sorted by front-panel order.
+
+    Platforms with two entries come in two flavours: two distinct front-panel
+    management ports (nh4220f's eth1/65/1 and eth1/66/1), both of which are
+    kept, and a breakout subsidiary of a single port (wedge800bact's eth1/33/3
+    under eth1/33/1), which is elided exactly like a data-port breakout.
+    """
+    return _select_ports_of_type(ppm_rows, PORT_TYPE_MANAGEMENT)
+
+
+def _build_management_ports(selected_rows: list[dict[str, str]]) -> list[dict]:
+    """Build DISABLED port entries for the management ports.
+
+    A MANAGEMENT_PORT is an ASIC front-panel port wired to a QSFP28/OSFP cage
+    and reserved for management traffic -- not the BMC/CPU NIC that carries
+    ssh, which no platform mapping describes. Expect these to read "down" in
+    ``fboss2 show interface`` whenever their cage is empty.
+
+    The SDK creates these at init regardless of the agent config, so they must
+    be in the SwitchState for warm boot to claim the reloaded SAI handles --
+    without them ``checkUnexpectedUnclaimedWarmbootHandles`` aborts the agent.
+    DISABLED keeps them out of the VLAN/interface topology.
+    """
+    ports = []
+    for row in selected_rows:
+        profile_id, speed = _choose_profile(
+            row.get("Supported_Port_Profiles", "").strip()
+        )
+        scope_str = row.get("Scope", "0").strip()
+        ports.append(
+            {
+                "logicalID": int(row.get("Global_PortID", "0").strip()),
+                "name": row.get("Port_Name", "").strip(),
+                "description": MANAGEMENT_PORT_DESCRIPTION,
+                "state": 1,  # DISABLED
+                "speed": speed,
+                "profileID": profile_id,
+                "minFrameSize": 64,
+                "maxFrameSize": 9412,
+                "parserType": 1,
+                "routable": False,
+                "ingressVlan": 4094,
+                "pause": {"rx": False, "tx": False},
+                "sFlowIngressRate": 0,
+                "sFlowEgressRate": 0,
+                "loopbackMode": 0,
+                "portType": int(PORT_TYPE_MANAGEMENT),
+                "drainState": 0,
+                "scope": int(scope_str) if scope_str.isdigit() else 0,
+                "conditionalEntropyRehash": False,
+            }
+        )
+    return ports
 
 
 def _build_ports_vlans_interfaces(
@@ -530,6 +630,7 @@ def generate_config(
     ports, port_vlans, vlan_ports, interfaces = _build_ports_vlans_interfaces(
         selected_rows, is_npu=switch_type == SWITCH_TYPE_NPU
     )
+    ports.extend(_build_management_ports(_select_management_ports(ppm_rows)))
 
     # Loopback interface (VLAN-based, virtual, no physical port)
     interfaces.insert(
