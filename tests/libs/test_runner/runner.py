@@ -874,6 +874,10 @@ class BaseHwTestRunner(ABC):
         for key, value in totals.items():
             merged.set(key, str(value))
         merged.set("time", f"{total_time:.3f}")
+        if not merged.get("timestamp"):
+            # No pass contributed a timestamp (every filter skipped); an empty
+            # one breaks the orchestrator's junit date parsing.
+            merged.set("timestamp", datetime.now().isoformat(timespec="seconds"))
 
         ET.indent(testsuites_el)
         ET.ElementTree(testsuites_el).write("/tmp/tr.xml", encoding="UTF-8", xml_declaration=True)
@@ -1487,6 +1491,12 @@ class LinkTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
     # the one port it tests. Matched against the generated class names.
     _BOTH_ENDS_TOKEN = "TCVR_L"
 
+    # Must stay in step with kNumPort in AgentEnsemblePtpTests.cpp: these tests
+    # flap the first 5 cabled ports (by port id) and need one snake pair
+    # untouched by the flap to keep the PTP loop routable.
+    _PTP_FLAP_TEST_SUBSTRINGS = ("enablePtpPortDown", "verifyPtpTcAfterLinkFlap")
+    _PTP_FLAPPED_PORT_COUNT = 5
+
     _BASE_CONFIG_DIR = Path("fboss/oss/link_test_configs")
     _REMOTE_CONFIG_PATH = "/home/netops/link_test_config.materialized_JSON"
     _SYSTEM_QSFP_CONFIG_PATH = "/etc/coop/qsfp.conf"
@@ -1525,6 +1535,41 @@ class LinkTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
             )
         return any(media_by_port.get(port) == media for port in pairs)
 
+    def _port_sort_key(self, port_name: str):
+        """Order ports the way the flat_set<PortDescriptor> in the tests does:
+        by platform-mapping port id, falling back to the numeric fields of the
+        name when the mapping is unavailable."""
+        if self._cached_port_map is None:
+            try:
+                model = _normalize_model(self.tc["model"])
+                self._cached_port_map = _load_platform_mapping(self._config_name(model))
+            except (OSError, KeyError, ValueError):
+                self._cached_port_map = {}
+        info = self._cached_port_map.get(port_name)
+        if info is not None:
+            return (0, info.logical_id)
+        return (1, tuple(int(n) for n in re.findall(r"\d+", port_name)))
+
+    def _ptp_flap_pair_survives(self, pass_ports: list[str]) -> bool:
+        """The PTP flap tests flap the first _PTP_FLAPPED_PORT_COUNT cabled
+        ports, purging their ECMP next hops; the loop only survives if a snake
+        pair sits fully outside that set. No snake-pairs data: don't gate."""
+        allowed = set(pass_ports)
+        # Only ports of a pair with both ends present are cabled in the
+        # generated config (see pre_test); the rest never come up.
+        pairs = {
+            port: peer
+            for port, peer in self._load_snake_pairs().items()
+            if port in allowed and peer in allowed
+        }
+        if not pairs:
+            return True
+        cabled = set(pairs) | set(pairs.values())
+        flapped = set(sorted(cabled, key=self._port_sort_key)[: self._PTP_FLAPPED_PORT_COUNT])
+        return any(
+            port not in flapped and peer not in flapped for port, peer in pairs.items()
+        )
+
     def _gate_filters(
         self, patterns: list[str], media_by_port: dict[str, str | None], optics_ports: list[str]
     ) -> tuple[list[str], list[tuple[str, str]]]:
@@ -1532,12 +1577,26 @@ class LinkTestRunner(_CablingAwareRunnerMixin, BaseHwTestRunner):
 
         PRBS patterns naming no media are gated too: they would expand to every
         media-templated class, including ones with no ports, and abort the binary.
+
+        PTP flap patterns are gated on a snake pair surviving the flap.
         """
+        ptp_flap_ok = self._ptp_flap_pair_survives(list(media_by_port))
         optical = set(optics_ports)
         eligible = {p: m for p, m in media_by_port.items() if p in optical}
         pairs = {p: peer for p, peer in self._load_snake_pairs().items() if p in eligible and peer in eligible}
         kept, skipped = [], []
         for pattern in patterns:
+            if any(s in pattern for s in self._PTP_FLAP_TEST_SUBSTRINGS):
+                if ptp_flap_ok:
+                    kept.append(pattern)
+                else:
+                    reason = (
+                        f"no snake pair outside the first {self._PTP_FLAPPED_PORT_COUNT} "
+                        "flapped ports; PTP loop unroutable after flap"
+                    )
+                    logger.warning("Skipping %s: %s", pattern, reason)
+                    skipped.append((pattern, reason))
+                continue
             media = self._media_token_in(pattern)
             if media is None and "Prbs" not in pattern:
                 kept.append(pattern)

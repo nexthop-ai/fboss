@@ -427,3 +427,93 @@ class TestGateFiltersDefault:
         )
         assert kept == ["*Foo*", "*Prbs*FR4_400G*"]
         assert skipped == []
+
+
+def _copper(port_range):
+    return {f"eth1/{n}/1": {"is_copper": True, "media_interface": None} for n in port_range}
+
+
+def _snake(*pairs):
+    return {f"eth1/{a}/1": f"eth1/{z}/1" for a, z in pairs}
+
+
+_PTP_FLAP = "*PtpTests*enablePtpPortDown*"
+_PTP_NO_SURVIVOR_REASON = (
+    "no snake pair outside the first 5 flapped ports; PTP loop unroutable after flap"
+)
+
+
+class TestPtpFlapGate:
+    """LinkTestRunner._gate_filters(): the PTP flap tests take the first 5
+    cabled ports down, purging their ECMP next hops for good; without a snake
+    pair fully outside that set the PTP loop can't route and the test fails,
+    so the pattern must be skipped instead."""
+
+    def test_surviving_pair_runs(self, tmp_path, monkeypatch):
+        result, _, execute_calls, skipped = _run_media_gated(
+            tmp_path, monkeypatch,
+            filters=[_PTP_FLAP],
+            ports_info=_copper(range(1, 11)),
+            pairs=_snake((1, 2), (3, 4), (5, 6), (7, 8), (9, 10)),
+        )
+        assert result is True
+        assert execute_calls == [[_PTP_FLAP]]
+        assert skipped == []
+
+    def test_all_pairs_touched_by_flap_skips(self, tmp_path, monkeypatch):
+        result, _, execute_calls, skipped = _run_media_gated(
+            tmp_path, monkeypatch,
+            filters=[_PTP_FLAP, "*LinkTest*trafficRxTx*"],
+            ports_info=_copper(range(1, 7)),
+            pairs=_snake((1, 2), (3, 4), (5, 6)),
+        )
+        assert result is True
+        assert execute_calls == [["*LinkTest*trafficRxTx*"]]
+        assert skipped == [(_PTP_FLAP, _PTP_NO_SURVIVOR_REASON)]
+
+    def test_verify_ptp_tc_after_link_flap_gated_too(self, tmp_path, monkeypatch):
+        pattern = "*PtpTests*verifyPtpTcAfterLinkFlap*"
+        result, _, execute_calls, skipped = _run_media_gated(
+            tmp_path, monkeypatch,
+            filters=[pattern],
+            ports_info=_copper(range(1, 7)),
+            pairs=_snake((1, 2), (3, 4), (5, 6)),
+        )
+        assert result is True
+        assert execute_calls == []
+        assert skipped == [(pattern, _PTP_NO_SURVIVOR_REASON)]
+
+    def test_no_snake_pairs_data_does_not_gate(self, tmp_path, monkeypatch):
+        result, _, execute_calls, skipped = _run_media_gated(
+            tmp_path, monkeypatch,
+            filters=[_PTP_FLAP],
+            ports_info=_copper(range(1, 7)),
+            pairs=None,
+        )
+        assert result is True
+        assert execute_calls == [[_PTP_FLAP]]
+        assert skipped == []
+
+    def test_pair_ends_must_both_be_cabled(self, tmp_path, monkeypatch):
+        # Pair (7, 8) would survive the flap, but eth1/8/1 isn't cabled, so it
+        # can't keep the loop alive.
+        result, _, execute_calls, skipped = _run_media_gated(
+            tmp_path, monkeypatch,
+            filters=[_PTP_FLAP],
+            ports_info=_copper([1, 2, 3, 4, 5, 6, 7]),
+            pairs=_snake((1, 2), (3, 4), (5, 6), (7, 8)),
+        )
+        assert result is True
+        assert execute_calls == []
+        assert skipped == [(_PTP_FLAP, _PTP_NO_SURVIVOR_REASON)]
+
+    def test_unpaired_ports_do_not_shift_the_flapped_set(self, tmp_path, monkeypatch):
+        result, _, execute_calls, skipped = _run_media_gated(
+            tmp_path, monkeypatch,
+            filters=[_PTP_FLAP],
+            ports_info=_copper(range(1, 11)),
+            pairs=_snake((5, 6), (7, 8), (9, 10)),
+        )
+        assert result is True
+        assert execute_calls == []
+        assert skipped == [(_PTP_FLAP, _PTP_NO_SURVIVOR_REASON)]
