@@ -15,6 +15,7 @@ add_executable(fboss2_cmd_config_test
   fboss/cli/fboss2/test/config/CmdConfigHistoryTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigHostnameTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigIcmpV4UnavailableSrcAddrTest.cpp
+  fboss/cli/fboss2/test/config/CmdConfigInterfaceDhcpRelayTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigInterfaceIpv6NdpTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigInterfaceSflowSampleDestTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigInterfaceSwitchportAccessVlanTest.cpp
@@ -52,6 +53,7 @@ add_executable(fboss2_cmd_config_test
   fboss/cli/fboss2/test/config/CmdDeleteDhcpTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteCoppCpuTrafficPolicyMatchActionTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteCoppReasonTest.cpp
+  fboss/cli/fboss2/test/config/CmdDeleteInterfaceDhcpRelayTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteInterfaceIpv6NdpTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteInterfaceQueuingPolicyTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteInterfaceTest.cpp
