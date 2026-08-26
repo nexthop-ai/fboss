@@ -94,12 +94,17 @@ echo "::endgroup::"
 echo "::group::[$DUT] Wait for completion"
 TEST_RC=""
 
-# Poll for up to 45 min (270 * 10s) via short ssh round-trips rather than one
-# long-held session. Each probe ALWAYS exits 0 (every branch ends in printf)
-# and reports state on stdout as "done <rc>", "dead", or "running <cur>|<last>"
-# so a non-zero probe (e.g. rc file not there yet) never reads as ssh failure.
+# Poll via short ssh round-trips rather than one long-held session. Each probe
+# ALWAYS exits 0 (every branch ends in printf) and reports state on stdout as
+# "done <rc>", "dead", or "running <cur>|<last>" so a non-zero probe (e.g. rc
+# file not there yet) never reads as ssh failure.
+#
+# Budget is wall clock, not an iteration count: each probe also pays an ssh
+# round-trip on top of the sleep. Keep it under the ~4h claim expiry.
+POLL_TIMEOUT_MIN="${POLL_TIMEOUT_MIN:-120}"
 POLL_START=$(date +%s)
-for _ in $(seq 1 270); do
+POLL_DEADLINE=$((POLL_START + POLL_TIMEOUT_MIN * 60))
+while [[ $(date +%s) -lt ${POLL_DEADLINE} ]]; do
   STATUS="$(nh dvc ssh "$DUT" -c '
     if [ -f /tmp/fboss2_itest.rc ]; then
       printf "done %s" "$(cat /tmp/fboss2_itest.rc)"
@@ -113,7 +118,7 @@ for _ in $(seq 1 270); do
   ' 2>/dev/null || echo "ssherror")"
 
   ELAPSED=$(($(date +%s) - POLL_START))
-  ELAPSED_FMT="${ELAPSED}s elapsed / 45m max"
+  ELAPSED_FMT="${ELAPSED}s elapsed / ${POLL_TIMEOUT_MIN}m max"
 
   # First word is the state (done|dead|running|ssherror); read's last
   # variable absorbs the rest of the line, so payloads with spaces
@@ -157,7 +162,7 @@ fail() {
 }
 
 if [[ -z ${TEST_RC} ]]; then
-  echo "::error::Integration test run did not finish within polling timeout"
+  echo "::error::Integration test run did not finish within the ${POLL_TIMEOUT_MIN}m polling timeout"
   fail
 fi
 

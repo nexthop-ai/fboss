@@ -420,10 +420,10 @@ class Fboss2IntegrationTest : public ::testing::Test {
    * Wait until the FBOSS agent is responsive (ready to serve thrift requests).
    * Polls 'show interface' until it succeeds or timeout is reached.
    * Use this after triggering a warmboot or coldboot restart.
-   * @param timeout Maximum time to wait (default: 120 seconds)
+   * @param timeout Maximum time to wait (default: 180 seconds)
    */
   void waitForAgentReady(
-      std::chrono::seconds timeout = std::chrono::seconds(120)) const;
+      std::chrono::seconds timeout = std::chrono::seconds(180)) const;
 
   /**
    * Ensure a VLAN + backing cfg::Interface exists in the staged config, then

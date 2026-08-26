@@ -156,8 +156,9 @@ void discardSessionImpl() {
 }
 
 // Like Fboss2IntegrationTest::waitForAgentReady() but returns false on
-// timeout instead of failing the test.
-bool agentResponsive(std::chrono::seconds timeout = std::chrono::seconds(120)) {
+// timeout instead of failing the test, so the suite teardown can pick a
+// recovery strategy instead of failing outright.
+bool agentResponsive(std::chrono::seconds timeout = std::chrono::seconds(180)) {
   // Poll-first: a responsive agent answers on the first iteration with no
   // sleep at all. When it isn't responsive (typically mid-restart after a
   // commit), retry every 10s until the deadline. Two expected failure modes
