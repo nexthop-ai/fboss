@@ -1,12 +1,6 @@
-<<<<<<< HEAD
 
 # bazelify: exclude-all
 
-# @lint-ignore FBCODETARGETSFILES Please migrate this to a BUCK file!
-||||||| a75ad2f54f
-# @lint-ignore FBCODETARGETSFILES Please migrate this to a BUCK file!
-=======
->>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
 load("@fbcode_macros//build_defs:python_binary.bzl", "python_binary")
 
 oncall("fboss_distro")
