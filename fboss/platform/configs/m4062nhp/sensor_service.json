@@ -18,7 +18,6 @@
           "compute": "@/1000.0"
         },
         {
-<<<<<<< HEAD
           "name": "DPM_1_POS12V",
           "sysfsPath": "/run/devmap/sensors/DPM_1/in1_input",
           "type": 1,
@@ -31,10 +30,6 @@
           "compute": "@/1000.0"
         },
         {
-||||||| a75ad2f54f
-          "name": "DPM_2_VIN",
-=======
->>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
           "name": "DPM_2_POS12V",
           "sysfsPath": "/run/devmap/sensors/DPM_2/in1_input",
           "type": 1,
@@ -239,7 +234,6 @@
           "compute": "@/1000.0"
         },
         {
-<<<<<<< HEAD
           "name": "CPU_TCTL_TEMP",
           "sysfsPath": "/run/devmap/sensors/CPU_TEMP/temp1_input",
           "type": 3,
@@ -300,11 +294,6 @@
           "compute": "@/1000.0"
         },
         {
-||||||| a75ad2f54f
-            "upperCriticalVal": 14,
-            "lowerCriticalVal": 9
-=======
->>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
           "name": "DIMM1_TEMP",
           "sysfsPath": "/run/devmap/sensors/DIMM1_TEMP/temp1_input",
           "type": 3,
@@ -335,16 +324,8 @@
           "sysfsPath": "/run/devmap/sensors/ASIC_TEMP/asic_temp_max_raw",
           "type": 3,
           "thresholds": {
-<<<<<<< HEAD
             "maxAlarmVal": 105,
             "upperCriticalVal": 112
-||||||| a75ad2f54f
-            "upperCriticalVal": 8191
-          }
-=======
-            "maxAlarmVal": 115,
-            "upperCriticalVal": 122
->>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
           },
           "compute": "379.10968 - 0.12984*@"
         },
@@ -353,16 +334,8 @@
           "sysfsPath": "/run/devmap/sensors/ASIC_TEMP/asic_temp_min_raw",
           "type": 3,
           "thresholds": {
-<<<<<<< HEAD
             "maxAlarmVal": 105,
             "upperCriticalVal": 112
-||||||| a75ad2f54f
-            "upperCriticalVal": 8191
-          }
-=======
-            "maxAlarmVal": 115,
-            "upperCriticalVal": 122
->>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
           },
           "compute": "379.10968 - 0.12984*@"
         },
