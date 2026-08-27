@@ -73,7 +73,6 @@
       ],
       "embeddedSensorConfigs": [
         {
-<<<<<<< HEAD
           "pmUnitScopedName": "CPU_TEMP",
           "sysfsPath": "/sys/bus/pci/drivers/k10temp/0000:00:18.3"
         },
@@ -92,15 +91,6 @@
         {
           "pmUnitScopedName": "DIMM2_TEMP",
           "sysfsPath": "/run/nexthop_bsp/sensors/DIMM2_TEMP"
-||||||| a75ad2f54f
-=======
-          "pmUnitScopedName": "DIMM1_TEMP",
-          "sysfsPath": "/sys/bus/i2c/devices/1-0050"
-        },
-        {
-          "pmUnitScopedName": "DIMM2_TEMP",
-          "sysfsPath": "/sys/bus/i2c/devices/1-0051"
->>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
         }
       ],
       "outgoingSlotConfigs": {
@@ -466,13 +456,9 @@
     "/run/devmap/sensors/DPM": "/[DPM]",
     "/run/devmap/sensors/DPM_1": "/[DPM_1]",
     "/run/devmap/sensors/DPM_2": "/[DPM_2]",
-<<<<<<< HEAD
     "/run/devmap/sensors/CPU_TEMP": "/[CPU_TEMP]",
     "/run/devmap/sensors/NVME_TEMP": "/[NVME_TEMP]",
     "/run/devmap/sensors/NIC_TEMP": "/[NIC_TEMP]",
-||||||| a75ad2f54f
-=======
->>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
     "/run/devmap/sensors/DIMM1_TEMP": "/[DIMM1_TEMP]",
     "/run/devmap/sensors/DIMM2_TEMP": "/[DIMM2_TEMP]",
     "/run/devmap/sensors/SWITCH_CARD_TEMP_SENSOR": "/SMB_SLOT@0/[SWITCH_CARD_TEMP_SENSOR]",
