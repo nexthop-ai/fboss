@@ -164,34 +164,6 @@ sai_status_t get_router_interface_attribute_fn(
   return SAI_STATUS_SUCCESS;
 }
 
-<<<<<<< HEAD
-sai_status_t get_router_interface_stats_fn(
-    sai_object_id_t /*router_interface_id*/,
-    uint32_t number_of_counters,
-    const sai_stat_id_t* /*counter_ids*/,
-    uint64_t* counters) {
-  for (uint32_t i = 0; i < number_of_counters; ++i) {
-    counters[i] = 0;
-  }
-  return SAI_STATUS_SUCCESS;
-}
-
-sai_status_t get_router_interface_stats_ext_fn(
-    sai_object_id_t router_interface_id,
-    uint32_t number_of_counters,
-    const sai_stat_id_t* counter_ids,
-    sai_stats_mode_t /*mode*/,
-    uint64_t* counters) {
-  // Delegate to the non-ext variant (ignoring mode) so the zero-fill loop lives
-  // in one place, matching FakeSaiPort/Tunnel/Queue convention.
-  return get_router_interface_stats_fn(
-      router_interface_id, number_of_counters, counter_ids, counters);
-}
-
-sai_status_t clear_router_interface_stats_fn(
-    sai_object_id_t /*router_interface_id*/,
-||||||| a75ad2f54f
-=======
 /*
  * No dataplane in fake sai, so stats stay 0. Must still be populated:
  * SaiRouterInterfaceManager::updateStats() calls getStats() every tick, and an
@@ -222,7 +194,6 @@ sai_status_t get_router_interface_stats_ext_fn(
 // noop: stats are always 0, nothing to clear.
 sai_status_t clear_router_interface_stats_fn(
     sai_object_id_t /*router_interface*/,
->>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
     uint32_t /*number_of_counters*/,
     const sai_stat_id_t* /*counter_ids*/) {
   return SAI_STATUS_SUCCESS;
@@ -240,15 +211,6 @@ void populate_router_interface_api(
       &set_router_interface_attribute_fn;
   _router_interface_api.get_router_interface_attribute =
       &get_router_interface_attribute_fn;
-<<<<<<< HEAD
-  _router_interface_api.get_router_interface_stats =
-      &get_router_interface_stats_fn;
-  _router_interface_api.get_router_interface_stats_ext =
-      &get_router_interface_stats_ext_fn;
-  _router_interface_api.clear_router_interface_stats =
-      &clear_router_interface_stats_fn;
-||||||| a75ad2f54f
-=======
 
   _router_interface_api.get_router_interface_stats =
       &get_router_interface_stats_fn;
@@ -257,7 +219,6 @@ void populate_router_interface_api(
   _router_interface_api.clear_router_interface_stats =
       &clear_router_interface_stats_fn;
 
->>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
   *router_interface_api = &_router_interface_api;
 }
 
