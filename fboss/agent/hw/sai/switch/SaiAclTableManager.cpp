@@ -2345,7 +2345,6 @@ void SaiAclTableManager::recreateAclTable(
   auto& aclEntryStore = saiStore_->get<SaiAclEntryTraits>();
   auto tableOid = static_cast<sai_object_id_t>(aclTable->adapterKey());
 
-<<<<<<< HEAD
   // Remove ACL entries from warmBootHandles_ (they reference counters and
   // table)
   aclEntryStore.removeUnclaimedWarmbootHandlesIf([tableOid](const auto& entry) {
@@ -2362,49 +2361,6 @@ void SaiAclTableManager::recreateAclTable(
   });
 
   // Remove group member and save its info for recreation
-||||||| a75ad2f54f
-  std::map<
-      SaiAclEntryTraits::AdapterHostKey,
-      SaiAclEntryTraits::CreateAttributes>
-      entries{};
-  // remove acl entries from acl table, retain their attributes
-  for (const auto& entry : aclEntryStore) {
-    auto key = entry.second.lock()->adapterHostKey();
-    if (std::get<SaiAclEntryTraits::Attributes::TableId>(key) !=
-        static_cast<sai_object_id_t>(aclTable->adapterKey())) {
-      continue;
-    }
-    auto value = entry.second.lock()->attributes();
-    auto aclEntry = aclEntryStore.setObject(key, value);
-    entries.emplace(key, value);
-    aclEntry.reset();
-  }
-  // remove group member and acl table, since store holds only weak ptr after
-  // setObject is invoked, clearing returned shared ptr is enough to destroy SAI
-  // object and call SAI remove API.
-  std::shared_ptr<SaiAclTableGroupMember> groupMember{};
-=======
-  std::map<
-      SaiAclEntryTraits::AdapterHostKey,
-      SaiAclEntryTraits::CreateAttributes>
-      entries{};
-  // remove acl entries from acl table, retain their attributes
-  for (const auto& entry : aclEntryStore) {
-    auto key = entry.second.lock()->adapterHostKey();
-    if (std::get<SaiAclEntryTraits::Attributes::TableId>(key) !=
-        static_cast<sai_object_id_t>(aclTable->adapterKey())) {
-      continue;
-    }
-    auto value = entry.second.lock()->attributes();
-    auto aclEntry = aclEntryStore.setObject(key, value);
-    entries.emplace(key, value);
-    aclEntry.reset();
-  }
-  // remove group member and acl table, since store holds only weak ptr after
-  // setObject is invoked, clearing returned shared ptr is enough to destroy
-  // SAI object and call SAI remove API.
-  std::shared_ptr<SaiAclTableGroupMember> groupMember{};
->>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
   SaiAclTableGroupMemberTraits::AdapterHostKey memberAdapterHostKey{};
   SaiAclTableGroupMemberTraits::CreateAttributes memberAttrs{};
   auto& aclGroupMemberStore = saiStore_->get<SaiAclTableGroupMemberTraits>();
