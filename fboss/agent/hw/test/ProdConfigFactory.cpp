@@ -118,12 +118,8 @@ uint16_t uplinksCountFromSwitch(PlatformType mode) {
     case PM::PLATFORM_ICECUBE800BC:
     case PM::PLATFORM_ICETEA800BC:
     case PM::PLATFORM_MONTBLANC:
-<<<<<<< HEAD
     case PM::PLATFORM_NH4010F:
     case PM::PLATFORM_NH4220F:
-||||||| a75ad2f54f
-=======
->>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
     case PM::PLATFORM_M4062NHP:
     case PM::PLATFORM_M5120CSC:
       return 4;
