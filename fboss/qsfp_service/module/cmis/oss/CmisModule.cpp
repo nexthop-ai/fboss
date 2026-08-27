@@ -6,10 +6,11 @@ namespace facebook {
 namespace fboss {
 
 /*
- * Always return false for vendor-specific.
+ * Keep modules in low power until AppSel programming completes, so the data
+ * path initializes once, on the configured application.
  */
 bool CmisModule::programAppSelInLowPowerMode() const {
-  return false;
+  return true;
 }
 
 /*
