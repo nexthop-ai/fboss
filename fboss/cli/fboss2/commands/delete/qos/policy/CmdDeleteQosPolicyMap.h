@@ -21,54 +21,6 @@
 namespace facebook::fboss {
 
 /**
-<<<<<<< HEAD
- * Which QosMap a delete targets. Only the two map types the config command
- * writes as individually addressable entries are removable today; the
- * remaining types CmdConfigQosPolicyMap supports are rejected by name.
- */
-enum class DeleteQosMapType {
-  DSCP, // QosMap.dscpMaps
-  TC_TO_QUEUE, // QosMap.trafficClassToQueueId
-};
-
-/**
- * Parses the entry to remove:
- *
- *   dscp <dscp-value>      - drop a DSCP codepoint from the policy's dscpMaps
- *   tc-to-queue <tc>       - drop a traffic class from trafficClassToQueueId
- *
- * The value alone identifies the entry: a DSCP codepoint appears in at most
- * one DscpQosMap, and a traffic class is a map key.
- */
-class DeleteQosMapEntry : public utils::BaseObjectArgType<std::string> {
- public:
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  /* implicit */ DeleteQosMapEntry(std::vector<std::string> v);
-
-  DeleteQosMapType getMapType() const {
-    return mapType_;
-  }
-
-  int16_t getKey() const {
-    return key_;
-  }
-
- private:
-  DeleteQosMapType mapType_{DeleteQosMapType::TC_TO_QUEUE};
-  int16_t key_{0};
-};
-
-struct CmdDeleteQosPolicyMapTraits : public WriteCommandTraits {
-  using ParentCmd = CmdDeleteQosPolicy;
-  static void addCliArg(CLI::App& cmd, std::vector<std::string>& args) {
-    cmd.add_option(
-           "map_entry",
-           args,
-           "<map-type> <value> where map-type is one of:\n"
-           "  dscp <dscp-value>   remove a DSCP to traffic-class mapping\n"
-           "  tc-to-queue <tc>    remove a traffic-class to queue mapping")
-||||||| a75ad2f54f
-=======
  * Which QosMap a delete targets — every map type CmdConfigQosPolicyMap can
  * write is removable, so config and delete cannot drift apart.
  */
@@ -128,7 +80,6 @@ struct CmdDeleteQosPolicyMapTraits : public WriteCommandTraits {
            "  pfc-pri-to-queue <pri>  remove a PFC priority to queue mapping\n"
            "  tc-to-pg <tc>           remove a traffic-class to PG mapping\n"
            "  pfc-pri-to-pg <pri>     remove a PFC priority to PG mapping")
->>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
         ->required()
         ->expected(2);
   }
