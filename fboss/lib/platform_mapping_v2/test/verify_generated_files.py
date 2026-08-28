@@ -7,19 +7,10 @@ import sys
 import unittest
 from typing import ClassVar
 
-<<<<<<< HEAD
-from fboss.lib.platform_mapping_v2.gen import generate_platform_mappings, INPUT_DIR
-||||||| a75ad2f54f
-from fboss.lib.platform_mapping_v2.gen import (
-    generate_platform_mappings,
-    INPUT_DIR as input_dir,
-)
-=======
 from fboss.lib.platform_mapping_v2.gen import (
     generate_platform_mappings_from_vendor_data,
 )
 from fboss.lib.platform_mapping_v2.read_files_utils import read_all_vendor_data
->>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
 
 
 class TestVerifyPlatformMappingGeneratedFiles(unittest.TestCase):
@@ -123,19 +114,8 @@ class TestVerifyPlatformMappingGeneratedFiles(unittest.TestCase):
         vendor_data_map = read_all_vendor_data(self._OSS_INPUT_DIR)
         for is_multi_npu, platforms in self._OSS_MULTI_NPU_SUPPORTED_PLATFORMS.items():
             for platform in platforms:
-<<<<<<< HEAD
-                generate_platform_mappings(
-                    INPUT_DIR + platform,
-||||||| a75ad2f54f
-                generate_platform_mappings(
-                    input_dir + platform,
-=======
                 generate_platform_mappings_from_vendor_data(
-                    vendor_data_map,
->>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
-                    self._TMP_GENERATED_DIR,
-                    platform,
-                    is_multi_npu,
+                    vendor_data_map, self._TMP_GENERATED_DIR, platform, is_multi_npu
                 )
 
     def _get_relative_files(self, directory: str) -> list[str]:
