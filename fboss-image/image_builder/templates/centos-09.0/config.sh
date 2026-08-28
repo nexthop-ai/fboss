@@ -41,6 +41,11 @@ setfacl -R -d -m g:switching:rwx -m o::rx /etc/coop
 # Default to python 3.12, also simulate the Debian python-is-python3 package
 update-alternatives --install /usr/bin/python python /usr/bin/python3.12 1
 update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
+# Fixup firewalld and its CLIs to definitively use the original system python
+# like the rest of the system tools and services.
+for fwbin in /usr/sbin/firewalld /usr/bin/firewall-cmd /usr/bin/firewall-offline-cmd; do
+  [ -f "$fwbin" ] && sed -i '1s#bin/python3 #bin/python3.9 #' "$fwbin"
+done
 
 # All dnf invocations with an invalid RPM repo configured will fail. Create the
 # metadata for the local_rpm_repo now to prevent that.
@@ -416,6 +421,16 @@ systemctl enable qsfp_service.service
 systemctl enable led_service.service
 systemctl enable fboss_sw_agent.service
 systemctl enable fboss_hw_agents.target
+
+# 7b. firewalld's default public zone allows only ssh/dhcpv6-client/cockpit
+# and rejects everything else. Enable the "fboss" service (thrift ports) and
+# the fboss-forward policy (transit) for the default zone here so the ports are
+# reachable off-box and transit traffic is not rejected.
+echo "Configuring firewalld for FBOSS..."
+if ! firewall-offline-cmd --zone=public --add-service=fboss; then
+  echo "config.sh: FATAL: could not add the fboss service to the public firewalldzone" >&2
+  exit 1
+fi
 
 # 8. NetworkManager: distro fixes profile permissions; cFBOSS disables the service.
 # cFBOSS also writes the /etc/fboss/platform marker so fboss_init.sh picks
