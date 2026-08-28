@@ -49,16 +49,13 @@ from neteng.fboss.switch_config.thrift_types import (
 )
 from neteng.fboss.transceiver.thrift_types import TransmitterTechnology, Vendor
 
-_FBOSS_DIR: str = os.getcwd() + "/fboss"
-INPUT_DIR: str = f"{_FBOSS_DIR}/lib/platform_mapping_v2/platforms/"
-
 
 def read_vendor_data(input_file_path: str) -> dict[str, str]:
     vendor_data = {}
     if not os.path.exists(input_file_path):
         raise FileNotFoundError(f"The folder '{input_file_path}' does not exist.")
 
-    for filename in os.listdir(input_file_path):
+    for filename in sorted(os.listdir(input_file_path)):
         filepath = os.path.join(input_file_path, filename)
         if (
             filepath.endswith(".csv") or filepath.endswith(".json")
@@ -70,11 +67,31 @@ def read_vendor_data(input_file_path: str) -> dict[str, str]:
     return vendor_data
 
 
+<<<<<<< HEAD
 def read_all_vendor_data(input_dir: str = INPUT_DIR) -> dict[str, dict[str, str]]:
+||||||| a75ad2f54f
+def read_all_vendor_data(input_dir: str = INPUT_DIR) -> Dict[str, Dict[str, str]]:
+=======
+def read_all_vendor_data(input_dir: str) -> Dict[str, Dict[str, str]]:
+>>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
     all_vendor_data = {}
     data_path = input_dir
+<<<<<<< HEAD
     print(f"Reading all vendor data in {data_path}...", file=sys.stderr)
     for filename in os.listdir(data_path):
+||||||| a75ad2f54f
+    print(
+        f"Reading all vendor data in {data_path}...",
+        file=sys.stderr,
+    )
+    for filename in os.listdir(data_path):
+=======
+    print(
+        f"Reading all vendor data in {data_path}...",
+        file=sys.stderr,
+    )
+    for filename in sorted(os.listdir(data_path)):
+>>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
         filepath = os.path.join(data_path, filename)
         if not os.path.isdir(filepath):
             continue
@@ -92,7 +109,6 @@ def get_content(directory: dict[str, str], filename: str) -> str:
 
 
 def column_int_enum_generator(string_list: str):
-    # pyre-ignore
     return IntEnum(
         "Column", {item: idx for idx, item in enumerate(string_list.split())}
     )

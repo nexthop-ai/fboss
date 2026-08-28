@@ -461,7 +461,15 @@ struct PortInfoThrift {
   32: switch_config.Scope scope;
   33: list<switch_config.PortNeighbor> expectedNeighborReachability;
   34: optional i64 cableLengthMeters;
+<<<<<<< HEAD
   35: optional i32 ingressVlan;
+||||||| a75ad2f54f
+=======
+  // Current UEC LLR state machine status. Set only for ports with an LLR
+  // profile bound on an LLR-capable ASIC.
+  35: optional hardware_stats.LlrTxStatus llrTxStatus;
+  36: optional hardware_stats.LlrRxStatus llrRxStatus;
+>>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
 }
 
 // Port queueing configuration
@@ -765,6 +773,7 @@ enum HwObjectType {
   SYSTEM_PORT = 25,
   FIRMWARE = 26,
   SRV6 = 27,
+  NEXT_HOP_GROUP_MEMBER = 28,
 }
 
 exception FbossFibUpdateError {
@@ -1262,6 +1271,9 @@ service FbossCtrl extends phy.FbossCommonPhyCtrl {
     1: fboss.FbossBaseError error,
   );
   map<string, hardware_stats.HwPortStats> getHwPortStats() throws (
+    1: fboss.FbossBaseError error,
+  );
+  map<string, hardware_stats.HwSwitchCounter> getRouteCounters() throws (
     1: fboss.FbossBaseError error,
   );
 

@@ -11,6 +11,7 @@ sed -i 's/^NAME=.*/NAME="FBOSS Distro Image"/' /usr/lib/os-release
 
 echo "Creating FBOSS log directories..."
 mkdir -p /var/facebook/logs/fboss/sdk
+mkdir -p /var/facebook/logs/fboss/archive
 semanage fcontext -a -t var_log_t '/var/facebook/logs/fboss(/.*)?'
 restorecon -Rv /var/facebook/logs/fboss
 
@@ -421,6 +422,9 @@ systemctl enable qsfp_service.service
 systemctl enable led_service.service
 systemctl enable fboss_sw_agent.service
 systemctl enable fboss_hw_agents.target
+# Normally enabled by systemd preset; enabled explicitly so FBOSS log rotation
+# does not depend on preset behaviour in the image build.
+systemctl enable logrotate.timer
 
 # 7b. firewalld's default public zone allows only ssh/dhcpv6-client/cockpit
 # and rejects everything else. Enable the "fboss" service (thrift ports) and

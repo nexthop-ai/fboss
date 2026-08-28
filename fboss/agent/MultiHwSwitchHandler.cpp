@@ -402,7 +402,9 @@ multiswitch::StateOperDelta MultiHwSwitchHandler::getNextStateOperDelta(
     throw FbossError("multi hw switch syncer not started");
   }
   auto iter = hwSwitchSyncers_.find(SwitchID(switchId));
-  CHECK(iter != hwSwitchSyncers_.end());
+  if (iter == hwSwitchSyncers_.end()) {
+    throw FbossError("No hw switch syncer for switch id: ", switchId);
+  }
   return iter->second->getNextStateOperDelta(
       std::move(prevOperResult), lastUpdateSeqNum);
 }
@@ -418,7 +420,9 @@ void MultiHwSwitchHandler::notifyHwSwitchDisconnected(
     throw FbossError("multi hw switch syncer not started");
   }
   auto iter = hwSwitchSyncers_.find(SwitchID(switchId));
-  CHECK(iter != hwSwitchSyncers_.end());
+  if (iter == hwSwitchSyncers_.end()) {
+    throw FbossError("No hw switch syncer for switch id: ", switchId);
+  }
 
   if (connectionStatusTable_.disconnected(SwitchID(switchId))) {
     // cancel any pending long poll request

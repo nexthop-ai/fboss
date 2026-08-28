@@ -52,6 +52,7 @@ class FakeAsic : public HwAsic {
       case HwAsic::Feature::NO_RX_REASON_TRAP:
       case HwAsic::Feature::SDK_REGISTER_DUMP:
       case HwAsic::Feature::ECMP_RANDOM_SPRAY_HIERARCHICAL_LEVEL:
+      case HwAsic::Feature::TEMPERATURE_MONITORING:
         return false;
 
       default:
@@ -235,6 +236,13 @@ class FakeAsic : public HwAsic {
     };
   }
   uint32_t getNumMemoryBuffers() const override {
+<<<<<<< HEAD
+||||||| a75ad2f54f
+    return 0;
+=======
+    // Divisor in SaiBufferManager::getIngressPoolDivisor(), called every stats
+    // update; 0 made the hw agent SIGFPE and crash loop.
+>>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
     return 1;
   }
   int getMidPriCpuQueueId() const override {

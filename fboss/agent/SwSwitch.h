@@ -1030,6 +1030,7 @@ class SwSwitch : public HwSwitchCallback {
       uint16_t switchIndex) const;
   std::map<uint16_t, multiswitch::HwSwitchStats> getHwSwitchStatsExpensive()
       const;
+  std::map<std::string, HwSwitchCounter> getRouteCounters() const;
 
   FabricReachabilityStats getFabricReachabilityStats();
   void setPortsDownForSwitch(SwitchID switchId);

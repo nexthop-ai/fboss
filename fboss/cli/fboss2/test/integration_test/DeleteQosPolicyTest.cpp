@@ -27,6 +27,7 @@
 
 #include <folly/json/dynamic.h>
 #include <folly/logging/xlog.h>
+<<<<<<< HEAD
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <string>
@@ -187,4 +188,155 @@ TEST_F(DeleteQosPolicyTest, DeleteMapEntriesThenPolicy) {
   result = runCli({"delete", "qos", "policy", kPolicy});
   EXPECT_NE(result.exitCode, 0);
   EXPECT_THAT(result.stderr, HasSubstr("No QoS policy named"));
+||||||| a75ad2f54f
+=======
+#include <gtest/gtest.h>
+#include <string>
+
+#include "fboss/cli/fboss2/test/integration_test/Fboss2IntegrationTest.h"
+
+using namespace facebook::fboss;
+
+class DeleteQosPolicyTest : public Fboss2IntegrationTest {
+ protected:
+  // Name used for the scratch policy this test creates and removes.
+  static constexpr auto kPolicy = "fboss2-it-scratch-qos";
+  static constexpr auto kDscp = "40";
+  static constexpr auto kTrafficClass = "5";
+  static constexpr auto kQueueId = "0";
+
+  static const folly::dynamic* findPolicy(
+      const folly::dynamic& config,
+      const std::string& name) {
+    if (!config.count("sw") || !config["sw"].count("qosPolicies")) {
+      return nullptr;
+    }
+    for (const auto& policy : config["sw"]["qosPolicies"]) {
+      if (policy.count("name") && policy["name"].asString() == name) {
+        return &policy;
+      }
+    }
+    return nullptr;
+  }
+
+  static bool hasPolicy(const folly::dynamic& config, const std::string& name) {
+    return findPolicy(config, name) != nullptr;
+  }
+
+  // True when the policy maps `dscp` to some traffic class.
+  static bool
+  hasDscp(const folly::dynamic& config, const std::string& name, int dscp) {
+    const auto* policy = findPolicy(config, name);
+    if (policy == nullptr || !policy->count("qosMap") ||
+        !(*policy)["qosMap"].count("dscpMaps")) {
+      return false;
+    }
+    for (const auto& entry : (*policy)["qosMap"]["dscpMaps"]) {
+      if (!entry.count("fromDscpToTrafficClass")) {
+        continue;
+      }
+      for (const auto& value : entry["fromDscpToTrafficClass"]) {
+        if (value.asInt() == dscp) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  // True when the policy maps traffic class `tc` to a queue.
+  static bool hasTcToQueue(
+      const folly::dynamic& config,
+      const std::string& name,
+      const std::string& tc) {
+    const auto* policy = findPolicy(config, name);
+    if (policy == nullptr || !policy->count("qosMap") ||
+        !(*policy)["qosMap"].count("trafficClassToQueueId")) {
+      return false;
+    }
+    return (*policy)["qosMap"]["trafficClassToQueueId"].count(tc) > 0;
+  }
+};
+
+TEST_F(DeleteQosPolicyTest, DeleteMapEntriesThenPolicy) {
+  // 1. Create a scratch policy carrying one dscp mapping and one tc-to-queue
+  //    mapping. `config qos policy <name> map ...` creates the policy when it
+  //    does not already exist.
+  XLOG(INFO) << "Creating qos policy " << kPolicy;
+  auto result = runCli(
+      {"config",
+       "qos",
+       "policy",
+       kPolicy,
+       "map",
+       "dscp",
+       kDscp,
+       "traffic-class",
+       kTrafficClass});
+  ASSERT_EQ(result.exitCode, 0)
+      << "stdout=" << result.stdout << " stderr=" << result.stderr;
+
+  result = runCli(
+      {"config",
+       "qos",
+       "policy",
+       kPolicy,
+       "map",
+       "tc-to-queue",
+       kTrafficClass,
+       kQueueId});
+  ASSERT_EQ(result.exitCode, 0)
+      << "stdout=" << result.stdout << " stderr=" << result.stderr;
+  commitConfig();
+
+  auto config = waitForRunningConfig([&](const folly::dynamic& cfg) {
+    return hasPolicy(cfg, kPolicy) && hasDscp(cfg, kPolicy, std::stoi(kDscp)) &&
+        hasTcToQueue(cfg, kPolicy, kTrafficClass);
+  });
+  ASSERT_TRUE(hasPolicy(config, kPolicy))
+      << "qos policy " << kPolicy << " missing after commit";
+  ASSERT_TRUE(hasDscp(config, kPolicy, std::stoi(kDscp)));
+  ASSERT_TRUE(hasTcToQueue(config, kPolicy, kTrafficClass));
+
+  // 2. Delete the dscp mapping. The tc-to-queue mapping must survive.
+  XLOG(INFO) << "Deleting dscp " << kDscp << " from " << kPolicy;
+  result = runCli({"delete", "qos", "policy", kPolicy, "map", "dscp", kDscp});
+  ASSERT_EQ(result.exitCode, 0)
+      << "stdout=" << result.stdout << " stderr=" << result.stderr;
+  commitConfig();
+  config = waitForRunningConfig([&](const folly::dynamic& cfg) {
+    return !hasDscp(cfg, kPolicy, std::stoi(kDscp));
+  });
+  EXPECT_FALSE(hasDscp(config, kPolicy, std::stoi(kDscp)));
+  EXPECT_TRUE(hasTcToQueue(config, kPolicy, kTrafficClass))
+      << "deleting the dscp mapping must not touch trafficClassToQueueId";
+
+  // 3. Delete the tc-to-queue mapping.
+  XLOG(INFO) << "Deleting tc-to-queue " << kTrafficClass << " from " << kPolicy;
+  result = runCli(
+      {"delete",
+       "qos",
+       "policy",
+       kPolicy,
+       "map",
+       "tc-to-queue",
+       kTrafficClass});
+  ASSERT_EQ(result.exitCode, 0)
+      << "stdout=" << result.stdout << " stderr=" << result.stderr;
+  commitConfig();
+  config = waitForRunningConfig([&](const folly::dynamic& cfg) {
+    return !hasTcToQueue(cfg, kPolicy, kTrafficClass);
+  });
+  EXPECT_FALSE(hasTcToQueue(config, kPolicy, kTrafficClass));
+
+  // 4. Delete the policy itself. Nothing references it, so this is allowed.
+  XLOG(INFO) << "Deleting qos policy " << kPolicy;
+  result = runCli({"delete", "qos", "policy", kPolicy});
+  ASSERT_EQ(result.exitCode, 0)
+      << "stdout=" << result.stdout << " stderr=" << result.stderr;
+  commitConfig();
+  config = waitForRunningConfig(
+      [&](const folly::dynamic& cfg) { return !hasPolicy(cfg, kPolicy); });
+  EXPECT_FALSE(hasPolicy(config, kPolicy));
+>>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
 }

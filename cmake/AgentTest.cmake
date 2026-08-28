@@ -89,6 +89,7 @@ target_link_libraries(async_logger_test
 
 gtest_discover_tests(async_logger_test)
 
+<<<<<<< HEAD
 add_executable(switch_handler_test
   fboss/util/oss/TestMain.cpp
   fboss/agent/test/SwitchHandlerTest.cpp
@@ -105,6 +106,21 @@ target_link_libraries(switch_handler_test
 )
 
 gtest_discover_tests(switch_handler_test)
+||||||| a75ad2f54f
+=======
+add_executable(mpls_handler_test
+  fboss/util/oss/TestMain.cpp
+  fboss/agent/test/MPLSHandlerTest.cpp
+)
+
+target_link_libraries(mpls_handler_test
+  agent_test_utils
+  ${GTEST}
+  ${LIBGMOCK_LIBRARIES}
+)
+
+gtest_discover_tests(mpls_handler_test)
+>>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
 
 add_library(agent_test_lib
   fboss/agent/test/AgentTest.cpp

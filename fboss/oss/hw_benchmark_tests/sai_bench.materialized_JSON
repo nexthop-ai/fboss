@@ -3,6 +3,10 @@
   "known_bad_tests": {
     "brcm/10.2.0.0_odp/tomahawk3_pciegen3": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -48,6 +52,10 @@
         }
     ],
     "brcm/10.2.0.0_odp/tomahawk3_pciegen3/mono": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -95,6 +103,10 @@
     ],
     "brcm/10.2.0.0_odp/tomahawk3_pciegen3/multi_switch": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -141,6 +153,10 @@
     ],
     "brcm/10.2.0.0_odp/tomahawk4": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -182,6 +198,10 @@
         }
     ],
     "brcm/10.2.0.0_odp/tomahawk4/mono": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -225,6 +245,10 @@
     ],
     "brcm/10.2.0.0_odp/tomahawk4/multi_switch": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -267,6 +291,10 @@
     ],
     "brcm/10.2.0.0_odp/tomahawk5": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -288,6 +316,10 @@
         }
     ],
     "brcm/10.2.0.0_odp/tomahawk5/mono": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -311,6 +343,10 @@
     ],
     "brcm/10.2.0.0_odp/tomahawk5/multi_switch": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -332,6 +368,10 @@
         }
     ],
     "brcm/10.2.0.0_odp/tomahawk_pentium": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -415,6 +455,10 @@
     ],
     "brcm/10.2.0.0_odp/tomahawk_pentium/mono": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -496,6 +540,10 @@
         }
     ],
     "brcm/10.2.0.0_odp/tomahawk_pentium/multi_switch": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -599,6 +647,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": "HwSrv6.*",
           "reason": "Srv6 not implemented on DSF"
         },
@@ -651,6 +703,10 @@
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
           "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
         },
         {
           "test_name_regex": "HwSrv6.*",
@@ -707,6 +763,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": "HwSrv6.*",
           "reason": "Srv6 not implemented on DSF"
         },
@@ -741,6 +801,10 @@
     ],
     "brcm/11.7.0.0_dnx_odp/ramon3": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": "HwInitAndExit.*G.*",
           "reason": "Init and exit tests have assumption on uplink/downlink vlans, which is not available in DSF"
         },
@@ -750,6 +814,10 @@
         }
     ],
     "brcm/11.7.0.0_dnx_odp/ramon3/mono": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": "HwInitAndExit.*G.*",
           "reason": "Init and exit tests have assumption on uplink/downlink vlans, which is not available in DSF"
@@ -761,6 +829,10 @@
     ],
     "brcm/11.7.0.0_dnx_odp/ramon3/multi_switch": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": "HwInitAndExit.*G.*",
           "reason": "Init and exit tests have assumption on uplink/downlink vlans, which is not available in DSF"
         },
@@ -770,6 +842,10 @@
         }
     ],
     "brcm/11.7.0.0_odp/tomahawk3_pciegen3": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -817,6 +893,10 @@
     ],
     "brcm/11.7.0.0_odp/tomahawk3_pciegen3/mono": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -862,6 +942,10 @@
         }
     ],
     "brcm/11.7.0.0_odp/tomahawk3_pciegen3/multi_switch": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -909,6 +993,10 @@
     ],
     "brcm/11.7.0.0_odp/tomahawk4": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -938,6 +1026,10 @@
         }
     ],
     "brcm/11.7.0.0_odp/tomahawk4/mono": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -969,6 +1061,10 @@
     ],
     "brcm/11.7.0.0_odp/tomahawk4/multi_switch": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -999,6 +1095,10 @@
     ],
     "brcm/11.7.0.0_odp/tomahawk5": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -1021,6 +1121,10 @@
     ],
     "brcm/11.7.0.0_odp/tomahawk5/mono": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -1042,6 +1146,10 @@
         }
     ],
     "brcm/11.7.0.0_odp/tomahawk5/multi_switch": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -1083,6 +1191,10 @@
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
           "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
         },
         {
           "test_name_regex": "HwSrv6.*",
@@ -1147,6 +1259,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": "HwSrv6.*",
           "reason": "Srv6 not implemented on DSF"
         },
@@ -1195,6 +1311,10 @@
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
           "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
         },
         {
           "test_name_regex": "HwSrv6.*",
@@ -1259,6 +1379,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": "HwSrv6.*",
           "reason": "Srv6 not implemented on DSF"
         },
@@ -1289,6 +1413,10 @@
     ],
     "brcm/12.2.0.0_dnx_odp/ramon3": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": "HwInitAndExit.*G.*",
           "reason": "Init and exit tests have assumption on uplink/downlink vlans, which is not available in DSF"
         },
@@ -1298,6 +1426,10 @@
         }
     ],
     "brcm/12.2.0.0_dnx_odp/ramon3/mono": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": "HwInitAndExit.*G.*",
           "reason": "Init and exit tests have assumption on uplink/downlink vlans, which is not available in DSF"
@@ -1309,6 +1441,10 @@
     ],
     "brcm/12.2.0.0_dnx_odp/ramon3/multi_switch": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": "HwInitAndExit.*G.*",
           "reason": "Init and exit tests have assumption on uplink/downlink vlans, which is not available in DSF"
         },
@@ -1318,6 +1454,10 @@
         }
     ],
     "brcm/13.0_ea_odp/tomahawk5": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -1341,6 +1481,10 @@
     ],
     "brcm/13.0_ea_odp/tomahawk5/mono": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -1363,6 +1507,10 @@
     ],
     "brcm/13.0_ea_odp/tomahawk5/multi_switch": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -1384,6 +1532,10 @@
         }
     ],
     "brcm/13.3.0.0_odp/tomahawk5": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -1431,6 +1583,10 @@
     ],
     "brcm/13.3.0.0_odp/tomahawk5/mono": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -1476,6 +1632,10 @@
         }
     ],
     "brcm/13.3.0.0_odp/tomahawk5/multi_switch": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -1523,6 +1683,10 @@
     ],
     "brcm/13.3.0.0_odp/tomahawk5t": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -1568,6 +1732,10 @@
         }
     ],
     "brcm/13.3.0.0_odp/tomahawk5t/mono": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -1615,6 +1783,10 @@
     ],
     "brcm/13.3.0.0_odp/tomahawk5t/multi_switch": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -1661,6 +1833,10 @@
     ],
     "brcm/14.2.0.0_odp/tomahawk6": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -1682,6 +1858,10 @@
         }
     ],
     "brcm/14.2.0.0_odp/tomahawk6/mono": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -1705,6 +1885,10 @@
     ],
     "brcm/14.2.0.0_odp/tomahawk6/multi_switch": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -1726,6 +1910,10 @@
         }
     ],
     "brcm/8.2.0.0_odp/tomahawk3_pciegen3": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -1773,6 +1961,10 @@
     ],
     "brcm/8.2.0.0_odp/tomahawk3_pciegen3/mono": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -1818,6 +2010,10 @@
         }
     ],
     "brcm/8.2.0.0_odp/tomahawk3_pciegen3/multi_switch": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -1865,6 +2061,10 @@
     ],
     "brcm/8.2.0.0_odp/tomahawk4": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -1906,6 +2106,10 @@
         }
     ],
     "brcm/8.2.0.0_odp/tomahawk4/mono": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -1949,6 +2153,10 @@
     ],
     "brcm/8.2.0.0_odp/tomahawk4/multi_switch": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -1990,6 +2198,10 @@
         }
     ],
     "brcm/8.2.0.0_odp/tomahawk_pentium": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -2073,6 +2285,10 @@
     ],
     "brcm/8.2.0.0_odp/tomahawk_pentium/mono": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -2154,6 +2370,10 @@
         }
     ],
     "brcm/8.2.0.0_odp/tomahawk_pentium/multi_switch": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -2237,6 +2457,10 @@
     ],
     "leaba/1.42.8/gibraltar": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -2282,6 +2506,10 @@
         }
     ],
     "leaba/1.42.8/gibraltar/mono": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -2329,6 +2557,10 @@
     ],
     "leaba/1.42.8/gibraltar/multi_switch": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -2374,6 +2606,10 @@
         }
     ],
     "leaba/24.8.3001/gibraltar": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -2421,6 +2657,10 @@
     ],
     "leaba/24.8.3001/gibraltar/mono": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -2467,6 +2707,10 @@
     ],
     "leaba/24.8.3001/gibraltar/multi_switch": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -2512,6 +2756,10 @@
         }
     ],
     "leaba/24.8.3001/graphene200": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -2563,6 +2811,10 @@
     ],
     "leaba/24.8.3001/graphene200/mono": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -2612,6 +2864,10 @@
         }
     ],
     "leaba/24.8.3001/graphene200/multi_switch": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -2663,6 +2919,10 @@
     ],
     "leaba/25.11.4210/gibraltar": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -2708,6 +2968,10 @@
         }
     ],
     "leaba/25.11.4210/gibraltar/mono": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -2755,6 +3019,10 @@
     ],
     "leaba/25.11.4210/gibraltar/multi_switch": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -2800,6 +3068,10 @@
         }
     ],
     "leaba/25.11.4210/graphene202x": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -2855,6 +3127,10 @@
     ],
     "leaba/25.11.4210/graphene202x/mono": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -2908,6 +3184,10 @@
         }
     ],
     "leaba/25.11.4210/graphene202x/multi_switch": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -2963,6 +3243,10 @@
     ],
     "leaba/25.5.4210/gibraltar": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -3008,6 +3292,10 @@
         }
     ],
     "leaba/25.5.4210/gibraltar/mono": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -3055,6 +3343,10 @@
     ],
     "leaba/25.5.4210/gibraltar/multi_switch": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -3100,6 +3392,10 @@
         }
     ],
     "leaba/25.5.4210/graphene200": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -3151,6 +3447,10 @@
     ],
     "leaba/25.5.4210/graphene200/mono": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -3200,6 +3500,10 @@
         }
     ],
     "leaba/25.5.4210/graphene200/multi_switch": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -3251,6 +3555,10 @@
     ],
     "leaba/26.2.4210/graphene200": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -3300,6 +3608,10 @@
         }
     ],
     "leaba/26.2.4210/graphene200/mono": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -3351,6 +3663,10 @@
     ],
     "leaba/26.2.4210/graphene200/multi_switch": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -3401,6 +3717,10 @@
     ],
     "nvda/2505.34/spectrum4": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -3446,6 +3766,10 @@
         }
     ],
     "nvda/2505.34/spectrum4/mono": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -3493,6 +3817,10 @@
     ],
     "nvda/2505.34/spectrum4/multi_switch": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -3538,6 +3866,10 @@
         }
     ],
     "nvda/2511.36/spectrum4": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -3585,6 +3917,10 @@
     ],
     "nvda/2511.36/spectrum4/mono": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -3630,6 +3966,10 @@
         }
     ],
     "nvda/2511.36/spectrum4/multi_switch": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
@@ -3677,6 +4017,10 @@
     ],
     "nvda/2605.37/spectrum4": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -3723,6 +4067,10 @@
     ],
     "nvda/2605.37/spectrum4/mono": [
         {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
+        {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"
         },
@@ -3768,6 +4116,10 @@
         }
     ],
     "nvda/2605.37/spectrum4/multi_switch": [
+        {
+          "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
+          "reason": "PBR ACL support has not landed yet"
+        },
         {
           "test_name_regex": ".*Voq.*",
           "reason": "VOQ tests not applicable to NPU"

@@ -582,6 +582,8 @@ cpp_library(
         "commands/show/facebook/openr/spark/CmdShowOpenrSparkNeighbors.cpp",
         "commands/show/facebook/openr/unicast_routes/CmdShowOpenrUnicastRoutes.cpp",
         "commands/show/facebook/state/CmdShowStateDrain.cpp",
+        "commands/show/facebook/te_srv6_agent/nexthopgroup/CmdShowTeSrv6AgentNexthopGroup.cpp",
+        "commands/show/facebook/te_srv6_agent/nexthopgroup/counters/CmdShowTeSrv6AgentNexthopGroupCounters.cpp",
         "commands/show/facebook/techsupport/CmdShowTechSupport.cpp",
         "commands/show/facebook/vip/fib/CmdShowVipsFib.cpp",
         "commands/show/facebook/vip/injectors/CmdShowVipsInjectors.cpp",
@@ -632,6 +634,7 @@ cpp_library(
         "commands/show/product/CmdShowProductDetails.cpp",
         "commands/show/rif/CmdShowRif.cpp",
         "commands/show/route/CmdShowRoute.cpp",
+        "commands/show/route/CmdShowRouteCounters.cpp",
         "commands/show/route/CmdShowRouteDetails.cpp",
         "commands/show/route/CmdShowRouteSummary.cpp",
         "commands/show/route/utils.cpp",
@@ -782,6 +785,8 @@ cpp_library(
         "commands/show/facebook/openr/spark/CmdShowOpenrSparkNeighbors.h",
         "commands/show/facebook/openr/unicast_routes/CmdShowOpenrUnicastRoutes.h",
         "commands/show/facebook/state/CmdShowStateDrain.h",
+        "commands/show/facebook/te_srv6_agent/nexthopgroup/CmdShowTeSrv6AgentNexthopGroup.h",
+        "commands/show/facebook/te_srv6_agent/nexthopgroup/counters/CmdShowTeSrv6AgentNexthopGroupCounters.h",
         "commands/show/facebook/techsupport/CmdShowTechSupport.h",
         "commands/show/facebook/vip/fib/CmdShowVipsFib.h",
         "commands/show/facebook/vip/injectors/CmdShowVipsInjectors.h",
@@ -834,6 +839,7 @@ cpp_library(
         "commands/show/product/CmdShowProductDetails.h",
         "commands/show/rif/CmdShowRif.h",
         "commands/show/route/CmdShowRoute.h",
+        "commands/show/route/CmdShowRouteCounters.h",
         "commands/show/route/CmdShowRouteDetails.h",
         "commands/show/route/CmdShowRouteSummary.h",
         "commands/show/route/utils.h",
@@ -931,6 +937,8 @@ cpp_library(
         "//fboss/cli/fboss2/commands/show/facebook/environment/temperature:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/facebook/openr:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/facebook/state:model-cpp2-types",
+        "//fboss/cli/fboss2/commands/show/facebook/te_srv6_agent/nexthopgroup:model-cpp2-types",
+        "//fboss/cli/fboss2/commands/show/facebook/te_srv6_agent/nexthopgroup/counters:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/facebook/techsupport:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/facebook/vip/fib:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/facebook/vip/injectors:model-cpp2-types",
@@ -1163,6 +1171,10 @@ cpp_library(
         "commands/config/session/CmdConfigSessionCommit.cpp",
         "commands/config/session/CmdConfigSessionDiff.cpp",
         "commands/config/session/CmdConfigSessionRebase.cpp",
+        "commands/config/srv6/CmdConfigSrv6.cpp",
+        "commands/config/srv6/my_sid/CmdConfigSrv6MySid.cpp",
+        "commands/config/srv6/my_sid/add/CmdConfigSrv6MySidAdd.cpp",
+        "commands/config/srv6/utils/Srv6MySidCliUtils.cpp",
         "commands/config/switch/CmdConfigSwitch.cpp",
         "commands/config/switch/admin_distance/CmdConfigAdminDistance.cpp",
         "commands/config/switch/hostname/CmdConfigHostname.cpp",
@@ -1305,6 +1317,10 @@ cpp_library(
         "commands/config/session/CmdConfigSessionCommit.h",
         "commands/config/session/CmdConfigSessionDiff.h",
         "commands/config/session/CmdConfigSessionRebase.h",
+        "commands/config/srv6/CmdConfigSrv6.h",
+        "commands/config/srv6/my_sid/CmdConfigSrv6MySid.h",
+        "commands/config/srv6/my_sid/add/CmdConfigSrv6MySidAdd.h",
+        "commands/config/srv6/utils/Srv6MySidCliUtils.h",
         "commands/config/switch/CmdConfigSwitch.h",
         "commands/config/switch/admin_distance/CmdConfigAdminDistance.h",
         "commands/config/switch/hostname/CmdConfigHostname.h",
@@ -1450,6 +1466,8 @@ cpp_binary(
 
 # bazelify: exclude
 cpp_binary(
+    # @autodeps-skip: This routing binary intentionally compiles shared fboss2
+    # sources directly; inferring their provider targets creates duplicate deps.
     name = "fboss2-routing-protocol",
     srcs = [
         "CmdHandlerImplBgp.cpp",
