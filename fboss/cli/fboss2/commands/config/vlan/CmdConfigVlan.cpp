@@ -32,16 +32,12 @@ CmdConfigVlanTraits::RetType CmdConfigVlan::queryClient(
     return fmt::format("VLAN {} already exists", static_cast<uint16_t>(vlanId));
   }
 
-<<<<<<< HEAD
   // createVlan inserts into swConfig.vlans() and swConfig.interfaces(), which
   // invalidates the pointers the cached PortMap holds. In production each CLI
   // invocation is its own process and rebuilds the map on load; the rebuild
   // matters for the test harness, which keeps the ConfigSession singleton
   // across commands.
   session.rebuildPortMap();
-||||||| a75ad2f54f
-=======
->>>>>>> 4c0febe6554dd53b1a6eed56b3bb194e2f42f408
   session.saveConfig();
 
   return fmt::format(

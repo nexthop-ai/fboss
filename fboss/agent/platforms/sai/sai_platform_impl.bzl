@@ -31,6 +31,7 @@ def sai_platform_impl():
                 # Exactly one chooseSaiPlatformImpl/createSaiPlatformPort
                 # definition may link; pick it per SAI flavor below.
                 "SaiPlatformInitBcm.cpp",
+                "SaiPlatformInitPai.cpp",
                 "SaiPlatformInitTajo.cpp",
                 "SaiPlatformInitYangra.cpp",
                 "SaiPlatformInitFake.cpp",
