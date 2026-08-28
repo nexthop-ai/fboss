@@ -27,6 +27,7 @@
 #include <vector>
 
 #include "fboss/cli/fboss2/utils/CmdUtilsCommon.h"
+#include "fboss/cli/fboss2/utils/LookupClassUtils.h"
 
 namespace facebook::fboss {
 
@@ -377,6 +378,33 @@ const std::vector<AclRuleRow>& matchFieldRows() {
          return onEntry(
              [plr](cfg::AclEntry& r) { r.packetLookupResult() = plr; });
        }},
+      // Same spelling as `config interface <intf> lookup-class`: a numeric id
+      // or a class name, parsed and range-checked by the shared helper.
+      {kAclRuleAttrLookupClassL2,
+       kOneValue,
+       kOneValue,
+       "<class-id>",
+       [](std::string_view, Values v) {
+         auto lc = lookup_class::parseLookupClassId(v[kValue0]);
+         return onEntry([lc](cfg::AclEntry& r) { r.lookupClassL2() = lc; });
+       }},
+      {kAclRuleAttrLookupClassNeighbor,
+       kOneValue,
+       kOneValue,
+       "<class-id>",
+       [](std::string_view, Values v) {
+         auto lc = lookup_class::parseLookupClassId(v[kValue0]);
+         return onEntry(
+             [lc](cfg::AclEntry& r) { r.lookupClassNeighbor() = lc; });
+       }},
+      {kAclRuleAttrLookupClassRoute,
+       kOneValue,
+       kOneValue,
+       "<class-id>",
+       [](std::string_view, Values v) {
+         auto lc = lookup_class::parseLookupClassId(v[kValue0]);
+         return onEntry([lc](cfg::AclEntry& r) { r.lookupClassRoute() = lc; });
+       }},
   };
   return kRows;
 }
@@ -638,30 +666,6 @@ std::string aclRuleAttrKeysCsv() {
 
 std::string aclRuleActionKeysCsv() {
   return rowKeysCsv(actionRows());
-}
-
-std::pair<cfg::AclTable*, std::string> findAclTable(
-    cfg::SwitchConfig& swConfig,
-    const std::string& tableName) {
-  if (!swConfig.aclTableGroups() || swConfig.aclTableGroups()->empty()) {
-    throw std::runtime_error(
-        "No aclTableGroups found in config. "
-        "Only field-56 (aclTableGroups) is supported; "
-        "the deprecated aclTableGroup (field 45) is not.");
-  }
-
-  for (auto& group : *swConfig.aclTableGroups()) {
-    auto& tables = *group.aclTables();
-    auto tit =
-        std::find_if(tables.begin(), tables.end(), [&](const cfg::AclTable& t) {
-          return *t.name() == tableName;
-        });
-    if (tit != tables.end()) {
-      return {&*tit, *group.name()};
-    }
-  }
-  throw std::runtime_error(
-      fmt::format("AclTable '{}' not found in any AclTableGroup", tableName));
 }
 
 } // namespace facebook::fboss

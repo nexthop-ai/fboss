@@ -12,7 +12,7 @@
 
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/cli/fboss2/CmdHandler.cpp"
-#include "fboss/cli/fboss2/commands/config/acl/rule/AclRuleAttrs.h"
+#include "fboss/cli/fboss2/commands/config/acl/AclConfigUtils.h"
 
 #include <fmt/format.h>
 #include <algorithm>
@@ -46,7 +46,7 @@ CmdDeleteAclRuleTraits::RetType CmdDeleteAclRule::queryClient(
   auto& swConfig = *config.sw();
 
   auto [matchingTable, matchingGroupName] =
-      findAclTable(swConfig, args.getTableName());
+      acl_utils::resolveAclTable(swConfig, args.getTableName());
 
   auto& entries = *matchingTable->aclEntries();
   auto eit =
@@ -64,22 +64,13 @@ CmdDeleteAclRuleTraits::RetType CmdDeleteAclRule::queryClient(
 
   entries.erase(eit);
 
-  // Drop any MatchToAction attached to this rule. ApplyThriftConfig's
-  // checkTrafficPolicyAclsExistInConfig rejects a config where a matcher
-  // references a non-existent AclEntry, so a leftover matchToAction would
-  // make `config session commit` fail. It would also silently re-attach
-  // on rule re-creation under the same name.
-  if (auto policy = swConfig.dataPlaneTrafficPolicy()) {
-    auto& mtaList = *policy->matchToAction();
-    mtaList.erase(
-        std::remove_if(
-            mtaList.begin(),
-            mtaList.end(),
-            [&](const cfg::MatchToAction& mta) {
-              return *mta.matcher() == args.getRuleName();
-            }),
-        mtaList.end());
-  }
+  // Drop any MatchToAction attached to this rule, in both the dataplane and
+  // the CPU policy. checkTrafficPolicyAclsExistInConfig walks both, so a
+  // leftover matcher in either makes `config session commit` fail. It would
+  // also silently re-attach on rule re-creation under the same name. A CoPP
+  // matcher needs no CLI to exist: rsw-style base configs ship
+  // cpuTrafficPolicy entries naming rules in aclTableGroups.
+  acl_utils::stripMatchersForRules(swConfig, {args.getRuleName()});
 
   // Removing an AclEntry takes the same dataplane path as mutating one —
   // processAclTableGroupDelta in SaiAclTableManager applies the diff at

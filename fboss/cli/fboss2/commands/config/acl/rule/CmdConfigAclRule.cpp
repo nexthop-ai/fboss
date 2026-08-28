@@ -12,6 +12,7 @@
 
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/cli/fboss2/CmdHandler.cpp"
+#include "fboss/cli/fboss2/commands/config/acl/AclConfigUtils.h"
 #include "fboss/cli/fboss2/commands/config/acl/rule/AclRuleAttrs.h"
 
 #include <fmt/format.h>
@@ -32,7 +33,10 @@ std::string aclRuleConfigHelpText() {
       "<table-name> <rule-name> <attr> <value> [<extra>] "
       "creates the rule if missing; <attr> is one of: " +
       aclRuleAttrKeysCsv() +
-      ". For 'action', <value> is one of: " + aclRuleActionKeysCsv() +
+      ". The lookup-class-* attrs take a class id or name, as "
+      "`config interface <intf> lookup-class` does"
+      ". For 'action', <value> is one of: " +
+      aclRuleActionKeysCsv() +
       " (with an attr-specific final token: queue id / dscp / tc / "
       "mirror name / counter name; 'redirect' takes 'nexthop <ip>'; "
       "permit/deny/trap-to-cpu/copy-to-cpu take no value).";
@@ -81,7 +85,7 @@ CmdConfigAclRuleTraits::RetType CmdConfigAclRule::queryClient(
   auto& swConfig = *config.sw();
 
   auto [matchingTable, matchingGroupName] =
-      findAclTable(swConfig, args.getTableName());
+      acl_utils::resolveAclTable(swConfig, args.getTableName());
 
   auto& entries = *matchingTable->aclEntries();
   auto eit =

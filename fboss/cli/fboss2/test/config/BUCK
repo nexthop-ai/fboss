@@ -12,6 +12,7 @@ cpp_unittest(
     srcs = [
         "BgpConfigSessionTest.cpp",  # bazelify: exclude
         "CmdConfigAclRuleTest.cpp",
+        "CmdConfigAclTest.cpp",
         "CmdConfigAdminDistanceTest.cpp",
         "CmdConfigAppliedInfoTest.cpp",
         "CmdConfigArpTest.cpp",
@@ -50,6 +51,7 @@ cpp_unittest(
         "CmdConfigVlanStaticMacTest.cpp",
         "CmdConfigVlanTest.cpp",
         "CmdDeleteAclRuleTest.cpp",
+        "CmdDeleteAclTableTest.cpp",
         "CmdDeleteAdminDistanceTest.cpp",
         "CmdDeleteIcmpV4UnavailableSrcAddrTest.cpp",
         "CmdDeleteArpTest.cpp",

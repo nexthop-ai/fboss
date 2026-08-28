@@ -19,6 +19,7 @@ cpp_binary(
     name = "fboss2_integration_test",
     srcs = [
         "ConfigAclRuleTest.cpp",
+        "ConfigAclTest.cpp",
         "ConfigAdminDistanceTest.cpp",
         "ConfigArpTest.cpp",
         "ConfigSflowSampleDestTest.cpp",

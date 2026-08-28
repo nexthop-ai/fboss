@@ -696,6 +696,8 @@ add_library(fboss2_lib
   fboss/cli/fboss2/utils/FilterUtils.h
   fboss/cli/fboss2/utils/LoopbackUtils.h
   fboss/cli/fboss2/utils/LoopbackUtils.cpp
+  fboss/cli/fboss2/utils/LookupClassUtils.cpp
+  fboss/cli/fboss2/utils/LookupClassUtils.h
   fboss/cli/fboss2/utils/PrbsUtils.cpp
   fboss/cli/fboss2/utils/SafetyPromptUtils.h
   fboss/cli/fboss2/utils/SafetyPromptUtils.cpp
@@ -817,12 +819,18 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/switch/hostname/CmdConfigHostname.h
   fboss/cli/fboss2/commands/config/switch/icmpv4_unavailable_src_addr/CmdConfigIcmpV4UnavailableSrcAddr.cpp
   fboss/cli/fboss2/commands/config/switch/icmpv4_unavailable_src_addr/CmdConfigIcmpV4UnavailableSrcAddr.h
+  fboss/cli/fboss2/commands/config/acl/AclConfigUtils.cpp
+  fboss/cli/fboss2/commands/config/acl/AclConfigUtils.h
   fboss/cli/fboss2/commands/config/acl/CmdConfigAcl.cpp
   fboss/cli/fboss2/commands/config/acl/CmdConfigAcl.h
   fboss/cli/fboss2/commands/config/acl/rule/AclRuleAttrs.cpp
   fboss/cli/fboss2/commands/config/acl/rule/AclRuleAttrs.h
   fboss/cli/fboss2/commands/config/acl/rule/CmdConfigAclRule.cpp
   fboss/cli/fboss2/commands/config/acl/rule/CmdConfigAclRule.h
+  fboss/cli/fboss2/commands/config/acl/table/CmdConfigAclTable.cpp
+  fboss/cli/fboss2/commands/config/acl/table/CmdConfigAclTable.h
+  fboss/cli/fboss2/commands/config/acl/table_group/CmdConfigAclTableGroup.cpp
+  fboss/cli/fboss2/commands/config/acl/table_group/CmdConfigAclTableGroup.h
   fboss/cli/fboss2/commands/config/arp/CmdConfigArp.cpp
   fboss/cli/fboss2/commands/config/arp/CmdConfigArp.h
   fboss/cli/fboss2/commands/config/copp/CmdConfigCopp.cpp
@@ -981,6 +989,10 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/delete/acl/CmdDeleteAcl.h
   fboss/cli/fboss2/commands/delete/acl/rule/CmdDeleteAclRule.cpp
   fboss/cli/fboss2/commands/delete/acl/rule/CmdDeleteAclRule.h
+  fboss/cli/fboss2/commands/delete/acl/table/CmdDeleteAclTable.cpp
+  fboss/cli/fboss2/commands/delete/acl/table/CmdDeleteAclTable.h
+  fboss/cli/fboss2/commands/delete/acl/table_group/CmdDeleteAclTableGroup.cpp
+  fboss/cli/fboss2/commands/delete/acl/table_group/CmdDeleteAclTableGroup.h
   fboss/cli/fboss2/commands/delete/arp/CmdDeleteArp.cpp
   fboss/cli/fboss2/commands/delete/arp/CmdDeleteArp.h
   fboss/cli/fboss2/commands/delete/copp/CmdDeleteCopp.cpp
