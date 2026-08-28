@@ -13,32 +13,10 @@ import logging
 import os
 import pytest
 
-from device.client.device_client import Device
+from prepare.fanout_ports import get_dut_facing_fanout_ports
 from prepare.mint.fanout import FanoutManager
-from prepare.sonic.base_testbed_setup import get_xcvr_to_ethernet_mapping
-from testbed.testbed_client import TestbedClient
 
 logger = logging.getLogger(__name__)
-
-
-def _dut_facing_fanout_ports(testbed):
-    """Map fanout name -> its Ethernet ports cabled to the testbed's DUT."""
-    client = TestbedClient(testbed)
-    dut_name = client.get_dut()[0].get_name()
-    fanouts = {dev.get_name(): dev for dev in client.get_fanout()}
-    mappings = {name: get_xcvr_to_ethernet_mapping(dev.get_model()) for name, dev in fanouts.items()}
-    ports = {}
-    for conn in Device(dut_name).get_all_connections():
-        for sub in conn.sub_connections:
-            for end, other in ((sub.conn_end_A, sub.conn_end_B), (sub.conn_end_B, sub.conn_end_A)):
-                if (
-                    other.device_name == dut_name
-                    and end.device_name in fanouts
-                    and end.device_port.name.startswith("XcvrSlot")
-                ):
-                    slot = int(end.device_port.name.removeprefix("XcvrSlot"))
-                    ports.setdefault(end.device_name, set()).add(mappings[end.device_name][slot])
-    return {name: sorted(p) for name, p in ports.items()}
 
 
 def _set_admin_state(fanout_name, ports, up):
@@ -57,7 +35,7 @@ def silence_fanout_ports():
     testbed = dut.removesuffix("-dut")
     shut = {}
     try:
-        shut = _dut_facing_fanout_ports(testbed)
+        shut = get_dut_facing_fanout_ports(testbed)
     except Exception:
         logger.warning("could not resolve fanout ports for %s", testbed, exc_info=True)
     for fanout_name, ports in shut.items():
