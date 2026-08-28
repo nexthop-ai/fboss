@@ -80,6 +80,9 @@ jobs:
         id: resync
         env:
           GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          # Where the script writes the final list of still-conflicted files,
+          # one path per line. Read back by the conflict comment step below.
+          RESYNC_CONFLICT_LIST: /tmp/resync-conflicted-files.txt
         run: |
           set -o pipefail
           # Capture combined output so the comment steps can quote a reason back
@@ -114,21 +117,25 @@ jobs:
         if: success() && steps.resync.outputs.rc == '2'
         env:
           GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          RESYNC_CONFLICT_LIST: /tmp/resync-conflicted-files.txt
         run: |
           PR_NUMBER=${{ steps.pr-details.outputs.pr_number }}
           NEW_BASE=${{ steps.resync.outputs.new_base }}
           WORKFLOW_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
-          # Quote the script's warnings (conflicted files committed with markers).
-          DETAILS=$(grep -E '^⚠️  WARN' /tmp/resync.log | tail -n 5 || true)
+          if [[ -s "$RESYNC_CONFLICT_LIST" ]]; then
+            COUNT=$(wc -l <"$RESYNC_CONFLICT_LIST" | tr -d ' ')
+            FILE_LIST=$(sed 's/^/- `/; s/$/`/' "$RESYNC_CONFLICT_LIST")
+          else
+            COUNT=0
+            FILE_LIST="_No file list was produced — see the workflow run._"
+          fi
 
-          gh pr comment ${PR_NUMBER} --body "⚠️ The sync PR was rebased on top of commit \`${NEW_BASE}\` (origin/main) and force-pushed, **but unresolved conflicts were committed with markers** — manual resolution is needed:
+          gh pr comment ${PR_NUMBER} --body "⚠️ The sync PR was rebased on top of commit \`${NEW_BASE}\` (origin/main) and force-pushed, **but ${COUNT} file(s) still contain conflict markers** — manual resolution is needed:
 
-          \`\`\`
-          ${DETAILS}
-          \`\`\`
+          ${FILE_LIST}
 
-          See [workflow run](${WORKFLOW_URL}) for the full list of conflicted files."
+          Resolve these on \`${{ steps.pr-details.outputs.head_ref }}\` and push. See [workflow run](${WORKFLOW_URL}) for the full log."
 
       - name: Comment on PR (failure)
         if: failure()

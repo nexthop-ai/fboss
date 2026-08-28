@@ -47,6 +47,27 @@ die() {
   exit 1
 }
 
+# ─── Conflict tracking ───────────────────────────────────────────────────────
+# Every path git reports as unmerged gets recorded here initially. Most merge
+# conflicts are resolved by replaying thee fix commits. The final list is
+# written to CONFLICT_LIST_FILE, one path per line.
+CONFLICT_LIST_FILE="${RESYNC_CONFLICT_LIST:-/tmp/resync-conflicted-files.txt}"
+: >"$CONFLICT_LIST_FILE"
+
+conflicted_candidates=()
+
+record_conflicts() {
+  local path
+  while IFS= read -r path; do
+    if [[ -n $path ]]; then
+      conflicted_candidates+=("$path")
+    fi
+  done <<<"$1"
+  # Never let a blank line make the loop's last command fail: under `set -e`
+  # that would abort the resync just before the push.
+  return 0
+}
+
 # Compatibility shims so sync-lib.sh functions can call echo_info/echo_debug.
 echo_info() { info "$@"; }
 echo_debug() { :; }
@@ -149,7 +170,9 @@ cherry_pick_with_autoresolve() {
     if [[ -n $still_conflicted ]]; then
       warn "Unresolved conflicts committed with markers (manual fix needed):"
       echo "$still_conflicted"
-      # Use 2 as a sentinel; caller accumulates into final_exit
+      record_conflicts "$still_conflicted"
+      # Return 2 so the log reads clearly; the caller ignores it, since whether
+      # these markers survive is settled by the step 3 re-check.
       GIT_EDITOR=true $GIT cherry-pick --continue
       return 2
     fi
@@ -189,6 +212,7 @@ if $has_merge_conflicts; then
   if [[ -n $still_conflicted ]]; then
     warn "Still-conflicted after auto-resolution (committing with markers):"
     echo "$still_conflicted"
+    record_conflicts "$still_conflicted"
   fi
 fi
 
@@ -208,18 +232,43 @@ git commit --no-verify -m "$merge_msg"
 info "New merge commit : $(git rev-parse HEAD)"
 
 # ─── Step 2: replay all fix commits ──────────────────────────────────────────
-final_exit=0
 for sha in "${fix_commits[@]}"; do
-  cherry_pick_with_autoresolve "$sha" || final_exit=$?
+  cherry_pick_with_autoresolve "$sha" || true
 done
 
-# ─── Step 3: force-push ───────────────────────────────────────────────────────
+# ─── Step 3: work out which files are STILL conflicted ───────────────────────
+# Re-check each candidate against the tree we are about to push instead of
+# trusting the per-stage warnings. Cherry-picks cut both ways: they resolve
+# files that conflicted during the merge, and they can leave markers of their
+# own. Only the end state is worth reporting or acting on.
+remaining_conflicts=()
+if [[ ${#conflicted_candidates[@]} -gt 0 ]]; then
+  while IFS= read -r path; do
+    [[ -f $path ]] || continue
+    if grep -qE '^<{7} ' "$path"; then
+      remaining_conflicts+=("$path")
+    fi
+  done < <(printf '%s\n' "${conflicted_candidates[@]}" | sort -u)
+fi
+
+if [[ ${#remaining_conflicts[@]} -gt 0 ]]; then
+  printf '%s\n' "${remaining_conflicts[@]}" >"$CONFLICT_LIST_FILE"
+fi
+
+# ─── Step 4: force-push ───────────────────────────────────────────────────────
 info "Force-pushing $current_branch..."
 git push --force-with-lease origin "$current_branch"
 
-if [[ $final_exit -eq 0 ]]; then
+if [[ ${#remaining_conflicts[@]} -eq 0 ]]; then
   info "✅ Resync complete!"
-else
-  warn "⚠️ Resynced but manual conflict resolution needed in the above files."
+  exit 0
 fi
-exit $final_exit
+
+# Prefix each path with the WARN marker so the failure-path comment, which
+# greps for WARN lines, picks up the file names too.
+warn "Files still containing conflict markers (${#remaining_conflicts[@]}):"
+for path in "${remaining_conflicts[@]}"; do
+  warn "  $path"
+done
+warn "⚠️ Resynced but manual conflict resolution needed in the files above."
+exit 2
