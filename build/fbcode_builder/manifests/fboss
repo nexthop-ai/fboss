@@ -24,12 +24,6 @@ services =
 [cmake.defines.feature_services=off]
 FBOSS_BUILD_PROFILE=fsdb_client
 
-# installed/fboss is unhashed because fboss is first-party, and the env var is
-# not otherwise hashed, so without this a profile flip in an existing scratch
-# dir leaves .built-by-getdeps matching and getdeps skips the rebuild.
-[depends.environment]
-FBOSS_BUILD_PROFILE
-
 [dependencies]
 folly-python
 fb303
@@ -66,7 +60,13 @@ python-pyyaml
 # .built-by-getdeps hash matches. Without BUILD_CFBOSS here, cfboss
 # (BUILD_CFBOSS=ON -> stub service binaries) and physical builds hash the same, so
 # a physical build reuses the cfboss stubs instead of rebuilding.
+#
+# FBOSS_BUILD_PROFILE is here because installed/fboss is unhashed (fboss is
+# first-party) and the env var is not otherwise hashed, so without this a
+# profile flip in an existing scratch dir leaves .built-by-getdeps matching
+# and getdeps skips the rebuild.
 [depends.environment]
+FBOSS_BUILD_PROFILE
 BUILD_SAI_FAKE
 SAI_BRCM_IMPL
 SAI_BRCM_PAI_IMPL
