@@ -29,7 +29,6 @@
 #include "fboss/cli/fboss2/commands/config/interface/ipv6/ndp/CmdConfigInterfaceIpv6Ndp.h"
 #include "fboss/cli/fboss2/commands/config/interface/pfc_config/CmdConfigInterfacePfcConfig.h"
 #include "fboss/cli/fboss2/commands/config/interface/sflow/CmdConfigInterfaceSflow.h"
-#include "fboss/cli/fboss2/commands/config/interface/sflow/sample_dest/CmdConfigInterfaceSflowSampleDest.h"
 #include "fboss/cli/fboss2/commands/config/interface/switchport/CmdConfigInterfaceSwitchport.h"
 #include "fboss/cli/fboss2/commands/config/interface/switchport/access/CmdConfigInterfaceSwitchportAccess.h"
 #include "fboss/cli/fboss2/commands/config/interface/switchport/access/vlan/CmdConfigInterfaceSwitchportAccessVlan.h"
@@ -108,7 +107,6 @@
 #include "fboss/cli/fboss2/commands/delete/interface/ipv6/ndp/CmdDeleteInterfaceIpv6Ndp.h"
 #include "fboss/cli/fboss2/commands/delete/interface/queuing_policy/CmdDeleteInterfaceQueuingPolicy.h"
 #include "fboss/cli/fboss2/commands/delete/interface/sflow/CmdDeleteInterfaceSflow.h"
-#include "fboss/cli/fboss2/commands/delete/interface/sflow/sample_dest/CmdDeleteInterfaceSflowSampleDest.h"
 #include "fboss/cli/fboss2/commands/delete/load_balancing/CmdDeleteLoadBalancing.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/CmdDeleteProtocol.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/bgp/CmdDeleteProtocolBgp.h"
@@ -296,23 +294,10 @@ const CommandTree& kConfigCommandTree() {
            },
            {
                "sflow",
-<<<<<<< HEAD
-               "Configure sFlow settings",
-               commandHandler<CmdConfigInterfaceSflow>,
-               argTypeHandler<CmdConfigInterfaceSflowTraits>,
-               {{
-                   "sample-dest",
-                   "Set the sFlow sample destination: <cpu|mirror>",
-                   commandHandler<CmdConfigInterfaceSflowSampleDest>,
-                   argRegistrar<CmdConfigInterfaceSflowSampleDestTraits>,
-               }},
-||||||| 4c0febe655
-=======
                "Configure sFlow settings: sample-dest <cpu|mirror>, "
                "ingress-rate <N>, egress-rate <N>",
                commandHandler<CmdConfigInterfaceSflow>,
                argRegistrar<CmdConfigInterfaceSflowTraits>,
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
            },
            {
                "switchport",
@@ -753,7 +738,6 @@ const CommandTree& kConfigCommandTree() {
           commandHandler<CmdDeleteInterface>,
           argRegistrar<CmdDeleteInterfaceTraits>,
           {{
-<<<<<<< HEAD
                "dhcp",
                "Delete (reset to default) DHCP settings for interface",
                commandHandler<CmdDeleteInterfaceDhcp>,
@@ -786,46 +770,10 @@ const CommandTree& kConfigCommandTree() {
            },
            {
                "sflow",
-               "Delete (reset to default) sFlow settings for interface",
-               commandHandler<CmdDeleteInterfaceSflow>,
-               argTypeHandler<CmdDeleteInterfaceSflowTraits>,
-               {{
-                   "sample-dest",
-                   "Clear the sFlow sample destination",
-                   commandHandler<CmdDeleteInterfaceSflowSampleDest>,
-                   argTypeHandler<CmdDeleteInterfaceSflowSampleDestTraits>,
-               }},
-||||||| 4c0febe655
-              "ipv6",
-              "Delete (reset to default) IPv6 settings for interface",
-              commandHandler<CmdDeleteInterfaceIpv6>,
-              argTypeHandler<CmdDeleteInterfaceIpv6Traits>,
-              {{
-                  "ndp",
-                  "Reset IPv6 Neighbor Discovery (NDP/RA) settings to defaults",
-                  commandHandler<CmdDeleteInterfaceIpv6Ndp>,
-                  argRegistrar<CmdDeleteInterfaceIpv6NdpTraits>,
-              }},
-          }},
-=======
-               "ipv6",
-               "Delete (reset to default) IPv6 settings for interface",
-               commandHandler<CmdDeleteInterfaceIpv6>,
-               argTypeHandler<CmdDeleteInterfaceIpv6Traits>,
-               {{
-                   "ndp",
-                   "Reset IPv6 Neighbor Discovery (NDP/RA) settings to defaults",
-                   commandHandler<CmdDeleteInterfaceIpv6Ndp>,
-                   argRegistrar<CmdDeleteInterfaceIpv6NdpTraits>,
-               }},
-           },
-           {
-               "sflow",
                "Delete (reset to default) sFlow settings for interface: "
                "sample-dest, ingress-rate, egress-rate",
                commandHandler<CmdDeleteInterfaceSflow>,
                argRegistrar<CmdDeleteInterfaceSflowTraits>,
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
            }},
       },
 
@@ -1006,7 +954,6 @@ const CommandTree& kConfigCommandTree() {
 
       {
           "delete",
-<<<<<<< HEAD
           "copp",
           "Delete COPP (Control Plane Policing) configuration",
           commandHandler<CmdDeleteCopp>,
@@ -1062,8 +1009,10 @@ const CommandTree& kConfigCommandTree() {
                commandHandler<CmdDeleteLoadBalancingLag>,
                argRegistrar<CmdDeleteLoadBalancingLagTraits>,
            }},
-||||||| 4c0febe655
-=======
+      },
+
+      {
+          "delete",
           "srv6",
           "Delete SRv6 MySID configuration",
           commandHandler<CmdDeleteSrv6>,
@@ -1080,7 +1029,6 @@ const CommandTree& kConfigCommandTree() {
                   argRegistrar<CmdDeleteSrv6MySidEntryTraits>,
               }},
           }},
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
       },
 
       {"delete",

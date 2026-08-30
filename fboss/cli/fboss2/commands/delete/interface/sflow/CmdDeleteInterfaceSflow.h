@@ -11,38 +11,6 @@
 #pragma once
 
 #include <string>
-<<<<<<< HEAD
-#include "fboss/cli/fboss2/CmdHandler.h"
-#include "fboss/cli/fboss2/commands/delete/interface/CmdDeleteInterface.h"
-#include "fboss/cli/fboss2/utils/InterfaceList.h"
-
-namespace facebook::fboss {
-
-struct CmdDeleteInterfaceSflowTraits : public WriteCommandTraits {
-  using ParentCmd = CmdDeleteInterface;
-  static constexpr utils::ObjectArgTypeId ObjectArgTypeId =
-      utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_NONE;
-  using ObjectArgType = std::monostate;
-  using RetType = std::string;
-};
-
-class CmdDeleteInterfaceSflow : public CmdHandler<
-                                    CmdDeleteInterfaceSflow,
-                                    CmdDeleteInterfaceSflowTraits> {
- public:
-  RetType queryClient(
-      const HostInfo& /* hostInfo */,
-      const utils::InterfaceList& interfaces) {
-    if (interfaces.empty()) {
-      throw std::invalid_argument("No interface name provided");
-    }
-    throw std::runtime_error(
-        "Incomplete command, please use one of the subcommands (e.g. sample-dest)");
-  }
-
-  void printOutput(const RetType& /* model */) {}
-||||||| 4c0febe655
-=======
 #include <vector>
 #include "fboss/cli/fboss2/CmdHandler.h"
 #include "fboss/cli/fboss2/commands/delete/interface/CmdDeleteInterface.h"
@@ -94,7 +62,6 @@ class CmdDeleteInterfaceSflow : public CmdHandler<
       const ObjectArgType& sflowAttrs);
 
   void printOutput(const RetType& logMsg);
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
 };
 
 } // namespace facebook::fboss

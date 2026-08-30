@@ -10,36 +10,6 @@
 
 #pragma once
 
-<<<<<<< HEAD
-#include "fboss/cli/fboss2/CmdHandler.h"
-#include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
-#include "fboss/cli/fboss2/utils/InterfaceList.h"
-
-namespace facebook::fboss {
-
-struct CmdConfigInterfaceSflowTraits : public WriteCommandTraits {
-  using ParentCmd = CmdConfigInterface;
-  using ObjectArgType = std::monostate;
-  using RetType = std::string;
-};
-
-class CmdConfigInterfaceSflow : public CmdHandler<
-                                    CmdConfigInterfaceSflow,
-                                    CmdConfigInterfaceSflowTraits> {
- public:
-  RetType queryClient(
-      const HostInfo& /* hostInfo */,
-      const utils::InterfaceList& interfaces) {
-    if (interfaces.empty()) {
-      throw std::invalid_argument("No interface name provided");
-    }
-    throw std::runtime_error(
-        "Incomplete command, please use one of the subcommands (e.g. sample-dest)");
-  }
-
-  void printOutput(const RetType& /* model */) {}
-||||||| 4c0febe655
-=======
 #include <string>
 #include <utility>
 #include <vector>
@@ -95,7 +65,6 @@ class CmdConfigInterfaceSflow : public CmdHandler<
       const ObjectArgType& sflowAttrs);
 
   void printOutput(const RetType& logMsg);
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
 };
 
 } // namespace facebook::fboss

@@ -9,12 +9,6 @@
  */
 
 #include "fboss/cli/fboss2/commands/config/interface/sflow/CmdConfigInterfaceSflow.h"
-<<<<<<< HEAD
-#include "fboss/cli/fboss2/CmdHandler.cpp"
-
-namespace facebook::fboss {
-||||||| 4c0febe655
-=======
 
 #include "fboss/cli/fboss2/CmdHandler.cpp"
 
@@ -217,7 +211,6 @@ CmdConfigInterfaceSflowTraits::RetType CmdConfigInterfaceSflow::queryClient(
 void CmdConfigInterfaceSflow::printOutput(const RetType& logMsg) {
   std::cout << logMsg << std::endl;
 }
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
 
 // Explicit template instantiation
 template void
