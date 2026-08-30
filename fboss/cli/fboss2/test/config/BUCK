@@ -43,6 +43,7 @@ cpp_unittest(
         "CmdConfigSessionCommitTest.cpp",
         "CmdConfigSessionDiffTest.cpp",
         "CmdConfigSessionTest.cpp",
+        "CmdConfigSrv6MySidTest.cpp",
         "CmdConfigTestBase.cpp",
         "CmdConfigTunnelIpInIpTest.cpp",
         "CmdConfigVlanDefaultTest.cpp",
@@ -64,6 +65,7 @@ cpp_unittest(
         "CmdDeleteInterfaceTest.cpp",
         "CmdDeleteLoadBalancingTest.cpp",
         "CmdDeleteQosDefaultPolicyTest.cpp",
+        "CmdDeleteQosPolicyTest.cpp",
         "CmdDeleteQosQueueConfigTest.cpp",
         "CmdDeleteTunnelIpInIpTest.cpp",
         "CmdDeleteVlanTest.cpp",
@@ -73,7 +75,6 @@ cpp_unittest(
         "CmdDeleteCoppCpuQueueTest.cpp",
         "CmdDeleteCoppCpuTrafficPolicyMatchActionTest.cpp",
         "CmdDeleteCoppReasonTest.cpp",
-        "CmdDeleteQosPolicyTest.cpp",
         "ProfileValidationTest.cpp",
     ],
     headers = [

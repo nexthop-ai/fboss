@@ -234,6 +234,8 @@ std::
       actionTypeList,
       qualifierExistsFn(cfg::AclTableQualifier::SRC_IPV6),
       qualifierExistsFn(cfg::AclTableQualifier::DST_IPV6),
+      qualifierExistsFn(cfg::AclTableQualifier::DST_IPV6_WORD3),
+      qualifierExistsFn(cfg::AclTableQualifier::DST_IPV6_WORD2),
       qualifierExistsFn(cfg::AclTableQualifier::SRC_IPV4),
       qualifierExistsFn(cfg::AclTableQualifier::DST_IPV4),
       qualifierExistsFn(cfg::AclTableQualifier::L4_SRC_PORT),

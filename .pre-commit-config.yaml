@@ -28,9 +28,9 @@ repos:
       - id: end-of-file-fixer
         exclude: (\.patch|\.materialized_JSON)$
       - id: check-yaml
-        # asic_config_v3 generated outputs are multi-document YAML with complex
+        # asic_config generated outputs are multi-document YAML with complex
         # mapping keys that PyYAML cannot load; they are generated artifacts.
-        exclude: ^fboss/configs/platforms/[^/]+/[^/]+/asic_config_v3/generated/
+        exclude: ^fboss/configs/platforms/[^/]+/[^/]+/asic_config/generated/
       - id: check-json
       - id: check-merge-conflict
   - repo: https://github.com/astral-sh/ruff-pre-commit
