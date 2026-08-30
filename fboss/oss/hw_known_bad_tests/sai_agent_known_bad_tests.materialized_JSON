@@ -13678,15 +13678,13 @@
           "test_name_regex": "AgentTest_PROFILE_800G_.*$"
         },
         {
-<<<<<<< HEAD
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.cold_boot.AgentAmIdlesTest.VerifyAmIdles$"
         },
         {
           "test_name_regex": "roundtrip.preprod_2_trunk_2_preprod.warm_boot.AgentAmIdlesTest.VerifyAmIdles$"
-||||||| 4c0febe655
-=======
+        },
+        {
           "test_name_regex": "AgentDropReasonTest.egressMtuDrop$"
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
         }
     ],
     "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5/multi_switch": [
@@ -13991,7 +13989,6 @@
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
         },
         {
-<<<<<<< HEAD
           "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
         },
         {
@@ -14014,10 +14011,9 @@
         },
         {
           "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
-||||||| 4c0febe655
-=======
+        },
+        {
           "test_name_regex": "AgentMacSwLearningModeTest.VerifyDefaultSwAgingForPort$"
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
         },
         {
           "test_name_regex": "AgentCoppTest/[01].Ipv6LinkLocalUcastIpNetworkControlDscpToHighPriQ$"

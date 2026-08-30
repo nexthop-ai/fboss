@@ -177,7 +177,6 @@ class Fboss2IntegrationTestRunner(TestRunner):
                 sw_agent_service_name=SW_AGENT_SERVICE_PROD,
             )
 
-<<<<<<< HEAD
     def _wait_for_agent_thrift_ports_free(self) -> None:
         # The base-class wait exists for suites where each test binary starts
         # its own agent and must bind the agent thrift ports. The fboss2 CLI
@@ -186,10 +185,6 @@ class Fboss2IntegrationTestRunner(TestRunner):
         # succeed and would burn its full timeout before every single test.
         return
 
-||||||| 4c0febe655
-    def _setup_coldboot_test(self, sai_replayer_log_path: str | None = None) -> None:
-=======
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
     def _setup_coldboot_test(self, sai_replayer_log_path: str | None = None) -> None:  # noqa: ARG002
         # The first cold boot always runs: it loads the test config and
         # establishes a clean state (in prod multi-switch the running agents

@@ -1,10 +1,11 @@
 load("@fbcode_macros//build_defs:python_unittest.bzl", "python_unittest")
 load("@fbsource//tools/build_defs/testinfra:network_access_utils.bzl", "network_access_utils")
 
-<<<<<<< HEAD
-oncall("fboss_agent")
-
 # bazelify: exclude-all
+
+# During asic_config_v3 migration, we use `fboss_oss` as oncall, eventually we
+# will transfer it to `fboss_agent` once we finish the migration
+oncall("fboss_oss")
 
 python_unittest(
     name = "test_conditional_settings",
@@ -13,11 +14,9 @@ python_unittest(
     network_access = network_access_utils.none(),
     deps = [
         "//fboss/lib/asic_config_v3:base_generator",
-||||||| 4c0febe655
-=======
-# During asic_config_v3 migration, we use `fboss_oss` as oncall, eventually we
-# will transfer it to `fboss_agent` once we finish the migration
-oncall("fboss_oss")
+        "//fboss/lib/asic_config_v3:paths",
+    ],
+)
 
 python_unittest(
     name = "validate_asic_configs_contents",
@@ -39,7 +38,6 @@ python_unittest(
     network_access = network_access_utils.none(),
     deps = [
         "fbsource//third-party/pypi/jsonschema:jsonschema",
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
         "//fboss/lib/asic_config_v3:paths",
     ],
 )

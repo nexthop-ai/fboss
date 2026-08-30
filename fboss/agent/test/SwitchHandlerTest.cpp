@@ -8,12 +8,7 @@
  *
  */
 
-<<<<<<< HEAD
 #include <fb303/ServiceData.h>
-||||||| 4c0febe655
-=======
-#include <gmock/gmock.h>
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
 #include <gtest/gtest.h>
 
 #include "fboss/agent/FbossEventBase.h"
@@ -1057,7 +1052,6 @@ TEST_F(SwSwitchHandlerTest, verifyRollback) {
 }
 
 /*
-<<<<<<< HEAD
  * hw_agent restarts right after sw_agent starts. All HwSwitch connections
  * drop, which creates cold boot markers and schedules a
  * graceful shutdown, but the update thread can fail a pending (non
@@ -1122,8 +1116,9 @@ TEST_F(
   // The graceful shutdown was requested exactly once (by the disconnect;
   // the update-drop path's defensive request collapses into it).
   EXPECT_EQ(shutdownHandlerRunCount(), 1);
-||||||| 4c0febe655
-=======
+}
+
+/*
  * waitUntilHwSwitchConnected() is satisfied by the first switch to register.
  * A caller that fans a state update out to every switch needs all of them:
  * with only some connected the rest return HWSWITCH_STATE_UPDATE_CANCELLED
@@ -1171,5 +1166,4 @@ TEST_F(SwSwitchHandlerTest, everyWaiterWakesWhenTheLastSwitchConnects) {
     waiter.join();
   }
   EXPECT_EQ(woken.load(), kWaiters);
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
 }

@@ -7,22 +7,14 @@ from argparse import ArgumentParser, Namespace
 from contextlib import suppress
 from typing import ClassVar
 
-<<<<<<< HEAD
 from fboss_test_runner.constants import SUB_ARG_PLATFORM_MANAGER_HW_TEST
-from fboss_test_runner.result_types import GtestResult
+from fboss_test_runner.reporters.json_reporter import JsonReporter
+from fboss_test_runner.result_types import GtestResult, TestExecutionResult
 from fboss_test_runner.runners.test_runner import (
     disable_services,
     enable_services,
     TestRunner,
 )
-||||||| 4c0febe655
-from fboss_test_runner.result_types import GtestResult
-from fboss_test_runner.runners.test_runner import TestRunner
-=======
-from fboss_test_runner.reporters.json_reporter import JsonReporter
-from fboss_test_runner.result_types import GtestResult, TestExecutionResult
-from fboss_test_runner.runners.test_runner import TestRunner
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
 
 SUB_ARG_TEST_TYPE = "--type"
 SUB_ARG_PLATFORM_HW_TEST = "platform_hw_test"
@@ -122,21 +114,14 @@ class PlatformServicesTestRunner(TestRunner):
 
     @staticmethod
     def _args_for_test_type(args: Namespace, test_type: str) -> Namespace:
-        return Namespace(
-            **{
-                **vars(args),
-                "fruid_path": None,
-                "type": test_type,
-            }
-        )
+        return Namespace(**{**vars(args), "fruid_path": None, "type": test_type})
 
     def list_tests(self, args: Namespace) -> int:
         test_types = [args.type] if args.type else self.TEST_TYPE_CHOICES
         exit_code = 0
         for test_type in test_types:
             exit_code = max(
-                exit_code,
-                super().list_tests(self._args_for_test_type(args, test_type)),
+                exit_code, super().list_tests(self._args_for_test_type(args, test_type))
             )
         return exit_code
 

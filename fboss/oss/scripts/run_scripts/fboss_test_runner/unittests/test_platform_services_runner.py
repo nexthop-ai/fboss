@@ -12,12 +12,8 @@ from argparse import Namespace
 from unittest.mock import patch
 
 import pytest
-<<<<<<< HEAD
 
-||||||| 4c0febe655
-=======
 from fboss_test_runner.result_types import GtestResult, GtestStatus, TestExecutionResult
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
 from fboss_test_runner.runners.platform_services_test_runner import (
     PlatformServicesTestRunner,
 )
@@ -99,30 +95,14 @@ class TestRunTestMultiTypeIteration:
             patch.object(
                 platform_runner, "_backup_and_modify_config", side_effect=lambda c: c
             ),
-            patch.object(platform_runner, "_run_tests", return_value=[]),
+            patch.object(platform_runner, "_run_tests", return_value=([], [])),
+            patch.object(platform_runner, "_write_results_to_xml"),
             patch.object(platform_runner, "_print_output_summary"),
         ):
             platform_runner.run_test(runner_args)
 
         # All 7 platform test types are iterated, in the order of TEST_TYPE_CHOICES.
         assert seen_types == list(PlatformServicesTestRunner.TEST_TYPE_CHOICES)
-<<<<<<< HEAD
-
-
-def test_thrift_port_wait_is_a_noop(platform_runner):
-    # Platform tests never bind the agent thrift ports, but the DUT's
-    # production agents hold 5909/5959 for the whole run, so the base-class
-    # wait would burn its full timeout before every test. The override must
-    # return without polling ports or sleeping.
-    with (
-        patch("fboss_test_runner.runners.test_runner.time.sleep") as mock_sleep,
-        patch.object(PlatformServicesTestRunner, "_port_in_use") as mock_port_in_use,
-    ):
-        platform_runner._wait_for_agent_thrift_ports_free()
-        mock_port_in_use.assert_not_called()
-        mock_sleep.assert_not_called()
-||||||| 4c0febe655
-=======
         assert runner_args.type is None
 
     def test_merges_results_and_returns_failure(self, platform_runner, tmp_path):
@@ -164,8 +144,7 @@ def test_thrift_port_wait_is_a_noop(platform_runner):
             results=[GtestResult("PlatformTest.Failed", GtestStatus.FAILED, 1)],
         )
         setup_failure = TestExecutionResult(
-            exit_code=os.EX_TEMPFAIL,
-            setup_failure="service failed to start",
+            exit_code=os.EX_TEMPFAIL, setup_failure="service failed to start"
         )
         executions = (
             [setup_failure, test_failure]
@@ -232,11 +211,7 @@ def test_thrift_port_wait_is_a_noop(platform_runner):
         assert run_test_type.call_count == 2
         print_summary.assert_called_once_with([completed_result])
         assert json.loads(output.read_text()) == [
-            {
-                "test_name": "PlatformTest.Passed",
-                "status": "PASSED",
-                "duration_ms": 1,
-            }
+            {"test_name": "PlatformTest.Passed", "status": "PASSED", "duration_ms": 1}
         ]
 
 
@@ -254,4 +229,17 @@ class TestListTestsMultiTypeIteration:
             PlatformServicesTestRunner.TEST_TYPE_CHOICES
         )
         run_test.assert_not_called()
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
+
+
+def test_thrift_port_wait_is_a_noop(platform_runner):
+    # Platform tests never bind the agent thrift ports, but the DUT's
+    # production agents hold 5909/5959 for the whole run, so the base-class
+    # wait would burn its full timeout before every test. The override must
+    # return without polling ports or sleeping.
+    with (
+        patch("fboss_test_runner.runners.test_runner.time.sleep") as mock_sleep,
+        patch.object(PlatformServicesTestRunner, "_port_in_use") as mock_port_in_use,
+    ):
+        platform_runner._wait_for_agent_thrift_ports_free()
+        mock_port_in_use.assert_not_called()
+        mock_sleep.assert_not_called()

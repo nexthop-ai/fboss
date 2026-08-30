@@ -28,7 +28,6 @@ def _deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any
     return result
 
 
-<<<<<<< HEAD
 # Sections of a variant config from which a condition may read its parameter.
 _CONDITION_SOURCES: tuple[str, ...] = ("asic_config_params", "features")
 
@@ -39,17 +38,18 @@ _CONDITION_OPERATORS: dict[str, Callable[[Any, Any], bool]] = {
     "not_equals": lambda value, operand: value != operand,
     "in": lambda value, operand: value in operand,
     "not_in": lambda value, operand: value not in operand,
-    "starts_with": lambda value, operand: isinstance(value, str)
-    and value.startswith(operand),
-    "not_starts_with": lambda value, operand: not (
+    "starts_with": lambda value, operand: (
         isinstance(value, str) and value.startswith(operand)
+    ),
+    "not_starts_with": lambda value, operand: (
+        not (isinstance(value, str) and value.startswith(operand))
     ),
 }
 
 # Keys of a conditional-setting entry that do not name an effect.
 _ENTRY_KEYS: frozenset[str] = frozenset({"name", "description", "condition"})
-||||||| 4c0febe655
-=======
+
+
 def resolve_variant_config(
     platform_config: dict[str, Any], variant: str
 ) -> dict[str, Any]:
@@ -64,7 +64,6 @@ def resolve_variant_config(
         platform_config.get("defaults", {}),
         platform_config.get("variants", {}).get(variant, {}),
     )
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
 
 
 class BaseAsicConfigGenerator(ABC):

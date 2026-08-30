@@ -5,11 +5,8 @@ load("@fbsource//tools/build_defs/testinfra:network_access_utils.bzl", "network_
 
 oncall("fboss_agent_push")
 
-<<<<<<< HEAD
-
 # bazelify: exclude-all
-||||||| 4c0febe655
-=======
+
 cpp_library(
     name = "test_helpers",
     headers = ["TestHelpers.h"],
@@ -21,7 +18,6 @@ cpp_library(
         "//thrift/lib/cpp2/folly_dynamic:folly_dynamic",
     ],
 )
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
 
 cpp_unittest(
     name = "subscription_tests",

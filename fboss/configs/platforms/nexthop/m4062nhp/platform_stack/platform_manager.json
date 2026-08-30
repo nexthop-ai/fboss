@@ -91,23 +91,6 @@
         {
           "pmUnitScopedName": "DIMM2_TEMP",
           "sysfsPath": "/run/nexthop_bsp/sensors/DIMM2_TEMP"
-<<<<<<< HEAD:fboss/platform/configs/m4062nhp/platform_manager.json
-||||||| 4c0febe655:fboss/platform/configs/m4062nhp/platform_manager.json
-          "sysfsPath": "/sys/bus/i2c/devices/1-0051"
-=======
-        },
-        {
-          "pmUnitScopedName": "CPU_TEMP",
-          "sysfsPath": "/sys/bus/pci/drivers/k10temp/0000:00:18.3"
-        },
-        {
-          "pmUnitScopedName": "NVME_TEMP",
-          "sysfsPath": "/sys/class/nvme/nvme0"
-        },
-        {
-          "pmUnitScopedName": "NIC_TEMP",
-          "sysfsPath": "/sys/bus/pci/devices/0000:02:00.0"
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe:fboss/configs/platforms/nexthop/m4062nhp/platform_stack/platform_manager.json
         }
       ],
       "outgoingSlotConfigs": {
@@ -473,9 +456,6 @@
     "/run/devmap/sensors/DPM": "/[DPM]",
     "/run/devmap/sensors/DPM_1": "/[DPM_1]",
     "/run/devmap/sensors/DPM_2": "/[DPM_2]",
-    "/run/devmap/sensors/CPU_TEMP": "/[CPU_TEMP]",
-    "/run/devmap/sensors/NVME_TEMP": "/[NVME_TEMP]",
-    "/run/devmap/sensors/NIC_TEMP": "/[NIC_TEMP]",
     "/run/devmap/sensors/DIMM1_TEMP": "/[DIMM1_TEMP]",
     "/run/devmap/sensors/DIMM2_TEMP": "/[DIMM2_TEMP]",
     "/run/devmap/sensors/CPU_TEMP": "/[CPU_TEMP]",

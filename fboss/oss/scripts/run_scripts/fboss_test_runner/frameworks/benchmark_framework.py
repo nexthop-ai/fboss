@@ -550,16 +550,10 @@ class BenchmarkFramework:
         if selection is None:
             return
 
-<<<<<<< HEAD
-        if not benchmarks_to_run:
+        if not selection.benchmark_names:
             # Report a skipped run, not nothing: callers key "did this produce
             # results?" off the CSV, so returning without one reads as an infra
             # failure rather than a platform gap.
-||||||| 4c0febe655
-        if not benchmarks_to_run:
-=======
-        if not selection.benchmark_names:
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
             print("No benchmarks to run after filtering known bad/unsupported")
             self._write_results_and_summary([], selection.skipped_count)
             return
@@ -574,23 +568,14 @@ class BenchmarkFramework:
                     selection.binary_path, args, benchmark_name=name
                 )
                 self._apply_threshold_check(
-                    result,
-                    selection.platform_key,
-                    selection.thresholds,
-                    args,
+                    result, selection.platform_key, selection.thresholds, args
                 )
-<<<<<<< HEAD
                 # On any non-OK outcome, collect platform diagnostics from the
                 # DUT and record them in the benchmark log, while the DUT is
                 # still in its failed state: before the next benchmark runs (and
                 # restarts the agent) and before the suite is torn down.
                 if result["test_status"] != "OK":
                     self._collect_rma_showtech(name)
-                self._apply_threshold_check(result, platform_key, all_thresholds, args)
-||||||| 4c0febe655
-                self._apply_threshold_check(result, platform_key, all_thresholds, args)
-=======
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
                 results.append(result)
             self._write_results_and_summary(results, selection.skipped_count)
         finally:
