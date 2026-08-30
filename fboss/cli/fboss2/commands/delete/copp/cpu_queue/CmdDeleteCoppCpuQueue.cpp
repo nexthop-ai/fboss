@@ -32,7 +32,6 @@ namespace facebook::fboss {
 namespace {
 
 // Collect human-readable descriptions of every config entry that still
-<<<<<<< HEAD
 // points at cpu-queue `queueId`: rxReason -> queue mappings (both the
 // ordered list and the deprecated map form) and matchToAction actions
 // carrying a queue id (send-to-queue, user-defined-trap).
@@ -64,27 +63,6 @@ std::vector<std::string> findQueueReferences(
             fmt::format(
                 "reason {} (deprecated rxReasonToCPUQueue map)",
                 apache::thrift::util::enumNameSafe(rxReason)));
-||||||| 4c0febe655
-=======
-// points at cpu-queue `queueId`: rxReason -> queue mappings and
-// matchToAction actions carrying a queue id (send-to-queue,
-// user-defined-trap).
-std::vector<std::string> findQueueReferences(
-    const cfg::SwitchConfig& swConfig,
-    int16_t queueId) {
-  std::vector<std::string> references;
-  if (!swConfig.cpuTrafficPolicy().has_value()) {
-    return references;
-  }
-  const auto& policy = *swConfig.cpuTrafficPolicy();
-  if (policy.rxReasonToQueueOrderedList().has_value()) {
-    for (const auto& entry : *policy.rxReasonToQueueOrderedList()) {
-      if (*entry.queueId() == queueId) {
-        references.push_back(
-            fmt::format(
-                "reason {}",
-                apache::thrift::util::enumNameSafe(*entry.rxReason())));
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
       }
     }
   }

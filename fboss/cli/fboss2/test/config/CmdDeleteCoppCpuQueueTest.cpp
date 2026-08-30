@@ -201,7 +201,6 @@ TEST_F(CmdDeleteCoppCpuQueueTestFixture, deleteQueueNotFound) {
   EXPECT_THROW(cmd.queryClient(hostInfo, args), std::runtime_error);
 }
 
-<<<<<<< HEAD
 // The deprecated rxReasonToCPUQueue map form is still read by the agent as
 // a fallback when rxReasonToQueueOrderedList is unset, so a queue referenced
 // only there must also refuse deletion. The CLI never writes this map; it
@@ -242,7 +241,4 @@ TEST_F(CmdDeleteCoppCpuQueueLegacyMapFixture, deleteQueueInLegacyMapThrows) {
   }
 }
 
-||||||| 4c0febe655
-=======
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
 } // namespace facebook::fboss

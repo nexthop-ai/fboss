@@ -914,26 +914,6 @@ const CommandTree& kConfigCommandTree() {
 
       {
           "delete",
-          "copp",
-          "Delete COPP (Control Plane Policing) configuration",
-          commandHandler<CmdDeleteCopp>,
-          argRegistrar<CmdDeleteCoppTraits>,
-          {{
-               "cpu-queue",
-               "Delete a CPU queue entry",
-               commandHandler<CmdDeleteCoppCpuQueue>,
-               argRegistrar<CmdDeleteCoppCpuQueueTraits>,
-           },
-           {
-               "reason",
-               "Delete a packet-rx reason to CPU queue mapping",
-               commandHandler<CmdDeleteCoppReason>,
-               argRegistrar<CmdDeleteCoppReasonTraits>,
-           }},
-      },
-
-      {
-          "delete",
           "dhcp",
           "Remove DHCP source-override settings",
           commandHandler<CmdDeleteDhcp>,

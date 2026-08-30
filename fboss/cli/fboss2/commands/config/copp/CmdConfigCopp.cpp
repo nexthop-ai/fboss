@@ -44,7 +44,6 @@ using copp_cpu_queue::parseQueueId;
 // `config copp reason <reason-name> queue <id>`.
 constexpr std::string_view kSubCmdQueue = "queue";
 
-<<<<<<< HEAD
 // Literal tokens and action types accepted by
 // `config copp cpu-traffic-policy match <matcher-name> action <action-type>
 // <value>`.
@@ -59,54 +58,6 @@ using copp_cpu_traffic_policy::kActionUserDefinedTrap;
 // negative. The real per-ASIC cap is enforced by the agent at apply time.
 constexpr int16_t kMaxTcValue = 127;
 
-||||||| 4c0febe655
-// CPU queue IDs are a small platform-bounded set; reject anything that is
-// clearly out of range before we construct a PortQueue. The actual per-ASIC
-// cap is enforced by the agent (SaiHostifManager::getMaxCpuQueues) at apply
-// time.
-constexpr int16_t kMaxCpuQueueId = 255;
-
-// Normalize a user-typed reason name: uppercase + dashes->underscores, so
-// that "arp", "ARP", "bgp-v6", "bgpv6" all match the cfg::PacketRxReason
-// enum names ("ARP", "BGPV6", ...).
-std::string normalizeReason(const std::string& v) {
-  std::string out;
-  out.reserve(v.size());
-  for (unsigned char c : v) {
-    out.push_back(c == '-' ? '_' : std::toupper(c));
-  }
-  return out;
-}
-
-std::string validReasonNames() {
-  std::vector<std::string> names;
-  for (auto value : apache::thrift::TEnumTraits<cfg::PacketRxReason>::values) {
-    names.push_back(apache::thrift::util::enumNameSafe(value));
-  }
-  return folly::join(", ", names);
-}
-
-int16_t parseQueueId(const std::string& s, std::string_view context) {
-  int16_t parsed = 0;
-  try {
-    parsed = folly::to<int16_t>(s);
-  } catch (const folly::ConversionError&) {
-    throw std::invalid_argument(
-        fmt::format("Queue ID ({}) must be an integer, got '{}'", context, s));
-  }
-  if (parsed < 0 || parsed > kMaxCpuQueueId) {
-    throw std::invalid_argument(
-        fmt::format(
-            "Queue ID ({}) must be in [0, {}], got {}",
-            context,
-            kMaxCpuQueueId,
-            parsed));
-  }
-  return parsed;
-}
-
-=======
->>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
 int32_t parseRateMax(const std::string& s, std::string_view unit) {
   int32_t parsed = 0;
   try {
