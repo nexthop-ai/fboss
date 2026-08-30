@@ -25,7 +25,6 @@ _GENERATED_PLATFORMS = [
     struct(platform = "nh4010f", mapping_codename = None, asic_codename = "nh4010f"),
     struct(platform = "nh4220f", mapping_codename = None, asic_codename = "nh4220f"),
     struct(platform = "wedge800bact", mapping_codename = None, asic_codename = "wedge800bact"),
-    struct(platform = "wedge800bnhp", mapping_codename = "wedge800bact", asic_codename = "wedge800bnhp"),
     struct(platform = "wedge800cact", mapping_codename = None, asic_codename = "wedge800cact"),
 ]
 
