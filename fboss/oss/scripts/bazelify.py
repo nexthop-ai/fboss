@@ -1656,6 +1656,7 @@ class DepResolver:
             or dep.startswith("//common/fb303/")
             or dep.startswith("//common/stats/")
             or dep.startswith("//configerator/structs/neteng/fboss/thrift")
+            or dep.startswith("//configerator/structs/neteng/bgp_policy/thrift")
         ):
             # Skip facebook/ internal paths
             if "/facebook/" in dep or "/facebook:" in dep:
