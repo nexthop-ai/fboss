@@ -4,19 +4,31 @@ run-name: Nightly Build - Full FBOSS
 on:
   # Allow manually triggering the workflow
   workflow_dispatch:
+    inputs:
+      branches:
+        description: "Branches to build, comma-separated (e.g. main,nh-fboss-cefe-eft2). Empty = read the list from Tide's config in nh-config."
+        required: false
+        default: ""
   # 7:00 PM IST (13:30 UTC) and 7:00 PM PST / 8:00 PM PDT (03:00 UTC)
   schedule:
     - cron: "30 13 * * *"
     - cron: "0 3 * * *"
 
 jobs:
+  # Which branches to build — see nightly-resolve-branches.reusable.yml.
+  resolve-branches:
+    uses: ./.github/workflows/nightly-resolve-branches.reusable.yml
+    with:
+      branches: ${{ inputs.branches }}
+    secrets: inherit
+
   nightly:
     name: Nightly (${{ matrix.branch }})
+    needs: resolve-branches
     strategy:
       fail-fast: false
       matrix:
-        branch:
-          - main
+        branch: ${{ fromJson(needs.resolve-branches.outputs.branches) }}
     permissions:
       id-token: write
       contents: read

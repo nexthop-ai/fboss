@@ -1,0 +1,102 @@
+name: Nightly Build (resolve branches)
+
+# Decides which branches the Nightly Build builds: main, plus every fboss EFT
+# branch that Tide is configured to test (branch_families in nh-config
+# prod/tide/families.yaml). We only build a branch so Tide can test it, so
+# Tide's list is the source of truth; adding or retiring an EFT branch then
+# needs no edit in this repo.
+#
+# main is always built. If the Tide config can't be fetched or read, the list
+# falls back to main only and a Slack warning says why.
+
+on:
+  workflow_call:
+    inputs:
+      branches:
+        description: "Comma-separated list to use instead of Tide's config (manual runs)."
+        required: false
+        type: string
+        default: ""
+    outputs:
+      branches:
+        description: "JSON list of branches to build."
+        value: ${{ jobs.resolve-branches.outputs.branches }}
+    secrets:
+      RABBIT_NEXTHOP_PAT:
+        description: "Token that can read nexthop-ai/nh-config."
+        required: true
+      SLACK_WEBHOOK_URL:
+        description: "Where the main-only warning goes."
+        required: true
+
+jobs:
+  resolve-branches:
+    name: Resolve branches
+    runs-on: k8s-nano
+    permissions:
+      contents: read   # GITHUB_TOKEN: check that listed branches exist in this repo
+    outputs:
+      branches: ${{ steps.resolve.outputs.branches }}
+      problem: ${{ steps.resolve.outputs.problem }}
+    steps:
+      - name: Checkout fboss scripts
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/scripts
+          sparse-checkout-cone-mode: false
+
+      - name: Checkout nh-config@main
+        if: inputs.branches == ''
+        # A failed fetch must not stop main from building; the next step
+        # falls back and warns.
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: nexthop-ai/nh-config
+          ref: main
+          path: __nh_config
+          sparse-checkout: prod/tide/families.yaml
+          sparse-checkout-cone-mode: false
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+
+      - name: Resolve
+        id: resolve
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OVERRIDE: ${{ inputs.branches }}
+        run: |
+          problem=""
+          if [[ -n "$OVERRIDE" ]]; then
+            list=$(tr ',' '\n' <<<"$OVERRIDE" | sed 's/^ *//;s/ *$//' | grep -v '^$' | jq -cR . | jq -sc .)
+            echo "Using branches from the manual input: $list"
+          elif list=$(python3 .github/scripts/nightly_branches.py __nh_config/prod/tide/families.yaml --repo "$GITHUB_REPOSITORY" 2>err.txt); then
+            echo "Branches from Tide's config: $list"
+          else
+            problem=$(sed 's/^::error:://' err.txt | tr '\n' ' ')
+            list='["main"]'
+            echo "::warning::Could not get the branch list from Tide's config; building main only. $problem"
+          fi
+          echo "branches=$list" >> "$GITHUB_OUTPUT"
+          echo "problem=$problem" >> "$GITHUB_OUTPUT"
+
+      # Warn loudly: nightly-build-notify.yml ignores non-failures, and the
+      # per-branch notifier only knows about the branches that did get built.
+      - name: Slack warning (main only)
+        if: steps.resolve.outputs.problem != ''
+        uses: slackapi/slack-github-action@v3.0.3
+        with:
+          webhook-type: incoming-webhook
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          payload: |
+            {
+              "text": ":warning: Nightly Build is building main only — could not read the EFT branch list from Tide's config",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":warning: *Nightly Build is building `main` only.*\nCould not get the EFT branch list from nh-config `prod/tide/families.yaml`:\n> ${{ steps.resolve.outputs.problem }}\nIf an EFT branch is live, fix the config (or run the workflow by hand with the `branches` input) so it gets built.\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow Run>"
+                  }
+                }
+              ]
+            }
