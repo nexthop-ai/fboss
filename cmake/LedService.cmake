@@ -122,7 +122,6 @@ target_link_libraries(led_manager_lib
   meru800bia_platform_mapping
   meru800bfa_platform_mapping
   morgan_platform_mapping
-  nh4220f_platform_mapping
   nh5010f_platform_mapping
   tahan800bc_platform_mapping
   tahansb800bc_platform_mapping
