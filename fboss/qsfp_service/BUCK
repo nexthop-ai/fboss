@@ -102,6 +102,7 @@ cpp_library(
 # bazelify: add_src = QsfpServiceSignalHandler.cpp
 # bazelify: add_src = oss/QsfpServer.cpp
 # bazelify: extra_dep = :handler
+# bazelify: extra_dep = //fboss/lib:thrift_method_rate_limit_setup
 cpp_library(
     name = "core-default",
     exported_deps = [
