@@ -119,6 +119,15 @@ jobs:
           product: "CrownedEagle"
           tests: ${{ steps.smoke.outputs.tests }}
 
+      - name: Schedule Frisco Eagle
+        id: schedule-frisco-eagle
+        uses: ./.github/actions/fboss-schedule-test
+        with:
+          build_id: ${{ inputs.build_id }}
+          priority: 100
+          product: "FriscoEagle"
+          tests: ${{ steps.smoke.outputs.tests }}
+
       - name: Schedule Steller Eagle
         id: schedule-steller-eagle
         uses: ./.github/actions/fboss-schedule-test
@@ -136,6 +145,7 @@ jobs:
           W8C_ID: ${{ steps.schedule-wedge800c.outputs.batch_id }}
           MP3_ID: ${{ steps.schedule-minipack3.outputs.batch_id }}
           CE_ID: ${{ steps.schedule-crowned-eagle.outputs.batch_id }}
+          FE_ID: ${{ steps.schedule-frisco-eagle.outputs.batch_id }}
           STLR_ID: ${{ steps.schedule-steller-eagle.outputs.batch_id }}
         run: |
           batches=$(jq -n \
@@ -144,6 +154,7 @@ jobs:
             --arg w8c "$W8C_ID" \
             --arg mp3 "$MP3_ID" \
             --arg ce "$CE_ID" \
+            --arg fe "$FE_ID" \
             --arg stlr "$STLR_ID" \
             '[
               {"pool_name":"Gold Eagle",    "batch_id":$ge},
@@ -151,6 +162,7 @@ jobs:
               {"pool_name":"Wedge800C",     "batch_id":$w8c},
               {"pool_name":"Minipack3",     "batch_id":$mp3},
               {"pool_name":"Crowned Eagle", "batch_id":$ce},
+              {"pool_name":"Frisco Eagle",  "batch_id":$fe},
               {"pool_name":"Steller Eagle", "batch_id":$stlr}
             ]')
 
