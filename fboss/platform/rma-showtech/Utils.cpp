@@ -26,6 +26,25 @@ using namespace facebook::fboss::platform::showtech_config;
 
 namespace facebook::fboss::platform {
 
+namespace {
+// POSIX ERE matching glog/folly-logging ERROR and FATAL lines, e.g.
+//   E0831 19:35:18.123456 12345 SwSwitch.cpp:42] ...
+// Left unanchored: services without a log file under /var/facebook/logs/fboss
+// are read with `journalctl -u`, which puts its own
+// "Aug 31 19:35:18 dut wedge_agent[123]: " prefix ahead of the glog one. Also
+// matches CHECK/abort output, whose banner lines carry no severity prefix.
+constexpr auto kGlogErrorLineRe =
+    "([EF][0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{6} )"
+    "|(Check failed:)"
+    "|(\\*\\*\\* (Check failure stack trace|Aborted at|Signal|SIGSEGV|SIGABRT))"
+    "|(terminate called after throwing)";
+
+// Lines of context to keep around each match, and the cap on the size of the
+// whole excerpt.
+constexpr int kErrorContextLines = 5;
+constexpr int kMaxErrorLines = 1000;
+} // namespace
+
 void Utils::printHostDetails() {
   std::cout << "##### Host Information #####" << std::endl;
   std::cout << "#### SYSTEM TIME ####" << std::endl;
@@ -343,6 +362,30 @@ void Utils::printServiceLogs(const std::string& service) const {
     cmd = fmt::format("journalctl -u {}", service);
   }
   std::cout << execCommandWithLimit(cmd).second << std::endl;
+  printErrorLogExcerpt(cmd);
+}
+
+// Truncating a long log keeps only its head and tail, which is precisely where
+// a crash is not: the CHECK failure or fatal log that killed the service sits
+// in the dropped middle. Re-run the command through grep so the error lines
+// (plus surrounding context) survive truncation.
+void Utils::printErrorLogExcerpt(const std::string& cmd) const {
+  auto grepCmd = fmt::format(
+      "{} 2>/dev/null | grep -E -C {} -e '{}' | head -n {}",
+      cmd,
+      kErrorContextLines,
+      kGlogErrorLineRe,
+      kMaxErrorLines);
+  auto excerpt = platformUtils_.execCommand(grepCmd).second;
+  std::cout << fmt::format(
+                   "#### Error/Fatal Lines (grep -E -C {}) ####",
+                   kErrorContextLines)
+            << std::endl;
+  if (excerpt.empty()) {
+    std::cout << "No error/fatal lines found" << std::endl;
+  } else {
+    std::cout << excerpt << std::endl;
+  }
 }
 
 void Utils::printLogs() {
@@ -391,6 +434,7 @@ void Utils::printLogs() {
   std::cout << "##### Linux Messages Log #####" << std::endl;
   std::cout << execCommandWithLimit("cat /var/log/messages").second
             << std::endl;
+  printErrorLogExcerpt("cat /var/log/messages");
 }
 
 std::vector<std::string> Utils::getCoredumpPids(
