@@ -63,17 +63,11 @@ fi
 # while the self-contained build here gets a real BUILD.bazel at build time.
 # The generated BUILD.bazel files are gitignored.
 while IFS= read -r oss_build; do
-  [ -f "$oss_build" ] || continue
   dst="${oss_build%.oss}"
   if ! cmp -s "$oss_build" "$dst" 2>/dev/null; then
     cp "$oss_build" "$dst"
   fi
-done <<EOF
-$REPO_ROOT/configerator/structs/neteng/fboss/bgp/if/BUILD.bazel.oss
-$REPO_ROOT/configerator/structs/neteng/bgp_policy/thrift/BUILD.bazel.oss
-$REPO_ROOT/configerator/structs/neteng/fboss/bgp/BUILD.bazel.oss
-$REPO_ROOT/neteng/fboss/bgp/if/BUILD.bazel.oss
-EOF
+done < <(find "$REPO_ROOT/configerator" "$REPO_ROOT/neteng" -name 'BUILD.bazel.oss')
 
 # Source site-specific configuration if present.
 ENV_FILE="$SCRIPT_DIR/fboss-build.env"

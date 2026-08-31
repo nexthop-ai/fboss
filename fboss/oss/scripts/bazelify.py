@@ -1655,23 +1655,28 @@ class DepResolver:
             or dep.startswith("//common/network/")
             or dep.startswith("//common/fb303/")
             or dep.startswith("//common/stats/")
-            or dep.startswith("//configerator/structs/neteng/fboss/thrift")
-            or dep.startswith("//configerator/structs/neteng/bgp_policy/thrift")
+            or dep.startswith("//configerator/structs")
         ):
             # Skip facebook/ internal paths
             if "/facebook/" in dep or "/facebook:" in dep:
                 return None
-            # Check for thrift sub-target
+            # Strip thrift sub-target suffixes, then verify existence below.
             for suffix in THRIFT_SUFFIXES:
                 if dep.endswith(suffix):
-                    return dep[: -len(suffix)]
+                    dep = dep[: -len(suffix)]
+                    break
             # Verify the target exists in our parsed targets or hand-written BUILD files
             if ":" in dep and dep not in self.all_targets:
                 dep_pkg_dir = dep.rsplit(":", 1)[0].lstrip("/")
-                # Check hand-written BUILD files that exist independently of the converter
-                build_path = Path(self._repo_root) / dep_pkg_dir / "BUILD.bazel"
-                buck_path = Path(self._repo_root) / dep_pkg_dir / "BUCK"
-                if build_path.exists() and not buck_path.exists():
+                # Check hand-written BUILD files that exist independently of
+                # the converter (committed either directly or as BUILD.bazel.oss
+                # that bazel.sh copies into place).
+                pkg_path = Path(self._repo_root) / dep_pkg_dir
+                build_path = pkg_path / "BUILD.bazel"
+                buck_path = pkg_path / "BUCK"
+                if (
+                    build_path.exists() or (pkg_path / "BUILD.bazel.oss").exists()
+                ) and not buck_path.exists():
                     # Hand-written BUILD (no BUCK) - trust it has the target
                     return dep
                 # Check if the package has .bzl includes that may define the
