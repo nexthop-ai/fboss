@@ -33,7 +33,7 @@
       }
     },
     "features": {
-      "generate_dlb_config": false,
+      "generate_dlb_config": true,
       "generate_low_clock_freq_settings": false,
       "generate_autoload_board_settings": true
     }
