@@ -402,8 +402,8 @@ void fillHwPortStats(
         if (updateFecStats) {
           // SDK provides clear-on-read counter but we store it as a monotonic
           // counter
-#if defined(BRCM_SAI_SDK_XGS_GTE_13_0)
-          // XGS GTE 13 has cumulative errors reported
+#if defined(BRCM_SAI_SDK_XGS_GTE_13_0) || defined(SAI_BRCM_PAI_IMPL)
+          // XGS GTE 13 and Broadcom PAI report cumulative FEC counters
           hwPortStats.fecCorrectableErrors() = value;
 #else
           hwPortStats.fecCorrectableErrors() =
@@ -415,8 +415,8 @@ void fillHwPortStats(
         if (updateFecStats) {
           // SDK provides clear-on-read counter but we store it as a monotonic
           // counter
-#if defined(BRCM_SAI_SDK_XGS_GTE_13_0)
-          // XGS GTE 13 has cumulative errors reported
+#if defined(BRCM_SAI_SDK_XGS_GTE_13_0) || defined(SAI_BRCM_PAI_IMPL)
+          // XGS GTE 13 and Broadcom PAI report cumulative FEC counters
           hwPortStats.fecUncorrectableErrors() = value;
 #else
           hwPortStats.fecUncorrectableErrors() =
@@ -723,7 +723,7 @@ void fillHwPortStats(
         break;
       }
 #endif
-#if defined(CHENAB_SAI_SDK) && !defined(CHENAB_SAI_SDK_VERSION_2511_6_0_21_ea)
+#if defined(CHENAB_SAI_SDK)
       case SAI_PORT_STAT_IF_OUT_DISCARDS_SLL:
         hwPortStats.outDiscardsSll_() = value;
         break;
@@ -2454,7 +2454,8 @@ bool SaiPortManager::rxSerdesParametersSupported() const {
 }
 
 bool SaiPortManager::rxSNRSupported() const {
-#if defined(BRCM_SAI_SDK_GTE_10_0)
+#if defined(BRCM_SAI_SDK_GTE_10_0) || \
+    (defined(SAI_BRCM_PAI_IMPL) && SAI_API_VERSION >= SAI_VERSION(1, 18, 1))
   return platform_->getAsic()->isSupported(HwAsic::Feature::RX_SNR);
 #else
   return false;
@@ -2839,10 +2840,18 @@ void SaiPortManager::updateStats(
     // share the PHY layer group, so clearing first would zero the corrected
     // bits/symbols counters before we read them.
     if (fecStatsSupported(portId)) {
+      // PAI (Agera3 retimer) has no get_port_stats_ext and reports cumulative
+      // FEC frames; read (don't clear) so the call goes through get_port_stats,
+      // and store the value as absolute below.
+#if defined(SAI_BRCM_PAI_IMPL)
+      constexpr auto kFecStatsMode = SAI_STATS_MODE_READ;
+#else
+      constexpr auto kFecStatsMode = SAI_STATS_MODE_READ_AND_CLEAR;
+#endif
       fecCollectionSucceeded &= collectStats(
           {SAI_PORT_STAT_IF_IN_FEC_CORRECTABLE_FRAMES,
            SAI_PORT_STAT_IF_IN_FEC_NOT_CORRECTABLE_FRAMES},
-          SAI_STATS_MODE_READ_AND_CLEAR,
+          kFecStatsMode,
           "FEC correctable/uncorrectable frames");
     }
     if (fecCollectionSucceeded) {
@@ -4171,18 +4180,20 @@ std::vector<sai_port_frequency_offset_ppm_values_t> SaiPortManager::getRxPPM(
 }
 
 std::vector<sai_port_snr_values_t> SaiPortManager::getRxSNR(
-    PortSaiId saiPortId,
-    uint8_t numPmdLanes) const {
-  const auto portItr = concurrentIndices_->portSaiId2PortInfo.find(saiPortId);
-  if (portItr == concurrentIndices_->portSaiId2PortInfo.cend()) {
-    XLOG(WARNING) << "Unknown PortSaiId: " << saiPortId;
-    return std::vector<sai_port_snr_values_t>();
-  }
+    const PortSaiId& saiPortId,
+    uint8_t numPmdLanes,
+    const PortID& portID) const {
+  // Take portID as a parameter (like getRxSignalDetect / getRxLockStatus)
+  // instead of resolving it via concurrentIndices_->portSaiId2PortInfo. On
+  // XPHY retimers only the line SAI port is registered in that index (base
+  // addPort registers the SAI id returned by addPortImpl, which is the line
+  // port), so a lookup on the system SAI port would miss and return empty --
+  // suppressing system-side SNR. The caller always has the PortID in hand.
+  //
   // TH5 Management port doesn't support RX SNR
   // If we do end up with management ports supporting rxSNR we may need to
   // support per-core HwAsic::Feature definitions instead of setting them at
   // the asic level.
-  auto portID = portItr->second.portID;
   if (getPortType(portID) == cfg::PortType::MANAGEMENT_PORT) {
     return std::vector<sai_port_snr_values_t>();
   }
@@ -4276,6 +4287,47 @@ void SaiPortManager::updateLeakyBucketFb303Counter(PortID portId, int value) {
     throw FbossError("PortStats_ not available for : ", portId);
   }
   portStatItr->second->updateLeakyBucketFlapCnt(value);
+}
+
+void SaiPortManager::updatePmdChangedFb303Counters(
+    PortID portId,
+    phy::Side side,
+    bool signalDetectChanged,
+    bool cdrLockChanged) {
+  auto portStatItr = portStats_.find(portId);
+  if (portStatItr == portStats_.end()) {
+    // Stats are not maintained for disabled ports
+    return;
+  }
+  bool isLine = side == phy::Side::LINE;
+  portStatItr->second->updatePhyChanged(
+      isLine ? kLineRxSignalDetectChanged() : kSystemRxSignalDetectChanged(),
+      signalDetectChanged);
+  portStatItr->second->updatePhyChanged(
+      isLine ? kLineRxCdrLockChanged() : kSystemRxCdrLockChanged(),
+      cdrLockChanged);
+}
+
+void SaiPortManager::updateLinkFaultChangedFb303Counters(
+    PortID portId,
+    phy::Side side,
+    bool localFaultChanged,
+    bool remoteFaultChanged) {
+  auto portStatItr = portStats_.find(portId);
+  if (portStatItr == portStats_.end()) {
+    // Stats are not maintained for disabled ports
+    return;
+  }
+  if (side != phy::Side::LINE) {
+    // updateRsInfo is only ever called for the line side, so there are no
+    // system.* fault counters registered. Bail rather than attributing a
+    // system sample to the line counter.
+    return;
+  }
+  portStatItr->second->updatePhyChanged(
+      kLineLocalFaultChanged(), localFaultChanged);
+  portStatItr->second->updatePhyChanged(
+      kLineRemoteFaultChanged(), remoteFaultChanged);
 }
 
 std::vector<sai_port_err_status_t> SaiPortManager::getPortErrStatus(

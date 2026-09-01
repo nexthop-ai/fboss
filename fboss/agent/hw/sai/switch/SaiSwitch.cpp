@@ -2575,8 +2575,8 @@ void SaiSwitch::updatePmdInfo(
     laneStates[laneId] = laneState;
   }
 
-  auto pmdRxSNR =
-      managerTable_->portManager().getRxSNR(port->adapterKey(), numPmdLanes);
+  auto pmdRxSNR = managerTable_->portManager().getRxSNR(
+      port->adapterKey(), numPmdLanes, portID);
   for (const auto& pmd : pmdRxSNR) {
     auto laneId = pmd.lane;
     phy::LaneStats laneStat;
@@ -2619,9 +2619,19 @@ void SaiSwitch::updatePmdInfo(
   for (const auto& laneStat : laneStats) {
     sideStats.pmd()->lanes()[laneStat.first] = laneStat.second;
   }
+  // The hardware latches these per read, so OR-ing across lanes says whether
+  // anything moved on this side since the previous updateAllPhyInfo. This runs
+  // once per collection, so each event is published exactly once.
+  bool signalDetectChanged = false;
+  bool cdrLockChanged = false;
   for (const auto& laneState : laneStates) {
     sideState.pmd()->lanes()[laneState.first] = laneState.second;
+    signalDetectChanged |=
+        laneState.second.signalDetectChanged().value_or(false);
+    cdrLockChanged |= laneState.second.cdrLockChanged().value_or(false);
   }
+  managerTable_->portManager().updatePmdChangedFb303Counters(
+      portID, *sideState.side(), signalDetectChanged, cdrLockChanged);
   auto swPort = getProgrammedState()->getPorts()->getNodeIf(portID);
   bool linkTrainingEnabled =
       swPort ? swPort->getLinkTraining().value_or(false) : false;
@@ -2739,8 +2749,8 @@ void SaiSwitch::updatePcsInfo(
 void SaiSwitch::updateRsInfo(
     phy::PhySideState& sideState,
     std::shared_ptr<SaiPort> port,
-    [[maybe_unused]] PortID swPort,
-    [[maybe_unused]] phy::PhySideState& lastState) {
+    PortID swPort,
+    phy::PhySideState& lastState) {
   bool rsInfoSupported =
       platform_->getAsic()->isSupported(HwAsic::Feature::SAI_PORT_ERR_STATUS);
   auto errStatus =
@@ -2757,6 +2767,19 @@ void SaiSwitch::updateRsInfo(
       default:
         break;
     }
+  }
+
+  // Diff against the previous sample so a fault that asserts and clears
+  // between two reads of PhyInfo is still observable. The first sample for a
+  // port has nothing to compare against and reports no change.
+  bool localFaultChanged = false;
+  bool remoteFaultChanged = false;
+  if (lastState.rs().has_value()) {
+    const auto& lastFaultStatus = *lastState.rs()->faultStatus();
+    localFaultChanged =
+        *lastFaultStatus.localFault() != *faultStatus.localFault();
+    remoteFaultChanged =
+        *lastFaultStatus.remoteFault() != *faultStatus.remoteFault();
   }
 
 #if SAI_API_VERSION >= SAI_VERSION(1, 10, 3)
@@ -2785,6 +2808,8 @@ void SaiSwitch::updateRsInfo(
     phy::RsInfo rsInfo;
     rsInfo.faultStatus() = faultStatus;
     sideState.rs() = rsInfo;
+    managerTable_->portManager().updateLinkFaultChangedFb303Counters(
+        swPort, *sideState.side(), localFaultChanged, remoteFaultChanged);
   }
 }
 
@@ -5237,6 +5262,9 @@ std::string SaiSwitch::listObjects(
         objTypes.push_back(SAI_OBJECT_TYPE_SRV6_SIDLIST);
         objTypes.push_back(SAI_OBJECT_TYPE_MY_SID_ENTRY);
 #endif
+        break;
+      case HwObjectType::SAMPLE_PACKET:
+        objTypes.push_back(SAI_OBJECT_TYPE_SAMPLEPACKET);
         break;
     }
   }

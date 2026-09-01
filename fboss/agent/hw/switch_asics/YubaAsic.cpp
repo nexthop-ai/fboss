@@ -101,7 +101,9 @@ bool YubaAsic::isSupportedNonFabric(Feature feature) const {
     case HwAsic::Feature::DEVICE_WATERMARK_SUPPORT:
     case HwAsic::Feature::ROUTE_COUNTERS:
     case HwAsic::Feature::PORT_DEBOUNCE:
+    case HwAsic::Feature::SAI_PORT_ERR_STATUS:
     case HwAsic::Feature::ACL_DST_IPV6_WORD_QUALIFIERS:
+    case HwAsic::Feature::NEXT_HOP_GROUP_MEMBER_MONITORED_OBJECT:
       return true;
     case HwAsic::Feature::SRV6_MYSID_RESOURCE_COUNTER:
     case HwAsic::Feature::SRV6_MYSID_DISCARD_COUNTER:
@@ -141,7 +143,6 @@ bool YubaAsic::isSupportedNonFabric(Feature feature) const {
     case HwAsic::Feature::ROUTE_FLEX_COUNTERS:
     case HwAsic::Feature::FEC_DIAG_COUNTERS:
     case HwAsic::Feature::PORT_EYE_VALUES:
-    case HwAsic::Feature::SAI_PORT_ERR_STATUS:
     case HwAsic::Feature::EXACT_MATCH:
     case HwAsic::Feature::FEC_CORRECTED_BITS:
     case HwAsic::Feature::RX_FREQUENCY_PPM:

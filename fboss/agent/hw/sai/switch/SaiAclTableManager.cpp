@@ -1699,6 +1699,7 @@ AclEntrySaiId SaiAclTableManager::addAclEntry(
       aclFieldRouteDestination,
 #endif
       labelExtended,
+      std::nullopt, // fieldPortUserMeta
   };
 
   auto saiAclEntry = aclEntryStore.setObject(adapterHostKey, attributes);
@@ -2261,6 +2262,11 @@ bool SaiAclTableManager::isQualifierSupported(
       return hasField(
           std::get<std::optional<
               SaiAclTableTraits::Attributes::FieldRouteDstUserMeta>>(
+              attributes));
+    case cfg::AclTableQualifier::LOOKUP_CLASS_PORT:
+      return hasField(
+          std::get<
+              std::optional<SaiAclTableTraits::Attributes::FieldPortUserMeta>>(
               attributes));
     case cfg::AclTableQualifier::ETHER_TYPE:
       return hasField(

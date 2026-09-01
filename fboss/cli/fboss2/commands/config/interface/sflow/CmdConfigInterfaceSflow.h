@@ -10,6 +10,7 @@
 
 #pragma once
 
+<<<<<<< HEAD
 #include "fboss/cli/fboss2/CmdHandler.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
 #include "fboss/cli/fboss2/utils/InterfaceList.h"
@@ -37,6 +38,64 @@ class CmdConfigInterfaceSflow : public CmdHandler<
   }
 
   void printOutput(const RetType& /* model */) {}
+||||||| 4c0febe655
+=======
+#include <string>
+#include <utility>
+#include <vector>
+#include "fboss/cli/fboss2/CmdHandler.h"
+#include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
+#include "fboss/cli/fboss2/utils/CmdUtilsCommon.h"
+#include "fboss/cli/fboss2/utils/InterfaceList.h"
+
+namespace facebook::fboss {
+
+// Parses one or more <attr> <value> pairs of
+//   config interface <name> sflow <attr> <value> [<attr> <value> ...]
+// where <attr> is one of: sample-dest, ingress-rate, egress-rate. All
+// attributes present are applied together in a single commit (e.g.
+// "sample-dest cpu ingress-rate 100 egress-rate 50" in one call).
+class SflowAttrArgs : public utils::BaseObjectArgType<std::string> {
+ public:
+  /* implicit */ SflowAttrArgs( // NOLINT(google-explicit-constructor)
+      std::vector<std::string> v);
+
+  const std::vector<std::pair<std::string, std::string>>& getAttributes()
+      const {
+    return attributes_;
+  }
+
+ private:
+  std::vector<std::pair<std::string, std::string>> attributes_;
+};
+
+struct CmdConfigInterfaceSflowTraits : public WriteCommandTraits {
+  using ParentCmd = CmdConfigInterface;
+  static void addCliArg(CLI::App& cmd, std::vector<std::string>& args) {
+    cmd.add_option(
+        "sflow_attrs",
+        args,
+        "<attr> <value> [<attr> <value> ...] where <attr> is one of: "
+        "sample-dest, ingress-rate, egress-rate");
+  }
+  using ObjectArgType = SflowAttrArgs;
+  using RetType = std::string;
+};
+
+class CmdConfigInterfaceSflow : public CmdHandler<
+                                    CmdConfigInterfaceSflow,
+                                    CmdConfigInterfaceSflowTraits> {
+ public:
+  using ObjectArgType = CmdConfigInterfaceSflowTraits::ObjectArgType;
+  using RetType = CmdConfigInterfaceSflowTraits::RetType;
+
+  RetType queryClient(
+      const HostInfo& hostInfo,
+      const utils::InterfaceList& interfaces,
+      const ObjectArgType& sflowAttrs);
+
+  void printOutput(const RetType& logMsg);
+>>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
 };
 
 } // namespace facebook::fboss

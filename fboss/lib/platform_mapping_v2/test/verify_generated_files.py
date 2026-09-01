@@ -57,8 +57,13 @@ class TestVerifyPlatformMappingGeneratedFiles(unittest.TestCase):
             "tahansb800bc_test_fixture",
             "wedge800bact",
             "m4062nhp",
+<<<<<<< HEAD
             "nh4010f",
             "nh4220f",
+||||||| 4c0febe655
+=======
+            "m4061clsc",
+>>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
             "wedge800bnhp",
             "wedge800cact",
             "wedge800cnhp",
@@ -75,6 +80,8 @@ class TestVerifyPlatformMappingGeneratedFiles(unittest.TestCase):
             "ladakh800bcls_rack",
             "ladakh800bcls_test_fixture",
             "ladakh800bcls_osfp_tray",
+            "ladakh800bcls_rack_postevt",
+            "ladakh800bcls_test_fixture_postevt",
             "leh800bcls",
             "leh800bcls_rack",
             "leh800bcls_test_fixture",

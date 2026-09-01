@@ -2851,6 +2851,15 @@ shared_ptr<Port> ThriftConfigApplier::updatePort(
     const shared_ptr<TransceiverSpec>& transceiver) {
   CHECK_EQ(orig->getID(), PortID(*portConf->logicalID()));
 
+  if (portConf->linkTraining().value_or(false) &&
+      (portConf->txPrecoding().value_or(false) ||
+       portConf->rxPrecoding().value_or(false))) {
+    throw FbossError(
+        "Port ",
+        orig->getID(),
+        " linkTraining and precoding cannot both be enabled");
+  }
+
   auto vlans = portVlans_[orig->getID()];
 
   std::vector<cfg::PortQueue> cfgPortQueues;
@@ -4194,6 +4203,8 @@ std::shared_ptr<AclMap> ThriftConfigApplier::updateAclsImpl(
   int numExistingProcessed = 0;
   int dataPriority = AclTable::kDataplaneAclMaxPriority;
   int cpuPriority = 1;
+  CHECK_LT(FLAGS_pbr_acl_priority, AclTable::kDataplaneAclMaxPriority)
+      << "PBR must sit below the dataplane band so no config ACL can reach it";
 
   flat_map<std::string, const cfg::TrafficCounter*> counterByName;
   folly::gen::from(*cfg_->trafficCounters()) |
@@ -4325,10 +4336,20 @@ std::shared_ptr<AclMap> ThriftConfigApplier::updateAclsImpl(
         ma = &matchAction;
       }
 
+      int aclPriority = isCoppAcl ? cpuPriority++ : dataPriority++;
+      if (aclPriority == FLAGS_pbr_acl_priority) {
+        throw FbossError(
+            "ACL ",
+            *aclCfg.name(),
+            " was assigned priority ",
+            aclPriority,
+            ", which is reserved for PBR ACL entries");
+      }
+
       auto acl = updateAcl(
           aclStage,
           aclCfg,
-          isCoppAcl ? cpuPriority++ : dataPriority++,
+          aclPriority,
           &numExistingProcessed,
           &changed,
           tableName,

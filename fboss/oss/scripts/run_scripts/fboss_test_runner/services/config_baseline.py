@@ -196,7 +196,14 @@ class ConfigBaseline:
                 print("Committing uncommitted config drift as the suite baseline")
                 self._commit("fboss_test_runner: suite baseline snapshot")
                 head = self.head()
+<<<<<<< HEAD
             print(f"Suite config baseline: {head[:8]}")
+||||||| 4c0febe655
+=======
+            print(
+                f"Suite config baseline: {head[:8] if head is not None else 'unknown'}"
+            )
+>>>>>>> be11fad19cf8da3f8dbcc1318a6109b7c9b96dbe
             return head
         except Exception as e:
             print(f"Warning: failed to capture config baseline: {e}")

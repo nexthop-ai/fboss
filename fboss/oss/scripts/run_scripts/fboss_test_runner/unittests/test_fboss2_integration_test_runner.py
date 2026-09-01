@@ -446,6 +446,9 @@ class TestSetupRunHook(unittest.TestCase):
         runner._setup_run = tracked_setup_run
         runner._setup_coldboot_test = tracked_setup_coldboot
         runner._test_framework = MagicMock()
+        # Stub the baseline out: the suite hooks would otherwise run real git
+        # commands against the live /etc/coop on a machine that has one.
+        runner._config_baseline = MagicMock()
 
         mock_args = _make_mock_args(
             sai_replayer_logging=None, simulator=None, coldboot_only=True

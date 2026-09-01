@@ -1594,6 +1594,7 @@ class ChildThriftPath<::facebook::fboss::cfg::Interface, ::facebook::fboss::fsdb
     STRUCT_CHILD_GETTERS(portID, 17);
     STRUCT_CHILD_GETTERS(desiredPeerName, 18);
     STRUCT_CHILD_GETTERS(desiredPeerAddressIPv6, 19);
+    STRUCT_CHILD_GETTERS(aggregatePortID, 20);
 };
 
 
@@ -1804,6 +1805,7 @@ class ChildThriftPath<::facebook::fboss::state::SwitchState, ::facebook::fboss::
     STRUCT_CHILD_GETTERS(mySidMaps, 126);
     STRUCT_CHILD_GETTERS(llrCfgMaps, 127);
     STRUCT_CHILD_GETTERS(classBasedPolicyMaps, 128);
+    STRUCT_CHILD_GETTERS(portAclTableGroupMaps, 129);
     STRUCT_CHILD_GETTERS(remoteSystemPortMaps, 600);
     STRUCT_CHILD_GETTERS(remoteInterfaceMaps, 601);
     STRUCT_CHILD_GETTERS(fabricLinkMonitoringSystemPortMaps, 602);
@@ -2034,6 +2036,7 @@ class ChildThriftPath<::facebook::fboss::cfg::AclTableGroup, ::facebook::fboss::
     STRUCT_CHILD_GETTERS(name, 1);
     STRUCT_CHILD_GETTERS(aclTables, 2);
     STRUCT_CHILD_GETTERS(stage, 3);
+    STRUCT_CHILD_GETTERS(bindPoint, 4);
 };
 
 
@@ -2283,6 +2286,7 @@ class ChildThriftPath<::facebook::fboss::state::AclTableGroupFields, ::facebook:
     STRUCT_CHILD_GETTERS(stage, 1);
     STRUCT_CHILD_GETTERS(name, 2);
     STRUCT_CHILD_GETTERS(aclTableMap, 3);
+    STRUCT_CHILD_GETTERS(bindPoint, 4);
 };
 
 
@@ -2927,6 +2931,7 @@ class ChildThriftPath<::facebook::neteng::fboss::bgp::thrift::TBgpPath, ::facebo
     STRUCT_CHILD_GETTERS(igp_cost, 26);
     STRUCT_CHILD_GETTERS(path_id_to_send, 27);
     STRUCT_CHILD_GETTERS(is_inactive, 28);
+    STRUCT_CHILD_GETTERS(backup_addr, 29);
 };
 
 
@@ -4275,6 +4280,7 @@ class ChildThriftPath<::facebook::fboss::state::PortFields, ::facebook::fboss::f
     STRUCT_CHILD_GETTERS(txPrecoding, 71);
     STRUCT_CHILD_GETTERS(rxPrecoding, 72);
     STRUCT_CHILD_GETTERS(linkScanMode, 73);
+    STRUCT_CHILD_GETTERS(ingressAclTableName, 74);
 };
 
 
@@ -5074,6 +5080,8 @@ class ChildThriftPath<::facebook::fboss::cfg::Port, ::facebook::fboss::fsdb::Fsd
     STRUCT_CHILD_GETTERS(txPrecoding, 43);
     STRUCT_CHILD_GETTERS(rxPrecoding, 44);
     STRUCT_CHILD_GETTERS(linkScanMode, 45);
+    STRUCT_CHILD_GETTERS(ingressAclTableName, 46);
+    STRUCT_CHILD_GETTERS(userMetaData, 47);
 };
 
 
@@ -6600,6 +6608,8 @@ class ChildThriftPath<::facebook::bgp::thrift::BgpSettingConfig, ::facebook::fbo
     STRUCT_CHILD_GETTERS(next_hop_tracking_use_openr_igp_cost, 17);
     STRUCT_CHILD_GETTERS(enable_addpath_gr_reconcile, 18);
     STRUCT_CHILD_GETTERS(enable_legacy_v4_nlri_encoding, 19);
+    STRUCT_CHILD_GETTERS(enable_stream_subscriber_backpressure, 20);
+    STRUCT_CHILD_GETTERS(enable_netlink_dampening, 21);
 };
 
 
@@ -6818,6 +6828,7 @@ class ChildThriftPath<::facebook::fboss::cfg::AclEntry, ::facebook::fboss::fsdb:
     STRUCT_CHILD_GETTERS(l4DstPortRange, 36);
     STRUCT_CHILD_GETTERS(dstIpV6Word3, 37);
     STRUCT_CHILD_GETTERS(dstIpV6Word2, 38);
+    STRUCT_CHILD_GETTERS(lookupClassPort, 39);
 };
 
 
@@ -7336,6 +7347,7 @@ class ChildThriftPath<::facebook::fboss::state::InterfaceFields, ::facebook::fbo
     STRUCT_CHILD_GETTERS(portId, 23);
     STRUCT_CHILD_GETTERS(desiredPeerName, 24);
     STRUCT_CHILD_GETTERS(desiredPeerAddressIPv6, 25);
+    STRUCT_CHILD_GETTERS(aggregatePortId, 26);
 };
 
 
@@ -7589,6 +7601,8 @@ class ChildThriftPath<::facebook::fboss::state::MySidFields, ::facebook::fboss::
     STRUCT_CHILD_GETTERS(clientId, 6);
     STRUCT_CHILD_GETTERS(isV6, 7);
     STRUCT_CHILD_GETTERS(namedNextHopGroup, 8);
+    STRUCT_CHILD_GETTERS(backupResolvedNextHopsId, 9);
+    STRUCT_CHILD_GETTERS(backupUnresolveNextHopsId, 12);
 };
 
 

@@ -193,6 +193,7 @@ struct PortFields {
   // Whether the SDK's software linkscan thread or the ASIC notices link
   // status changes on this port. Unset = leave SDK default untouched.
   73: optional switch_config.LinkScanMode linkScanMode;
+  74: optional string ingressAclTableName;
 }
 
 typedef ctrl.SystemPortThrift SystemPortFields
@@ -689,6 +690,16 @@ struct MySidFields {
   7: optional bool isV6;
   # Optional named next hop group for the MySid entry.
   8: optional string namedNextHopGroup;
+  # SRv6 midpoint FRR: when set, this MySid entry is programmed as a hardware
+  # protection group. resolvedNextHopsId (field 4) is the PRIMARY path; this is
+  # the resolved BACKUP (standby) next hop set id (typically an ECMP of
+  # SRv6-encap next hops that impose a repair SID).
+  9: optional i64 backupResolvedNextHopsId;
+  # SRv6 midpoint FRR: the requested (unresolved) BACKUP next hop set id, set by
+  # the addAdjacencyFrr thrift API. RibMySidUpdater resolves it into
+  # backupResolvedNextHopsId (field 9), symmetric to unresolveNextHopsId
+  # (field 3) -> resolvedNextHopsId (field 4).
+  12: optional i64 backupUnresolveNextHopsId;
 }
 
 struct QosPolicyFields {
@@ -753,6 +764,10 @@ struct InterfaceFields {
   /* These fields contains information of remote GPU */
   24: optional string desiredPeerName;
   25: optional string desiredPeerAddressIPv6;
+  /* applicable only for port type of interface bound to an aggregate port
+   * rather than a physical port. Exactly one of portId and aggregatePortId
+   * is set. */
+  26: optional i32 aggregatePortId;
 }
 
 enum LacpState {
@@ -837,6 +852,7 @@ struct AclTableGroupFields {
   1: switch_config.AclStage stage;
   2: string name;
   3: optional map<string, AclTableFields> aclTableMap;
+  4: switch_config.AclTableGroupBindPoint bindPoint = switch_config.AclTableGroupBindPoint.SWITCH;
 }
 
 struct QcmCfgFields {
@@ -907,6 +923,10 @@ struct SwitchState {
     SwitchIdList,
     map<string, ClassBasedPolicyFields>
   > classBasedPolicyMaps;
+  129: map<
+    SwitchIdList,
+    map<switch_config.AclStage, AclTableGroupFields>
+  > portAclTableGroupMaps;
   // Remote object maps
   600: map<SwitchIdList, map<i64, SystemPortFields>> remoteSystemPortMaps;
   601: map<SwitchIdList, map<i32, InterfaceFields>> remoteInterfaceMaps;

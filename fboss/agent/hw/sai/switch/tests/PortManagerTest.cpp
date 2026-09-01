@@ -7,6 +7,7 @@
  *  of patent rights can be found in the PATENTS file in the same directory.
  *
  */
+#include "fboss/agent/AgentFeatures.h"
 #include "fboss/agent/hw/HwPortFb303Stats.h"
 #include "fboss/agent/hw/StatsConstants.h"
 #include "fboss/agent/hw/sai/fake/FakeSai.h"
@@ -189,13 +190,15 @@ class PortManagerTest : public ManagerTestBase {
         std::nullopt, // QosIngressBufferProfileList
         std::nullopt, // QosEgressBufferProfileList
         std::nullopt, // CablePropagationDelayMediaType
+        std::nullopt, // LinkScanMode
 #if SAI_API_VERSION >= SAI_VERSION(1, 18, 0)
         std::nullopt, // LlrModeLocal
         std::nullopt, // LlrModeRemote
         std::nullopt, // LlrProfile
 #endif
         std::nullopt, // PfcPauseDurationOverride
-        std::nullopt, // LinkScanMode
+        std::nullopt, // Ingress ACL
+        std::nullopt, // Metadata
     };
     return portApi.create<SaiPortTraits>(a, 0);
   }
@@ -946,6 +949,61 @@ TEST_F(PortManagerTest, shareLlrProfileAcrossPorts) {
   // Removing the last referencing port frees it.
   saiManagerTable->portManager().removePort(port1);
   EXPECT_EQ(fs->portLlrProfileManager.map().size(), 0);
+}
+
+TEST_F(PortManagerTest, programPrecodingFromPlatformMappingWhenEnabled) {
+  gflags::FlagSaver flagSaver;
+  FLAGS_montblanc_precoding = false;
+
+  auto verifyPrecoding = [&](std::optional<bool> txEnabled,
+                             std::optional<bool> rxEnabled,
+                             const std::vector<int32_t>& expectedTx,
+                             const std::vector<int32_t>& expectedRx) {
+    auto swPort = makePort(p0);
+    auto pinConfigs = swPort->getPinConfigs();
+    for (auto& pinConfig : pinConfigs) {
+      pinConfig.rx()->precoding() = 2;
+      pinConfig.tx()->precoding() = 1;
+    }
+    swPort->resetPinConfigs(pinConfigs);
+    swPort->setTxPrecoding(txEnabled);
+    swPort->setRxPrecoding(rxEnabled);
+
+    saiManagerTable->portManager().addPort(swPort);
+    auto* handle =
+        saiManagerTable->portManager().getPortHandle(swPort->getID());
+    const auto& fakeSerdes = FakeSai::getInstance()->portSerdesManager.get(
+        handle->serdes->adapterKey());
+    EXPECT_EQ(fakeSerdes.txPrecoding, expectedTx);
+    EXPECT_EQ(fakeSerdes.rxPrecoding, expectedRx);
+    saiManagerTable->portManager().removePort(swPort);
+  };
+
+  verifyPrecoding(std::nullopt, std::nullopt, {}, {});
+  verifyPrecoding(false, false, {}, {});
+  verifyPrecoding(true, false, {1}, {});
+  verifyPrecoding(false, true, {}, {2});
+  verifyPrecoding(true, true, {1}, {2});
+}
+
+TEST_F(PortManagerTest, programPrecodingWhenMontblancFlagEnabled) {
+  gflags::FlagSaver flagSaver;
+  FLAGS_montblanc_precoding = true;
+
+  auto swPort = makePort(p0);
+  auto pinConfigs = swPort->getPinConfigs();
+  for (auto& pinConfig : pinConfigs) {
+    pinConfig.rx()->precoding() = 2;
+    pinConfig.tx()->precoding() = 1;
+  }
+  swPort->resetPinConfigs(pinConfigs);
+
+  saiManagerTable->portManager().addPort(swPort);
+  auto* handle = saiManagerTable->portManager().getPortHandle(swPort->getID());
+  const auto& fakeSerdes = FakeSai::getInstance()->portSerdesManager.get(
+      handle->serdes->adapterKey());
+  EXPECT_EQ(fakeSerdes.txPrecoding, std::vector<int32_t>{1});
+  EXPECT_EQ(fakeSerdes.rxPrecoding, std::vector<int32_t>{2});
 }
 #endif
 } // namespace facebook::fboss
