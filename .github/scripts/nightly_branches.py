@@ -8,10 +8,11 @@ Prints a JSON list to stdout: always "main" first, then every `branch:` under
 order, no duplicates). With --repo, each of those branches must exist in that
 repo (checked with `gh api`, needs GH_TOKEN).
 
-Anything wrong — unreadable file, no branch_families block, a pattern such as
-nh-fboss-* instead of a branch name, a branch that does not exist — prints an
-::error:: line to stderr and exits 1. The workflow then builds main only and
-warns on Slack.
+Anything that stops the whole list from being read — unreadable file, no
+branch_families block, a listed branch that does not exist — prints an
+::error:: line to stderr and exits 1; the workflow then builds main only and
+warns on Slack. A single bad rule (a pattern such as nh-fboss-* instead of a
+branch name) is skipped with a ::warning::, so the other branches still build.
 
 The file is parsed with PyYAML (the same parser Tide uses); the k8s runner
 image ships it since nexthop-ai/nhsystem-ops#622.
@@ -57,10 +58,14 @@ def nightly_branches(text: str, path: str) -> list[str]:
         if not value.startswith(FBOSS_PREFIX):
             continue  # SONiC release rules etc.
         if GLOB_CHARS & set(value):
-            fail(
-                f"branch_families rule '{value}' is a pattern; "
-                "the nightly needs the exact branch name."
+            # One author's glob must not stop the correctly-listed branches
+            # from building; skip the rule and leave a trace in the run log.
+            print(
+                f"::warning::branch_families rule '{value}' is a pattern; "
+                "the nightly can only build exact branch names - skipping it.",
+                file=sys.stderr,
             )
+            continue
         if value not in branches:
             branches.append(value)
     return branches
