@@ -20,7 +20,6 @@ jobs:
     uses: nexthop-ai/nh/.github/workflows/monobuild.reusable.yml@main
     with:
       submodule: fboss
-      nh_branch: main
       use-nh-ci-app: true
     secrets:
       GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
