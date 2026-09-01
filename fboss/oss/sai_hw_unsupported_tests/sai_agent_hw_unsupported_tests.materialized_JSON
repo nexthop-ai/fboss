@@ -5908,37 +5908,7 @@
           "test_name_regex": "AgentIngressBufferPoolTest.validateIngressPoolParamChange$"
         },
         {
-          "test_name_regex": "AgentRouteStatExtendedLabelTest.NamedNhgExtendedCounterLabel$"
-        },
-        {
-          "test_name_regex": "AgentRouteStatExtendedLabelTest.RouteCounterExtendedLabel$"
-        },
-        {
           "test_name_regex": "AgentSendPacketToMulticastQueueTest.SendPacketOutOfPortToMCQueue$"
-        },
-        {
-          "test_name_regex": "AgentSrv6BindingSidTest.*$"
-        },
-        {
-          "test_name_regex": "AgentSrv6DecapTest.*$"
-        },
-        {
-          "test_name_regex": "AgentSrv6EcmpLoadBalancerTest.*$"
-        },
-        {
-          "test_name_regex": "AgentSrv6EncapTest.*$"
-        },
-        {
-          "test_name_regex": "AgentSrv6FlowLabelEcmpLoadBalancerTest.*$"
-        },
-        {
-          "test_name_regex": "AgentSrv6MidpointTest.*$"
-        },
-        {
-          "test_name_regex": "AgentSrv6ResourceUsageTest.*$"
-        },
-        {
-          "test_name_regex": "AgentSrv6TrunkLoadBalancerTest.*$"
         },
         {
           "test_name_regex": "AgentMacOverFlowTest.*$"
@@ -6021,37 +5991,7 @@
           "test_name_regex": "AgentIngressBufferPoolTest.validateIngressPoolParamChange$"
         },
         {
-          "test_name_regex": "AgentRouteStatExtendedLabelTest.NamedNhgExtendedCounterLabel$"
-        },
-        {
-          "test_name_regex": "AgentRouteStatExtendedLabelTest.RouteCounterExtendedLabel$"
-        },
-        {
           "test_name_regex": "AgentSendPacketToMulticastQueueTest.SendPacketOutOfPortToMCQueue$"
-        },
-        {
-          "test_name_regex": "AgentSrv6BindingSidTest.*$"
-        },
-        {
-          "test_name_regex": "AgentSrv6DecapTest.*$"
-        },
-        {
-          "test_name_regex": "AgentSrv6EcmpLoadBalancerTest.*$"
-        },
-        {
-          "test_name_regex": "AgentSrv6EncapTest.*$"
-        },
-        {
-          "test_name_regex": "AgentSrv6FlowLabelEcmpLoadBalancerTest.*$"
-        },
-        {
-          "test_name_regex": "AgentSrv6MidpointTest.*$"
-        },
-        {
-          "test_name_regex": "AgentSrv6ResourceUsageTest.*$"
-        },
-        {
-          "test_name_regex": "AgentSrv6TrunkLoadBalancerTest.*$"
         },
         {
           "test_name_regex": "AgentMacOverFlowTest.*$"
