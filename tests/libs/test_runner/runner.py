@@ -230,6 +230,90 @@ def _benchmark_skip_known_bad(model: str) -> str:
     return f" --skip-known-bad-tests {key}"
 
 
+# asicToFeatureNames in asic_production_features.materialized_JSON says a chip
+# supports a feature with no SDK-version awareness - sai_agent_test_runner.py's
+# _filter_tests only ever checks against that flat list.
+# featureSupportSpecs[].supportedFrom[].minSdkVersion is upstream metadata
+# that needs to be taken into account. The helpers below cross-reference the
+# two, using the SDK version each model is actually pinned to (the same one
+# _SAI_KNOWN_BAD_KEY already declares), so SaiAgentTestRunner can upload a
+# filtered copy of the JSON before --enable-production-features runs.
+
+def _sdk_version_for_model(model: str) -> str | None:
+    """This model's pinned SDK version, e.g. "14.2.0.0_odp" or "25.11.4210".
+
+    None for models missing from that table. Compared on (major, minor)
+    only (see _sdk_version_meets_minimum) -- verified to order correctly
+    for both BRCM's "X.Y.0.0_odp" scheme and Leaba's "YY.M.build" scheme.
+    """
+    key = _SAI_KNOWN_BAD_KEY.get(model)
+    if not key:
+        return None
+    parts = key.split("/")
+    if len(parts) != 4:
+        return None
+    return parts[1]
+
+
+def _parse_sdk_version(version: str) -> tuple[int, int] | None:
+    match = re.match(r"^(\d+)\.(\d+)", version)
+    if not match:
+        return None
+    return (int(match.group(1)), int(match.group(2)))
+
+
+def _sdk_version_meets_minimum(current: str, minimum: str) -> bool:
+    """Compare sdk version on (major, minor) only
+    """
+    current_parsed = _parse_sdk_version(current)
+    minimum_parsed = _parse_sdk_version(minimum)
+    if current_parsed is None or minimum_parsed is None:
+        return True
+    return current_parsed >= minimum_parsed
+
+
+def _sdk_excluded_feature_names(
+    data: dict, asic: str, current_sdk_version: str
+) -> set[str]:
+    """Feature names in asicToFeatureNames[asic] whose featureSupportSpecs
+    minSdkVersion exceeds current_sdk_version.
+    """
+    id_to_name = dict(
+        zip(
+            data.get("asicToFeatures", {}).get(asic, []),
+            data.get("asicToFeatureNames", {}).get(asic, []),
+            strict=False,
+        )
+    )
+    excluded_names = set()
+    for spec in data.get("featureSupportSpecs", []):
+        name = id_to_name.get(spec.get("feature"))
+        if name is None:
+            continue
+        for support in spec.get("supportedFrom", []):
+            if asic not in support.get("asics", []):
+                continue
+            min_version = support.get("minSdkVersion")
+            if min_version and not _sdk_version_meets_minimum(
+                current_sdk_version, min_version
+            ):
+                excluded_names.add(name)
+    return excluded_names
+
+
+def _sdk_gate_production_features(
+    data: dict, asic: str, excluded_names: set[str]
+) -> dict:
+    """Return a copy of the production-features JSON with asicToFeatureNames[asic]
+    stripped of excluded_names. Other asics are left untouched.
+    """
+    filtered = copy.deepcopy(data)
+    names = filtered.get("asicToFeatureNames", {})
+    if asic in names:
+        names[asic] = [n for n in names[asic] if n not in excluded_names]
+    return filtered
+
+
 def _normalize_model(model: str) -> str:
     """Shorten device-DB model name to FBOSS codename form, e.g. NH-4010-F -> nh4010f."""
     return model.lower().replace("-", "")
@@ -1070,9 +1154,90 @@ class SaiAgentTestRunner(BaseHwTestRunner):
     BINARIES = ("bin/sai_agent_hw_test-sai_impl", "bin/multi_switch_agent_hw_test")
     REQUIRED_PATHS = (*BINARIES, *_STACK_SHARE[STACK])
 
-    @staticmethod
-    def _enable_production_features(model: str) -> str:
-        PROD_FEEATURES_KEY: dict[str, str] = {
+    _SYSTEM_PRODUCTION_FEATURES_PATH = (
+        f"{_FBOSS_ROOT_ON_DUT}/share/production_features/"
+        "asic_production_features.materialized_JSON"
+    )
+    _REMOTE_SDK_GATED_PRODUCTION_FEATURES_PATH = (
+        "/home/netops/sdk_gated_production_features.materialized_JSON"
+    )
+
+    def __init__(self):
+        super().__init__()
+        # Keyed by (asic, sdk_version); test_args() is called once per test
+        # case in a batch, and each entry costs an ssh cat + scp put, so cache
+        # across calls instead of re-uploading per test.
+        self._sdk_gated_production_features_cache: dict[
+            tuple[str, str], str | None
+        ] = {}
+
+    def _upload_sdk_gated_production_features(
+        self, asic: str, current_sdk_version: str
+    ) -> str | None:
+        """Read the DUT's production-features JSON, drop any feature whose
+        minSdkVersion exceeds current_sdk_version, and upload the filtered
+        copy. Returns the remote path to pass as --production-features, or
+        None -- run with the upstream default unchanged, either because
+        nothing needs excluding at this SDK version or because something
+        here failed.
+        """
+        if self.ssh_client is None or self.scp_client is None:
+            return None
+        with tempfile.NamedTemporaryFile(
+            suffix=".materialized_JSON", delete=False
+        ) as f:
+            local_path = f.name
+        try:
+            exit_status, output = self.scp_client.get_file(
+                self._SYSTEM_PRODUCTION_FEATURES_PATH, local_path
+            )
+            if exit_status != 0:
+                logger.warning(
+                    "Could not fetch %s from DUT (%s); running without "
+                    "minSdkVersion gating",
+                    self._SYSTEM_PRODUCTION_FEATURES_PATH,
+                    output,
+                )
+                return None
+            try:
+                with open(local_path, encoding="utf-8") as f:
+                    data = json.load(f)
+            except json.JSONDecodeError:
+                logger.warning(
+                    "Production features JSON from DUT was unparseable; "
+                    "running without minSdkVersion gating"
+                )
+                return None
+
+            excluded_names = _sdk_excluded_feature_names(
+                data, asic, current_sdk_version
+            )
+            if not excluded_names:
+                # Nothing to gate at this SDK version -- skip the upload and
+                # let --enable-production-features read the DUT's default
+                # file.
+                return None
+
+            filtered = _sdk_gate_production_features(data, asic, excluded_names)
+            with open(local_path, "w", encoding="utf-8") as f:
+                json.dump(filtered, f, indent=4)
+
+            exit_status, output = self.scp_client.put_file(
+                local_path, self._REMOTE_SDK_GATED_PRODUCTION_FEATURES_PATH
+            )
+        finally:
+            os.unlink(local_path)
+        if exit_status != 0:
+            logger.warning(
+                "Failed to upload SDK-gated production features (%s); "
+                "running without minSdkVersion gating",
+                output,
+            )
+            return None
+        return self._REMOTE_SDK_GATED_PRODUCTION_FEATURES_PATH
+
+    def _enable_production_features(self, model: str) -> str:
+        prod_features_key: dict[str, str] = {
             "minipack3": "tomahawk5",
             "wedge800bact": "tomahawk5",
             "wedge800bnhp": "tomahawk5",
@@ -1083,8 +1248,20 @@ class SaiAgentTestRunner(BaseHwTestRunner):
             "nh4215f": "tomahawk6",
             "nh4220f": "tomahawk6",
         }
-        key = PROD_FEEATURES_KEY.get(model)
-        return f" --enable-production-features {key}" if key else ""
+        key = prod_features_key.get(model)
+        if not key:
+            return ""
+        sdk_version = _sdk_version_for_model(model)
+        features_path = None
+        if sdk_version:
+            cache_key = (key, sdk_version)
+            if cache_key not in self._sdk_gated_production_features_cache:
+                self._sdk_gated_production_features_cache[cache_key] = (
+                    self._upload_sdk_gated_production_features(key, sdk_version)
+                )
+            features_path = self._sdk_gated_production_features_cache[cache_key]
+        features_arg = f" --production-features {features_path}" if features_path else ""
+        return f" --enable-production-features {key}{features_arg}"
 
     def test_args(self, model: str) -> str:
         config_name = _SAI_AGENT_CONFIG_NAME.get(model, model)
