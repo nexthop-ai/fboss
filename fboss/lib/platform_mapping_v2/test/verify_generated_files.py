@@ -57,19 +57,7 @@ class TestVerifyPlatformMappingGeneratedFiles(unittest.TestCase):
             "tahansb800bc_test_fixture",
             "wedge800bact",
             "m4062nhp",
-<<<<<<< HEAD
-<<<<<<< HEAD
-            "nh4010f",
             "nh4220f",
-||||||| 4c0febe655
-=======
-||||||| parent of 933d157642 (Fix merge conflicts.)
-<<<<<<< HEAD
-            "nh4010f",
-||||||| 4c0febe655
-=======
-=======
->>>>>>> 933d157642 (Fix merge conflicts.)
             "m4061clsc",
             "nh4010f",
             "wedge800bnhp",
