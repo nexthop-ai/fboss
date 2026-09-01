@@ -10,11 +10,13 @@ concurrency:
 
 # Reusable workflows cannot grant themselves broader permissions than the
 # caller allows — declare them here so the reusable's job-level requests
-# for `checks: read` (poseidon status wait) and `contents: read` (private
-# stars-post-results action download) actually apply.
+# for `checks: read` (poseidon status wait), `contents: read` (private
+# stars-post-results action download), and `actions: read` (startup-failure
+# check) actually apply.
 permissions:
   checks: read
   contents: read
+  actions: read
 
 jobs:
   merge-status:
