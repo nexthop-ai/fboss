@@ -44,6 +44,7 @@ from fboss_test_runner.constants import (
     OPT_ARG_NUM_WARMBOOT_ITERATIONS,
     OPT_ARG_PROFILE,
     OPT_ARG_QSFP_CONFIG_FILE,
+    OPT_ARG_RESULTS_JSON,
     OPT_ARG_SAI_LOGGING,
     OPT_ARG_SAI_REPLAYER_LOGGING,
     OPT_ARG_SAI_REPLAYER_SDK_LOG_LEVEL,
@@ -62,7 +63,14 @@ from fboss_test_runner.constants import (
 )
 from fboss_test_runner.reporters.console_reporter import ConsoleReporter
 from fboss_test_runner.reporters.csv_reporter import CsvReporter
-from fboss_test_runner.result_types import GtestResult, GtestStatus, RunOutcome
+from fboss_test_runner.reporters.json_reporter import JsonReporter
+from fboss_test_runner.result_types import (
+    compute_exit_code,
+    GtestResult,
+    GtestStatus,
+    RunOutcome,
+    TestExecutionResult,
+)
 from fboss_test_runner.runners.utils import (
     collect_rma_showtech,
     get_test_regexes_from_file,
@@ -171,6 +179,10 @@ def enable_services(test_name: str):
     print("Services restart initiated", flush=True)
 
 
+class _TestBinaryNotFoundError(RuntimeError):
+    """Raised when the selected test binary cannot be resolved."""
+
+
 class TestRunner(abc.ABC):
     WARMBOOT_SETUP_OPTION = "--setup-for-warmboot"
     COLDBOOT_PREFIX = "cold_boot."
@@ -264,8 +276,8 @@ class TestRunner(abc.ABC):
 
     def _on_suite_start(self, suite: str) -> None:  # noqa: B027
         """Called before the first test of each gtest suite (the `Suite` in
-        `Suite.Case`). Tests are run in --gtest_list_tests order, which groups
-        them by suite, so this fires once per suite per run."""
+        `Suite.Case`). The test list is sorted, so a suite's cases are
+        contiguous and this fires once per suite per run."""
 
     def _on_suite_end(self, suite: str) -> None:  # noqa: B027
         """Called after the last test of each gtest suite, including the final
@@ -301,6 +313,11 @@ class TestRunner(abc.ABC):
             action="store_true",
             default=False,
             help="Only lists the tests, do not run any test",
+        )
+        sub_parser.add_argument(
+            OPT_ARG_RESULTS_JSON,
+            default=None,
+            help="Write structured per-test results to this JSON file",
         )
         sub_parser.add_argument(
             OPT_ARG_CONFIG_FILE, type=str, help="run with the specified config file"
@@ -769,6 +786,7 @@ class TestRunner(abc.ABC):
             # boot-phase prefix (cold_boot./warm_boot.).
             results = self._parse_gtest_run_output(stdout_tail)
             for result in results:
+                result.filter_name = test_to_run
                 result.test_name = test_prefix + result.test_name
             if results:
                 outcome = RunOutcome(stdout_tail.decode("utf-8"), results)
@@ -777,11 +795,19 @@ class TestRunner(abc.ABC):
                 # an early exit); synthesize a result so the test still appears
                 # in the summary.
                 status = GtestStatus.OK if info["kind"] == "OK" else GtestStatus.FAILED
-                synthesized = GtestResult(test_prefix + test_to_run, status, elapsed_ms)
+                synthesized = GtestResult(
+                    test_name=test_prefix + test_to_run,
+                    status=status,
+                    duration_ms=elapsed_ms,
+                    filter_name=test_to_run,
+                )
                 outcome = RunOutcome(synthesized.as_log_line(), [synthesized])
         elif info["kind"] == "OK" and not xml_exists:
             synthesized = GtestResult(
-                test_prefix + test_to_run, GtestStatus.OK, elapsed_ms
+                test_name=test_prefix + test_to_run,
+                status=GtestStatus.OK,
+                duration_ms=elapsed_ms,
+                filter_name=test_to_run,
             )
             outcome = RunOutcome(synthesized.as_log_line(), [synthesized])
         else:
@@ -803,13 +829,17 @@ class TestRunner(abc.ABC):
             )
             if info["kind"] == "TIMEOUT":
                 synthesized = GtestResult(
-                    test_prefix + test_to_run,
-                    GtestStatus.TIMEOUT,
-                    args.test_run_timeout * 1000,
+                    test_name=test_prefix + test_to_run,
+                    status=GtestStatus.TIMEOUT,
+                    duration_ms=args.test_run_timeout * 1000,
+                    filter_name=test_to_run,
                 )
             else:
                 synthesized = GtestResult(
-                    test_prefix + test_to_run, GtestStatus.FAILED, elapsed_ms
+                    test_name=test_prefix + test_to_run,
+                    status=GtestStatus.FAILED,
+                    duration_ms=elapsed_ms,
+                    filter_name=test_to_run,
                 )
             outcome = RunOutcome(synthesized.as_log_line(), [synthesized])
 
@@ -1034,9 +1064,13 @@ class TestRunner(abc.ABC):
             enable_services(file_name)
         return all_results, test_results
 
-    def _print_output_summary(self, results: list[GtestResult]) -> None:
+    def _print_output_summary(
+        self, results: list[GtestResult], results_json: str | None = None
+    ) -> None:
         ConsoleReporter().print_gtest_summary(results)
         CsvReporter().write_gtest_results(results)
+        if results_json is not None:
+            JsonReporter().write_gtest_results(results, results_json)
 
     def _parse_test_result_xml(self, test_result_xml: str | None) -> ET.Element | None:
         """Safely parse a test result XML string"""
@@ -1212,21 +1246,21 @@ class TestRunner(abc.ABC):
             print(f"An error occurred while reading the file: {e}")
         return test_result
 
-    def run_test(self, args: Namespace) -> None:
+    def _prepare_tests(self, args: Namespace) -> list[str]:
         self.args = args
         test_binary = self._get_test_binary_name()
-        # Some runners return an absolute path (e.g. /opt/fboss/bin/sai_test-sai_impl);
-        # others return a bare binary name resolved via $PATH (e.g. platform_hw_test).
+        # Resolve packaged binaries through the PATH configured by setup_fboss_env.
         if os.path.isabs(test_binary):
             binary_found = os.path.isfile(test_binary)
         else:
             binary_found = shutil.which(test_binary) is not None
         if not binary_found:
+            message = f"Test binary not found: {test_binary}"
             print(
-                f"Error: test binary not found: {test_binary}\n"
+                f"Error: {message}\n"
                 f"\tMake sure the binary is installed at the expected path."
             )
-            return
+            raise _TestBinaryNotFoundError(message)
 
         # Initialize test lists once at the start
         self._initialize_test_lists(args)
@@ -1241,31 +1275,61 @@ class TestRunner(abc.ABC):
         tests_to_run = self._get_tests_to_run()
         tests_to_run = self._filter_tests(tests_to_run)
         # Sort the tests to run to match internal test infra behavior
-        tests_to_run = sorted(tests_to_run)
+        return sorted(tests_to_run)
 
-        # Check if tests need to be run or only listed
-        if (
-            args.list_tests is False
-            and getattr(args, "list_tests_for_features", None) is None
-        ):
-            start_time = datetime.now()
+    def list_tests(self, args: Namespace) -> int:
+        try:
+            tests_to_run = self._prepare_tests(args)
+        except _TestBinaryNotFoundError:
+            return os.EX_TEMPFAIL
+
+        for test in tests_to_run:
+            print(test)
+        return 0
+
+    def _execute_test(self, args: Namespace) -> TestExecutionResult:
+        try:
+            tests_to_run = self._prepare_tests(args)
             original_conf_file = (
                 args.config if (args.config is not None) else self._get_config_path()
             )
             conf_file = self._backup_and_modify_config(original_conf_file)
-            output, test_results = self._run_tests(tests_to_run, conf_file, args)
-            end_time = datetime.now()
-            delta_time = end_time - start_time
-            print(
-                f"Running all tests took {delta_time} between {start_time} and {end_time}",
-                flush=True,
+        except _TestBinaryNotFoundError as error:
+            return TestExecutionResult(
+                exit_code=os.EX_TEMPFAIL, setup_failure=str(error)
             )
-            # output is the list[GtestResult] for the console/CSV summary;
-            # test_results is the list of per-test XML strings for the
-            # aggregated XML report.
-            self._print_output_summary(output)
-            self._write_results_to_xml(test_results)
-        else:
-            # Print the filtered tests
-            for test in tests_to_run:
-                print(test)
+        except Exception as error:
+            return TestExecutionResult(
+                exit_code=os.EX_TEMPFAIL, setup_failure=str(error), error=error
+            )
+
+        # Test execution failures are not setup failures. Let them propagate so
+        # callers do not report a runner crash as SETUP_FAILED.
+        start_time = datetime.now()
+        # results is the list[GtestResult] for the console/CSV summary;
+        # test_results is the list of per-test XML strings for the
+        # aggregated XML report.
+        results, test_results = self._run_tests(tests_to_run, conf_file, args)
+        end_time = datetime.now()
+        delta_time = end_time - start_time
+        print(
+            f"Running all tests took {delta_time} between {start_time} and {end_time}",
+            flush=True,
+        )
+        self._write_results_to_xml(test_results)
+        exit_code = compute_exit_code(results)
+
+        return TestExecutionResult(exit_code=exit_code, results=results)
+
+    def run_test(self, args: Namespace) -> int:
+        execution = self._execute_test(args)
+        if execution.error is not None and args.results_json is None:
+            raise execution.error
+        if execution.setup_failure is not None:
+            if args.results_json is not None:
+                JsonReporter().write_setup_failure(
+                    args.results_json, execution.setup_failure
+                )
+        elif execution.results is not None:
+            self._print_output_summary(execution.results, args.results_json)
+        return execution.exit_code

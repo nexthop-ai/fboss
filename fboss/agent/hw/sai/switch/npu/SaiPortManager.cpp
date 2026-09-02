@@ -2,6 +2,7 @@
 
 #include "fboss/agent/hw/sai/switch/SaiPortManager.h"
 #include <folly/logging/xlog.h>
+#include "fboss/agent/AgentFeatures.h"
 #include "fboss/agent/FbossError.h"
 #include "fboss/agent/hw/HwPortFb303Stats.h"
 #include "fboss/agent/hw/gen-cpp2/hardware_stats_constants.h"
@@ -875,28 +876,67 @@ SaiPortTraits::CreateAttributes SaiPortManager::attributesFromSwPort(
   staticModuleId = swPort->getPortSwitchId();
 #endif
 
-#if defined(TAJO_SDK_GTE_26_2) || defined(TAJO_SDK_VERSION_25_5_4210)
+#if defined(FBOSS_SAI_PORT_LINK_DOWN_DEBOUNCE_PERIOD)
+#if defined(FBOSS_SAI_PORT_LINK_UP_DEBOUNCE_PERIOD)
   std::optional<SaiPortTraits::Attributes::LinkUpDebouncePeriodMs>
       linkUpDebounce{};
+#endif
   std::optional<SaiPortTraits::Attributes::LinkDownDebouncePeriodMs>
       linkDownDebounce{};
-  if (platform_->getAsic()->isSupported(HwAsic::Feature::PORT_DEBOUNCE)) {
+  // BRCM refuses both the get and the set of its debounce timer unless the
+  // port is already in hardware linkscan, so the timer can only be programmed
+  // on ports the config also puts in that mode. Leaba has no such tie-in and
+  // never reports a linkscan mode at all, so only gate the BRCM build.
+  bool debounceProgrammable = true;
+#if defined(BRCM_SAI_SDK_GTE_15_4)
+  debounceProgrammable =
+      swPort->getLinkScanMode() == cfg::LinkScanMode::HARDWARE;
+#endif
+  if (platform_->getAsic()->isSupported(HwAsic::Feature::PORT_DEBOUNCE) &&
+      debounceProgrammable) {
     // Hold timers (ms) the SDK applies before reporting link up/down events.
     // Unset on the swPort maps to the SDK default of "no debounce".
     constexpr sai_uint32_t kSdkDefaultLinkDebouncePeriodMs = 0;
+#if defined(BRCM_SAI_SDK_GTE_15_4)
+    constexpr sai_uint32_t kLinkDownDebounceUnitsPerMs = 1000;
+#else
+    constexpr sai_uint32_t kLinkDownDebounceUnitsPerMs = 1;
+#endif
+#if defined(FBOSS_SAI_PORT_LINK_UP_DEBOUNCE_PERIOD)
     linkUpDebounce = SaiPortTraits::Attributes::LinkUpDebouncePeriodMs{
         static_cast<sai_uint32_t>(swPort->getPortUpHoldoffTimeMs().value_or(
             kSdkDefaultLinkDebouncePeriodMs))};
+#else
+    if (swPort->getPortUpHoldoffTimeMs().has_value()) {
+      throw FbossError(
+          "Per-port link up debounce timer (portUpHoldoffTimeMs) is not "
+          "supported by this SAI SDK; cannot apply to port ",
+          swPort->getID());
+    }
+#endif
+    // Leaba takes this timer in milliseconds (hence the attribute name), but
+    // the BRCM extension it maps to is documented -- and implemented -- in
+    // microseconds. Broadcom additionally rounds nothing: only exactly
+    // 0/50/75/100/150/250/500ms are accepted, anything else fails the set with
+    // SAI_STATUS_INVALID_ATTR_VALUE_0.
     linkDownDebounce = SaiPortTraits::Attributes::LinkDownDebouncePeriodMs{
-        static_cast<sai_uint32_t>(swPort->getPortDownHoldoffTimeMs().value_or(
-            kSdkDefaultLinkDebouncePeriodMs))};
+        static_cast<sai_uint32_t>(
+            swPort->getPortDownHoldoffTimeMs().value_or(
+                kSdkDefaultLinkDebouncePeriodMs) *
+            kLinkDownDebounceUnitsPerMs)};
   } else if (
       swPort->getPortUpHoldoffTimeMs().has_value() ||
       swPort->getPortDownHoldoffTimeMs().has_value()) {
+    if (!platform_->getAsic()->isSupported(HwAsic::Feature::PORT_DEBOUNCE)) {
+      throw FbossError(
+          "Per-port link debounce timers (portUpHoldoffTimeMs / "
+          "portDownHoldoffTimeMs) are not supported on this ASIC; cannot apply "
+          "to port ",
+          swPort->getID());
+    }
     throw FbossError(
-        "Per-port link debounce timers (portUpHoldoffTimeMs / "
-        "portDownHoldoffTimeMs) are not supported on this ASIC; cannot apply to "
-        "port ",
+        "Per-port link debounce timers require hardware linkscan; set "
+        "linkScanMode to HARDWARE on port ",
         swPort->getID());
   }
 #else
@@ -905,7 +945,7 @@ SaiPortTraits::CreateAttributes SaiPortManager::attributesFromSwPort(
     throw FbossError(
         "Per-port link debounce timers (portUpHoldoffTimeMs / "
         "portDownHoldoffTimeMs) are only supported on Leaba SAI SDK 26.2 or "
-        "newer; cannot apply to port ",
+        "Broadcom SAI SDK 15.4 or newer; cannot apply to port ",
         swPort->getID());
   }
 #endif
@@ -1004,8 +1044,11 @@ SaiPortTraits::CreateAttributes SaiPortManager::attributesFromSwPort(
         std::nullopt, // QosIngressBufferProfileList
         std::nullopt, // QosEgressBufferProfileList
         std::nullopt, // CablePropagationDelayMediaType
-#if defined(TAJO_SDK_GTE_26_2) || defined(TAJO_SDK_VERSION_25_5_4210)
+        std::nullopt, // LinkScanMode
+#if defined(FBOSS_SAI_PORT_LINK_UP_DEBOUNCE_PERIOD)
         std::nullopt, // LinkUpDebouncePeriodMs
+#endif
+#if defined(FBOSS_SAI_PORT_LINK_DOWN_DEBOUNCE_PERIOD)
         std::nullopt, // LinkDownDebouncePeriodMs
 #endif
 #if SAI_API_VERSION >= SAI_VERSION(1, 18, 0)
@@ -1014,7 +1057,8 @@ SaiPortTraits::CreateAttributes SaiPortManager::attributesFromSwPort(
         std::nullopt, // LlrProfile
 #endif
         std::nullopt, // PfcPauseDurationOverride
-        std::nullopt, // LinkScanMode
+        std::nullopt, // Ingress ACL
+        std::nullopt, // Metadata
     };
   }
   std::optional<SaiPortTraits::Attributes::PortVlanId> vlanIdAttr{vlanId};
@@ -1113,8 +1157,11 @@ SaiPortTraits::CreateAttributes SaiPortManager::attributesFromSwPort(
       std::nullopt, // QosIngressBufferProfileList
       std::nullopt, // QosEgressBufferProfileList
       propagationDelayMediaType, // CablePropagationDelayMediaType
-#if defined(TAJO_SDK_GTE_26_2) || defined(TAJO_SDK_VERSION_25_5_4210)
+      linkScanMode, // LinkScanMode
+#if defined(FBOSS_SAI_PORT_LINK_UP_DEBOUNCE_PERIOD)
       linkUpDebounce, // LinkUpDebouncePeriodMs
+#endif
+#if defined(FBOSS_SAI_PORT_LINK_DOWN_DEBOUNCE_PERIOD)
       linkDownDebounce, // LinkDownDebouncePeriodMs
 #endif
 #if SAI_API_VERSION >= SAI_VERSION(1, 18, 0)
@@ -1122,12 +1169,13 @@ SaiPortTraits::CreateAttributes SaiPortManager::attributesFromSwPort(
       std::nullopt, // LlrModeRemote
       std::nullopt, // LlrProfile
 #endif
-#if defined(CHENAB_SAI_SDK) && !defined(CHENAB_SAI_SDK_VERSION_2511_6_0_21_ea)
+#if defined(CHENAB_SAI_SDK)
       0xffff, // PfcPauseDurationOverride
 #else
       std::nullopt, // PfcPauseDurationOverride
 #endif
-      linkScanMode, // LinkScanMode
+      std::nullopt, // Ingress ACL
+      std::nullopt, // Metadata
   };
 }
 
@@ -1237,6 +1285,10 @@ void SaiPortManager::programLlr(
 // no LLR_INIT is sent -- silently, as the field cannot be read back. Verified
 // on TU1: the same cycle leaves a link-down port at llr_active_tx = 0 and
 // brings a link-up port to 1.
+//
+// Raised with Broadcom as CS00012475411: whether the adapter host is expected
+// to re-apply mode remote on link up, or brcm-sai should, is unanswered, so
+// this works around it here.
 //
 // The false write is required: setOptionalAttribute elides a set whose value
 // already matches, and mode remote is already true in the store. Only remote
@@ -1479,14 +1531,19 @@ void SaiPortManager::programSerdes(
         }
       }
     }
-    // Precoding is handled by link training
-    if (!rxPrecoding.empty() && !linkTrainingEnabled) {
+    // TODO: Remove the flag fallback once precoding is populated in all port
+    // configs.
+    const auto txPrecodingEnabled =
+        FLAGS_montblanc_precoding || swPort->getTxPrecoding().value_or(false);
+    const auto rxPrecodingEnabled =
+        FLAGS_montblanc_precoding || swPort->getRxPrecoding().value_or(false);
+    if (!rxPrecoding.empty() && rxPrecodingEnabled) {
       SaiPortSerdesTraits::Attributes::RxPrecodingAttr rxPrecodingAttr{
           rxPrecoding};
       SaiApiTable::getInstance()->portApi().setAttribute(
           portHandle->serdes->adapterKey(), rxPrecodingAttr);
     }
-    if (!txPrecoding.empty() && !linkTrainingEnabled) {
+    if (!txPrecoding.empty() && txPrecodingEnabled) {
       SaiPortSerdesTraits::Attributes::TxPrecodingAttr txPrecodingAttr{
           txPrecoding};
       SaiApiTable::getInstance()->portApi().setAttribute(

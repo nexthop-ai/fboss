@@ -863,8 +863,6 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/interface/pfc_config/CmdConfigInterfacePfcConfig.h
   fboss/cli/fboss2/commands/config/interface/sflow/CmdConfigInterfaceSflow.cpp
   fboss/cli/fboss2/commands/config/interface/sflow/CmdConfigInterfaceSflow.h
-  fboss/cli/fboss2/commands/config/interface/sflow/sample_dest/CmdConfigInterfaceSflowSampleDest.cpp
-  fboss/cli/fboss2/commands/config/interface/sflow/sample_dest/CmdConfigInterfaceSflowSampleDest.h
   fboss/cli/fboss2/commands/config/interface/pfc_config/PfcConfigUtils.h
   fboss/cli/fboss2/commands/config/interface/switchport/CmdConfigInterfaceSwitchport.cpp
   fboss/cli/fboss2/commands/config/interface/switchport/CmdConfigInterfaceSwitchport.h
@@ -957,10 +955,16 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/srv6/CmdConfigSrv6.h
   fboss/cli/fboss2/commands/config/srv6/my_sid/CmdConfigSrv6MySid.cpp
   fboss/cli/fboss2/commands/config/srv6/my_sid/CmdConfigSrv6MySid.h
-  fboss/cli/fboss2/commands/config/srv6/my_sid/add/CmdConfigSrv6MySidAdd.cpp
-  fboss/cli/fboss2/commands/config/srv6/my_sid/add/CmdConfigSrv6MySidAdd.h
+  fboss/cli/fboss2/commands/config/srv6/my_sid/entry/CmdConfigSrv6MySidEntry.cpp
+  fboss/cli/fboss2/commands/config/srv6/my_sid/entry/CmdConfigSrv6MySidEntry.h
   fboss/cli/fboss2/commands/config/srv6/utils/Srv6MySidCliUtils.cpp
   fboss/cli/fboss2/commands/config/srv6/utils/Srv6MySidCliUtils.h
+  fboss/cli/fboss2/commands/delete/srv6/CmdDeleteSrv6.cpp
+  fboss/cli/fboss2/commands/delete/srv6/CmdDeleteSrv6.h
+  fboss/cli/fboss2/commands/delete/srv6/my_sid/CmdDeleteSrv6MySid.cpp
+  fboss/cli/fboss2/commands/delete/srv6/my_sid/CmdDeleteSrv6MySid.h
+  fboss/cli/fboss2/commands/delete/srv6/my_sid/entry/CmdDeleteSrv6MySidEntry.cpp
+  fboss/cli/fboss2/commands/delete/srv6/my_sid/entry/CmdDeleteSrv6MySidEntry.h
   fboss/cli/fboss2/commands/config/session/CmdConfigSessionClear.h
   fboss/cli/fboss2/commands/config/session/CmdConfigSessionClear.cpp
   fboss/cli/fboss2/commands/config/session/CmdConfigSessionCommit.h
@@ -969,6 +973,8 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/session/CmdConfigSessionDiff.cpp
   fboss/cli/fboss2/commands/config/session/CmdConfigSessionRebase.h
   fboss/cli/fboss2/commands/config/session/CmdConfigSessionRebase.cpp
+  fboss/cli/fboss2/commands/config/traffic_counter/CmdConfigTrafficCounter.cpp
+  fboss/cli/fboss2/commands/config/traffic_counter/CmdConfigTrafficCounter.h
   fboss/cli/fboss2/commands/config/tunnel/CmdConfigTunnel.cpp
   fboss/cli/fboss2/commands/config/tunnel/CmdConfigTunnel.h
   fboss/cli/fboss2/commands/config/tunnel/ip_in_ip/CmdConfigTunnelIpInIp.cpp
@@ -1037,8 +1043,6 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/delete/interface/queuing_policy/CmdDeleteInterfaceQueuingPolicy.h
   fboss/cli/fboss2/commands/delete/interface/sflow/CmdDeleteInterfaceSflow.cpp
   fboss/cli/fboss2/commands/delete/interface/sflow/CmdDeleteInterfaceSflow.h
-  fboss/cli/fboss2/commands/delete/interface/sflow/sample_dest/CmdDeleteInterfaceSflowSampleDest.cpp
-  fboss/cli/fboss2/commands/delete/interface/sflow/sample_dest/CmdDeleteInterfaceSflowSampleDest.h
   fboss/cli/fboss2/commands/delete/load_balancing/CmdDeleteLoadBalancing.cpp
   fboss/cli/fboss2/commands/delete/load_balancing/CmdDeleteLoadBalancing.h
   fboss/cli/fboss2/commands/delete/protocol/CmdDeleteProtocol.cpp
@@ -1067,6 +1071,8 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/delete/switch/admin_distance/CmdDeleteAdminDistance.h
   fboss/cli/fboss2/commands/delete/switch/icmpv4_unavailable_src_addr/CmdDeleteIcmpV4UnavailableSrcAddr.cpp
   fboss/cli/fboss2/commands/delete/switch/icmpv4_unavailable_src_addr/CmdDeleteIcmpV4UnavailableSrcAddr.h
+  fboss/cli/fboss2/commands/delete/traffic_counter/CmdDeleteTrafficCounter.cpp
+  fboss/cli/fboss2/commands/delete/traffic_counter/CmdDeleteTrafficCounter.h
   fboss/cli/fboss2/commands/delete/tunnel/CmdDeleteTunnel.cpp
   fboss/cli/fboss2/commands/delete/tunnel/CmdDeleteTunnel.h
   fboss/cli/fboss2/commands/delete/tunnel/ip_in_ip/CmdDeleteTunnelIpInIp.cpp

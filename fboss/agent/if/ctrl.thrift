@@ -289,6 +289,9 @@ struct InterfaceDetail {
   13: switch_config.InterfaceType interfaceType;
   // used in CLI display
   14: list<string> portNames;
+  // AggregatePortId populated only for interfaces of type PORT that are bound
+  // to an aggregate port rather than a physical port
+  15: optional i32 aggregatePortId;
 }
 
 /*
@@ -770,6 +773,7 @@ enum HwObjectType {
   FIRMWARE = 26,
   SRV6 = 27,
   NEXT_HOP_GROUP_MEMBER = 28,
+  SAMPLE_PACKET = 29,
 }
 
 exception FbossFibUpdateError {

@@ -126,6 +126,11 @@ cpp_unittest(
     ],
 )
 
+# CmdListConfigTest walks the config command tree, so this binary needs the
+# config flavor of kAdditionalCommandTree(). Buck gets it from the
+# cmd-list-config-impl dep below; that src is Meta-internal, so Bazel takes the
+# OSS equivalent here.
+# bazelify: extra_dep = //fboss/cli/fboss2:cmd-list-config-impl-oss
 # bazelify: extra_dep = //neteng/fboss/bgp/if:bgp_thrift
 cpp_unittest(
     name = "cmd_test",
@@ -211,6 +216,7 @@ cpp_unittest(
         "CmdShowSystemPortTest.cpp",
         "CmdShowTeFlowTest.cpp",
         "CmdShowTechSupportTest.cpp",  # bazelify: exclude
+        "CmdShowTransceiverEepromTest.cpp",
         "CmdShowTransceiverLoopbackTest.cpp",
         "CmdShowTransceiverTest.cpp",  # bazelify: exclude
         "CmdStartPcapTest.cpp",
@@ -241,6 +247,7 @@ cpp_unittest(
         "//fboss/agent:address_utils",
         "//fboss/agent/if:common-cpp2-types",
         "//fboss/agent/if:ctrl-cpp2-types",
+        "//fboss/cli/fboss2:cli-parser-utils",
         "//fboss/cli/fboss2:cmd-list-header",
         "//fboss/cli/fboss2:cmd-local-options",
         "//fboss/cli/fboss2:cmd-subcommands",

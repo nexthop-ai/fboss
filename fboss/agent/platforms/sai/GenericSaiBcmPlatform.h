@@ -35,24 +35,4 @@ class GenericSaiBcmPlatform : public SaiBcmPlatform {
   std::unique_ptr<HwAsic> asic_;
 };
 
-// Platform types served by GenericSaiBcmPlatform, i.e. boxes that need no
-// platform-specific subclass and are fully described by their platform mapping.
-bool useGenericSaiBcmPlatform(PlatformType type);
-
-// Builds a GenericSaiBcmPlatform for `type`, resolving the platform mapping
-// from `platformMappingStr` when non-empty and from the built-in per-platform
-// mapping otherwise. Throws FbossError if `type` is not one of the types
-// useGenericSaiBcmPlatform() accepts.
-//
-// Declared here rather than kept private to SaiPlatformInitBcm.cpp because
-// chooseSaiPlatformImpl() has one definition per SAI implementation (see
-// SaiPlatformInitImpl.h) and more than one of them needs these platforms:
-// the bcm build serves them on real hardware, and the fake build serves them
-// to fboss-sim. Sharing one definition keeps the platform-mapping selection
-// from being restated per SAI implementation.
-std::unique_ptr<SaiPlatform> createGenericSaiBcmPlatform(
-    std::unique_ptr<PlatformProductInfo> productInfo,
-    folly::MacAddress localMac,
-    const std::string& platformMappingStr);
-
 } // namespace facebook::fboss

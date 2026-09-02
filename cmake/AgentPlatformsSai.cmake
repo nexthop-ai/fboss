@@ -38,10 +38,6 @@ set(SAI_PLATFORM_BCM_SRC
 )
 
 set(SAI_PLATFORM_FAKE_SRC
-  # GenericSaiBcmPlatform serves platforms that need no vendor SDK at init,
-  # which lets fboss-sim run a real platform's port layout on the fake SAI
-  # implementation. See SaiPlatformInitFake.cpp.
-  fboss/agent/platforms/sai/GenericSaiBcmPlatform.cpp
   fboss/agent/platforms/sai/SaiBcmMinipackPlatform.cpp
   fboss/agent/platforms/sai/SaiBcmPlatform.cpp
   fboss/agent/platforms/sai/SaiBcmPlatformPort.cpp

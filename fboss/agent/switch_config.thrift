@@ -543,6 +543,12 @@ enum AclLookupClass {
   ARS_ALTERNATE_MEMBERS_CLASS = 32,
 }
 
+enum AclLookupClassPort {
+  CLASS_PORT_UNCONSTRAINED = 0,
+  CLASS_PORT_RESTRICTED = 1,
+  CLASS_PORT_BLOCKED = 2,
+}
+
 enum PacketLookupResultType {
   PACKET_LOOKUP_RESULT_MPLS_NO_MATCH = 1,
 }
@@ -680,6 +686,9 @@ struct AclEntry {
   // word3 is AAAA:BBBB and word2 is CCCC:DDDD.
   37: optional i64 dstIpV6Word3;
   38: optional i64 dstIpV6Word2;
+
+  /* Match lookup class assigned to the packet's ingress port. */
+  39: optional AclLookupClassPort lookupClassPort;
 }
 
 enum AclTableActionType {
@@ -729,6 +738,12 @@ enum AclTableQualifier {
   NEXT_HOP_GROUP_ID = 29,
   DST_IPV6_WORD3 = 30,
   DST_IPV6_WORD2 = 31,
+  LOOKUP_CLASS_PORT = 32,
+}
+
+enum AclTableGroupBindPoint {
+  SWITCH = 0,
+  PORT = 1,
 }
 
 struct AclTable {
@@ -752,6 +767,7 @@ struct AclTableGroup {
   1: string name;
   2: list<AclTable> aclTables = [];
   3: AclStage stage = AclStage.INGRESS;
+  4: AclTableGroupBindPoint bindPoint = AclTableGroupBindPoint.SWITCH;
 }
 // enddocs_AclTableGroup_struct
 
@@ -1433,8 +1449,14 @@ struct Port {
    * Whether link status changes on this port are noticed by the SDK's
    * software linkscan thread or by the ASIC.
    * Unset = leave whatever the SDK came up with untouched.
-   */
+  */
   45: optional LinkScanMode linkScanMode;
+
+  // Ingress ACL table bound directly to this port.
+  46: optional string ingressAclTableName;
+
+  /* Lookup class assigned to packets ingressing on this port. */
+  47: optional AclLookupClassPort userMetaData;
 }
 
 enum LacpPortRate {
@@ -1736,6 +1758,12 @@ struct Interface {
    * These fields contains information of remote GPU */
   18: optional string desiredPeerName;
   19: optional string desiredPeerAddressIPv6;
+  /* valid only for port type of interface. Holds the key of the
+   * cfg::AggregatePort this interface is bound to, for a port router interface
+   * over an aggregate port. Exactly one of portID and aggregatePortID is set.
+   * Kept separate from portID because AggregatePortID and PortID share a
+   * numeric space, so a single field could not be disambiguated. */
+  20: optional i32 aggregatePortID;
 }
 
 struct StaticRouteWithNextHops {
@@ -2405,6 +2433,11 @@ struct PortFlowletConfig {
 
 // Behavior for LLR-desired frames while the LLR TX state machine is in the
 // INIT or FLUSH state (UE Spec 1.0.2 section 5.1.5).
+//
+// The spec permits all three in both states. Tomahawk Ultra accepts only INIT
+// in {BLOCK, BEST_EFFORT} and FLUSH in {BLOCK}, rejecting anything else at SAI
+// profile create. Broadcom confirmed in CS00012472686 that this is a hardware
+// design limit rather than an SDK gap, and that TU2 behaves the same.
 enum LlrFrameAction {
   DISCARD = 0,
   BLOCK = 1,
@@ -2434,10 +2467,9 @@ struct LlrConfig {
   6: i64 dataAgeTimeout;
   // Action for LLR-desired frames in INIT state (llr_init_behavior).
   7: LlrFrameAction initFrameAction = LlrFrameAction.BEST_EFFORT;
-  // Action for LLR-desired frames in FLUSH state (llr_flush_behavior).
-  // Tomahawk Ultra (the only LLR-capable ASIC today) only supports BLOCK in
-  // FLUSH; other values are rejected at SAI profile create, so BLOCK is the
-  // default.
+  // Action for LLR-desired frames in FLUSH state (llr_flush_behavior). BLOCK is
+  // the only value Tomahawk Ultra accepts, hence the default; see
+  // LlrFrameAction.
   8: LlrFrameAction flushFrameAction = LlrFrameAction.BLOCK;
   // Re-initialize LLR on FLUSH (re_init_on_discard).
   9: bool reInitOnFlush = false;
