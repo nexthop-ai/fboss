@@ -21,6 +21,10 @@ inputs:
     description: "Comma-separated list of specific test file paths. Empty -> --all-eligible-tests."
     required: false
     default: ""
+  attributes:
+    description: "Comma-separated testbed attribute filters in key=value form (e.g. dut_count=1). Empty -> no attribute constraint."
+    required: false
+    default: ""
 
 outputs:
   batch_id:
@@ -38,6 +42,7 @@ runs:
         PRIORITY: ${{ inputs.priority }}
         PRODUCT: ${{ inputs.product }}
         TESTS: ${{ inputs.tests }}
+        ATTRIBUTES: ${{ inputs.attributes }}
       run: |
         CMD="nh te schedule"
         CMD="$CMD --build-id $BUILD_ID"
@@ -49,6 +54,10 @@ runs:
           CMD="$CMD --tests $TESTS"
         else
           CMD="$CMD --all-eligible-tests"
+        fi
+
+        if [ -n "$ATTRIBUTES" ]; then
+          CMD="$CMD --attribute $ATTRIBUTES"
         fi
 
         CMD="$CMD --product $PRODUCT"
