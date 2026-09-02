@@ -1,4 +1,4 @@
-from tests.libs.test_runner.runner import LinkTestRunner
+from tests.libs.test_runner import LinkTestRunner
 
 # Split per variant so the runner can require the media on both ends of a pair for
 # TCVR_L-to-TCVR_L but only one end for ASIC-to-TCVR_S.

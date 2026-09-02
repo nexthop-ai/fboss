@@ -19,16 +19,17 @@ py_test(
     main = "check_test_filter_overlap.py",
 )
 
-# The runner under test, plus the tests.libs.device SSH/SCP helpers it imports
-# and the __init__ files that make `tests.libs.*` importable at all.
+# The runner package under test, plus the tests.libs.device SSH/SCP helpers it
+# imports and the __init__ files that make `tests.libs.*` importable at all.
 py_library(
     name = "test_runner",
     srcs = [
         "__init__.py",
         "libs/__init__.py",
-        "libs/test_runner/filter_utils.py",
-        "libs/test_runner/runner.py",
-    ] + glob(["libs/device/*.py"]),
+    ] + glob(
+        ["libs/test_runner/**/*.py"],
+        exclude = ["libs/test_runner/**/test_*.py"],
+    ) + glob(["libs/device/*.py"]),
     imports = [".."],
     deps = [
         _PIP + "paramiko",

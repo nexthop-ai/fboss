@@ -1,7 +1,7 @@
 import logging
 import pytest
 
-from tests.libs.test_runner.runner import (
+from tests.libs.test_runner import (
     BspTestRunner,
     Fboss2IntegrationTestRunner,
     LedTestRunner,

@@ -1,12 +1,49 @@
 # FBOSS Hardware Test Runner
 
-`runner.py` defines per-test-type runner classes (`SaiTestRunner`,
+This package defines per-test-type runner classes (`SaiTestRunner`,
 `BspTestRunner`, etc.) consumed by pytest fixtures in
 `fboss/tests/conftest.py`. Each runner deploys the test binaries it needs
 onto a DUT and then drives `run_test.py` over SSH.
 
-This README documents the deploy/cache behavior so you don't have to
-reverse-engineer it from the code.
+This README documents the module layout and the deploy/cache behavior so you
+don't have to reverse-engineer them from the code.
+
+## Module layout
+
+| Module | Holds |
+| --- | --- |
+| `__init__.py` | the public API: re-exports every runner class |
+| `base.py` | `BaseHwTestRunner` lifecycle: setup, `run_test()` template, filter upload, remote execution, failure-duration floor |
+| `deploy.py` | the env-var contract constants and `ArtifactDeployer` (fetch/cache/slice/DUT markers, everything below) |
+| `cabling.py` | `CablingAwareRunnerMixin`: ports-info/snake-pairs parsing, gtest filter splitting, multi-pass execution |
+| `platform_configs.py` | model → config codename / known-bad-key / production-features maps |
+| `platform_mapping.py` | platform_mapping.json loading and port-profile/medium selection |
+| `junit.py` | JUnit merge/normalize and benchmark CSV → tr.xml conversion |
+| `runners/` | one module per runner family: `sai`, `qsfp`, `link`, `platform`, `smoke`, `fboss2`, `benchmark` |
+| `filter_utils.py` | catch-all filter derivation for test modules |
+
+Runners grow in their own `runners/<name>.py`; adding a runner means a new
+file there, an export line in `__init__.py`, and a fixture in conftest.
+Dependency direction is one-way: `runners/*` import the shared modules, and
+`deploy.py`/`junit.py` import nothing from the rest of the package.
+
+## MINT / reuse
+
+Long-term these tests are expected to run under MINT. This package cannot be
+imported from `mint/` as-is: both trees own a top-level `tests` package (a
+known collision hazard, see DEVX-4661), this tree is not pip-installable, and
+MINT uses the nhtools `device`/`switch` SSH stack rather than
+`tests.libs.device`. The extraction seam is deliberate, though:
+`deploy.py` (transport injected via the SSH/SCP client arguments) plus
+`junit.py` plus the remote-execution core carry no per-platform-model
+knowledge (no m4062nhp-style tables), but they are still coupled to the
+FBOSS stack itself: the `FBOSS_*` env-var names, the `/opt/fboss` install
+root, and `_local_source_path` mirroring `fboss/oss/scripts/package.py`'s
+layout. Moving them into an installable nhtools-style package later means
+parameterizing those, not untangling model logic. The platform-mapping
+and cabling halves stay FBOSS-specific. Alternatively, MINT-orchestrated runs
+can keep going through the nhtest layer (`TestInstanceFboss`), which drives
+this package out-of-process via the env-var contract below.
 
 ## Env-var contract
 
@@ -45,16 +82,16 @@ Each runner declares two things:
   entry against that package and fails loudly on drift.
 
 `REQUIRED_PATHS` — the full set deployed to the DUT — is composed as
-`(*BINARIES, *_STACK_SHARE[STACK])`:
+`(*BINARIES, *STACK_SHARE[STACK])`:
 
 - **Binaries are sliced per runner** — they're large (~1 GB each), so a runner
   ships only the one(s) it runs.
-- **`share/` configs are shipped wholesale per stack** via `_STACK_SHARE`. The
+- **`share/` configs are shipped wholesale per stack** via `STACK_SHARE`. The
   forwarding tree (`hw_test_configs`, every
   `*_known_bad_tests` / `*_unsupported_tests`, `production_features`,
   `hw_benchmark_tests`, …) is ~19 MB — cheaper to ship in full than to maintain a
   per-runner subset that can silently miss a file. Platform tests read no
-  `share/` configs, so `_STACK_SHARE[platform]` is empty.
+  `share/` configs, so `STACK_SHARE[platform]` is empty.
   `share/hw_bench_configs` is the one exception: only `BenchmarkTestRunner` reads
   it, so it appends the dir to its own `REQUIRED_PATHS` instead.
 
@@ -72,7 +109,7 @@ the production image already on the DUT (`/opt/fboss/bin/`).
 | `SmokeTestRunner` | forwarding | `bin/python_tests/agent_smoke.py`, `bin/python_tests/junit.py` | runs the script directly — no `run_test.py`, no `share/` |
 | `BenchmarkTestRunner` | forwarding | `bin/sai_all_benchmarks-sai_impl`, `bin/sai_multi_switch_all_benchmarks-sai_impl` | `share/hw_bench_configs/`; always invokes SAI benchmarks in multi_switch mode |
 
-All forwarding runners get the full forwarding `share/` tree from `_STACK_SHARE`
+All forwarding runners get the full forwarding `share/` tree from `STACK_SHARE`
 (so `hw_benchmark_tests/sai_bench.materialized_JSON` is always present — the
 earlier per-runner gap is gone).
 
@@ -221,7 +258,7 @@ Two guards catch drift from the upstream FBOSS test infra:
   runner's manifest is stale.
   ```
 
-  Reconcile by editing `BINARIES` (binaries) or `_STACK_SHARE` (share configs).
+  Reconcile by editing `BINARIES` (binaries) or `STACK_SHARE` (share configs).
 
-`share/` rarely needs touching — `_STACK_SHARE` ships the whole forwarding tree,
+`share/` rarely needs touching — `STACK_SHARE` ships the whole forwarding tree,
 so a new config file is picked up automatically.

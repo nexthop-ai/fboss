@@ -6,7 +6,7 @@ architecturally supports a feature, with no SDK-version awareness --
 consults that flat list only. featureSupportSpecs[].supportedFrom[].
 minSdkVersion is upstream metadata nothing in the OSS test-selection
 pipeline reads. These tests cover the pure comparison/filtering helpers in
-runner.py, plus the end-to-end _upload_sdk_gated_production_features /
+platform_configs.py, plus the end-to-end _upload_sdk_gated_production_features /
 _enable_production_features flow with scp_client mocked.
 """
 
@@ -15,41 +15,41 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from tests.libs.test_runner.runner import (
-    _parse_sdk_version,
-    _sdk_excluded_feature_names,
-    _sdk_gate_production_features,
-    _sdk_version_for_model,
-    _sdk_version_meets_minimum,
-    SaiAgentTestRunner,
+from tests.libs.test_runner import SaiAgentTestRunner
+from tests.libs.test_runner.platform_configs import (
+    parse_sdk_version,
+    sdk_excluded_feature_names,
+    sdk_gate_production_features,
+    sdk_version_for_model,
+    sdk_version_meets_minimum,
 )
 
 # ---------------------------------------------------------------------------
-# _sdk_version_for_model
+# sdk_version_for_model
 # ---------------------------------------------------------------------------
 
 
 def test_sdk_version_for_model_brcm():
-    assert _sdk_version_for_model("nh4215f") == "14.2.0.0_odp"
-    assert _sdk_version_for_model("nh4220f") == "14.2.0.0_odp"
-    assert _sdk_version_for_model("minipack3") == "13.3.0.0_odp"
+    assert sdk_version_for_model("nh4215f") == "14.2.0.0_odp"
+    assert sdk_version_for_model("nh4220f") == "14.2.0.0_odp"
+    assert sdk_version_for_model("minipack3") == "13.3.0.0_odp"
 
 
 def test_sdk_version_for_model_leaba():
-    assert _sdk_version_for_model("wedge800cact") == "25.11.4210"
-    assert _sdk_version_for_model("nhcw800f") == "25.11.4210"
+    assert sdk_version_for_model("wedge800cact") == "25.11.4210"
+    assert sdk_version_for_model("nhcw800f") == "25.11.4210"
 
 
 def test_sdk_version_for_model_missing_returns_none():
     # wedge800bnhp is a known gap: present in SaiAgentTestRunner's model->asic
-    # table but absent from _SAI_KNOWN_BAD_KEY, so gating silently stays off
+    # table but absent from SAI_KNOWN_BAD_KEY, so gating silently stays off
     # for it.
-    assert _sdk_version_for_model("wedge800bnhp") is None
-    assert _sdk_version_for_model("no-such-model") is None
+    assert sdk_version_for_model("wedge800bnhp") is None
+    assert sdk_version_for_model("no-such-model") is None
 
 
 # ---------------------------------------------------------------------------
-# _parse_sdk_version / _sdk_version_meets_minimum
+# parse_sdk_version / sdk_version_meets_minimum
 # ---------------------------------------------------------------------------
 
 
@@ -65,7 +65,7 @@ def test_sdk_version_for_model_missing_returns_none():
     ],
 )
 def test_parse_sdk_version(version, expected):
-    assert _parse_sdk_version(version) == expected
+    assert parse_sdk_version(version) == expected
 
 
 @pytest.mark.parametrize(
@@ -87,22 +87,22 @@ def test_parse_sdk_version(version, expected):
         # regression (Leaba link debounce, g202x): the schema has no way
         # to encode that, so upstream necessarily excludes it via a
         # separate list instead (sai_graphene202x_25_11_unsupported_tests
-        # -- see _sdk_version_for_model's docstring), not via
+        # -- see sdk_version_for_model's docstring), not via
         # minSdkVersion.
         ("25.11.4210", "25.5.4210", True),
     ],
 )
 def test_sdk_version_meets_minimum(current, minimum, expected):
-    assert _sdk_version_meets_minimum(current, minimum) is expected
+    assert sdk_version_meets_minimum(current, minimum) is expected
 
 
 def test_sdk_version_meets_minimum_fails_open_on_unparsable():
-    assert _sdk_version_meets_minimum("garbage", "15.4_ea_odp") is True
-    assert _sdk_version_meets_minimum("14.2.0.0_odp", "garbage") is True
+    assert sdk_version_meets_minimum("garbage", "15.4_ea_odp") is True
+    assert sdk_version_meets_minimum("14.2.0.0_odp", "garbage") is True
 
 
 # ---------------------------------------------------------------------------
-# _sdk_excluded_feature_names / _sdk_gate_production_features
+# sdk_excluded_feature_names / sdk_gate_production_features
 # ---------------------------------------------------------------------------
 
 
@@ -143,7 +143,7 @@ def _production_features_fixture():
 
 def test_sdk_excluded_feature_names_below_minimum():
     data = _production_features_fixture()
-    assert _sdk_excluded_feature_names(data, "tomahawk6", "14.2.0.0_odp") == {
+    assert sdk_excluded_feature_names(data, "tomahawk6", "14.2.0.0_odp") == {
         "SRV6_ENCAP",
         "SRV6_MIDPOINT",
     }
@@ -151,28 +151,28 @@ def test_sdk_excluded_feature_names_below_minimum():
 
 def test_sdk_excluded_feature_names_meets_minimum():
     data = _production_features_fixture()
-    assert _sdk_excluded_feature_names(data, "tomahawk6", "15.4.0.0_odp") == set()
+    assert sdk_excluded_feature_names(data, "tomahawk6", "15.4.0.0_odp") == set()
 
 
 def test_sdk_excluded_feature_names_scoped_to_requested_asic():
     data = _production_features_fixture()
     # tomahawk5 only carries SRV6_MIDPOINT (feature 104) -- SRV6_ENCAP (100)
     # isn't in its asicToFeatures list at all, so it can't be excluded from it.
-    assert _sdk_excluded_feature_names(data, "tomahawk5", "14.2.0.0_odp") == {
+    assert sdk_excluded_feature_names(data, "tomahawk5", "14.2.0.0_odp") == {
         "SRV6_MIDPOINT"
     }
 
 
 def test_sdk_excluded_feature_names_unknown_asic_returns_empty():
     data = _production_features_fixture()
-    assert _sdk_excluded_feature_names(data, "unknown_asic", "1.0.0.0_odp") == set()
+    assert sdk_excluded_feature_names(data, "unknown_asic", "1.0.0.0_odp") == set()
 
 
 def test_sdk_gate_production_features_only_touches_requested_asic():
     data = _production_features_fixture()
     excluded = {"SRV6_ENCAP", "SRV6_MIDPOINT"}
 
-    filtered = _sdk_gate_production_features(data, "tomahawk6", excluded)
+    filtered = sdk_gate_production_features(data, "tomahawk6", excluded)
 
     assert filtered["asicToFeatureNames"]["tomahawk6"] == ["L3_FORWARDING"]
     assert (
@@ -191,7 +191,7 @@ def test_sdk_gate_production_features_only_touches_requested_asic():
 
 def test_sdk_gate_production_features_no_exclusions_is_a_no_op_copy():
     data = _production_features_fixture()
-    filtered = _sdk_gate_production_features(data, "tomahawk6", set())
+    filtered = sdk_gate_production_features(data, "tomahawk6", set())
     assert filtered == data
     assert filtered is not data
 
@@ -263,7 +263,7 @@ def test_upload_sdk_gated_production_features_skips_upload_when_nothing_excluded
 
 
 def test_enable_production_features_no_override_when_nothing_excluded():
-    # minSdkVersion of "1.0_odp" is below every real _SAI_KNOWN_BAD_KEY pin,
+    # minSdkVersion of "1.0_odp" is below every real SAI_KNOWN_BAD_KEY pin,
     # so nh4215f's real 14.2.0.0_odp already satisfies it -- nothing to gate.
     fixture = _production_features_fixture()
     for spec in fixture["featureSupportSpecs"]:
@@ -294,7 +294,7 @@ def test_enable_production_features_leaba_no_exclusions():
 
 def test_enable_production_features_gates_leaba_srv6():
     # Same shape as the real wedge800cact/nhcw800f SRv6 entry -- see
-    # _sdk_version_for_model's docstring for why (major, minor) comparison
+    # sdk_version_for_model's docstring for why (major, minor) comparison
     # holds for Leaba's calendar-style versioning.
     fixture = {
         "asicToFeatures": {"g202x": [1, 100]},

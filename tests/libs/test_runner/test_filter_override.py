@@ -16,7 +16,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from tests.libs.test_runner.runner import (
+from tests.libs.test_runner import (
     BenchmarkTestRunner,
     BspTestRunner,
     Fboss2IntegrationTestRunner,

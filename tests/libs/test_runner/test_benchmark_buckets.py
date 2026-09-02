@@ -21,19 +21,18 @@ from tests.libs.test_runner.filter_utils import (
     load_test_context,
     module_inclusion_filters,
 )
-from tests.libs.test_runner.runner import (
-    _repo_dir,
-    _SAI_AGENT_CONFIG_NAME,
-    _SAI_KNOWN_BAD_KEY,
-    BenchmarkTestRunner,
-    QsfpBenchmarkTestRunner,
+from tests.libs.test_runner import BenchmarkTestRunner, QsfpBenchmarkTestRunner
+from tests.libs.test_runner.platform_configs import (
+    SAI_AGENT_CONFIG_NAME,
+    SAI_KNOWN_BAD_KEY,
 )
+from tests.libs.test_runner.platform_mapping import repo_dir
 
-_BENCH_DIR = _repo_dir(Path("tests/agent_hw/benchmarks"))
+_BENCH_DIR = repo_dir(Path("tests/agent_hw/benchmarks"))
 
 # The framework is shipped from the DUT image, not this package, so it is not on
 # the path by default.
-sys.path.insert(0, str(_repo_dir(Path("fboss/oss/scripts/run_scripts"))))
+sys.path.insert(0, str(repo_dir(Path("fboss/oss/scripts/run_scripts"))))
 
 from fboss_test_runner.frameworks.benchmark_framework import (  # noqa: E402
     BenchmarkFramework,
@@ -130,11 +129,11 @@ def test_benchmark_runner_pins_multi_switch(monkeypatch):
 def test_bench_config_exists_for_every_benchmarked_platform():
     """test_args() names hw_bench_configs unconditionally, so a platform without
     an entry there (real config or symlink) would fail on the DUT."""
-    bench_dir = _repo_dir(Path("fboss/oss/hw_bench_configs"))
-    models = set(_SAI_KNOWN_BAD_KEY) | set(_SAI_AGENT_CONFIG_NAME)
+    bench_dir = repo_dir(Path("fboss/oss/hw_bench_configs"))
+    models = set(SAI_KNOWN_BAD_KEY) | set(SAI_AGENT_CONFIG_NAME)
     missing = sorted(
         name
-        for name in (_SAI_AGENT_CONFIG_NAME.get(m, m) for m in models)
+        for name in (SAI_AGENT_CONFIG_NAME.get(m, m) for m in models)
         if not (bench_dir / f"{name}.agent.materialized_JSON").is_file()
     )
     assert not missing, f"no hw_bench_configs entry (add a symlink): {missing}"
@@ -206,6 +205,6 @@ def test_rest_bucket_owns_the_leftovers(tmp_path):
 
 
 def test_qsfp_benchmark_test_still_selects_everything(tmp_path):
-    qsfp_test = _repo_dir(Path("tests/qsfp")) / "qsfp_benchmark_tests.py"
+    qsfp_test = repo_dir(Path("tests/qsfp")) / "qsfp_benchmark_tests.py"
     filters = load_test_context(str(qsfp_test))["filters"]
     assert _select(filters, tmp_path=tmp_path) == _NAMES

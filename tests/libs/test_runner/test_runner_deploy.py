@@ -15,9 +15,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from tests.libs.test_runner import runner as runner_module
-from tests.libs.test_runner.runner import (
-    BaseHwTestRunner,
+from tests.libs.test_runner import (
     BenchmarkTestRunner,
     BspTestRunner,
     LinkTestRunner,
@@ -27,9 +25,16 @@ from tests.libs.test_runner.runner import (
     SaiAgentTestRunner,
     SaiTestRunner,
     SmokeTestRunner,
-    _STACK_FORWARDING,
-    _STACK_PLATFORM,
-    _STACK_SHARE,
+)
+from tests.libs.test_runner import base as base_module
+from tests.libs.test_runner import deploy as deploy_module
+from tests.libs.test_runner import platform_mapping as platform_mapping_module
+from tests.libs.test_runner.base import BaseHwTestRunner
+from tests.libs.test_runner.deploy import (
+    STACK_FORWARDING,
+    STACK_PLATFORM,
+    STACK_SHARE,
+    ArtifactDeployer,
 )
 
 _FORWARDING_URL = "http://example/forwarding.tar.zst"
@@ -46,7 +51,7 @@ def isolated_cache(monkeypatch, tmp_path):
     """Point the host cache root at a per-test tmp dir so tests can't
     leak state into each other (or pollute the real /tmp/fboss-test-cache)."""
     cache_root = tmp_path / "fboss-test-cache"
-    monkeypatch.setattr(runner_module, "_HOST_CACHE_ROOT", str(cache_root))
+    monkeypatch.setattr(deploy_module, "_HOST_CACHE_ROOT", str(cache_root))
     return str(cache_root)
 
 
@@ -210,7 +215,7 @@ class TestDeployArtifactsDutMarker:
     def test_sha_match_skips_scp(self, monkeypatch, isolated_cache):
         # DUT already records the sha of the slice we're about to pack.
         runner = _make_runner(SaiTestRunner, deployed_sha="deadbeef")
-        monkeypatch.setattr(BaseHwTestRunner, "_sha256", staticmethod(lambda path: "deadbeef"))
+        monkeypatch.setattr(ArtifactDeployer, "_sha256", staticmethod(lambda path: "deadbeef"))
         fake_run, recorded = _fake_run_factory(SaiTestRunner.REQUIRED_PATHS)
         monkeypatch.setattr(subprocess, "run", fake_run)
 
@@ -247,12 +252,12 @@ class TestCacheLifecycle:
         os.makedirs(os.path.join(isolated_cache, "old-build-1"))
         os.makedirs(os.path.join(isolated_cache, "old-build-2"))
         os.makedirs(os.path.join(isolated_cache, "12345"))
-        _make_runner(SaiTestRunner)._prune_stale_cache("12345")
+        ArtifactDeployer._prune_stale_cache("12345")
         assert os.listdir(isolated_cache) == ["12345"]
 
     def test_prune_noop_when_cache_absent(self, tmp_path, monkeypatch):
-        monkeypatch.setattr(runner_module, "_HOST_CACHE_ROOT", str(tmp_path / "nope"))
-        _make_runner(SaiTestRunner)._prune_stale_cache("12345")  # must not raise
+        monkeypatch.setattr(deploy_module, "_HOST_CACHE_ROOT", str(tmp_path / "nope"))
+        ArtifactDeployer._prune_stale_cache("12345")  # must not raise
 
     def test_deploy_prunes_stale_before_running(self, monkeypatch, isolated_cache):
         os.makedirs(os.path.join(isolated_cache, "old-build"))
@@ -275,7 +280,7 @@ class TestDeployArtifactsLocal:
         oss = repo / "fboss" / "oss"
         # Every forwarding share dir a forwarding runner ships, so _slice_members
         # resolves a complete tree.
-        for rel in runner_module._STACK_SHARE[runner_module._STACK_FORWARDING]:
+        for rel in STACK_SHARE[STACK_FORWARDING]:
             rel_clean = rel.rstrip("/")
             d = oss / rel_clean[len("share/"):]
             d.mkdir(parents=True, exist_ok=True)
@@ -299,7 +304,7 @@ class TestDeployArtifactsLocal:
         runner.scp_client.put_file.side_effect = capture_put
 
         with patch.object(
-            type(runner), "_fboss_repo_root",
+            ArtifactDeployer, "_fboss_repo_root",
             staticmethod(lambda: __import__("pathlib").Path(repo)),
         ):
             with patch.dict(os.environ, {"FBOSS_FORWARDING_LOCAL_DIR": build_fboss}, clear=True):
@@ -322,7 +327,7 @@ class TestDeployArtifactsLocal:
         os.remove(os.path.join(build_fboss, "sai_test-sai_impl"))  # dev didn't build it
         runner = _make_runner(SaiTestRunner)
         with patch.object(
-            type(runner), "_fboss_repo_root",
+            ArtifactDeployer, "_fboss_repo_root",
             staticmethod(lambda: __import__("pathlib").Path(repo)),
         ):
             with patch.dict(os.environ, {"FBOSS_FORWARDING_LOCAL_DIR": build_fboss}, clear=True):
@@ -331,31 +336,41 @@ class TestDeployArtifactsLocal:
         runner.scp_client.put_file.assert_not_called()
 
 
+def _make_deployer(runner_cls):
+    return ArtifactDeployer(
+        runner_name=runner_cls.__name__,
+        stack=runner_cls.STACK,
+        required_paths=runner_cls.REQUIRED_PATHS,
+        ssh_client=MagicMock(),
+        scp_client=MagicMock(),
+    )
+
+
 class TestLocalSourcePath:
     """_local_source_path mirrors package.py's test_files mapping."""
 
     def test_share_maps_to_oss(self, tmp_path):
-        runner = _make_runner(SaiTestRunner)
-        with patch.object(type(runner), "_fboss_repo_root", staticmethod(lambda: tmp_path)):
-            got = runner._local_source_path("share/hw_test_configs", "/build/fboss")
+        deployer = _make_deployer(SaiTestRunner)
+        with patch.object(ArtifactDeployer, "_fboss_repo_root", staticmethod(lambda: tmp_path)):
+            got = deployer._local_source_path("share/hw_test_configs", "/build/fboss")
         assert got == str(tmp_path / "fboss" / "oss" / "hw_test_configs")
 
     def test_compiled_binary_maps_to_build_dir(self, tmp_path):
-        runner = _make_runner(SaiTestRunner)
-        with patch.object(type(runner), "_fboss_repo_root", staticmethod(lambda: tmp_path)):
-            got = runner._local_source_path("bin/sai_test-sai_impl", "/build/fboss")
+        deployer = _make_deployer(SaiTestRunner)
+        with patch.object(ArtifactDeployer, "_fboss_repo_root", staticmethod(lambda: tmp_path)):
+            got = deployer._local_source_path("bin/sai_test-sai_impl", "/build/fboss")
         assert got == os.path.join("/build/fboss", "sai_test-sai_impl")
 
     def test_run_script_maps_to_run_scripts(self, tmp_path):
-        runner = _make_runner(PlatformTestRunner)
-        with patch.object(type(runner), "_fboss_repo_root", staticmethod(lambda: tmp_path)):
-            got = runner._local_source_path("bin/run_test.py", "/build/fboss")
+        deployer = _make_deployer(PlatformTestRunner)
+        with patch.object(ArtifactDeployer, "_fboss_repo_root", staticmethod(lambda: tmp_path)):
+            got = deployer._local_source_path("bin/run_test.py", "/build/fboss")
         assert got == str(tmp_path / "fboss" / "oss" / "scripts" / "run_scripts" / "run_test.py")
 
     def test_python_test_maps_to_python_tests(self, tmp_path):
-        runner = _make_runner(SaiTestRunner)
-        with patch.object(type(runner), "_fboss_repo_root", staticmethod(lambda: tmp_path)):
-            got = runner._local_source_path("bin/python_tests/agent_smoke.py", "/build/fboss")
+        deployer = _make_deployer(SaiTestRunner)
+        with patch.object(ArtifactDeployer, "_fboss_repo_root", staticmethod(lambda: tmp_path)):
+            got = deployer._local_source_path("bin/python_tests/agent_smoke.py", "/build/fboss")
         assert got == str(tmp_path / "fboss" / "oss" / "python_tests" / "agent_smoke.py")
 
 
@@ -372,16 +387,16 @@ class TestPlatformMappingPath:
         gen = self._gen_dir(tmp_path)
         flat = gen / "meru800bia_platform_mapping.json"
         flat.write_text("{}")
-        monkeypatch.setattr(runner_module, "_repo_dir", lambda rel: gen)
-        assert runner_module._platform_mapping_path("meru800bia") == flat
+        monkeypatch.setattr(platform_mapping_module, "repo_dir", lambda rel: gen)
+        assert platform_mapping_module._platform_mapping_path("meru800bia") == flat
 
     def test_nested_vendor_layout(self, tmp_path, monkeypatch):
         gen = self._gen_dir(tmp_path)
         nested = gen / "accton" / "wedge800bact" / "platform_mapping.json"
         nested.parent.mkdir(parents=True)
         nested.write_text("{}")
-        monkeypatch.setattr(runner_module, "_repo_dir", lambda rel: gen)
-        assert runner_module._platform_mapping_path("wedge800bact") == nested
+        monkeypatch.setattr(platform_mapping_module, "repo_dir", lambda rel: gen)
+        assert platform_mapping_module._platform_mapping_path("wedge800bact") == nested
 
     def test_flat_preferred_over_nested(self, tmp_path, monkeypatch):
         gen = self._gen_dir(tmp_path)
@@ -390,14 +405,14 @@ class TestPlatformMappingPath:
         nested = gen / "vendor" / "foo" / "platform_mapping.json"
         nested.parent.mkdir(parents=True)
         nested.write_text("{}")
-        monkeypatch.setattr(runner_module, "_repo_dir", lambda rel: gen)
-        assert runner_module._platform_mapping_path("foo") == flat
+        monkeypatch.setattr(platform_mapping_module, "repo_dir", lambda rel: gen)
+        assert platform_mapping_module._platform_mapping_path("foo") == flat
 
     def test_missing_raises(self, tmp_path, monkeypatch):
         gen = self._gen_dir(tmp_path)
-        monkeypatch.setattr(runner_module, "_repo_dir", lambda rel: gen)
+        monkeypatch.setattr(platform_mapping_module, "repo_dir", lambda rel: gen)
         with pytest.raises(FileNotFoundError):
-            runner_module._platform_mapping_path("does_not_exist")
+            platform_mapping_module._platform_mapping_path("does_not_exist")
 
 
 class TestLocalBuildFingerprint:
@@ -417,10 +432,11 @@ class TestLocalBuildFingerprint:
 
     def _fp(self, runner, build_dir, repo):
         from pathlib import Path
+        deployer = _make_deployer(type(runner))
         with patch.object(
-            type(runner), "_fboss_repo_root", staticmethod(lambda: Path(repo))
+            ArtifactDeployer, "_fboss_repo_root", staticmethod(lambda: Path(repo))
         ):
-            return runner._local_build_fingerprint(str(build_dir))
+            return deployer._local_build_fingerprint(str(build_dir))
 
     def test_in_place_relink_changes_fingerprint(self, tmp_path):
         runner, d, repo = self._runner_and_build(tmp_path)
@@ -475,7 +491,7 @@ class TestRunnerManifests:
         assert "bin/run_test.py" not in BspTestRunner.REQUIRED_PATHS
 
     def test_benchmark_runner_has_a_deploy_manifest(self):
-        assert BenchmarkTestRunner.STACK == _STACK_FORWARDING
+        assert BenchmarkTestRunner.STACK == STACK_FORWARDING
         assert "bin/sai_all_benchmarks-sai_impl" in BenchmarkTestRunner.REQUIRED_PATHS
 
     def test_only_benchmark_runner_ships_hw_bench_configs(self):
@@ -484,12 +500,12 @@ class TestRunnerManifests:
         # dirs must ship. No other runner needs it.
         for rel in ("share/hw_bench_configs/", "share/hw_test_configs/"):
             assert rel in BenchmarkTestRunner.REQUIRED_PATHS
-        assert "share/hw_bench_configs/" not in _STACK_SHARE[_STACK_FORWARDING]
+        assert "share/hw_bench_configs/" not in STACK_SHARE[STACK_FORWARDING]
         for cls in (SaiTestRunner, SaiAgentTestRunner, QsfpTestRunner, LinkTestRunner):
             assert "share/hw_bench_configs/" not in cls.REQUIRED_PATHS
 
     def test_qsfp_benchmark_runner_has_a_deploy_manifest(self):
-        assert QsfpBenchmarkTestRunner.STACK == _STACK_FORWARDING
+        assert QsfpBenchmarkTestRunner.STACK == STACK_FORWARDING
         assert "bin/qsfp_hw_test_benchmark" in QsfpBenchmarkTestRunner.REQUIRED_PATHS
         # Must not inherit the SAI benchmark binary slice.
         assert "bin/sai_all_benchmarks-sai_impl" not in QsfpBenchmarkTestRunner.REQUIRED_PATHS
@@ -498,11 +514,11 @@ class TestRunnerManifests:
 
     def test_forwarding_runners_route_to_forwarding_stack(self):
         for cls in (SaiTestRunner, SaiAgentTestRunner, BenchmarkTestRunner, QsfpBenchmarkTestRunner):
-            assert cls.STACK == _STACK_FORWARDING, f"{cls.__name__} should be forwarding"
+            assert cls.STACK == STACK_FORWARDING, f"{cls.__name__} should be forwarding"
 
     def test_platform_stack_runners_route_to_platform_stack(self):
         for cls in (PlatformTestRunner, BspTestRunner):
-            assert cls.STACK == _STACK_PLATFORM, f"{cls.__name__} should be platform"
+            assert cls.STACK == STACK_PLATFORM, f"{cls.__name__} should be platform"
 
 
 # run scripts and python smoke scripts ship under bin/ but aren't run_test.py
@@ -535,7 +551,7 @@ def test_runner_binaries_are_known_to_fboss_test_runner():
     renaming/removing one, fails loudly with a pointer to reconcile.
     """
     pkg = (
-        BaseHwTestRunner._fboss_repo_root()
+        ArtifactDeployer._fboss_repo_root()
         / "fboss/oss/scripts/run_scripts/fboss_test_runner"
     )
     tokens: set[str] = set()
@@ -579,8 +595,8 @@ class TestDeployOnly:
             return (0, "ok")
 
         ssh.run_cmd.side_effect = ssh_handler
-        monkeypatch.setattr(runner_module, "DeviceSSHClient", lambda *a, **k: ssh)
-        monkeypatch.setattr(runner_module, "DeviceSCPClient", lambda *a, **k: scp)
+        monkeypatch.setattr(base_module, "DeviceSSHClient", lambda *a, **k: ssh)
+        monkeypatch.setattr(base_module, "DeviceSCPClient", lambda *a, **k: scp)
         return ssh, scp
 
     def test_run_test_deploys_then_skips_execution(self, monkeypatch, isolated_cache):
