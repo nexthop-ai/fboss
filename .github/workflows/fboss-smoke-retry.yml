@@ -1,0 +1,147 @@
+name: FBOSS Smoke Retry
+# Companion to fboss-sync-smoke.reusable.yml. The Wait & Verify job there
+# polls for a bounded budget (poll_budget_minutes) instead of holding a
+# runner for the whole testbed queue wait, which regularly exceeds the 4h
+# job cap. When the budget expires with batches still unresolved, the job
+# fails with a SMOKE_RETRYABLE error annotation.
+#
+# This cron looks for open upstream-sync PRs whose latest Monobuild run
+# failed with that marker and re-runs just the failed jobs. Because the
+# schedule job succeeded, `gh run rerun --failed` reuses its batch-ID
+# outputs — no new test batches are scheduled — and batch state lives in
+# the test scheduler, so each attempt simply resumes waiting. Once every
+# batch has an outcome, Wait & Verify ends with a real pass/fail (no
+# marker) and retries stop on their own.
+#
+# Runs killed without the marker (job timeout, runner loss, GHA outage,
+# cancellation) are also retried, but only when every non-successful job
+# in the run is Wait & Verify itself — that guarantees `rerun --failed`
+# can't re-run the build or the schedule job (which would schedule a
+# duplicate set of batches). Consequence: manually cancelling just the
+# Wait & Verify job does NOT stop the retries; close the PR or let the
+# wait reach a real verdict instead.
+
+on:
+  # Every 90 minutes: :00 of hours 0,3,6,... plus :30 of hours 1,4,7,...
+  # (cron can't express a 90m period in one line).
+  schedule:
+    - cron: "0 0-23/3 * * *"
+    - cron: "30 1-23/3 * * *"
+  workflow_dispatch:
+
+permissions:
+  actions: write # re-run workflow runs (and read their logs)
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: fboss-smoke-retry
+  cancel-in-progress: false
+
+jobs:
+  retry:
+    name: Retry unresolved smoke waits
+    # Only makes a handful of GitHub API calls; the smallest runner suffices.
+    runs-on: k8s-nano
+    timeout-minutes: 15
+    steps:
+      - name: Find and re-run retryable smoke runs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          SYNC_PR_TITLE: "[sync] Sync with upstream stable commit"
+        run: |
+          set -uo pipefail
+
+          # Open upstream-sync PRs (exact title match; the search is only a
+          # server-side prefilter).
+          prs=$(gh pr list --state open \
+                  --search "in:title \"$SYNC_PR_TITLE\"" \
+                  --json number,title,headRefOid \
+                | jq -c --arg t "$SYNC_PR_TITLE" '.[] | select(.title == $t)')
+
+          if [ -z "$prs" ]; then
+            echo "No open sync PRs; nothing to do."
+            exit 0
+          fi
+
+          rerun_failures=0
+          while IFS= read -r pr; do
+            number=$(echo "$pr" | jq -r '.number')
+            sha=$(echo "$pr" | jq -r '.headRefOid')
+            echo "PR #${number} (head ${sha})"
+
+            # Latest Monobuild run for the PR's current head commit.
+            run=$(gh run list --workflow monobuild.yml \
+                    --event pull_request --commit "$sha" \
+                    --json databaseId,status,conclusion --limit 1 \
+                  | jq -c '.[0] // empty')
+            if [ -z "$run" ]; then
+              echo "  no Monobuild run for this commit; skipping."
+              continue
+            fi
+
+            run_id=$(echo "$run" | jq -r '.databaseId')
+            status=$(echo "$run" | jq -r '.status')
+            conclusion=$(echo "$run" | jq -r '.conclusion')
+            echo "  run ${run_id}: status=${status} conclusion=${conclusion}"
+
+            # A run can only be re-run once it has fully completed.
+            if [ "$status" != "completed" ]; then
+              echo "  still running; skipping."
+              continue
+            fi
+
+            # Two retryable shapes:
+            #  - failure WITH the SMOKE_RETRYABLE marker: the polling budget
+            #    expired. A real test failure ends without the marker and is
+            #    never retried.
+            #  - cancelled/timed_out where Wait & Verify is the ONLY
+            #    non-successful job: the wait was killed before it could
+            #    print the marker (job-timeout safety cap, runner loss, GHA
+            #    outage, cancellation). The only-Wait-&-Verify guard is what
+            #    makes `rerun --failed` safe here — it can't re-run the
+            #    build or the schedule job, so no duplicate batches.
+            case "$conclusion" in
+              failure)
+                # Capture the log before grepping: with pipefail, `grep -q`
+                # exiting on first match can SIGPIPE gh and make the pipeline
+                # report failure even though the marker is present.
+                failed_log=$(gh run view "$run_id" --log-failed || true)
+                if ! grep -q "SMOKE_RETRYABLE" <<< "$failed_log"; then
+                  echo "  failure is not SMOKE_RETRYABLE; skipping."
+                  continue
+                fi
+                ;;
+              cancelled|timed_out)
+                other_bad=$(gh api "repos/${GH_REPO}/actions/runs/${run_id}/jobs" --paginate \
+                  | jq -r '[.jobs[]
+                            | select(.conclusion != "success"
+                                     and .conclusion != "skipped"
+                                     and .conclusion != "neutral")
+                            | select(.name | contains("Wait & Verify") | not)
+                            | .name] | length')
+                if [ "$other_bad" != "0" ]; then
+                  echo "  ${conclusion}, but jobs other than Wait & Verify are unsuccessful; skipping."
+                  continue
+                fi
+                ;;
+              *)
+                echo "  conclusion '${conclusion}' is not retryable; skipping."
+                continue
+                ;;
+            esac
+
+            echo "  re-running failed jobs of run ${run_id}..."
+            if gh run rerun "$run_id" --failed; then
+              echo "  ✅ re-run requested."
+            else
+              # Keep going for other PRs; report at the end. A common cause
+              # is hitting GitHub's re-run attempt limit for the run.
+              echo "  ⚠️ re-run request failed."
+              rerun_failures=$((rerun_failures + 1))
+            fi
+          done <<< "$prs"
+
+          exit "$rerun_failures"

@@ -44,7 +44,10 @@ jobs:
     uses: ./.github/workflows/fboss-sync-smoke.reusable.yml
     with:
       build_id: ${{ needs.monobuild.outputs.build_id }}
-      timeout_minutes: 240
+      # Wait & Verify self-limits via poll_budget_minutes (30m) and is then
+      # re-run by fboss-smoke-retry.yml until all batches resolve; this is
+      # just the hard safety cap for a wedged wait job.
+      timeout_minutes: 45
     secrets:
       GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
       AWS_NEXIS_BUILDRUNNER_SSH_KEY: ${{ secrets.AWS_NEXIS_BUILDRUNNER_SSH_KEY }}

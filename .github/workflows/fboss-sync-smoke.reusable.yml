@@ -30,6 +30,14 @@ on:
         description: "Seconds between polls per batch."
         required: false
         type: number
+        default: 180
+      poll_budget_minutes:
+        description: >-
+          Wall-clock polling budget for the wait phase. If batches are still
+          unresolved when it expires, Wait & Verify fails as SMOKE_RETRYABLE
+          and fboss-smoke-retry.yml re-runs it later.
+        required: false
+        type: number
         default: 30
 
 jobs:
@@ -70,108 +78,97 @@ jobs:
           role-duration-seconds: 14400
           output-env-credentials: true
 
-      # Each pool is scheduled via the shared composite action so the
-      # `nh te schedule` invocation lives in exactly one place. Steps execute
-      # sequentially in declaration order; each takes only seconds.
-
-      - name: Schedule Gold Eagle
-        id: schedule-gold-eagle
-        uses: ./.github/actions/fboss-schedule-test
+      # Scheduling is idempotent per (build_id, product): batch IDs live in
+      # a per-build JSON map in the actions cache, so a re-run (even "Re-run
+      # all jobs", or a retry after this job died mid-way through the pools)
+      # reuses the batches already scheduled instead of scheduling
+      # duplicates. The map is saved under a per-attempt key (save keys are
+      # immutable) and restored by build_id prefix, so partial progress from
+      # a failed attempt is preserved. Cache entries are branch-scoped and
+      # expire after ~7 days without access; a spurious eviction merely
+      # causes a redundant (harmless) reschedule.
+      - name: Restore batch IDs scheduled by previous attempts
+        uses: actions/cache/restore@v6
         with:
-          build_id: ${{ inputs.build_id }}
-          priority: 100
-          product: "GoldenEagle320"
-          tests: ${{ steps.smoke.outputs.tests }}
-          attributes: "dut_count=1"
+          path: .nh-batch-cache/batches.json
+          key: fboss-batches-${{ inputs.build_id }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            fboss-batches-${{ inputs.build_id }}-
 
-      - name: Schedule Wedge800B
-        id: schedule-wedge800b
-        uses: ./.github/actions/fboss-schedule-test
-        with:
-          build_id: ${{ inputs.build_id }}
-          priority: 100
-          product: "WEDGE800BACT"
-          tests: ${{ steps.smoke.outputs.tests }}
-          attributes: "dut_count=1"
-
-      - name: Schedule Wedge800C
-        id: schedule-wedge800c
-        uses: ./.github/actions/fboss-schedule-test
-        with:
-          build_id: ${{ inputs.build_id }}
-          priority: 100
-          product: "WEDGE800CACT"
-          tests: ${{ steps.smoke.outputs.tests }}
-          attributes: "dut_count=1"
-
-      - name: Schedule Minipack3
-        id: schedule-minipack3
-        uses: ./.github/actions/fboss-schedule-test
-        with:
-          build_id: ${{ inputs.build_id }}
-          priority: 100
-          product: "MINIPACK3"
-          tests: ${{ steps.smoke.outputs.tests }}
-          attributes: "dut_count=1"
-
-      - name: Schedule Crowned Eagle
-        id: schedule-crowned-eagle
-        uses: ./.github/actions/fboss-schedule-test
-        with:
-          build_id: ${{ inputs.build_id }}
-          priority: 100
-          product: "CrownedEagle"
-          tests: ${{ steps.smoke.outputs.tests }}
-          attributes: "dut_count=1"
-
-      - name: Schedule Frisco Eagle
-        id: schedule-frisco-eagle
-        uses: ./.github/actions/fboss-schedule-test
-        with:
-          build_id: ${{ inputs.build_id }}
-          priority: 100
-          product: "FriscoEagle"
-          tests: ${{ steps.smoke.outputs.tests }}
-          attributes: "dut_count=1"
-
-      - name: Schedule Steller Eagle
-        id: schedule-steller-eagle
-        uses: ./.github/actions/fboss-schedule-test
-        with:
-          build_id: ${{ inputs.build_id }}
-          priority: 100
-          product: "StellerEagle"
-          tests: ${{ steps.smoke.outputs.tests }}
-          attributes: "dut_count=1"
-
-      - name: Aggregate batch IDs into JSON
+      - name: Schedule all pools
         id: aggregate
         env:
-          GE_ID: ${{ steps.schedule-gold-eagle.outputs.batch_id }}
-          W8B_ID: ${{ steps.schedule-wedge800b.outputs.batch_id }}
-          W8C_ID: ${{ steps.schedule-wedge800c.outputs.batch_id }}
-          MP3_ID: ${{ steps.schedule-minipack3.outputs.batch_id }}
-          CE_ID: ${{ steps.schedule-crowned-eagle.outputs.batch_id }}
-          FE_ID: ${{ steps.schedule-frisco-eagle.outputs.batch_id }}
-          STLR_ID: ${{ steps.schedule-steller-eagle.outputs.batch_id }}
+          BUILD_ID: ${{ inputs.build_id }}
+          PRIORITY: 100
+          TESTS: ${{ steps.smoke.outputs.tests }}
         run: |
-          batches=$(jq -n \
-            --arg ge "$GE_ID" \
-            --arg w8b "$W8B_ID" \
-            --arg w8c "$W8C_ID" \
-            --arg mp3 "$MP3_ID" \
-            --arg ce "$CE_ID" \
-            --arg fe "$FE_ID" \
-            --arg stlr "$STLR_ID" \
-            '[
-              {"pool_name":"Gold Eagle",    "batch_id":$ge},
-              {"pool_name":"Wedge800B",     "batch_id":$w8b},
-              {"pool_name":"Wedge800C",     "batch_id":$w8c},
-              {"pool_name":"Minipack3",     "batch_id":$mp3},
-              {"pool_name":"Crowned Eagle", "batch_id":$ce},
-              {"pool_name":"Frisco Eagle",  "batch_id":$fe},
-              {"pool_name":"Steller Eagle", "batch_id":$stlr}
-            ]')
+          set -uo pipefail
+
+          # The single place the pool list lives; the product name doubles
+          # as the display name in the wait job's polling log.
+          POOLS=(
+            GoldenEagle320
+            WEDGE800BACT
+            WEDGE800CACT
+            MINIPACK3
+            CrownedEagle
+            FriscoEagle
+            StellerEagle
+          )
+
+          map_file=".nh-batch-cache/batches.json"
+          mkdir -p .nh-batch-cache
+          [ -s "$map_file" ] || echo '{}' > "$map_file"
+
+          # Let the save step know whether the map gained new entries, even
+          # if a later pool's scheduling fails (outputs written before a
+          # failure survive it).
+          echo "scheduled_new=false" >> "$GITHUB_OUTPUT"
+
+          batches='[]'
+          for product in "${POOLS[@]}"; do
+            batch_id=$(jq -r --arg p "$product" '.[$p] // empty' "$map_file")
+            if [[ "$batch_id" =~ ^[0-9]+$ ]] && [[ "$batch_id" -ne 0 ]]; then
+              echo "♻️ ${product}: reusing already-scheduled batch ${batch_id}"
+            else
+              CMD="nh te schedule"
+              CMD="$CMD --build-id $BUILD_ID"
+              CMD="$CMD --test-env fboss"
+              CMD="$CMD --nos fboss"
+              CMD="$CMD --priority $PRIORITY"
+
+              if [ -n "$TESTS" ]; then
+                CMD="$CMD --tests $TESTS"
+              else
+                CMD="$CMD --all-eligible-tests"
+              fi
+
+              # Smoke tests only need single-DUT testbeds.
+              CMD="$CMD --attribute dut_count=1"
+              CMD="$CMD --product $product"
+              CMD="$CMD --department software"
+
+              exit_code=0
+              output=$($CMD 2>&1) || exit_code=$?
+
+              batch_id=$(echo "$output" | grep "Batch ID:" | awk '{print $3}')
+
+              if [[ ${exit_code:-0} -ne 0 ]] || ! [[ "$batch_id" =~ ^[0-9]+$ ]] || [[ "$batch_id" -eq 0 ]]; then
+                echo "⚠️ ${product}: schedule failed."
+                echo "$output"
+                exit 1
+              fi
+
+              echo "✅ ${product}: scheduled batch ${batch_id}"
+              jq --arg p "$product" --arg b "$batch_id" '.[$p] = $b' \
+                "$map_file" > "${map_file}.tmp" && mv "${map_file}.tmp" "$map_file"
+              # Overwrite, not append: the last write of an output wins.
+              echo "scheduled_new=true" >> "$GITHUB_OUTPUT"
+            fi
+
+            batches=$(echo "$batches" | jq --arg n "$product" --arg b "$batch_id" \
+              '. + [{"pool_name": $n, "batch_id": $b}]')
+          done
 
           echo "All pools scheduled:"
           echo "$batches" | jq
@@ -184,6 +181,16 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
+      # always(): if scheduling died mid-way, the pools that DID get
+      # scheduled must still reach the cache so the next attempt doesn't
+      # schedule them again.
+      - name: Save batch IDs to cache
+        if: always() && steps.aggregate.outputs.scheduled_new == 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: .nh-batch-cache/batches.json
+          key: fboss-batches-${{ inputs.build_id }}-${{ github.run_id }}-${{ github.run_attempt }}
+
   wait-all:
     name: Wait & Verify
     needs: schedule-all
@@ -195,6 +202,7 @@ jobs:
       batches: ${{ needs.schedule-all.outputs.batches }}
       timeout_minutes: ${{ inputs.timeout_minutes }}
       poll_interval_seconds: ${{ inputs.poll_interval_seconds }}
+      poll_budget_minutes: ${{ inputs.poll_budget_minutes }}
     secrets:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
       AWS_NEXIS_BUILDRUNNER_SSH_KEY: ${{ secrets.AWS_NEXIS_BUILDRUNNER_SSH_KEY }}
