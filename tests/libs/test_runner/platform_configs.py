@@ -85,6 +85,15 @@ def benchmark_skip_known_bad(model: str) -> str:
     return f" --skip-known-bad-tests {key}"
 
 
+def fboss2_skip_known_bad(model: str) -> str:
+    sai_key = SAI_KNOWN_BAD_KEY.get(model)
+    if not sai_key:
+        return ""
+    vendor, sdk = sai_key.split("/")[:2]
+    platform = SAI_AGENT_CONFIG_NAME.get(model, model)
+    return f" --skip-known-bad-tests {platform}/{vendor}-{sdk}"
+
+
 # asicToFeatureNames in asic_production_features.materialized_JSON says a chip
 # supports a feature with no SDK-version awareness - sai_agent_test_runner.py's
 # _filter_tests only ever checks against that flat list.

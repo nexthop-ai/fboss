@@ -2,6 +2,7 @@
 
 from tests.libs.test_runner.base import BaseHwTestRunner
 from tests.libs.test_runner.deploy import STACK_FORWARDING, STACK_SHARE
+from tests.libs.test_runner.platform_configs import fboss2_skip_known_bad
 
 
 class Fboss2IntegrationTestRunner(BaseHwTestRunner):
@@ -10,10 +11,9 @@ class Fboss2IntegrationTestRunner(BaseHwTestRunner):
     fboss2_integration_test is a gtest binary that drives fboss2-dev CLI
     commands against a running FBOSS instance and verifies their output. It
     is SAI/platform-independent — it talks to the agent over Thrift — so
-    unlike the SAI/agent runners it needs no --config or per-model
-    known-bad-test key. run_test.py's fboss2_integration subcommand resolves
-    both internally (/etc/coop/agent.conf and the bundled
-    fboss2_integration_known_bad_tests file).
+    unlike the SAI/agent runners it needs no --config: run_test.py's
+    fboss2_integration subcommand defaults to /etc/coop/agent.conf via its
+    _get_config_path() hook.
     """
 
     # fboss2_integration_test ships in the forwarding test tarball
@@ -27,7 +27,7 @@ class Fboss2IntegrationTestRunner(BaseHwTestRunner):
     REQUIRED_PATHS = (*BINARIES, *STACK_SHARE[STACK])
 
     def test_args(self, model: str) -> str:
-        return "fboss2_integration"
+        return f"fboss2_integration{fboss2_skip_known_bad(model)}"
 
     def pre_test(self):
         """No-op: run_test.py fboss2_integration owns the agent lifecycle.

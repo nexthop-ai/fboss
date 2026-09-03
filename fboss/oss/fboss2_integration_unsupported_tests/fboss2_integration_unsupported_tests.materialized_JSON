@@ -8,6 +8,11 @@
           "test_name_regex": "ConfigAclRuleTest\\.SetVlan$"
         }
     ],
+    "m4062nhp/brcm-14.2.0.0_odp": [
+        {
+          "test_name_regex": "TunnelIpInIpTest\\."
+        }
+    ],
     "wedge800bact/brcm-13.3.0.0_odp": [
         {
           "test_name_regex": "ConfigAclRuleTest\\.SetEtherType$"

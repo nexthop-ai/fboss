@@ -55,6 +55,7 @@ STACK_SHARE: dict[str, tuple[str, ...]] = {
         "share/link_known_bad_tests/",
         "share/hw_benchmark_tests/",
         "share/fboss2_integration_known_bad_tests/",
+        "share/fboss2_integration_unsupported_tests/",
     ),
     STACK_PLATFORM: (),
 }
