@@ -321,7 +321,8 @@ jobs:
           # >>>> terminates nested C++ templates.
           if git grep -nI -E '<{4,}' -- ':/' \
                ':(top,exclude).github/scripts/nh-fix-merge-conflicts.py' \
-               ':(top,exclude).github/scripts/rebase_upstream_pr.sh' \
+               ':(top,exclude).github/scripts/rebase_upstream_pr.py' \
+               ':(top,exclude).github/scripts/tests/test_rebase_upstream_pr.py' \
                ':(top,exclude).github/scripts/reconcile-upstream-merges.py'; then
             echo "❌ Leftover DON'T-MERGE marker found. Drop the reminder before merging."
             rc=1

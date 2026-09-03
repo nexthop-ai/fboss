@@ -1,16 +1,23 @@
 name: Rebase Upstream PR
 
-# Rebase a stale facebook/fboss PR (whose branch lives on our public fork
-# nexthop-ai/fboss) onto the latest stable commit (default) or a chosen target,
-# auto-resolving the usual cmake/BUCK/include conflicts, then build-and-test it with
-# our internal cmake harness. On green, the validated rebase is force-pushed back to
-# the PR branch (updating the live upstream PR). On unresolved conflicts or a
-# build/test failure, we hand off to the @mabel Slack bot in #sw-fboss-automation.
+# Rebase a stale facebook/fboss PR — or the whole stack it belongs to — onto the
+# latest stable commit (default) or a chosen target, auto-resolving the usual
+# cmake/BUCK/include conflicts, then build-and-test the result with our internal
+# cmake harness. Any member PR is an equivalent handle to its stack: the chain is
+# discovered from the PR-body declarations ('Stacked on #N' / 'Based-on:'),
+# verified against git ancestry, and rebased root -> top (each child replays only
+# its own commits onto its parent's new tip, so unchanged levels keep their SHAs
+# and see no churn). On green, every moved PR branch is force-pushed with a lease,
+# all-or-nothing. On unresolved conflicts or a build/test failure, we hand off to
+# the @mabel Slack bot in #sw-fboss-automation.
 #
-# Conflict handoffs are resumable: after the conflicts are resolved and pushed to
-# the -rebase-wip branch, re-dispatching with resume_from_wip=true (and the same
-# rebase_onto target) picks the resolution up from there and runs it through the
-# same build-and-test gate — the PR branch is only ever updated on green.
+# Conflict handoffs are resumable: cleanly rebased levels are staged on their
+# <branch>-rebase-wip branches as they complete; after the conflicted level is
+# resolved and pushed to its -rebase-wip branch, re-dispatching with
+# resume_from_wip=true (and the same rebase_onto target) adopts the staged levels,
+# continues upward, and runs everything through the same build-and-test gate — the
+# PR branches are only ever updated on green. dry_run=true reports the discovered
+# stack and per-level plan without rebasing or pushing anything.
 
 on:
   workflow_dispatch:
@@ -26,6 +33,16 @@ on:
         type: string
       resume_from_wip:
         description: "Resume from the PR's -rebase-wip branch (after manual conflict resolution) instead of the PR head"
+        required: false
+        default: false
+        type: boolean
+      dry_run:
+        description: "Only discover + verify the PR's stack and report the per-level plan; rebase nothing, push nothing"
+        required: false
+        default: false
+        type: boolean
+      force_cli_tests:
+        description: "Run the fboss-sim and DUT fboss2 CLI suites even when the stack's diff touches no CLI path (e.g. to check the new base against the CLI)"
         required: false
         default: false
         type: boolean
@@ -47,15 +64,24 @@ jobs:
       pr_branch: ${{ steps.rebase.outputs.pr_branch }}
       author_user: ${{ steps.rebase.outputs.author_user }}
       test_branch: ${{ steps.rebase.outputs.test_branch }}
-      expected_oid: ${{ steps.rebase.outputs.expected_oid }}
       rebased_sha: ${{ steps.rebase.outputs.rebased_sha }}
       target: ${{ steps.rebase.outputs.target }}
       has_conflicts: ${{ steps.rebase.outputs.has_conflicts }}
       conflicting_files: ${{ steps.rebase.outputs.conflicting_files }}
       wip_branch: ${{ steps.rebase.outputs.wip_branch }}
       dropped_commits: ${{ steps.rebase.outputs.dropped_commits }}
-      orig_commit_count: ${{ steps.rebase.outputs.orig_commit_count }}
-      new_commit_count: ${{ steps.rebase.outputs.new_commit_count }}
+      levels: ${{ steps.rebase.outputs.levels }}
+      stack_size: ${{ steps.rebase.outputs.stack_size }}
+      all_noop: ${{ steps.rebase.outputs.all_noop }}
+      cli_changed: ${{ steps.rebase.outputs.cli_changed }}
+      conflict_pr: ${{ steps.rebase.outputs.conflict_pr }}
+      conflict_level: ${{ steps.rebase.outputs.conflict_level }}
+      staged_prs: ${{ steps.rebase.outputs.staged_prs }}
+      lock_ref: ${{ steps.rebase.outputs.lock_ref }}
+      merged_parent_pr: ${{ steps.rebase.outputs.merged_parent_pr }}
+      merged_parent_state: ${{ steps.rebase.outputs.merged_parent_state }}
+      merged_parent_sha: ${{ steps.rebase.outputs.merged_parent_sha }}
+      merged_parent_absorbed: ${{ steps.rebase.outputs.merged_parent_absorbed }}
     steps:
       - name: Checkout private-fboss
         uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
@@ -75,27 +101,132 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
         run: |
-          .github/scripts/rebase_upstream_pr.sh "${{ inputs.pr_number }}" "${{ inputs.rebase_onto }}" "${{ inputs.resume_from_wip }}"
+          .github/scripts/rebase_upstream_pr.py rebase "${{ inputs.pr_number }}" \
+            --onto "${{ inputs.rebase_onto }}" \
+            --resume-from-wip "${{ inputs.resume_from_wip }}" \
+            --dry-run "${{ inputs.dry_run }}"
 
   # Build-and-test the clean rebased branch (only when the rebase was conflict-free).
   build-and-test:
     name: Build and Test
     needs: rebase
-    if: needs.rebase.outputs.has_conflicts == 'false'
+    if: needs.rebase.outputs.has_conflicts == 'false' && needs.rebase.outputs.all_noop != 'true' && inputs.dry_run == false
     uses: ./.github/workflows/build-and-test.yml
     with:
       use_clang: true
       ref: ${{ needs.rebase.outputs.test_branch }}
     secrets: inherit
 
+  # Boot fboss-sim from the rebased stack top and run the fboss2 CLI
+  # integration tests against it. Informational, like the DUT job below: a
+  # failure pings @mabel (via notify-build-failure) but does not block the
+  # force-push — the sim suite carries pre-existing upstream-tree failures
+  # (e.g. the ConfigAclRuleTest ethertype/vlan commit crashes), so gating on
+  # it would freeze all rebases until those are fixed. Unlike the DUT job it
+  # needs no testbed. The rebased tree is an upstream tree, which lacks the
+  # internal Bazel framework, so this is the cmake fake-SAI flow (same shape
+  # as upstream's fake-cli-sim.yml harness, on the internal sccache/getdeps-
+  # cache fast path); fboss-sim-docker-package.py explicitly supports
+  # upstream trees ("-fake" agent names). No bgpd RPM is staged — matching
+  # the upstream harness, the sim image simply has no BGP. Like the internal PR
+  # flow (fboss-sim-cli.yml's path filter), the suite only runs when the
+  # stack's own diff touches the CLI or its test plumbing (cli_changed, from
+  # the rebase job); force_cli_tests overrides for a manual check of the new
+  # base against the CLI.
+  fboss-sim-test:
+    name: fboss-sim CLI Test
+    needs: rebase
+    if: >-
+      needs.rebase.outputs.has_conflicts == 'false' && needs.rebase.outputs.all_noop != 'true' && inputs.dry_run == false
+      && (needs.rebase.outputs.cli_changed == 'true' || inputs.force_cli_tests == true)
+    runs-on: cloudstack-ubuntu24-large
+    timeout-minutes: 120
+    env:
+      GETDEPS_CACHE_URL: "http://bucket.internal.nexthop.ai:7480/image-stash/getdeps-cache"
+      GETDEPS_CACHE_UPLOAD: "1"
+      # Same flavor-pinned job counts as build-and-test.yml (stable cache keys).
+      NHFBOSS_LINK_JOBS: "5"
+      NHFBOSS_COMPILE_JOBS: "320"
+    steps:
+      - name: Set up HTTP proxy
+        uses: nexthop-ai/nh/.github/actions/http-proxy@main
+
+      - name: Check out the rebased test branch
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.rebase.outputs.test_branch }}
+
+      - name: Build FBOSS Docker image (with registry cache)
+        uses: ./.github/actions/fboss-builder-image
+
+      - name: Start FBOSS build container
+        run: ./fboss/oss/scripts/nhfboss-docker-enter.py
+
+      - name: Fetch dependencies
+        run: |
+          docker exec \
+            -e GETDEPS_CACHE_URL=${{ env.GETDEPS_CACHE_URL }} \
+            -e GETDEPS_CACHE_UPLOAD=${{ env.GETDEPS_CACHE_UPLOAD }} \
+            -e NHFBOSS_COMPILE_JOBS=${{ env.NHFBOSS_COMPILE_JOBS }} \
+            -e NHFBOSS_LINK_JOBS=${{ env.NHFBOSS_LINK_JOBS }} \
+            FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-get-deps.sh
+
+      - name: Build fake-SAI agents + fboss2 targets
+        run: |
+          docker exec \
+            -e SAI_IMPL=fake \
+            -e NHFBOSS_COMPILE_JOBS=${{ env.NHFBOSS_COMPILE_JOBS }} \
+            -e NHFBOSS_LINK_JOBS=${{ env.NHFBOSS_LINK_JOBS }} \
+            FBOSS_build_${USER} ./fboss/oss/scripts/nhfboss-build.sh --cmake-target all
+
+      - name: Collect sccache statistics
+        if: always()
+        run: docker exec FBOSS_build_${USER} sccache -s || true
+
+      # ldd must resolve CentOS libs, so collect inside the build container.
+      - name: Collect fboss-sim artifacts (inside CentOS build container)
+        run: docker exec FBOSS_build_${USER} python3 fboss-sim/scripts/fboss-sim-docker-package.py --collect-only
+
+      - name: Build fboss-sim runtime image (host has the Docker daemon)
+        run: python3 fboss-sim/scripts/fboss-sim-docker-package.py --build-only
+
+      - name: Start fboss-sim runtime container
+        run: python3 fboss-sim/scripts/fboss-sim-docker-run.py
+
+      - name: Wait for agent services to be ready
+        run: |
+          for i in $(seq 1 60); do
+            elapsed=$(( (i - 1) * 2 ))
+            if docker exec fboss_sim_runtime_${USER} /opt/fboss/bin/fboss2 show interface >/dev/null 2>&1; then
+              echo "✓ Agent ready after ${elapsed}s"
+              exit 0
+            fi
+            echo "  [${elapsed}s] not ready yet, retrying..."
+            sleep 2
+          done
+          echo "❌ Agent not ready after 120s"
+          for log in sw_agent hw_agent0 wedge_agent; do
+            echo "===== /var/facebook/logs/fboss/$log.log (last 50) ====="
+            docker exec fboss_sim_runtime_${USER} tail -n 50 "/var/facebook/logs/fboss/$log.log" || true
+          done
+          exit 1
+
+      - name: Run fboss2 integration tests
+        run: docker exec fboss_sim_runtime_${USER} /opt/fboss/bin/fboss2_integration_test
+
   # Run the fboss2 integration tests on a real DUT after the build, as
   # pr-validation.yml does. Informational only — continue-on-error lives
   # inside integration_test.yml, so DUT flakiness/availability never blocks
   # the force-push. The DUT job pulls fboss_cli_bins from this run's build.
+  # Gated on cli_changed here: integration_test.yml's own detect step treats
+  # a workflow_dispatch caller as "always run", which would put every rebase
+  # into the single-slot DUT queue ahead of real PR runs.
   cli-integration-test:
     name: CLI Integration Test (DUT)
-    needs: build-and-test
-    if: needs.build-and-test.result == 'success'
+    needs: [rebase, build-and-test]
+    if: >-
+      needs.build-and-test.result == 'success'
+      && (needs.rebase.outputs.cli_changed == 'true' || inputs.force_cli_tests == true)
     permissions:
       id-token: write  # aws-actions/configure-aws-credentials (OIDC)
       contents: read
@@ -103,11 +234,13 @@ jobs:
     uses: ./.github/workflows/integration_test.yml
     secrets: inherit
 
-  # On green, force-push the validated rebase to the real PR branch (updates the
-  # live upstream PR). --force-with-lease pins the PR head OID captured at rebase
-  # start, so a concurrent update aborts rather than getting clobbered.
+  # On green, force-push the validated rebase to every moved PR branch (updates
+  # the live upstream PRs), bottom -> top. --force-with-lease pins each branch's
+  # head OID captured at rebase start, and a dry-run pass over all branches runs
+  # first, so a concurrent update anywhere aborts the whole batch rather than
+  # leaving a half-updated stack.
   update-pr:
-    name: Update PR branch
+    name: Update PR branches
     needs: [rebase, build-and-test]
     if: needs.build-and-test.result == 'success'
     runs-on: k8s-micro
@@ -115,102 +248,94 @@ jobs:
       - name: Checkout
         uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
         with:
-          ref: main
           token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
-      - name: Force-push rebased commit to PR branch
+      # A leased dry-run pass over every branch runs first, so the update is
+      # all-or-nothing: if any PR branch moved since the rebase started,
+      # nothing is pushed.
+      - name: Force-push rebased commits to PR branches
         env:
           GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
-          PR_BRANCH: ${{ needs.rebase.outputs.pr_branch }}
-          EXPECTED_OID: ${{ needs.rebase.outputs.expected_oid }}
-          REBASED_SHA: ${{ needs.rebase.outputs.rebased_sha }}
+          LEVELS: ${{ needs.rebase.outputs.levels }}
           TEST_BRANCH: ${{ needs.rebase.outputs.test_branch }}
-        run: |
-          set -euo pipefail
-          git remote add nexthop-ai "https://x-access-token:${GH_TOKEN}@github.com/nexthop-ai/fboss.git" 2>/dev/null || \
-            git remote set-url nexthop-ai "https://x-access-token:${GH_TOKEN}@github.com/nexthop-ai/fboss.git"
-          # test_branch (private-fboss) is rebased_sha plus our NH-harness overlay commit
-          # on top; fetch it so rebased_sha is a local object, then push just that SHA --
-          # never the harness overlay -- to the real (public) PR branch.
-          git fetch --no-tags origin "$TEST_BRANCH"
-          git push --force-with-lease="$PR_BRANCH:$EXPECTED_OID" \
-            nexthop-ai "$REBASED_SHA:refs/heads/$PR_BRANCH"
-          echo "✅ Updated nexthop-ai/fboss:$PR_BRANCH to $REBASED_SHA"
+        run: .github/scripts/rebase_upstream_pr.py push
+      # Re-align the 'Stacked on #N' / stack-list / 'Based-on:' declarations in
+      # the member PRs' bodies with what was just pushed. Best-effort: the token
+      # may not be able to edit another author's upstream PR; the script warns
+      # instead of failing, and the next discovery verifies ancestry anyway.
+      - name: Heal stack declarations in PR bodies
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          LEVELS: ${{ needs.rebase.outputs.levels }}
+        run: .github/scripts/rebase_upstream_pr.py heal
 
-  # Always clean up the private-fboss test branch holding the rebase + NH harness overlay.
-  # test_branch is emitted as soon as the PR is resolved (before the rebase itself), so
-  # gate on has_conflicts rather than test_branch != '' -- on conflicts it's never pushed.
+  # Clean up the run's transient state. Steps are individually gated because the
+  # job must run on every outcome (always()): the stack lock in particular has to
+  # be released even after conflicts or a failed rebase, or the next dispatch
+  # (including a resume) would be refused.
   cleanup:
-    name: Cleanup test branch
+    name: Cleanup
     needs: [rebase, update-pr]
-    if: always() && needs.rebase.outputs.has_conflicts == 'false'
+    if: always()
     runs-on: k8s-micro
     steps:
       - name: Checkout
         uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
         with:
-          ref: main
           token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+      # test_branch is emitted before the rebase itself, so gate on has_conflicts
+      # rather than test_branch != '' -- on conflicts it's never pushed.
       - name: Delete test branch
+        if: needs.rebase.outputs.has_conflicts == 'false' && inputs.dry_run == false
         env:
           TEST_BRANCH: ${{ needs.rebase.outputs.test_branch }}
         run: git push origin --delete "$TEST_BRANCH" || true
-      # The wip branch (if this PR ever went through a conflict handoff) has served
-      # its purpose once the validated rebase reaches the PR branch. Only delete it
-      # after update-pr succeeded — on a failed build it still holds the manual
-      # resolution, which would otherwise be lost.
-      - name: Delete wip branch
+      # The staged wip branches have served their purpose once the validated
+      # rebase reaches the PR branches. Only delete them after update-pr
+      # succeeded — on a failed build or a conflict handoff they still hold the
+      # staged levels (and any manual resolution), which would otherwise be lost.
+      - name: Delete staged wip branches
         if: needs.update-pr.result == 'success'
         env:
           GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
-          WIP_BRANCH: ${{ needs.rebase.outputs.wip_branch }}
-        run: gh api -X DELETE "repos/nexthop-ai/fboss/git/refs/heads/$WIP_BRANCH" || true
+          LEVELS: ${{ needs.rebase.outputs.levels }}
+        run: |
+          set -euo pipefail
+          jq -r '.[].branch' <<<"$LEVELS" | while read -r branch; do
+            gh api -X DELETE "repos/nexthop-ai/fboss/git/refs/heads/${branch}-rebase-wip" 2>/dev/null || true
+          done
+      - name: Release stack lock
+        if: needs.rebase.outputs.lock_ref != ''
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          LOCK_REF: ${{ needs.rebase.outputs.lock_ref }}
+        run: gh api -X DELETE "repos/nexthop-ai/fboss/git/refs/${LOCK_REF#refs/}" || true
 
-  # On green + PR updated, tell the author what happened and how to undo it.
-  # The old head OID is the one piece of state that's painful to dig up later
-  # (PR timeline archaeology), so the revert command ships in the message.
+  # On green + PRs updated, tell the author what happened and how to undo it.
+  # The old head OIDs are the one piece of state that's painful to dig up later
+  # (PR timeline archaeology), so per-branch revert commands ship in the message.
   notify-success:
-    name: Notify author (PR updated)
+    name: Notify author (PRs updated)
     needs: [rebase, update-pr]
     if: needs.update-pr.result == 'success'
     runs-on: k8s-nano
     steps:
+      - name: Checkout
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
       - name: DM author on Slack (channel fallback)
         env:
           WEBHOOK: ${{ secrets.SW_FBOSS_AUTOMATION_SLACK_WEBHOOK_URL }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           PR: ${{ inputs.pr_number }}
-          PR_BRANCH: ${{ needs.rebase.outputs.pr_branch }}
           AUTHOR: ${{ needs.rebase.outputs.author_user }}
           TARGET: ${{ needs.rebase.outputs.target }}
-          OLD_OID: ${{ needs.rebase.outputs.expected_oid }}
-          NEW_SHA: ${{ needs.rebase.outputs.rebased_sha }}
+          LEVELS: ${{ needs.rebase.outputs.levels }}
+          STACK_SIZE: ${{ needs.rebase.outputs.stack_size }}
           RESUMED: ${{ inputs.resume_from_wip }}
-          WIP_BRANCH: ${{ needs.rebase.outputs.wip_branch }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: |
-          set -euo pipefail
-          via="automatic rebase"
-          [[ $RESUMED == 'true' ]] && via="manual resolution on \`$WIP_BRANCH\` (branch now deleted)"
-          msg=$(printf '✅ Upstream PR #%s rebased onto `%s`, build and tests passed, and your PR branch `%s` in nexthop-ai/fboss was updated to `%s` (via %s).\nTo revert to your previous commits, run from your fboss clone:\n```git push --force origin %s:refs/heads/%s```\nRun: %s' \
-            "$PR" "$TARGET" "$PR_BRANCH" "$NEW_SHA" "$via" "$OLD_OID" "$PR_BRANCH" "$RUN_URL")
-          # DM the author when a bot token is configured: internal usernames map
-          # to @nexthop.ai emails, which Slack resolves to a member id. Requires
-          # scopes chat:write + users:read.email.
-          if [[ -n ${SLACK_BOT_TOKEN:-} ]]; then
-            uid=$(curl -sSf -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
-              "https://slack.com/api/users.lookupByEmail?email=${AUTHOR}@nexthop.ai" \
-              | jq -r 'select(.ok) | .user.id // empty')
-            if [[ -n $uid ]]; then
-              ok=$(jq -n --arg ch "$uid" --arg text "$msg" '{channel:$ch, text:$text}' | \
-                curl -sSf -X POST -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
-                  -H 'Content-type: application/json' --data @- \
-                  https://slack.com/api/chat.postMessage | jq -r '.ok')
-              [[ $ok == true ]] && exit 0
-            fi
-            echo "::warning::Slack DM to '$AUTHOR' failed; falling back to channel webhook."
-          fi
-          jq -n --arg text "$AUTHOR: $msg" '{text:$text}' | \
-            curl -sSf -X POST -H 'Content-type: application/json' --data @- "$WEBHOOK"
+        run: .github/scripts/rebase_upstream_pr.py notify success
 
   # ─── @mabel handoffs ──────────────────────────────────────────────────────
   notify-conflicts:
@@ -219,28 +344,35 @@ jobs:
     if: needs.rebase.outputs.has_conflicts == 'true'
     runs-on: k8s-nano
     steps:
+      - name: Checkout
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
       - name: Prompt @mabel to resolve conflicts
         env:
           WEBHOOK: ${{ secrets.SW_FBOSS_AUTOMATION_SLACK_WEBHOOK_URL }}
           PR: ${{ inputs.pr_number }}
           TARGET: ${{ needs.rebase.outputs.target }}
           WIP_BRANCH: ${{ needs.rebase.outputs.wip_branch }}
+          CONFLICT_PR: ${{ needs.rebase.outputs.conflict_pr }}
+          CONFLICT_LEVEL: ${{ needs.rebase.outputs.conflict_level }}
+          STACK_SIZE: ${{ needs.rebase.outputs.stack_size }}
+          STAGED_PRS: ${{ needs.rebase.outputs.staged_prs }}
           CONFLICTS: ${{ needs.rebase.outputs.conflicting_files }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           REPO: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-          msg=$(printf '<@%s> the rebase of upstream PR #%s onto `%s` still has conflicts after nh-fix-merge-conflicts.py. Please resolve the merge conflicts on branch `%s` in nexthop-ai/fboss, force-push the corrected rebase to that same branch, then resume validation with:\n```gh workflow run rebase-upstream-pr.yml -R %s -f pr_number=%s -f rebase_onto=%s -f resume_from_wip=true```\nDo NOT push to the PR branch directly — the resume run build-tests the wip branch and updates the PR only on green.\nConflicting files:\n%s\nRun: %s' \
-            "$MABEL" "$PR" "$TARGET" "$WIP_BRANCH" "$REPO" "$PR" "$TARGET" "$CONFLICTS" "$RUN_URL")
-          jq -n --arg text "$msg" '{text:$text}' | \
-            curl -sSf -X POST -H 'Content-type: application/json' --data @- "$WEBHOOK"
+        run: .github/scripts/rebase_upstream_pr.py notify conflicts
 
   notify-build-failure:
     name: Notify @mabel (build/test failed)
-    needs: [rebase, build-and-test]
-    if: always() && needs.rebase.outputs.has_conflicts == 'false' && needs.build-and-test.result == 'failure'
+    needs: [rebase, build-and-test, fboss-sim-test]
+    if: always() && needs.rebase.outputs.has_conflicts == 'false' && (needs.build-and-test.result == 'failure' || needs.fboss-sim-test.result == 'failure')
     runs-on: k8s-nano
     steps:
+      - name: Checkout
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
       - name: Prompt @mabel to investigate failure
         env:
           WEBHOOK: ${{ secrets.SW_FBOSS_AUTOMATION_SLACK_WEBHOOK_URL }}
@@ -248,13 +380,9 @@ jobs:
           PR_BRANCH: ${{ needs.rebase.outputs.pr_branch }}
           FAILED_TESTS: ${{ needs.build-and-test.outputs.failed_tests }}
           FAILED_COUNT: ${{ needs.build-and-test.outputs.failed_test_count }}
+          SIM_RESULT: ${{ needs.fboss-sim-test.result }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: |
-          set -euo pipefail
-          msg=$(printf '<@%s> the build-and-test cycle for rebased upstream PR #%s (branch `%s`) failed. Please investigate and fix.\nFailed tests (%s):\n%s\nRun: %s' \
-            "$MABEL" "$PR" "$PR_BRANCH" "${FAILED_COUNT:-?}" "${FAILED_TESTS:-<none captured — likely a build failure>}" "$RUN_URL")
-          jq -n --arg text "$msg" '{text:$text}' | \
-            curl -sSf -X POST -H 'Content-type: application/json' --data @- "$WEBHOOK"
+        run: .github/scripts/rebase_upstream_pr.py notify build-failure
 
   notify-dropped-commits:
     name: Notify @mabel (dropped commits)
@@ -262,18 +390,18 @@ jobs:
     if: needs.rebase.outputs.dropped_commits == 'true'
     runs-on: k8s-nano
     steps:
+      - name: Checkout
+        uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
+        with:
+          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
       - name: Warn @mabel about dropped commits
         env:
           WEBHOOK: ${{ secrets.SW_FBOSS_AUTOMATION_SLACK_WEBHOOK_URL }}
           PR: ${{ inputs.pr_number }}
-          PR_BRANCH: ${{ needs.rebase.outputs.pr_branch }}
-          ORIG: ${{ needs.rebase.outputs.orig_commit_count }}
-          NEW: ${{ needs.rebase.outputs.new_commit_count }}
+          LEVELS: ${{ needs.rebase.outputs.levels }}
+          MERGED_PARENT_PR: ${{ needs.rebase.outputs.merged_parent_pr }}
+          MERGED_PARENT_STATE: ${{ needs.rebase.outputs.merged_parent_state }}
+          MERGED_PARENT_SHA: ${{ needs.rebase.outputs.merged_parent_sha }}
+          MERGED_PARENT_ABSORBED: ${{ needs.rebase.outputs.merged_parent_absorbed }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: |
-          set -euo pipefail
-          dropped=$(( ORIG - NEW ))
-          msg=$(printf '<@%s> ⚠️ rebase of upstream PR #%s (branch `%s`) dropped %s commit(s) (%s → %s). This is expected for already-merged patches, but please verify no important commits vanished before the PR is updated.\nRun: %s' \
-            "$MABEL" "$PR" "$PR_BRANCH" "$dropped" "$ORIG" "$NEW" "$RUN_URL")
-          jq -n --arg text "$msg" '{text:$text}' | \
-            curl -sSf -X POST -H 'Content-type: application/json' --data @- "$WEBHOOK"
+        run: .github/scripts/rebase_upstream_pr.py notify dropped-commits
