@@ -203,20 +203,9 @@
           "type": 1,
           "thresholds": {
             "maxAlarmVal": 1.149,
-<<<<<<< HEAD
-            "minAlarmVal": 1.0,
-            "upperCriticalVal": 1.211,
-            "lowerCriticalVal": 0.95
-||||||| be11fad19c
-            "maxAlarmVal": 1.203,
-            "minAlarmVal": 1.087,
-            "upperCriticalVal": 1.261,
-            "lowerCriticalVal": 1.043
-=======
             "minAlarmVal": 1.000,
             "upperCriticalVal": 1.211,
             "lowerCriticalVal": 0.950
->>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
           },
           "compute": "@/1000.0"
         },
