@@ -5,13 +5,8 @@ import os
 import sys
 from dataclasses import dataclass
 from typing import Any, Optional, Union
-<<<<<<< HEAD
 
 from thrift.python.serializer import Protocol, serialize
-||||||| be11fad19c
-from typing import Any, Dict, List, Optional, Tuple, Union
-=======
->>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
 
 from fboss.lib.platform_mapping_v2.platform_mapping_v2 import PlatformMappingV2
 from fboss.lib.platform_mapping_v2.read_files_utils import (
@@ -65,14 +60,7 @@ _RAW_PLATFORM_MAPPING_FAMILIES: dict[str, tuple[str, ...]] = {
     "montblanc": ("montblanc", "montblanc_odd_ports_8x100G", "montblanc_gtsw_yolo"),
     "tahansb800bc": ("tahansb800bc", "tahansb800bc_test_fixture"),
     "wedge800bact": ("wedge800bact", "wedge800bnhp"),
-<<<<<<< HEAD
     "wedge800cact": ("wedge800cact", "wedge800cnhp"),
-||||||| be11fad19c
-    "wedge800bact": ("wedge800bact",),
-    "wedge800cact": ("wedge800cact",),
-=======
-    "wedge800cact": ("wedge800cact",),
->>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
 }
 
 
