@@ -138,6 +138,7 @@ add_library(agent_hw_test_src
   fboss/agent/test/agent_hw_tests/AgentInPauseDiscardsTests.cpp
   fboss/agent/test/agent_hw_tests/AgentInTrapDiscardsTest.cpp
   fboss/agent/test/agent_hw_tests/AgentPacketSendTests.cpp
+  fboss/agent/test/agent_hw_tests/nexthop_AgentPortPktCounterTests.cpp
   fboss/agent/test/agent_hw_tests/AgentL3ForwardingTests.cpp
   fboss/agent/test/agent_hw_tests/AgentL4PortBlackholingTests.cpp
   fboss/agent/test/agent_hw_tests/AgentLinkLocalForwardingTests.cpp
