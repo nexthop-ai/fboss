@@ -61,6 +61,15 @@ class TestVerifyPlatformMappingGeneratedFiles(unittest.TestCase):
             "nh4010f",
             "nh4220f",
             "m4061clsc",
+<<<<<<< HEAD
+||||||| parent of b87b8ff847 (fix fboss/lib/platform_mapping_v2/test/verify_generated_files.py)
+<<<<<<< HEAD
+            "nh4010f",
+||||||| be11fad19c
+=======
+=======
+            "nh4010f",
+>>>>>>> b87b8ff847 (fix fboss/lib/platform_mapping_v2/test/verify_generated_files.py)
             "m5120csc",
             "wedge800bnhp",
             "wedge800cact",
