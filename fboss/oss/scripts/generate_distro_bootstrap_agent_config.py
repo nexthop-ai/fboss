@@ -105,6 +105,9 @@ VOQ_ASIC_TYPES = {11, 14, 23, 24, 27}
 SWITCH_TYPE_NPU = 0
 SWITCH_TYPE_VOQ = 2
 
+PORT_MAX_FRAME_SIZE = 9412
+INTERFACE_MTU = 9000
+
 # switch_config.thrift PortType, as spelled in the Port_Type CSV column.
 PORT_TYPE_INTERFACE = "0"
 PORT_TYPE_MANAGEMENT = "4"
@@ -457,7 +460,7 @@ def _build_management_ports(selected_rows: list[dict[str, str]]) -> list[dict]:
                 "speed": speed,
                 "profileID": profile_id,
                 "minFrameSize": 64,
-                "maxFrameSize": 9412,
+                "maxFrameSize": PORT_MAX_FRAME_SIZE,
                 "parserType": 1,
                 "routable": False,
                 "ingressVlan": 4094,
@@ -509,7 +512,7 @@ def _build_ports_vlans_interfaces(
                 "speed": speed,
                 "profileID": profile_id,
                 "minFrameSize": 64,
-                "maxFrameSize": 9412,
+                "maxFrameSize": PORT_MAX_FRAME_SIZE,
                 "parserType": 1,
                 "routable": True,
                 "ingressVlan": ingress_vlan,
@@ -551,7 +554,7 @@ def _build_ports_vlans_interfaces(
                     "vlanID": ingress_vlan,
                     "name": f"fboss{ingress_vlan}",
                     "ipAddresses": [],
-                    "mtu": 9412,
+                    "mtu": INTERFACE_MTU,
                     "isVirtual": False,
                     "isStateSyncDisabled": False,
                     "type": 1,  # VLAN
@@ -565,7 +568,7 @@ def _build_ports_vlans_interfaces(
                     "routerID": 0,
                     "portID": global_port_id,
                     "ipAddresses": [],
-                    "mtu": 9412,
+                    "mtu": INTERFACE_MTU,
                     "isVirtual": False,
                     "isStateSyncDisabled": False,
                     "type": 3,  # PORT
@@ -645,7 +648,7 @@ def generate_config(
             "routerID": 0,
             "vlanID": 10,
             "ipAddresses": [],
-            "mtu": 9412,
+            "mtu": INTERFACE_MTU,
             "isVirtual": True,
             "isStateSyncDisabled": False,
             "type": 1,  # VLAN
