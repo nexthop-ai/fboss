@@ -16347,4 +16347,28 @@ Nh5010fPlatformMapping::Nh5010fPlatformMapping(
     const std::string& platformMappingStr)
     : PlatformMapping(platformMappingStr) {}
 
+// Transcribed from the CPU ucode_port entries of the SONiC config for this
+// board, NH-5010-F-O64-C2/defaults/nh5010.bcm, which encodes them as
+// CPU.<channel>:core_<coreId>.<corePortIdx>. Entries are listed in ascending
+// ucode_port order and keyed sequentially from 0. Note core 0 carries two
+// CPU ports (idx 0 and 201) while every other core carries one.
+std::map<uint32_t, std::pair<uint32_t, uint32_t>>
+Nh5010fPlatformMapping::getCpuPortsCoreAndPortIdx() const {
+  static const std::map<uint32_t, std::pair<uint32_t, uint32_t>>
+      kCpuPortsCoreAndPortIdx = {
+          // {CPU System Port, {Core ID, Port ID/PP_DSP}}
+          {0, {0, 0}}, // ucode_port_0   CPU.0
+          {1, {1, 200}}, // ucode_port_380 CPU.8
+          {2, {0, 201}}, // ucode_port_381 CPU.16
+          {3, {2, 202}}, // ucode_port_382 CPU.24
+          {4, {3, 203}}, // ucode_port_383 CPU.32
+          {5, {6, 204}}, // ucode_port_384 CPU.4
+          {6, {7, 205}}, // ucode_port_385 CPU.12
+          {7, {4, 206}}, // ucode_port_386 CPU.20
+          {8, {5, 207}}, // ucode_port_387 CPU.28
+      };
+
+  return kCpuPortsCoreAndPortIdx;
+}
+
 } // namespace facebook::fboss

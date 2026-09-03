@@ -86,7 +86,6 @@ bool Qumran3DAsic::isSupported(Feature feature) const {
     case HwAsic::Feature::ACL_BYTE_COUNTER:
     case HwAsic::Feature::INGRESS_PRIORITY_GROUP_DROPPED_PACKETS:
     case HwAsic::Feature::ROUTE_METADATA:
-    case HwAsic::Feature::NO_RX_REASON_TRAP:
     case HwAsic::Feature::INGRESS_PRIORITY_GROUP_SHARED_WATERMARK:
     case HwAsic::Feature::PORT_MTU_ERROR_TRAP:
     case HwAsic::Feature::FAST_LLFC_COUNTER:
@@ -292,6 +291,14 @@ bool Qumran3DAsic::isSupported(Feature feature) const {
     case HwAsic::Feature::SAI_FEC_SYMBOL_ERRORS:
     case HwAsic::Feature::SLL_HLL_DISCARD_COUNTERS:
     case HwAsic::Feature::NEXT_HOP_GROUP_MEMBER_MONITORED_OBJECT:
+    // Claiming this makes SaiPlatform::getSwitchAttributes set
+    // SAI_SWITCH_ATTR_NO_ACLS_FOR_TRAPS, which the Broadcom SAI only accepts on
+    // DNXAI devices: _brcm_sai_support_no_acls_for_traps is set solely in
+    // _brcm_sai_dnxai_features_init(). Q3D dispatches via DEV_IS_DNX3() to
+    // _brcm_sai_dnx3_features_init(), which leaves it FALSE, so
+    // _brcm_sai_switch_dnx_acl_traps_init() rejects the attribute with
+    // SAI_STATUS_ATTR_NOT_SUPPORTED_0 and fails sai_create_switch().
+    case HwAsic::Feature::NO_RX_REASON_TRAP:
       return false;
   }
   return false;
