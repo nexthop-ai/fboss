@@ -14,14 +14,17 @@ namespace cpp2 facebook.fboss.cli
 
 // Action level required for config changes to take effect.
 // Used to track the highest impact action needed when committing config
-// changes.
+// changes. The levels are generic across services; how a level is carried out
+// for a given service (agent warmboot vs plain bgpd restart, ...) is decided by
+// FbossServiceUtil::restartService() from the (service, level) pair.
 enum ConfigActionLevel {
-  HITLESS = 0, // Can be applied with reloadConfig() - default
-  // Requires a service restart that preserves state where possible. For the
-  // agent this is a warmboot (forwarding state retained); for bgpd (BGP++),
-  // which has no hitless reload, it is a plain service restart.
-  AGENT_WARMBOOT = 1,
-  AGENT_COLDBOOT = 2, // Requires agent coldboot restart (clears ASIC state)
+  // Can be applied with reloadConfig() if the service supports it - default
+  HITLESS = 0,
+  // Restart the service gracefully, retaining state where the service can:
+  // an agent warmboot, or a plain restart for daemons with no warmboot (bgpd).
+  SERVICE_RESTART = 1,
+  // Restart the service disruptively: an agent coldboot (clears ASIC state).
+  DISRUPTIVE_SERVICE_RESTART = 2,
 }
 
 // Identifier for different services that can be configured

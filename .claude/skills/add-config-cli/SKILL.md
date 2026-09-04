@@ -294,14 +294,14 @@ Check, in order:
 2. `fboss/agent/hw/sai/switch/SaiSwitch.cpp` — grep for `<field>ChangeProhibited()`
    or `<field>` appearing next to a `FbossError` throw inside a
    `SwitchSettingsDelta` handler. If one exists, the field can't change
-   hitlessly — use `AGENT_COLDBOOT` (or `AGENT_WARMBOOT` if the comment
+   hitlessly — use `DISRUPTIVE_SERVICE_RESTART` (or `SERVICE_RESTART` if the comment
    allows).
 3. `fboss/agent/state/SwitchSettings.h` — the setter should be a simple
    `set<tag>(value)`. Anything more interesting means look harder.
 
 The three action levels live in
 [fboss/cli/fboss2/cli_metadata.thrift](../../../fboss/cli/fboss2/cli_metadata.thrift):
-`HITLESS`, `AGENT_WARMBOOT`, `AGENT_COLDBOOT`.
+`HITLESS`, `SERVICE_RESTART`, `DISRUPTIVE_SERVICE_RESTART`.
 
 **Write the determination back to column D (IMPACT) of the tracking
 spreadsheet** (see §0a) — one value per row, matching the per-attribute

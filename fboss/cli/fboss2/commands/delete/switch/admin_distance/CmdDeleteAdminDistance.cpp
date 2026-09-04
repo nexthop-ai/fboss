@@ -61,7 +61,8 @@ CmdDeleteAdminDistanceTraits::RetType CmdDeleteAdminDistance::queryClient(
   // routes are not re-stamped when the map changes. A coldboot is required to
   // flush and re-program all routes with the restored default distance.
   session.saveConfig(
-      cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_COLDBOOT);
+      cli::ServiceType::AGENT,
+      cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART);
 
   return fmt::format(
       "Successfully removed admin distance entry for client-id {}. Routes from "

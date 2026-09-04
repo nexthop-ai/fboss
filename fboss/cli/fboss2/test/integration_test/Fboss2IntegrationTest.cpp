@@ -269,7 +269,7 @@ void Fboss2IntegrationTest::restoreConfig(const std::string& configJson) const {
   auto& config = session.getAgentConfig();
   apache::thrift::SimpleJSONSerializer::deserialize(configJson, config);
   session.saveConfig(
-      cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
+      cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART);
   commitConfig();
   waitForAgentReady();
   XLOG(INFO) << "Config snapshot restored";

@@ -73,19 +73,19 @@ TEST_F(CmdConfigReloadTestFixture, bootTypeArgHitless) {
 
 TEST_F(CmdConfigReloadTestFixture, bootTypeArgWarmboot) {
   BootTypeArg arg{std::vector<std::string>{"warmboot"}};
-  EXPECT_EQ(arg.level(), cli::ConfigActionLevel::AGENT_WARMBOOT);
+  EXPECT_EQ(arg.level(), cli::ConfigActionLevel::SERVICE_RESTART);
 }
 
 TEST_F(CmdConfigReloadTestFixture, bootTypeArgColdboot) {
   BootTypeArg arg{std::vector<std::string>{"coldboot"}};
-  EXPECT_EQ(arg.level(), cli::ConfigActionLevel::AGENT_COLDBOOT);
+  EXPECT_EQ(arg.level(), cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART);
 }
 
 TEST_F(CmdConfigReloadTestFixture, bootTypeArgCaseInsensitive) {
   BootTypeArg upper{std::vector<std::string>{"COLDBOOT"}};
-  EXPECT_EQ(upper.level(), cli::ConfigActionLevel::AGENT_COLDBOOT);
+  EXPECT_EQ(upper.level(), cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART);
   BootTypeArg mixed{std::vector<std::string>{"WarmBoot"}};
-  EXPECT_EQ(mixed.level(), cli::ConfigActionLevel::AGENT_WARMBOOT);
+  EXPECT_EQ(mixed.level(), cli::ConfigActionLevel::SERVICE_RESTART);
 }
 
 TEST_F(CmdConfigReloadTestFixture, bootTypeArgInvalid) {

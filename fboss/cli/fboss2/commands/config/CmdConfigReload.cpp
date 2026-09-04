@@ -44,9 +44,9 @@ BootTypeArg::BootTypeArg(std::vector<std::string> v) {
   if (mode == "hitless") {
     level_ = cli::ConfigActionLevel::HITLESS;
   } else if (mode == "warmboot") {
-    level_ = cli::ConfigActionLevel::AGENT_WARMBOOT;
+    level_ = cli::ConfigActionLevel::SERVICE_RESTART;
   } else if (mode == "coldboot") {
-    level_ = cli::ConfigActionLevel::AGENT_COLDBOOT;
+    level_ = cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART;
   } else {
     throw std::invalid_argument(
         "Invalid boot type '" + v[0] +
@@ -103,8 +103,9 @@ std::string performLocalRestart(cli::ConfigActionLevel level) {
   auto restarted = serviceUtil.restartService(cli::ServiceType::AGENT, level);
 
   folly::StringPiece bootType =
-      (level == cli::ConfigActionLevel::AGENT_COLDBOOT) ? "coldboot"
-                                                        : "warmboot";
+      (level == cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART)
+      ? "coldboot"
+      : "warmboot";
   return fmt::format(
       "Config reloaded successfully via {} restart.",
       formatRestartedServices(restarted, bootType));
@@ -128,7 +129,8 @@ CmdConfigReloadTraits::RetType CmdConfigReload::queryClient(
     throw std::invalid_argument(
         fmt::format(
             "config reload {} is local-only; remove --host or run on the switch.",
-            (bootType.level() == cli::ConfigActionLevel::AGENT_COLDBOOT)
+            (bootType.level() ==
+             cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART)
                 ? "coldboot"
                 : "warmboot"));
   }

@@ -611,14 +611,14 @@ TEST_F(ConfigSessionTestFixture, actionLevelUpdateAndGet) {
   TestableConfigSession session(
       sessionDir.string(), (getTestEtcDir() / "coop").string());
 
-  // Update to AGENT_WARMBOOT
+  // Update to SERVICE_RESTART
   session.updateRequiredAction(
-      cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
+      cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART);
 
   // Verify the action level was updated
   EXPECT_EQ(
       session.getRequiredAction(cli::ServiceType::AGENT),
-      cli::ConfigActionLevel::AGENT_WARMBOOT);
+      cli::ConfigActionLevel::SERVICE_RESTART);
 }
 
 TEST_F(ConfigSessionTestFixture, actionLevelHigherTakesPrecedence) {
@@ -628,18 +628,18 @@ TEST_F(ConfigSessionTestFixture, actionLevelHigherTakesPrecedence) {
   TestableConfigSession session(
       sessionDir.string(), (getTestEtcDir() / "coop").string());
 
-  // Update to AGENT_WARMBOOT first
+  // Update to SERVICE_RESTART first
   session.updateRequiredAction(
-      cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
+      cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART);
 
   // Try to "downgrade" to HITLESS - should be ignored
   session.updateRequiredAction(
       cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
-  // Verify action level remains at AGENT_WARMBOOT
+  // Verify action level remains at SERVICE_RESTART
   EXPECT_EQ(
       session.getRequiredAction(cli::ServiceType::AGENT),
-      cli::ConfigActionLevel::AGENT_WARMBOOT);
+      cli::ConfigActionLevel::SERVICE_RESTART);
 }
 
 TEST_F(ConfigSessionTestFixture, actionLevelReset) {
@@ -649,9 +649,9 @@ TEST_F(ConfigSessionTestFixture, actionLevelReset) {
   TestableConfigSession session(
       sessionDir.string(), (getTestEtcDir() / "coop").string());
 
-  // Set to AGENT_WARMBOOT
+  // Set to SERVICE_RESTART
   session.updateRequiredAction(
-      cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
+      cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART);
 
   // Reset the action level
   session.resetRequiredAction(cli::ServiceType::AGENT);
@@ -675,7 +675,7 @@ TEST_F(ConfigSessionTestFixture, actionLevelPersistsToMetadataFile) {
     session.getAgentConfig();
     session.setCommandLine("config interface eth1/1/1 mtu 9000");
     session.saveConfig(
-        cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART);
   }
 
   // Verify metadata file exists and has correct JSON format
@@ -688,7 +688,7 @@ TEST_F(ConfigSessionTestFixture, actionLevelPersistsToMetadataFile) {
   EXPECT_TRUE(json.count("action"));
   EXPECT_TRUE(json["action"].isObject());
   EXPECT_TRUE(json["action"].count("AGENT"));
-  EXPECT_EQ(json["action"]["AGENT"].asString(), "AGENT_WARMBOOT");
+  EXPECT_EQ(json["action"]["AGENT"].asString(), "SERVICE_RESTART");
 }
 
 TEST_F(ConfigSessionTestFixture, actionLevelLoadsFromMetadataFile) {
@@ -701,7 +701,7 @@ TEST_F(ConfigSessionTestFixture, actionLevelLoadsFromMetadataFile) {
   fs::create_directories(sessionDir);
   std::ofstream metaFile(metadataFile);
   // Use symbolic enum names for human readability
-  metaFile << R"({"action":{"AGENT":"AGENT_WARMBOOT"}})";
+  metaFile << R"({"action":{"AGENT":"SERVICE_RESTART"}})";
   metaFile.close();
 
   // Also create the session config file (otherwise session will overwrite from
@@ -715,7 +715,7 @@ TEST_F(ConfigSessionTestFixture, actionLevelLoadsFromMetadataFile) {
   // Verify action level was loaded
   EXPECT_EQ(
       session.getRequiredAction(cli::ServiceType::AGENT),
-      cli::ConfigActionLevel::AGENT_WARMBOOT);
+      cli::ConfigActionLevel::SERVICE_RESTART);
 }
 
 TEST_F(ConfigSessionTestFixture, actionLevelPersistsAcrossSessions) {
@@ -730,7 +730,7 @@ TEST_F(ConfigSessionTestFixture, actionLevelPersistsAcrossSessions) {
     session1.getAgentConfig();
     session1.setCommandLine("config interface eth1/1/1 mtu 9000");
     session1.saveConfig(
-        cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART);
   }
 
   // Second session: verify action level was persisted
@@ -740,7 +740,7 @@ TEST_F(ConfigSessionTestFixture, actionLevelPersistsAcrossSessions) {
 
     EXPECT_EQ(
         session2.getRequiredAction(cli::ServiceType::AGENT),
-        cli::ConfigActionLevel::AGENT_WARMBOOT);
+        cli::ConfigActionLevel::SERVICE_RESTART);
   }
 }
 
@@ -1484,11 +1484,11 @@ TEST_F(ConfigSessionTestFixture, bgpConfigEditPreservesOtherSections) {
   EXPECT_EQ(saved["peer_groups"][0]["name"].asString(), "RACK");
 
   // A BGP restart must be recorded so `config session commit` applies it.
-  // bgpd has no hitless reload, so the recorded level is AGENT_WARMBOOT (a
+  // bgpd has no hitless reload, so the recorded level is SERVICE_RESTART (a
   // plain service restart for BGP).
   EXPECT_EQ(
       session.getRequiredAction(cli::ServiceType::BGP),
-      cli::ConfigActionLevel::AGENT_WARMBOOT);
+      cli::ConfigActionLevel::SERVICE_RESTART);
 }
 
 // A staged BGP edit persists to disk and is seeded back by a fresh session via
@@ -1795,14 +1795,14 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
     EXPECT_CALL(
         *mock,
         restartService(
-            cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT))
+            cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
         .Times(1);
     session->setCommandLine(
         "config interface eth1/1/1 switchport access vlan 3000");
     (*session->getAgentConfig().sw()->ports())[0].description() =
         "Second version";
     session->saveConfig(
-        cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
+        cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART);
     ASSERT_FALSE(session->commit(localhost()).commitSha.empty());
   }
 
@@ -1815,7 +1815,7 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
     EXPECT_CALL(
         *mock,
         restartService(
-            cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT))
+            cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
         .Times(1);
     std::string rollbackSha = session->rollback(localhost(), firstCommitSha);
     EXPECT_FALSE(rollbackSha.empty());
@@ -1833,7 +1833,7 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
     EXPECT_CALL(
         *mock,
         restartService(
-            cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT))
+            cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
         .Times(1);
     // No-arg rollback: back to the "Second version" commit.
     std::string rollbackSha = session->rollback(localhost());
