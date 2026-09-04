@@ -96,7 +96,7 @@ DEFAULT_ASIC_TYPE = 13
 # Platforms whose ASIC cannot be inferred: no materialized HW test config, and a
 # core type shared with a different ASIC (nh5010f and blackwolf800banw are both
 # Q4D_NIF, but are Qumran3D and Qumran4D respectively).
-PLATFORM_ASIC_TYPE: dict[str, int] = {"nh5010f": 27}
+PLATFORM_ASIC_TYPE: dict[str, int] = {"m4340nhp": 23, "nh5010f": 27}
 
 # Jericho2/3/4 and the Qumran parts derived from them accept only VOQ. Ramon is
 # DNX too but is FABRIC, so it is deliberately absent.
@@ -145,10 +145,12 @@ PLATFORM_CODENAME: dict[str, str] = {
     "crownedeagle": "wedge800bnhp",
     "friscoeagle": "wedge800cnhp",
     "blackkite": "nh4220f",
+    "sunbird": "m4340nhp",
 }
 
 CODENAMES_REQUIRING_PLATFORM_DESCRIPTOR = {
     "m4062nhp",
+    "m4340nhp",
     "nh4010f",
     "nh4220f",
     "wedge800bact",

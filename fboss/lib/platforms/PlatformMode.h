@@ -126,6 +126,8 @@ inline std::string toString(PlatformType mode) {
       return "SAINTPAUL";
     case PlatformType::PLATFORM_M4062NHP:
       return "M4062NHP";
+    case PlatformType::PLATFORM_M4340NHP:
+      return "M4340NHP";
     case PlatformType::PLATFORM_MERU400BIU_DEPRECATED:
       return "MERU400BIU";
     case PlatformType::PLATFORM_MERU400BFU_DEPRECATED:

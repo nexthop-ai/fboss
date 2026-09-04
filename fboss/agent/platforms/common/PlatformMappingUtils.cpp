@@ -216,6 +216,7 @@ std::unique_ptr<PlatformMapping> initPlatformMapping(PlatformType type) {
           ? std::make_unique<Icecube800banwPlatformMapping>()
           : std::make_unique<Icecube800banwPlatformMapping>(platformMappingStr);
     case PlatformType::PLATFORM_M4062NHP:
+    case PlatformType::PLATFORM_M4340NHP:
     case PlatformType::PLATFORM_NH4010F:
     case PlatformType::PLATFORM_NH4220F:
     case PlatformType::PLATFORM_WEDGE800BACT:
