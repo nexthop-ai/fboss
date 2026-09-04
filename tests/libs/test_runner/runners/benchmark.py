@@ -51,7 +51,13 @@ class BenchmarkTestRunner(BaseHwTestRunner):
     # the ASIC), so the production agents must be down first or the bind aborts
     # (Address already in use) and the ASIC contends (SIGBUS/SIGSEGV). run_test.py
     # stops these for the gtest runners but not for the benchmark sub-command.
-    BENCHMARK_DISABLE_SERVICES = ["fboss_sw_agent", "fboss_hw_agent@0"]
+    #
+    # bgpd must go too: it reconnects to whatever holds port 5909, so it treats
+    # the benchmark's agent as a restarted production agent and issues a full
+    # syncFib. syncFib is replace-all per client, and EcmpSetupHelper programs
+    # test routes as ClientID::BGPD, so the sync deletes the route under the
+    # traffic the benchmark is mid-measurement on.
+    BENCHMARK_DISABLE_SERVICES = ["fboss_sw_agent", "fboss_hw_agent@0", "bgpd"]
 
     def pre_test(self):
         services = " ".join(self.BENCHMARK_DISABLE_SERVICES)
