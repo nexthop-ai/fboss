@@ -615,3 +615,7 @@ class TestAgentsHealthyForSuite(unittest.TestCase):
         mock_run.return_value = MagicMock(stdout="")  # int("") -> ValueError
         with patch.object(runner, "_agents_ready", return_value=True):
             self.assertTrue(runner._agents_healthy_for_suite())
+
+
+if __name__ == "__main__":
+    unittest.main()

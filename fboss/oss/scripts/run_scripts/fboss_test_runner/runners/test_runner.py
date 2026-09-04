@@ -8,7 +8,25 @@ import shutil
 import subprocess
 import time
 from argparse import ArgumentParser, Namespace
+<<<<<<< HEAD
 from datetime import datetime
+=======
+from contextlib import suppress
+from datetime import datetime, timezone
+
+from nh_test_xml_utils import (
+    emit_test_boundary,
+    exit_info,
+    find_core_dumps_since,
+    find_recent_core_dump,
+    find_unclean_unit_exits,
+    inject_failure_into_xml,
+    inject_streams_into_xml,
+    pipe_to_tee,
+    StreamTee,
+    write_synthetic_failure_xml,
+)
+>>>>>>> e3ebb4fc3c (NO-DEVX: run_test.py: fail a test when a unit it left running crashes (#1837))
 
 from fboss_test_runner.constants import (
     ALL_SIMUALTOR_ASICS_STR,
@@ -74,6 +92,102 @@ def _print_deprecation_banner(lines: list[str]) -> None:
     print(f"{border}{_RESET}\n", flush=True)
 
 
+<<<<<<< HEAD
+=======
+# The kernel truncates the process name embedded in a core file name
+# (systemd-coredump: core.<comm>.<uid>.<boot>.<pid>.<ts>[.zst]) to
+# TASK_COMM_LEN - 1 characters.
+_TASK_COMM_LEN = 15
+
+
+def _core_is_from(core_path: str, exe_name: str) -> bool:
+    """True if the core file at `core_path` was dumped by `exe_name`."""
+    name = os.path.basename(core_path)
+    return name.startswith(f"core.{exe_name[:_TASK_COMM_LEN]}.") or exe_name in name
+
+
+def _wipe_agent_warmboot_state(services: list[str]) -> None:
+    """Wipe warm_boot state whenever the agents are stopped or restarted.
+
+    fboss_*_agent gracefulExit() writes can_warm_boot for the sw switch and
+    can_warm_boot_<idx> for each hw switch, alongside the serialized
+    sai_adapter_state/switch_state blobs they refer to. Wipe the whole dir
+    rather than individual markers so both agents agree on boot type: a
+    partial clear leaves one agent cold-booting while the other warm-boots
+    against state the first no longer owns, which is what cold_boot_agents()
+    goes out of its way to avoid.
+    """
+    if not any(
+        s.startswith("fboss_sw_agent") or s.startswith("fboss_hw_agent")
+        for s in services
+    ):
+        return
+    subprocess.run(
+        ["rm", "-rf", f"{FBOSS_AGENT_VOLATILE_STATE_DIR}/warm_boot"], check=False
+    )
+
+
+def disable_services(test_name: str):
+    if test_name in TEST_DISABLE_SERVICES:
+        services = TEST_DISABLE_SERVICES[test_name]
+        print(f"Stopping services: {', '.join(services)}", flush=True)
+        subprocess.run(["systemctl", "mask", *services], check=False)
+        subprocess.run(["systemctl", "stop", *services], check=False)
+        time.sleep(2)
+        # Wipe so the next test binary cold-boots instead of crashing on
+        # missing agent.conf.
+        _wipe_agent_warmboot_state(services)
+        print("Services stopped", flush=True)
+
+
+def _wait_for_devmap(timeout_s: int = 30) -> None:
+    # platform_manager rebuilds /run/devmap/ asynchronously after restart.
+    # Poll until sensors and xcvrs dirs are non-empty so dependent services
+    # (qsfp_service, sensor_service) don't start against missing symlinks.
+    deadline = time.time() + timeout_s
+    while time.time() < deadline:
+        if all(
+            os.path.isdir(d) and os.listdir(d)
+            for d in ("/run/devmap/sensors", "/run/devmap/xcvrs")
+        ):
+            return
+        time.sleep(1)
+    print(
+        "Warning: /run/devmap not fully repopulated after platform_manager restart",
+        flush=True,
+    )
+
+
+def enable_services(test_name: str):
+    if test_name not in TEST_DISABLE_SERVICES:
+        return
+    services = TEST_DISABLE_SERVICES[test_name]
+    # The test binary's own agents left warm-boot state behind; clear it before
+    # anything below can restart them, so the production agents cold-boot
+    # rather than warm-booting onto SAI objects they never created.
+    _wipe_agent_warmboot_state(services)
+
+    print(f"Restarting services: {', '.join(services)}", flush=True)
+    subprocess.run(
+        ["systemctl", "unmask", *services], check=False, stderr=subprocess.DEVNULL
+    )
+
+    if test_name == SUB_ARG_BSP_HW_TEST:
+        print("Restarting platform_manager to rebuild /run/devmap/", flush=True)
+        subprocess.run(["systemctl", "restart", "platform_manager"], check=False)
+        _wait_for_devmap()
+
+    for service in services:
+        subprocess.Popen(
+            ["systemctl", "restart", service],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+
+    print("Services restart initiated", flush=True)
+
+
+>>>>>>> e3ebb4fc3c (NO-DEVX: run_test.py: fail a test when a unit it left running crashes (#1837))
 class _TestBinaryNotFoundError(RuntimeError):
     """Raised when the selected test binary cannot be resolved."""
 
@@ -172,6 +286,37 @@ class TestRunner(abc.ABC):
 
     def _end_run(self) -> None:  # noqa: B027
         pass
+
+    def _apply_agent_crash(
+        self, run_outcome: RunOutcome, test_prefix: str, test_to_run: str, reason: str
+    ) -> None:
+        """Downgrade a test to FAILED because an agent crashed while it ran.
+
+        The gtest binary reported its own verdict (often OK: the CLI suite's
+        `waitForAgentReady()` rides through a crash + `RestartSec` retry), so
+        both the in-memory results and the per-test XML are rewritten.
+        """
+        message = f"Agent crashed during test: {reason}"
+        print(
+            f"########## AGENT CRASH detected during {test_prefix}{test_to_run}: "
+            f"{reason} -- marking test FAILED",
+            flush=True,
+        )
+        for result in run_outcome.results:
+            if result.status in (GtestStatus.OK, GtestStatus.SKIPPED):
+                result.status = GtestStatus.FAILED
+        run_outcome.console_output = "\n".join(
+            result.as_log_line() for result in run_outcome.results
+        )
+        if os.path.exists(self.TESTRESULT_CURRENT_RUN_FILE):
+            inject_failure_into_xml(
+                self.TESTRESULT_CURRENT_RUN_FILE,
+                message,
+                f"{message}\n\nThe test binary reported its own result, but a "
+                "production agent crashed (and was restarted by systemd) while "
+                "the test was running, so the result is not trustworthy.",
+            )
+        self._collect_rma_showtech(test_to_run)
 
     def add_subcommand_arguments(self, sub_parser: ArgumentParser) -> None:
         sub_parser.add_argument(
@@ -605,6 +750,58 @@ class TestRunner(abc.ABC):
             )
             return RunOutcome(result.as_log_line(), [result])
 
+    def _run_test_guarded(
+        self,
+        conf_file: str,
+        test_prefix: str,
+        test_to_run: str,
+        setup_warmboot: bool,
+        sai_replayer_logging_path: str | None = None,
+    ) -> RunOutcome:
+        """_run_test, then fail the test if a unit it left running crashed.
+
+        Every runner leaves some production units running while its binary
+        executes (see TEST_DISABLE_SERVICES: sai_test keeps fsdb and the
+        platform services up, sai_agent keeps qsfp_service up, the CLI suite
+        keeps everything up). Those units run with `Restart=always`, so a
+        crash caused by the test is invisible to gtest: systemd brings the
+        unit back, the binary's own readiness wait rides through it, and the
+        test reports OK while a core sits on disk and the hardware may never
+        have got the config. Two signals, both read after the binary exits:
+          * A unit's main process died uncleanly during the window, as
+            recorded by PID 1 in the journal. Clean exits and SIGTERM deaths
+            are ignored, so the stop/restart the CLI or a warm-boot phase
+            performs on purpose does not register, and a console logout
+            bouncing serial-getty (Restart=always, exit 0) does not either.
+            Units the runner masked are inactive and produce nothing.
+          * A new core file appeared, from anything but the test binary
+            itself (that one already failed on its own). Deliberately not
+            limited to agent cores: any process dumping core on a production
+            image while a test runs makes that result untrustworthy.
+        """
+        start_time = time.time()
+        run_outcome = self._run_test(
+            conf_file,
+            test_prefix,
+            test_to_run,
+            setup_warmboot,
+            sai_replayer_logging_path,
+        )
+        reasons = find_unclean_unit_exits(start_time)
+        own_binary = os.path.basename(self._get_test_binary_name())
+        cores = [
+            core
+            for core in find_core_dumps_since(start_time)
+            if not _core_is_from(core, own_binary)
+        ]
+        if cores:
+            reasons.append(f"new core dump(s): {', '.join(cores)}")
+        if reasons:
+            self._apply_agent_crash(
+                run_outcome, test_prefix, test_to_run, "; ".join(reasons)
+            )
+        return run_outcome
+
     def _string_in_file(self, file_path: str, string: str) -> bool | None:
         try:
             with open(file_path) as file:
@@ -720,7 +917,7 @@ class TestRunner(abc.ABC):
                 print("########## Running test: " + test_to_run, flush=True)
                 if simulator:
                     self._restart_bcmsim(simulator)
-                run_outcome = self._run_test(
+                run_outcome = self._run_test_guarded(
                     conf_file,
                     test_prefix,
                     test_to_run,
@@ -771,7 +968,7 @@ class TestRunner(abc.ABC):
                         f"({wb_iter + 1}/{num_wb_iterations}): {test_to_run}",
                         flush=True,
                     )
-                    run_outcome = self._run_test(
+                    run_outcome = self._run_test_guarded(
                         conf_file,
                         test_prefix,
                         test_to_run,
