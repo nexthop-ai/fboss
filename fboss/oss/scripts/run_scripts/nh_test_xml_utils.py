@@ -9,9 +9,11 @@ this module holds the test-infra-specific helpers (stream tee, exit-info
 classifier, XML stream injection, synthetic-failure XML emitter, etc.).
 """
 
+import json
 import os
 import re
 import signal
+import subprocess
 import time
 import xml.etree.ElementTree as ET
 from contextlib import suppress
@@ -67,12 +69,7 @@ class StreamTee:
     over to the synthetic-XML emitter.
     """
 
-    def __init__(
-        self,
-        writer,
-        head_bytes: int = 4096,
-        tail_bytes: int = 61440,
-    ):
+    def __init__(self, writer, head_bytes: int = 4096, tail_bytes: int = 61440):
         self._writer = writer
         self._head = bytearray()
         self._head_cap = head_bytes
@@ -199,6 +196,41 @@ def inject_streams_into_xml(
     return True
 
 
+def inject_failure_into_xml(xml_path: str, message: str, text: str = "") -> bool:
+    """Mark every passing <testcase> in `xml_path` as failed.
+
+    Used when the test binary itself reported success but the harness
+    detected an out-of-band failure during the test window -- typically a
+    production agent (fboss_sw_agent / fboss_hw_agent@N) that crashed and
+    was resurrected by systemd `Restart=` before the test noticed. gtest
+    cannot see that, so the harness downgrades the recorded result here.
+
+    Testcases that already carry a <failure> or <error> are left untouched;
+    a <failure message=`message`> whose body is `text` (scrubbed of
+    XML-1.0-illegal characters) is appended to the rest. The write is atomic
+    (tmpfile + os.replace). Returns True on a successful update, False if the
+    XML is malformed or has no testcases (caller should leave it untouched).
+    """
+    try:
+        tree = ET.parse(xml_path)
+    except ET.ParseError:
+        return False
+    testcases = list(tree.getroot().iter("testcase"))
+    if not testcases:
+        return False
+    body = _scrub_for_xml(text) if text else _scrub_for_xml(message)
+    for testcase in testcases:
+        if testcase.find("failure") is not None or testcase.find("error") is not None:
+            continue
+        failure = ET.SubElement(testcase, "failure", message=_scrub_for_xml(message))
+        failure.text = body
+    payload = b'<?xml version="1.0" encoding="UTF-8"?>\n' + ET.tostring(
+        tree.getroot(), encoding="utf-8"
+    )
+    _atomic_write_bytes(xml_path, payload)
+    return True
+
+
 def emit_test_boundary(
     kind: str,
     test_name: str,
@@ -229,19 +261,40 @@ def emit_test_boundary(
     print(line, flush=True)
 
 
-_CORE_DUMP_DIRS = [
-    "/var/core",
-    "/var/lib/systemd/coredump",
-]
+_CORE_DUMP_DIRS = ["/var/core", "/var/lib/systemd/coredump"]
 
 
 _CORE_DUMP_MTIME_SLACK_SEC = 2.0
 
 
+def _scan_core_dumps(cutoff: float) -> list[tuple[float, str]]:
+    """One pass over `_CORE_DUMP_DIRS`: (mtime, path) of every core file with
+    mtime >= cutoff, newest first. Unreadable directories and entries are
+    skipped.
+    """
+    found: list[tuple[float, str]] = []
+    for dir_path in _CORE_DUMP_DIRS:
+        if not os.path.isdir(dir_path):
+            continue
+        try:
+            with os.scandir(dir_path) as it:
+                for entry in it:
+                    try:
+                        if not entry.is_file():
+                            continue
+                        mtime = entry.stat().st_mtime
+                        if mtime >= cutoff:
+                            found.append((mtime, entry.path))
+                    except OSError:
+                        continue
+        except OSError:
+            continue
+    found.sort(reverse=True)
+    return found
+
+
 def find_recent_core_dump(
-    start_time: float,
-    deadline_sec: float = 2.0,
-    poll_interval_sec: float = 0.1,
+    start_time: float, deadline_sec: float = 2.0, poll_interval_sec: float = 0.1
 ) -> str | None:
     """Return absolute path of the newest core file with mtime >= start_time.
 
@@ -256,29 +309,115 @@ def find_recent_core_dump(
     deadline = time.monotonic() + deadline_sec
     cutoff = start_time - _CORE_DUMP_MTIME_SLACK_SEC
     while True:
-        best_path: str | None = None
-        best_mtime = 0.0
-        for dir_path in _CORE_DUMP_DIRS:
-            if not os.path.isdir(dir_path):
-                continue
-            try:
-                with os.scandir(dir_path) as it:
-                    for entry in it:
-                        try:
-                            if entry.is_file():
-                                mtime = entry.stat().st_mtime
-                                if mtime >= cutoff and mtime > best_mtime:
-                                    best_path = entry.path
-                                    best_mtime = mtime
-                        except OSError:
-                            continue
-            except OSError:
-                continue
-        if best_path is not None:
-            return best_path
+        matches = _scan_core_dumps(cutoff)
+        if matches:
+            return matches[0][1]
         if time.monotonic() >= deadline:
             return None
         time.sleep(poll_interval_sec)
+
+
+def find_core_dumps_since(start_time: float) -> list[str]:
+    """Return every core file with mtime >= start_time, newest first.
+
+    Unlike `find_recent_core_dump` this does not poll and returns all
+    matches, so a caller can check whether *any* process dumped core during
+    a window (e.g. while a test ran against the production agents) and name
+    each core in the failure reason.
+    """
+    cutoff = start_time - _CORE_DUMP_MTIME_SLACK_SEC
+    return [path for _, path in _scan_core_dumps(cutoff)]
+
+
+# systemd (PID 1) logs one line per main-process exit of every unit, e.g.
+#   "fboss_hw_agent@0.service: Main process exited, code=dumped, status=6/ABRT"
+# The unit name is also carried in the UNIT journal field. Parsing this line is
+# preferable to `systemctl show -p NRestarts/Result`: NRestarts only moves for
+# Restart=-triggered restarts (so a manual restart followed by a crash reads
+# "unchanged"), and Result is reset to "success" the moment the unit is
+# started again, so by the time a check runs after the test the crash has
+# already been papered over. The journal keeps the record.
+_MAIN_PROCESS_EXIT_RE = re.compile(
+    r"^(?P<unit>\S+): Main process exited, code=(?P<code>\w+), "
+    r"status=(?P<status>\d+)/(?P<name>\S+)$"
+)
+_OOM_KILL_RE = re.compile(
+    r"^(?P<unit>\S+): A process of this unit has been killed by the OOM killer"
+)
+
+# Exits systemd's own `systemctl stop/restart` produces on a well-behaved unit:
+# a clean exit, or termination by the stop signal (SIGTERM; SIGINT/SIGHUP for
+# units that set KillSignal=) either as a signal death or as the 128+N status
+# a shell/python wrapper returns when it relays it.
+_GRACEFUL_SIGNALS = frozenset({"TERM", "INT", "HUP"})
+_GRACEFUL_EXIT_STATUSES = frozenset(
+    {0, 128 + signal.SIGTERM, 128 + signal.SIGINT, 128 + signal.SIGHUP}
+)
+
+
+def _classify_unit_exit(message: str) -> str | None:
+    """Return a human-readable reason if `message` (a PID 1 journal line)
+    records an unclean main-process exit of a unit, else None."""
+    m = _OOM_KILL_RE.match(message)
+    if m:
+        return f"{m['unit']} killed by the OOM killer"
+    m = _MAIN_PROCESS_EXIT_RE.match(message)
+    if not m:
+        return None
+    code, status, name = m["code"], int(m["status"]), m["name"]
+    if code == "exited" and status in _GRACEFUL_EXIT_STATUSES:
+        return None
+    if code == "killed" and name in _GRACEFUL_SIGNALS:
+        return None
+    what = {"dumped": "dumped core", "killed": "was killed", "exited": "exited"}.get(
+        code, code
+    )
+    return f"{m['unit']} main process {what} (status={status}/{name})"
+
+
+def find_unclean_unit_exits(start_time: float) -> list[str]:
+    """Return one reason per systemd unit whose main process died uncleanly
+    since `start_time` (crash, abort, OOM kill, non-zero exit), oldest first.
+
+    Reads PID 1's journal records for the window. Clean stops and restarts --
+    the ones the test infrastructure and the fboss2 CLI perform on purpose --
+    exit 0 or die by SIGTERM and are not reported, so bouncing a unit inside
+    the window is fine; only an exit systemd would count as a failure is.
+    Returns [] when journalctl is unavailable or fails (workstations, the
+    fboss-sim container).
+    """
+    since = int(start_time - _CORE_DUMP_MTIME_SLACK_SEC)
+    try:
+        result = subprocess.run(
+            [
+                "journalctl",
+                "-q",
+                "--no-pager",
+                "-o",
+                "json",
+                f"--since=@{since}",
+                "_PID=1",
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except OSError:
+        return []
+    if result.returncode != 0:
+        return []
+    reasons: list[str] = []
+    for line in result.stdout.splitlines():
+        try:
+            message = json.loads(line).get("MESSAGE")
+        except (ValueError, AttributeError):
+            continue
+        if not isinstance(message, str):
+            continue
+        reason = _classify_unit_exit(message)
+        if reason:
+            reasons.append(reason)
+    return reasons
 
 
 def write_synthetic_failure_xml(
