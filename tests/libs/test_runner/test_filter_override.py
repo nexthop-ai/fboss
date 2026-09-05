@@ -16,6 +16,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from tests.libs.test_runner import cabling
 from tests.libs.test_runner import (
     BenchmarkTestRunner,
     BspTestRunner,
@@ -517,3 +518,38 @@ class TestPtpFlapGate:
         assert result is True
         assert execute_calls == []
         assert skipped == [(_PTP_FLAP, _PTP_NO_SURVIVOR_REASON)]
+
+
+class TestRunTimeout:
+    def test_scaled_timeout_floors_at_default_and_grows_with_ports(self):
+        assert cabling._scaled_test_run_timeout(32) == 1200
+        assert cabling._scaled_test_run_timeout(128) == 1920
+
+    def test_cmd_omits_flag_when_unset(self):
+        runner = _make_runner(QsfpTestRunner, {"filters": ["*Foo*"]})
+        assert "--test-run-timeout" not in runner.build_test_cmd("m4062nhp")
+
+    def test_cmd_carries_flag_when_set(self):
+        runner = _make_runner(QsfpTestRunner, {"filters": ["*Foo*"]})
+        runner._test_run_timeout_secs = 1920
+        assert "--test-run-timeout 1920" in runner.build_test_cmd("m4062nhp")
+
+    @pytest.mark.parametrize("runner_cls", [QsfpTestRunner, LinkTestRunner])
+    def test_cabling_aware_run_scales_flag_by_cabled_ports(self, runner_cls, tmp_path):
+        ports_info = {f"eth1/{i}/1": {"media_technology": "PASSIVE_CU"} for i in range(1, 129)}
+        runner, cabling_path = _make_cabling_runner(
+            runner_cls, tmp_path, "*PortStatus*", ports_info
+        )
+        cmds = []
+
+        def fake_execute(model, log_local, xml_local, skip_tr_xml):  # noqa: ARG001
+            cmds.append(runner.build_test_cmd(model))
+            return True
+
+        with patch.object(runner, "_prepare_pass"), \
+             patch.object(runner, "pre_test"), \
+             patch.object(runner, "post_test"), \
+             patch.object(runner, "_execute_test_binary", side_effect=fake_execute):
+            assert runner._run_cabling_aware(cabling_path, {}, skip_tr_xml=True) is True
+
+        assert cmds and all("--test-run-timeout 1920" in c for c in cmds)

@@ -109,6 +109,7 @@ class BaseHwTestRunner(ABC):
         self.tc = None
         self._use_generated_config = False
         self._fboss_logging = None
+        self._test_run_timeout_secs: int | None = None
 
     def _upload_generated_config(self, config: dict) -> None:
         with tempfile.NamedTemporaryFile("w", suffix=".materialized_JSON", delete=False) as f:
@@ -290,9 +291,11 @@ class BaseHwTestRunner(ABC):
     def build_test_cmd(self, model: str) -> str:
         test_args = self.test_args(model)
         logging_arg = f" --fboss_logging {self._fboss_logging}" if self._fboss_logging else ""
+        timeout = self._test_run_timeout_secs
+        timeout_arg = f" --test-run-timeout {timeout}" if timeout is not None else ""
         return (
             f"sudo su -c 'cd /opt/fboss && source ./bin/setup_fboss_env && "
-            f" ./bin/run_test.py {test_args} --filter_file={self.filter_filepath}{logging_arg} "
+            f" ./bin/run_test.py {test_args} --filter_file={self.filter_filepath}{logging_arg}{timeout_arg} "
             f"' > {self.testlog_filepath} 2>&1"
         )
 

@@ -30,6 +30,17 @@ def _load_json_pairs(path: str | None) -> dict[str, str]:
     return pairs
 
 
+# Per-gtest --test-run-timeout passed to run_test.py; the floor matches its
+# default. Tests that walk every transceiver twice (verifyResetControl) measure
+# ~10s per port, so 15s/port leaves 50% margin.
+_DEFAULT_TEST_RUN_TIMEOUT_SECS = 1200
+_TEST_RUN_TIMEOUT_PER_PORT_SECS = 15
+
+
+def _scaled_test_run_timeout(n_ports: int) -> int:
+    return max(_DEFAULT_TEST_RUN_TIMEOUT_SECS, _TEST_RUN_TIMEOUT_PER_PORT_SECS * n_ports)
+
+
 def _cage_of(port_name: str) -> str:
     """Transceiver cage a port name belongs to: eth1/25/5 -> eth1/25."""
     parts = port_name.split("/")
@@ -227,6 +238,10 @@ class CablingAwareRunnerMixin:
         # setup()/deploy already ran in the base run_test() before this call.
         model = normalize_model(self.tc["model"])
         all_ports, optics_ports, media_by_port = self._load_cabling(cabling_path)
+        self._test_run_timeout_secs = _scaled_test_run_timeout(len(all_ports))
+        logger.info(
+            "test-run-timeout %ds for %d cabled ports", self._test_run_timeout_secs, len(all_ports)
+        )
 
         gtest_filter = self.tc.get("gtest_filter")
         if gtest_filter:
