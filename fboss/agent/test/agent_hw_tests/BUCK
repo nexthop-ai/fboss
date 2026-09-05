@@ -312,6 +312,11 @@ cpp_library(
         "AgentTrunkLoadBalancerTests.cpp",
         "AgentTrunkTests.cpp",
         "AgentTunnelMgrTests.cpp",
+<<<<<<< HEAD
+=======
+        "nexthop_AgentClearPortStatsTests.cpp",
+        "nexthop_AgentPortPktCounterTests.cpp",
+>>>>>>> 45f1d8fbfe (NOS-15346: Clear egress queue stats for all port queues, not just the configured ones (#1902))
     ],
     headers = [
         "AgentArsBase.h",
