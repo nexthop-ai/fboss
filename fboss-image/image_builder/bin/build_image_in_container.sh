@@ -280,6 +280,7 @@ if [ -n "${BUILD_PXE}" ]; then
   (
     set -e -o pipefail
     kiwi-ng-3 \
+      --shared-cache-dir=/var/cache/kiwi-btrfs \
       --profile FBOSS \
       --type oem \
       ${KIWI_DEBUG} system build \
@@ -297,6 +298,7 @@ if [ -n "${BUILD_ONIE}" ]; then
   (
     set -e -o pipefail
     kiwi-ng-3 \
+      --shared-cache-dir=/var/cache/kiwi-onie \
       --profile FBOSS \
       --type tbz \
       ${KIWI_DEBUG} system build \
