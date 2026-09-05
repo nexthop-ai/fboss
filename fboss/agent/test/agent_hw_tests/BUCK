@@ -307,6 +307,7 @@ cpp_library(
         "AgentTrunkLoadBalancerTests.cpp",
         "AgentTrunkTests.cpp",
         "AgentTunnelMgrTests.cpp",
+        "nexthop_AgentClearPortStatsTests.cpp",
         "nexthop_AgentPortPktCounterTests.cpp",
     ],
     headers = [
