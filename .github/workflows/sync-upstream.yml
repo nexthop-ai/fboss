@@ -18,6 +18,7 @@ jobs:
       submodule_commit: ${{ steps.sync.outputs.submodule_commit }}
       push_direct: ${{ steps.sync.outputs.push_direct }}
       conflicting_files: ${{ steps.sync.outputs.conflicting_files }}
+      conflict_owners: ${{ steps.sync.outputs.conflict_owners }}
     steps:
       - name: Checkout repository
         uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
@@ -196,7 +197,15 @@ jobs:
         if: steps.check-existing-pr.outputs.existing_pr == ''
         env:
           GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          CONFLICT_OWNERS: ${{ needs.sync-upstream.outputs.conflict_owners }}
         run: |
+          # Annotate each conflicted file with its guessed owner (may be empty).
+          conflict_list=$(echo "${{ needs.sync-upstream.outputs.conflicting_files }}" |
+            while read -r f; do
+              login=$(echo "${CONFLICT_OWNERS:-null}" | jq -r --arg f "$f" '.[$f].login // empty')
+              echo "- [ ] $f${login:+ — @$login}"
+            done)
+
           PR_BODY="This PR syncs private-fboss with upstream stable commit.
 
           **Stable Commit:** \`${{ needs.sync-upstream.outputs.stable_commit }}\`
@@ -204,7 +213,7 @@ jobs:
           ⚠️ **Manual conflict resolution required**
 
           The following files have conflicts that need to be resolved:
-          $(echo "${{ needs.sync-upstream.outputs.conflicting_files }}" | sed 's/^/- [ ] /')
+          $conflict_list
 
           Please resolve these conflicts and merge when ready.
 
@@ -219,6 +228,14 @@ jobs:
             --assignee travisb-nexthop \
             --assignee hillol-nexthop)
           echo "PR created: $PR_URL"
+
+          # Also assign the guessed owners; gh silently drops
+          # non-collaborators, so a bad guess can't fail the job.
+          owners=$(echo "${CONFLICT_OWNERS:-null}" |
+            jq -r '[.[] | select(. != null) | .login] | unique | join(",")')
+          if [[ -n $owners ]]; then
+            gh pr edit "$PR_URL" --add-assignee "$owners" || true
+          fi
 
           echo "pr_created=true" >> "$GITHUB_OUTPUT"
           echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"

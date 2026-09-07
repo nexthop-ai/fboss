@@ -323,7 +323,8 @@ jobs:
                ':(top,exclude).github/scripts/nh-fix-merge-conflicts.py' \
                ':(top,exclude).github/scripts/rebase_upstream_pr.py' \
                ':(top,exclude).github/scripts/tests/test_rebase_upstream_pr.py' \
-               ':(top,exclude).github/scripts/reconcile-upstream-merges.py'; then
+               ':(top,exclude).github/scripts/reconcile-upstream-merges.py' \
+               ':(top,exclude).github/scripts/detect_conflict_owners.py'; then
             echo "❌ Leftover DON'T-MERGE marker found. Drop the reminder before merging."
             rc=1
           fi

@@ -105,6 +105,13 @@ else
     has_conflicts=true
     echo_info "⚠️ Some conflicts remain unresolved:"
     echo "$remaining_conflicts"
+
+    # Guess an owner per conflicted file (last real Nexthop author on our
+    # side) so the PR can be annotated and assigned to the right people.
+    conflict_owners=$(echo "$remaining_conflicts" |
+      xargs .github/scripts/detect_conflict_owners.py) ||
+      conflict_owners='{}'
+    echo_info "Conflict owners: $conflict_owners"
   fi
 
   git add -A
@@ -133,6 +140,8 @@ else
   echo "conflicting_files<<EOF" >>"$GITHUB_OUTPUT"
   echo "$remaining_conflicts" >>"$GITHUB_OUTPUT"
   echo "EOF" >>"$GITHUB_OUTPUT"
+  # Single-line JSON: {file: {email, name, login} | null}
+  echo "conflict_owners=$conflict_owners" >>"$GITHUB_OUTPUT"
 fi
 
 echo_info "✅ Sync script completed successfully"
