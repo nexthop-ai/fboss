@@ -25,9 +25,28 @@ using namespace facebook::fboss;
 
 class ConfigVlanSwitchportAccessTest : public Fboss2IntegrationTest {
  protected:
+<<<<<<< HEAD
   // 'switchport access vlan' writes to sw.ports[].ingressVlan in the running
   // config. show-interface's 'vlan' field is derived from a different source
   // (L3 interface / portID mapping), so is not a reliable read-back.
+=======
+  void SetUp() override {
+    Fboss2IntegrationTest::SetUp();
+    originalConfigJson_ = snapshotConfig();
+  }
+
+  void TearDown() override {
+    // Restoring the snapshot removes the VLAN and interface auto-created
+    // during the test. Warm boot cannot roll back deletions of hardware
+    // objects without hitting unclaimed warmboot handles in SaiStore, so
+    // request a disruptive restart (cold boot) to wipe ASIC state cleanly.
+    restoreConfig(
+        originalConfigJson_,
+        cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART);
+    Fboss2IntegrationTest::TearDown();
+  }
+
+>>>>>>> 8662455b19 (NO-NOS: [fboss2] Allow restoreConfig to escalate to cold boot and use in ConfigVlanSwitchportAccessTest (#1950))
   std::optional<int> getIngressVlan(const std::string& portName) const {
     auto config = getRunningConfig();
     const auto& sw = config["sw"];

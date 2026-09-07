@@ -16,6 +16,8 @@
 #include <utility>
 #include <vector>
 
+#include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
+
 namespace facebook::fboss {
 
 class PlatformMapping;
@@ -385,6 +387,35 @@ class Fboss2IntegrationTest : public ::testing::Test {
   void discardSession() const;
 
   /**
+<<<<<<< HEAD
+=======
+   * Serialize the system config (/etc/coop/agent.conf, which a fresh
+   * ConfigSession materializes). Snapshot in SetUp(), pass to
+   * restoreConfig() in TearDown() to leave the DUT as found even when a
+   * test fails mid-way.
+   */
+  std::string snapshotConfig() const;
+
+  /**
+   * Commit a snapshotConfig() snapshot back with an agent restart and wait
+   * for the agent. Goes through the ConfigSession API: commit() only
+   * restarts services for actions accumulated by saveConfig(), so a config
+   * written to the session file directly gets git-committed but never
+   * applied.
+   *
+   * Defaults to cli::ConfigActionLevel::SERVICE_RESTART (warm boot), but can
+   * be escalated to cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART (cold
+   * boot) for tests whose config changes remove hardware objects (such as
+   * VLANs or interfaces) that warm boot inherently cannot roll back without
+   * unclaimed warmboot handle failures.
+   */
+  void restoreConfig(
+      const std::string& configJson,
+      cli::ConfigActionLevel actionLevel =
+          cli::ConfigActionLevel::SERVICE_RESTART) const;
+
+  /**
+>>>>>>> 8662455b19 (NO-NOS: [fboss2] Allow restoreConfig to escalate to cold boot and use in ConfigVlanSwitchportAccessTest (#1950))
    * Wait until the FBOSS agent is responsive (ready to serve thrift requests).
    * Polls 'show interface' until it succeeds or timeout is reached.
    * Use this after triggering a warmboot or coldboot restart.

@@ -162,6 +162,164 @@ Fboss2IntegrationTest::Result Fboss2IntegrationTest::executeCliCommand(
   return Result{exitCode, capturedStdout.str(), capturedStderr.str()};
 }
 
+<<<<<<< HEAD
+=======
+Result shellCommand(const std::vector<std::string>& args) {
+  XLOG(INFO) << "Running command: " << folly::join(" ", args);
+
+  folly::Subprocess::Options options;
+  options.pipeStdout();
+  options.pipeStderr();
+
+  folly::Subprocess proc(args, options);
+  auto [stdout, stderr] = proc.communicate();
+  auto exitStatus = proc.wait().exitStatus();
+
+  return Result{exitStatus, stdout, stderr};
+}
+
+void discardSessionImpl() {
+  // NOLINTNEXTLINE(concurrency-mt-unsafe): HOME is read-only in practice
+  const char* home = std::getenv("HOME");
+  if (home == nullptr) {
+    XLOG(WARN) << "HOME environment variable not set, cannot discard session";
+    return;
+  }
+  fs::path sessionDir = fs::path(home) / ".fboss2";
+  fs::path sessionConfig = sessionDir / "agent.conf";
+  fs::path sessionMetadata = sessionDir / "cli_metadata.json";
+
+  std::error_code ec;
+  if (fs::exists(sessionConfig, ec)) {
+    XLOG(INFO) << "Discarding session config: " << sessionConfig.string();
+    fs::remove(sessionConfig, ec);
+    if (ec) {
+      XLOG(WARN) << "Failed to remove session config: " << ec.message();
+    }
+  }
+  if (fs::exists(sessionMetadata, ec)) {
+    XLOG(INFO) << "Discarding session metadata: " << sessionMetadata.string();
+    fs::remove(sessionMetadata, ec);
+    if (ec) {
+      XLOG(WARN) << "Failed to remove session metadata: " << ec.message();
+    }
+  }
+
+  // Reset the in-memory singleton so the next CLI command starts a fresh
+  // session from the current system config, not stale in-process state.
+  ConfigSession::resetInstance();
+}
+
+// Like Fboss2IntegrationTest::waitForAgentReady() but returns false on
+// timeout instead of failing the test, so the suite teardown can pick a
+// recovery strategy instead of failing outright.
+bool agentResponsive(std::chrono::seconds timeout = std::chrono::seconds(180)) {
+  // Poll-first: a responsive agent answers on the first iteration with no
+  // sleep at all. When it isn't responsive (typically mid-restart after a
+  // commit), retry every 10s until the deadline. Two expected failure modes
+  // while restarting:
+  // 1. "Connection refused"  — process not yet listening
+  // 2. "switch is still initializing" — process up, HW init in progress
+  // Both resolve naturally once the agent finishes warmboot/coldboot (~50s).
+  auto deadline = std::chrono::steady_clock::now() + timeout;
+  while (true) {
+    auto result = cliCommand({"show", "interface"});
+    if (result.exitCode == 0) {
+      XLOG(DBG1) << "Agent is ready";
+      return true;
+    }
+    if (std::chrono::steady_clock::now() >= deadline) {
+      return false;
+    }
+    XLOG(DBG1) << "Agent not ready: " << result.stderr;
+    XLOG(INFO) << "Agent not ready yet, retrying in 10s...";
+    // NOLINTNEXTLINE(facebook-hte-BadCall-sleep_for)
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+  }
+}
+
+void dumpAgentDiagnostics() {
+  // Print to std::cerr (not XLOG) so the dump is unconditional and not
+  // reordered/buffered by folly's async logger relative to the FAIL() output.
+  std::cerr << "=== Agent diagnostics (waitForAgentReady timed out) ==="
+            << std::endl;
+
+  for (const auto* unit : {"fboss_sw_agent", "fboss_hw_agent@0"}) {
+    std::cerr << "--- systemctl status " << unit << " ---" << std::endl;
+    auto status = shellCommand(
+        {"/usr/bin/systemctl", "--no-pager", "-l", "status", unit});
+    if (!status.stdout.empty()) {
+      std::cerr << status.stdout;
+    }
+    if (!status.stderr.empty()) {
+      std::cerr << status.stderr;
+    }
+  }
+
+  // Both fboss_sw_agent and fboss_hw_agent@0 are configured to append to
+  // /var/facebook/logs/fboss/wedge_agent.log (see fboss_sw_agent.service /
+  // fboss_hw_agent@.service). Tail enough lines to capture the start of the
+  // most recent boot.
+  constexpr auto kAgentLogPath = "/var/facebook/logs/fboss/wedge_agent.log";
+  constexpr auto kTailLines = "500";
+  std::cerr << "--- tail -n " << kTailLines << " " << kAgentLogPath << " ---"
+            << std::endl;
+  auto tail = shellCommand({"/usr/bin/tail", "-n", kTailLines, kAgentLogPath});
+  if (!tail.stdout.empty()) {
+    std::cerr << tail.stdout;
+  }
+  if (tail.exitCode != 0 && !tail.stderr.empty()) {
+    std::cerr << "tail stderr: " << tail.stderr;
+  }
+  std::cerr << "=== End agent diagnostics ===" << std::endl;
+}
+
+} // namespace
+
+void Fboss2IntegrationTest::SetUp() {
+  XLOG(INFO) << "Fboss2IntegrationTest::SetUp - starting CLI test";
+  // Discard any stale session from previous runs to ensure we start fresh
+  discardSession();
+  // Prior tests may have triggered a warm/coldboot; wait out any residual
+  // agent-initializing state before the test body starts talking to it.
+  waitForAgentReady();
+}
+
+void Fboss2IntegrationTest::TearDown() {
+  XLOG(INFO) << "Fboss2IntegrationTest::TearDown - cleaning up CLI test";
+}
+
+void Fboss2IntegrationTest::discardSession() const {
+  discardSessionImpl();
+}
+
+std::string Fboss2IntegrationTest::snapshotConfig() const {
+  discardSession();
+  auto snapshot = apache::thrift::SimpleJSONSerializer::serialize<std::string>(
+      ConfigSession::getInstance().getAgentConfig());
+  discardSession();
+  return snapshot;
+}
+
+void Fboss2IntegrationTest::restoreConfig(
+    const std::string& configJson,
+    cli::ConfigActionLevel actionLevel) const {
+  if (configJson.empty()) {
+    return;
+  }
+  discardSession();
+
+  XLOG(INFO) << "Restoring config snapshot...";
+  auto& session = ConfigSession::getInstance();
+  auto& config = session.getAgentConfig();
+  apache::thrift::SimpleJSONSerializer::deserialize(configJson, config);
+  session.saveConfig(cli::ServiceType::AGENT, actionLevel);
+  commitConfig();
+  waitForAgentReady();
+  XLOG(INFO) << "Config snapshot restored";
+}
+
+>>>>>>> 8662455b19 (NO-NOS: [fboss2] Allow restoreConfig to escalate to cold boot and use in ConfigVlanSwitchportAccessTest (#1950))
 Fboss2IntegrationTest::Result Fboss2IntegrationTest::runCli(
     const std::vector<std::string>& args) const {
   XLOG(INFO) << "Running CLI command: " << folly::join(" ", args);
