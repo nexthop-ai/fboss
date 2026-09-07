@@ -258,7 +258,9 @@ std::string Fboss2IntegrationTest::snapshotConfig() const {
   return snapshot;
 }
 
-void Fboss2IntegrationTest::restoreConfig(const std::string& configJson) const {
+void Fboss2IntegrationTest::restoreConfig(
+    const std::string& configJson,
+    cli::ConfigActionLevel actionLevel) const {
   if (configJson.empty()) {
     return;
   }
@@ -268,8 +270,7 @@ void Fboss2IntegrationTest::restoreConfig(const std::string& configJson) const {
   auto& session = ConfigSession::getInstance();
   auto& config = session.getAgentConfig();
   apache::thrift::SimpleJSONSerializer::deserialize(configJson, config);
-  session.saveConfig(
-      cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART);
+  session.saveConfig(cli::ServiceType::AGENT, actionLevel);
   commitConfig();
   waitForAgentReady();
   XLOG(INFO) << "Config snapshot restored";

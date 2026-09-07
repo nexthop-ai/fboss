@@ -30,7 +30,13 @@ class ConfigVlanSwitchportAccessTest : public Fboss2IntegrationTest {
   }
 
   void TearDown() override {
-    restoreConfig(originalConfigJson_);
+    // Restoring the snapshot removes the VLAN and interface auto-created
+    // during the test. Warm boot cannot roll back deletions of hardware
+    // objects without hitting unclaimed warmboot handles in SaiStore, so
+    // request a disruptive restart (cold boot) to wipe ASIC state cleanly.
+    restoreConfig(
+        originalConfigJson_,
+        cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART);
     Fboss2IntegrationTest::TearDown();
   }
 

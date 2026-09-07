@@ -16,6 +16,8 @@
 #include <utility>
 #include <vector>
 
+#include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
+
 namespace facebook::fboss {
 
 class PlatformMapping;
@@ -408,13 +410,22 @@ class Fboss2IntegrationTest : public ::testing::Test {
   std::string snapshotConfig() const;
 
   /**
-   * Commit a snapshotConfig() snapshot back with an agent warmboot and wait
+   * Commit a snapshotConfig() snapshot back with an agent restart and wait
    * for the agent. Goes through the ConfigSession API: commit() only
    * restarts services for actions accumulated by saveConfig(), so a config
    * written to the session file directly gets git-committed but never
    * applied.
+   *
+   * Defaults to cli::ConfigActionLevel::SERVICE_RESTART (warm boot), but can
+   * be escalated to cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART (cold
+   * boot) for tests whose config changes remove hardware objects (such as
+   * VLANs or interfaces) that warm boot inherently cannot roll back without
+   * unclaimed warmboot handle failures.
    */
-  void restoreConfig(const std::string& configJson) const;
+  void restoreConfig(
+      const std::string& configJson,
+      cli::ConfigActionLevel actionLevel =
+          cli::ConfigActionLevel::SERVICE_RESTART) const;
 
   /**
    * Wait until the FBOSS agent is responsive (ready to serve thrift requests).
