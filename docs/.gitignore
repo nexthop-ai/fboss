@@ -7,6 +7,7 @@
 # Generated files
 .docusaurus
 .cache-loader
+/fb/sdoc-cache.json
 
 # Misc
 .DS_Store
