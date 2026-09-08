@@ -116,6 +116,13 @@
               "csrOffsetCalc": "0x0048",
               "startPort": 33,
               "numPorts": 32
+            },
+            {
+              "pmUnitScopedNamePrefix": "SFP",
+              "deviceName": "xcvr_ctrl",
+              "csrOffsetCalc": "0x0",
+              "startPort": 65,
+              "numPorts": 2
             }
           ],
           "ledCtrlConfigs": [
@@ -151,18 +158,75 @@
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
               "deviceName": "port_led",
-              "csrOffsetCalc": "0x60 + (2 - {ledNum})*0x8",
-              "numPorts": 32,
-              "ledPerPort": 2,
+              "csrOffsetCalc": "0x60",
+              "numPorts": 8,
+              "ledPerPort": 1,
               "startPort": 1
             },
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
               "deviceName": "port_led",
-              "csrOffsetCalc": "0x64 + (2 - {ledNum})*0x8",
-              "numPorts": 32,
-              "ledPerPort": 2,
+              "csrOffsetCalc": "0x64",
+              "numPorts": 8,
+              "ledPerPort": 1,
+              "startPort": 9
+            },
+            {
+              "pmUnitScopedNamePrefix": "SMB_PORT_LED",
+              "deviceName": "port_led",
+              "csrOffsetCalc": "0x68",
+              "numPorts": 8,
+              "ledPerPort": 1,
+              "startPort": 17
+            },
+            {
+              "pmUnitScopedNamePrefix": "SMB_PORT_LED",
+              "deviceName": "port_led",
+              "csrOffsetCalc": "0x6c",
+              "numPorts": 8,
+              "ledPerPort": 1,
+              "startPort": 25
+            },
+            {
+              "pmUnitScopedNamePrefix": "SMB_PORT_LED",
+              "deviceName": "port_led",
+              "csrOffsetCalc": "0x70",
+              "numPorts": 8,
+              "ledPerPort": 1,
               "startPort": 33
+            },
+            {
+              "pmUnitScopedNamePrefix": "SMB_PORT_LED",
+              "deviceName": "port_led",
+              "csrOffsetCalc": "0x74",
+              "numPorts": 8,
+              "ledPerPort": 1,
+              "startPort": 41
+            },
+            {
+              "pmUnitScopedNamePrefix": "SMB_PORT_LED",
+              "deviceName": "port_led",
+              "csrOffsetCalc": "0x78",
+              "numPorts": 8,
+              "ledPerPort": 1,
+              "startPort": 49
+            },
+            {
+              "pmUnitScopedNamePrefix": "SMB_PORT_LED",
+              "deviceName": "port_led",
+              "csrOffsetCalc": "0x7c",
+              "numPorts": 8,
+              "ledPerPort": 1,
+              "startPort": 57
+            },
+            {
+              "pmUnitScopedNamePrefix": "MGMT_SFP_LED",
+              "deviceName": "port_led",
+              "csrOffsetCalc": "0x9c",
+              "numPorts": 2,
+              "ledPerPort": 1,
+              "lanesPerPort": 1,
+              "startPort": 65
             }
           ]
         }
@@ -384,10 +448,14 @@
     "/run/devmap/xcvrs/xcvr_io_63": "/SMB_SLOT@0/[SMB_OSFP_I2C_63]",
     "/run/devmap/xcvrs/xcvr_ctrl_63": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_63]",
     "/run/devmap/xcvrs/xcvr_io_64": "/SMB_SLOT@0/[SMB_OSFP_I2C_64]",
-    "/run/devmap/xcvrs/xcvr_ctrl_64": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_64]"
+    "/run/devmap/xcvrs/xcvr_ctrl_64": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_64]",
+    "/run/devmap/xcvrs/xcvr_io_65": "/SMB_SLOT@0/[SMB_MUX_2@2]",
+    "/run/devmap/xcvrs/xcvr_ctrl_65": "/SMB_SLOT@0/[SFP_XCVR_CTRL_PORT_65]",
+    "/run/devmap/xcvrs/xcvr_io_66": "/SMB_SLOT@0/[SMB_MUX_2@3]",
+    "/run/devmap/xcvrs/xcvr_ctrl_66": "/SMB_SLOT@0/[SFP_XCVR_CTRL_PORT_66]"
   },
   "chassisEepromDevicePath": "/[CHASSIS_EEPROM]",
-  "numXcvrs": 64,
+  "numXcvrs": 66,
   "bspKmodsRpmName": "nexthop_bsp_kmods",
   "bspKmodsRpmVersion": "1.0.0-1",
   "requiredKmodsToLoad": [

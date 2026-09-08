@@ -20,8 +20,6 @@ inline constexpr folly::StringPiece kPortMappingLadakh800bclsCsv{
     "Ladakh800bcls_BspMapping.csv"};
 inline constexpr folly::StringPiece kPortMappingNh4010fCsv{
     "Nh4010f_BspMapping.csv"};
-inline constexpr folly::StringPiece kPortMappingNh4220fCsv{
-    "Nh4220f_BspMapping.csv"};
 inline constexpr folly::StringPiece kPortMappingLeh800bclsCsv{
     "Leh800bcls_BspMapping.csv"};
 
