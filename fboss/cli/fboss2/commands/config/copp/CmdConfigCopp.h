@@ -12,19 +12,11 @@
 
 #include <algorithm>
 #include <cstdint>
-<<<<<<< HEAD
-||||||| be11fad19c
-=======
 #include <optional>
->>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
 #include <stdexcept>
 #include <string>
 #include <string_view>
-<<<<<<< HEAD
-||||||| be11fad19c
-=======
 #include <utility>
->>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
 #include <vector>
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/cli/fboss2/CmdHandler.h"
@@ -34,7 +26,6 @@
 
 namespace facebook::fboss {
 
-<<<<<<< HEAD
 // Shared vocabulary for the copp cpu-traffic-policy match-action commands,
 // used by both the `config` and `delete` command trees so the accepted
 // action-type tokens and the matcher lookup live in one place.
@@ -64,12 +55,7 @@ inline std::vector<cfg::MatchToAction>::iterator findMatchToAction(
 
 } // namespace copp_cpu_traffic_policy
 
-// Argument for `config copp cpu-queue <id> [<sub-cmd> <value>]`.
-||||||| be11fad19c
-// Argument for `config copp cpu-queue <id> [<sub-cmd> <value>]`.
-=======
 // Argument for `config copp queue <id> [<attr> <value> ...]`.
->>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
 //
 // Accepted forms (validated by CoppQueueArgs):
 //   <id>                         -> ensure queue <id> exists; creating a new
@@ -191,28 +177,12 @@ class CoppCpuTrafficPolicyArgs : public utils::BaseObjectArgType<std::string> {
 };
 
 // The `copp` parent node itself is not usable; it only exists to dispatch to
-<<<<<<< HEAD
-// cpu-queue, reason, and cpu-traffic-policy. The parent needs a handler
-// (rather than being a pure branch node) so that addCommandBranch()
-// increments depth before descending into the leaves — without that, the
-// children would all register their positional args at the same CmdArgsLists
-// slot, and CLI11 parsing collides with siblings of `config` whose names
-// happen to also be valid reason names (e.g. `arp`).
-||||||| be11fad19c
-// cpu-queue and reason. The parent needs a handler (rather than being a pure
-// branch node) so that addCommandBranch() increments depth before descending
-// into the leaves — without that, cpu-queue and reason would both register
-// their positional args at the same CmdArgsLists slot, and CLI11 parsing
-// collides with siblings of `config` whose names happen to also be valid
-// reason names (e.g. `arp`).
-=======
-// queue and reason. The parent needs a handler (rather than being a pure
-// branch node) so that addCommandBranch() increments depth before descending
-// into the leaves — without that, queue and reason would both register
-// their positional args at the same CmdArgsLists slot, and CLI11 parsing
-// collides with siblings of `config` whose names happen to also be valid
-// reason names (e.g. `arp`).
->>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
+// queue, reason, and cpu-traffic-policy. The parent needs a handler (rather
+// than being a pure branch node) so that addCommandBranch() increments depth
+// before descending into the leaves — without that, the children would all
+// register their positional args at the same CmdArgsLists slot, and CLI11
+// parsing collides with siblings of `config` whose names happen to also be
+// valid reason names (e.g. `arp`).
 struct CmdConfigCoppTraits : public WriteCommandTraits {
   using ObjectArgType = utils::NoneArgType;
   using RetType = std::string;
@@ -225,14 +195,8 @@ class CmdConfigCopp : public CmdHandler<CmdConfigCopp, CmdConfigCoppTraits> {
 
   RetType queryClient(const HostInfo& /* hostInfo */) {
     throw std::runtime_error(
-<<<<<<< HEAD
-        "Incomplete command, please use 'cpu-queue', 'reason', or "
+        "Incomplete command, please use 'queue', 'reason', or "
         "'cpu-traffic-policy' subcommand");
-||||||| be11fad19c
-        "Incomplete command, please use 'cpu-queue' or 'reason' subcommand");
-=======
-        "Incomplete command, please use 'queue' or 'reason' subcommand");
->>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
   }
 
   void printOutput(const RetType& /* model */) {}

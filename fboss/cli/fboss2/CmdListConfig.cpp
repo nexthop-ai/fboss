@@ -914,50 +914,6 @@ const CommandTree& kConfigCommandTree() {
 
       {
           "delete",
-<<<<<<< HEAD
-||||||| be11fad19c
-          "copp",
-          "Delete COPP (Control Plane Policing) configuration",
-          commandHandler<CmdDeleteCopp>,
-          argRegistrar<CmdDeleteCoppTraits>,
-          {{
-               "cpu-queue",
-               "Delete a CPU queue entry",
-               commandHandler<CmdDeleteCoppCpuQueue>,
-               argRegistrar<CmdDeleteCoppCpuQueueTraits>,
-           },
-           {
-               "reason",
-               "Delete a packet-rx reason to CPU queue mapping",
-               commandHandler<CmdDeleteCoppReason>,
-               argRegistrar<CmdDeleteCoppReasonTraits>,
-           }},
-      },
-
-      {
-          "delete",
-=======
-          "copp",
-          "Delete COPP (Control Plane Policing) configuration",
-          commandHandler<CmdDeleteCopp>,
-          argRegistrar<CmdDeleteCoppTraits>,
-          {{
-               "queue",
-               "Delete a CPU queue entry",
-               commandHandler<CmdDeleteCoppQueue>,
-               argRegistrar<CmdDeleteCoppQueueTraits>,
-           },
-           {
-               "reason",
-               "Delete a packet-rx reason to CPU queue mapping",
-               commandHandler<CmdDeleteCoppReason>,
-               argRegistrar<CmdDeleteCoppReasonTraits>,
-           }},
-      },
-
-      {
-          "delete",
->>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
           "dhcp",
           "Remove DHCP source-override settings",
           commandHandler<CmdDeleteDhcp>,
@@ -983,10 +939,10 @@ const CommandTree& kConfigCommandTree() {
           commandHandler<CmdDeleteCopp>,
           argRegistrar<CmdDeleteCoppTraits>,
           {{
-               "cpu-queue",
+               "queue",
                "Delete a CPU queue entry",
-               commandHandler<CmdDeleteCoppCpuQueue>,
-               argRegistrar<CmdDeleteCoppCpuQueueTraits>,
+               commandHandler<CmdDeleteCoppQueue>,
+               argRegistrar<CmdDeleteCoppQueueTraits>,
            },
            {
                "cpu-traffic-policy",

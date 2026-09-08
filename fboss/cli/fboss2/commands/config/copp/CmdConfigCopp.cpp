@@ -39,7 +39,7 @@ using copp_queue::parseQueueId;
 // Literal tokens accepted in
 // `config copp reason <reason-name> queue <id> [order <n>]`.
 constexpr std::string_view kSubCmdQueue = "queue";
-<<<<<<< HEAD
+constexpr std::string_view kSubCmdOrder = "order";
 
 // Literal tokens and action types accepted by
 // `config copp cpu-traffic-policy match <matcher-name> action <action-type>
@@ -54,104 +54,6 @@ using copp_cpu_traffic_policy::kActionUserDefinedTrap;
 // SetTcAction.tcValue is a thrift byte (int8_t); values above 127 wrap
 // negative. The real per-ASIC cap is enforced by the agent at apply time.
 constexpr int16_t kMaxTcValue = 127;
-
-int32_t parseRateMax(const std::string& s, std::string_view unit) {
-  int32_t parsed = 0;
-  try {
-    parsed = folly::to<int32_t>(s);
-  } catch (const folly::ConversionError&) {
-    throw std::invalid_argument(
-        fmt::format(
-            "rate-limit {} value must be an integer, got '{}'", unit, s));
-  }
-  if (parsed < 0) {
-    throw std::invalid_argument(
-        fmt::format(
-            "rate-limit {} value must be non-negative, got {}", unit, parsed));
-  }
-  return parsed;
-}
-
-// Find the cpuQueues[] entry with matching id, or append a fresh one.
-// A new entry uses thrift defaults (streamType=UNICAST, unset weight); this
-// is only reached when the user targets a queue id that does not exist yet
-// in the session config, which is rare in practice — platforms ship with a
-// populated cpuQueues list.
-cfg::PortQueue& findOrCreateCpuQueue(cfg::SwitchConfig& swConfig, int16_t id) {
-  auto& queues = *swConfig.cpuQueues();
-  auto it = copp_cpu_queue::findCpuQueue(queues, id);
-  if (it != queues.end()) {
-    return *it;
-  }
-  cfg::PortQueue q;
-  q.id() = id;
-  queues.push_back(q);
-  return queues.back();
-}
-
-void applyRateLimit(cfg::PortQueue& q, CoppCpuQueueArgs::Op op, int32_t max) {
-  cfg::Range range;
-  range.minimum() = 0;
-  range.maximum() = max;
-  cfg::PortQueueRate rate;
-  if (op == CoppCpuQueueArgs::Op::RATE_LIMIT_KBPS) {
-    rate.kbitsPerSec() = range;
-  } else {
-    rate.pktsPerSec() = range;
-  }
-  q.portQueueRate() = rate;
-}
-||||||| be11fad19c
-
-int32_t parseRateMax(const std::string& s, std::string_view unit) {
-  int32_t parsed = 0;
-  try {
-    parsed = folly::to<int32_t>(s);
-  } catch (const folly::ConversionError&) {
-    throw std::invalid_argument(
-        fmt::format(
-            "rate-limit {} value must be an integer, got '{}'", unit, s));
-  }
-  if (parsed < 0) {
-    throw std::invalid_argument(
-        fmt::format(
-            "rate-limit {} value must be non-negative, got {}", unit, parsed));
-  }
-  return parsed;
-}
-
-// Find the cpuQueues[] entry with matching id, or append a fresh one.
-// A new entry uses thrift defaults (streamType=UNICAST, unset weight); this
-// is only reached when the user targets a queue id that does not exist yet
-// in the session config, which is rare in practice — platforms ship with a
-// populated cpuQueues list.
-cfg::PortQueue& findOrCreateCpuQueue(cfg::SwitchConfig& swConfig, int16_t id) {
-  auto& queues = *swConfig.cpuQueues();
-  auto it = copp_cpu_queue::findCpuQueue(queues, id);
-  if (it != queues.end()) {
-    return *it;
-  }
-  cfg::PortQueue q;
-  q.id() = id;
-  queues.push_back(q);
-  return queues.back();
-}
-
-void applyRateLimit(cfg::PortQueue& q, CoppCpuQueueArgs::Op op, int32_t max) {
-  cfg::Range range;
-  range.minimum() = 0;
-  range.maximum() = max;
-  cfg::PortQueueRate rate;
-  if (op == CoppCpuQueueArgs::Op::RATE_LIMIT_KBPS) {
-    rate.kbitsPerSec() = range;
-  } else {
-    rate.pktsPerSec() = range;
-  }
-  q.portQueueRate() = rate;
-}
-=======
-constexpr std::string_view kSubCmdOrder = "order";
->>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
 
 } // namespace
 

@@ -567,7 +567,6 @@ TEST_F(CmdConfigCoppTestFixture, reason_preservesOrderingOnUpdate) {
   EXPECT_EQ(*list[2].queueId(), 0);
 }
 
-<<<<<<< HEAD
 // =============================================================
 // CoppCpuTrafficPolicyArgs validation tests
 // =============================================================
@@ -766,8 +765,8 @@ TEST_F(
   EXPECT_EQ(*matchToActions[0].matcher(), "acl-new");
   ASSERT_TRUE(matchToActions[0].action()->sendToQueue().has_value());
   EXPECT_EQ(*matchToActions[0].action()->sendToQueue()->queueId(), 2);
-||||||| be11fad19c
-=======
+}
+
 TEST_F(CmdConfigCoppTestFixture, reasonArgs_order) {
   CoppReasonArgs a({"arp", "queue", "9", "order", "0"});
   ASSERT_TRUE(a.getOrder().has_value());
@@ -847,7 +846,6 @@ TEST_F(CmdConfigCoppTestFixture, reason_orderOutOfRange) {
       cmd.queryClient(
           hostInfo, CoppReasonArgs({"bgp", "queue", "2", "order", "5"})),
       std::invalid_argument);
->>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
 }
 
 } // namespace facebook::fboss
