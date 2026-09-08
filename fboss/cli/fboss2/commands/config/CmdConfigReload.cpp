@@ -97,10 +97,12 @@ std::string performLocalRestart(cli::ConfigActionLevel level) {
       configJson, agentConfig);
 
   // FbossServiceUtil infers multi_switch mode and switch indices from the
-  // config; restartService() waits for each service to become active and
-  // throws std::runtime_error on timeout.
+  // config; restartService() waits for each service to become active, then for
+  // the agent to report itself configured, and throws std::runtime_error on
+  // timeout.
   FbossServiceUtil serviceUtil(agentConfig);
-  auto restarted = serviceUtil.restartService(cli::ServiceType::AGENT, level);
+  auto restarted = serviceUtil.restartService(
+      cli::ServiceType::AGENT, level, /*waitForReady=*/true);
 
   folly::StringPiece bootType =
       (level == cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART)

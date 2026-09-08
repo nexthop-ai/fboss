@@ -1795,7 +1795,9 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
     EXPECT_CALL(
         *mock,
         restartService(
-            cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
+            cli::ServiceType::AGENT,
+            cli::ConfigActionLevel::SERVICE_RESTART,
+            ::testing::_))
         .Times(1);
     session->setCommandLine(
         "config interface eth1/1/1 switchport access vlan 3000");
@@ -1815,7 +1817,9 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
     EXPECT_CALL(
         *mock,
         restartService(
-            cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
+            cli::ServiceType::AGENT,
+            cli::ConfigActionLevel::SERVICE_RESTART,
+            ::testing::_))
         .Times(1);
     std::string rollbackSha = session->rollback(localhost(), firstCommitSha);
     EXPECT_FALSE(rollbackSha.empty());
@@ -1833,7 +1837,9 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
     EXPECT_CALL(
         *mock,
         restartService(
-            cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
+            cli::ServiceType::AGENT,
+            cli::ConfigActionLevel::SERVICE_RESTART,
+            ::testing::_))
         .Times(1);
     // No-arg rollback: back to the "Second version" commit.
     std::string rollbackSha = session->rollback(localhost());
