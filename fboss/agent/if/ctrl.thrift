@@ -468,10 +468,6 @@ struct PortInfoThrift {
   // profile bound on an LLR-capable ASIC.
   35: optional hardware_stats.LlrTxStatus llrTxStatus;
   36: optional hardware_stats.LlrRxStatus llrRxStatus;
-<<<<<<< HEAD
-  37: optional i32 ingressVlan;
-||||||| be11fad19c
-=======
 
   // Lookup class assigned to packets ingressing on this port. Mirrors
   // switch_config.Port.userMetaData. Unset when the port has no class ID.
@@ -480,7 +476,8 @@ struct PortInfoThrift {
   // Ingress ACL table bound directly to this port. Mirrors
   // switch_config.Port.ingressAclTableName. Unset when no table is bound.
   38: optional string ingressAclTableName;
->>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
+
+  39: optional i32 ingressVlan;
 }
 
 // Port queueing configuration
