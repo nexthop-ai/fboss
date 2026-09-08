@@ -24,10 +24,13 @@ Then read only what the diff actually touches:
 
 # How to apply them
 
-Apply reviewers 1-5, plus the pattern rules and the architect reviewer that the table pulled in, serially in
-a single pass — there is no subagent fan-out in this environment.
+Subagent fan-out is disabled here (`Agent`/`Task` are denied tools), so run the reviewers yourself, one at a
+time, in the order the table above lists them. Do not merge them into one sweep: for each reviewer, take that
+persona alone and write out its findings — `file:line`, severity, one-line issue, confidence — before starting
+the next. A reviewer with nothing to say records "none". Reviewer N does not inherit reviewer N-1's
+conclusions, and "already covered above" is not a finding.
 
-Then apply `verifier.md` before writing any comment: deduplicate by `file:line`, calibrate confidence, honour
+Then apply `verifier.md` over that collected list: deduplicate by `file:line`, calibrate confidence, honour
 the anti-downgrade rules, drop `@generated` files and issues that pre-exist outside this diff, and
 **only comment on findings with final confidence >= 0.7**.
 
@@ -101,10 +104,27 @@ line-level commentary.
 - Provide specific, actionable feedback
 - Use inline comments for line-specific issues
 - Always submit the review, even when you have no inline comments, so the author gets explicit confirmation that the review ran
-- The review body is a terse report of what the review found, plus the inline comment count — at most ~10 words total. It is not a description of the PR, and never contains praise or adjectives about code quality. Examples:
+- The review body opens with a terse verdict line: what the review found plus the inline comment count, at most ~10 words. Not a description of the PR, and never praise or adjectives about code quality. Examples:
   - `LGTM.`
   - `Minor nits. Posted 3 comments.`
   - `Found an unhandled SAI error in the warmboot path. Posted 2 comments.`
-- If the review itself hit a problem (truncated diff, tool errors), note that briefly in the body instead
-- Put all detailed feedback in inline comments, never in the review body
+- Under the verdict, name the reviewers you ran (numbers from the dispatch table), then every finding that
+  cleared the verifier's 0.7 threshold, as a table:
+
+  | File:Line | Reviewer | Severity | Issue | Confidence |
+  |---|---|---|---|---|
+
+  One row per finding, not per inline comment. A finding with no line to anchor to — a stale PR
+  description, a file that should exist and does not, a whole-diff design judgment — still gets a row;
+  put `PR body`, `design`, or the nearest related path in the first column. Credit every reviewer that
+  found it, so a row two reviewers hit independently reads `5 + 10`. Sort by severity, then confidence.
+  The row is a pointer: the explanation and any code suggestion stay in the inline comment where there
+  is one. If nothing cleared 0.7, write `No findings >= 0.7.` and skip the table.
+- Then list what the verifier dropped, one line each:
+  `<file:line> — <issue> (reviewer <N>, <confidence before> -> <after>) — <why dropped>`.
+  Restrict it to findings a reader might otherwise expect to see flagged: pre-existing outside this diff,
+  an established pattern in the surrounding code (say how many nearby files share it), or simply below 0.7
+  after calibration. This is what shows the calibration actually ran, and it stops the next run re-raising
+  the same point. Omit the section entirely if nothing was dropped.
+- If the review itself hit a problem (truncated diff, tool errors), say so in the verdict line
 - Submit with the event type given in the submission instructions above; never use "REQUEST_CHANGES"
