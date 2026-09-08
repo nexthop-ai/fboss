@@ -1662,7 +1662,13 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
     EXPECT_CALL(
         *mock,
         restartService(
+<<<<<<< HEAD
             cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT))
+=======
+            cli::ServiceType::AGENT,
+            cli::ConfigActionLevel::SERVICE_RESTART,
+            ::testing::_))
+>>>>>>> f6d6211261 (NOS-10186: [fboss2] Wait for the agent to be configured after a restart (#1953))
         .Times(1);
     session->setCommandLine(
         "config interface eth1/1/1 switchport access vlan 3000");
@@ -1682,7 +1688,13 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
     EXPECT_CALL(
         *mock,
         restartService(
+<<<<<<< HEAD
             cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT))
+=======
+            cli::ServiceType::AGENT,
+            cli::ConfigActionLevel::SERVICE_RESTART,
+            ::testing::_))
+>>>>>>> f6d6211261 (NOS-10186: [fboss2] Wait for the agent to be configured after a restart (#1953))
         .Times(1);
     std::string rollbackSha = session->rollback(localhost(), firstCommitSha);
     EXPECT_FALSE(rollbackSha.empty());
@@ -1700,7 +1712,13 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
     EXPECT_CALL(
         *mock,
         restartService(
+<<<<<<< HEAD
             cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT))
+=======
+            cli::ServiceType::AGENT,
+            cli::ConfigActionLevel::SERVICE_RESTART,
+            ::testing::_))
+>>>>>>> f6d6211261 (NOS-10186: [fboss2] Wait for the agent to be configured after a restart (#1953))
         .Times(1);
     // No-arg rollback: back to the "Second version" commit.
     std::string rollbackSha = session->rollback(localhost());

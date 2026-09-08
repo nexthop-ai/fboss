@@ -11,9 +11,13 @@
 #include "fboss/cli/fboss2/session/FbossServiceUtil.h"
 
 #include <fmt/format.h>
+#include <folly/IPAddress.h>
 #include <folly/String.h>
+#include <folly/logging/xlog.h>
 #include <glog/logging.h>
+#include <chrono>
 #include <stdexcept>
+#include <thread>
 #include "fboss/agent/AgentDirectoryUtil.h"
 #include "fboss/agent/if/gen-cpp2/FbossCtrl.h"
 #include "fboss/cli/fboss2/session/SystemdInterface.h"
@@ -26,6 +30,34 @@ constexpr std::string_view kWedgeAgent = "wedge_agent";
 constexpr std::string_view kSwAgent = "fboss_sw_agent";
 constexpr std::string_view kHwAgentPrefix = "fboss_hw_agent@";
 constexpr std::string_view kBgpd = "bgpd";
+
+// Mirrors SwSwitch::isFullyConfigured(): every run state at or past CONFIGURED
+// except EXITING serves config RPCs, and that is the same predicate
+// ThriftHandler::ensureConfigured() gates on before throwing "switch is still
+// initializing or is exiting and is not fully configured yet".
+bool agentReportsReady() {
+  using namespace facebook::fboss;
+  // The services we restart are the local ones -- systemctl cannot reach any
+  // other machine -- so the agent to ask is always the local one, whatever
+  // host the command was aimed at.
+  static const HostInfo kLocalAgent{
+      "localhost", "localhost-oob", folly::IPAddress("127.0.0.1")};
+  try {
+    auto client =
+        utils::createClient<apache::thrift::Client<FbossCtrl>>(kLocalAgent);
+    auto runState = client->sync_getSwitchRunState();
+    return runState >= SwitchRunState::CONFIGURED &&
+        runState != SwitchRunState::EXITING;
+  } catch (const std::exception& ex) {
+    // Not listening yet, or listening but still initializing: both mean not
+    // ready, and both are expected for most of the restart window, so this is
+    // not surfaced to the operator. Logged at DBG2 so `--loglevel DBG2` shows
+    // what is being swallowed when a wait times out for a less ordinary
+    // reason.
+    XLOG(DBG2) << "Agent not ready yet (" << ex.what() << "), will retry";
+    return false;
+  }
+}
 } // namespace
 
 namespace facebook::fboss {
@@ -40,8 +72,17 @@ FbossServiceUtil::FbossServiceUtil(
 FbossServiceUtil::FbossServiceUtil(
     std::vector<int> switchIndexes,
     bool multiSwitch,
+<<<<<<< HEAD
     std::unique_ptr<SystemdInterface> systemd)
     : systemd_(std::move(systemd)),
+=======
+    std::unique_ptr<SystemdInterface> systemd,
+    AgentDirectoryUtil dirUtil,
+    AgentReadyProbe agentReadyProbe)
+    : systemd_(std::move(systemd)),
+      dirUtil_(std::move(dirUtil)),
+      agentReadyProbe_(std::move(agentReadyProbe)),
+>>>>>>> f6d6211261 (NOS-10186: [fboss2] Wait for the agent to be configured after a restart (#1953))
       switchIndexes_(std::move(switchIndexes)),
       multiSwitch_(multiSwitch) {}
 
@@ -166,6 +207,7 @@ std::vector<std::string> FbossServiceUtil::reloadConfig(
   return reloadedServices;
 }
 
+<<<<<<< HEAD
 std::vector<std::string> FbossServiceUtil::restartService(
     cli::ServiceType service,
     cli::ConfigActionLevel level) {
@@ -185,6 +227,52 @@ std::vector<std::string> FbossServiceUtil::restartService(
       restartType = "reload";
       break;
   }
+=======
+std::string FbossServiceUtil::restartTypeName(
+    cli::ServiceType service,
+    cli::ConfigActionLevel level) {
+  // The action level is generic; what it means is decided per service. Only
+  // the agent distinguishes a warmboot from a coldboot -- bgpd has neither, so
+  // every restart level is a plain restart for it.
+  switch (level) {
+    case cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART:
+      return service == cli::ServiceType::AGENT ? "coldboot" : "restart";
+    case cli::ConfigActionLevel::SERVICE_RESTART:
+      return service == cli::ServiceType::AGENT ? "warmboot" : "restart";
+    case cli::ConfigActionLevel::HITLESS:
+      // Not expected: HITLESS is applied via reloadConfig(), not restart.
+      return "reload";
+  }
+  return "restart";
+}
+
+void FbossServiceUtil::waitForAgentReady(
+    int maxWaitSeconds,
+    int pollIntervalMs) {
+  const auto& probe = agentReadyProbe_ ? agentReadyProbe_ : agentReportsReady;
+  int waitedMs = 0;
+
+  while (waitedMs < maxWaitSeconds * 1000) {
+    if (probe()) {
+      LOG(INFO) << "Agent is configured and serving";
+      return;
+    }
+    // NOLINTNEXTLINE(facebook-hte-BadCall-sleep_for)
+    std::this_thread::sleep_for(std::chrono::milliseconds(pollIntervalMs));
+    waitedMs += pollIntervalMs;
+  }
+
+  throw std::runtime_error(
+      fmt::format(
+          "Agent did not become configured within {} seconds", maxWaitSeconds));
+}
+
+std::vector<std::string> FbossServiceUtil::restartService(
+    cli::ServiceType service,
+    cli::ConfigActionLevel level,
+    bool waitForReady) {
+  const std::string restartType = restartTypeName(service, level);
+>>>>>>> f6d6211261 (NOS-10186: [fboss2] Wait for the agent to be configured after a restart (#1953))
 
   auto services = getServicesToRestart(service);
 
@@ -197,6 +285,14 @@ std::vector<std::string> FbossServiceUtil::restartService(
     performColdboot(services);
   } else {
     performWarmboot(services);
+  }
+
+  // The units are Type=simple, so systemd calls them active as soon as the
+  // binary is exec'd, well before the agent has read its config or programmed
+  // the ASIC. Only the agent itself knows when it can serve config RPCs, so
+  // ask it rather than returning on systemd state alone.
+  if (service == cli::ServiceType::AGENT && waitForReady) {
+    waitForAgentReady();
   }
 
   return services;

@@ -758,11 +758,18 @@ ConfigSession::applyServiceActions(
   std::map<cli::ServiceType, std::vector<std::string>> serviceNames;
   for (const auto& [service, level] : actions) {
     switch (level) {
+<<<<<<< HEAD
       case cli::ConfigActionLevel::AGENT_COLDBOOT:
       case cli::ConfigActionLevel::AGENT_WARMBOOT:
       case cli::ConfigActionLevel::BGP_RESTART:
         serviceNames[service] =
             fbossServiceUtil_->restartService(service, level);
+=======
+      case cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART:
+      case cli::ConfigActionLevel::SERVICE_RESTART:
+        serviceNames[service] = fbossServiceUtil_->restartService(
+            service, level, /*waitForReady=*/true);
+>>>>>>> f6d6211261 (NOS-10186: [fboss2] Wait for the agent to be configured after a restart (#1953))
         break;
       case cli::ConfigActionLevel::HITLESS:
         serviceNames[service] =
