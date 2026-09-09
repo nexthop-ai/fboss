@@ -300,6 +300,8 @@ class CablingAwareRunnerMixin:
                     self.tc["gtest_filter"] = filter_value
                 else:
                     self.tc["filters"] = filter_value
+                # The previous pass's run_test.py restarted the agents on exit.
+                self._wait_for_agent_settled()
                 self._prepare_pass(model, ports)
                 self.pre_test()  # fresh warm/cold-boot state wipe per pass
                 pre_test_called = True

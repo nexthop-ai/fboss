@@ -27,6 +27,28 @@ logger = logging.getLogger("test_runner")
 # run_test returns False.
 MIN_FAILURE_DURATION_SECS = 120
 
+# Cap on waiting for fboss_sw_agent to finish initializing; above the unit's
+# TimeoutStartSec of 180 s.
+AGENT_SETTLE_TIMEOUT_SECS = 240
+AGENT_SETTLE_POLL_SECS = 5
+
+
+_AGENT_STOPPED_STATES = {"inactive", "failed", "deactivating"}
+_AGENT_STARTING_STATES = {"activating", "reloading"}
+
+
+def _first_stdout_line(output: str) -> str:
+    """run_cmd interleaves stderr as 'stderr: ...' lines; skip those."""
+    for line in (output or "").splitlines():
+        if line.strip() and not line.startswith("stderr:"):
+            return line.strip()
+    return ""
+
+
+def remote_fboss_cmd(inner: str) -> str:
+    """Wrap a command so it runs as root with the FBOSS environment loaded."""
+    return f"sudo su -c 'cd /opt/fboss && source ./bin/setup_fboss_env && {inner}'"
+
 
 def _enforce_min_failure_duration(run_test):
     """Decorator: pad a failing run out to MIN_FAILURE_DURATION_SECS.
@@ -288,16 +310,58 @@ class BaseHwTestRunner(ABC):
     def post_test(self):
         pass
 
+    def _wait_for_agent_settled(
+        self,
+        timeout_s: int = AGENT_SETTLE_TIMEOUT_SECS,
+        poll_s: int = AGENT_SETTLE_POLL_SECS,
+    ) -> None:
+        """Wait until fboss_sw_agent is stopped or fully initialized.
+
+        Stopping the agent mid-init hangs until TimeoutStopSec and ends in
+        SIGKILL. systemd reports the unit active as soon as it execs, so
+        `fboss2 show product`, which fails until the switch is configured, is
+        the readiness check. Gives up after timeout_s with a warning.
+        """
+        started = time.monotonic()
+        deadline = started + timeout_s
+        while True:
+            rc, output = self.ssh_client.run_cmd("sudo systemctl is-active fboss_sw_agent")
+            state = _first_stdout_line(output)
+            if state in _AGENT_STOPPED_STATES:
+                logger.info(
+                    "fboss_sw_agent %s after %.0fs", state, time.monotonic() - started
+                )
+                return
+            if state == "active":
+                rc, _ = self.ssh_client.run_cmd(remote_fboss_cmd("fboss2 show product"))
+                if rc == 0:
+                    logger.info(
+                        "fboss_sw_agent initialized after %.0fs", time.monotonic() - started
+                    )
+                    return
+            elif state in _AGENT_STARTING_STATES:
+                logger.info("fboss_sw_agent %s, waiting", state)
+            else:
+                logger.warning(
+                    "could not read fboss_sw_agent state (rc=%s): %s", rc, (output or "").strip()
+                )
+            if time.monotonic() >= deadline:
+                logger.warning(
+                    "fboss_sw_agent still initializing after %ds; continuing", timeout_s
+                )
+                return
+            time.sleep(poll_s)
+
     def build_test_cmd(self, model: str) -> str:
         test_args = self.test_args(model)
         logging_arg = f" --fboss_logging {self._fboss_logging}" if self._fboss_logging else ""
         timeout = self._test_run_timeout_secs
         timeout_arg = f" --test-run-timeout {timeout}" if timeout is not None else ""
-        return (
-            f"sudo su -c 'cd /opt/fboss && source ./bin/setup_fboss_env && "
-            f" ./bin/run_test.py {test_args} --filter_file={self.filter_filepath}{logging_arg}{timeout_arg} "
-            f"' > {self.testlog_filepath} 2>&1"
+        inner = (
+            f" ./bin/run_test.py {test_args} --filter_file={self.filter_filepath}"
+            f"{logging_arg}{timeout_arg} "
         )
+        return f"{remote_fboss_cmd(inner)} > {self.testlog_filepath} 2>&1"
 
     @_enforce_min_failure_duration
     def run_test(self, test_context, skip_tr_xml=False, fboss_logging=None):
@@ -345,6 +409,7 @@ class BaseHwTestRunner(ABC):
 
         model = normalize_model(self.tc["model"])
 
+        self._wait_for_agent_settled()
         self.pre_test()
         try:
             success = self._execute_test_binary(
