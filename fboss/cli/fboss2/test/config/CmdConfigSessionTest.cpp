@@ -1821,17 +1821,9 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
     EXPECT_CALL(
         *mock,
         restartService(
-<<<<<<< HEAD
-<<<<<<< HEAD
             cli::ServiceType::AGENT,
             cli::ConfigActionLevel::SERVICE_RESTART,
             ::testing::_))
-||||||| parent of 2e3680b4be (AI conflict resolutions)
-<<<<<<< HEAD
-            cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
-=======
-            cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
->>>>>>> 2e3680b4be (AI conflict resolutions)
         .Times(1);
     session->setCommandLine(
         "config interface eth1/1/1 switchport access vlan 3000");
