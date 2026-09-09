@@ -22,7 +22,11 @@ std::optional<sai_attr_id_t>
 SaiNextHopGroupTraits::Attributes::AttributeSplitHorizonEnable::operator()() {
 #if defined(BRCM_SAI_SDK_GTE_13_0) && !defined(BRCM_SAI_SDK_GTE_14_0) && \
     defined(BRCM_SAI_SDK_XGS)
+  /* NH TODO: re-enable once sai_impl headers expose
+   * SAI_NEXT_HOP_GROUP_ATTR_SPLIT_HORIZON_ENABLE.
   return SAI_NEXT_HOP_GROUP_ATTR_SPLIT_HORIZON_ENABLE;
+  */
+  return std::nullopt;
 #else
   return std::nullopt;
 #endif

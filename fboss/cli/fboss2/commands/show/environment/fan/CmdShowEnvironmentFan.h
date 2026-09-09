@@ -22,7 +22,8 @@ namespace facebook::fboss {
  Define the traits of this command. This will include the inputs and output
  types
 */
-struct CmdShowEnvironmentFanTraits : public ReadCommandTraits {
+struct CmdShowEnvironmentFanTraits : public ReadCommandTraits,
+                                     public CliDocsExempt {
   static constexpr utils::ObjectArgTypeId ObjectArgTypeId =
       utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_NONE;
   using ObjectArgType = std::monostate;
