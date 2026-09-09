@@ -22,7 +22,7 @@ that is what the filters match. Naming that cannot be resolved statically, and
 any runner file left owning no test at all, are hard failures: both would
 otherwise make this check pass by looking at the wrong thing.
 
-Runs standalone from a checkout, and as //fboss/tests:filter_overlap_test in
+Runs standalone from a checkout, and as //fboss:filter_overlap_test in
 the Monobuild.
 """
 
@@ -36,7 +36,6 @@ import pathlib
 import re
 import sys
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
 
 GTEST_RE = re.compile(
     r"\b(TEST|TEST_F|TEST_P|TYPED_TEST|TYPED_TEST_P)\s*\(\s*"
@@ -72,11 +71,11 @@ UNTIERED_PRIORITY = 99
 @dataclass(frozen=True)
 class SuiteSpec:
     name: str
-    fixture_names: Tuple[str, ...]
-    source_dirs: Tuple[str, ...]
-    path_filter: Optional[str] = None
+    fixture_names: tuple[str, ...]
+    source_dirs: tuple[str, ...]
+    path_filter: str | None = None
     benchmark_mode: bool = False
-    untiered_files: Tuple[str, ...] = ()
+    untiered_files: tuple[str, ...] = ()
     supports_filters: bool = True
 
 
@@ -85,15 +84,15 @@ class RunnerFile:
     path: pathlib.Path
     relpath: str
     suite: str
-    filters: List[str]
-    includes: List[str]
-    excludes: List[str]
-    raw_matches: List[str]
-    current_matches: List[str]
+    filters: list[str]
+    includes: list[str]
+    excludes: list[str]
+    raw_matches: list[str]
+    current_matches: list[str]
     priority: int
 
 
-SUITES: Dict[str, SuiteSpec] = {
+SUITES: dict[str, SuiteSpec] = {
     "agent_hw": SuiteSpec(
         name="agent_hw",
         fixture_names=("sai_agent_test_runner",),
@@ -151,7 +150,7 @@ def is_repo_root(candidate: pathlib.Path) -> bool:
     ).is_dir()
 
 
-def resolve_repo_root(explicit: Optional[str]) -> pathlib.Path:
+def resolve_repo_root(explicit: str | None) -> pathlib.Path:
     """Locate the FBOSS repo root, or under bazel the runfiles copy of it."""
     if explicit:
         candidate = pathlib.Path(explicit)
@@ -168,15 +167,15 @@ def resolve_repo_root(explicit: Optional[str]) -> pathlib.Path:
         raise SystemExit(f"--repo-root {explicit} does not exist (cwd={os.getcwd()})")
 
     here = pathlib.Path(__file__).resolve()
-    for candidate in [here.parent] + list(here.parents):
+    for candidate in [here.parent, *here.parents]:
         if is_repo_root(candidate):
             return candidate
     raise SystemExit("Could not infer FBOSS repo root from script location")
 
 
-def split_filters(filters: List[str]) -> Tuple[List[str], List[str]]:
-    includes: List[str] = []
-    excludes: List[str] = []
+def split_filters(filters: list[str]) -> tuple[list[str], list[str]]:
+    includes: list[str] = []
+    excludes: list[str] = []
     in_exclusions = False
     for item in filters:
         if item.startswith("-"):
@@ -189,7 +188,7 @@ def split_filters(filters: List[str]) -> Tuple[List[str], List[str]]:
     return includes, excludes
 
 
-def extract_filters_from_test_context(tree: ast.AST) -> Optional[List[str]]:
+def extract_filters_from_test_context(tree: ast.AST) -> list[str] | None:
     for node in ast.walk(tree):
         if not isinstance(node, ast.Assign):
             continue
@@ -197,11 +196,11 @@ def extract_filters_from_test_context(tree: ast.AST) -> Optional[List[str]]:
             if isinstance(target, ast.Name) and target.id == "test_context":
                 if not isinstance(node.value, ast.Dict):
                     continue
-                for key, value in zip(node.value.keys, node.value.values):
+                for key, value in zip(node.value.keys, node.value.values, strict=True):
                     if isinstance(key, ast.Constant) and key.value == "filters":
                         if not isinstance(value, ast.List):
                             return None
-                        out: List[str] = []
+                        out: list[str] = []
                         for elt in value.elts:
                             if not isinstance(elt, ast.Constant) or not isinstance(
                                 elt.value, str
@@ -212,7 +211,7 @@ def extract_filters_from_test_context(tree: ast.AST) -> Optional[List[str]]:
     return None
 
 
-def extract_fixture_name(tree: ast.AST) -> Optional[str]:
+def extract_fixture_name(tree: ast.AST) -> str | None:
     for node in ast.walk(tree):
         if isinstance(node, ast.FunctionDef) and node.name.startswith("test_"):
             arg_names = [arg.arg for arg in node.args.args]
@@ -222,7 +221,7 @@ def extract_fixture_name(tree: ast.AST) -> Optional[str]:
     return None
 
 
-def parse_runner_file(pyfile: pathlib.Path) -> Optional[Tuple[str, List[str]]]:
+def parse_runner_file(pyfile: pathlib.Path) -> tuple[str, list[str]] | None:
     try:
         text = pyfile.read_text(encoding="utf-8")
     except OSError:
@@ -269,7 +268,7 @@ def iter_source_files(repo: pathlib.Path, spec: SuiteSpec):
 _NESTING = {"(": ")", "[": "]", "{": "}", "<": ">"}
 
 
-def match_block(text: str, open_idx: int, opener: str, closer: str) -> Optional[str]:
+def match_block(text: str, open_idx: int, opener: str, closer: str) -> str | None:
     """Contents of the balanced block whose opener sits at text[open_idx]."""
     depth = 0
     for idx in range(open_idx, len(text)):
@@ -283,10 +282,10 @@ def match_block(text: str, open_idx: int, opener: str, closer: str) -> Optional[
     return None
 
 
-def split_top_level(inner: str) -> List[str]:
+def split_top_level(inner: str) -> list[str]:
     """Split a macro or template argument list on its depth-0 commas."""
-    parts: List[str] = []
-    current: List[str] = []
+    parts: list[str] = []
+    current: list[str] = []
     depth = 0
     for char in inner:
         if char in _NESTING:
@@ -309,13 +308,13 @@ class SuiteNaming:
     """How gtest spells the concrete instances of one test suite."""
 
     kind: str  # "typed" or "param"
-    suffixes: Tuple[str, ...]
+    suffixes: tuple[str, ...]
     prefix: str = ""
 
 
-def types_alias_arity(text: str) -> Dict[str, int]:
+def types_alias_arity(text: str) -> dict[str, int]:
     """Map ``using X = testing::Types<...>`` aliases to their type count."""
-    arity: Dict[str, int] = {}
+    arity: dict[str, int] = {}
     for match in TYPES_ALIAS_RE.finditer(text):
         inner = match_block(text, match.end() - 1, "<", ">")
         if inner is not None:
@@ -323,7 +322,7 @@ def types_alias_arity(text: str) -> Dict[str, int]:
     return arity
 
 
-def param_values(args: List[str]) -> Tuple[List[str], str]:
+def param_values(args: list[str]) -> tuple[list[str], str]:
     """Values an INSTANTIATE_*_P generator expands to, or ([], why-not)."""
     if len(args) < 3:
         return [], "malformed INSTANTIATE, fewer than 3 arguments"
@@ -341,7 +340,7 @@ def param_values(args: List[str]) -> Tuple[List[str], str]:
     return values, ""
 
 
-def param_suffixes(args: List[str]) -> Tuple[Optional[Tuple[str, ...]], str]:
+def param_suffixes(args: list[str]) -> tuple[tuple[str, ...] | None, str]:
     """Suffixes gtest appends per value of an INSTANTIATE_*_P, or (None, why)."""
     values, reason = param_values(args)
     if not values:
@@ -351,7 +350,7 @@ def param_suffixes(args: List[str]) -> Tuple[Optional[Tuple[str, ...]], str]:
         return tuple(str(idx) for idx in range(len(values))), ""
     if not ENUM_NAME_GEN_RE.search(args[3]):
         return None, "name generator is not the enumNameSafe(info.param) idiom"
-    names: List[str] = []
+    names: list[str] = []
     for value in values:
         enum_match = QUALIFIED_ENUM_RE.match(value)
         if not enum_match:
@@ -361,8 +360,8 @@ def param_suffixes(args: List[str]) -> Tuple[Optional[Tuple[str, ...]], str]:
 
 
 def collect_suite_naming(
-    texts: Dict[str, str],
-) -> Tuple[Dict[str, SuiteNaming], Dict[str, str]]:
+    texts: dict[str, str],
+) -> tuple[dict[str, SuiteNaming], dict[str, str]]:
     """Resolve instantiation naming per suite; returns (naming, why-not).
 
     Type aliases are file-local by convention -- several files declare their
@@ -370,12 +369,12 @@ def collect_suite_naming(
     fall back to a repo-wide alias when its arity is unambiguous.
     """
     alias_by_file = {rel: types_alias_arity(text) for rel, text in texts.items()}
-    global_alias: Dict[str, set] = {}
+    global_alias: dict[str, set] = {}
     for aliases in alias_by_file.values():
         for alias, count in aliases.items():
             global_alias.setdefault(alias, set()).add(count)
 
-    def arity(rel: str, alias: str) -> Tuple[Optional[int], str]:
+    def arity(rel: str, alias: str) -> tuple[int | None, str]:
         local = alias_by_file[rel].get(alias)
         if local is not None:
             return local, ""
@@ -386,8 +385,8 @@ def collect_suite_naming(
             return None, f"type list {alias} has ambiguous arity {sorted(counts)}"
         return next(iter(counts)), ""
 
-    naming: Dict[str, SuiteNaming] = {}
-    unresolved: Dict[str, str] = {}
+    naming: dict[str, SuiteNaming] = {}
+    unresolved: dict[str, str] = {}
     for rel, text in texts.items():
         for match in TYPED_SUITE_RE.finditer(text):
             suite, alias = match.group(1), match.group(2)
@@ -423,7 +422,7 @@ def collect_suite_naming(
     return naming, unresolved
 
 
-def instance_names(suite: str, test: str, spelling: SuiteNaming) -> List[str]:
+def instance_names(suite: str, test: str, spelling: SuiteNaming) -> list[str]:
     if spelling.kind == "typed":
         prefix = f"{spelling.prefix}/" if spelling.prefix else ""
         return [f"{prefix}{suite}/{sfx}.{test}" for sfx in spelling.suffixes]
@@ -432,7 +431,7 @@ def instance_names(suite: str, test: str, spelling: SuiteNaming) -> List[str]:
 
 def scrape_concrete_tests(
     repo: pathlib.Path, spec: SuiteSpec
-) -> Tuple[List[str], List[str]]:
+) -> tuple[list[str], list[str]]:
     """Concrete gtest names for a suite, plus unresolvable-naming complaints.
 
     Typed and parameterized tests are not named ``Suite.Test`` at run time:
@@ -442,7 +441,7 @@ def scrape_concrete_tests(
     spelling -- otherwise a filter like ``*AgentCoppTest/0*`` silently matches
     nothing and the runner looks like it owns no tests.
     """
-    texts: Dict[str, str] = {}
+    texts: dict[str, str] = {}
     for path in iter_source_files(repo, spec):
         try:
             texts[path.relative_to(repo).as_posix()] = path.read_text(
@@ -459,7 +458,7 @@ def scrape_concrete_tests(
         return sorted(names), []
 
     naming, unresolved = collect_suite_naming(texts)
-    unnamed: Dict[str, str] = {}
+    unnamed: dict[str, str] = {}
     for text in texts.values():
         for match in GTEST_RE.finditer(text):
             macro, suite, test = match.group(1), match.group(2), match.group(3)
@@ -480,23 +479,23 @@ def scrape_concrete_tests(
     return sorted(names), complaints
 
 
-def match_any(test_name: str, patterns: List[str]) -> bool:
+def match_any(test_name: str, patterns: list[str]) -> bool:
     return any(fnmatch.fnmatchcase(test_name, pat) for pat in patterns)
 
 
 def apply_filters(
-    includes: List[str], excludes: List[str], tests: List[str]
-) -> Tuple[List[str], List[str]]:
+    includes: list[str], excludes: list[str], tests: list[str]
+) -> tuple[list[str], list[str]]:
     raw = [t for t in tests if match_any(t, includes)]
     current = [t for t in raw if not match_any(t, excludes)]
     return raw, current
 
 
 def collect_runners(
-    repo: pathlib.Path, suite_tests: Dict[str, List[str]]
-) -> Tuple[Dict[str, List[RunnerFile]], List[str]]:
-    by_suite: Dict[str, List[RunnerFile]] = {name: [] for name in SUITES}
-    skipped: List[str] = []
+    repo: pathlib.Path, suite_tests: dict[str, list[str]]
+) -> tuple[dict[str, list[RunnerFile]], list[str]]:
+    by_suite: dict[str, list[RunnerFile]] = {name: [] for name in SUITES}
+    skipped: list[str] = []
     for pyfile in sorted((repo / "tests").rglob("*.py")):
         if pyfile.name in {"__init__.py", "conftest.py"}:
             continue
@@ -531,7 +530,7 @@ def collect_runners(
 
 
 def classify_suite(
-    spec: SuiteSpec, runners: List[RunnerFile], tests: List[str]
+    _spec: SuiteSpec, runners: list[RunnerFile], tests: list[str]
 ) -> dict:
     tiered = [r for r in runners if r.priority != UNTIERED_PRIORITY]
     untiered = [r for r in runners if r.priority == UNTIERED_PRIORITY]
@@ -621,16 +620,16 @@ def print_suite_report(spec: SuiteSpec, result: dict) -> int:
 
 def check_inputs_present(
     repo: pathlib.Path,
-    by_suite: Dict[str, List[RunnerFile]],
-    suite_tests: Dict[str, List[str]],
-) -> List[str]:
+    by_suite: dict[str, list[RunnerFile]],
+    suite_tests: dict[str, list[str]],
+) -> list[str]:
     """Guard against silently checking nothing.
 
     Under bazel the inputs are whatever the BUILD file declared as data. A
     missing source dir or runner file would otherwise turn this into a test
     that passes because it looked at an empty tree.
     """
-    problems: List[str] = []
+    problems: list[str] = []
     for suite_name, spec in SUITES.items():
         if not spec.supports_filters:
             continue

@@ -1,3 +1,4 @@
+load("@rules_python//python:defs.bzl", "py_test")
 load("@rules_shell//shell:sh_library.bzl", "sh_library")
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//fboss:bootstrap_agent_configs.bzl", "register_bootstrap_agent_config_tests")
@@ -22,7 +23,7 @@ filegroup(
 )
 
 # C++ sources whose TEST/TEST_F/... names the runner filters in tests/ select
-# over. Must stay in sync with SUITES in tests/check_test_filter_overlap.py;
+# over. Must stay in sync with SUITES in fboss/oss/scripts/check_test_filter_overlap.py;
 # that script fails if a configured suite scrapes zero test names.
 filegroup(
     name = "hw_test_gtest_srcs",
@@ -39,6 +40,20 @@ filegroup(
         "fboss/qsfp_service/test/hw_test/**/*.cpp",
         "fboss/qsfp_service/test/hw_test/**/*.h",
     ]),
+)
+
+# Build-time lint over the tests/ runner filters against hw_test_gtest_srcs.
+# Lives in this package because fboss/oss/scripts must not become its own
+# Bazel package: the genrules below reference its files by label directly.
+py_test(
+    name = "filter_overlap_test",
+    srcs = ["fboss/oss/scripts/check_test_filter_overlap.py"],
+    args = ["--repo-root=fboss"],
+    data = [
+        ":hw_test_gtest_srcs",
+        "//fboss/tests:runner_py_srcs",
+    ],
+    main = "fboss/oss/scripts/check_test_filter_overlap.py",
 )
 
 filegroup(

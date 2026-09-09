@@ -1,22 +1,15 @@
-load("@rules_python//python:defs.bzl", "py_library", "py_test")
+load("@rules_python//python:defs.bzl", "py_library")
 load("//bazel_lib:pytest.bzl", "run_all_pytests")
 
 # Test runner runs within the nhtests-run environment, use the same python libs
 _PIP = "@nhtools_itests_pip//"
 
-# Runner filter lists live in this package; the gtest names they select over
-# come from //fboss:hw_test_gtest_srcs. Both are declared so bazel re-runs the
-# check when either side changes -- the script must not reach outside runfiles,
-# hence the explicit --repo-root.
-py_test(
-    name = "filter_overlap_test",
-    srcs = ["check_test_filter_overlap.py"],
-    args = ["--repo-root=fboss"],
-    data = glob(
-        ["**/*.py"],
-        exclude = ["check_test_filter_overlap.py"],
-    ) + ["//fboss:hw_test_gtest_srcs"],
-    main = "check_test_filter_overlap.py",
+# Runner files whose test_context["filters"] are checked by
+# //fboss:filter_overlap_test.
+filegroup(
+    name = "runner_py_srcs",
+    srcs = glob(["**/*.py"]),
+    visibility = ["//fboss:__pkg__"],
 )
 
 # The runner package under test, plus the tests.libs.device SSH/SCP helpers it
