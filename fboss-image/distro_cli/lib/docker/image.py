@@ -138,6 +138,12 @@ def _get_image_build_timestamp(image_tag: str) -> int | None:
         return None
 
 
+# Checksum reported by the production short-circuit in _should_build_image():
+# the image already tagged :latest (loaded by bazel) is used as-is, so there is
+# no checksum-tagged image to activate.
+NO_CHECKSUM = "Not computed"
+
+
 def _should_build_image(root_dir: Path, production: bool = True) -> tuple[bool, str, str]:
     """Determine if the fboss_builder image should be rebuilt.
 
@@ -161,7 +167,7 @@ def _should_build_image(root_dir: Path, production: bool = True) -> tuple[bool, 
                 ],
             )
             if result.returncode == 0:
-                return False, "Not computed", "Trust in bazel"
+                return False, NO_CHECKSUM, "Trust in bazel"
         except subprocess.CalledProcessError:
             pass
 
@@ -222,20 +228,21 @@ def build_fboss_builder_image() -> None:
     should_build, checksum, reason = _should_build_image(root_dir)
 
     if not should_build:
-        try:
-            subprocess.run(
-                [
-                    "docker",
-                    "tag",
-                    f"{FBOSS_BUILDER_IMAGE}:{checksum}",
-                    f"{FBOSS_BUILDER_IMAGE}:latest",
-                ],
-                check=True,
-            )
-        except subprocess.CalledProcessError as e:
-            raise RuntimeError(
-                f"Failed to activate cached {FBOSS_BUILDER_IMAGE} image: {e}"
-            ) from e
+        if checksum != NO_CHECKSUM:
+            try:
+                subprocess.run(
+                    [
+                        "docker",
+                        "tag",
+                        f"{FBOSS_BUILDER_IMAGE}:{checksum}",
+                        f"{FBOSS_BUILDER_IMAGE}:latest",
+                    ],
+                    check=True,
+                )
+            except subprocess.CalledProcessError as e:
+                raise RuntimeError(
+                    f"Failed to activate cached {FBOSS_BUILDER_IMAGE} image: {e}"
+                ) from e
         logger.info(
             f"{FBOSS_BUILDER_IMAGE} image with checksum {checksum[:12]} "
             f"{reason}, skipping build"

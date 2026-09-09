@@ -6,7 +6,11 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from distro_cli.lib.docker.image import _should_build_image, build_fboss_builder_image
+from distro_cli.lib.docker.image import (
+    NO_CHECKSUM,
+    _should_build_image,
+    build_fboss_builder_image,
+)
 
 
 class TestShouldBuildImage(unittest.TestCase):
@@ -121,6 +125,19 @@ class TestBuildFbossBuilderImage(unittest.TestCase):
             RuntimeError, "Failed to activate cached fboss_builder image"
         ):
             build_fboss_builder_image()
+
+    @patch("distro_cli.lib.docker.image.get_abs_path")
+    @patch("distro_cli.lib.docker.image._should_build_image")
+    @patch("distro_cli.lib.docker.image.subprocess.run")
+    def test_trusted_latest_image_is_not_retagged(
+        self, mock_run, mock_should_build, mock_get_abs_path
+    ):
+        mock_get_abs_path.return_value = Path(__file__)
+        mock_should_build.return_value = (False, NO_CHECKSUM, "Trust in bazel")
+
+        build_fboss_builder_image()
+
+        mock_run.assert_not_called()
 
 
 if __name__ == "__main__":
