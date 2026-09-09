@@ -1822,9 +1822,16 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
         *mock,
         restartService(
 <<<<<<< HEAD
+<<<<<<< HEAD
             cli::ServiceType::AGENT,
             cli::ConfigActionLevel::SERVICE_RESTART,
             ::testing::_))
+||||||| parent of 2e3680b4be (AI conflict resolutions)
+<<<<<<< HEAD
+            cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
+=======
+            cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
+>>>>>>> 2e3680b4be (AI conflict resolutions)
         .Times(1);
     session->setCommandLine(
         "config interface eth1/1/1 switchport access vlan 3000");
@@ -1867,52 +1874,6 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
             cli::ServiceType::AGENT,
             cli::ConfigActionLevel::SERVICE_RESTART,
             ::testing::_))
-        .Times(1);
-    // No-arg rollback: back to the "Second version" commit.
-    std::string rollbackSha = session->rollback(localhost());
-    EXPECT_FALSE(rollbackSha.empty());
-  }
-||||||| be11fad19c
-=======
-            cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT))
-        .Times(1);
-    session->setCommandLine(
-        "config interface eth1/1/1 switchport access vlan 3000");
-    (*session->getAgentConfig().sw()->ports())[0].description() =
-        "Second version";
-    session->saveConfig(
-        cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT);
-    ASSERT_FALSE(session->commit(localhost()).commitSha.empty());
-  }
-
-  // Rollback to the first commit: this undoes the warmboot-level change, so it
-  // must warmboot-restart the agent. reloadConfig() must NOT be called (the
-  // StrictMock enforces this).
-  {
-    MockFbossServiceUtil* mock = nullptr;
-    auto session = makeSession(mock);
-    EXPECT_CALL(
-        *mock,
-        restartService(
-            cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT))
-        .Times(1);
-    std::string rollbackSha = session->rollback(localhost(), firstCommitSha);
-    EXPECT_FALSE(rollbackSha.empty());
-  }
-
-  // Rollback forward to the pre-rollback state (undoing the rollback commit)
-  // crosses the same warmboot-level change again, so it too must restart the
-  // agent. This exercises the rollback commit recording the action level it
-  // applied.
-  std::string headBeforeSecondRollback;
-  {
-    MockFbossServiceUtil* mock = nullptr;
-    auto session = makeSession(mock);
-    headBeforeSecondRollback = session->getGit().getHead();
-    EXPECT_CALL(
-        *mock,
-        restartService(
-            cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT))
         .Times(1);
     // No-arg rollback: back to the "Second version" commit.
     std::string rollbackSha = session->rollback(localhost());
@@ -1972,7 +1933,6 @@ TEST_F(ConfigSessionTestFixture, rollbackRejectsUnreadableTargetMetadata) {
   EXPECT_EQ(git().getHead(), headBeforeRollback);
   EXPECT_EQ(readFile(cliConfigPath), configBeforeRollback);
   EXPECT_EQ(readFile(metadataPath), metadataBeforeRollback);
->>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
 }
 
 } // namespace facebook::fboss
