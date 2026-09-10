@@ -28,6 +28,16 @@
         {
           "test_name_regex": "ConfigAclRuleTest\\.SetVlan$"
         }
+    ],
+    "wedge800cact/leaba-25.11.4210": [
+        {
+          "test_name_regex": "ConfigLoadBalancingTest\\.EcmpHashAlgorithm$"
+        }
+    ],
+    "wedge800cnhp/leaba-25.11.4210": [
+        {
+          "test_name_regex": "ConfigLoadBalancingTest\\.EcmpHashAlgorithm$"
+        }
     ]
   }
 }
