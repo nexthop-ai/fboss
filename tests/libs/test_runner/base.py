@@ -356,7 +356,10 @@ class BaseHwTestRunner(ABC):
         test_args = self.test_args(model)
         logging_arg = f" --fboss_logging {self._fboss_logging}" if self._fboss_logging else ""
         timeout = self._test_run_timeout_secs
-        timeout_arg = f" --test-run-timeout {timeout}" if timeout is not None else ""
+        if timeout is None and self.tc:
+            # Per-file override from test_context (run_test.py defaults to 1200 s).
+            timeout = self.tc.get("test_run_timeout")
+        timeout_arg = f" --test-run-timeout {int(timeout)}" if timeout is not None else ""
         inner = (
             f" ./bin/run_test.py {test_args} --filter_file={self.filter_filepath}"
             f"{logging_arg}{timeout_arg} "

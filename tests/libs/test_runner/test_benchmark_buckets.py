@@ -91,6 +91,22 @@ def test_build_test_cmd_passes_filter_file(runner_cls):
     assert f"--filter_file={runner.filter_filepath}" in cmd
 
 
+def test_build_test_cmd_passes_test_context_timeout():
+    runner = BenchmarkTestRunner()
+    runner.tc = {"model": "nhbw800f", "filters": ["*SystemScale*"]}
+    assert "--test-run-timeout" not in runner.build_test_cmd("nhbw800f")
+    runner.tc["test_run_timeout"] = 2400
+    assert "--test-run-timeout 2400" in runner.build_test_cmd("nhbw800f")
+    # A runner-computed budget (cabling) still wins over the file's value.
+    runner._test_run_timeout_secs = 1920
+    assert "--test-run-timeout 1920" in runner.build_test_cmd("nhbw800f")
+
+
+def test_memory_scale_bucket_declares_timeout():
+    ctx = load_test_context(str(_BENCH_DIR / "memory_scale_benchmarks.py"))
+    assert ctx["test_run_timeout"] > 1200
+
+
 @pytest.mark.parametrize("runner_cls", (BenchmarkTestRunner, QsfpBenchmarkTestRunner))
 def test_set_filters_is_inherited(runner_cls, tmp_path):
     # The old override was a no-op returning True without writing anything.
