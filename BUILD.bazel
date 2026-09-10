@@ -223,6 +223,7 @@ filegroup(
         "build/**",
         "cmake/**",
         "common/**",
+        "fboss/configs/**",
         # fboss code needed for platform stack
         "fboss/fsdb/**",
         "fboss/lib/**",
@@ -292,6 +293,7 @@ filegroup(
         "build/**", # Avoid dot files, especially .sccache to which bazel doesn't have permission
         "cmake/**",
         "common/**",
+        "fboss/configs/**",
         # fboss code needed for forwarding stack
         "fboss/agent/**",
         "fboss/cli/**",
