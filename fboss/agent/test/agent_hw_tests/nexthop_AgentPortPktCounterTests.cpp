@@ -33,6 +33,23 @@ class AgentPortPktCounterTest : public AgentHwTest {
     return std::nullopt;
   }
 
+  cfg::SwitchConfig initialConfig(
+      const AgentEnsemble& ensemble) const override {
+    auto config = AgentHwTest::initialConfig(ensemble);
+    auto asic = ensemble.getSw()->getHwAsicTable()->getHwAsic(
+        getSwitchIdUnderTest(ensemble));
+    // MAC loopback on BRCM does not exercise the RX classification path that
+    // backs the per packet type counters.
+    if (asic->getAsicVendor() == HwAsic::AsicVendor::ASIC_VENDOR_BCM) {
+      for (auto& port : *config.ports()) {
+        if (port.portType() == cfg::PortType::INTERFACE_PORT) {
+          port.loopbackMode() = cfg::PortLoopbackMode::PHY;
+        }
+      }
+    }
+    return config;
+  }
+
  protected:
   std::vector<PortID> portsUnderTest() const {
     return FLAGS_hyper_port ? masterLogicalHyperPortIds()
