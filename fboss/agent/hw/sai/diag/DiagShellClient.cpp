@@ -10,7 +10,6 @@
 
 #include "fboss/agent/FbossEventBase.h"
 #include "fboss/agent/hw/sai/switch/gen-cpp2/SaiCtrlAsyncClient.h"
-#include "folly/Memory.h"
 
 #include <folly/Exception.h>
 #include <folly/FileUtil.h>
@@ -25,8 +24,8 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <atomic>
 #include <csignal>
-#include <iostream>
 #include <thread>
 
 DEFINE_string(host, "::1", "The host to connect to");
@@ -90,6 +89,7 @@ const IPAddress getIPFromHost(const std::string& hostname) {
   return IPAddress();
 }
 
+<<<<<<< HEAD
 void subscribeToDiagShell(folly::EventBase* evb, const IPAddress& ip) {
   auto client = utility::getStreamingClient(evb, ip, FLAGS_port);
   auto responseAndStream = client->sync_startDiagShell();
@@ -122,14 +122,68 @@ void subscribeToDiagShell(folly::EventBase* evb, const IPAddress& ip) {
           })
       .detach();
   evb->loop();
+=======
+void subscribeToDiagShell(
+    folly::EventBase* evb,
+    const IPAddress& ip,
+    std::atomic<bool>* shouldStop,
+    std::atomic<bool>* streamLost) {
+  auto client = utility::getStreamingClient(evb, ip, FLAGS_port);
+  try {
+    // startDiagShell throws if another client holds the shell or the switch
+    // is not ready; catch it so the client exits instead of terminating.
+    auto responseAndStream = client->sync_startDiagShell();
+    folly::writeFull(
+        STDOUT_FILENO,
+        responseAndStream.response.c_str(),
+        responseAndStream.response.size());
+    std::move(responseAndStream.stream)
+        .subscribeExTry(
+            evb,
+            [evb, shouldStop, streamLost](auto&& t) {
+              if (t.hasValue()) {
+                const auto& shellOut = t.value();
+                folly::writeFull(
+                    STDOUT_FILENO, shellOut.c_str(), shellOut.size());
+                return;
+              }
+              if (shouldStop->load()) {
+                // User quit / Ctrl-C: the stream ending is expected.
+                evb->terminateLoopSoon();
+                return;
+              }
+              // Server closed the stream (agent restart/shutdown, idle
+              // timeout): stop the stdin loop so the user gets their shell
+              // back instead of a REPL that errors on every keystroke.
+              // N.B., can't use folly logging, because it messes with the
+              // terminal mode such that backspace, ctrl+D, etc.. don't seem
+              // to work anymore.
+              if (t.hasException()) {
+                LOG(ERROR) << "diag shell session ended: "
+                           << folly::exceptionStr(std::move(t.exception()));
+              } else {
+                LOG(INFO) << "diag shell session ended: stream completed";
+              }
+              *streamLost = true;
+              *shouldStop = true;
+              evb->terminateLoopSoon();
+            })
+        .detach();
+    evb->loop();
+  } catch (const std::exception& e) {
+    LOG(ERROR) << "failed to start diag shell: " << e.what();
+    *streamLost = true;
+    *shouldStop = true;
+  }
+>>>>>>> 00ac9f61e0 (NOS-12890: keep diag_shell alive past 60s and exit the client on disconnect (#1924))
 }
 
 void handleStdin(
     folly::EventBase* evb,
     const IPAddress& ip,
-    const bool* shouldStop) {
+    std::atomic<bool>* shouldStop) {
   auto client = utility::getStreamingClient(evb, ip, FLAGS_port);
-  ssize_t nread;
+  ssize_t nread = 0;
   constexpr ssize_t bufSize = 512;
   std::array<char, bufSize> buf;
   auto ci = getClientInformation();
@@ -142,7 +196,8 @@ void handleStdin(
     if (select(STDIN_FILENO + 1, &readSet, nullptr, nullptr, &timeout) > 0) {
       if ((nread = ::read(STDIN_FILENO, buf.data(), bufSize)) < 0) {
         folly::throwSystemError("failed to read from stdin");
-      } else if (nread == 0) {
+      } else if (nread == 0 || *shouldStop) {
+        *shouldStop = true; // stdin EOF (Ctrl-D)
         break;
       } else {
         std::string input(buf.data(), nread);
@@ -153,6 +208,7 @@ void handleStdin(
         }
         // When user enters quit, finish the stdin thread
         if (input.find("quit") == 0 || *shouldStop) {
+          *shouldStop = true;
           break;
         }
       }
@@ -166,7 +222,7 @@ void handleStdin(
 
 class SignalHandler : public AsyncSignalHandler {
  public:
-  SignalHandler(folly::EventBase* eventBase, bool* shouldStop)
+  SignalHandler(folly::EventBase* eventBase, std::atomic<bool>* shouldStop)
       : AsyncSignalHandler(eventBase), shouldStop_(shouldStop) {
     registerSignalHandler(SIGINT);
     registerSignalHandler(SIGTERM);
@@ -177,7 +233,7 @@ class SignalHandler : public AsyncSignalHandler {
   }
 
  private:
-  bool* shouldStop_;
+  std::atomic<bool>* shouldStop_;
 };
 
 } // namespace
@@ -204,7 +260,9 @@ int main(int argc, char* argv[]) {
   facebook::fboss::FbossEventBase streamEvb{"DiagShellClientStreamEventBase"};
   facebook::fboss::FbossEventBase stdinEvb{"DiagShellClientStdinEventBase"};
 
-  bool stopThread = false;
+  std::atomic<bool> stopThread{false};
+  // Set when the server ended the session (vs. user quit / Ctrl-C).
+  std::atomic<bool> streamLost{false};
   // Converts the host to IP address if a hostname is given
   IPAddress hostIP = getIPFromHost(FLAGS_host);
   // No host given
@@ -214,8 +272,14 @@ int main(int argc, char* argv[]) {
   }
 
   LOG(INFO) << "Connecting to: " << hostIP;
+<<<<<<< HEAD
   std::thread streamT(
       [&streamEvb, &hostIP]() { subscribeToDiagShell(&streamEvb, hostIP); });
+=======
+  std::thread streamT([&streamEvb, &hostIP, &stopThread, &streamLost]() {
+    subscribeToDiagShell(&streamEvb, hostIP, &stopThread, &streamLost);
+  });
+>>>>>>> 00ac9f61e0 (NOS-12890: keep diag_shell alive past 60s and exit the client on disconnect (#1924))
 
   std::thread readStdinT([&stdinEvb, &hostIP, &stopThread]() {
     handleStdin(&stdinEvb, hostIP, &stopThread);
@@ -226,7 +290,7 @@ int main(int argc, char* argv[]) {
   readStdinT.join();
   streamEvb.terminateLoopSoon();
   streamT.join();
-  // call exit(0) otherwise EventBase destructor will be hanging due to active
+  // call exit() otherwise EventBase destructor will be hanging due to active
   // client/connection. Without this, we need multiple Ctrl+C to terminate
-  exit(0);
+  exit(streamLost ? 1 : 0);
 }
