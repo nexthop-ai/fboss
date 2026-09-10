@@ -108,9 +108,20 @@ else
 
     # Guess an owner per conflicted file (last real Nexthop author on our
     # side) so the PR can be annotated and assigned to the right people.
-    conflict_owners=$(echo "$remaining_conflicts" |
-      xargs .github/scripts/detect_conflict_owners.py) ||
-      conflict_owners='{}'
+    # The detector lives in nh and is shared with sync-upstream.reusable.yml;
+    # fetch it from nh main rather than keeping a copy here. Best-effort:
+    # any failure degrades to the bare file list.
+    conflict_owners='{}'
+    detector=$(mktemp)
+    if gh api repos/nexthop-ai/nh/contents/.github/scripts/detect_conflict_owners.py \
+      --jq .content | base64 -d >"$detector"; then
+      chmod +x "$detector"
+      conflict_owners=$(echo "$remaining_conflicts" | xargs "$detector") ||
+        conflict_owners='{}'
+    else
+      echo_info "Could not fetch detect_conflict_owners.py from nh; skipping owner detection"
+    fi
+    rm -f "$detector"
     echo_info "Conflict owners: $conflict_owners"
   fi
 

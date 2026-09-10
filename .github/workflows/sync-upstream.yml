@@ -35,6 +35,9 @@ jobs:
 
       - name: Run sync script
         id: sync
+        env:
+          # Read access to nh for the shared conflict-owner detector.
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
         run: |
           .github/scripts/sync_upstream.sh
 
