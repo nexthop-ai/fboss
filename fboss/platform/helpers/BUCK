@@ -106,6 +106,7 @@ cpp_library(
 )
 
 # bazelify: add_src = oss/Init.cpp
+# bazelify: extra_dep = //common/fb303/cpp:fb303
 # bazelify: extra_dep = //fboss/lib:thrift_service_utils
 cpp_library(
     name = "init",
@@ -144,6 +145,7 @@ cpp_library(
 
 # bazelify: add_src = oss/Init.cpp
 # bazelify: extra_dep = @fbthrift//:fbthrift
+# bazelify: extra_dep = //common/fb303/cpp:fb303
 # bazelify: extra_dep = //fboss/lib:thrift_service_utils
 cpp_library(
     name = "init_cli",

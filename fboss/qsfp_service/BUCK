@@ -130,7 +130,6 @@ cpp_library(
     ],
 )
 
-# bazelify: add_src = oss/StatsPublisher.cpp
 cpp_library(
     name = "stats",
     srcs = [
