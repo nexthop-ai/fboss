@@ -104,16 +104,19 @@ jobs:
         run: |
           set -uo pipefail
 
-          # The single place the pool list lives; the product name doubles
-          # as the display name in the wait job's polling log.
+          # The single place the pool list lives, as SKU:department. The SKU
+          # doubles as the display name in the wait job's polling log. SKUs,
+          # not codenames: a codename is not unique (Wedge800BACT and
+          # NH-BW800-F both resolve to CrownedEagle) and the scheduler's
+          # product lookup is exact, so the old upper-case wedge names 404.
           POOLS=(
-            GoldenEagle320
-            WEDGE800BACT
-            WEDGE800CACT
-            MINIPACK3
-            CrownedEagle
-            FriscoEagle
-            StellerEagle
+            NH-4010-F:software      # GoldenEagle320
+            Wedge800BACT:software
+            Wedge800CACT:software
+            Minipack3:software
+            NH-BW800-F:software     # CrownedEagle
+            NH-CW800-F:software     # FriscoEagle
+            NH-4215-F:prototype     # StellerEagle
           )
 
           map_file=".nh-batch-cache/batches.json"
@@ -126,7 +129,9 @@ jobs:
           echo "scheduled_new=false" >> "$GITHUB_OUTPUT"
 
           batches='[]'
-          for product in "${POOLS[@]}"; do
+          for entry in "${POOLS[@]}"; do
+            product=${entry%%:*}
+            department=${entry##*:}
             batch_id=$(jq -r --arg p "$product" '.[$p] // empty' "$map_file")
             if [[ "$batch_id" =~ ^[0-9]+$ ]] && [[ "$batch_id" -ne 0 ]]; then
               echo "♻️ ${product}: reusing already-scheduled batch ${batch_id}"
@@ -146,12 +151,14 @@ jobs:
               # Smoke tests only need single-DUT testbeds.
               CMD="$CMD --attribute dut_count=1"
               CMD="$CMD --product $product"
-              CMD="$CMD --department software"
+              CMD="$CMD --department $department"
 
               exit_code=0
               output=$($CMD 2>&1) || exit_code=$?
 
-              batch_id=$(echo "$output" | grep "Batch ID:" | awk '{print $3}')
+              # `|| true`: under pipefail a missing "Batch ID:" line would
+              # otherwise kill the step here, before the error below prints.
+              batch_id=$(echo "$output" | grep "Batch ID:" | awk '{print $3}' || true)
 
               if [[ ${exit_code:-0} -ne 0 ]] || ! [[ "$batch_id" =~ ^[0-9]+$ ]] || [[ "$batch_id" -eq 0 ]]; then
                 echo "⚠️ ${product}: schedule failed."
