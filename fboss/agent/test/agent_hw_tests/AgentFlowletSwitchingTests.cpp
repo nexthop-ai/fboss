@@ -112,10 +112,13 @@ class AgentFlowletAclPriorityTest : public AgentFlowletSwitchingTest {
 
   enum class ExpectedHit { RoceAck, Flowlet, RoceSprayMiss, Cancel };
 
-  AclCounters readCounters() {
-    auto read = [this](AclType aclType) {
+  AclCounters readCounters(bool waitForStats = false) {
+    auto read = [this, waitForStats](AclType aclType) {
+      const auto& counterName = getCounterName(aclType);
       return static_cast<int64_t>(
-          utility::getAclInOutPackets(getSw(), getCounterName(aclType)));
+          waitForStats
+              ? utility::waitForAndGetAclInOutPackets(getSw(), counterName)
+              : utility::getAclInOutPackets(getSw(), counterName));
     };
     return AclCounters{
         .roceAck = read(AclType::UDF_ACK),
@@ -159,7 +162,7 @@ class AgentFlowletAclPriorityTest : public AgentFlowletSwitchingTest {
   // an over-matching entry is caught.
   void
   runStep(int roceOpcode, uint8_t bthReserved, int l4DstPort, ExpectedHit hit) {
-    auto before = readCounters();
+    auto before = readCounters(true /*waitForStats*/);
 
     sendRoceTraffic(
         helper_->ecmpPortDescriptorAt(kFrontPanelPortForTest).phyPortID(),
