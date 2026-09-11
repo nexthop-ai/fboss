@@ -47,6 +47,10 @@ common_overrides: |
   CONFIG_I2C_XILINX=m
   CONFIG_GPIO_PCI_IDIO_16=m
 
+  # IPMI over I2C (SSIF) to the BMC; ACPI IPI0001 SSIF node binds it on the
+  # DesignWare I2C controller. ipmi_ssif depends on IPMI_HANDLER (=m) and I2C (=y).
+  CONFIG_IPMI_SSIF=m
+
 
 # Kernel version overrides
 # Add kernel version as key, then add config lines in the value
