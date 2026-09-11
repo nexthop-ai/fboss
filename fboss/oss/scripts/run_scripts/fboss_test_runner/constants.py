@@ -118,7 +118,7 @@ _SAI_AGENT_DISABLE_SERVICES = ["fboss_sw_agent", "fboss_hw_agent@0", "bgpd"]
 
 # Shared by SAI hw_test and link binaries: prod agents hold port 5909 /
 # the SAI device; qsfp_service holds the transceivers.
-_SAI_DISABLE_SERVICES = ["fboss_sw_agent", "fboss_hw_agent@0", "qsfp_service"]
+_SAI_DISABLE_SERVICES = ["fboss_sw_agent", "fboss_hw_agent@0", "qsfp_service", "bgpd"]
 
 TEST_DISABLE_SERVICES = {
     # qsfp_hw_test has its own qsfp_service and must own the xcvr i2c bus, but
@@ -128,7 +128,9 @@ TEST_DISABLE_SERVICES = {
         "led_service",
         "fboss_sw_agent",
         "fboss_hw_agent@0",
+        "bgpd",
     ],
+    SUB_ARG_LED_HW_TEST: ["bgpd"],
     SUB_ARG_BSP_HW_TEST: ["fan_service", "qsfp_service", "led_service"],
     SUB_ARG_PLATFORM_MANAGER_HW_TEST: [
         "platform_manager",
