@@ -10,6 +10,7 @@
 
 #include "fboss/agent/hw/sai/switch/SaiAclTableManager.h"
 #include "fboss/agent/hw/sai/store/SaiStore.h"
+#include "fboss/agent/hw/sai/switch/SaiAclTableGroupManager.h"
 #include "fboss/agent/hw/sai/switch/SaiManagerTable.h"
 #include "fboss/agent/hw/sai/switch/SaiPortManager.h"
 #include "fboss/agent/hw/sai/switch/SaiSwitchManager.h"
@@ -183,8 +184,12 @@ std::
     pair<SaiAclTableTraits::AdapterHostKey, SaiAclTableTraits::CreateAttributes>
     SaiAclTableManager::aclTableCreateAttributes(
         sai_acl_stage_t aclStage,
-        const std::shared_ptr<AclTable>& addedAclTable) {
-  std::vector<sai_int32_t> bindPointList{SAI_ACL_BIND_POINT_TYPE_SWITCH};
+        const std::shared_ptr<AclTable>& addedAclTable,
+        cfg::AclTableGroupBindPoint bindPoint) {
+  std::vector<sai_int32_t> bindPointList{
+      bindPoint == cfg::AclTableGroupBindPoint::PORT
+          ? SAI_ACL_BIND_POINT_TYPE_PORT
+          : SAI_ACL_BIND_POINT_TYPE_SWITCH};
   SaiAclTableTraits::Attributes::Stage tableStage = aclStage;
 
   auto actionTypeList = getActionTypeList(addedAclTable);
@@ -218,6 +223,11 @@ std::
       qualifierExistsFn(cfg::AclTableQualifier::IP_PROTOCOL_NUMBER) ||
       ((isQumran3d || isQumran4d || isJericho4) &&
        qualifierExistsFn(cfg::AclTableQualifier::IPV6_NEXT_HEADER));
+  std::optional<SaiAclTableTraits::Attributes::FieldPortUserMeta>
+      fieldPortUserMeta;
+  if (qualifierExistsFn(cfg::AclTableQualifier::LOOKUP_CLASS_PORT)) {
+    fieldPortUserMeta = SaiAclTableTraits::Attributes::FieldPortUserMeta{true};
+  }
 
   std::vector<std::optional<sai_object_id_t>> udfGroupIds(
       SaiAclTableManager::kMaxUdfGroups, std::nullopt);
@@ -280,7 +290,7 @@ std::
       udfGroupIds[3], // UserDefinedFieldGroupMin3
       udfGroupIds[4], // UserDefinedFieldGroupMin4
 #endif
-      std::nullopt, // port meta
+      fieldPortUserMeta,
   };
 
   SaiAclTableTraits::AdapterHostKey adapterHostKey{addedAclTable->getID()};

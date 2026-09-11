@@ -29,7 +29,16 @@ from fboss.platform.firmware_onboarding.validator.preflight import (
     run_preflight,
 )
 
+<<<<<<< HEAD
 _CANONICAL_PLATFORMS: list[str] = ["icecube800bc", "m4062nhp"]
+||||||| be11fad19c
+
+_CANONICAL_PLATFORMS: list[str] = [
+    "icecube800bc",
+]
+=======
+_CANONICAL_PLATFORMS: list[str] = ["icecube800bc", "icecube800banw"]
+>>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
 
 
 class CanonicalExamplesTest(unittest.TestCase):

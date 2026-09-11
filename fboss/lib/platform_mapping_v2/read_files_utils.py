@@ -529,8 +529,16 @@ def read_si_settings(
             tcvr_override_setting=tcvr_setting,
         )
 
+<<<<<<< HEAD
         tx_kwargs: dict[str, Any] = {}
         if chip.core_type == CoreType.G200:
+||||||| be11fad19c
+        tx_kwargs: Dict[str, Any] = {}
+        if chip.core_type == CoreType.G200:
+=======
+        tx_kwargs: Dict[str, Any] = {}
+        if chip.core_type in (CoreType.G200, CoreType.P200):
+>>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
             # pyrefly: ignore [missing-attribute]
             if "TX_PRE3" in column_names and row[Column.TX_PRE3]:
                 # pyrefly: ignore [missing-attribute]

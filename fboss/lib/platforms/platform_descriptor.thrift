@@ -26,8 +26,14 @@ struct PlatformDescriptor {
   3: list<string> modeNames;
   4: switch_config.AsicType asicType;
   5: map<string, bool> variantAttributes;
+<<<<<<< HEAD
   // When set, this descriptor applies only to systems whose chassis EEPROM
   // matches one of the listed versions. Descriptors without any selector act
   // as the default for their platformType.
   6: optional list<PmUnitVersionMatch> pmUnitVersions;
+||||||| be11fad19c
+=======
+  // Number of physical switching ASICs in the platform.
+  6: i16 numSwitchAsics = 1;
+>>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
 }

@@ -8,7 +8,7 @@
  *
  */
 
-#include "fboss/cli/fboss2/commands/delete/copp/cpu_queue/CmdDeleteCoppCpuQueue.h"
+#include "fboss/cli/fboss2/commands/delete/copp/queue/CmdDeleteCoppQueue.h"
 
 #include "fboss/cli/fboss2/CmdHandler.cpp"
 
@@ -32,9 +32,19 @@ namespace facebook::fboss {
 namespace {
 
 // Collect human-readable descriptions of every config entry that still
+<<<<<<< HEAD:fboss/cli/fboss2/commands/delete/copp/cpu_queue/CmdDeleteCoppCpuQueue.cpp
 // points at cpu-queue `queueId`: rxReason -> queue mappings (both the
 // ordered list and the deprecated map form) and matchToAction actions
 // carrying a queue id (send-to-queue, user-defined-trap).
+||||||| be11fad19c:fboss/cli/fboss2/commands/delete/copp/cpu_queue/CmdDeleteCoppCpuQueue.cpp
+// points at cpu-queue `queueId`: rxReason -> queue mappings and
+// matchToAction actions carrying a queue id (send-to-queue,
+// user-defined-trap).
+=======
+// points at queue `queueId`: rxReason -> queue mappings and
+// matchToAction actions carrying a queue id (send-to-queue,
+// user-defined-trap).
+>>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6:fboss/cli/fboss2/commands/delete/copp/queue/CmdDeleteCoppQueue.cpp
 std::vector<std::string> findQueueReferences(
     const cfg::SwitchConfig& swConfig,
     int16_t queueId) {
@@ -86,16 +96,16 @@ std::vector<std::string> findQueueReferences(
 
 } // namespace
 
-CoppCpuQueueDeleteArgs::CoppCpuQueueDeleteArgs(std::vector<std::string> v) {
+CoppQueueDeleteArgs::CoppQueueDeleteArgs(std::vector<std::string> v) {
   if (v.size() != 1) {
     throw std::invalid_argument(
         fmt::format("Expected exactly one <id>, got {}", v.size()));
   }
-  queueId_ = copp_cpu_queue::parseQueueId(v[0], "cpu-queue");
+  queueId_ = copp_queue::parseQueueId(v[0], "queue");
   data_ = std::move(v);
 }
 
-CmdDeleteCoppCpuQueueTraits::RetType CmdDeleteCoppCpuQueue::queryClient(
+CmdDeleteCoppQueueTraits::RetType CmdDeleteCoppQueue::queryClient(
     const HostInfo& /* hostInfo */,
     const ObjectArgType& args) {
   auto& session = ConfigSession::getInstance();
@@ -103,17 +113,16 @@ CmdDeleteCoppCpuQueueTraits::RetType CmdDeleteCoppCpuQueue::queryClient(
 
   auto& queues = *swConfig.cpuQueues();
   const auto queueId = args.getQueueId();
-  auto it = copp_cpu_queue::findCpuQueue(queues, queueId);
+  auto it = copp_queue::findQueue(queues, queueId);
   if (it == queues.end()) {
-    throw std::runtime_error(
-        fmt::format("No cpu-queue {} in the config", queueId));
+    throw std::runtime_error(fmt::format("No queue {} in the config", queueId));
   }
 
   const auto references = findQueueReferences(swConfig, queueId);
   if (!references.empty()) {
     throw std::runtime_error(
         fmt::format(
-            "Cannot delete cpu-queue {}: still referenced by {}. "
+            "Cannot delete queue {}: still referenced by {}. "
             "Delete those references first.",
             queueId,
             folly::join(", ", references)));
@@ -121,15 +130,14 @@ CmdDeleteCoppCpuQueueTraits::RetType CmdDeleteCoppCpuQueue::queryClient(
   queues.erase(it);
 
   session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
-  return fmt::format("Deleted cpu-queue {}", queueId);
+  return fmt::format("Deleted queue {}", queueId);
 }
 
-void CmdDeleteCoppCpuQueue::printOutput(const RetType& logMsg) {
+void CmdDeleteCoppQueue::printOutput(const RetType& logMsg) {
   std::cout << logMsg << std::endl;
 }
 
 // Explicit template instantiation
-template void
-CmdHandler<CmdDeleteCoppCpuQueue, CmdDeleteCoppCpuQueueTraits>::run();
+template void CmdHandler<CmdDeleteCoppQueue, CmdDeleteCoppQueueTraits>::run();
 
 } // namespace facebook::fboss

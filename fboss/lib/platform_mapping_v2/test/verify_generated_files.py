@@ -61,6 +61,7 @@ class TestVerifyPlatformMappingGeneratedFiles(unittest.TestCase):
             "nh4010f",
             "nh4220f",
             "m4061clsc",
+            "m5120csc",
             "wedge800bnhp",
             "wedge800cact",
             "wedge800cnhp",

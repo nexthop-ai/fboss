@@ -244,10 +244,12 @@ bool QsfpModule::upgradeFirmwareLocked(
       triggerModuleReset();
       // If there are more than 1 firmware to update on the optic (for modules
       // that have separate MCU and DSP firmwares), then update the cache in
-      // preparation for the next upgrade. The sleep here is for the module to
-      // recover after the previous hard reset
+      // preparation for the next upgrade.
+      // Adding additional 3s beyond the 2s already in triggerModuleReset, to
+      // keep it consistent with the prior delay. We should check and remove it
+      // if its not needed
       // @lint-ignore CLANGTIDY facebook-hte-BadCall-sleep
-      sleep(5);
+      sleep(3);
       updateQsfpData(true);
       updateCachedTransceiverInfoLocked({});
     }
@@ -281,6 +283,15 @@ bool QsfpModule::upgradeFirmwareLocked(
 
 void QsfpModule::triggerModuleReset() {
   qsfpImpl_->triggerQsfpHardReset();
+  // Required delay time between a transceiver getting out of reset and fully
+  // functional.
+  //
+  // This blocks with qsfpModuleMutex_ held, which is acceptable given the two
+  // callers: remediation, which is being removed fleetwide, and the reset that
+  // follows a firmware download, which already holds the lock far longer than
+  // 2s.
+  // @lint-ignore CLANGTIDY facebook-hte-BadCall-sleep
+  sleep(kSecAfterModuleOutOfReset);
 }
 
 // Note that this needs to be called while holding the
@@ -505,6 +516,11 @@ void QsfpModule::updateCachedTransceiverInfoLocked(ModuleStatus moduleStatus) {
           TransceiverErrorState::INVALID_IDENTIFIER);
       QSFP_LOG(ERR, this) << "Invalid module identifier";
     }
+
+    if (hasInvalidBankSelect()) {
+      tcvrState.errorStates()->insert(
+          TransceiverErrorState::INVALID_BANK_SELECT);
+    }
     auto currentStatus = getModuleStatus();
     // Use the input `moduleStatus` as the reference to update the
     // `cmisStateChanged` for currentStatus, which will be used in the
@@ -557,6 +573,14 @@ void QsfpModule::updateCachedTransceiverInfoLocked(ModuleStatus moduleStatus) {
 
     tcvrState.timeCollected() = lastRefreshTime_;
     tcvrStats.timeCollected() = lastRefreshTime_;
+
+    const auto thermalMargins = getThermalMargins();
+    if (thermalMargins.dspTempMargin) {
+      tcvrStats.dspTempMargin() = *thermalMargins.dspTempMargin;
+    }
+    if (thermalMargins.laserTempMargin) {
+      tcvrStats.laserTempMargin() = *thermalMargins.laserTempMargin;
+    }
 
     tcvrStats.remediationCounter() = numRemediation_;
     tcvrState.eepromCsumValid() = verifyEepromChecksums();

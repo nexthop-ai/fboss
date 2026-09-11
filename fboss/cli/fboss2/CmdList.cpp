@@ -22,6 +22,7 @@
 #include "fboss/cli/fboss2/commands/clear/interface/counters/phy/CmdClearInterfaceCountersPhy.h"
 #include "fboss/cli/fboss2/commands/clear/interface/prbs/CmdClearInterfacePrbs.h"
 #include "fboss/cli/fboss2/commands/clear/interface/prbs/stats/CmdClearInterfacePrbsStats.h"
+#include "fboss/cli/fboss2/commands/config/gen/agent/CmdConfigGenAgent.h"
 #include "fboss/cli/fboss2/commands/get/pcap/CmdGetPcap.h"
 #include "fboss/cli/fboss2/commands/set/fanhold/CmdSetFanHold.h"
 #include "fboss/cli/fboss2/commands/set/interface/CmdSetInterface.h"
@@ -52,6 +53,7 @@
 #include "fboss/cli/fboss2/commands/show/fabric/reachability/CmdShowFabricReachability.h"
 #include "fboss/cli/fboss2/commands/show/fabric/reachability/uncached/CmdShowFabricReachabilityUncached.h"
 #include "fboss/cli/fboss2/commands/show/fabric/topology/CmdShowFabricTopology.h"
+#include "fboss/cli/fboss2/commands/show/fb303counters/CmdShowFb303Counters.h"
 #include "fboss/cli/fboss2/commands/show/flowlet/CmdShowFlowlet.h"
 #include "fboss/cli/fboss2/commands/show/fsdb/CmdShowFsdbOperState.h"
 #include "fboss/cli/fboss2/commands/show/fsdb/CmdShowFsdbOperStats.h"
@@ -119,6 +121,15 @@ namespace facebook::fboss {
 
 const CommandTree& kCommandTree() {
   static CommandTree root = {
+      {"config",
+       "gen",
+       "Generate FBOSS service configuration files",
+       {{"agent",
+         "Generate an Agent configuration file",
+         commandHandler<CmdConfigGenAgent>,
+         argTypeHandler<CmdConfigGenAgentTraits>,
+         localOptionsHandler<CmdConfigGenAgentTraits>}}},
+
       {"show",
        "acl",
        "Show ACL information",
@@ -150,6 +161,14 @@ const CommandTree& kCommandTree() {
        commandHandler<CmdShowAggregatePort>,
        validFilterHandler<CmdShowAggregatePort>,
        argTypeHandler<CmdShowAggregatePortTraits>},
+
+      {"show",
+       "fb303-counters",
+       "Show raw fb303 counters from a FBOSS service",
+       commandHandler<CmdShowFb303Counters>,
+       validFilterHandler<CmdShowFb303Counters>,
+       argTypeHandler<CmdShowFb303CountersTraits>,
+       localOptionsHandler<CmdShowFb303CountersTraits>},
 
       {"show",
        "arp",

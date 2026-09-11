@@ -92,10 +92,10 @@
 #include "fboss/cli/fboss2/commands/delete/arp/CmdDeleteArp.h"
 #include "fboss/cli/fboss2/commands/delete/config/CmdDeleteConfig.h"
 #include "fboss/cli/fboss2/commands/delete/copp/CmdDeleteCopp.h"
-#include "fboss/cli/fboss2/commands/delete/copp/cpu_queue/CmdDeleteCoppCpuQueue.h"
 #include "fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/CmdDeleteCoppCpuTrafficPolicy.h"
 #include "fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/match/CmdDeleteCoppCpuTrafficPolicyMatch.h"
 #include "fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/match/action/CmdDeleteCoppCpuTrafficPolicyMatchAction.h"
+#include "fboss/cli/fboss2/commands/delete/copp/queue/CmdDeleteCoppQueue.h"
 #include "fboss/cli/fboss2/commands/delete/copp/reason/CmdDeleteCoppReason.h"
 #include "fboss/cli/fboss2/commands/delete/dhcp/CmdDeleteDhcp.h"
 #include "fboss/cli/fboss2/commands/delete/dhcp/relay_source_override/CmdDeleteDhcpRelaySourceOverride.h"
@@ -204,10 +204,10 @@ const CommandTree& kConfigCommandTree() {
           commandHandler<CmdConfigCopp>,
           argRegistrar<CmdConfigCoppTraits>,
           {{
-               "cpu-queue",
+               "queue",
                "Configure a CPU queue (bandwidth shaping)",
-               commandHandler<CmdConfigCoppCpuQueue>,
-               argRegistrar<CmdConfigCoppCpuQueueTraits>,
+               commandHandler<CmdConfigCoppQueue>,
+               argRegistrar<CmdConfigCoppQueueTraits>,
            },
            {
                "cpu-traffic-policy",
@@ -914,6 +914,50 @@ const CommandTree& kConfigCommandTree() {
 
       {
           "delete",
+<<<<<<< HEAD
+||||||| be11fad19c
+          "copp",
+          "Delete COPP (Control Plane Policing) configuration",
+          commandHandler<CmdDeleteCopp>,
+          argRegistrar<CmdDeleteCoppTraits>,
+          {{
+               "cpu-queue",
+               "Delete a CPU queue entry",
+               commandHandler<CmdDeleteCoppCpuQueue>,
+               argRegistrar<CmdDeleteCoppCpuQueueTraits>,
+           },
+           {
+               "reason",
+               "Delete a packet-rx reason to CPU queue mapping",
+               commandHandler<CmdDeleteCoppReason>,
+               argRegistrar<CmdDeleteCoppReasonTraits>,
+           }},
+      },
+
+      {
+          "delete",
+=======
+          "copp",
+          "Delete COPP (Control Plane Policing) configuration",
+          commandHandler<CmdDeleteCopp>,
+          argRegistrar<CmdDeleteCoppTraits>,
+          {{
+               "queue",
+               "Delete a CPU queue entry",
+               commandHandler<CmdDeleteCoppQueue>,
+               argRegistrar<CmdDeleteCoppQueueTraits>,
+           },
+           {
+               "reason",
+               "Delete a packet-rx reason to CPU queue mapping",
+               commandHandler<CmdDeleteCoppReason>,
+               argRegistrar<CmdDeleteCoppReasonTraits>,
+           }},
+      },
+
+      {
+          "delete",
+>>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
           "dhcp",
           "Remove DHCP source-override settings",
           commandHandler<CmdDeleteDhcp>,

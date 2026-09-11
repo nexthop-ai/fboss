@@ -1,9 +1,21 @@
+load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")
 load("@fbcode_macros//build_defs:thrift_library.bzl", "thrift_library")
 load("//fboss/agent/hw/sai/switch:switch.bzl", "all_handler_libs", "all_npu_libs", "all_phy_libs")
 
 oncall("fboss_agent_push")
 
+<<<<<<< HEAD
 # bazelify: include sai_switch_impl.bzl:sai_switch_impl
+||||||| be11fad19c
+=======
+cpp_library(
+    name = "drop_reason_utils",
+    srcs = ["DropReasonUtils.cpp"],
+    headers = ["DropReasonUtils.h"],
+    deps = ["//folly/logging:logging"],
+    exported_deps = [],
+)
+>>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
 
 thrift_library(
     name = "if",

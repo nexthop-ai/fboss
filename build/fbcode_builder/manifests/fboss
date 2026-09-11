@@ -20,10 +20,30 @@ builder = nop
 [features]
 default = services
 services =
+exported_libraries =
 
-[cmake.defines.feature_services=off]
+[cmake.defines.all(feature_services=off,feature_exported_libraries=off)]
 FBOSS_BUILD_PROFILE=fsdb_client
 
+<<<<<<< HEAD
+||||||| be11fad19c
+# installed/fboss is unhashed because fboss is first-party, and the env var is
+# not otherwise hashed, so without this a profile flip in an existing scratch
+# dir leaves .built-by-getdeps matching and getdeps skips the rebuild.
+[depends.environment]
+FBOSS_BUILD_PROFILE
+
+=======
+[cmake.defines.all(feature_services=off,feature_exported_libraries=on)]
+FBOSS_BUILD_PROFILE=exported_libraries
+
+# installed/fboss is unhashed because fboss is first-party, and the env var is
+# not otherwise hashed, so without this a profile flip in an existing scratch
+# dir leaves .built-by-getdeps matching and getdeps skips the rebuild.
+[depends.environment]
+FBOSS_BUILD_PROFILE
+
+>>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
 [dependencies]
 folly-python
 fb303

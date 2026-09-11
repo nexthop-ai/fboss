@@ -180,6 +180,13 @@ add_fbthrift_cpp_library(
 )
 
 add_fbthrift_cpp_library(
+  show_fb303counters_model
+  fboss/cli/fboss2/commands/show/fb303counters/model.thrift
+  OPTIONS
+    json
+)
+
+add_fbthrift_cpp_library(
   show_hwagent_status_model
   fboss/cli/fboss2/commands/show/hwagent/model.thrift
   OPTIONS
@@ -391,6 +398,31 @@ add_fbthrift_cpp_library(
 
 find_package(CLI11 CONFIG REQUIRED)
 
+add_library(fboss2_config_file_utils
+  fboss/cli/fboss2/utils/ConfigFileUtils.h
+  fboss/cli/fboss2/utils/ConfigFileUtils.cpp
+)
+
+target_link_libraries(fboss2_config_file_utils
+  Folly::folly
+  FBThrift::thriftcpp2
+)
+
+add_library(fboss2_config_gen_lib
+  fboss/cli/fboss2/commands/config/gen/PlatformConfigPathUtils.h
+  fboss/cli/fboss2/commands/config/gen/PlatformConfigPathUtils.cpp
+  fboss/cli/fboss2/commands/config/gen/agent/AgentConfigGenUtils.h
+  fboss/cli/fboss2/commands/config/gen/agent/AgentConfigGenUtils.cpp
+)
+
+target_link_libraries(fboss2_config_gen_lib
+  agent_config_cpp2
+  fboss_error
+  fboss2_config_file_utils
+  Folly::folly
+  split_platform_mapping_utils
+)
+
 add_library(fboss2_lib
   fboss/cli/fboss2/commands/bounce/interface/CmdBounceInterface.h
   fboss/cli/fboss2/commands/bounce/interface/CmdBounceInterface.cpp
@@ -409,6 +441,8 @@ add_library(fboss2_lib
   fboss/cli/fboss2/commands/clear/interface/prbs/stats/CmdClearInterfacePrbsStats.cpp
   fboss/cli/fboss2/commands/clear/interface/counters/phy/CmdClearInterfaceCountersPhy.h
   fboss/cli/fboss2/commands/clear/interface/counters/phy/CmdClearInterfaceCountersPhy.cpp
+  fboss/cli/fboss2/commands/config/gen/agent/CmdConfigGenAgent.h
+  fboss/cli/fboss2/commands/config/gen/agent/CmdConfigGenAgent.cpp
   fboss/cli/fboss2/CmdGlobalOptions.cpp
   fboss/cli/fboss2/CmdHandler.cpp
   fboss/cli/fboss2/CmdStreamHandler.h
@@ -503,6 +537,8 @@ add_library(fboss2_lib
   fboss/cli/fboss2/commands/show/host/CmdShowHost.cpp
   fboss/cli/fboss2/commands/show/hardware/CmdShowHardware.h
   fboss/cli/fboss2/commands/show/hardware/CmdShowHardware.cpp
+  fboss/cli/fboss2/commands/show/fb303counters/CmdShowFb303Counters.h
+  fboss/cli/fboss2/commands/show/fb303counters/CmdShowFb303Counters.cpp
   fboss/cli/fboss2/commands/show/hwagent/CmdShowHwAgentStatus.h
   fboss/cli/fboss2/commands/show/hwagent/CmdShowHwAgentStatus.cpp
   fboss/cli/fboss2/commands/show/hwobject/CmdShowHwObject.h
@@ -659,7 +695,6 @@ add_library(fboss2_lib
   fboss/cli/fboss2/commands/show/bgp/table/CmdShowBgpTableSummary.h
   fboss/cli/fboss2/commands/show/bgp/neighbors/CmdShowBgpNeighbors.h
   fboss/cli/fboss2/commands/show/bgp/neighbors/session_id/CmdBgpNeighborsSessionId.h
-  fboss/cli/fboss2/commands/show/bgp/neighbors/advertised/BgpNeighborsAdvertisedDryRun.h
   fboss/cli/fboss2/commands/show/bgp/neighbors/advertised/BgpNeighborsAdvertisedPostPolicy.h
   fboss/cli/fboss2/commands/show/bgp/neighbors/advertised/BgpNeighborsAdvertisedPrePolicy.h
   fboss/cli/fboss2/commands/show/bgp/neighbors/advertised/BgpNeighborsAdvertisedRejected.h
@@ -711,6 +746,7 @@ add_library(fboss2_lib
 
 target_link_libraries(fboss2_lib
   CLI11::CLI11
+  fboss2_config_gen_lib
   tabulate::tabulate
   data_corral_service_cpp2
   fb303_cpp2
@@ -778,6 +814,7 @@ target_link_libraries(fboss2_lib
   show_systemport_model
   show_cpuport_model
   show_teflow_model
+  show_fb303counters_model
   show_hwagent_status_model
   show_interface_counters_fec_ber
   show_interface_counters_fec_histogram
@@ -785,6 +822,7 @@ target_link_libraries(fboss2_lib
   show_fabric_topology_model
   show_rif
   show_interface_counters_fec_uncorrectable
+  thrift_service_client
   ${RE2}
 )
 
@@ -916,8 +954,8 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/qos/CmdConfigQos.h
   fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPool.cpp
   fboss/cli/fboss2/commands/config/qos/buffer_pool/CmdConfigQosBufferPool.h
-  fboss/cli/fboss2/commands/config/qos/PortQueueConfigUtils.cpp
-  fboss/cli/fboss2/commands/config/qos/PortQueueConfigUtils.h
+  fboss/cli/fboss2/commands/config/QueueConfigUtils.cpp
+  fboss/cli/fboss2/commands/config/QueueConfigUtils.h
   fboss/cli/fboss2/commands/config/qos/QosPolicyUtils.cpp
   fboss/cli/fboss2/commands/config/qos/QosPolicyUtils.h
   fboss/cli/fboss2/commands/config/qos/default_policy/CmdConfigQosDefaultPolicy.cpp
@@ -1061,6 +1099,8 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/delete/protocol/static/CmdDeleteProtocolStatic.h
   fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.cpp
   fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.h
+  fboss/cli/fboss2/commands/delete/copp/queue/CmdDeleteCoppQueue.cpp
+  fboss/cli/fboss2/commands/delete/copp/queue/CmdDeleteCoppQueue.h
   fboss/cli/fboss2/commands/delete/qos/policy/CmdDeleteQosPolicy.cpp
   fboss/cli/fboss2/commands/delete/qos/policy/CmdDeleteQosPolicy.h
   fboss/cli/fboss2/commands/delete/qos/policy/CmdDeleteQosPolicyMap.cpp
@@ -1101,6 +1141,7 @@ add_library(fboss2_config_lib
 target_link_libraries(fboss2_config_lib
   cli_metadata
   fboss2_lib
+  fboss2_config_file_utils
   agent_config_utils
   agent_dir_util
   common_file_utils

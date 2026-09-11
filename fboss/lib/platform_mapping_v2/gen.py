@@ -5,8 +5,13 @@ import os
 import sys
 from dataclasses import dataclass
 from typing import Any, Optional, Union
+<<<<<<< HEAD
 
 from thrift.python.serializer import Protocol, serialize
+||||||| be11fad19c
+from typing import Any, Dict, List, Optional, Tuple, Union
+=======
+>>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
 
 from fboss.lib.platform_mapping_v2.platform_mapping_v2 import PlatformMappingV2
 from fboss.lib.platform_mapping_v2.read_files_utils import (
@@ -60,7 +65,14 @@ _RAW_PLATFORM_MAPPING_FAMILIES: dict[str, tuple[str, ...]] = {
     "montblanc": ("montblanc", "montblanc_odd_ports_8x100G", "montblanc_gtsw_yolo"),
     "tahansb800bc": ("tahansb800bc", "tahansb800bc_test_fixture"),
     "wedge800bact": ("wedge800bact", "wedge800bnhp"),
+<<<<<<< HEAD
     "wedge800cact": ("wedge800cact", "wedge800cnhp"),
+||||||| be11fad19c
+    "wedge800bact": ("wedge800bact",),
+    "wedge800cact": ("wedge800cact",),
+=======
+    "wedge800cact": ("wedge800cact",),
+>>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
 }
 
 
@@ -225,7 +237,11 @@ def generate_platform_mappings_from_vendor_data(
     )
 
     generate_platform_descriptor(
-        vendor_data_map, output_dir, platform_name, platform_descriptor_data
+        vendor_data_map,
+        output_dir,
+        platform_name,
+        generator.get_num_switch_asics(),
+        platform_descriptor_data,
     )
 
 
@@ -308,6 +324,7 @@ def generate_platform_descriptor(
     vendor_data_map: dict[str, dict[str, str]],
     output_dir: str,
     platform_name: str,
+    num_switch_asics: int,
     platform_descriptor_data: Optional[PlatformDescriptorData] = None,
 ) -> None:
     if platform_descriptor_data is None:
@@ -316,8 +333,14 @@ def generate_platform_descriptor(
         )
     if platform_descriptor_data is None:
         return
+    if num_switch_asics < 1:
+        raise ValueError(
+            f"Static mapping for {platform_name} does not define a switch ASIC"
+        )
 
     _, platform_descriptor = platform_descriptor_data
+    platform_descriptor = dict(platform_descriptor)
+    platform_descriptor["numSwitchAsics"] = num_switch_asics
     descriptor_json = _format_json(platform_descriptor)
     if not descriptor_json.endswith("\n"):
         descriptor_json += "\n"

@@ -92,11 +92,28 @@ class ConfigSession {
   // ReadOnly skips seeding ~/.fboss2 when no session exists; used by commands
   // (history, session diff) that must not stage one.
   enum class SessionInit { CreateIfAbsent, ReadOnly };
+<<<<<<< HEAD
+||||||| be11fad19c
+  ConfigSession();
+  virtual ~ConfigSession() = default;
+=======
 
+  explicit ConfigSession(SessionInit init = SessionInit::CreateIfAbsent);
+
+  virtual ~ConfigSession() = default;
+>>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
+
+<<<<<<< HEAD
   explicit ConfigSession(SessionInit init = SessionInit::CreateIfAbsent);
 
   virtual ~ConfigSession();
 
+||||||| be11fad19c
+  // Get or create the current config session
+  // If no session exists, copies /etc/coop/agent.conf to ~/.fboss2/agent.conf
+  static ConfigSession& getInstance();
+=======
+>>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
   // Get or create the current config session.
   // If no session exists, copies /etc/coop/agent.conf to ~/.fboss2/agent.conf,
   // unless init == ReadOnly.
@@ -397,8 +414,12 @@ class ConfigSession {
 
   // git relative path of the bgpd config tracked in the /etc/coop repo.
   static constexpr auto kBgpGitRelPath = "bgpcpp/bgpcpp.conf";
+<<<<<<< HEAD
   // git relative path of the agent config tracked in the /etc/coop repo.
   static constexpr auto kAgentGitRelPath = "cli/agent.conf";
+||||||| be11fad19c
+=======
+>>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
   // git relative path of the CLI metadata tracked in the /etc/coop repo.
   static constexpr auto kMetadataGitRelPath = "cli/cli_metadata.json";
   // Like Git::fileAtRevision but returns "" instead of throwing when the path
@@ -412,7 +433,12 @@ class ConfigSession {
   // a rollback to resolvedSha would undo (i.e. commits in (resolvedSha, HEAD]).
   // Undoing a change needs at least the action level applying it did (e.g. a
   // VLAN membership change requires an agent warmboot in both directions), so
+<<<<<<< HEAD
   // rollback() promotes each domain's default action to this level.
+||||||| be11fad19c
+=======
+  // rollback() promotes each service's default action to this level.
+>>>>>>> fbc276b526bb5274e1497b421b55d7be9dc455f6
   // If resolvedSha is not found in the metadata history, the max over the
   // whole history is returned (conservative).
   std::map<cli::ServiceType, cli::ConfigActionLevel> rolledBackActionLevels(
