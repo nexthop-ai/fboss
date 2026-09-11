@@ -32,10 +32,12 @@
         }
       }
     },
-    "mgmt_port_overrides": {
-      "logical_id": 268,
-      "physical_id": 1026
-    },
+    "mgmt_port_overrides": [
+      {
+        "logical_id": 268,
+        "physical_id": 1026
+      }
+    ],
     "port_mapping_overrides": {
       "core_range": "0-127",
       "num_logical_ports_per_datapath": 8,
