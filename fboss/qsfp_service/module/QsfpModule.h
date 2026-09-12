@@ -44,6 +44,13 @@ struct QsfpConfig;
 class TransceiverImpl;
 class TransceiverManager;
 
+// Component thermal margins in degrees Celsius. Each is unset unless the
+// module advertises support for it.
+struct ThermalMargins {
+  std::optional<double> dspTempMargin;
+  std::optional<double> laserTempMargin;
+};
+
 /**
  * This is the QSFP module error which should be throw only if it's module
  * related issue.
@@ -558,6 +565,10 @@ class QsfpModule : public Transceiver {
     return false;
   }
 
+  virtual bool hasInvalidBankSelect() const {
+    return false;
+  }
+
   double mwToDb(double value);
 
   /*
@@ -675,6 +686,10 @@ class QsfpModule : public Transceiver {
 
   virtual std::optional<VdmDiagsStats> getVdmDiagsStatsInfo() {
     return std::nullopt;
+  }
+
+  virtual ThermalMargins getThermalMargins() {
+    return ThermalMargins{};
   }
 
   virtual std::optional<VdmPerfMonitorStats> getVdmPerfMonitorStats() {

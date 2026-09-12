@@ -203,9 +203,9 @@
           "type": 1,
           "thresholds": {
             "maxAlarmVal": 1.149,
-            "minAlarmVal": 1.0,
+            "minAlarmVal": 1.000,
             "upperCriticalVal": 1.211,
-            "lowerCriticalVal": 0.95
+            "lowerCriticalVal": 0.950
           },
           "compute": "@/1000.0"
         },

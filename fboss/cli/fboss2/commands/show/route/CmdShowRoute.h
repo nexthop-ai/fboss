@@ -49,7 +49,6 @@ class CmdShowRoute : public CmdHandler<CmdShowRoute, CmdShowRouteTraits> {
   getAcceptedFilterValues() {
     return {{"addressFamily", {"ipv4", "ipv6"}}};
   }
-
   // Canned, synthetic model (no real switch data) used to render a
   // deterministic example for the CLI reference wiki. No live switch.
   static RetType sampleModel();

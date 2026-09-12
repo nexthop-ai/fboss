@@ -27,8 +27,8 @@ RestartSec=30
 TimeoutStartSec=180s
 TimeoutStopSec=30s
 
-StandardOutput=append:/var/facebook/logs/fboss/wedge_agent.log
-StandardError=append:/var/facebook/logs/fboss/wedge_agent.log
+StandardOutput=append:/var/facebook/logs/fboss/fboss_hw_agent%i.log
+StandardError=append:/var/facebook/logs/fboss/fboss_hw_agent%i.log
 
 [Install]
 WantedBy=multi-user.target

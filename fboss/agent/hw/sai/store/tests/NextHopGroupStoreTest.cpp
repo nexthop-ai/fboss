@@ -27,6 +27,7 @@ class NextHopGroupStoreTest : public SaiStoreTest {
         {SAI_NEXT_HOP_GROUP_TYPE_ECMP,
          std::nullopt,
          std::nullopt,
+         std::nullopt,
          std::nullopt},
         0);
   }
@@ -36,7 +37,11 @@ class NextHopGroupStoreTest : public SaiStoreTest {
     std::optional<SaiNextHopGroupTraits::Attributes::ArsObjectId> arsObjectId{
         arsSaiId};
     return nextHopGroupApi.create<SaiNextHopGroupTraits>(
-        {SAI_NEXT_HOP_GROUP_TYPE_ECMP, arsObjectId, std::nullopt, std::nullopt},
+        {SAI_NEXT_HOP_GROUP_TYPE_ECMP,
+         arsObjectId,
+         std::nullopt,
+         std::nullopt,
+         std::nullopt},
         0);
   }
 
@@ -45,6 +50,7 @@ class NextHopGroupStoreTest : public SaiStoreTest {
         {SAI_ARS_MODE_PER_PACKET_QUALITY,
          0,
          0,
+         std::nullopt,
          std::nullopt,
          std::nullopt,
          std::nullopt,
@@ -235,7 +241,11 @@ TEST_F(NextHopGroupStoreTest, nextHopGroupMemberLoadCtor) {
 TEST_F(NextHopGroupStoreTest, nextHopGroupCreateCtor) {
   SaiNextHopGroupTraits::AdapterHostKey k;
   SaiNextHopGroupTraits::CreateAttributes c{
-      SAI_NEXT_HOP_GROUP_TYPE_ECMP, std::nullopt, std::nullopt, std::nullopt};
+      SAI_NEXT_HOP_GROUP_TYPE_ECMP,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt};
   auto obj = createObj<SaiNextHopGroupTraits>(k, c, 0);
 }
 
@@ -428,6 +438,7 @@ TEST_F(NextHopGroupStoreTest, protectionAndHierarchicalAhkSerDeser) {
       {SAI_NEXT_HOP_GROUP_TYPE_HW_PROTECTION,
        std::nullopt,
        std::nullopt,
+       std::nullopt,
        std::nullopt});
   auto protJson = protObj->adapterHostKeyToFollyDynamic();
   EXPECT_EQ(
@@ -466,7 +477,11 @@ TEST_F(NextHopGroupStoreTest, protectionAndHierarchicalAhkSerDeser) {
 
   auto parentObj = store.setObject(
       parentKey,
-      {SAI_NEXT_HOP_GROUP_TYPE_ECMP, std::nullopt, std::nullopt, std::nullopt});
+      {SAI_NEXT_HOP_GROUP_TYPE_ECMP,
+       std::nullopt,
+       std::nullopt,
+       std::nullopt,
+       std::nullopt});
   auto parentJson = parentObj->adapterHostKeyToFollyDynamic();
   EXPECT_EQ(
       SaiObject<SaiNextHopGroupTraits>::follyDynamicToAdapterHostKey(

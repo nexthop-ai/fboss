@@ -319,7 +319,6 @@ cpp_library(
         "commands/show/bgp/health/CmdShowBgpHealth.h",
         "commands/show/bgp/holdtimers/CmdShowBgpHoldTimers.h",
         "commands/show/bgp/neighbors/CmdShowBgpNeighbors.h",
-        "commands/show/bgp/neighbors/advertised/BgpNeighborsAdvertisedDryRun.h",
         "commands/show/bgp/neighbors/advertised/BgpNeighborsAdvertisedPostPolicy.h",
         "commands/show/bgp/neighbors/advertised/BgpNeighborsAdvertisedPrePolicy.h",
         "commands/show/bgp/neighbors/advertised/BgpNeighborsAdvertisedRejected.h",
@@ -351,7 +350,6 @@ cpp_library(
         "commands/show/bgp/table/CmdShowBgpTablePrefix.h",
         "commands/show/bgp/table/CmdShowBgpTableSummary.h",
         "commands/show/bgp/updategroup/CmdShowBgpUpdateGroup.h",
-        "commands/show/facebook/bgp/neighbors/received/BgpNeighborsReceivedDryRun.h",
         "commands/show/facebook/bgp/ribpolicy/CmdShowBgpRibPolicy.h",
         "commands/show/facebook/bgp/ribpolicy/CmdShowBgpRibPolicyCps.h",
         "commands/show/facebook/bgp/ribpolicy/CmdShowBgpRibPolicyCrf.h",
@@ -447,6 +445,7 @@ cpp_library(
         "commands/clear/interface/prbs/stats/CmdClearInterfacePrbsStats.cpp",
         "commands/clear_and_override/facebook/bgp/ribpolicy/CmdClearAndOverrideBgpRibPolicyCps.cpp",
         "commands/clear_and_override/facebook/bgp/ribpolicy/CmdClearAndOverrideBgpRibPolicyCrf.cpp",
+        "commands/config/gen/agent/CmdConfigGenAgent.cpp",
         "commands/create/config/facebook/CmdCreateConfig.cpp",
         "commands/create/config/facebook/CmdCreateConfigPatcherAgent.cpp",
         "commands/create/config/facebook/CmdCreateConfigPatcherQsfp.cpp",
@@ -540,7 +539,6 @@ cpp_library(
         "commands/show/facebook/CmdShowVersionSDK.cpp",
         "commands/show/facebook/CmdShowVersionSensorService.cpp",
         "commands/show/facebook/CmdShowVersionTeSrv6Agent.cpp",
-        "commands/show/facebook/bgp/neighbors/received/BgpNeighborsReceivedDryRun.cpp",
         "commands/show/facebook/bgp/ribpolicy/CmdShowBgpRibPolicy.cpp",
         "commands/show/facebook/bgp/ribpolicy/CmdShowBgpRibPolicyCps.cpp",
         "commands/show/facebook/bgp/ribpolicy/CmdShowBgpRibPolicyCrf.cpp",
@@ -592,6 +590,7 @@ cpp_library(
         "commands/show/facebook/vip/injectors/CmdShowVipsInjectors.cpp",
         "commands/show/facebook/vip/overview/CmdShowVipsOverview.cpp",
         "commands/show/facebook/vip/prefixes/CmdShowVipsPrefixes.cpp",
+        "commands/show/fb303counters/CmdShowFb303Counters.cpp",
         "commands/show/flowlet/CmdShowFlowlet.cpp",
         "commands/show/fsdb/CmdShowFsdbDataCommon.cpp",
         "commands/show/fsdb/CmdShowFsdbPublishers.cpp",
@@ -687,6 +686,7 @@ cpp_library(
         "commands/clear_and_override/facebook/bgp/ribpolicy/CmdClearAndOverrideBgpRibPolicyCps.h",
         "commands/clear_and_override/facebook/bgp/ribpolicy/CmdClearAndOverrideBgpRibPolicyCrf.h",
         "commands/clear_and_override/facebook/bgp/ribpolicy/Constants.h",
+        "commands/config/gen/agent/CmdConfigGenAgent.h",
         "commands/create/config/facebook/CmdCreateConfig.h",
         "commands/create/config/facebook/CmdCreateConfigPatcherAgent.h",
         "commands/create/config/facebook/CmdCreateConfigPatcherQsfp.h",
@@ -798,6 +798,7 @@ cpp_library(
         "commands/show/facebook/vip/injectors/CmdShowVipsInjectors.h",
         "commands/show/facebook/vip/overview/CmdShowVipsOverview.h",
         "commands/show/facebook/vip/prefixes/CmdShowVipsPrefixes.h",
+        "commands/show/fb303counters/CmdShowFb303Counters.h",
         "commands/show/flowlet/CmdShowFlowlet.h",
         "commands/show/fsdb/CmdShowFsdbDataCommon.h",
         "commands/show/fsdb/CmdShowFsdbOperState.h",
@@ -867,7 +868,10 @@ cpp_library(
         "utils/LookupClassUtils.h",
         "utils/clients/BmcClient.h",  # bazelify: exclude
     ],
-    deps = ["//folly/container:f14_hash"],
+    deps = [
+        ":fboss2-config-gen-lib",
+        "//folly/container:f14_hash",
+    ],
     exported_deps = [
         "fbsource//third-party/fmt:fmt",
         "fbsource//third-party/glog:glog",
@@ -950,6 +954,7 @@ cpp_library(
         "//fboss/cli/fboss2/commands/show/facebook/vip/injectors:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/facebook/vip/overview:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/facebook/vip/prefixes:model-cpp2-types",
+        "//fboss/cli/fboss2/commands/show/fb303counters:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/flowlet:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/hardware:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/host:model-cpp2-types",
@@ -995,6 +1000,7 @@ cpp_library(
         "//fboss/lib/inputbalance:input_balance_util",
         "//fboss/lib/phy:phy-cpp2-types",
         "//fboss/lib/phy:prbs-cpp2-types",
+        "//fboss/lib/thrift_service_client:thrift-service-client",
         "//fboss/mka_service/if:mka_structs-cpp2-types",
         "//fboss/mka_service/if/facebook:mka_service_thrift-cpp2-services",
         "//fboss/platform/data_corral_service/if:data_corral_service-cpp2-services",
@@ -1074,6 +1080,44 @@ cpp_library(
     ],
 )
 
+cpp_library(
+    name = "fboss2-config-file-utils",
+    srcs = ["utils/ConfigFileUtils.cpp"],
+    headers = ["utils/ConfigFileUtils.h"],
+    deps = [
+        "fbsource//third-party/fmt:fmt",
+        "//folly:file",
+        "//folly:file_util",
+    ],
+    exported_deps = [
+        "//folly/json:dynamic",
+        "//thrift/lib/cpp2/protocol:protocol",
+    ],
+)
+
+cpp_library(
+    name = "fboss2-config-gen-lib",
+    srcs = [
+        "commands/config/gen/PlatformConfigPathUtils.cpp",
+        "commands/config/gen/agent/AgentConfigGenUtils.cpp",
+    ],
+    headers = [
+        "commands/config/gen/PlatformConfigPathUtils.h",
+        "commands/config/gen/agent/AgentConfigGenUtils.h",
+    ],
+    deps = [
+        ":fboss2-config-file-utils",
+        "//fboss/agent:fboss-error",
+        "//fboss/lib/platforms:platform_mapping_utils",
+        "//folly:file_util",
+        "//folly/json:dynamic",
+        "//thrift/lib/cpp/util:enum_utils",
+    ],
+    exported_deps = [
+        "//fboss/agent:agent_config-cpp2-types",
+    ],
+)
+
 cpp_binary(
     name = "fboss2",
     srcs = [
@@ -1116,6 +1160,7 @@ cpp_library(
         "CmdListConfig.cpp",
         "commands/config/CmdConfigAppliedInfo.cpp",
         "commands/config/CmdConfigReload.cpp",
+        "commands/config/QueueConfigUtils.cpp",
         "commands/config/acl/AclConfigUtils.cpp",
         "commands/config/acl/CmdConfigAcl.cpp",
         "commands/config/acl/rule/AclRuleAttrs.cpp",
@@ -1162,7 +1207,6 @@ cpp_library(
         "commands/config/ptp/CmdConfigPtp.cpp",
         "commands/config/ptp/transparent_clock/CmdConfigPtpTransparentClock.cpp",
         "commands/config/qos/CmdConfigQos.cpp",
-        "commands/config/qos/PortQueueConfigUtils.cpp",
         "commands/config/qos/QosPolicyUtils.cpp",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPool.cpp",
         "commands/config/qos/default_policy/CmdConfigQosDefaultPolicy.cpp",
@@ -1205,10 +1249,10 @@ cpp_library(
         "commands/delete/acl/table_group/CmdDeleteAclTableGroup.cpp",
         "commands/delete/arp/CmdDeleteArp.cpp",
         "commands/delete/copp/CmdDeleteCopp.cpp",
-        "commands/delete/copp/cpu_queue/CmdDeleteCoppCpuQueue.cpp",
         "commands/delete/copp/cpu_traffic_policy/CmdDeleteCoppCpuTrafficPolicy.cpp",
         "commands/delete/copp/cpu_traffic_policy/match/CmdDeleteCoppCpuTrafficPolicyMatch.cpp",
         "commands/delete/copp/cpu_traffic_policy/match/action/CmdDeleteCoppCpuTrafficPolicyMatchAction.cpp",
+        "commands/delete/copp/queue/CmdDeleteCoppQueue.cpp",
         "commands/delete/copp/reason/CmdDeleteCoppReason.cpp",
         "commands/delete/vlan/CmdDeleteVlan.cpp",
         "commands/delete/dhcp/CmdDeleteDhcp.cpp",
@@ -1257,6 +1301,7 @@ cpp_library(
     headers = [
         "commands/config/CmdConfigAppliedInfo.h",
         "commands/config/CmdConfigReload.h",
+        "commands/config/QueueConfigUtils.h",
         "commands/config/acl/AclConfigUtils.h",
         "commands/config/acl/CmdConfigAcl.h",
         "commands/config/acl/rule/AclRuleAttrs.h",
@@ -1311,7 +1356,6 @@ cpp_library(
         "commands/config/ptp/CmdConfigPtp.h",
         "commands/config/ptp/transparent_clock/CmdConfigPtpTransparentClock.h",
         "commands/config/qos/CmdConfigQos.h",
-        "commands/config/qos/PortQueueConfigUtils.h",
         "commands/config/qos/QosPolicyUtils.h",
         "commands/config/qos/buffer_pool/CmdConfigQosBufferPool.h",
         "commands/config/qos/default_policy/CmdConfigQosDefaultPolicy.h",
@@ -1354,10 +1398,10 @@ cpp_library(
         "commands/delete/acl/table_group/CmdDeleteAclTableGroup.h",
         "commands/delete/arp/CmdDeleteArp.h",
         "commands/delete/copp/CmdDeleteCopp.h",
-        "commands/delete/copp/cpu_queue/CmdDeleteCoppCpuQueue.h",
         "commands/delete/copp/cpu_traffic_policy/CmdDeleteCoppCpuTrafficPolicy.h",
         "commands/delete/copp/cpu_traffic_policy/match/CmdDeleteCoppCpuTrafficPolicyMatch.h",
         "commands/delete/copp/cpu_traffic_policy/match/action/CmdDeleteCoppCpuTrafficPolicyMatchAction.h",
+        "commands/delete/copp/queue/CmdDeleteCoppQueue.h",
         "commands/delete/copp/reason/CmdDeleteCoppReason.h",
         "commands/delete/vlan/CmdDeleteVlan.h",
         "commands/delete/dhcp/CmdDeleteDhcp.h",
@@ -1405,6 +1449,7 @@ cpp_library(
     ],
     deps = [
         "fbsource//third-party/glog:glog",
+        ":fboss2-config-file-utils",
         ":table-utils",
         "//common/network/if:if-cpp2-types",
         "//configerator/structs/neteng/fboss/bgp:bgp_config-cpp2-types",
@@ -1515,7 +1560,6 @@ cpp_binary(
         "commands/show/bgp/table/CmdShowBgpTablePrefix.cpp",
         "commands/show/bgp/updategroup/CmdShowBgpUpdateGroup.cpp",
         "commands/show/facebook/CmdShowUtils.cpp",
-        "commands/show/facebook/bgp/neighbors/received/BgpNeighborsReceivedDryRun.cpp",
         "commands/show/facebook/bgp/ribpolicy/CmdShowBgpRibPolicy.cpp",
         "commands/show/facebook/bgp/ribpolicy/CmdShowBgpRibPolicyCps.cpp",
         "commands/show/facebook/bgp/ribpolicy/CmdShowBgpRibPolicyCrf.cpp",

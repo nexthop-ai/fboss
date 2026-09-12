@@ -56,7 +56,7 @@ add_executable(fboss2_cmd_config_test
   fboss/cli/fboss2/test/config/CmdDeleteBgpPeerGroupTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteBgpPolicyAsPathListTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteConfigInterfaceTest.cpp
-  fboss/cli/fboss2/test/config/CmdDeleteCoppCpuQueueTest.cpp
+  fboss/cli/fboss2/test/config/CmdDeleteCoppQueueTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteDhcpTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteCoppCpuTrafficPolicyMatchActionTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteCoppReasonTest.cpp

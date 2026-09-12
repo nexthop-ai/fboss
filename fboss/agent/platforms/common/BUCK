@@ -71,6 +71,7 @@ cpp_library(
         "//fboss/agent/platforms/common/yangra2:yangra2_platform_mapping",
         "//folly:file_util",
         "//folly/logging:logging",
+        "//thrift/lib/cpp/util:enum_utils",
     ],
     exported_deps = [
         ":platform_mapping",

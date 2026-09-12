@@ -65,7 +65,7 @@
                     "properties": {
                         "config_type": {
                             "type": "string",
-                            "enum": ["YAML_CONFIG", "JSON_CONFIG", "KEY_VALUE_CONFIG"],
+                            "enum": ["KEY_VALUE_CONFIG", "JSON_CONFIG", "YAML_CONFIG"],
                             "description": "Output configuration format. Values must match the AsicConfigType enum in fboss/agent/hw/config/asic_config_v2.thrift."
                         },
                         "exact_match": {

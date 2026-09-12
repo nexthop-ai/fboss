@@ -530,7 +530,7 @@ def read_si_settings(
         )
 
         tx_kwargs: dict[str, Any] = {}
-        if chip.core_type == CoreType.G200:
+        if chip.core_type in (CoreType.G200, CoreType.P200):
             # pyrefly: ignore [missing-attribute]
             if "TX_PRE3" in column_names and row[Column.TX_PRE3]:
                 # pyrefly: ignore [missing-attribute]

@@ -1,11 +1,16 @@
 """Tests for Docker image management utilities."""
 
 import os
+import subprocess
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from distro_cli.lib.docker.image import _should_build_image
+from distro_cli.lib.docker.image import (
+    NO_CHECKSUM,
+    _should_build_image,
+    build_fboss_builder_image,
+)
 
 
 class TestShouldBuildImage(unittest.TestCase):
@@ -87,6 +92,52 @@ class TestShouldBuildImage(unittest.TestCase):
         self.assertEqual(checksum, "abc123")
         self.assertIn("expired", reason)
         self.assertIn("48", reason)
+
+
+class TestBuildFbossBuilderImage(unittest.TestCase):
+    @patch("distro_cli.lib.docker.image.get_abs_path")
+    @patch("distro_cli.lib.docker.image._should_build_image")
+    @patch("distro_cli.lib.docker.image.subprocess.run")
+    def test_cached_checksum_image_becomes_latest(
+        self, mock_run, mock_should_build, mock_get_abs_path
+    ):
+        mock_get_abs_path.return_value = Path(__file__)
+        mock_should_build.return_value = (False, "abc123", "exists")
+
+        build_fboss_builder_image()
+
+        mock_run.assert_called_once_with(
+            ["docker", "tag", "fboss_builder:abc123", "fboss_builder:latest"],
+            check=True,
+        )
+
+    @patch("distro_cli.lib.docker.image.get_abs_path")
+    @patch("distro_cli.lib.docker.image._should_build_image")
+    @patch("distro_cli.lib.docker.image.subprocess.run")
+    def test_cached_checksum_activation_failure_raises_runtime_error(
+        self, mock_run, mock_should_build, mock_get_abs_path
+    ):
+        mock_get_abs_path.return_value = Path(__file__)
+        mock_should_build.return_value = (False, "abc123", "exists")
+        mock_run.side_effect = subprocess.CalledProcessError(1, ["docker", "tag"])
+
+        with self.assertRaisesRegex(
+            RuntimeError, "Failed to activate cached fboss_builder image"
+        ):
+            build_fboss_builder_image()
+
+    @patch("distro_cli.lib.docker.image.get_abs_path")
+    @patch("distro_cli.lib.docker.image._should_build_image")
+    @patch("distro_cli.lib.docker.image.subprocess.run")
+    def test_trusted_latest_image_is_not_retagged(
+        self, mock_run, mock_should_build, mock_get_abs_path
+    ):
+        mock_get_abs_path.return_value = Path(__file__)
+        mock_should_build.return_value = (False, NO_CHECKSUM, "Trust in bazel")
+
+        build_fboss_builder_image()
+
+        mock_run.assert_not_called()
 
 
 if __name__ == "__main__":
