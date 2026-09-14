@@ -71,6 +71,13 @@ inline bool communityMemberExists(
 // Find the inline Community member keyed by name within a list, creating it
 // if absent. The CLI always defines members inline (the CommunityRefType
 // union's `community` arm); the member's name is its identity.
+//
+// A created member is seeded with type NORMAL. Community.type is an
+// unqualified field with no schema default, and CommunityType has no zero
+// enumerator (NORMAL = 1), so an unseeded member would serialize as `type: 0`
+// — a value no enumerator matches — and reach bgpd that way on commit.
+// NORMAL is the only safe seed: it mirrors CommunityList.boolean_operator's
+// own OR default, and `type <value>` overwrites it.
 inline bgp::bgp_policy::Community& findOrCreateCommunityMember(
     bgp::bgp_policy::CommunityList& list,
     const std::string& name) {
@@ -84,6 +91,7 @@ inline bgp::bgp_policy::Community& findOrCreateCommunityMember(
   members.emplace_back();
   auto& community = members.back().set_community();
   community.name() = name;
+  community.type() = bgp::bgp_policy::CommunityType::NORMAL;
   return community;
 }
 
