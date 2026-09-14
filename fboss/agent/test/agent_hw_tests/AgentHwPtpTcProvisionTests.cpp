@@ -9,12 +9,8 @@
  */
 
 #include <folly/IPAddress.h>
-<<<<<<< HEAD
 #include <unordered_set>
-||||||| fbc276b526
-=======
 #include "fboss/agent/packet/IPv6Hdr.h"
->>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
 #include "fboss/agent/packet/PTPHeader.h"
 #include "fboss/agent/packet/PktFactory.h"
 #include "fboss/agent/packet/UDPHeader.h"

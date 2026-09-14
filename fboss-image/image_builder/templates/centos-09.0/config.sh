@@ -236,23 +236,13 @@ for component_dir in /repos/*; do
     fi
     ;;
 
-<<<<<<< HEAD
-  npu_sai)
+  npu_sai | phy_sai)
     if [ "$BUILD_TARGET" = "cfboss" ]; then
-      echo "cfboss: skipping npu_sai processing"
+      echo "cfboss: skipping $component_name processing"
     else
       process_npu_sai_tarball "$component_dir"
       handler_rc=$?
     fi
-||||||| fbc276b526
-  npu_sai)
-    process_npu_sai_tarball "$component_dir"
-    handler_rc=$?
-=======
-  npu_sai | phy_sai)
-    process_npu_sai_tarball "$component_dir"
-    handler_rc=$?
->>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
     ;;
 
   other_dependencies)

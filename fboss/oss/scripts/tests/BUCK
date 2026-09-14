@@ -3,11 +3,8 @@ load("@fbsource//tools/build_defs/testinfra:network_access_utils.bzl", "network_
 
 oncall("fboss_distro")
 
-<<<<<<< HEAD
-
 # bazelify: exclude-all
-||||||| fbc276b526
-=======
+
 python_unittest(
     name = "test_package",
     srcs = ["test_package.py"],
@@ -25,4 +22,3 @@ python_unittest(
         "//fboss/oss/scripts:platform_descriptor_utils",
     ],
 )
->>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
