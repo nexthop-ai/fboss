@@ -12,6 +12,8 @@ thrift_library(
     thrift_srcs = {"model.thrift": []},
 )
 
+# bazelify: exclude
+# fboss2-lib compiles this .cpp itself; a translated target here would strip it.
 cpp_library(
     name = "CmdShowInterfaceTransceiverPerformanceMonitoring",
     srcs = ["CmdShowInterfaceTransceiverPerformanceMonitoring.cpp"],
