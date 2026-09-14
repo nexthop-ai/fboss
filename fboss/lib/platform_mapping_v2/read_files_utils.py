@@ -5,7 +5,7 @@ import os
 import sys
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 from fboss.lib.platform_mapping_v2.asic_vendor_config import AsicVendorConfig
 from fboss.lib.platform_mapping_v2.integrated_transceiver_mapping import (
@@ -56,13 +56,13 @@ class PlatformMappingInput:
     base_platform: str
     input_dir: str
     vendor: str
-    data: Dict[str, str]
+    data: dict[str, str]
 
 
-PlatformMappingInputs = Dict[str, PlatformMappingInput]
+PlatformMappingInputs = dict[str, PlatformMappingInput]
 
 
-def read_vendor_data(input_file_path: str) -> Dict[str, str]:
+def read_vendor_data(input_file_path: str) -> dict[str, str]:
     vendor_data = {}
     if not os.path.exists(input_file_path):
         raise FileNotFoundError(f"The folder '{input_file_path}' does not exist.")
@@ -80,9 +80,7 @@ def read_vendor_data(input_file_path: str) -> Dict[str, str]:
 
 
 def _add_platform_mapping_input(
-    inputs: PlatformMappingInputs,
-    name: str,
-    platform_input: PlatformMappingInput,
+    inputs: PlatformMappingInputs, name: str, platform_input: PlatformMappingInput
 ) -> None:
     # Platform names are globally unique
     if name in inputs:
@@ -95,9 +93,8 @@ def _add_platform_mapping_input(
 
 
 def _find_variant_inputs(
-    variants_dir: str,
-    mapping_subdir: str,
-) -> List[Tuple[str, str]]:
+    variants_dir: str, mapping_subdir: str
+) -> list[tuple[str, str]]:
     if not os.path.isdir(variants_dir):
         return []
 
@@ -110,8 +107,7 @@ def _find_variant_inputs(
 
 
 def discover_platform_mapping_inputs(
-    platforms_dir: str,
-    mapping_subdir: str = "platform_mapping",
+    platforms_dir: str, mapping_subdir: str = "platform_mapping"
 ) -> PlatformMappingInputs:
     inputs: PlatformMappingInputs = {}
 
