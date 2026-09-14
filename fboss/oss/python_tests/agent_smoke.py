@@ -35,7 +35,7 @@ DEFAULT_SERVICES = [
     "qsfp_service.service",
     "fsdb.service",
     HW_AGENT_WILDCARD,
-    # TODO BGP++
+    "bgpd.service",
 ]
 DEFAULT_RESULTS_XML = "/home/netops/tr.xml"
 DEFAULT_STARTUP_TIMEOUT = 180
