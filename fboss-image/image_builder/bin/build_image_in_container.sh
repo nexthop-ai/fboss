@@ -255,10 +255,6 @@ dprint "Copying /etc/resolv.conf to ${DESCRIPTION_DIR}/root/etc/resolv.conf..."
 mkdir -p "${DESCRIPTION_DIR}/root/etc"
 cp /etc/resolv.conf "${DESCRIPTION_DIR}/root/etc/"
 
-<<<<<<< HEAD
-# Add build timestamp to the image
-echo "Built on: $(date -u)" >"$DESCRIPTION_DIR/root/etc/build-info"
-
 # Strip any cFBOSS-only overlay files left in the persistent staging tree by a
 # previous container build, so they never leak into a hardware image. The file
 # list is derived from root_files_cfboss itself, so newly added overlay files
@@ -274,17 +270,10 @@ if [ -d "${DESCRIPTION_DIR}/root_files_cfboss" ]; then
     done
 fi
 
-||||||| fbc276b526
-# Add build timestamp to the image
-echo "Built on: $(date -u)" >"$DESCRIPTION_DIR/root/etc/build-info"
-
-=======
->>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
 # Copy rootfs template files to overlay
 dprint "Copying rootfs files to overlay..."
 cp -R ${DESCRIPTION_DIR}/root_files/* ${DESCRIPTION_DIR}/root/
 
-<<<<<<< HEAD
 # cFBOSS: layer the root_files_cfboss overlay (carries the pre-baked fruid.json
 # and any other cFBOSS-only static files) and write the build_target marker
 if [ -n "${BUILD_CONTAINER}" ]; then
@@ -295,8 +284,7 @@ if [ -n "${BUILD_CONTAINER}" ]; then
   mkdir -p ${DESCRIPTION_DIR}/root/repos
   echo cfboss >${DESCRIPTION_DIR}/root/repos/build_target
 fi
-||||||| fbc276b526
-=======
+
 # Written after the root_files copy so an overlay file cannot shadow it.
 write_build_info() {
   local rel bytes size repos
@@ -342,7 +330,6 @@ write_build_info() {
 dprint "Recording image provenance in /etc/build-info..."
 write_build_info >"${DESCRIPTION_DIR}/root/etc/build-info"
 tee -a "${LOG_FILE}" <"${DESCRIPTION_DIR}/root/etc/build-info"
->>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
 
 # Remove any existing after_pkgs files from previous runs
 rm -f ${DESCRIPTION_DIR}/root/var/tmp/after_pkgs_install_file.json
