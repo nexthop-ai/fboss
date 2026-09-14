@@ -507,6 +507,78 @@ class TestFilterFiles(unittest.TestCase):
             content = (pkg / "BUILD.bazel").read_text()
             self.assertIn("alwayslink = True", content)
 
+    def test_excluded_cpp_subpackage_is_transparent(self):
+        """A subdirectory whose BUCK has only a `# bazelify: exclude`d
+        cpp_library must not swallow the parent's sources: they belong to the
+        nearest enclosing thrift-only package's _impl target (or a deeper
+        thrift-only package's), mirroring commands/show/interface/transceiver."""
+        with TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            parent = tmp_path / "fboss" / "cli"
+            iface = parent / "iface"
+            excl = iface / "excl"
+            deep = excl / "deep"
+            deep.mkdir(parents=True)
+            (parent / "Lib.cpp").touch()
+            (iface / "A.cpp").touch()
+            (excl / "B.cpp").touch()
+            (deep / "C.cpp").touch()
+            (iface / "model.thrift").touch()
+            (deep / "model.thrift").touch()
+            (parent / "BUCK").write_text(
+                'load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")\n'
+                'oncall("test")\n'
+                "cpp_library(\n"
+                '    name = "cli-lib",\n'
+                '    srcs = ["Lib.cpp", "iface/A.cpp", "iface/excl/B.cpp", '
+                '"iface/excl/deep/C.cpp"],\n'
+                ")\n"
+            )
+            thrift = (
+                'load("@fbcode_macros//build_defs:thrift_library.bzl", '
+                '"thrift_library")\n'
+                'oncall("test")\n'
+                "thrift_library(\n"
+                '    name = "model",\n'
+                '    languages = ["cpp2"],\n'
+                '    thrift_srcs = {"model.thrift": []},\n'
+                ")\n"
+            )
+            excluded_cpp = (
+                'load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")\n'
+                "# bazelify: exclude\n"
+                "cpp_library(\n"
+                '    name = "Cmd",\n'
+                '    srcs = ["{src}"],\n'
+                ")\n"
+            )
+            (iface / "BUCK").write_text(thrift)
+            (excl / "BUCK").write_text(
+                'oncall("test")\n' + excluded_cpp.format(src="B.cpp")
+            )
+            (deep / "BUCK").write_text(thrift + excluded_cpp.format(src="C.cpp"))
+
+            parser = BuckParser(str(tmp_path))
+            targets = parser.parse_all()
+            resolver = DepResolver({}, parser.all_targets, str(tmp_path))
+            generator = BuildFileGenerator(resolver, str(tmp_path))
+            generator.generate_all(targets)
+
+            parent_build = (parent / "BUILD.bazel").read_text()
+            self.assertIn("//fboss/cli/iface:_impl", parent_build)
+            self.assertIn("//fboss/cli/iface/excl/deep:_impl", parent_build)
+            self.assertNotIn("iface/excl/B.cpp", parent_build)
+
+            iface_impl = (iface / "BUILD.bazel").read_text()
+            self.assertIn('"A.cpp"', iface_impl)
+            self.assertIn('"excl/B.cpp"', iface_impl)
+            self.assertNotIn("C.cpp", iface_impl)
+
+            deep_impl = (deep / "BUILD.bazel").read_text()
+            self.assertIn('"C.cpp"', deep_impl)
+            self.assertNotIn('name = "Cmd"', deep_impl)
+            self.assertFalse((excl / "BUILD.bazel").exists())
+
     def test_deduplication(self):
         self._make_dir("fboss/agent")
         result = self.gen._filter_files(
