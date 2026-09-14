@@ -132,7 +132,7 @@ INTF_ID_OFFSET = 2000
 # resolved automatically by _resolve_codename().
 #
 # Sources of truth:
-#   • platform_mapping_v2.py  _PLATFORM_VARIANTS_MAP
+#   • fboss/configs/platforms  <vendor>/<platform>[/variants/<variant>]
 #   • platform_name_lib.py    sanitize_platform_name()
 #   • nhdiags                 platform_map.py
 PLATFORM_CODENAME: dict[str, str] = {

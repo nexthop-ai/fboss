@@ -6,5 +6,6 @@
   "modeNames": [
     "wedge800cnhp"
   ],
-  "asicType": 20
+  "asicType": 20,
+  "numSwitchAsics": 1
 }

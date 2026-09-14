@@ -91,6 +91,7 @@ OSS_MULTI_NPU_SUPPORTED_PLATFORMS: dict[bool, list[str]] = {
         "m5120csc",
         "wedge800bnhp",
         "wedge800cact",
+        "wedge800cnhp",
         "blackwolf800banw",
         "j4sim",
         "icecube800banw",
