@@ -942,7 +942,6 @@
           "productionState": 1,
           "productionSubState": 3,
           "respinVariantIndicator": 2
-<<<<<<< HEAD
         },
         {
           "sensors": [
@@ -1077,12 +1076,6 @@
           "productionState": 2,
           "productionSubState": 1,
           "respinVariantIndicator": 2
-||||||| fbc276b526
-          "productProductionState": 1,
-          "productVersion": 3,
-          "productSubVersion": 2
-=======
->>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
         }
       ]
     },
