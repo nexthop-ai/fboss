@@ -213,37 +213,6 @@ std::unique_ptr<PlatformMapping> initPlatformMapping(PlatformType type) {
       return platformMappingStr.empty()
           ? std::make_unique<Icecube800banwPlatformMapping>()
           : std::make_unique<Icecube800banwPlatformMapping>(platformMappingStr);
-<<<<<<< HEAD
-    case PlatformType::PLATFORM_M4062NHP:
-    case PlatformType::PLATFORM_M4340NHP:
-    case PlatformType::PLATFORM_NH4010F:
-    case PlatformType::PLATFORM_NH4220F:
-    case PlatformType::PLATFORM_WEDGE800BACT:
-    case PlatformType::PLATFORM_WEDGE800BNHP:
-      // These platforms ship no compiled-in platform mapping. The mapping
-      // must be provided externally via --platform_descriptor_config_path or
-      // --platform_mapping_override_path.
-      throw FbossError(
-          "Platform ",
-          apache::thrift::util::enumNameSafe(type),
-          " requires an external platform mapping; ",
-          "set --platform_descriptor_config_path or ",
-          "--platform_mapping_override_path");
-||||||| fbc276b526
-    case PlatformType::PLATFORM_M4062NHP:
-    case PlatformType::PLATFORM_WEDGE800BACT:
-    case PlatformType::PLATFORM_WEDGE800BNHP:
-      // These platforms ship no compiled-in platform mapping. The mapping
-      // must be provided externally via --platform_descriptor_config_path or
-      // --platform_mapping_override_path.
-      throw FbossError(
-          "Platform ",
-          apache::thrift::util::enumNameSafe(type),
-          " requires an external platform mapping; ",
-          "set --platform_descriptor_config_path or ",
-          "--platform_mapping_override_path");
-=======
->>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
     case PlatformType::PLATFORM_ICETEA800BC:
       return platformMappingStr.empty()
           ? std::make_unique<Icetea800bcPlatformMapping>()
