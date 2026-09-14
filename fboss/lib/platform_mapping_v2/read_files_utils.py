@@ -5,13 +5,7 @@ import os
 import sys
 from dataclasses import dataclass
 from enum import IntEnum
-<<<<<<< HEAD
-from typing import Any, Optional
-||||||| fbc276b526
-from typing import Any, Dict, List, Optional
-=======
 from typing import Any, Dict, List, Optional, Tuple
->>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
 
 from fboss.lib.platform_mapping_v2.asic_vendor_config import AsicVendorConfig
 from fboss.lib.platform_mapping_v2.integrated_transceiver_mapping import (
@@ -57,11 +51,6 @@ from neteng.fboss.switch_config.thrift_types import (
 from neteng.fboss.transceiver.thrift_types import TransmitterTechnology, Vendor
 
 
-<<<<<<< HEAD
-def read_vendor_data(input_file_path: str) -> dict[str, str]:
-||||||| fbc276b526
-def read_vendor_data(input_file_path: str) -> Dict[str, str]:
-=======
 @dataclass(frozen=True)
 class PlatformMappingInput:
     base_platform: str
@@ -74,7 +63,6 @@ PlatformMappingInputs = Dict[str, PlatformMappingInput]
 
 
 def read_vendor_data(input_file_path: str) -> Dict[str, str]:
->>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
     vendor_data = {}
     if not os.path.exists(input_file_path):
         raise FileNotFoundError(f"The folder '{input_file_path}' does not exist.")
@@ -91,30 +79,6 @@ def read_vendor_data(input_file_path: str) -> Dict[str, str]:
     return vendor_data
 
 
-<<<<<<< HEAD
-def read_all_vendor_data(input_dir: str) -> dict[str, dict[str, str]]:
-    all_vendor_data = {}
-    data_path = input_dir
-    print(f"Reading all vendor data in {data_path}...", file=sys.stderr)
-    for filename in sorted(os.listdir(data_path)):
-        filepath = os.path.join(data_path, filename)
-        if not os.path.isdir(filepath):
-            continue
-        all_vendor_data[filename] = read_vendor_data(filepath)
-||||||| fbc276b526
-def read_all_vendor_data(input_dir: str) -> Dict[str, Dict[str, str]]:
-    all_vendor_data = {}
-    data_path = input_dir
-    print(
-        f"Reading all vendor data in {data_path}...",
-        file=sys.stderr,
-    )
-    for filename in sorted(os.listdir(data_path)):
-        filepath = os.path.join(data_path, filename)
-        if not os.path.isdir(filepath):
-            continue
-        all_vendor_data[filename] = read_vendor_data(filepath)
-=======
 def _add_platform_mapping_input(
     inputs: PlatformMappingInputs,
     name: str,
@@ -128,7 +92,6 @@ def _add_platform_mapping_input(
             f"'{platform_input.input_dir}'"
         )
     inputs[name] = platform_input
->>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
 
 
 def _find_variant_inputs(

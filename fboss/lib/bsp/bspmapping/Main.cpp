@@ -16,24 +16,10 @@
 #include "fboss/lib/bsp/bspmapping/Parser.h"
 
 namespace facebook::fboss {
-<<<<<<< HEAD
-const std::map<PlatformType, folly::StringPiece> kHardwareNameMap = {
-    {facebook::fboss::PlatformType::PLATFORM_LADAKH800BCLS,
-     kPortMappingLadakh800bclsCsv},
-    {facebook::fboss::PlatformType::PLATFORM_NH4010F, kPortMappingNh4010fCsv},
-    {facebook::fboss::PlatformType::PLATFORM_LEH800BCLS,
-     kPortMappingLeh800bclsCsv},
-||||||| fbc276b526
-const std::map<PlatformType, folly::StringPiece> kHardwareNameMap = {
-    {facebook::fboss::PlatformType::PLATFORM_LADAKH800BCLS,
-     kPortMappingLadakh800bclsCsv},
-    {facebook::fboss::PlatformType::PLATFORM_LEH800BCLS,
-     kPortMappingLeh800bclsCsv},
-=======
 const std::map<std::string, folly::StringPiece> kPlatformNameToCsv = {
     {"ladakh800bcls", kPortMappingLadakh800bclsCsv},
+    {"nh4010f", kPortMappingNh4010fCsv},
     {"leh800bcls", kPortMappingLeh800bclsCsv},
->>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
 };
 
 // Helper function to generate PHY CSV filename from regular CSV filename
