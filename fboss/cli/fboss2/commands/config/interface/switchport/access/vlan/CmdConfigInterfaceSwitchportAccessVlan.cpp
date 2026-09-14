@@ -57,7 +57,7 @@ CmdConfigInterfaceSwitchportAccessVlan::queryClient(
   // the target VLAN — the agent expects a port to be a member of its ingress
   // VLAN. Drop the port's previous untagged (access) memberships and any
   // existing entry in the target VLAN, then insert the new entry. Tagged
-  // (trunk) memberships in other VLANs are preserved.
+  // memberships in other VLANs are preserved.
   auto& vlanPorts = *config.sw()->vlanPorts();
   vlanPorts.erase(
       std::remove_if(

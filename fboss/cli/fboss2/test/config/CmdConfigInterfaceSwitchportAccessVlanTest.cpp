@@ -217,7 +217,7 @@ TEST_F(
   EXPECT_EQ(*port1Entries[0].vlanID(), 2001);
   EXPECT_FALSE(*port1Entries[0].emitTags());
 
-  // Port 2: same replacement, but its tagged (trunk) membership in VLAN 3000
+  // Port 2: same replacement, but its tagged membership in VLAN 3000
   // is preserved.
   auto port2Entries = vlanPortEntriesFor(2);
   ASSERT_EQ(port2Entries.size(), 2);
