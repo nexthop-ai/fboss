@@ -305,8 +305,6 @@ class TestKernelDownloadHTTP(unittest.TestCase):
         # Create test manifest with HTTP URL
         self.manifest_path = self.temp_dir / "test-http-manifest.json"
         manifest_data = {
-            "name": "test-http-download",
-            "version": "1.0.0",
             "kernel": {"download": self.http_server.get_url("kernel-test.tar.zst")},
             "distribution_formats": {"usb": "output/test.iso"},
         }
