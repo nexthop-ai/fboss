@@ -31,7 +31,8 @@ permissions:
 env:
   GETDEPS_CACHE_URL: "http://bucket.internal.nexthop.ai:7480/image-stash/getdeps-cache"
   GETDEPS_CACHE_UPLOAD: "1"
-  FBOSS_SIM_CACHE_REF: "container-registry.sw.internal.nexthop.ai/fboss-sim-runtime:buildcache"
+  HARBOR_REGISTRY: "harbor.sw.internal.nexthop.ai"
+  FBOSS_SIM_CACHE_REF: "harbor.sw.internal.nexthop.ai/fboss-artifacts/fboss-sim-runtime:buildcache"
 
 jobs:
   fboss-sim-cli:
@@ -131,6 +132,15 @@ jobs:
       - name: Drop the nh checkout before the image build
         if: always() && steps.nh-checkout.outcome == 'success'
         run: sudo rm -rf nh
+
+      # buildx exports the layer cache to FBOSS_SIM_CACHE_REF; Harbor serves
+      # pulls anonymously but authenticates writes.
+      - name: Log in to Harbor for the buildcache push
+        env:
+          ROBOT_SECRET: ${{ secrets.HARBOR_FBOSS_ARTIFACTS_ROBOT_SECRET }}
+        run: |
+          echo "$ROBOT_SECRET" | docker login "${{ env.HARBOR_REGISTRY }}" \
+            -u 'robot$fboss-artifacts+ci' --password-stdin
 
       - name: Build fboss-sim runtime image (host has the Docker daemon)
         run: |
