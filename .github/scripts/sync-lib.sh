@@ -162,8 +162,11 @@ overlay_nh_harness() {
   # pushed to a real upstream PR branch:
   #   d09a2fbf: fake SAI initializes FakePort members; unfixed agents SEGV (#621)
   #   c7d40884: distro_cli docker test self-skips when docker is absent
+  #   86941d3f: SAI_NEXT_HOP_GROUP_ATTR_SPLIT_HORIZON_ENABLE undeclared on our
+  #             sai_impl headers; Qumran3DAsic + CmdShowEnvironmentFan build fixes
   local fix
-  for fix in d09a2fbfe633fedbac25bd083e75cf2fa8122bad c7d40884e67522873e44206e6ac238c8e76a4751; do
+  for fix in d09a2fbfe633fedbac25bd083e75cf2fa8122bad c7d40884e67522873e44206e6ac238c8e76a4751 \
+    86941d3fe633bd0bf03460391a75a2efddf5ec6b; do
     git cherry-pick -x "$fix" || {
       echo_error "cherry-pick of internal fix $fix failed; resolve or drop it"
       git cherry-pick --abort || true
