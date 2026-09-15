@@ -8,7 +8,22 @@ inputs:
   registry:
     description: Container registry host
     required: false
-    default: container-registry.sw.internal.nexthop.ai
+    default: harbor.sw.internal.nexthop.ai
+  project:
+    description: Harbor project holding the cache image
+    required: false
+    default: fboss-artifacts
+  robot_secret:
+    description: >
+      Harbor robot account secret used to push the cache image. Pulls are
+      anonymous, so leaving this empty degrades to a build-every-time cache
+      miss rather than failing the job.
+    required: false
+    default: ""
+  robot_user:
+    description: Harbor robot account name matching robot_secret
+    required: false
+    default: robot$fboss-artifacts+ci
 
 runs:
   using: composite
@@ -17,8 +32,11 @@ runs:
       shell: bash
       env:
         REGISTRY: ${{ inputs.registry }}
+        PROJECT: ${{ inputs.project }}
+        ROBOT_USER: ${{ inputs.robot_user }}
+        ROBOT_SECRET: ${{ inputs.robot_secret }}
       run: |
-        CACHE_IMAGE="${REGISTRY}/fboss-builder:cache"
+        CACHE_IMAGE="${REGISTRY}/${PROJECT}/fboss-builder:cache"
         # Compute cache key from Dockerfile + build scripts
         CACHE_KEY=$(cat fboss/oss/docker/Dockerfile fboss/oss/docker/setup_clang.sh requirements-dev.txt .pre-commit-config.yaml 2>/dev/null | sha256sum | cut -c1-12)
         CACHE_TAG="${CACHE_IMAGE}-${CACHE_KEY}"
@@ -32,5 +50,10 @@ runs:
           ./fboss/oss/scripts/nhfboss-docker-build.py
           # Push to registry for next run
           docker tag "fboss_image_${USER}:latest" "${CACHE_TAG}"
+          if [ -n "${ROBOT_SECRET}" ]; then
+            echo "${ROBOT_SECRET}" | docker login "${REGISTRY}" -u "${ROBOT_USER}" --password-stdin
+          else
+            echo "Warning: no Harbor robot secret provided; cache push will fail"
+          fi
           docker push "${CACHE_TAG}" || echo "Warning: failed to push cache image"
         fi

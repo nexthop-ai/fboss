@@ -85,6 +85,8 @@ jobs:
 
       - name: Build FBOSS Docker image (with registry cache)
         uses: ./.github/actions/fboss-builder-image
+        with:
+          robot_secret: ${{ secrets.HARBOR_FBOSS_ARTIFACTS_ROBOT_SECRET }}
 
       - name: Start FBOSS build container
         run: ./fboss/oss/scripts/nhfboss-docker-enter.py
