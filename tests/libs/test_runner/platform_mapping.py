@@ -10,8 +10,8 @@ _PLATFORM_MAPPING_DIR = Path(
     "fboss/lib/platform_mapping_v2/generated_platform_mappings"
 )
 
-# Link and QSFP hw test binaries have no support for profiles above 800G just yet.
-_MAX_PROFILE_SPEED_MBPS = 800_000
+# Upper bound on the profiles the link/QSFP hw test binaries will drive.
+_MAX_PROFILE_SPEED_MBPS = 1_600_000
 
 _SWITCH_CONFIG_THRIFT = Path("fboss/agent/switch_config.thrift")
 
