@@ -33,7 +33,7 @@ repos:
         # mapping keys that PyYAML cannot load; they are generated artifacts.
         # The asic_config.yaml copies next to platform descriptors are the same
         # files.
-        exclude: ^fboss/(configs/platforms/[^/]+/[^/]+/asic_config/generated/|lib/platform_mapping_v2/generated_platform_mappings/[^/]+/[^/]+/asic_config\.yaml$)
+        exclude: ^fboss/configs/platforms/[^/]+/[^/]+/(asic_config/generated/|platform_mapping/generated/asic_config\.yaml$)
       - id: check-json
       - id: check-merge-conflict
   - repo: https://github.com/astral-sh/ruff-pre-commit

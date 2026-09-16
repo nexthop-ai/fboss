@@ -17,7 +17,6 @@ from __future__ import annotations
 import pathlib
 import shutil
 
-
 PLATFORM_DESCRIPTOR_ARCHIVE_ROOT = pathlib.PurePosixPath(
     "share/platform_descriptors/platforms"
 )
@@ -47,7 +46,11 @@ def get_platform_descriptor_paths(
                 f"Platform descriptor {descriptor_path} has no sibling "
                 f"{mapping_path.name}"
             )
-        for source in sorted(generated_dir.glob("*.json")):
+        # asic_config.yaml is read from beside platform_mapping.json at runtime
+        sources = list(generated_dir.glob("*.json")) + list(
+            generated_dir.glob("*.yaml")
+        )
+        for source in sorted(sources):
             relative_path = source.relative_to(platform_configs_dir)
             paths[source] = str(PLATFORM_DESCRIPTOR_ARCHIVE_ROOT / relative_path)
     return paths

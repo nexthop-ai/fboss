@@ -2,13 +2,12 @@
 
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 
-_GENERATED_DIR = "fboss/configs/platforms"
-_DESCRIPTOR_DIR = "fboss/lib/platform_mapping_v2/generated_platform_mappings"
+_PLATFORMS_DIR = "fboss/configs/platforms"
 _COMPARE_SCRIPT = "//bazel_lib:generated_files_identical"
 _REGISTRY_SCRIPT = "fboss/oss/scripts/descriptor_asic_config_registry.sh"
 
-# descriptor: directory under _DESCRIPTOR_DIR holding platform_mapping.json, which is
-#   where SaiBcmPlatform::getHwConfig() reads asic_config.yaml from at runtime.
+# descriptor: <vendor>/<platform> whose platform_mapping/generated holds platform_mapping.json,
+#   which is where SaiBcmPlatform::getHwConfig() reads asic_config.yaml from at runtime.
 # generated: the asic_config_v3 output the copy is taken from.
 _DESCRIPTOR_COPIES = [
     struct(
@@ -24,10 +23,10 @@ _DESCRIPTOR_COPIES = [
 ]
 
 def _copy_path(descriptor):
-    return _DESCRIPTOR_DIR + "/" + descriptor + "/asic_config.yaml"
+    return _PLATFORMS_DIR + "/" + descriptor + "/platform_mapping/generated/asic_config.yaml"
 
 def _generated_path(generated):
-    return _GENERATED_DIR + "/" + generated
+    return _PLATFORMS_DIR + "/" + generated
 
 def _copy_diff_test(entry):
     """Diffs one descriptor copy against the generated yaml it comes from."""
@@ -55,7 +54,7 @@ def _check_registry():
     covered = [_copy_path(e.descriptor) for e in _DESCRIPTOR_COPIES]
     uncovered = [
         f
-        for f in native.glob([_DESCRIPTOR_DIR + "/*/*/asic_config.yaml"], allow_empty = True)
+        for f in native.glob([_PLATFORMS_DIR + "/*/*/platform_mapping/generated/asic_config.yaml"], allow_empty = True)
         if f not in covered
     ]
 

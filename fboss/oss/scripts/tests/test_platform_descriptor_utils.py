@@ -35,6 +35,7 @@ class PlatformDescriptorUtilsTest(unittest.TestCase):
             "platform_mapping.json",
             "port_id_to_port_assignment.json",
             "raw_platform_mapping.json",
+            "asic_config.yaml",
         ):
             (generated_dir / filename).write_text(filename)
         (generated_dir / "not_packaged.txt").write_text("not packaged")
@@ -62,7 +63,12 @@ class PlatformDescriptorUtilsTest(unittest.TestCase):
                 "platform_mapping/generated/platform_mapping.json",
                 paths[nexthop_dir / "platform_mapping.json"],
             )
-            self.assertEqual(8, len(paths))
+            self.assertEqual(
+                "share/platform_descriptors/platforms/nexthop/m4062nhp/"
+                "platform_mapping/generated/asic_config.yaml",
+                paths[nexthop_dir / "asic_config.yaml"],
+            )
+            self.assertEqual(10, len(paths))
             self.assertNotIn(accton_dir / "not_packaged.txt", paths)
 
     def test_copy_platform_descriptors_uses_packaged_layout(self) -> None:
@@ -85,6 +91,7 @@ class PlatformDescriptorUtilsTest(unittest.TestCase):
                     "platform_mapping.json",
                     "port_id_to_port_assignment.json",
                     "raw_platform_mapping.json",
+                    "asic_config.yaml",
                 },
                 {path.name for path in destination.iterdir()},
             )

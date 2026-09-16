@@ -375,42 +375,25 @@ class TestLocalSourcePath:
 
 
 class TestPlatformMappingPath:
-    """_platform_mapping_path resolves both the legacy flat layout and the
-    newer descriptor-backed <vendor>/<config>/ layout."""
+    """_platform_mapping_path resolves the colocated
+    <vendor>/<config>/platform_mapping/generated/ layout."""
 
-    def _gen_dir(self, tmp_path):
-        d = tmp_path / "fboss" / "lib" / "platform_mapping_v2" / "generated_platform_mappings"
+    def _configs_dir(self, tmp_path):
+        d = tmp_path / "fboss" / "configs" / "platforms"
         d.mkdir(parents=True, exist_ok=True)
         return d
 
-    def test_flat_layout(self, tmp_path, monkeypatch):
-        gen = self._gen_dir(tmp_path)
-        flat = gen / "meru800bia_platform_mapping.json"
-        flat.write_text("{}")
-        monkeypatch.setattr(platform_mapping_module, "repo_dir", lambda rel: gen)
-        assert platform_mapping_module._platform_mapping_path("meru800bia") == flat
-
-    def test_nested_vendor_layout(self, tmp_path, monkeypatch):
-        gen = self._gen_dir(tmp_path)
-        nested = gen / "accton" / "wedge800bact" / "platform_mapping.json"
+    def test_vendor_layout(self, tmp_path, monkeypatch):
+        configs = self._configs_dir(tmp_path)
+        nested = configs / "accton" / "wedge800bact" / "platform_mapping" / "generated" / "platform_mapping.json"
         nested.parent.mkdir(parents=True)
         nested.write_text("{}")
-        monkeypatch.setattr(platform_mapping_module, "repo_dir", lambda rel: gen)
+        monkeypatch.setattr(platform_mapping_module, "repo_dir", lambda rel: configs)
         assert platform_mapping_module._platform_mapping_path("wedge800bact") == nested
 
-    def test_flat_preferred_over_nested(self, tmp_path, monkeypatch):
-        gen = self._gen_dir(tmp_path)
-        flat = gen / "foo_platform_mapping.json"
-        flat.write_text("{}")
-        nested = gen / "vendor" / "foo" / "platform_mapping.json"
-        nested.parent.mkdir(parents=True)
-        nested.write_text("{}")
-        monkeypatch.setattr(platform_mapping_module, "repo_dir", lambda rel: gen)
-        assert platform_mapping_module._platform_mapping_path("foo") == flat
-
     def test_missing_raises(self, tmp_path, monkeypatch):
-        gen = self._gen_dir(tmp_path)
-        monkeypatch.setattr(platform_mapping_module, "repo_dir", lambda rel: gen)
+        configs = self._configs_dir(tmp_path)
+        monkeypatch.setattr(platform_mapping_module, "repo_dir", lambda rel: configs)
         with pytest.raises(FileNotFoundError):
             platform_mapping_module._platform_mapping_path("does_not_exist")
 

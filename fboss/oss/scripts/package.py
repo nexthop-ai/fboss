@@ -23,7 +23,6 @@ OSS_DIR = SRC_DIR / "fboss/oss"
 RUN_SCRIPTS_DIR = SRC_DIR / "fboss/oss/scripts/run_scripts"
 RUN_CONFIGS_DIR = SRC_DIR / "fboss/oss/scripts/run_configs"
 PYTHON_TESTS_DIR = OSS_DIR / "python_tests"
-PLATFORM_MAPPING_DIR = SRC_DIR / "fboss/lib/platform_mapping_v2"
 PLATFORM_CONFIGS_DIR = SRC_DIR / "fboss/configs/platforms"
 
 BUILD_DIR = "--build-dir"
@@ -83,7 +82,6 @@ FORWARDING_EXTRA = {
     RUN_CONFIGS_DIR / "th3": "share/th3",
     RUN_CONFIGS_DIR / "th4": "share/th4",
     RUN_CONFIGS_DIR / "th5": "share/th5",
-    PLATFORM_MAPPING_DIR / "generated_platform_mappings": "share/platform_descriptors",
 }
 
 FORWARDING_LIBS = []
@@ -224,7 +222,7 @@ _SOURCE_DATE_EPOCH = int(os.environ.get("SOURCE_DATE_EPOCH") or 1)
 
 
 # Build-system metadata that lives next to files we package wholesale (e.g.
-# generated_platform_mappings/BUCK). It has no business on a switch.
+# run_scripts/BUCK). It has no business on a switch.
 _EXCLUDED_BASENAMES = frozenset(
     {"BUCK", "TARGETS", "BUILD.bazel", "CMakeLists.txt", "OWNERS", "__pycache__"}
 )
