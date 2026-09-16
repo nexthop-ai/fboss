@@ -273,7 +273,7 @@ heavy_genrule(
     ],
     outs = [
         "fboss_platform_stack.tar",
-        "fboss_platform_stack_tests.tar",
+        "fboss_platform_stack_tests.tar.zst",
     ],
     cmd = LOAD_FBOSS_BUILDER_CMD + FREE_UP_DISK_IN_CI_CMD + """
         pushd fboss/fboss-image
@@ -282,7 +282,7 @@ heavy_genrule(
         popd
 
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss/oss/scripts/dist/platform-stack.tar $(location fboss_platform_stack.tar)
-        $(execpath //bazel_lib:ln_or_cp) fboss/platform-stack-tests.tar $(location fboss_platform_stack_tests.tar)
+        zstd -T0 -12 -f -o $(location fboss_platform_stack_tests.tar.zst) fboss/platform-stack-tests.tar
     """ + delete_build_products_in_ci([
         "fboss/fboss/oss/scripts/.build/platform-stack",
         "fboss/fboss-image/distro_cli/.artifacts",
@@ -370,7 +370,7 @@ heavy_genrule(
     ],
     outs = [
         "fboss_forwarding_stack_broadcom_xgs.tar",
-        "fboss_forwarding_stack_tests_broadcom_xgs.tar",
+        "fboss_forwarding_stack_tests_broadcom_xgs.tar.zst",
     ],
     cmd = LOAD_FBOSS_BUILDER_CMD + FREE_UP_DISK_IN_CI_CMD + """
         BUILD_DIR="fboss/fboss-image/.nh-broadcom-xgs"
@@ -384,7 +384,7 @@ heavy_genrule(
         popd
 
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss/oss/scripts/dist/forwarding-stack.tar $(location fboss_forwarding_stack_broadcom_xgs.tar)
-        $(execpath //bazel_lib:ln_or_cp) fboss/forwarding-stack-tests.tar $(location fboss_forwarding_stack_tests_broadcom_xgs.tar)
+        zstd -T0 -12 -f -o $(location fboss_forwarding_stack_tests_broadcom_xgs.tar.zst) fboss/forwarding-stack-tests.tar
     """ + delete_build_products_in_ci([
         "fboss/fboss/oss/scripts/.build/forwarding-stack",
         "fboss/fboss-image/distro_cli/.artifacts",
@@ -479,7 +479,7 @@ heavy_genrule(
     ],
     outs = [
         "fboss_forwarding_stack_broadcom_th6.tar",
-        "fboss_forwarding_stack_tests_broadcom_th6.tar",
+        "fboss_forwarding_stack_tests_broadcom_th6.tar.zst",
     ],
     cmd = LOAD_FBOSS_BUILDER_CMD + FREE_UP_DISK_IN_CI_CMD + """
         BUILD_DIR="fboss/fboss-image/.nh-broadcom-th6"
@@ -493,7 +493,7 @@ heavy_genrule(
         popd
 
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss/oss/scripts/dist/forwarding-stack.tar $(location fboss_forwarding_stack_broadcom_th6.tar)
-        $(execpath //bazel_lib:ln_or_cp) fboss/forwarding-stack-tests.tar $(location fboss_forwarding_stack_tests_broadcom_th6.tar)
+        zstd -T0 -12 -f -o $(location fboss_forwarding_stack_tests_broadcom_th6.tar.zst) fboss/forwarding-stack-tests.tar
     """ + delete_build_products_in_ci([
         "fboss/fboss/oss/scripts/.build/forwarding-stack",
         "fboss/fboss-image/distro_cli/.artifacts",
@@ -585,7 +585,7 @@ heavy_genrule(
     ],
     outs = [
         "fboss_forwarding_stack_broadcom_dnx.tar",
-        "fboss_forwarding_stack_tests_broadcom_dnx.tar",
+        "fboss_forwarding_stack_tests_broadcom_dnx.tar.zst",
     ],
     cmd = LOAD_FBOSS_BUILDER_CMD + FREE_UP_DISK_IN_CI_CMD + """
         BUILD_DIR="fboss/fboss-image/.nh-broadcom-dnx"
@@ -599,7 +599,7 @@ heavy_genrule(
         popd
 
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss/oss/scripts/dist/forwarding-stack.tar $(location fboss_forwarding_stack_broadcom_dnx.tar)
-        $(execpath //bazel_lib:ln_or_cp) fboss/forwarding-stack-tests.tar $(location fboss_forwarding_stack_tests_broadcom_dnx.tar)
+        zstd -T0 -12 -f -o $(location fboss_forwarding_stack_tests_broadcom_dnx.tar.zst) fboss/forwarding-stack-tests.tar
     """ + delete_build_products_in_ci([
         "fboss/fboss/oss/scripts/.build/forwarding-stack",
         "fboss/fboss-image/distro_cli/.artifacts",
@@ -692,7 +692,7 @@ heavy_genrule(
     ],
     outs = [
         "fboss_forwarding_stack_cisco_s1.tar",
-        "fboss_forwarding_stack_tests_cisco_s1.tar",
+        "fboss_forwarding_stack_tests_cisco_s1.tar.zst",
     ],
     cmd = LOAD_FBOSS_BUILDER_CMD + FREE_UP_DISK_IN_CI_CMD + """
         BUILD_DIR="fboss/fboss-image/.nh-cisco-s1"
@@ -706,7 +706,7 @@ heavy_genrule(
         popd
 
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss/oss/scripts/dist/forwarding-stack.tar $(location fboss_forwarding_stack_cisco_s1.tar)
-        $(execpath //bazel_lib:ln_or_cp) fboss/forwarding-stack-tests.tar $(location fboss_forwarding_stack_tests_cisco_s1.tar)
+        zstd -T0 -12 -f -o $(location fboss_forwarding_stack_tests_cisco_s1.tar.zst) fboss/forwarding-stack-tests.tar
     """ + delete_build_products_in_ci([
         "fboss/fboss/oss/scripts/.build/forwarding-stack",
         "fboss/fboss-image/distro_cli/.artifacts",
@@ -773,32 +773,6 @@ heavy_genrule(
         "fboss/fboss-image/distro_cli/.artifacts",
     ]),
     tags = ["no-sandbox"],
-)
-
-heavy_genrule(
-    name = "compress_test_artifacts",
-    needs = "all_cpus",
-    srcs = [
-        "fboss_forwarding_stack_tests_broadcom_xgs.tar",
-        "fboss_forwarding_stack_tests_broadcom_th6.tar",
-        "fboss_forwarding_stack_tests_broadcom_dnx.tar",
-        "fboss_forwarding_stack_tests_cisco_s1.tar",
-        "fboss_platform_stack_tests.tar",
-    ],
-    outs = [
-        "fboss_forwarding_stack_tests_broadcom_xgs.tar.zst",
-        "fboss_forwarding_stack_tests_broadcom_th6.tar.zst",
-        "fboss_forwarding_stack_tests_broadcom_dnx.tar.zst",
-        "fboss_forwarding_stack_tests_cisco_s1.tar.zst",
-        "fboss_platform_stack_tests.tar.zst",
-    ],
-    cmd = """
-        zstd -T0 -12 -f -o $(location fboss_forwarding_stack_tests_broadcom_xgs.tar.zst) $(location fboss_forwarding_stack_tests_broadcom_xgs.tar)
-        zstd -T0 -12 -f -o $(location fboss_forwarding_stack_tests_broadcom_th6.tar.zst) $(location fboss_forwarding_stack_tests_broadcom_th6.tar)
-        zstd -T0 -12 -f -o $(location fboss_forwarding_stack_tests_broadcom_dnx.tar.zst) $(location fboss_forwarding_stack_tests_broadcom_dnx.tar)
-        zstd -T0 -12 -f -o $(location fboss_forwarding_stack_tests_cisco_s1.tar.zst) $(location fboss_forwarding_stack_tests_cisco_s1.tar)
-        zstd -T0 -12 -f -o $(location fboss_platform_stack_tests.tar.zst) $(location fboss_platform_stack_tests.tar)
-    """,
 )
 
 heavy_genrule(
