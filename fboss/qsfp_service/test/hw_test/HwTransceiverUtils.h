@@ -99,9 +99,13 @@ class HwTransceiverUtils {
   static void verifyCopper400gProfile(
       const TcvrState& tcvrState,
       const std::vector<MediaInterfaceId>& mediaInterfaces);
-  static void verifyOptical800gProfile(
+  // Verifies the module's reported media codes against the codes the
+  // TransceiverProperties config declares for this speed. Speed-agnostic, so a
+  // new optical profile only needs a case in verifyMediaInterfaceCompliance().
+  static void verifyOpticalProfileForSpeed(
       const TransceiverManagementInterface mgmtInterface,
-      const std::vector<MediaInterfaceId>& mediaInterfaces);
+      const std::vector<MediaInterfaceId>& mediaInterfaces,
+      cfg::PortSpeed speed);
   static void verifyCopper800gProfile(
       const TcvrState& tcvrState,
       const std::vector<MediaInterfaceId>& mediaInterfaces);
