@@ -246,9 +246,9 @@ enum MediaInterfaceCode {
   // 8x800G over DR4: 4 banks, each a 2x800G-DR4
   DR4_8x800G = 36,
   FR2_200G = 37,
-<<<<<<< HEAD
   // 1.6TBASE-DR8 (IEEE 802.3 Clause 180)
   DR8_1600G = 38,
+<<<<<<< HEAD
   // Active copper at 200G/lane (IEEE 802.3 Clause 179). The hw test runner
   // parses the trailing speed off these names, so keep the suffix.
   CR1_200G = 39,
@@ -258,6 +258,12 @@ enum MediaInterfaceCode {
 ||||||| fbc276b526
 =======
 >>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
+||||||| parent of 109aa6e8f7 (resolve transceiver.thrift)
+||||||| fbc276b526
+=======
+>>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
+=======
+>>>>>>> 109aa6e8f7 (resolve transceiver.thrift)
 }
 
 // The extended specification compliance code of the transceiver module.
