@@ -7,21 +7,11 @@ import re
 from pathlib import Path
 from typing import NamedTuple
 
-<<<<<<< HEAD
 logger = logging.getLogger("test_runner")
 
 ProfileId = int
 
-_PLATFORM_MAPPING_DIR = Path(
-    "fboss/lib/platform_mapping_v2/generated_platform_mappings"
-)
-||||||| parent of 895a742852 (move nexthop generated platform mappings to fboss/configs/platforms)
-_PLATFORM_MAPPING_DIR = Path(
-    "fboss/lib/platform_mapping_v2/generated_platform_mappings"
-)
-=======
 _PLATFORM_CONFIGS_DIR = Path("fboss/configs/platforms")
->>>>>>> 895a742852 (move nexthop generated platform mappings to fboss/configs/platforms)
 
 # Upper bound on the profiles the link/QSFP hw test binaries will drive.
 _MAX_PROFILE_SPEED_MBPS = 1_600_000
