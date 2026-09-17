@@ -132,7 +132,7 @@ INTF_ID_OFFSET = 2000
 # resolved automatically by _resolve_codename().
 #
 # Sources of truth:
-#   • platform_mapping_v2.py  _PLATFORM_VARIANTS_MAP
+#   • fboss/configs/platforms  <vendor>/<platform>[/variants/<variant>]
 #   • platform_name_lib.py    sanitize_platform_name()
 #   • nhdiags                 platform_map.py
 PLATFORM_CODENAME: dict[str, str] = {
@@ -154,7 +154,22 @@ CODENAMES_REQUIRING_PLATFORM_DESCRIPTOR = {
     "nh4010f",
     "nh4220f",
     "wedge800bact",
+    "wedge800bnhp",
+    "wedge800cact",
+    "wedge800cnhp",
 }
+
+
+def _find_platform_dir(
+    platforms_dir: pathlib.Path | None, codename: str
+) -> pathlib.Path | None:
+    """Locate <platforms_dir>/<vendor>/<codename>/platform_mapping."""
+    if platforms_dir is None:
+        return None
+    for candidate in sorted(platforms_dir.glob(f"*/{codename}/platform_mapping")):
+        if candidate.is_dir():
+            return candidate
+    return None
 
 
 def _resolve_codename(platform: str, platforms_dir: pathlib.Path | None = None) -> str:
@@ -166,7 +181,7 @@ def _resolve_codename(platform: str, platforms_dir: pathlib.Path | None = None) 
        (mimics fboss_init.sh logic), then retry 1 and 2.
     """
     # 1. Direct directory match
-    if platforms_dir and (platforms_dir / platform).is_dir():
+    if _find_platform_dir(platforms_dir, platform):
         return platform
 
     # 2. Explicit alias
@@ -176,7 +191,7 @@ def _resolve_codename(platform: str, platforms_dir: pathlib.Path | None = None) 
     # 3. Normalise and retry
     normalised = platform.lower().replace("-", "").replace("_", "").replace(" ", "")
     if normalised != platform:
-        if platforms_dir and (platforms_dir / normalised).is_dir():
+        if _find_platform_dir(platforms_dir, normalised):
             return normalised
         if normalised in PLATFORM_CODENAME:
             return PLATFORM_CODENAME[normalised]
@@ -187,14 +202,10 @@ def _resolve_codename(platform: str, platforms_dir: pathlib.Path | None = None) 
 
 
 def _find_platforms_dir(script_path: pathlib.Path) -> pathlib.Path:
-    """Walk up from the script to locate the platform_mapping_v2/platforms dir."""
+    """Walk up from the script to locate the configs/platforms dir."""
     candidates = [
-        script_path.parent.parent.parent / "lib" / "platform_mapping_v2" / "platforms",
-        script_path.parent.parent.parent.parent
-        / "fboss"
-        / "lib"
-        / "platform_mapping_v2"
-        / "platforms",
+        script_path.parent.parent.parent / "configs" / "platforms",
+        script_path.parent.parent.parent.parent / "fboss" / "configs" / "platforms",
     ]
     for c in candidates:
         if c.is_dir():
@@ -593,9 +604,11 @@ def generate_config(
     ASIC config is loaded from hw_test_configs/ materialized JSON by default.
     """
     codename = _resolve_codename(platform, platforms_dir)
-    platform_dir = platforms_dir / codename
-    if not platform_dir.is_dir():
-        raise FileNotFoundError(f"Platform directory not found: {platform_dir}")
+    platform_dir = _find_platform_dir(platforms_dir, codename)
+    if platform_dir is None:
+        raise FileNotFoundError(
+            f"Platform directory not found: {platforms_dir}/*/{codename}/platform_mapping"
+        )
 
     ppm_path = platform_dir / f"{codename}_port_profile_mapping.csv"
     static_path = platform_dir / f"{codename}_static_mapping.csv"
@@ -793,7 +806,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--platforms-dir",
         default=default_platforms_dir,
-        help="Path to platform_mapping_v2/platforms (auto-detected by default)",
+        help="Path to fboss/configs/platforms (auto-detected by default)",
     )
     parser.add_argument(
         "--asic-config-source",

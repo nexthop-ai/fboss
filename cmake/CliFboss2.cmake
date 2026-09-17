@@ -396,6 +396,13 @@ add_fbthrift_cpp_library(
     phy_cpp2
 )
 
+add_fbthrift_cpp_library(
+  show_interface_transceiver_performancemonitoring
+  fboss/cli/fboss2/commands/show/interface/transceiver/performancemonitoring/model.thrift
+  OPTIONS
+    json
+)
+
 find_package(CLI11 CONFIG REQUIRED)
 
 add_library(fboss2_config_file_utils
@@ -416,11 +423,14 @@ add_library(fboss2_config_gen_lib
 )
 
 target_link_libraries(fboss2_config_gen_lib
+  acl_config_utils
   agent_config_cpp2
   fboss_error
   fboss2_config_file_utils
   Folly::folly
+  platform_descriptor
   split_platform_mapping_utils
+  switch_asics
 )
 
 add_library(fboss2_lib
@@ -464,6 +474,8 @@ add_library(fboss2_lib
   fboss/cli/fboss2/commands/set/interface/prbs/CmdSetInterfacePrbs.cpp
   fboss/cli/fboss2/commands/set/interface/prbs/state/CmdSetInterfacePrbsState.h
   fboss/cli/fboss2/commands/set/interface/prbs/state/CmdSetInterfacePrbsState.cpp
+  fboss/cli/fboss2/commands/set/interface/loopback/CmdSetInterfaceLoopback.h
+  fboss/cli/fboss2/commands/set/interface/loopback/CmdSetInterfaceLoopback.cpp
   fboss/cli/fboss2/commands/set/port/CmdSetPort.h
   fboss/cli/fboss2/commands/set/port/CmdSetPort.cpp
   fboss/cli/fboss2/commands/set/port/state/CmdSetPortState.h
@@ -601,6 +613,10 @@ add_library(fboss2_lib
   fboss/cli/fboss2/commands/show/interface/counters/fec/histogram/CmdShowInterfaceCountersFecHistogram.cpp
   fboss/cli/fboss2/commands/show/interface/counters/mka/CmdShowInterfaceCountersMKA.h
   fboss/cli/fboss2/commands/show/interface/counters/mka/CmdShowInterfaceCountersMKA.cpp
+  fboss/cli/fboss2/commands/show/interface/transceiver/CmdShowInterfaceTransceiver.h
+  fboss/cli/fboss2/commands/show/interface/transceiver/CmdShowInterfaceTransceiver.cpp
+  fboss/cli/fboss2/commands/show/interface/transceiver/performancemonitoring/CmdShowInterfaceTransceiverPerformanceMonitoring.h
+  fboss/cli/fboss2/commands/show/interface/transceiver/performancemonitoring/CmdShowInterfaceTransceiverPerformanceMonitoring.cpp
   fboss/cli/fboss2/commands/show/interface/phy/CmdShowInterfacePhy.h
   fboss/cli/fboss2/commands/show/interface/phy/CmdShowInterfacePhy.cpp
   fboss/cli/fboss2/commands/show/interface/phymap/CmdShowInterfacePhymap.h
@@ -822,6 +838,7 @@ target_link_libraries(fboss2_lib
   show_fabric_topology_model
   show_rif
   show_interface_counters_fec_uncorrectable
+  show_interface_transceiver_performancemonitoring
   thrift_service_client
   ${RE2}
 )
@@ -1141,7 +1158,7 @@ target_link_libraries(fboss2_config_lib
   cli_metadata
   fboss2_lib
   fboss2_config_file_utils
-  agent_config_utils
+  port_config_utils
   agent_dir_util
   common_file_utils
   switch_config_cpp2

@@ -1115,6 +1115,10 @@ class SwSwitch : public HwSwitchCallback {
   PortDescriptor getPortFromPkt(const RxPacket* pkt) const;
 
   void handlePacket(std::unique_ptr<RxPacket> pkt);
+
+  bool isFabricLinkMonitoringPacket(
+      const RxPacket& pkt,
+      const std::shared_ptr<SwitchState>& state) const;
   template <typename VlanOrIntfT>
   void handlePacketImpl(
       std::unique_ptr<RxPacket> pkt,
@@ -1442,6 +1446,7 @@ class SwSwitch : public HwSwitchCallback {
   std::unique_ptr<EcmpResourceManager> ecmpResourceManager_;
   std::unique_ptr<ShelManager> shelManager_;
   std::unique_ptr<FabricLinkMonitoringManager> fabricLinkMonitoringManager_;
+  bool rxPacketTypeSupported_{false};
   std::unique_ptr<CpuLatencyManager> cpuLatencyManager_;
   std::unique_ptr<StateUpdateValidator> stateUpdateValidator_;
 

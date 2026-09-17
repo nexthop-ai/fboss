@@ -63,6 +63,7 @@ cpp_library(
         "//fboss/agent/hw/switch_asics:switch_asics",
         "//fboss/agent/state:state",
         "//fboss/lib:common_utils",
+        "//fboss/lib/config:acl_config_utils",
     ],
 )
 
@@ -294,13 +295,13 @@ cpp_library(
     headers = ["ConfigUtils.h"],
     deps = [
         "fbsource//third-party/fmt:fmt",
-        ":acl_test_utils",
         ":port_test_utils",
         ":voq_test_utils",
         "//fboss/agent:core",
         "//fboss/agent/test:test_ensemble_if",
         "//fboss/agent/test:trunk_utils",
         "//fboss/agent/test:utils",
+        "//fboss/lib/config:acl_config_utils",
         "//fboss/lib/config:fboss_config_utils",
         "//folly:format",
         "//folly/testing:test_util",
@@ -313,7 +314,7 @@ cpp_library(
         "//fboss/agent/hw/switch_asics:switch_asics",
         "//fboss/agent/platforms/common:platform_mapping",
         "//fboss/agent/state:state",
-        "//fboss/lib/config:agent_config_utils",
+        "//fboss/lib/config:port_config_utils",
         "//folly:network_address",
     ],
 )
@@ -974,6 +975,9 @@ cpp_library(
     name = "nexthop_id_test_utils",
     srcs = ["NextHopIdTestUtils.cpp"],
     headers = ["NextHopIdTestUtils.h"],
+    deps = [
+        "//fboss/agent:agent_features",  # @manual
+    ],
     exported_deps = [
         "//fboss/agent:address_utils",
         "//fboss/agent:hwswitch_matcher",

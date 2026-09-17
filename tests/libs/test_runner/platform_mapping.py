@@ -11,9 +11,7 @@ logger = logging.getLogger("test_runner")
 
 ProfileId = int
 
-_PLATFORM_MAPPING_DIR = Path(
-    "fboss/lib/platform_mapping_v2/generated_platform_mappings"
-)
+_PLATFORM_CONFIGS_DIR = Path("fboss/configs/platforms")
 
 # Upper bound on the profiles the link/QSFP hw test binaries will drive.
 _MAX_PROFILE_SPEED_MBPS = 1_600_000
@@ -114,24 +112,20 @@ class PortInfo(NamedTuple):
 
 
 def _platform_mapping_path(config_name: str) -> Path:
-    """Locate a config's platform_mapping.json across both on-disk layouts.
+    """Locate a config's platform_mapping.json.
 
-    Descriptor-backed platforms (e.g. wedge800bact/wedge800cact) are generated
-    into <vendor>/<config_name>/platform_mapping.json, while the rest keep the
-    legacy flat <config_name>_platform_mapping.json. Prefer the flat file for
-    backwards compat, then fall back to a vendor-directory scan mirroring
-    PlatformDescriptorRegistry (fboss/lib/platforms/PlatformDescriptor.h).
+    Mappings are generated beside their inputs under
+    configs/platforms/<vendor>/<config_name>/platform_mapping/generated/, the
+    same tree PlatformDescriptorRegistry (fboss/lib/platforms/PlatformDescriptor.h)
+    scans on the switch.
     """
-    base = repo_dir(_PLATFORM_MAPPING_DIR)
-    flat = base / f"{config_name}_platform_mapping.json"
-    if flat.is_file():
-        return flat
-    nested = sorted(base.glob(f"*/{config_name}/platform_mapping.json"))
-    if nested:
-        return nested[0]
+    base = repo_dir(_PLATFORM_CONFIGS_DIR)
+    pattern = f"*/{config_name}/platform_mapping/generated/platform_mapping.json"
+    found = sorted(base.glob(pattern))
+    if found:
+        return found[0]
     raise FileNotFoundError(
-        f"no platform mapping for {config_name!r}: looked for {flat} and "
-        f"{base}/*/{config_name}/platform_mapping.json"
+        f"no platform mapping for {config_name!r}: looked for {base}/{pattern}"
     )
 
 

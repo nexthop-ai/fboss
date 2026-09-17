@@ -2525,7 +2525,7 @@ bool SaiPortManager::rxSNRSupported() const {
 
 bool SaiPortManager::fecCodewordsStatsSupported(PortID portId) const {
 #if defined(BRCM_SAI_SDK_GTE_10_0) || defined(BRCM_SAI_SDK_DNX_GTE_11_0) || \
-    defined(TAJO_SDK_GTE_24_8_3001)
+    defined(TAJO_SDK_GTE_24_8_3001) || defined(SAI_BRCM_PAI_IMPL)
   return platform_->getAsic()->isSupported(
              HwAsic::Feature::SAI_FEC_CODEWORDS_STATS) &&
       utility::isReedSolomonFec(getFECMode(portId)) &&
@@ -4332,6 +4332,16 @@ std::optional<sai_latch_status_t> SaiPortManager::getPcsRxLinkStatus(
   return SaiApiTable::getInstance()->portApi().getAttribute(
       saiPortId, SaiPortTraits::Attributes::PcsRxLinkStatus{});
 }
+
+#endif
+
+#if defined(SAI_BRCM_PAI_IMPL) && SAI_API_VERSION >= SAI_VERSION(1, 10, 0)
+phy::Loopback SaiPortManager::getLoopbackMode(PortSaiId saiPortId) const {
+  auto mode = SaiApiTable::getInstance()->portApi().getAttribute(
+      saiPortId, SaiPortTraits::Attributes::PortLoopbackMode{});
+  return (mode == SAI_PORT_LOOPBACK_MODE_NONE) ? phy::Loopback::OFF
+                                               : phy::Loopback::ON;
+}
 #endif
 
 #if SAI_API_VERSION >= SAI_VERSION(1, 10, 3)
@@ -4456,6 +4466,11 @@ TransmitterTechnology SaiPortManager::getMedium(PortID portID) const {
 }
 
 uint8_t SaiPortManager::getNumPmdLanes(PortSaiId saiPortId) const {
+  return getPmdLaneList(saiPortId).size();
+}
+
+std::vector<uint32_t> SaiPortManager::getPmdLaneList(
+    PortSaiId saiPortId) const {
 #if defined(BRCM_SAI_SDK_XGS)
   std::vector<uint32_t> lanes;
   if (hwLaneListIsPmdLaneList_) {
@@ -4469,7 +4484,7 @@ uint8_t SaiPortManager::getNumPmdLanes(PortSaiId saiPortId) const {
   auto lanes = SaiApiTable::getInstance()->portApi().getAttribute(
       saiPortId, SaiPortTraits::Attributes::HwLaneList{});
 #endif
-  return lanes.size();
+  return lanes;
 }
 
 void SaiPortManager::resetQueues() {

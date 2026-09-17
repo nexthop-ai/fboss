@@ -2030,7 +2030,9 @@ class BuildFileGenerator:
                 for item in sorted(d.iterdir()):
                     rel = prefix + item.name
                     if item.is_dir():
-                        if (item / "BUCK").exists():
+                        if (item / "BUCK").exists() and self._is_bazel_pkg(
+                            f"{buck_path}/{rel}"
+                        ):
                             continue  # separate Bazel package, skip
                         _pkg_scan(item, rel + "/")
                     elif item.is_file():
@@ -2217,6 +2219,11 @@ class BuildFileGenerator:
             result.append(f)
         return result
 
+    def _is_bazel_pkg(self, label: str) -> bool:
+        """A BUCK file whose targets were all excluded is not a package
+        boundary for source-file ownership."""
+        return label in self._cpp_pkgs or label in self._thrift_only_pkgs
+
     def _get_thrift_subpkg_extra_deps(
         self, files: list[str], buck_path: str
     ) -> list[str]:
@@ -2257,11 +2264,13 @@ class BuildFileGenerator:
                     if subpkg in self._thrift_only_pkgs:
                         # Keep walking deeper to find the innermost boundary
                         deepest_thrift_subpkg = subpkg
-                    else:
+                    elif subpkg in self._cpp_pkgs:
                         # Hit a non-thrift BUCK boundary — file belongs there,
                         # no _impl dep needed from us
                         deepest_thrift_subpkg = None
                         break
+                    # A BUCK file whose targets were all excluded is not a
+                    # Bazel package; keep walking as if it were a plain dir.
             if deepest_thrift_subpkg and deepest_thrift_subpkg not in seen_pkgs:
                 seen_pkgs.add(deepest_thrift_subpkg)
                 extra.append(f"{deepest_thrift_subpkg}:_impl")

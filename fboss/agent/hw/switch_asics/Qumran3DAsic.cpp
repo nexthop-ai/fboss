@@ -292,6 +292,8 @@ bool Qumran3DAsic::isSupported(Feature feature) const {
     case HwAsic::Feature::SAI_FEC_SYMBOL_ERRORS:
     case HwAsic::Feature::SLL_HLL_DISCARD_COUNTERS:
     case HwAsic::Feature::NEXT_HOP_GROUP_MEMBER_MONITORED_OBJECT:
+    case HwAsic::Feature::AGGREGATE_PORT_ROUTER_INTERFACE:
+    case HwAsic::Feature::RX_PACKET_TYPE:
     // Claiming this makes SaiPlatform::getSwitchAttributes set
     // SAI_SWITCH_ATTR_NO_ACLS_FOR_TRAPS, which the Broadcom SAI only accepts on
     // DNXAI devices: _brcm_sai_support_no_acls_for_traps is set solely in

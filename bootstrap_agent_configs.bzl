@@ -7,7 +7,7 @@ _GENERATOR = _SCRIPTS_DIR + "/generate_distro_bootstrap_agent_config.py"
 _COMPARE_SCRIPT = "//bazel_lib:generated_files_identical"
 _REGISTRY_SCRIPT = _SCRIPTS_DIR + "/bootstrap_agent_config_registry.sh"
 _CONFIGS_DIR = _SCRIPTS_DIR + "/run_configs/default_configs"
-_PLATFORMS_DIR = "fboss/lib/platform_mapping_v2/platforms"
+_PLATFORMS_DIR = "fboss/configs/platforms"
 _HW_TEST_CONFIGS_DIR = "fboss/oss/hw_test_configs"
 
 # Stands in for platforms with no ASIC config, so --asic-config-source is always
@@ -15,17 +15,21 @@ _HW_TEST_CONFIGS_DIR = "fboss/oss/hw_test_configs"
 # own __file__, which resolves out of the sandbox and reads undeclared inputs.
 _EMPTY_ASIC_CONFIG = ":empty_asic_config"
 
-# mapping_codename: platform_mapping_v2 dir supplying the CSVs, when it differs
-#   from platform (minipack3 -> montblanc; wedge800bnhp borrows wedge800bact's).
+# vendor: configs/platforms/<vendor>/ directory holding the platform mapping.
+# mapping_codename: platform mapping dir supplying the CSVs, when it differs
+#   from platform (minipack3 -> montblanc).
 # asic_codename: hw_test_configs materialized JSON, when it differs from
-#   platform. None means the platform has no ASIC config.
+#   platform (the NHP variants reuse the ACT ASIC config). None means the
+#   platform has no ASIC config.
 _GENERATED_PLATFORMS = [
-    struct(platform = "m4062nhp", mapping_codename = None, asic_codename = "m4062nhp"),
-    struct(platform = "minipack3", mapping_codename = "montblanc", asic_codename = "montblanc"),
-    struct(platform = "nh4010f", mapping_codename = None, asic_codename = "nh4010f"),
-    struct(platform = "nh4220f", mapping_codename = None, asic_codename = "nh4220f"),
-    struct(platform = "wedge800bact", mapping_codename = None, asic_codename = "wedge800bact"),
-    struct(platform = "wedge800cact", mapping_codename = None, asic_codename = "wedge800cact"),
+    struct(platform = "m4062nhp", vendor = "nexthop", mapping_codename = None, asic_codename = "m4062nhp"),
+    struct(platform = "minipack3", vendor = "celestica", mapping_codename = "montblanc", asic_codename = "montblanc"),
+    struct(platform = "nh4010f", vendor = "nexthop", mapping_codename = None, asic_codename = "nh4010f"),
+    struct(platform = "nh4220f", vendor = "nexthop", mapping_codename = None, asic_codename = "nh4220f"),
+    struct(platform = "wedge800bact", vendor = "accton", mapping_codename = None, asic_codename = "wedge800bact"),
+    struct(platform = "wedge800bnhp", vendor = "nexthop", mapping_codename = None, asic_codename = "wedge800bact"),
+    struct(platform = "wedge800cact", vendor = "accton", mapping_codename = None, asic_codename = "wedge800cact"),
+    struct(platform = "wedge800cnhp", vendor = "nexthop", mapping_codename = None, asic_codename = "wedge800cact"),
 ]
 
 # NHP and ACT are the same product from different vendors, so their configs must
@@ -56,10 +60,10 @@ def _conf_diff_test(name, actual, expected, hint):
         size = "small",
     )
 
-def _bootstrap_agent_config_test(platform, mapping_codename, asic_codename):
+def _bootstrap_agent_config_test(platform, vendor, mapping_codename, asic_codename):
     """Regenerates one platform's agent.conf and diffs it against the committed copy."""
     mapping_codename = mapping_codename or platform
-    platform_dir = _PLATFORMS_DIR + "/" + mapping_codename
+    platform_dir = _PLATFORMS_DIR + "/" + vendor + "/" + mapping_codename + "/platform_mapping"
     ppm_csv = platform_dir + "/" + mapping_codename + "_port_profile_mapping.csv"
     static_csv = platform_dir + "/" + mapping_codename + "_static_mapping.csv"
 
@@ -78,7 +82,7 @@ def _bootstrap_agent_config_test(platform, mapping_codename, asic_codename):
         PPM=$(location {ppm_csv})
         python3 $(location {generator}) \\
             --platform {mapping_codename} \\
-            --platforms-dir $$(dirname $$(dirname $$PPM)) \\
+            --platforms-dir $$(dirname $$(dirname $$(dirname $$(dirname $$PPM)))) \\
             --asic-config-source $(location {asic_src}) \\
             --output $@
         """.format(
@@ -114,7 +118,7 @@ def _bootstrap_agent_config_identity_test(platform, source_platform):
     )
 
 def _has_own_mapping(platform):
-    pattern = _PLATFORMS_DIR + "/" + platform + "/" + platform + "_port_profile_mapping.csv"
+    pattern = _PLATFORMS_DIR + "/*/" + platform + "/platform_mapping/" + platform + "_port_profile_mapping.csv"
     return native.glob([pattern], allow_empty = True)
 
 def _has_own_asic_config(platform):
@@ -167,6 +171,7 @@ def register_bootstrap_agent_config_tests():
     for p in _GENERATED_PLATFORMS:
         _bootstrap_agent_config_test(
             platform = p.platform,
+            vendor = p.vendor,
             mapping_codename = p.mapping_codename,
             asic_codename = p.asic_codename,
         )

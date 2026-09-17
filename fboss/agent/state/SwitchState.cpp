@@ -1005,6 +1005,10 @@ std::optional<InterfaceID> SwitchState::getInterfaceIDForPortIf(
         XLOG(ERR) << "No port node found for port " << port.phyPortID();
         return std::nullopt;
       }
+      if (physicalPort->getInterfaceIDs().empty()) {
+        // Fabric ports never have an interface.
+        return std::nullopt;
+      }
       // On VOQ/Fabric switches, port and interface have 1:1 relation.
       // For non VOQ/Fabric switches, in practice, a port is always part of a
       // single VLAN (and thus single interface).
@@ -1184,7 +1188,19 @@ template MultiSwitchLlrConfigMap* SwitchState::modify<
     switch_state_tags::llrCfgMaps>(std::shared_ptr<SwitchState>*);
 template MultiSwitchDsfNodeMap* SwitchState::modify<
     switch_state_tags::dsfNodesMap>(std::shared_ptr<SwitchState>*);
+template MultiSwitchAclTableGroupMap* SwitchState::modify<
+    switch_state_tags::aclTableGroupMaps>(std::shared_ptr<SwitchState>*);
 
 template struct ThriftStructNode<SwitchState, state::SwitchState>;
+
+uint32_t getEcmpWidth(const std::shared_ptr<SwitchState>& state) {
+  auto switchSettings = utility::getFirstNodeIf(state->getSwitchSettings());
+  if (switchSettings) {
+    if (auto ecmpWidth = switchSettings->getEcmpWidth()) {
+      return static_cast<uint32_t>(*ecmpWidth);
+    }
+  }
+  return FLAGS_ecmp_width;
+}
 
 } // namespace facebook::fboss

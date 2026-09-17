@@ -86,6 +86,7 @@ bool ChenabAsic::isSupportedNonFabric(Feature feature) const {
     case HwAsic::Feature::WARMBOOT:
     case HwAsic::Feature::SAI_PRBS:
     case HwAsic::Feature::ROUTER_INTERFACE_STATISTICS:
+    case HwAsic::Feature::AGGREGATE_PORT_ROUTER_INTERFACE:
     case HwAsic::Feature::CPU_PORT_EGRESS_BUFFER_POOL:
     case HwAsic::Feature::BLACKHOLE_ROUTE_DROP_COUNTER:
     case HwAsic::Feature::ANY_ACL_DROP_COUNTER:
@@ -256,6 +257,7 @@ bool ChenabAsic::isSupportedNonFabric(Feature feature) const {
     case HwAsic::Feature::PORT_DEBOUNCE:
     case HwAsic::Feature::ACL_DST_IPV6_WORD_QUALIFIERS:
     case HwAsic::Feature::NEXT_HOP_GROUP_MEMBER_MONITORED_OBJECT:
+    case HwAsic::Feature::RX_PACKET_TYPE:
       return false;
   }
   return false;
@@ -334,7 +336,7 @@ HwAsic::AsicVendor ChenabAsic::getAsicVendor() const {
   return HwAsic::AsicVendor::ASIC_VENDOR_CHENAB;
 }
 std::string ChenabAsic::getVendor() const {
-  return "chenab_vendor";
+  return "chenab";
 }
 bool ChenabAsic::isSupported(Feature feature) const {
   return getSwitchType() != cfg::SwitchType::FABRIC

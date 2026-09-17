@@ -516,6 +516,9 @@ class HwAsic {
     SAI_PORT_IN_CONGESTION_DISCARDS,
     TEMPERATURE_MONITORING,
     ROUTER_INTERFACE_STATISTICS,
+    // Set to true if router interfaces can be bound directly to aggregate
+    // ports (non-VLAN router interfaces on LAGs).
+    AGGREGATE_PORT_ROUTER_INTERFACE,
     CPU_PORT_EGRESS_BUFFER_POOL,
     TECH_SUPPORT,
     DRAM_QUARANTINED_BUFFER_STATS,
@@ -586,6 +589,9 @@ class HwAsic {
     // Each attribute returns the drop reasons seen since the last read, which
     // is cleared on read. Counterpart to SWITCH_CUSTOM_DROP_BITMAP_SUPPORT.
     SWITCH_DROP_REASON_LIST_SUPPORT,
+    // SDK reports the type of a received packet, so the application does
+    // not have to classify the packet itself to identify specific types.
+    RX_PACKET_TYPE,
   };
 
   enum class AsicMode {

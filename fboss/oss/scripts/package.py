@@ -10,13 +10,20 @@ import os
 import pathlib
 import sys
 import tarfile
+from collections.abc import Mapping
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING or __package__:
+    from .platform_descriptor_utils import get_platform_descriptor_paths
+else:
+    from platform_descriptor_utils import get_platform_descriptor_paths
 
 SRC_DIR = pathlib.Path("/var/FBOSS/fboss")
 OSS_DIR = SRC_DIR / "fboss/oss"
 RUN_SCRIPTS_DIR = SRC_DIR / "fboss/oss/scripts/run_scripts"
 RUN_CONFIGS_DIR = SRC_DIR / "fboss/oss/scripts/run_configs"
 PYTHON_TESTS_DIR = OSS_DIR / "python_tests"
-PLATFORM_MAPPING_DIR = SRC_DIR / "fboss/lib/platform_mapping_v2"
+PLATFORM_CONFIGS_DIR = SRC_DIR / "fboss/configs/platforms"
 
 BUILD_DIR = "--build-dir"
 TARGET_NAMES = ("agent-benchmarks", "forwarding-stack", "platform-stack")
@@ -75,7 +82,6 @@ FORWARDING_EXTRA = {
     RUN_CONFIGS_DIR / "th3": "share/th3",
     RUN_CONFIGS_DIR / "th4": "share/th4",
     RUN_CONFIGS_DIR / "th5": "share/th5",
-    PLATFORM_MAPPING_DIR / "generated_platform_mappings": "share/platform_descriptors",
 }
 
 FORWARDING_LIBS = []
@@ -216,7 +222,7 @@ _SOURCE_DATE_EPOCH = int(os.environ.get("SOURCE_DATE_EPOCH") or 1)
 
 
 # Build-system metadata that lives next to files we package wholesale (e.g.
-# generated_platform_mappings/BUCK). It has no business on a switch.
+# run_scripts/BUCK). It has no business on a switch.
 _EXCLUDED_BASENAMES = frozenset(
     {"BUCK", "TARGETS", "BUILD.bazel", "CMakeLists.txt", "OWNERS", "__pycache__"}
 )
@@ -236,7 +242,7 @@ def _normalize_tarinfo(ti: tarfile.TarInfo) -> tarfile.TarInfo | None:
     return ti
 
 
-def write_tar(filename: str, contents: dict[str, str]) -> None:
+def write_tar(filename: str, contents: Mapping[pathlib.Path, str]) -> None:
     if not contents:
         return
 
@@ -273,7 +279,10 @@ def _build_target(target: str, build_dir: pathlib.Path):
 
     if target == "forwarding-stack":
         bins = FORWARDING_BINARIES
-        extras = FORWARDING_EXTRA
+        extras = {
+            **FORWARDING_EXTRA,
+            **get_platform_descriptor_paths(PLATFORM_CONFIGS_DIR),
+        }
         libs = FORWARDING_LIBS + COMMON_LIBS
         test_bins = FORWARDING_TEST_BINARIES
         test_extras = FORWARDING_TEST_EXTRA
