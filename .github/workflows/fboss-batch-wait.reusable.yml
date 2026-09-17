@@ -92,11 +92,11 @@ jobs:
           # printing its last-known status each cycle.
           declare -a STATE
           declare -a DISPLAY        # what to show for this pool each cycle
-          declare -a FAILED_COUNT
+          declare -a FAILED_DETAIL  # human-readable reason once STATE=fail
           for ((i=0; i<N; i++)); do
             STATE[i]="pending"
             DISPLAY[i]="(not yet polled)"
-            FAILED_COUNT[i]=0
+            FAILED_DETAIL[i]=""
           done
 
           echo "Polling ${N} batches sequentially every ${POLL_INTERVAL}s (budget: ${POLL_BUDGET_MINUTES}m)"
@@ -126,8 +126,29 @@ jobs:
                     failed=$(echo "$summary" | grep "Failed tests:" | awk '{print $3}')
                     if [[ "$failed" =~ ^[0-9]+$ ]] && [ "$failed" -gt 0 ]; then
                       STATE[i]="fail"
-                      FAILED_COUNT[i]="$failed"
-                      DISPLAY[i]="❌ DONE (fail, ${failed} test(s))"
+                      # "Failed tests" from the summary lumps together real test
+                      # failures and infra failures: a testbed that never got a
+                      # healthy image (prep_failed) or never started the run
+                      # (run_failed) marks its queue entries failed without any
+                      # test executing, and those have no test logs to look at.
+                      # Classify them so the report doesn't read as a regression.
+                      entries=$(nh te batch show "$bid" 2>/dev/null)
+                      prep=$(echo "$entries" | grep -c 'prep_failed')
+                      runf=$(echo "$entries" | grep -c 'run_failed')
+                      if [ "$((prep + runf))" -ge "$failed" ] && [ "$((prep + runf))" -gt 0 ]; then
+                        if [ "$runf" -eq 0 ]; then
+                          FAILED_DETAIL[i]="prepare failed, no tests ran"
+                        elif [ "$prep" -eq 0 ]; then
+                          FAILED_DETAIL[i]="run failed, no test results"
+                        else
+                          FAILED_DETAIL[i]="infra failure (${prep} prepare, ${runf} run), no test results"
+                        fi
+                      elif [ "$((prep + runf))" -gt 0 ]; then
+                        FAILED_DETAIL[i]="fail, ${failed} test(s) incl. ${prep} prepare / ${runf} run failure(s)"
+                      else
+                        FAILED_DETAIL[i]="fail, ${failed} test(s)"
+                      fi
+                      DISPLAY[i]="❌ DONE (${FAILED_DETAIL[i]})"
                     else
                       STATE[i]="pass"
                       DISPLAY[i]="✅ DONE (pass)"
@@ -196,7 +217,7 @@ jobs:
                 echo "✅ ${POOL_NAMES[i]} (batch ${BATCH_IDS[i]}): PASS"
                 ;;
               fail)
-                echo "❌ ${POOL_NAMES[i]} (batch ${BATCH_IDS[i]}): FAIL (${FAILED_COUNT[i]} test(s))"
+                echo "❌ ${POOL_NAMES[i]} (batch ${BATCH_IDS[i]}): FAIL (${FAILED_DETAIL[i]})"
                 fails=$((fails + 1))
                 ;;
             esac
