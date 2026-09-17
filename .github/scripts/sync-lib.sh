@@ -134,6 +134,10 @@ run_conflict_resolver() {
 # Usage: cherry_pick_internal_fix <sha>
 cherry_pick_internal_fix() {
   local fix=$1
+  # A fix sha only reachable from a branch is not in a checkout that fetched
+  # main plus tags; GitHub serves any reachable commit by sha.
+  git rev-parse -q --verify "$fix^{commit}" >/dev/null ||
+    git fetch --no-tags origin "$fix"
   git cherry-pick -x "$fix" && return 0
 
   if ! git rev-parse -q --verify CHERRY_PICK_HEAD >/dev/null; then
@@ -194,19 +198,28 @@ overlay_nh_harness() {
   local harness_ref=$1 stable_tarball=$2 commit_msg=$3
   local p
   # From build/fbcode_builder take only our getdeps fork (S3 cache, fetcher,
-  # hashed install dirs); manifests, patches, and CMake helpers stay at the
-  # build target's versions.
-  for p in .github fboss/oss/docker fboss/oss/scripts fboss-sim fboss/oss/stable_commits \
+  # hashed install dirs); CMake helpers stay at the build target's versions.
+  for p in .github fboss/oss/docker fboss-sim fboss/oss/stable_commits \
     build/fbcode_builder/getdeps.py build/fbcode_builder/getdeps; do
     rm -rf "$p"
     git checkout "$harness_ref" -- "$p"
   done
-  # Restore the manifests and github_hashes shas from the same tarball that
-  # named the build target, so the dep pins are exactly the set the stable
-  # commit was validated with.
+  # Lay our scripts over the target's rather than replacing the directory:
+  # upstream cmake invokes helpers from here (e.g. npu_sdk_utils.py at link
+  # time) that the internal tree may not carry yet.
+  git checkout "$harness_ref" -- fboss/oss/scripts
+  # Restore the manifests, their patches and the github_hashes shas from the
+  # same tarball that named the build target, so the dep pins are exactly the
+  # set the stable commit was validated with. Patches must travel with the
+  # manifests: a manifest's patchfile targets the source layout of the tarball
+  # that manifest downloads, and upstream changes both together.
   rm -rf build/deps/github_hashes build/fbcode_builder/manifests
   tar xzf "$stable_tarball" --wildcards \
     'build/deps/github_hashes/*' 'build/fbcode_builder/manifests/*'
+  if tar tzf "$stable_tarball" build/fbcode_builder/patches >/dev/null 2>&1; then
+    rm -rf build/fbcode_builder/patches
+    tar xzf "$stable_tarball" --wildcards 'build/fbcode_builder/patches/*'
+  fi
   # docker-build.py's use_stable_hashes() re-extracts the pins from the tree's
   # tarball at container start; put the same tarball in the tree so that
   # re-extraction can't reintroduce a stale set.
@@ -219,9 +232,11 @@ overlay_nh_harness() {
   #   c7d40884: distro_cli docker test self-skips when docker is absent
   #   86941d3f: SAI_NEXT_HOP_GROUP_ATTR_SPLIT_HORIZON_ENABLE undeclared on our
   #             sai_impl headers; Qumran3DAsic + CmdShowEnvironmentFan build fixes
+  #   553feace: kernel_download_test fixture carries fields upstream 289c3c97a4
+  #             rejects (#2171)
   local fix
   for fix in d09a2fbfe633fedbac25bd083e75cf2fa8122bad c7d40884e67522873e44206e6ac238c8e76a4751 \
-    86941d3fe633bd0bf03460391a75a2efddf5ec6b; do
+    86941d3fe633bd0bf03460391a75a2efddf5ec6b 553feace0e692a33e2d917be16789faf291aeb9f; do
     cherry_pick_internal_fix "$fix" || return 1
   done
 }
