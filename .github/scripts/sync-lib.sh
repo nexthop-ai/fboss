@@ -121,6 +121,61 @@ run_conflict_resolver() {
   rm -f .github/scripts/nh-fix-merge-conflicts.py
 }
 
+# Cherry-pick one internal fix onto the upstream tree, tolerating the two ways
+# a pinned fix goes stale against a moving upstream:
+#   * upstream deleted a file the fix patches -> that hunk is dead code; take
+#     the deletion
+#   * upstream absorbed the whole fix -> the pick is empty; skip it
+# Anything else -- in particular a content conflict in a file that still
+# exists upstream -- is a real failure: stop, so a human rebases or retires
+# the fix instead of CI quietly shipping without it. Drops are announced as
+# ::warning:: annotations so they surface in the run summary, not just the log.
+#
+# Usage: cherry_pick_internal_fix <sha>
+cherry_pick_internal_fix() {
+  local fix=$1
+  git cherry-pick -x "$fix" && return 0
+
+  if ! git rev-parse -q --verify CHERRY_PICK_HEAD >/dev/null; then
+    # No sequencer state: the pick never started (bad SHA, dirty tree).
+    echo_error "cherry-pick of internal fix $fix could not start"
+    return 1
+  fi
+
+  local live=() gone=() f
+  while IFS= read -r -d '' f; do
+    if git cat-file -e "HEAD:$f" 2>/dev/null; then
+      live+=("$f")
+    else
+      gone+=("$f")
+    fi
+  done < <(git diff --name-only --diff-filter=U -z)
+
+  if ((${#live[@]})); then
+    echo_error "internal fix $fix conflicts in files that still exist upstream" \
+      "(${live[*]}); rebase or retire the fix"
+    git cherry-pick --abort || true
+    return 1
+  fi
+
+  ((${#gone[@]})) && git rm -q -- "${gone[@]}"
+
+  if git diff --cached --quiet HEAD; then
+    # Nothing of the fix survives: every file it patched is gone upstream, or
+    # upstream already carries the change.
+    echo "::warning::internal fix $fix is fully obsolete against upstream; skipped"
+    git cherry-pick --skip
+    return
+  fi
+
+  ((${#gone[@]})) &&
+    echo "::warning::internal fix $fix: dropped hunks in files deleted upstream (${gone[*]})"
+  GIT_EDITOR=true git cherry-pick --continue && return 0
+  echo_error "cherry-pick of internal fix $fix failed; resolve or drop it"
+  git cherry-pick --abort || true
+  return 1
+}
+
 # Overlay our internal CI harness onto a bare upstream tree (which has none of
 # it) as one extra commit, so the branch is build-test-ready with the cmake
 # harness. Then cherry-pick internal-only fixes the pure-upstream tree needs
@@ -167,10 +222,6 @@ overlay_nh_harness() {
   local fix
   for fix in d09a2fbfe633fedbac25bd083e75cf2fa8122bad c7d40884e67522873e44206e6ac238c8e76a4751 \
     86941d3fe633bd0bf03460391a75a2efddf5ec6b; do
-    git cherry-pick -x "$fix" || {
-      echo_error "cherry-pick of internal fix $fix failed; resolve or drop it"
-      git cherry-pick --abort || true
-      return 1
-    }
+    cherry_pick_internal_fix "$fix" || return 1
   done
 }
