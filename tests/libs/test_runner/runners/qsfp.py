@@ -43,9 +43,19 @@ class QsfpTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
         "resetTranscieverAndDetectStateChanged",
     )
 
+    # Passive DACs do not support 200G serdes, so limit them to 100G lane speeds.
+    _PASSIVE_CU_MAX_LANE_SPEED_MBPS = 106_250
+
     def _medium_profile(self, port: str, info: PortInfo) -> int | None:
+        max_lane_speed = (
+            self._PASSIVE_CU_MAX_LANE_SPEED_MBPS
+            if self._media_tech_by_port.get(port) == "PASSIVE_CU"
+            else None
+        )
         return info.profile_for_medium(
-            self._is_copper_by_port.get(port), media_speed_mbps(self._media_by_port.get(port))
+            self._is_copper_by_port.get(port),
+            media_speed_mbps(self._media_by_port.get(port)),
+            max_lane_speed,
         )
 
     def _port_profile_id(self, port: str, port_map: dict) -> int:

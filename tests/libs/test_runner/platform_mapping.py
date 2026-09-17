@@ -2,9 +2,14 @@
 
 import functools
 import json
+import logging
 import re
 from pathlib import Path
 from typing import NamedTuple
+
+logger = logging.getLogger("test_runner")
+
+ProfileId = int
 
 _PLATFORM_MAPPING_DIR = Path(
     "fboss/lib/platform_mapping_v2/generated_platform_mappings"
@@ -23,14 +28,38 @@ def repo_dir(relative: Path) -> Path:
     raise FileNotFoundError(f"could not locate {relative} above {__file__}")
 
 
-@functools.lru_cache(maxsize=1)
-def _profile_medium_by_id() -> dict[int, str]:
-    """PortProfileID value -> "copper" | "optical", from the thrift enum names."""
+def _read_switch_config_thrift() -> str:
     path = repo_dir(_SWITCH_CONFIG_THRIFT.parent) / _SWITCH_CONFIG_THRIFT.name
     try:
         text = path.read_text()
     except OSError as e:
         raise RuntimeError(f"Failed to read {path}: {e}") from e
+
+    return text
+
+
+@functools.lru_cache(maxsize=1)
+def _profile_lanes_by_id() -> dict[ProfileId, int]:
+    """PortProfileID value -> lane count, from the thrift enum names.
+
+    Names are PROFILE_<speed>_<lanes>_<modulation>_<fec>_<medium>, so the lane
+    count is the third underscore-separated field (PROFILE_800G_8_... -> 8).
+    """
+    text = _read_switch_config_thrift()
+    lanes = {}
+    for name, value in re.findall(r"(PROFILE_\w+)\s*=\s*(\d+)", text):
+        parts = name.split("_")
+        if len(parts) > 2 and parts[2].isdigit():
+            lanes[int(value)] = int(parts[2])
+    if not lanes:
+        logger.warning(f"Failed to parse lane speeds from switch config thrift path {_SWITCH_CONFIG_THRIFT}")
+    return lanes
+
+
+@functools.lru_cache(maxsize=1)
+def _profile_medium_by_id() -> dict[ProfileId, str]:
+    """PortProfileID value -> "copper" | "optical", from the thrift enum names."""
+    text = _read_switch_config_thrift()
     media = {}
     for name, value in re.findall(r"(PROFILE_\w+)\s*=\s*(\d+)", text):
         if "_COPPER" in name:
@@ -38,7 +67,7 @@ def _profile_medium_by_id() -> dict[int, str]:
         elif "_OPTICAL" in name:
             media[int(value)] = "optical"
     if not media:
-        raise RuntimeError(f"No PortProfileID entries parsed from {path}")
+        raise RuntimeError(f"No PortProfileID entries parsed from {_SWITCH_CONFIG_THRIFT}")
     return media
 
 
@@ -51,20 +80,33 @@ def media_speed_mbps(media_interface: str | None) -> int | None:
 
 class PortInfo(NamedTuple):
     logical_id: int
-    profile_id: int
+    profile_id: ProfileId
     speed: int
-    # Supported profiles, {profileID: speed}.
-    profiles: dict[int, int]
+    # Supported profiles, {id: speed in Mbps}.
+    profiles: dict[ProfileId, int]
 
-    def profile_for_medium(self, is_copper: bool | None, media_speed: int | None) -> int | None:
+    def profile_for_medium(
+        self,
+        is_copper: bool | None,
+        media_speed: int | None,
+        max_lane_speed: int | None = None,
+    ) -> ProfileId | None:
         """Best profile for the cabled medium: prefer the module's media speed,
         else max speed. None medium keeps the default pick; copper with no
-        copper profile returns None."""
+        copper profile returns None. Excludes profiles with serdes rates greater than
+        max_lane_speed."""
         if is_copper is None:
             return self.profile_id
         want = "copper" if is_copper else "optical"
         medium = _profile_medium_by_id()
         matching = [pid for pid in self.profiles if medium.get(pid) == want]
+        lanes = _profile_lanes_by_id() if max_lane_speed is not None else {}
+        if lanes:
+            matching = [
+                pid
+                for pid in matching
+                if lanes.get(pid) and self.profiles[pid] / lanes[pid] <= max_lane_speed
+            ]
         if matching:
             speed_matching = [pid for pid in matching if self.profiles[pid] == media_speed]
             return max(speed_matching or matching, key=lambda pid: self.profiles[pid])
@@ -97,7 +139,7 @@ def load_platform_mapping(config_name: str) -> dict[str, PortInfo]:
     path = _platform_mapping_path(config_name)
     with open(path, encoding="utf-8") as f:
         mapping = json.load(f)
-    prof = {
+    prof: dict[ProfileId, int] = {
         int(p["factor"]["profileID"]): p["profile"]["speed"]
         for p in mapping["platformSupportedProfiles"]
         if p["profile"]["speed"] <= _MAX_PROFILE_SPEED_MBPS
