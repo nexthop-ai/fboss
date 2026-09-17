@@ -155,6 +155,8 @@ CODENAMES_REQUIRING_PLATFORM_DESCRIPTOR = {
     "nh4220f",
     "wedge800bact",
     "wedge800bnhp",
+    "wedge800cact",
+    "wedge800cnhp",
 }
 
 

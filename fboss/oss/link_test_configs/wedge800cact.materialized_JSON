@@ -5,6 +5,7 @@
     "disable_neighbor_updates": "true",
     "enable_replayer": "true",
     "log_variable_name": "true",
+    "platform_descriptor_config_path": "/tmp/platform_descriptors/",
     "sai_configure_six_tap": "true",
     "enable_1to1_intf_route_table_mapping": "true"
   },
