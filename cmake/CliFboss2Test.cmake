@@ -102,6 +102,10 @@ add_executable(fboss2_cmd_test
   fboss/cli/fboss2/test/CmdBgpTestUtils.cpp
   fboss/cli/fboss2/test/CanonicalRibResolverTest.cpp
   fboss/cli/fboss2/test/CmdShowBgpChangelistTest.cpp
+  fboss/cli/fboss2/test/CmdShowBgpConfigTest.cpp
+  fboss/cli/fboss2/test/CmdShowBgpHealthTest.cpp
+  fboss/cli/fboss2/test/CmdShowBgpHoldTimersWikiDocsTest.cpp
+  fboss/cli/fboss2/test/CmdShowBgpInitializationEventsTest.cpp
   fboss/cli/fboss2/test/CmdShowBgpNeighborsAdvertisedPostPolicyTest.cpp
   fboss/cli/fboss2/test/CmdShowBgpNeighborsAdvertisedPrePolicyTest.cpp
   fboss/cli/fboss2/test/CmdShowBgpNeighborsAdvertisedRejectedTest.cpp
@@ -109,6 +113,7 @@ add_executable(fboss2_cmd_test
   fboss/cli/fboss2/test/CmdShowBgpNeighborsReceivedPrePolicyTest.cpp
   fboss/cli/fboss2/test/CmdShowBgpNeighborsReceivedRejectedTest.cpp
   fboss/cli/fboss2/test/CmdShowBgpNeighborsTest.cpp
+  fboss/cli/fboss2/test/CmdShowBgpNexthopInfoWikiDocsTest.cpp
   fboss/cli/fboss2/test/CmdShowBgpOriginatedRoutesTest.cpp
   fboss/cli/fboss2/test/CmdShowBgpPolicyConfigTest.cpp
   fboss/cli/fboss2/test/CmdShowBgpShadowRibTest.cpp

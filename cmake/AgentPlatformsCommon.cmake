@@ -48,8 +48,13 @@ target_link_libraries(platform_mapping_utils
   blackwolf800banw_platform_mapping
   icetea800bc_platform_mapping
   tahansb800bc_platform_mapping
+<<<<<<< HEAD
   nh5010f_platform_mapping
   wedge800cact_platform_mapping
+||||||| fbc276b526
+  wedge800cact_platform_mapping
+=======
+>>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
   m5120csc_platform_mapping
   ladakh800bcls_platform_mapping
   leh800bcls_platform_mapping

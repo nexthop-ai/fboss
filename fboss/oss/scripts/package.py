@@ -10,13 +10,25 @@ import os
 import pathlib
 import sys
 import tarfile
+from collections.abc import Mapping
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING or __package__:
+    from .platform_descriptor_utils import get_platform_descriptor_paths
+else:
+    from platform_descriptor_utils import get_platform_descriptor_paths
 
 SRC_DIR = pathlib.Path("/var/FBOSS/fboss")
 OSS_DIR = SRC_DIR / "fboss/oss"
 RUN_SCRIPTS_DIR = SRC_DIR / "fboss/oss/scripts/run_scripts"
 RUN_CONFIGS_DIR = SRC_DIR / "fboss/oss/scripts/run_configs"
+<<<<<<< HEAD
 PYTHON_TESTS_DIR = OSS_DIR / "python_tests"
 PLATFORM_MAPPING_DIR = SRC_DIR / "fboss/lib/platform_mapping_v2"
+||||||| fbc276b526
+=======
+PLATFORM_CONFIGS_DIR = SRC_DIR / "fboss/configs/platforms"
+>>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
 
 BUILD_DIR = "--build-dir"
 TARGET_NAMES = ("agent-benchmarks", "forwarding-stack", "platform-stack")
@@ -211,6 +223,7 @@ def _find_getdeps_libs(
     return libs
 
 
+<<<<<<< HEAD
 # Non-zero sentinel: the rpm/tar paths treat SOURCE_DATE_EPOCH=0 as unset.
 _SOURCE_DATE_EPOCH = int(os.environ.get("SOURCE_DATE_EPOCH") or 1)
 
@@ -237,6 +250,11 @@ def _normalize_tarinfo(ti: tarfile.TarInfo) -> tarfile.TarInfo | None:
 
 
 def write_tar(filename: str, contents: dict[str, str]) -> None:
+||||||| fbc276b526
+def write_tar(filename: str, contents: dict[str, str]) -> None:
+=======
+def write_tar(filename: str, contents: Mapping[pathlib.Path, str]) -> None:
+>>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
     if not contents:
         return
 
@@ -273,7 +291,10 @@ def _build_target(target: str, build_dir: pathlib.Path):
 
     if target == "forwarding-stack":
         bins = FORWARDING_BINARIES
-        extras = FORWARDING_EXTRA
+        extras = {
+            **FORWARDING_EXTRA,
+            **get_platform_descriptor_paths(PLATFORM_CONFIGS_DIR),
+        }
         libs = FORWARDING_LIBS + COMMON_LIBS
         test_bins = FORWARDING_TEST_BINARIES
         test_extras = FORWARDING_TEST_EXTRA

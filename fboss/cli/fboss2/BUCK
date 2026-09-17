@@ -1,4 +1,3 @@
-load("@fbcode//clifoundation/cli_target/buck_defs:cli.bzl", "cli")
 load("@fbcode_macros//build_defs:cpp_binary.bzl", "cpp_binary")
 load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")
 load("@fbcode_macros//build_defs:export_files.bzl", "export_file")
@@ -471,6 +470,7 @@ cpp_library(
         "commands/set/debug/facebook/CmdSetDebugBgp.cpp",
         "commands/set/fanhold/CmdSetFanHold.cpp",
         "commands/set/interface/CmdSetInterface.cpp",
+        "commands/set/interface/loopback/CmdSetInterfaceLoopback.cpp",
         "commands/set/interface/prbs/CmdSetInterfacePrbs.cpp",
         "commands/set/interface/prbs/state/CmdSetInterfacePrbsState.cpp",
         "commands/set/port/CmdSetPort.cpp",
@@ -620,6 +620,8 @@ cpp_library(
         "commands/show/interface/prbs/stats/CmdShowInterfacePrbsStats.cpp",
         "commands/show/interface/status/CmdShowInterfaceStatus.cpp",
         "commands/show/interface/traffic/CmdShowInterfaceTraffic.cpp",
+        "commands/show/interface/transceiver/CmdShowInterfaceTransceiver.cpp",
+        "commands/show/interface/transceiver/performancemonitoring/CmdShowInterfaceTransceiverPerformanceMonitoring.cpp",
         "commands/show/l2/CmdShowL2.cpp",
         "commands/show/lldp/CmdShowLldp.cpp",
         "commands/show/mac/CmdShowMacAddrToBlock.cpp",
@@ -715,6 +717,7 @@ cpp_library(
         "commands/set/debug/facebook/CmdSetDebugBgp.h",
         "commands/set/fanhold/CmdSetFanHold.h",
         "commands/set/interface/CmdSetInterface.h",
+        "commands/set/interface/loopback/CmdSetInterfaceLoopback.h",
         "commands/set/interface/prbs/CmdSetInterfacePrbs.h",
         "commands/set/interface/prbs/state/CmdSetInterfacePrbsState.h",
         "commands/set/port/CmdSetPort.h",
@@ -830,6 +833,8 @@ cpp_library(
         "commands/show/interface/prbs/stats/CmdShowInterfacePrbsStats.h",
         "commands/show/interface/status/CmdShowInterfaceStatus.h",
         "commands/show/interface/traffic/CmdShowInterfaceTraffic.h",
+        "commands/show/interface/transceiver/CmdShowInterfaceTransceiver.h",
+        "commands/show/interface/transceiver/performancemonitoring/CmdShowInterfaceTransceiverPerformanceMonitoring.h",
         "commands/show/l2/CmdShowL2.h",
         "commands/show/lldp/CmdShowLldp.h",
         "commands/show/mac/CmdShowMacAddrToBlock.h",
@@ -976,6 +981,7 @@ cpp_library(
         "//fboss/cli/fboss2/commands/show/interface/prbs/stats:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/interface/status:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/interface/traffic:model-cpp2-types",
+        "//fboss/cli/fboss2/commands/show/interface/transceiver/performancemonitoring:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/lldp:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/mac:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/mirror:model-cpp2-types",
@@ -1108,6 +1114,9 @@ cpp_library(
     deps = [
         ":fboss2-config-file-utils",
         "//fboss/agent:fboss-error",
+        "//fboss/agent/hw/switch_asics:switch_asics",
+        "//fboss/lib/config:acl_config_utils",
+        "//fboss/lib/platforms:platform_descriptor",
         "//fboss/lib/platforms:platform_mapping_utils",
         "//folly:file_util",
         "//folly/json:dynamic",
@@ -1115,6 +1124,7 @@ cpp_library(
     ],
     exported_deps = [
         "//fboss/agent:agent_config-cpp2-types",
+        "//fboss/lib/platforms:platform_descriptor_thrift-cpp2-types",
     ],
 )
 
@@ -1134,18 +1144,6 @@ cpp_binary(
     external_deps = [
         "CLI11",
     ],
-)
-
-cli.metadata(
-    name = "cli-fboss2",
-    binary_name = "fboss2",
-    criticality = cli.criticality(
-        critical_subcommands = [],
-        level = cli.level.TIER_0,
-        reason = "Manages FBOSS network switch agents for configuration, monitoring, and troubleshooting of datacenter network switches",
-    ),
-    description = "FBOSS agent management frontend.",
-    executable = ":fboss2",
 )
 
 auto_tab_complete(
@@ -1463,7 +1461,7 @@ cpp_library(
         "//fboss/agent/packet:ipproto",
         "//fboss/agent/platforms/common:platform_mapping",
         "//fboss/lib:common_file_utils",
-        "//fboss/lib/config:agent_config_utils",
+        "//fboss/lib/config:port_config_utils",
         "//fboss/qsfp_service/if:qsfp-cpp2-services",
         "//folly:file_util",
         "//folly:range",

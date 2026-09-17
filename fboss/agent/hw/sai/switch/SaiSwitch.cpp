@@ -1570,13 +1570,25 @@ std::shared_ptr<SwitchState> SaiSwitch::stateChangedImplLocked(
   }
 
   if (platform_->getAsic()->isSupported(HwAsic::Feature::SAI_MPLS_INSEGMENT)) {
-    processDelta(
-        delta.getLabelForwardingInformationBaseDelta(),
+    // Split so removal, which resolves nothing, does not take newState.
+    auto labelDelta = delta.getLabelForwardingInformationBaseDelta();
+    processRemovedDelta(
+        labelDelta,
+        managerTable_->inSegEntryManager(),
+        lockPolicy,
+        &SaiInSegEntryManager::processRemovedInSegEntry);
+    processChangedDelta(
+        labelDelta,
         managerTable_->inSegEntryManager(),
         lockPolicy,
         &SaiInSegEntryManager::processChangedInSegEntry,
+        delta.newState());
+    processAddedDelta(
+        labelDelta,
+        managerTable_->inSegEntryManager(),
+        lockPolicy,
         &SaiInSegEntryManager::processAddedInSegEntry,
-        &SaiInSegEntryManager::processRemovedInSegEntry);
+        delta.newState());
   }
 
 #if SAI_API_VERSION >= SAI_VERSION(1, 12, 0)
@@ -1750,13 +1762,27 @@ std::shared_ptr<SwitchState> SaiSwitch::stateChangedImplLocked(
       managerTable_->switchManager().setIngressAcl();
     }
 
-    processDelta(
+    // Removals first: an entry taking over a priority that another entry is
+    // vacating must not be added while the old one still holds it.
+    processRemovedDelta(
+        delta.getAclsDelta(),
+        managerTable_->aclTableManager(),
+        lockPolicy,
+        &SaiAclTableManager::removeAclEntry,
+        cfg::switch_config_constants::DEFAULT_INGRESS_ACL_TABLE(),
+        delta.newState());
+    processChangedDelta(
         delta.getAclsDelta(),
         managerTable_->aclTableManager(),
         lockPolicy,
         &SaiAclTableManager::changedAclEntry,
+        cfg::switch_config_constants::DEFAULT_INGRESS_ACL_TABLE(),
+        delta.newState());
+    processAddedDelta(
+        delta.getAclsDelta(),
+        managerTable_->aclTableManager(),
+        lockPolicy,
         &SaiAclTableManager::addAclEntry,
-        &SaiAclTableManager::removeAclEntry,
         cfg::switch_config_constants::DEFAULT_INGRESS_ACL_TABLE(),
         delta.newState());
   }
@@ -2478,8 +2504,23 @@ std::map<PortID, phy::PhyInfo> SaiSwitch::updateAllPhyInfoLocked() {
             lastSysPmdState,
             lastSysPmdStats,
             portID,
-            false /* readSerdesParams */);
+            readSerdesParams);
       }
+
+#if defined(SAI_BRCM_PAI_IMPL) && SAI_API_VERSION >= SAI_VERSION(1, 10, 0)
+      // Only read on the PAI retimer. NPU / non-retimer platforms are
+      // unaffected: no extra per-port SAI read and no change to their PhyInfo.
+      // system() is populated above under the same isXphy condition.
+      if (isXphy) {
+        auto& phyPortMgr = managerTable_->portManager();
+        phyParams.state()->line()->loopback() =
+            phyPortMgr.getLoopbackMode(portHandle->port->adapterKey());
+        if (portHandle->sysPort) {
+          phyParams.state()->system()->loopback() =
+              phyPortMgr.getLoopbackMode(portHandle->sysPort->adapterKey());
+        }
+      }
+#endif
 
       // Update PCS Info
       updatePcsInfo(
@@ -2518,16 +2559,16 @@ void SaiSwitch::updatePmdInfo(
     [[maybe_unused]] phy::PmdStats& lastPmdStats,
     [[maybe_unused]] PortID portID,
     bool readSerdesParams) {
-  uint32_t numPmdLanes;
+  std::vector<uint32_t> pmdLanes;
   if (platform_->getAsic()->isSupported(
           HwAsic::Feature::SAI_PORT_GET_PMD_LANES)) {
     // HwLaneList might mean physical port list instead of pmd lane list on
-    // TH4 So, use getNumPmdLanes() to get the number of pmd lanes
-    numPmdLanes =
-        managerTable_->portManager().getNumPmdLanes(port->adapterKey());
+    // TH4 So, use getPmdLaneList() to get the pmd lanes
+    pmdLanes = managerTable_->portManager().getPmdLaneList(port->adapterKey());
   } else {
-    numPmdLanes = GET_ATTR(Port, HwLaneList, port->attributes()).size();
+    pmdLanes = GET_ATTR(Port, HwLaneList, port->attributes());
   }
+  uint32_t numPmdLanes = pmdLanes.size();
   if (!numPmdLanes) {
     return;
   }
@@ -2649,28 +2690,55 @@ void SaiSwitch::updatePmdInfo(
   }
 #endif
 
+  // Serdes parameters need BRCM_SAI_SDK_GTE_13_0 plus the RX_SERDES_PARAMETERS
+  // feature; where they are unavailable the TX FIR taps still read, but
+  // nothing supplies a lane label for them, so fall back to the pmd lane list.
+  const bool haveSerdesParams =
+      managerTable_->portManager().rxSerdesParametersSupported();
   std::vector<phy::SerdesParameters> pmdSerdesParameters;
   std::vector<phy::TxSettings> pmdTxSettings;
+  std::vector<int> txLaneLabels;
   if (readSerdesParams && serdes) {
-    pmdSerdesParameters = managerTable_->portManager().getSerdesParameters(
-        serdes->adapterKey(), portID, numPmdLanes);
+    if (haveSerdesParams) {
+      pmdSerdesParameters = managerTable_->portManager().getSerdesParameters(
+          serdes->adapterKey(), portID, numPmdLanes);
+    }
     pmdTxSettings = managerTable_->portManager().getTxSettings(
         serdes->adapterKey(), portID, numPmdLanes);
+    if (!haveSerdesParams) {
+      txLaneLabels.assign(pmdLanes.begin(), pmdLanes.end());
+    }
   } else {
     // Use the previous state
-    for (const auto& [_, laneState] : *lastPmdState.lanes()) {
-      pmdSerdesParameters.push_back(*laneState.serdesParameters());
+    for (const auto& [laneId, laneState] : *lastPmdState.lanes()) {
+      if (haveSerdesParams) {
+        pmdSerdesParameters.push_back(*laneState.serdesParameters());
+        pmdTxSettings.push_back(*laneState.txSettings());
+        continue;
+      }
+      // txSettings is a non-optional field, so dereferencing an unset one
+      // yields a zeroed struct rather than throwing; skip lanes never read.
+      if (!apache::thrift::is_non_optional_field_set_manually_or_by_serializer(
+              laneState.txSettings())) {
+        continue;
+      }
       pmdTxSettings.push_back(*laneState.txSettings());
+      txLaneLabels.push_back(laneId);
     }
   }
-  for (int l = 0; l < pmdSerdesParameters.size(); l++) {
-    auto laneId = *pmdSerdesParameters[l].lane();
+  auto numEntries =
+      haveSerdesParams ? pmdSerdesParameters.size() : pmdTxSettings.size();
+  for (size_t l = 0; l < numEntries; l++) {
+    auto laneId =
+        haveSerdesParams ? *pmdSerdesParameters[l].lane() : txLaneLabels[l];
     phy::LaneState laneState;
     if (laneStates.find(laneId) != laneStates.end()) {
       laneState = laneStates[laneId];
     }
     laneState.lane() = laneId;
-    laneState.serdesParameters() = pmdSerdesParameters[l];
+    if (haveSerdesParams) {
+      laneState.serdesParameters() = pmdSerdesParameters[l];
+    }
     if (l < pmdTxSettings.size()) {
       laneState.txSettings() = pmdTxSettings[l];
     }
@@ -5413,13 +5481,25 @@ void SaiSwitch::processAclTableGroupDelta(
       for (const auto& iter : std::as_const(*aclTablesDelta.getNew())) {
         auto table = iter.second;
         auto tableName = table->getID();
-        processDelta(
+        processRemovedDelta(
+            delta.getAclsDelta(aclStage, tableName),
+            managerTable_->aclTableManager(),
+            lockPolicy,
+            &SaiAclTableManager::removeAclEntry,
+            tableName,
+            delta.newState());
+        processChangedDelta(
             delta.getAclsDelta(aclStage, tableName),
             managerTable_->aclTableManager(),
             lockPolicy,
             &SaiAclTableManager::changedAclEntry,
+            tableName,
+            delta.newState());
+        processAddedDelta(
+            delta.getAclsDelta(aclStage, tableName),
+            managerTable_->aclTableManager(),
+            lockPolicy,
             &SaiAclTableManager::addAclEntry,
-            &SaiAclTableManager::removeAclEntry,
             tableName,
             delta.newState());
       }

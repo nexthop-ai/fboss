@@ -40,7 +40,7 @@
 #include "fboss/cli/fboss2/utils/HostInfo.h"
 #include "fboss/cli/fboss2/utils/InterfaceList.h"
 #include "fboss/cli/fboss2/utils/LookupClassUtils.h"
-#include "fboss/lib/config/AgentConfigUtils.h"
+#include "fboss/lib/config/agent/PortConfigUtils.h"
 
 namespace facebook::fboss {
 

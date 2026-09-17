@@ -293,6 +293,8 @@ cpp_library(
         "//fboss/lib:thrift_method_rate_limit_setup",
         "//fboss/lib:thrift_service_utils",
         "//fboss/lib/thrift_service_client:thrift-service-client",
+        "//fboss/platform/helpers:platform_thrift_acceptor",
+        "//fboss/platform/helpers:platform_thrift_acceptor_util",
         "//folly/logging:logging",
         "//thrift/lib/cpp2/async:multiplex_async_processor",
     ],
@@ -935,6 +937,20 @@ cpp_library(
         ":fboss-types",
         "//fboss/agent/state:state",
         "//folly:synchronized",
+    ],
+)
+
+cpp_library(
+    name = "pbr_acl_manager",
+    srcs = [
+        "PbrAclManager.cpp",
+    ],
+    deps = [
+        ":fboss-error",
+        ":switch_config-cpp2-types",
+        "//fboss/agent/state:nodebase",
+        "//fboss/agent/state:state",
+        "//folly/logging:logging",
     ],
 )
 

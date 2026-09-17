@@ -204,18 +204,23 @@ class RouteNextHopEntry
   bool hasOverrideSwitchingModeOrNhops() const;
   bool hasOverrideSwitchingMode() const;
   bool hasOverrideNextHops() const;
-  NextHopSet normalizedNextHops() const {
-    return normalizedNextHopsImpl(false /*ignoreOverride*/);
+  // ecmpWidth defaults to FLAGS_ecmp_width while the flag is being retired;
+  // callers with a SwitchState (e.g. FibHelpers) pass the config-sourced value.
+  NextHopSet normalizedNextHops(uint32_t ecmpWidth = FLAGS_ecmp_width) const {
+    return normalizedNextHopsImpl(false /*ignoreOverride*/, ecmpWidth);
   }
   // Deprecated: do not add new callers; will be removed. Use the static
   // normalizeNextHops(NextHopSet) instead.
-  NextHopSet nonOverrideNormalizedNextHops() const {
-    return normalizedNextHopsImpl(true /*ignoreOverride*/);
+  NextHopSet nonOverrideNormalizedNextHops(
+      uint32_t ecmpWidth = FLAGS_ecmp_width) const {
+    return normalizedNextHopsImpl(true /*ignoreOverride*/, ecmpWidth);
   }
   // Weight-normalize an arbitrary nexthop set to ECMP width. Pure: depends
   // only on the input set (no `this`), so callers that resolve the set via an
   // ID can normalize without an inline getNextHopSet() read.
-  static NextHopSet normalizeNextHops(const NextHopSet& nhopSet);
+  static NextHopSet normalizeNextHops(
+      const NextHopSet& nhopSet,
+      uint32_t ecmpWidth = FLAGS_ecmp_width);
 
   std::string str() const;
 
@@ -267,7 +272,8 @@ class RouteNextHopEntry
       uint64_t normalizedPathCount);
 
  private:
-  NextHopSet normalizedNextHopsImpl(bool ignoreOverride) const;
+  NextHopSet normalizedNextHopsImpl(bool ignoreOverride, uint32_t ecmpWidth)
+      const;
   static state::RouteNextHopEntry getRouteNextHopEntryThrift(
       Action action,
       AdminDistance distance,
@@ -281,7 +287,8 @@ class RouteNextHopEntry
       const std::optional<NextHopSetID>& clientNextHopSetID);
   static void normalize(
       std::vector<NextHopWeight>& scaledWeights,
-      NextHopWeight totalWeight);
+      NextHopWeight totalWeight,
+      uint32_t ecmpWidth);
 };
 
 /**
@@ -319,8 +326,23 @@ RouteNextHopSet toRouteNextHopSet(
 
 /**
  * Convert RouteNextHops to thrift representaion of nexthops
+ *
+ * With replicateWeightedNexthops, a next hop of weight w > 1 is expanded back
+ * into w next hops of ECMP_WEIGHT, undoing the combining toRouteNextHopSet
+ * does for combineDuplicateWeights. Next hops at ECMP_WEIGHT or
+ * UCMP_DEFAULT_WEIGHT are emitted once, verbatim.
  */
-std::vector<NextHopThrift> fromRouteNextHopSet(RouteNextHopSet const& nhs);
+std::vector<NextHopThrift> fromRouteNextHopSet(
+    RouteNextHopSet const& nhs,
+    bool replicateWeightedNexthops = false);
+
+/**
+ * Same conversion for nexthops held in a vector, e.g. as resolved from a
+ * next hop set id.
+ */
+std::vector<NextHopThrift> fromNextHops(
+    std::vector<NextHop> const& nhs,
+    bool replicateWeightedNexthops = false);
 
 UnicastRoute toUnicastRoute(
     const folly::CIDRNetwork& nw,

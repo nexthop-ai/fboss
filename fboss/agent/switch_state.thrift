@@ -303,6 +303,7 @@ struct ClassBasedPolicyFields {
   1: string name;
   2: NamedNextHopGroupAndID defaultNextHopGroup;
   3: map<common.ForwardingClass, NamedNextHopGroupAndID> class2NextHopGroup;
+  4: bool referenced;
 }
 
 enum NeighborState {
@@ -596,6 +597,7 @@ struct RouteNextHopsMulti {
   2: map<ctrl.ClientID, RouteNextHopEntry> client2NextHopEntry;
 }
 
+@fboss_common.AllowSkipThriftCow
 struct RouteFields {
   1: RoutePrefix prefix;
   2: RouteNextHopsMulti nexthopsmulti;
@@ -618,9 +620,7 @@ struct LabelForwardingEntryFields {
 
 struct FibContainerFields {
   1: i16 vrf;
-  @fboss_common.AllowSkipThriftCow
   2: map<string, RouteFields> fibV4;
-  @fboss_common.AllowSkipThriftCow
   3: map<string, RouteFields> fibV6;
 }
 

@@ -55,6 +55,7 @@ namespace facebook::fboss {
 namespace {
 
 bool useGenericSaiBcmPlatform(PlatformType type) {
+<<<<<<< HEAD
   return type == PlatformType::PLATFORM_BLACKWOLF800BANW ||
       type == PlatformType::PLATFORM_J4SIM ||
       type == PlatformType::PLATFORM_JANGA800BIC ||
@@ -80,6 +81,44 @@ bool useGenericSaiBcmPlatform(PlatformType type) {
       type == PlatformType::PLATFORM_TAHAN800BC ||
       type == PlatformType::PLATFORM_TAHANSB800BC ||
       type == PlatformType::PLATFORM_M4061CLSC;
+||||||| fbc276b526
+  return type == PlatformType::PLATFORM_BLACKWOLF800BANW ||
+      type == PlatformType::PLATFORM_J4SIM ||
+      type == PlatformType::PLATFORM_JANGA800BIC ||
+      type == PlatformType::PLATFORM_MERU800BIA ||
+      type == PlatformType::PLATFORM_MERU800BIAB ||
+      type == PlatformType::PLATFORM_MERU800BIAC ||
+      type == PlatformType::PLATFORM_MERU800BFA ||
+      type == PlatformType::PLATFORM_MERU800BFA_P1 ||
+      type == PlatformType::PLATFORM_SAINTPAUL ||
+      type == PlatformType::PLATFORM_WEDGE800BACT ||
+      type == PlatformType::PLATFORM_WEDGE800BNHP ||
+      type == PlatformType::PLATFORM_ICECUBE800BC ||
+      type == PlatformType::PLATFORM_ICECUBE800BANW ||
+      type == PlatformType::PLATFORM_ICETEA800BC ||
+      type == PlatformType::PLATFORM_LADAKH800BCLS ||
+      type == PlatformType::PLATFORM_LEH800BCLS ||
+      type == PlatformType::PLATFORM_MINIPACK3BTA ||
+      type == PlatformType::PLATFORM_MONTBLANC ||
+      type == PlatformType::PLATFORM_TAHAN800BC ||
+      type == PlatformType::PLATFORM_TAHANSB800BC ||
+      type == PlatformType::PLATFORM_M4061CLSC;
+=======
+  switch (type) {
+    case PlatformType::PLATFORM_WEDGE100:
+    case PlatformType::PLATFORM_WEDGE400:
+    case PlatformType::PLATFORM_WEDGE400_GRANDTETON:
+    case PlatformType::PLATFORM_DARWIN:
+    case PlatformType::PLATFORM_DARWIN48V:
+    case PlatformType::PLATFORM_MINIPACK:
+    case PlatformType::PLATFORM_YAMP:
+    case PlatformType::PLATFORM_FUJI:
+    case PlatformType::PLATFORM_ELBERT:
+      return false;
+    default:
+      return true;
+  }
+>>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
 }
 
 std::unique_ptr<PlatformMapping> createGenericSaiBcmPlatformMapping(

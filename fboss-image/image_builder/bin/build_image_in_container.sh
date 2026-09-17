@@ -255,6 +255,7 @@ dprint "Copying /etc/resolv.conf to ${DESCRIPTION_DIR}/root/etc/resolv.conf..."
 mkdir -p "${DESCRIPTION_DIR}/root/etc"
 cp /etc/resolv.conf "${DESCRIPTION_DIR}/root/etc/"
 
+<<<<<<< HEAD
 # Add build timestamp to the image
 echo "Built on: $(date -u)" >"$DESCRIPTION_DIR/root/etc/build-info"
 
@@ -273,10 +274,17 @@ if [ -d "${DESCRIPTION_DIR}/root_files_cfboss" ]; then
     done
 fi
 
+||||||| fbc276b526
+# Add build timestamp to the image
+echo "Built on: $(date -u)" >"$DESCRIPTION_DIR/root/etc/build-info"
+
+=======
+>>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
 # Copy rootfs template files to overlay
 dprint "Copying rootfs files to overlay..."
 cp -R ${DESCRIPTION_DIR}/root_files/* ${DESCRIPTION_DIR}/root/
 
+<<<<<<< HEAD
 # cFBOSS: layer the root_files_cfboss overlay (carries the pre-baked fruid.json
 # and any other cFBOSS-only static files) and write the build_target marker
 if [ -n "${BUILD_CONTAINER}" ]; then
@@ -287,6 +295,54 @@ if [ -n "${BUILD_CONTAINER}" ]; then
   mkdir -p ${DESCRIPTION_DIR}/root/repos
   echo cfboss >${DESCRIPTION_DIR}/root/repos/build_target
 fi
+||||||| fbc276b526
+=======
+# Written after the root_files copy so an overlay file cannot shadow it.
+write_build_info() {
+  local rel bytes size repos
+
+  echo "FBOSS distro image"
+  echo "Built on: $(date -u)"
+  echo "Built by: $(whoami)@$(hostname)"
+
+  # The manifest and the source revision are only knowable outside the
+  # container; the CLI drops them here before starting the build.
+  if [ -f "${WSROOT}/build-provenance" ]; then
+    cat "${WSROOT}/build-provenance"
+  else
+    echo "Manifest: unknown (no build-provenance from the CLI)"
+  fi
+
+  echo ""
+  echo "Components:"
+
+  # Read the overlay's copy rather than the staging directory: it is what
+  # actually ships, it is a real directory rather than the /deps symlink, and
+  # it is the exact tree config.sh consumes as /repos.
+  local repos="${DESCRIPTION_DIR}/root/repos"
+
+  if [ ! -d "$repos" ]; then
+    echo "  (none: $repos does not exist)"
+    return
+  fi
+
+  # Two levels down is <component>/<artifact>, the layout config.sh consumes.
+  find "$repos" -mindepth 2 -maxdepth 2 -type f -printf '%P\t%s\n' |
+    sort |
+    while IFS=$'\t' read -r rel bytes; do
+      size=$(numfmt --to=iec "$bytes" 2>/dev/null || echo "${bytes}B")
+      echo "  ${rel}  ${size}  sha256:$(sha256sum "${repos}/${rel}" | cut -d' ' -f1)"
+    done
+
+  if [ -z "$(find "$repos" -mindepth 2 -maxdepth 2 -type f -print -quit)" ]; then
+    echo "  (none: no artifacts were staged)"
+  fi
+}
+
+dprint "Recording image provenance in /etc/build-info..."
+write_build_info >"${DESCRIPTION_DIR}/root/etc/build-info"
+tee -a "${LOG_FILE}" <"${DESCRIPTION_DIR}/root/etc/build-info"
+>>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
 
 # Remove any existing after_pkgs files from previous runs
 rm -f ${DESCRIPTION_DIR}/root/var/tmp/after_pkgs_install_file.json

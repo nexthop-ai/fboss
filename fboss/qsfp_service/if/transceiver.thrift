@@ -246,6 +246,7 @@ enum MediaInterfaceCode {
   // 8x800G over DR4: 4 banks, each a 2x800G-DR4
   DR4_8x800G = 36,
   FR2_200G = 37,
+<<<<<<< HEAD
   // 1.6TBASE-DR8 (IEEE 802.3 Clause 180)
   DR8_1600G = 38,
   // Active copper at 200G/lane (IEEE 802.3 Clause 179). The hw test runner
@@ -254,6 +255,9 @@ enum MediaInterfaceCode {
   CR2_400G = 40,
   CR4_800G = 41,
   CR8_1600G = 42,
+||||||| fbc276b526
+=======
+>>>>>>> a86baef3b722a6e7cd287f3a3cf79de202e66b53
 }
 
 // The extended specification compliance code of the transceiver module.
