@@ -416,7 +416,6 @@ heavy_genrule(
         "sdk_dependencies.txt",
     ],
     outs = [
-        "nh-fboss-broadcom-xgs.iso",
         "nh-fboss-broadcom-xgs.bin",
         "nh-fboss-broadcom-xgs.tar",
     ],
@@ -448,10 +447,10 @@ heavy_genrule(
             bazel-out/volatile-status.txt >> "${BUILD_INFO}"
 
         pushd fboss/fboss-image
-        ./distro_cli/fboss-image build nh-fboss-broadcom-xgs.json 2>&1
+        jq 'del(.distribution_formats.usb)' nh-fboss-broadcom-xgs.json > nh-fboss-broadcom-xgs-image.json
+        ./distro_cli/fboss-image build nh-fboss-broadcom-xgs-image.json 2>&1
         popd
 
-        $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.iso $(location nh-fboss-broadcom-xgs.iso)
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.tar $(location nh-fboss-broadcom-xgs.tar)
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.bin $(location nh-fboss-broadcom-xgs.bin)
     """ + delete_build_products_in_ci([
@@ -459,6 +458,73 @@ heavy_genrule(
         "fboss/fboss-image/distro_cli/.artifacts",
     ]),
     tags = ["no-sandbox"],
+)
+
+# USB iso for the nightly only. Repeats the image build, but saves ~5G of bazel cache
+# space per PR build.
+heavy_genrule(
+    name = "nh-fboss-broadcom-xgs-iso",
+    stamp = True,
+    srcs = [
+        "//BGP:distro_bgpd.rpm",
+        "//fboss/fboss-image/flashrom:distro_flashrom.rpm",
+        "//bazel_lib:ln_or_cp",
+        "//fboss_bsps/nexthop_fboss_bsp_kmods:distro_nexthop_bsp.tar",
+        "//fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar",
+        "//fboss_extras/nexthop_product_support:distro_nexthop_product_support.rpm",
+        "//nhbroadcomsai/fboss-xgs:distro_sai.tar",
+        "fboss-image/nh-fboss-broadcom-xgs.json",
+        ":fboss_builder_docker", # Prevent concurrent building
+        "distro_kernel_6.11.tar",
+        "fboss_platform_stack.tar",
+        "fboss_forwarding_stack_broadcom_xgs.tar",
+        ":image_builder",
+        "CMakeLists.txt",
+        "functions.cmake",
+        "sdk_dependencies.txt",
+    ],
+    outs = ["nh-fboss-broadcom-xgs.iso"],
+    cmd = LOAD_FBOSS_BUILDER_CMD + """
+        BUILD_DIR="fboss/fboss-image/.nh-broadcom-xgs"
+        mkdir -p "${BUILD_DIR}"
+
+        ln -f $(location distro_kernel_6.11.tar) "${BUILD_DIR}/distro_kernel_6.11.tar"
+        ln -f $(location //nhbroadcomsai/fboss-xgs:distro_sai.tar) "${BUILD_DIR}/distro_sai.tar"
+        ln -f $(location //fboss_extras/nexthop_product_support:distro_nexthop_product_support.rpm) "${BUILD_DIR}/distro_nexthop_product_support.rpm"
+        ln -f $(location //fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar) "${BUILD_DIR}/distro_fboss_bsp.tar"
+        ln -f $(location //fboss_bsps/nexthop_fboss_bsp_kmods:distro_nexthop_bsp.tar) "${BUILD_DIR}/distro_nexthop_bsp.tar"
+        ln -f $(location fboss_platform_stack.tar) "${BUILD_DIR}/fboss_platform_stack.tar"
+        ln -f $(location //BGP:distro_bgpd.rpm) "${BUILD_DIR}/distro_bgpd.rpm"
+        ln -f $(location //fboss/fboss-image/flashrom:distro_flashrom.rpm) "${BUILD_DIR}/distro_flashrom.rpm"
+        ln -f $(location fboss_forwarding_stack_broadcom_xgs.tar) "${BUILD_DIR}/forwarding-stack.tar"
+
+        BUILD_INFO="fboss/fboss-image/image_builder/templates/centos-09.0/root_files/etc/nexthop_build_info"
+        mkdir -p "${BUILD_INFO%/*}"
+        echo "IMAGE_TYPE broadcom_xgs" > "${BUILD_INFO}"
+        grep \\
+            -e 'BUILD_ID ' \\
+            -e 'GIT_COMMIT_NH ' \\
+            -e 'GIT_COMMIT_FBOSS ' \\
+            -e 'GIT_COMMIT_BGP ' \\
+            -e 'GIT_COMMIT_FBOSS_BSPS_FBOSS_BSP_KMODS ' \\
+            -e 'GIT_COMMIT_FBOSS_BSPS_NEXTHOP_FBOSS_BSP_KMODS ' \\
+            -e 'GIT_COMMIT_NHBROADCOMSAI_FBOSS_XGS ' \\
+            bazel-out/volatile-status.txt >> "${BUILD_INFO}"
+
+        pushd fboss/fboss-image
+        jq '.distribution_formats |= {usb}' nh-fboss-broadcom-xgs.json > nh-fboss-broadcom-xgs-iso.json
+        ./distro_cli/fboss-image build nh-fboss-broadcom-xgs-iso.json 2>&1
+        popd
+
+        $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-xgs.iso $(location nh-fboss-broadcom-xgs.iso)
+    """ + delete_build_products_in_ci([
+        "fboss/fboss-image/.nh-broadcom-xgs",
+        "fboss/fboss-image/distro_cli/.artifacts",
+    ]),
+    tags = [
+        "no-sandbox",
+        "only-for-nightly",
+    ],
 )
 
 heavy_genrule(
@@ -524,7 +590,6 @@ heavy_genrule(
         "sdk_dependencies.txt",
     ],
     outs = [
-        "nh-fboss-broadcom-th6.iso",
         "nh-fboss-broadcom-th6.bin",
         "nh-fboss-broadcom-th6.tar",
     ],
@@ -554,10 +619,10 @@ heavy_genrule(
             bazel-out/volatile-status.txt >> "${BUILD_INFO}"
 
         pushd fboss/fboss-image
-        ./distro_cli/fboss-image build nh-fboss-broadcom-th6.json 2>&1
+        jq 'del(.distribution_formats.usb)' nh-fboss-broadcom-th6.json > nh-fboss-broadcom-th6-image.json
+        ./distro_cli/fboss-image build nh-fboss-broadcom-th6-image.json 2>&1
         popd
 
-        $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-th6.iso $(location nh-fboss-broadcom-th6.iso)
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-th6.bin $(location nh-fboss-broadcom-th6.bin)
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-th6.tar $(location nh-fboss-broadcom-th6.tar)
     """ + delete_build_products_in_ci([
@@ -565,6 +630,70 @@ heavy_genrule(
         "fboss/fboss-image/distro_cli/.artifacts",
     ]),
     tags = ["no-sandbox"],
+)
+
+# USB iso for the nightly only. Repeats the image build, but saves ~5G of bazel cache
+# space per PR build.
+heavy_genrule(
+    name = "nh-fboss-broadcom-th6-iso",
+    stamp = True,
+    srcs = [
+        "//BGP:distro_bgpd.rpm",
+        "//fboss/fboss-image/flashrom:distro_flashrom.rpm",
+        "//bazel_lib:ln_or_cp",
+        "//fboss_bsps/nexthop_fboss_bsp_kmods:distro_nexthop_bsp.tar",
+        "//fboss_extras/nexthop_product_support:distro_nexthop_product_support.rpm",
+        "//nhbroadcomsai/fboss-th6:distro_sai.tar",
+        "fboss-image/nh-fboss-broadcom-th6.json",
+        ":fboss_builder_docker", # Prevent concurrent building
+        "distro_kernel_6.11.tar",
+        "fboss_platform_stack.tar",
+        "fboss_forwarding_stack_broadcom_th6.tar",
+        ":image_builder",
+        "CMakeLists.txt",
+        "functions.cmake",
+        "sdk_dependencies.txt",
+    ],
+    outs = ["nh-fboss-broadcom-th6.iso"],
+    cmd = LOAD_FBOSS_BUILDER_CMD + """
+        BUILD_DIR="fboss/fboss-image/.nh-broadcom-th6"
+        mkdir -p "${BUILD_DIR}"
+
+        ln -f $(location distro_kernel_6.11.tar) "${BUILD_DIR}/distro_kernel_6.11.tar"
+        ln -f $(location //nhbroadcomsai/fboss-th6:distro_sai.tar) "${BUILD_DIR}/distro_sai.tar"
+        ln -f $(location //fboss_extras/nexthop_product_support:distro_nexthop_product_support.rpm) "${BUILD_DIR}/distro_nexthop_product_support.rpm"
+        ln -f $(location //fboss_bsps/nexthop_fboss_bsp_kmods:distro_nexthop_bsp.tar) "${BUILD_DIR}/distro_nexthop_bsp.tar"
+        ln -f $(location fboss_platform_stack.tar) "${BUILD_DIR}/fboss_platform_stack.tar"
+        ln -f $(location //BGP:distro_bgpd.rpm) "${BUILD_DIR}/distro_bgpd.rpm"
+        ln -f $(location //fboss/fboss-image/flashrom:distro_flashrom.rpm) "${BUILD_DIR}/distro_flashrom.rpm"
+        ln -f $(location fboss_forwarding_stack_broadcom_th6.tar) "${BUILD_DIR}/forwarding-stack.tar"
+
+        BUILD_INFO="fboss/fboss-image/image_builder/templates/centos-09.0/root_files/etc/nexthop_build_info"
+        mkdir -p "${BUILD_INFO%/*}"
+        echo "IMAGE_TYPE broadcom_th6" > "${BUILD_INFO}"
+        grep \\
+            -e 'BUILD_ID ' \\
+            -e 'GIT_COMMIT_NH ' \\
+            -e 'GIT_COMMIT_FBOSS ' \\
+            -e 'GIT_COMMIT_BGP ' \\
+            -e 'GIT_COMMIT_FBOSS_BSPS_NEXTHOP_FBOSS_BSP_KMODS ' \\
+            -e 'GIT_COMMIT_NHBROADCOMSAI_FBOSS_TH6 ' \\
+            bazel-out/volatile-status.txt >> "${BUILD_INFO}"
+
+        pushd fboss/fboss-image
+        jq '.distribution_formats |= {usb}' nh-fboss-broadcom-th6.json > nh-fboss-broadcom-th6-iso.json
+        ./distro_cli/fboss-image build nh-fboss-broadcom-th6-iso.json 2>&1
+        popd
+
+        $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-th6.iso $(location nh-fboss-broadcom-th6.iso)
+    """ + delete_build_products_in_ci([
+        "fboss/fboss-image/.nh-broadcom-th6",
+        "fboss/fboss-image/distro_cli/.artifacts",
+    ]),
+    tags = [
+        "no-sandbox",
+        "only-for-nightly",
+    ],
 )
 
 heavy_genrule(
@@ -630,7 +759,6 @@ heavy_genrule(
         "sdk_dependencies.txt",
     ],
     outs = [
-        "nh-fboss-broadcom-dnx.iso",
         "nh-fboss-broadcom-dnx.bin",
         "nh-fboss-broadcom-dnx.tar",
     ],
@@ -656,14 +784,14 @@ heavy_genrule(
             -e 'GIT_COMMIT_FBOSS ' \\
             -e 'GIT_COMMIT_BGP ' \\
             -e 'GIT_COMMIT_FBOSS_BSPS_NEXTHOP_FBOSS_BSP_KMODS ' \\
-            -e 'GIT_COMMIT_NHBROADCOMSAI_FBOSS_TH6 ' \\
+            -e 'GIT_COMMIT_NHBROADCOMSAI_FBOSS_DNX ' \\
             bazel-out/volatile-status.txt >> "${BUILD_INFO}"
 
         pushd fboss/fboss-image
-        ./distro_cli/fboss-image build nh-fboss-broadcom-dnx.json 2>&1
+        jq 'del(.distribution_formats.usb)' nh-fboss-broadcom-dnx.json > nh-fboss-broadcom-dnx-image.json
+        ./distro_cli/fboss-image build nh-fboss-broadcom-dnx-image.json 2>&1
         popd
 
-        $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-dnx.iso $(location nh-fboss-broadcom-dnx.iso)
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-dnx.bin $(location nh-fboss-broadcom-dnx.bin)
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-dnx.tar $(location nh-fboss-broadcom-dnx.tar)
     """ + delete_build_products_in_ci([
@@ -671,6 +799,70 @@ heavy_genrule(
         "fboss/fboss-image/distro_cli/.artifacts",
     ]),
     tags = ["no-sandbox"],
+)
+
+# USB iso for the nightly only. Repeats the image build, but saves ~5G of bazel cache
+# space per PR build.
+heavy_genrule(
+    name = "nh-fboss-broadcom-dnx-iso",
+    stamp = True,
+    srcs = [
+        "//BGP:distro_bgpd.rpm",
+        "//fboss/fboss-image/flashrom:distro_flashrom.rpm",
+        "//bazel_lib:ln_or_cp",
+        "//fboss_bsps/nexthop_fboss_bsp_kmods:distro_nexthop_bsp.tar",
+        "//fboss_extras/nexthop_product_support:distro_nexthop_product_support.rpm",
+        "//nhbroadcomsai/fboss-dnx:distro_sai_dnx.tar",
+        "fboss-image/nh-fboss-broadcom-dnx.json",
+        ":fboss_builder_docker", # Prevent concurrent building
+        "distro_kernel_6.11.tar",
+        "fboss_platform_stack.tar",
+        "fboss_forwarding_stack_broadcom_dnx.tar",
+        ":image_builder",
+        "CMakeLists.txt",
+        "functions.cmake",
+        "sdk_dependencies.txt",
+    ],
+    outs = ["nh-fboss-broadcom-dnx.iso"],
+    cmd = LOAD_FBOSS_BUILDER_CMD + """
+        BUILD_DIR="fboss/fboss-image/.nh-broadcom-dnx"
+        mkdir -p "${BUILD_DIR}"
+
+        ln -f $(location distro_kernel_6.11.tar) "${BUILD_DIR}/distro_kernel_6.11.tar"
+        ln -f $(location //nhbroadcomsai/fboss-dnx:distro_sai_dnx.tar) "${BUILD_DIR}/distro_sai.tar"
+        ln -f $(location //fboss_extras/nexthop_product_support:distro_nexthop_product_support.rpm) "${BUILD_DIR}/distro_nexthop_product_support.rpm"
+        ln -f $(location //fboss_bsps/nexthop_fboss_bsp_kmods:distro_nexthop_bsp.tar) "${BUILD_DIR}/distro_nexthop_bsp.tar"
+        ln -f $(location fboss_platform_stack.tar) "${BUILD_DIR}/fboss_platform_stack.tar"
+        ln -f $(location //BGP:distro_bgpd.rpm) "${BUILD_DIR}/distro_bgpd.rpm"
+        ln -f $(location //fboss/fboss-image/flashrom:distro_flashrom.rpm) "${BUILD_DIR}/distro_flashrom.rpm"
+        ln -f $(location fboss_forwarding_stack_broadcom_dnx.tar) "${BUILD_DIR}/forwarding-stack.tar"
+
+        BUILD_INFO="fboss/fboss-image/image_builder/templates/centos-09.0/root_files/etc/nexthop_build_info"
+        mkdir -p "${BUILD_INFO%/*}"
+        echo "IMAGE_TYPE broadcom_dnx" > "${BUILD_INFO}"
+        grep \\
+            -e 'BUILD_ID ' \\
+            -e 'GIT_COMMIT_NH ' \\
+            -e 'GIT_COMMIT_FBOSS ' \\
+            -e 'GIT_COMMIT_BGP ' \\
+            -e 'GIT_COMMIT_FBOSS_BSPS_NEXTHOP_FBOSS_BSP_KMODS ' \\
+            -e 'GIT_COMMIT_NHBROADCOMSAI_FBOSS_DNX ' \\
+            bazel-out/volatile-status.txt >> "${BUILD_INFO}"
+
+        pushd fboss/fboss-image
+        jq '.distribution_formats |= {usb}' nh-fboss-broadcom-dnx.json > nh-fboss-broadcom-dnx-iso.json
+        ./distro_cli/fboss-image build nh-fboss-broadcom-dnx-iso.json 2>&1
+        popd
+
+        $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-broadcom-dnx.iso $(location nh-fboss-broadcom-dnx.iso)
+    """ + delete_build_products_in_ci([
+        "fboss/fboss-image/.nh-broadcom-dnx",
+        "fboss/fboss-image/distro_cli/.artifacts",
+    ]),
+    tags = [
+        "no-sandbox",
+        "only-for-nightly",
+    ],
 )
 
 heavy_genrule(
@@ -736,7 +928,6 @@ heavy_genrule(
         "sdk_dependencies.txt",
     ],
     outs = [
-        "nh-fboss-cisco-s1.iso",
         "nh-fboss-cisco-s1.tar",
     ],
     cmd = LOAD_FBOSS_BUILDER_CMD + """
@@ -763,16 +954,77 @@ heavy_genrule(
             bazel-out/volatile-status.txt >> "${BUILD_INFO}"
 
         pushd fboss/fboss-image
-        ./distro_cli/fboss-image build nh-fboss-cisco-s1.json 2>&1
+        jq 'del(.distribution_formats.usb)' nh-fboss-cisco-s1.json > nh-fboss-cisco-s1-image.json
+        ./distro_cli/fboss-image build nh-fboss-cisco-s1-image.json 2>&1
         popd
 
-        $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-cisco-s1.iso $(location nh-fboss-cisco-s1.iso)
         $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-cisco-s1.tar $(location nh-fboss-cisco-s1.tar)
     """ + delete_build_products_in_ci([
         "fboss/fboss-image/.nh-cisco-s1",
         "fboss/fboss-image/distro_cli/.artifacts",
     ]),
     tags = ["no-sandbox"],
+)
+
+# USB iso for the nightly only. Repeats the image build, but saves ~5G of bazel cache
+# space per PR build.
+heavy_genrule(
+    name = "nh-fboss-cisco-s1-iso",
+    stamp = True,
+    srcs = [
+        "//BGP:distro_bgpd.rpm",
+        "//fboss/fboss-image/flashrom:distro_flashrom.rpm",
+        "//bazel_lib:ln_or_cp",
+        "//fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar",
+        "//nhciscosai/fboss-s1:distro_sai.tar",
+        "fboss-image/nh-fboss-cisco-s1.json",
+        ":fboss_builder_docker", # Prevent concurrent building
+        "distro_kernel_6.11.tar",
+        "fboss_platform_stack.tar",
+        "fboss_forwarding_stack_cisco_s1.tar",
+        ":image_builder",
+        "CMakeLists.txt",
+        "functions.cmake",
+        "sdk_dependencies.txt",
+    ],
+    outs = ["nh-fboss-cisco-s1.iso"],
+    cmd = LOAD_FBOSS_BUILDER_CMD + """
+        BUILD_DIR="fboss/fboss-image/.nh-cisco-s1"
+        mkdir -p "${BUILD_DIR}"
+
+        ln -f $(location distro_kernel_6.11.tar) "${BUILD_DIR}/distro_kernel_6.11.tar"
+        ln -f $(location //nhciscosai/fboss-s1:distro_sai.tar) "${BUILD_DIR}/distro_sai.tar"
+        ln -f $(location //fboss_bsps/fboss_bsp_kmods:distro_fboss_bsp.tar) "${BUILD_DIR}/distro_fboss_bsp.tar"
+        ln -f $(location fboss_platform_stack.tar) "${BUILD_DIR}/fboss_platform_stack.tar"
+        ln -f $(location //BGP:distro_bgpd.rpm) "${BUILD_DIR}/distro_bgpd.rpm"
+        ln -f $(location //fboss/fboss-image/flashrom:distro_flashrom.rpm) "${BUILD_DIR}/distro_flashrom.rpm"
+        ln -f $(location fboss_forwarding_stack_cisco_s1.tar) "${BUILD_DIR}/forwarding-stack.tar"
+
+        BUILD_INFO="fboss/fboss-image/image_builder/templates/centos-09.0/root_files/etc/nexthop_build_info"
+        mkdir -p "${BUILD_INFO%/*}"
+        echo "IMAGE_TYPE cisco_s1" > "${BUILD_INFO}"
+        grep \\
+            -e 'BUILD_ID ' \\
+            -e 'GIT_COMMIT_NH ' \\
+            -e 'GIT_COMMIT_FBOSS ' \\
+            -e 'GIT_COMMIT_BGP ' \\
+            -e 'GIT_COMMIT_FBOSS_BSPS_FBOSS_BSP_KMODS ' \\
+            bazel-out/volatile-status.txt >> "${BUILD_INFO}"
+
+        pushd fboss/fboss-image
+        jq '.distribution_formats |= {usb}' nh-fboss-cisco-s1.json > nh-fboss-cisco-s1-iso.json
+        ./distro_cli/fboss-image build nh-fboss-cisco-s1-iso.json 2>&1
+        popd
+
+        $(execpath //bazel_lib:ln_or_cp) fboss/fboss-image/nh-fboss-cisco-s1.iso $(location nh-fboss-cisco-s1.iso)
+    """ + delete_build_products_in_ci([
+        "fboss/fboss-image/.nh-cisco-s1",
+        "fboss/fboss-image/distro_cli/.artifacts",
+    ]),
+    tags = [
+        "no-sandbox",
+        "only-for-nightly",
+    ],
 )
 
 heavy_genrule(
