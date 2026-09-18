@@ -13,6 +13,11 @@
           "test_name_regex": "TunnelIpInIpTest\\."
         }
     ],
+    "nh4220f/brcm-14.2.0.0_odp": [
+        {
+          "test_name_regex": "TunnelIpInIpTest\\."
+        }
+    ],
     "wedge800bact/brcm-13.3.0.0_odp": [
         {
           "test_name_regex": "ConfigAclRuleTest\\.SetEtherType$"
