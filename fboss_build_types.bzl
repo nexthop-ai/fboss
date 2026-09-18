@@ -65,5 +65,5 @@ def fboss_unit_test(name, tags=None):
             "//fboss:fboss_builder.tar",
             ":" + name,
         ],
-        tags = tags,
+        tags = (tags or []) + ["resources:docker_test_clients:1"],
     )
