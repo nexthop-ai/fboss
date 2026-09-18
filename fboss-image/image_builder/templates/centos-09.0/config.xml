@@ -161,9 +161,6 @@
         <package name="usbutils"/>
         <package name="ndisc6"/>
         <package name="chrony"/>
-    </packages>
-
-    <packages type="image" profiles="CFBOSS">
         <package name="jemalloc"/>
     </packages>
 
