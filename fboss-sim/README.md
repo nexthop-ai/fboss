@@ -61,9 +61,10 @@ The image can include the bgp++ routing daemon — the same RPM the distro image
 installs. Inclusion is optional: the packager never builds or downloads
 anything, it stages an RPM only if one is already on disk, and otherwise builds
 the image without BGP. When an RPM is present, `Dockerfile.runtime` unpacks it
-with `rpm2cpio` — `/usr/sbin/bgpd`, its config (`/etc/coop/bgpcpp.conf`, where
-`fboss2 config session` promotes BGP commits) and `bgpd.service`, which
-`setup-container.sh` enables when `/usr/sbin/bgpd` exists. `fsdb` is always
+with `rpm2cpio` — `/opt/bgp` (`bin/bgpd`, `bin/setup_bgp_env` and the `lib/`
+the daemon loads), its config (`/etc/coop/bgpcpp.conf`, where `fboss2 config
+session` promotes BGP commits) and `bgpd.service`, which `setup-container.sh`
+enables when `/opt/bgp/bin/bgpd` exists. `fsdb` is always
 packaged and enabled, since bgpd publishes its config/RIB state to FSDB.
 
 To include BGP, put an RPM at `.build_dir/downloads/distro_bgpd.rpm` (or pass

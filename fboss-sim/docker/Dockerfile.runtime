@@ -80,8 +80,9 @@ COPY tmp_build_dir/share/ /opt/fboss/share/
 
 # Layer 2.5: bgpd — the same bgp++ RPM the distro image installs, staged by
 # fboss-sim-docker-package.py and unpacked rather than rpm-installed: the
-# payload is just /usr/sbin/bgpd, the systemd unit and
-# /etc/coop/bgpcpp.conf, the spec sets AutoReqProv: no, and setup-container.sh
+# payload is just /opt/bgp (bgpd, setup_bgp_env and the getdeps libraries it
+# loads), the systemd unit and /etc/coop/bgpcpp.conf, the spec sets
+# AutoReqProv: no, and setup-container.sh
 # already owns unit enablement (the spec's %post does the same on a real box).
 # /etc/coop/bgpcpp.conf is where fboss2 config sessions promote BGP commits.
 # tmp_build_dir/bgpd/ empty (no RPM) → this layer is a no-op.

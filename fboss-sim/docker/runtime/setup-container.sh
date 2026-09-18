@@ -103,7 +103,7 @@ echo "→ Enabling fsdb service..."
 ln -sf /usr/lib/systemd/system/fsdb.service \
   /etc/systemd/system/multi-user.target.wants/fsdb.service
 
-if [ -x /usr/sbin/bgpd ]; then
+if [ -x /opt/bgp/bin/bgpd ]; then
   echo "→ Enabling bgpd service..."
   ln -sf /usr/lib/systemd/system/bgpd.service \
     /etc/systemd/system/multi-user.target.wants/bgpd.service
@@ -129,7 +129,7 @@ echo "  - Monolithic mode: DISABLED (masked, use switch-agent-mode.sh to enable)
 echo "  - Memory allocator: jemalloc (via LD_PRELOAD)"
 echo "  - Multi-switch flag: ENABLED (via /etc/coop/agent.conf)"
 echo "  - FSDB: ENABLED"
-if [ -x /usr/sbin/bgpd ]; then
+if [ -x /opt/bgp/bin/bgpd ]; then
   echo "  - bgpd (bgp++): ENABLED"
 else
   echo "  - bgpd (bgp++): NOT PACKAGED"
