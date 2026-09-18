@@ -22,7 +22,7 @@
   "phy_sai": {
   },
   "fboss-forwarding-stack": {
-    "download": "file:.nh-cisco-s1/forwarding-stack.tar"
+    "download": "file:.nh-cisco-s1/fboss_forwarding_stack_cisco_s1.tar"
   },
   "image_build_hooks": {
     "after_pkgs_install": "nexthop-extra-pkgs.json"

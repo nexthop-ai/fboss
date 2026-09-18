@@ -24,7 +24,7 @@
   "phy_sai": {
   },
   "fboss-forwarding-stack": {
-    "download": "file:.nh-broadcom-th6/forwarding-stack.tar"
+    "download": "file:.nh-broadcom-th6/fboss_forwarding_stack_broadcom_th6.tar"
   },
   "image_build_hooks": {
     "after_pkgs_install": "nexthop-extra-pkgs.json"

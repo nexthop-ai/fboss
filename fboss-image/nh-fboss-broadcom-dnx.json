@@ -19,12 +19,12 @@
     { "download": "file:.nh-broadcom-dnx/distro_nexthop_bsp.tar" }
   ],
   "npu_sai": {
-    "download": "file:.nh-broadcom-dnx/distro_sai.tar"
+    "download": "file:.nh-broadcom-dnx/distro_sai_dnx.tar"
   },
   "phy_sai": {
   },
   "fboss-forwarding-stack": {
-    "download": "file:.nh-broadcom-dnx/forwarding-stack.tar"
+    "download": "file:.nh-broadcom-dnx/fboss_forwarding_stack_broadcom_dnx.tar"
   },
   "image_build_hooks": {
     "after_pkgs_install": "nexthop-extra-pkgs.json"

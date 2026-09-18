@@ -46,3 +46,4 @@ BUILD.bazel
 neteng/fboss/bgp/public_tld/configerator/structs/neteng
 # Site-specific build configuration (contains infrastructure URLs/credentials)
 fboss/oss/scripts/fboss-build.env
+.distro_build/
