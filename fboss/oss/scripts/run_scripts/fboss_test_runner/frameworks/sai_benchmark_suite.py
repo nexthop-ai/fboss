@@ -46,12 +46,31 @@ class SaiBenchmarkSuite(BenchmarkSuite):
         return SAI_BENCH_CONFIG
 
     def known_bad_keys(self, platform_key: str) -> list[str]:
-        keys_to_try = [platform_key]
-        for suffix in ("/mono", "/multi_switch"):
-            if platform_key.endswith(suffix):
-                keys_to_try.append(platform_key[: -len(suffix)])
-                break
-        return keys_to_try
+        """Walk ``platform_key`` back to its ``vendor/sdk/asic`` prefix, longest
+        first, so any segment after the ASIC (run mode, platform codename, or
+        both) inherits the ASIC-level known-bad / unsupported entries.
+
+        Every prefix down to three segments is tried, so platform-specific
+        skips can be keyed as ``vendor/sdk/asic/<codename>`` and still pick up
+        the ASIC-wide entries.
+
+        Examples::
+
+            "brcm/14.2.0.0_odp/tomahawk6"
+                -> ["brcm/14.2.0.0_odp/tomahawk6"]
+            "brcm/14.2.0.0_odp/tomahawk6/multi_switch"
+                -> ["brcm/14.2.0.0_odp/tomahawk6/multi_switch",
+                    "brcm/14.2.0.0_odp/tomahawk6"]
+            "brcm/13.3.0.0_odp/tomahawk5/<platform>"
+                -> ["brcm/13.3.0.0_odp/tomahawk5/<platform>",
+                    "brcm/13.3.0.0_odp/tomahawk5"]
+            "brcm/12.2.0.0_dnx_odp/jericho3/mono/fap"
+                -> ["brcm/12.2.0.0_dnx_odp/jericho3/mono/fap",
+                    "brcm/12.2.0.0_dnx_odp/jericho3/mono",
+                    "brcm/12.2.0.0_dnx_odp/jericho3"]
+        """
+        parts = platform_key.split("/")
+        return ["/".join(parts[:n]) for n in range(len(parts), 2, -1)]
 
     def build_cmd(
         self, binary: str, args: Namespace, benchmark_name: str | None = None

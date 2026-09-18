@@ -1707,6 +1707,18 @@
           "reason": "New test, needs more debugging"
         }
     ],
+    "brcm/14.2.0.0_odp/tomahawk6/nh4220f": [
+        {
+          "test_name_regex": "Route(Add|Del)HwEcmpGroupScale(128|256)x64Benchmark",
+          "reason": "XXX: NEXTHOP INTERNAL ONLY - DO NOT UPSTREAM BLACK KITE. nh4220f has 64 front-panel cages (64 master interface ports); 64-wide ECMP group scale needs more than 64 ports"
+        }
+    ],
+    "brcm/14.2.0.0_odp/tomahawk6/m4061nhp": [
+        {
+          "test_name_regex": "Route(Add|Del)HwEcmpGroupScale(128|256)x64Benchmark",
+          "reason": "XXX: NOS-17160 NEXTHOP INTERNAL ONLY - DO NOT UPSTREAM BLUE KITE YET. m4061nhp (Blue Kite) has 64 front-panel cages (64 master interface ports); 64-wide ECMP group scale needs more than 64 ports"
+        }
+    ],
     "brcm/14.2.0.0_odp/tomahawk6/mono": [
         {
           "test_name_regex": "HwPbrAclStatsCollectionBenchmark",

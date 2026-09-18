@@ -76,13 +76,17 @@ def benchmark_skip_known_bad(model: str) -> str:
     # known-bad files which use vendor/coldboot-sai/warmboot-sai/asic. Collapse the
     # duplicated SDK segment so the benchmark platform key matches the config;
     # otherwise the lookup misses and unsupported (VOQ/Fabric/SRv6) benchmarks run.
+    # The agent config codename is appended so a platform can carry its own
+    # skips; the runner walks the key back to vendor/sdk/asic, so a platform
+    # without an entry of its own is a harmless miss and inherits the ASIC skips.
     key = SAI_KNOWN_BAD_KEY.get(model)
     if not key:
         return ""
     parts = key.split("/")
     if len(parts) == 4 and parts[1] == parts[2]:
         key = f"{parts[0]}/{parts[1]}/{parts[3]}"
-    return f" --skip-known-bad-tests {key}"
+    platform = SAI_AGENT_CONFIG_NAME.get(model, model)
+    return f" --skip-known-bad-tests {key}/{platform}"
 
 
 def fboss2_skip_known_bad(model: str) -> str:

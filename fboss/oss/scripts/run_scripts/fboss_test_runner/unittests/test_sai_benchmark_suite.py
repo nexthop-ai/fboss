@@ -105,14 +105,43 @@ def test_build_cmd_with_switch_id_for_testing_excluded(suite, sai_args):
 
 
 def test_known_bad_keys_strips_run_mode(suite):
-    assert suite.known_bad_keys("brcm/x/y/tomahawk4/mono") == [
-        "brcm/x/y/tomahawk4/mono",
-        "brcm/x/y/tomahawk4",
+    assert suite.known_bad_keys("brcm/x/tomahawk4/mono") == [
+        "brcm/x/tomahawk4/mono",
+        "brcm/x/tomahawk4",
     ]
 
 
 def test_known_bad_keys_plain(suite):
-    assert suite.known_bad_keys("brcm/x/y/tomahawk4") == ["brcm/x/y/tomahawk4"]
+    assert suite.known_bad_keys("brcm/x/tomahawk4") == ["brcm/x/tomahawk4"]
+
+
+def test_known_bad_keys_platform_inherits_asic(suite):
+    assert suite.known_bad_keys("brcm/x/tomahawk5/sampleplatform") == [
+        "brcm/x/tomahawk5/sampleplatform",
+        "brcm/x/tomahawk5",
+    ]
+
+
+def test_known_bad_keys_walks_every_prefix_to_asic(suite):
+    assert suite.known_bad_keys("brcm/x/jericho3/mono/fap") == [
+        "brcm/x/jericho3/mono/fap",
+        "brcm/x/jericho3/mono",
+        "brcm/x/jericho3",
+    ]
+
+
+def test_known_bad_keys_platform_then_mode_skips_asic_mode_key(suite):
+    # Prefix walk only: a run mode after the platform codename never reaches
+    # the ASIC-level run-mode key (brcm/x/tomahawk5/multi_switch).
+    assert suite.known_bad_keys("brcm/x/tomahawk5/sampleplatform/multi_switch") == [
+        "brcm/x/tomahawk5/sampleplatform/multi_switch",
+        "brcm/x/tomahawk5/sampleplatform",
+        "brcm/x/tomahawk5",
+    ]
+
+
+def test_known_bad_keys_short_key_returns_nothing(suite):
+    assert suite.known_bad_keys("brcm/x") == []
 
 
 # ---- find_thresholds (dotted per-benchmark keys) -------------------------

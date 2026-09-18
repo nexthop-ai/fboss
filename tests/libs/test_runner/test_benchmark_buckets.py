@@ -12,17 +12,18 @@ during DUT validation.
 import sys
 from argparse import Namespace
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
+from tests.libs.test_runner import BenchmarkTestRunner, QsfpBenchmarkTestRunner
 from tests.libs.test_runner.filter_utils import (
     catch_all_filters,
     load_test_context,
     module_inclusion_filters,
 )
-from tests.libs.test_runner import BenchmarkTestRunner, QsfpBenchmarkTestRunner
 from tests.libs.test_runner.platform_configs import (
+    benchmark_skip_known_bad,
     SAI_AGENT_CONFIG_NAME,
     SAI_KNOWN_BAD_KEY,
 )
@@ -131,6 +132,24 @@ def test_bench_config_always_from_hw_bench_configs(model, config_name):
     args = BenchmarkTestRunner().test_args(model)
     assert f"./share/hw_bench_configs/{config_name}.agent.materialized_JSON" in args
     assert "hw_test_configs" not in args
+
+
+@pytest.mark.parametrize(
+    ("model", "expected"),
+    [
+        ("nh4215f", "brcm/14.2.0.0_odp/tomahawk6/m4062nhp"),
+        ("minipack3", "brcm/13.3.0.0_odp/tomahawk5/montblanc"),
+        ("nhcw800f", "leaba/25.11.4210/graphene202x/wedge800cact"),
+    ],
+)
+def test_benchmark_skip_key_is_asic_plus_platform(model, expected):
+    """The SAI 4-tuple collapses to vendor/sdk/asic and gains the config codename,
+    so a platform can carry its own sai_bench skips and still inherit the ASIC's."""
+    assert benchmark_skip_known_bad(model) == f" --skip-known-bad-tests {expected}"
+
+
+def test_benchmark_skip_key_unknown_model():
+    assert benchmark_skip_known_bad("wedge800bnhp") == ""
 
 
 def test_benchmark_runner_pins_multi_switch(monkeypatch):
