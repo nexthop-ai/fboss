@@ -121,6 +121,11 @@
 #include "fboss/cli/fboss2/commands/delete/interface/CmdDeleteInterface.h"
 #include "fboss/cli/fboss2/commands/delete/interface/ipv6/CmdDeleteInterfaceIpv6.h"
 #include "fboss/cli/fboss2/commands/delete/interface/ipv6/ndp/CmdDeleteInterfaceIpv6Ndp.h"
+<<<<<<< HEAD
+=======
+#include "fboss/cli/fboss2/commands/delete/interface/pfc_config/CmdDeleteInterfacePfcConfig.h"
+#include "fboss/cli/fboss2/commands/delete/interface/queuing_policy/CmdDeleteInterfaceQueuingPolicy.h"
+>>>>>>> 3336bfbff5 (NOS-12849: Add fboss2-dev delete commands for PFC config, buffer pool, priority group policy (#1952))
 #include "fboss/cli/fboss2/commands/delete/interface/sflow/CmdDeleteInterfaceSflow.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/CmdDeleteProtocol.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/bgp/CmdDeleteProtocolBgp.h"
@@ -128,9 +133,11 @@
 #include "fboss/cli/fboss2/commands/delete/protocol/static/CmdDeleteProtocolStatic.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.h"
 #include "fboss/cli/fboss2/commands/delete/qos/CmdDeleteQos.h"
+#include "fboss/cli/fboss2/commands/delete/qos/buffer_pool/CmdDeleteQosBufferPool.h"
 #include "fboss/cli/fboss2/commands/delete/qos/default_policy/CmdDeleteQosDefaultPolicy.h"
 #include "fboss/cli/fboss2/commands/delete/qos/policy/CmdDeleteQosPolicy.h"
 #include "fboss/cli/fboss2/commands/delete/qos/policy/CmdDeleteQosPolicyMap.h"
+#include "fboss/cli/fboss2/commands/delete/qos/priority_group_policy/CmdDeleteQosPriorityGroupPolicy.h"
 #include "fboss/cli/fboss2/commands/delete/qos/queue_config/CmdDeleteQosQueueConfig.h"
 #include "fboss/cli/fboss2/commands/delete/qos/queue_config/CmdDeleteQosQueueConfigQueueId.h"
 #include "fboss/cli/fboss2/commands/delete/srv6/CmdDeleteSrv6.h"
@@ -856,6 +863,22 @@ const CommandTree& kConfigCommandTree() {
                }},
            },
            {
+<<<<<<< HEAD
+=======
+               "pfc-config",
+               "Remove the interface's PFC config, or reset one of its "
+               "optional fields: watchdog, rx-duration, tx-duration",
+               commandHandler<CmdDeleteInterfacePfcConfig>,
+               argRegistrar<CmdDeleteInterfacePfcConfigTraits>,
+           },
+           {
+               "queuing-policy",
+               "Clear the interface's queuing policy (falls back to the default port queue config)",
+               commandHandler<CmdDeleteInterfaceQueuingPolicy>,
+               argTypeHandler<CmdDeleteInterfaceQueuingPolicyTraits>,
+           },
+           {
+>>>>>>> 3336bfbff5 (NOS-12849: Add fboss2-dev delete commands for PFC config, buffer pool, priority group policy (#1952))
                "sflow",
                "Delete (reset to default) sFlow settings for interface: "
                "sample-dest, ingress-rate, egress-rate",
@@ -871,6 +894,12 @@ const CommandTree& kConfigCommandTree() {
           commandHandler<CmdDeleteQos>,
           argRegistrar<CmdDeleteQosTraits>,
           {{
+               "buffer-pool",
+               "Remove a buffer pool (refused while a queue or priority group still names it)",
+               commandHandler<CmdDeleteQosBufferPool>,
+               argRegistrar<CmdDeleteQosBufferPoolTraits>,
+           },
+           {
                "default-policy",
                "Clear the default data-plane QoS policy",
                commandHandler<CmdDeleteQosDefaultPolicy>,
@@ -899,6 +928,12 @@ const CommandTree& kConfigCommandTree() {
                    commandHandler<CmdDeleteQosPolicyMap>,
                    argRegistrar<CmdDeleteQosPolicyMapTraits>,
                }},
+           },
+           {
+               "priority-group-policy",
+               "Remove a priority group policy (refused while an interface's pfc-config still binds it)",
+               commandHandler<CmdDeleteQosPriorityGroupPolicy>,
+               argRegistrar<CmdDeleteQosPriorityGroupPolicyTraits>,
            }},
       },
 

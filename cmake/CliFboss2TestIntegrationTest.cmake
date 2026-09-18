@@ -54,6 +54,11 @@ add_executable(fboss2_integration_test
   fboss/cli/fboss2/test/integration_test/DeleteArpTest.cpp
   fboss/cli/fboss2/test/integration_test/DeleteDhcpSourceOverrideTest.cpp
   fboss/cli/fboss2/test/integration_test/DeleteInterfaceIpv6NdpTest.cpp
+<<<<<<< HEAD
+=======
+  fboss/cli/fboss2/test/integration_test/DeleteLoadBalancingTest.cpp
+  fboss/cli/fboss2/test/integration_test/DeletePfcTest.cpp
+>>>>>>> 3336bfbff5 (NOS-12849: Add fboss2-dev delete commands for PFC config, buffer pool, priority group policy (#1952))
   fboss/cli/fboss2/test/integration_test/DeleteQosPolicyTest.cpp
   fboss/cli/fboss2/test/integration_test/DeleteVlanTest.cpp
   fboss/cli/fboss2/test/integration_test/TunnelIpInIpTest.cpp

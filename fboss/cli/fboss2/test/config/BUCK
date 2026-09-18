@@ -57,9 +57,16 @@ cpp_unittest(
         "CmdDeleteDataPlaneTrafficPolicyMatchActionTest.cpp",
         "CmdDeleteDhcpTest.cpp",
         "CmdDeleteInterfaceIpv6NdpTest.cpp",
+<<<<<<< HEAD
+=======
+        "CmdDeleteInterfacePfcConfigTest.cpp",
+        "CmdDeleteInterfaceQueuingPolicyTest.cpp",
+>>>>>>> 3336bfbff5 (NOS-12849: Add fboss2-dev delete commands for PFC config, buffer pool, priority group policy (#1952))
         "CmdDeleteInterfaceTest.cpp",
         "CmdDeleteQosDefaultPolicyTest.cpp",
+        "CmdDeleteQosBufferPoolTest.cpp",
         "CmdDeleteQosPolicyTest.cpp",
+        "CmdDeleteQosPriorityGroupPolicyTest.cpp",
         "CmdDeleteQosQueueConfigTest.cpp",
         "CmdDeleteTrafficCounterTest.cpp",
         "CmdDeleteTunnelIpInIpTest.cpp",

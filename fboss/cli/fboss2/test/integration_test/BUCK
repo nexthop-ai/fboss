@@ -64,7 +64,12 @@ cpp_binary(
         "DeleteCoppTest.cpp",
         "DeleteDhcpSourceOverrideTest.cpp",
         "DeleteInterfaceIpv6NdpTest.cpp",
+<<<<<<< HEAD
         "DeleteInterfaceTest.cpp",
+=======
+        "DeleteLoadBalancingTest.cpp",
+        "DeletePfcTest.cpp",
+>>>>>>> 3336bfbff5 (NOS-12849: Add fboss2-dev delete commands for PFC config, buffer pool, priority group policy (#1952))
         "DeleteQosPolicyTest.cpp",
         "DeleteVlanTest.cpp",
         "Fboss2IntegrationTest.cpp",
