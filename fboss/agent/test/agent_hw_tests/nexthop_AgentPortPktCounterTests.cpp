@@ -40,7 +40,8 @@ class AgentPortPktCounterTest : public AgentHwTest {
         getSwitchIdUnderTest(ensemble));
     // MAC loopback on BRCM does not exercise the RX classification path that
     // backs the per packet type counters.
-    if (asic->getAsicVendor() == HwAsic::AsicVendor::ASIC_VENDOR_BCM) {
+    if (asic->getAsicVendor() == HwAsic::AsicVendor::ASIC_VENDOR_BCM &&
+        phyLoopbackSupported(ensemble.getSw()->getPlatformType())) {
       for (auto& port : *config.ports()) {
         if (port.portType() == cfg::PortType::INTERFACE_PORT) {
           port.loopbackMode() = cfg::PortLoopbackMode::PHY;
@@ -51,6 +52,23 @@ class AgentPortPktCounterTest : public AgentHwTest {
   }
 
  protected:
+  static bool phyLoopbackSupported(PlatformType platform) {
+    switch (platform) {
+      case PlatformType::PLATFORM_NH4220F:
+      case PlatformType::PLATFORM_NH4010F:
+      case PlatformType::PLATFORM_MONTBLANC:
+        return false;
+      default:
+        return true;
+    }
+  }
+
+  bool rxPktTypeCountersExercised(const std::shared_ptr<Port>& port) const {
+    return hwAsicForPort(port->getID())->getAsicType() !=
+        cfg::AsicType::ASIC_TYPE_TOMAHAWK5 ||
+        port->getLoopbackMode() != cfg::PortLoopbackMode::MAC;
+  }
+
   std::vector<PortID> portsUnderTest() const {
     return FLAGS_hyper_port ? masterLogicalHyperPortIds()
                             : masterLogicalInterfacePortIds();
@@ -99,8 +117,8 @@ TEST_F(AgentPortPktCounterTest, VerifyRxPktCountersUnderTraffic) {
     auto after = getNextUpdatedPortStats(ports);
 
     for (auto portId : ports) {
-      auto portName =
-          getProgrammedState()->getPorts()->getNodeIf(portId)->getName();
+      auto port = getProgrammedState()->getPorts()->getNodeIf(portId);
+      auto portName = port->getName();
       SCOPED_TRACE(
           folly::to<std::string>(
               "port ", portName, " (id ", static_cast<int>(portId), ")"));
@@ -124,22 +142,29 @@ TEST_F(AgentPortPktCounterTest, VerifyRxPktCountersUnderTraffic) {
         continue;
       }
 
-      EXPECT_GT(dInUcast, 0)
-          << "in_unicast_pkts did not advance while in_bytes advanced by "
-          << dInBytes;
-      if (dInUcast <= 0) {
-        continue;
-      }
+      if (rxPktTypeCountersExercised(port)) {
+        EXPECT_GT(dInUcast, 0)
+            << "in_unicast_pkts did not advance while in_bytes advanced by "
+            << dInBytes;
+        if (dInUcast <= 0) {
+          continue;
+        }
 
-      // The port loops its own traffic back, so both directions carry the same
-      // frames. Comparing the implied frame sizes catches a port whose packet
-      // count covers more than that port.
-      double outFrameSize = static_cast<double>(dOutBytes) / dOutUcast;
-      double inFrameSize = static_cast<double>(dInBytes) / dInUcast;
-      EXPECT_NEAR(inFrameSize, outFrameSize, outFrameSize * kFrameSizeTolerance)
-          << "in_bytes/in_unicast_pkts (" << inFrameSize
-          << ") disagrees with out_bytes/out_unicast_pkts (" << outFrameSize
-          << "), off by a factor of " << (outFrameSize / inFrameSize);
+        // The port loops its own traffic back, so both directions carry the
+        // same frames. Comparing the implied frame sizes catches a port whose
+        // packet count covers more than that port.
+        double outFrameSize = static_cast<double>(dOutBytes) / dOutUcast;
+        double inFrameSize = static_cast<double>(dInBytes) / dInUcast;
+        EXPECT_NEAR(
+            inFrameSize, outFrameSize, outFrameSize * kFrameSizeTolerance)
+            << "in_bytes/in_unicast_pkts (" << inFrameSize
+            << ") disagrees with out_bytes/out_unicast_pkts (" << outFrameSize
+            << "), off by a factor of " << (outFrameSize / inFrameSize);
+      } else {
+        XLOG(WARNING) << portName
+                      << ": loopback bypasses the RX MAC on this ASIC, "
+                         "skipping in_unicast_pkts checks";
+      }
 
       EXPECT_GE(*after[portId].inMulticastPkts_(), 0)
           << "in_multicast_pkts uninitialized";
