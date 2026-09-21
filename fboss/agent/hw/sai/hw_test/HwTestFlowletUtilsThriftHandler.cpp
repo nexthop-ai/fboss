@@ -6,10 +6,6 @@
 
 namespace facebook::fboss::utility {
 
-void HwTestThriftHandler::updateFlowletStats() {
-  hwSwitch_->getHwFlowletStats();
-}
-
 cfg::SwitchingMode HwTestThriftHandler::getFwdSwitchingMode(
     std::unique_ptr<state::RouteNextHopEntry> routeNextHopEntry) {
   auto saiSwitch = static_cast<SaiSwitch*>(hwSwitch_);
