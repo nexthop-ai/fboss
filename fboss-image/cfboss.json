@@ -3,6 +3,11 @@
     "container": "cfboss-image.tar.xz"
   },
   "kernel": {},
+  "other_dependencies": [
+    {
+      "download": "file:.cfboss/distro_bgpd.rpm"
+    }
+  ],
   "fboss-platform-stack": {
     "execute": ["../fboss/oss/scripts/build_fboss_stack.sh", "--cfboss", "platform"]
   },

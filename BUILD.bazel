@@ -626,6 +626,7 @@ distro_build(
     deps = [
         "cfboss-platform-stack.tar",
         "cfboss-forwarding-stack.tar",
+        "//BGP:distro_bgpd.rpm",
     ],
     manifest = "cfboss.json",
     manifest_edits = " | ".join([
