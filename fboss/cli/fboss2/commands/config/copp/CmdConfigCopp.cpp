@@ -26,6 +26,7 @@
 #include <vector>
 #include "fboss/cli/fboss2/commands/config/QueueConfigUtils.h"
 #include "fboss/cli/fboss2/commands/config/copp/CoppUtils.h"
+#include "fboss/cli/fboss2/commands/config/traffic_counter/TrafficCounterConfigUtils.h"
 #include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
@@ -210,6 +211,56 @@ std::string applyReasonConfig(
       order);
 }
 
+<<<<<<< HEAD
+=======
+std::string applyCpuTrafficPolicyConfig(
+    cfg::SwitchConfig& swConfig,
+    const CoppCpuTrafficPolicyArgs& args) {
+  if (!swConfig.cpuTrafficPolicy().has_value()) {
+    swConfig.cpuTrafficPolicy() = cfg::CPUTrafficPolicyConfig{};
+  }
+  auto& policy = *swConfig.cpuTrafficPolicy();
+  if (!policy.trafficPolicy().has_value()) {
+    policy.trafficPolicy() = cfg::TrafficPolicyConfig{};
+  }
+  auto& matchToActions = *policy.trafficPolicy()->matchToAction();
+
+  const auto& name = args.getMatcherName();
+  auto it = copp_cpu_traffic_policy::findMatchToAction(matchToActions, name);
+  if (it == matchToActions.end()) {
+    cfg::MatchToAction newEntry;
+    newEntry.matcher() = name;
+    newEntry.action() = cfg::MatchAction{};
+    matchToActions.push_back(std::move(newEntry));
+    it = std::prev(matchToActions.end());
+  }
+
+  auto& action = *it->action();
+  const auto& actionType = args.getActionType();
+  const auto& value = args.getActionValue();
+  if (actionType == kActionSendToQueue) {
+    cfg::QueueMatchAction queueAction;
+    queueAction.queueId() = folly::to<int16_t>(value);
+    action.sendToQueue() = std::move(queueAction);
+  } else if (actionType == kActionCounter) {
+    action.counter() = value;
+    utils::ensureTrafficCounterDeclared(swConfig, value);
+  } else if (actionType == kActionSetTc) {
+    cfg::SetTcAction setTcAction;
+    setTcAction.tcValue() = folly::to<int8_t>(value);
+    action.setTc() = std::move(setTcAction);
+  } else {
+    // kActionUserDefinedTrap
+    cfg::UserDefinedTrapAction trapAction;
+    trapAction.queueId() = folly::to<int16_t>(value);
+    action.userDefinedTrap() = std::move(trapAction);
+  }
+
+  return fmt::format(
+      "Set action '{}' = '{}' for matcher '{}'", actionType, value, name);
+}
+
+>>>>>>> bfe2a26c7c (NOS-16562: Create missing counters when configuring ACL and CoPP actions (#1966))
 } // namespace
 
 CmdConfigCoppQueueTraits::RetType CmdConfigCoppQueue::queryClient(

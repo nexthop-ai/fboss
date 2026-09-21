@@ -445,6 +445,140 @@ TEST_F(CmdConfigAclRuleTestFixture, setActionDenyDataAndControlPlane) {
       cfg::AclActionType::DENY_DATA_AND_CONTROL_PLANE);
 }
 
+<<<<<<< HEAD
+=======
+TEST_F(CmdConfigAclRuleTestFixture, setActionSendToQueue) {
+  setupTestableConfigSession(
+      cmdPrefix_, "AclTable1 rule-1 action send-to-queue 7");
+  CmdConfigAclRule cmd;
+  HostInfo host("testhost");
+  AclRuleConfigArgs args(
+      {"AclTable1", "rule-1", "action", "send-to-queue", "7"});
+  // The success message echoes the whole value tail, so the queue id (7)
+  // must appear — not just the "send-to-queue" sub-attribute.
+  auto result = cmd.queryClient(host, args);
+  EXPECT_THAT(result, HasSubstr("send-to-queue"));
+  EXPECT_THAT(result, HasSubstr("7"));
+  EXPECT_EQ(*getMatchAction("rule-1").sendToQueue()->queueId(), 7);
+}
+
+TEST_F(CmdConfigAclRuleTestFixture, setActionSetDscp) {
+  setupTestableConfigSession(cmdPrefix_, "AclTable1 rule-1 action set-dscp 46");
+  CmdConfigAclRule cmd;
+  HostInfo host("testhost");
+  AclRuleConfigArgs args({"AclTable1", "rule-1", "action", "set-dscp", "46"});
+  cmd.queryClient(host, args);
+  EXPECT_EQ(*getMatchAction("rule-1").setDscp()->dscpValue(), 46);
+}
+
+TEST_F(CmdConfigAclRuleTestFixture, setActionSetTc) {
+  setupTestableConfigSession(cmdPrefix_, "AclTable1 rule-1 action set-tc 3");
+  CmdConfigAclRule cmd;
+  HostInfo host("testhost");
+  AclRuleConfigArgs args({"AclTable1", "rule-1", "action", "set-tc", "3"});
+  cmd.queryClient(host, args);
+  EXPECT_EQ(*getMatchAction("rule-1").setTc()->tcValue(), 3);
+}
+
+TEST_F(CmdConfigAclRuleTestFixture, setActionMirrorIngress) {
+  setupTestableConfigSession(
+      cmdPrefix_, "AclTable1 rule-1 action mirror-ingress mirror0");
+  CmdConfigAclRule cmd;
+  HostInfo host("testhost");
+  AclRuleConfigArgs args(
+      {"AclTable1", "rule-1", "action", "mirror-ingress", "mirror0"});
+  cmd.queryClient(host, args);
+  EXPECT_EQ(*getMatchAction("rule-1").ingressMirror(), "mirror0");
+}
+
+TEST_F(CmdConfigAclRuleTestFixture, setActionMirrorEgress) {
+  setupTestableConfigSession(
+      cmdPrefix_, "AclTable1 rule-1 action mirror-egress mirror1");
+  CmdConfigAclRule cmd;
+  HostInfo host("testhost");
+  AclRuleConfigArgs args(
+      {"AclTable1", "rule-1", "action", "mirror-egress", "mirror1"});
+  cmd.queryClient(host, args);
+  EXPECT_EQ(*getMatchAction("rule-1").egressMirror(), "mirror1");
+}
+
+TEST_F(CmdConfigAclRuleTestFixture, setActionCounter) {
+  setupTestableConfigSession(
+      cmdPrefix_, "AclTable1 rule-1 action counter my-counter");
+  CmdConfigAclRule cmd;
+  HostInfo host("testhost");
+  AclRuleConfigArgs args(
+      {"AclTable1", "rule-1", "action", "counter", "my-counter"});
+  cmd.queryClient(host, args);
+  EXPECT_EQ(*getMatchAction("rule-1").counter(), "my-counter");
+  const auto& counters =
+      *ConfigSession::getInstance().getAgentConfig().sw()->trafficCounters();
+  ASSERT_EQ(counters.size(), 1);
+  EXPECT_EQ(*counters[0].name(), "my-counter");
+  EXPECT_THAT(*counters[0].types(), ElementsAre(cfg::CounterType::PACKETS));
+  cmd.queryClient(
+      host,
+      AclRuleConfigArgs(
+          {"AclTable1", "rule-2", "action", "counter", "my-counter"}));
+  EXPECT_EQ(*getMatchAction("rule-2").counter(), "my-counter");
+  ASSERT_EQ(counters.size(), 1);
+  EXPECT_EQ(*counters[0].name(), "my-counter");
+  EXPECT_THAT(*counters[0].types(), ElementsAre(cfg::CounterType::PACKETS));
+}
+
+TEST_F(CmdConfigAclRuleTestFixture, setActionCounterPreservesDeclaredTypes) {
+  setupTestableConfigSession(
+      cmdPrefix_, "AclTable1 rule-1 action counter my-counter");
+  auto& counters =
+      *ConfigSession::getInstance().getAgentConfig().sw()->trafficCounters();
+  cfg::TrafficCounter counter;
+  counter.name() = "my-counter";
+  counter.types() = {cfg::CounterType::BYTES};
+  counters.push_back(counter);
+
+  CmdConfigAclRule().queryClient(
+      HostInfo("testhost"),
+      AclRuleConfigArgs(
+          {"AclTable1", "rule-1", "action", "counter", "my-counter"}));
+
+  ASSERT_EQ(counters.size(), 1);
+  EXPECT_THAT(*counters[0].types(), ElementsAre(cfg::CounterType::BYTES));
+}
+
+TEST_F(CmdConfigAclRuleTestFixture, setActionTrapToCpu) {
+  setupTestableConfigSession(cmdPrefix_, "AclTable1 rule-1 action trap-to-cpu");
+  CmdConfigAclRule cmd;
+  HostInfo host("testhost");
+  AclRuleConfigArgs args({"AclTable1", "rule-1", "action", "trap-to-cpu"});
+  cmd.queryClient(host, args);
+  EXPECT_EQ(*getMatchAction("rule-1").toCpuAction(), cfg::ToCpuAction::TRAP);
+}
+
+TEST_F(CmdConfigAclRuleTestFixture, setActionCopyToCpu) {
+  setupTestableConfigSession(cmdPrefix_, "AclTable1 rule-1 action copy-to-cpu");
+  CmdConfigAclRule cmd;
+  HostInfo host("testhost");
+  AclRuleConfigArgs args({"AclTable1", "rule-1", "action", "copy-to-cpu"});
+  cmd.queryClient(host, args);
+  EXPECT_EQ(*getMatchAction("rule-1").toCpuAction(), cfg::ToCpuAction::COPY);
+}
+
+TEST_F(CmdConfigAclRuleTestFixture, setActionRedirectNexthop) {
+  setupTestableConfigSession(
+      cmdPrefix_, "AclTable1 rule-1 action redirect nexthop 10.10.10.1");
+  CmdConfigAclRule cmd;
+  HostInfo host("testhost");
+  AclRuleConfigArgs args(
+      {"AclTable1", "rule-1", "action", "redirect", "nexthop", "10.10.10.1"});
+  cmd.queryClient(host, args);
+  auto& ma = getMatchAction("rule-1");
+  ASSERT_TRUE(ma.redirectToNextHop().has_value());
+  const auto& nhs = *ma.redirectToNextHop()->redirectNextHops();
+  ASSERT_EQ(nhs.size(), 1u);
+  EXPECT_EQ(*nhs[0].ip(), "10.10.10.1");
+}
+
+>>>>>>> bfe2a26c7c (NOS-16562: Create missing counters when configuring ACL and CoPP actions (#1966))
 TEST_F(CmdConfigAclRuleTestFixture, setPacketLookupResult) {
   setupTestableConfigSession(
       cmdPrefix_, "AclTable1 rule-1 packet-lookup-result mpls-no-match");

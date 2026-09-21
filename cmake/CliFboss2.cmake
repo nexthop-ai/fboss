@@ -1071,6 +1071,8 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/session/CmdConfigSessionRebase.cpp
   fboss/cli/fboss2/commands/config/traffic_counter/CmdConfigTrafficCounter.cpp
   fboss/cli/fboss2/commands/config/traffic_counter/CmdConfigTrafficCounter.h
+  fboss/cli/fboss2/commands/config/traffic_counter/TrafficCounterConfigUtils.cpp
+  fboss/cli/fboss2/commands/config/traffic_counter/TrafficCounterConfigUtils.h
   fboss/cli/fboss2/commands/config/tunnel/CmdConfigTunnel.cpp
   fboss/cli/fboss2/commands/config/tunnel/CmdConfigTunnel.h
   fboss/cli/fboss2/commands/config/tunnel/ip_in_ip/CmdConfigTunnelIpInIp.cpp
