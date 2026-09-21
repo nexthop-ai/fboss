@@ -14,6 +14,7 @@
 #include "fboss/cli/fboss2/CmdHandler.cpp"
 #include "fboss/cli/fboss2/commands/config/acl/AclConfigUtils.h"
 #include "fboss/cli/fboss2/commands/config/acl/rule/AclRuleAttrs.h"
+#include "fboss/cli/fboss2/commands/config/traffic_counter/TrafficCounterConfigUtils.h"
 
 #include <fmt/format.h>
 #include <folly/String.h>
@@ -125,6 +126,9 @@ CmdConfigAclRuleTraits::RetType CmdConfigAclRule::queryClient(
       mit = std::prev(mtaList.end());
     }
     args.applyActionTo(*mit->action());
+    if (const auto& counterName = mit->action()->counter()) {
+      utils::ensureTrafficCounterDeclared(swConfig, *counterName);
+    }
   }
 
   // AclEntry mutations are applied at runtime via processAclTableGroupDelta

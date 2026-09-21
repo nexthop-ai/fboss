@@ -728,6 +728,43 @@ TEST_F(CmdConfigCoppTestFixture, cpuTrafficPolicy_overwritesSameActionType) {
   ASSERT_NE(mta, nullptr);
   ASSERT_TRUE(mta->action()->counter().has_value());
   EXPECT_EQ(*mta->action()->counter(), "cnt-new");
+  const auto& counters =
+      *ConfigSession::getInstance().getAgentConfig().sw()->trafficCounters();
+  ASSERT_EQ(counters.size(), 1);
+  EXPECT_EQ(*counters[0].name(), "cnt-new");
+  EXPECT_THAT(*counters[0].types(), ElementsAre(cfg::CounterType::PACKETS));
+  cmd.queryClient(
+      hostInfo,
+      CoppCpuTrafficPolicyArgs(
+          {"match", "another-matcher", "action", "counter", "cnt-new"}));
+  const auto* anotherMta = findMatchToAction("another-matcher");
+  ASSERT_NE(anotherMta, nullptr);
+  ASSERT_TRUE(anotherMta->action()->counter().has_value());
+  EXPECT_EQ(*anotherMta->action()->counter(), "cnt-new");
+  ASSERT_EQ(counters.size(), 1);
+  EXPECT_EQ(*counters[0].name(), "cnt-new");
+  EXPECT_THAT(*counters[0].types(), ElementsAre(cfg::CounterType::PACKETS));
+}
+
+TEST_F(
+    CmdConfigCoppTestFixture,
+    cpuTrafficPolicy_preservesDeclaredCounterTypes) {
+  setupTestableConfigSession(
+      cpuTrafficPolicyCmdPrefix_, "match cpuPolicy-mid action counter cnt-new");
+  auto& counters =
+      *ConfigSession::getInstance().getAgentConfig().sw()->trafficCounters();
+  cfg::TrafficCounter counter;
+  counter.name() = "cnt-new";
+  counter.types() = {cfg::CounterType::BYTES};
+  counters.push_back(counter);
+
+  CmdConfigCoppCpuTrafficPolicy().queryClient(
+      HostInfo("testhost"),
+      CoppCpuTrafficPolicyArgs(
+          {"match", "cpuPolicy-mid", "action", "counter", "cnt-new"}));
+
+  ASSERT_EQ(counters.size(), 1);
+  EXPECT_THAT(*counters[0].types(), ElementsAre(cfg::CounterType::BYTES));
 }
 
 // Adding an action when the device has neither cpuTrafficPolicy nor

@@ -636,6 +636,38 @@ TEST_F(CmdConfigAclRuleTestFixture, setActionCounter) {
       {"AclTable1", "rule-1", "action", "counter", "my-counter"});
   cmd.queryClient(host, args);
   EXPECT_EQ(*getMatchAction("rule-1").counter(), "my-counter");
+  const auto& counters =
+      *ConfigSession::getInstance().getAgentConfig().sw()->trafficCounters();
+  ASSERT_EQ(counters.size(), 1);
+  EXPECT_EQ(*counters[0].name(), "my-counter");
+  EXPECT_THAT(*counters[0].types(), ElementsAre(cfg::CounterType::PACKETS));
+  cmd.queryClient(
+      host,
+      AclRuleConfigArgs(
+          {"AclTable1", "rule-2", "action", "counter", "my-counter"}));
+  EXPECT_EQ(*getMatchAction("rule-2").counter(), "my-counter");
+  ASSERT_EQ(counters.size(), 1);
+  EXPECT_EQ(*counters[0].name(), "my-counter");
+  EXPECT_THAT(*counters[0].types(), ElementsAre(cfg::CounterType::PACKETS));
+}
+
+TEST_F(CmdConfigAclRuleTestFixture, setActionCounterPreservesDeclaredTypes) {
+  setupTestableConfigSession(
+      cmdPrefix_, "AclTable1 rule-1 action counter my-counter");
+  auto& counters =
+      *ConfigSession::getInstance().getAgentConfig().sw()->trafficCounters();
+  cfg::TrafficCounter counter;
+  counter.name() = "my-counter";
+  counter.types() = {cfg::CounterType::BYTES};
+  counters.push_back(counter);
+
+  CmdConfigAclRule().queryClient(
+      HostInfo("testhost"),
+      AclRuleConfigArgs(
+          {"AclTable1", "rule-1", "action", "counter", "my-counter"}));
+
+  ASSERT_EQ(counters.size(), 1);
+  EXPECT_THAT(*counters[0].types(), ElementsAre(cfg::CounterType::BYTES));
 }
 
 TEST_F(CmdConfigAclRuleTestFixture, setActionTrapToCpu) {

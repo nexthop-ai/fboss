@@ -26,6 +26,7 @@
 #include <vector>
 #include "fboss/cli/fboss2/commands/config/QueueConfigUtils.h"
 #include "fboss/cli/fboss2/commands/config/copp/CoppUtils.h"
+#include "fboss/cli/fboss2/commands/config/traffic_counter/TrafficCounterConfigUtils.h"
 #include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
@@ -321,6 +322,7 @@ std::string applyCpuTrafficPolicyConfig(
     action.sendToQueue() = std::move(queueAction);
   } else if (actionType == kActionCounter) {
     action.counter() = value;
+    utils::ensureTrafficCounterDeclared(swConfig, value);
   } else if (actionType == kActionSetTc) {
     cfg::SetTcAction setTcAction;
     setTcAction.tcValue() = folly::to<int8_t>(value);
