@@ -52,8 +52,6 @@
       "sai_feat_tail_timestamp": 0,
       "sai_port_phy_time_sync_en": 1,
       "l3_intf_vlan_split_egress": 1,
-      "l3_ecmp_member_first_lkup_mem_size": 32768,
-      "l3_ecmp_member_secondary_mem_size": 8192,
       "sai_stats_disable_mask": "0x200",
       "l3_alpm_large_vrf_mode": 1,
       "sai_ip_counter_cstats": 1,
@@ -80,7 +78,7 @@
       }
     ],
     "features": {
-      "generate_dlb_config": false,
+      "generate_dlb_config": true,
       "generate_low_clock_freq_settings": false,
       "generate_autoload_board_settings": true
     }
