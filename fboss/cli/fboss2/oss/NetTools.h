@@ -65,14 +65,7 @@ class BgpAttrCommunityC {
   std::string commStr_;
 };
 
-<<<<<<< HEAD
-// Rendered for unresolved names; must match what the internal bgplib prints.
-||||||| a86baef3b7
-// Constant for null/empty message
-constexpr const char* kNullMessage = "";
-=======
 // Keep unresolved aliases consistent with the internal BGP utility.
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 constexpr const char* kNullMessage = "(NA)";
 
 // Well-known BGP communities (subset)

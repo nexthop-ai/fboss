@@ -102,50 +102,6 @@ void PlatformProductInfo::initMode() {
     } else if (
         modelName.find("Wedge400") == 0 || modelName.find("WEDGE400") == 0) {
       type_ = PlatformType::PLATFORM_WEDGE400;
-<<<<<<< HEAD
-    } else if (
-        modelName.find("Wedge800BACT") == 0 ||
-        modelName.find("WEDGE800BACT") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800BACT;
-    } else if (
-        modelName.find("Wedge800BNHP") == 0 ||
-        modelName.find("WEDGE800BNHP") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800BNHP;
-    } else if (
-        modelName.find("Wedge800CACT") == 0 ||
-        modelName.find("WEDGE800CACT") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800CACT;
-    } else if (
-        modelName.find("Wedge800CNHP") == 0 ||
-        modelName.find("WEDGE800CNHP") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800CNHP;
-    } else if (modelName.find("M5120CSC") == 0) {
-      type_ = PlatformType::PLATFORM_M5120CSC;
-    } else if (
-        modelName.find("Wedge800CNHP") == 0 ||
-        modelName.find("WEDGE800CNHP") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800CNHP;
-||||||| a86baef3b7
-    } else if (
-        modelName.find("Wedge800BACT") == 0 ||
-        modelName.find("WEDGE800BACT") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800BACT;
-    } else if (
-        modelName.find("Wedge800BNHP") == 0 ||
-        modelName.find("WEDGE800BNHP") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800BNHP;
-    } else if (
-        modelName.find("Wedge800CACT") == 0 ||
-        modelName.find("WEDGE800CACT") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800CACT;
-    } else if (modelName.find("M5120CSC") == 0) {
-      type_ = PlatformType::PLATFORM_M5120CSC;
-    } else if (
-        modelName.find("Wedge800CNHP") == 0 ||
-        modelName.find("WEDGE800CNHP") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800CNHP;
-=======
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
     } else if (modelName.find("DARWIN48V") == 0) {
       type_ = PlatformType::PLATFORM_DARWIN48V;
     } else if (
@@ -293,26 +249,12 @@ void PlatformProductInfo::initMode() {
     } else if (
         modelName.find("Saintpaul") == 0 || modelName.find("SAINTPAUL") == 0) {
       type_ = PlatformType::PLATFORM_SAINTPAUL;
-<<<<<<< HEAD
     } else if (
-        modelName.find("M4062nhp") == 0 || modelName.find("M4062NHP") == 0 ||
         // "Nova4000" is the legacy model name still burned into the EEPROM of
         // early units; keep matching it so those boards map to
         // PLATFORM_M4062NHP.
         modelName.find("Nova4000") == 0) {
       type_ = PlatformType::PLATFORM_M4062NHP;
-    } else if (
-        modelName.find("M4061CLSC") == 0 || modelName.find("M4061clsc") == 0) {
-      type_ = PlatformType::PLATFORM_M4061CLSC;
-||||||| a86baef3b7
-    } else if (
-        modelName.find("M4062nhp") == 0 || modelName.find("M4062NHP") == 0) {
-      type_ = PlatformType::PLATFORM_M4062NHP;
-    } else if (
-        modelName.find("M4061CLSC") == 0 || modelName.find("M4061clsc") == 0) {
-      type_ = PlatformType::PLATFORM_M4061CLSC;
-=======
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
     } else {
       throw FbossError("invalid model name " + modelName);
     }
@@ -379,20 +321,12 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_MINIPACK3BTA;
     } else if (FLAGS_mode == "minipack3n") {
       type_ = PlatformType::PLATFORM_MINIPACK3N;
-<<<<<<< HEAD
     } else if (FLAGS_mode == "nh4010f") {
       type_ = PlatformType::PLATFORM_NH4010F;
     } else if (FLAGS_mode == "nh4220f") {
       type_ = PlatformType::PLATFORM_NH4220F;
     } else if (FLAGS_mode == "nh5010f") {
       type_ = PlatformType::PLATFORM_NH5010F;
-    } else if (FLAGS_mode == "wedge800bact") {
-      type_ = PlatformType::PLATFORM_WEDGE800BACT;
-||||||| a86baef3b7
-    } else if (FLAGS_mode == "wedge800bact") {
-      type_ = PlatformType::PLATFORM_WEDGE800BACT;
-=======
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
     } else if (FLAGS_mode == "tahansb800bc" || FLAGS_mode == "tahansb800bcm") {
       type_ = PlatformType::PLATFORM_TAHANSB800BC;
     } else if (FLAGS_mode == "j4sim") {

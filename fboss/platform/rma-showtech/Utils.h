@@ -31,14 +31,10 @@ class Utils {
   void printNvmeDetails();
   void printPowerGoodDetails();
   void printLogs();
-<<<<<<< HEAD
   void printCrashDetails();
   void printSystemdDetails();
   void printConfigDetails();
-||||||| a86baef3b7
-=======
   void printDeviceRegistersDetails();
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 
  private:
   const showtech_config::ShowtechConfig& config_;
@@ -54,15 +50,9 @@ class Utils {
   void printCoopConfigFiles() const;
   void printCoopGitHistory() const;
   std::optional<std::tuple<int, int>> getI2cInfoForDevice(
-<<<<<<< HEAD
-      const std::string& path);
-  std::vector<std::string> getCoredumpPids(const std::string& coreList) const;
-||||||| a86baef3b7
-      const std::string& path);
-=======
       const std::string& path,
       bool skipLog = false);
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
+  std::vector<std::string> getCoredumpPids(const std::string& coreList) const;
   std::pair<int, std::string> execCommandWithLimit(
       const std::string& cmd,
       int maxLines = 5000) const;

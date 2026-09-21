@@ -9,15 +9,8 @@ kernel/dist
 distro_cli/.artifacts
 image_builder/templates/centos-09.0/root
 *.iso
-<<<<<<< HEAD
-*.tar*
-*.generated.json
-||||||| a86baef3b7
-*.tar*
-image_builder/output/
-=======
 # Not *.tar* -- that also matches directories like systemd/sysinit.target.d.
 *.tar
 *.tar.*
 image_builder/output/
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
+*.generated.json

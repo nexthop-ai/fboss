@@ -49,13 +49,7 @@ target_link_libraries(qsfp_platforms_wedge
   icecube800bc_platform_mapping
   icetea800bc_platform_mapping
   tahansb800bc_platform_mapping
-<<<<<<< HEAD
   nh5010f_platform_mapping
-  wedge800cact_platform_mapping
-||||||| a86baef3b7
-  wedge800cact_platform_mapping
-=======
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
   ladakh800bcls_platform_mapping
   leh800bcls_platform_mapping
   platform_base

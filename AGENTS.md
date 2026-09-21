@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Instructions
 
 - Do not pipe commands to head/tail/grep etc, redirect the output to a /tmp file and then check $? to see if the command succeeded and then filter the output by running head/tail/grep etc on the /tmp file.
@@ -26,9 +25,8 @@
 - If possible avoid calling c_str() on std::string if not needed, in particular when passing it as a folly::StringPiece.
 - Don't use .has_value() on Thrift non-optional fields.
 - If a function may return a nullable pointer, it must be marked nullable by annotating the return type with FOLLY_NULLABLE defined in <folly/CppAttributes.h>.
-||||||| a86baef3b7
-=======
-# AGENTS.md
+
+# Upstream guidance (from facebook/fboss AGENTS.md)
 
 Guidance for AI coding agents working in this repository.
 
@@ -100,4 +98,3 @@ Meta-internal test infrastructure, or Meta-internal CI. If a document or code
 comment references those, it applies only to internal checkouts.
 
 For questions, use GitHub Issues or Discussions.
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177

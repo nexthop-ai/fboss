@@ -11,8 +11,9 @@ from argparse import Namespace
 from typing import cast
 from unittest import mock
 
-from fboss_test_runner.runners.test_runner import TestRunner
 from npu_sdk_utils import main as npu_sdk_utils_main, materialize_agent_config
+
+from fboss_test_runner.runners.test_runner import TestRunner
 
 
 class NpuSdkConfigTest(unittest.TestCase):
@@ -36,10 +37,7 @@ class NpuSdkConfigTest(unittest.TestCase):
                 "builtAt": "2026-09-13T01:23:45Z",
                 "npuSaiImpl": "SAI_BRCM_IMPL",
                 "npuSaiSdkSelector": "SAI_VERSION_11_7_0_0_ODP",
-                "sdkVersion": {
-                    "asicSdk": "6.5.30-4",
-                    "saiSdk": "11.7.0.0_odp",
-                },
+                "sdkVersion": {"asicSdk": "6.5.30-4", "saiSdk": "11.7.0.0_odp"},
             }
         }
         self.config_path.write_text(json.dumps(self.config))
@@ -164,13 +162,13 @@ class TestRunnerSdkConfigIntegrationTest(unittest.TestCase):
 
             def _run_tests(
                 self, tests_to_run: list[str], conf_file: str, args: Namespace
-            ) -> list:
+            ) -> tuple[list, list]:
                 self.config_path_seen_during_run = conf_file
                 self.config_seen_during_run = json.loads(
                     pathlib.Path(conf_file).read_text()
                 )
                 self.assertions = (tests_to_run, args.config)
-                return []
+                return [], []
 
             def _print_output_summary(self, results, results_json=None) -> None:
                 pass
@@ -200,6 +198,7 @@ class TestRunnerSdkConfigIntegrationTest(unittest.TestCase):
                 run_on_reference_board=False,
             )
             runner = SdkConfigRunner()
+            runner.TESTRESULT_FILE = str(root / "tr.xml")
             generated_root = root / "generated_configs"
             prepared_path = generated_root / "sai" / config_path.name
             prepared_path.parent.mkdir(parents=True)
@@ -222,8 +221,7 @@ class TestRunnerSdkConfigIntegrationTest(unittest.TestCase):
                 sw_config["sdkVersion"],
             )
             self.assertEqual(
-                (["Suite.Test"], runner.config_path_seen_during_run),
-                runner.assertions,
+                (["Suite.Test"], runner.config_path_seen_during_run), runner.assertions
             )
             self.assertEqual(str(config_path), args.config)
             self.assertEqual(

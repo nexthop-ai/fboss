@@ -441,15 +441,9 @@ TEST(
   EXPECT_CALL(
       *mockPtr,
       restartService(
-<<<<<<< HEAD
           cli::ServiceType::AGENT,
           cli::ConfigActionLevel::SERVICE_RESTART,
           ::testing::_))
-||||||| a86baef3b7
-          cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT))
-=======
-          cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
       .WillOnce(::testing::Return(std::vector<std::string>{"wedge_agent"}));
 
   TestableConfigSession session(
@@ -478,14 +472,8 @@ TEST(
       *mockPtr,
       restartService(
           cli::ServiceType::AGENT,
-<<<<<<< HEAD
           cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART,
           ::testing::_))
-||||||| a86baef3b7
-          cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_COLDBOOT))
-=======
-          cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART))
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
       .WillOnce(
           ::testing::Return(
               std::vector<std::string>{"fboss_hw_agent@0", "fboss_sw_agent"}));

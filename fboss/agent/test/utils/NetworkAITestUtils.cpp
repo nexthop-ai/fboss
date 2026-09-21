@@ -394,13 +394,8 @@ void applyBackendAsicConfig(
             lineStart += 1;
           }
           std::string indent;
-<<<<<<< HEAD
-          while (lineStart < pos && std::isspace(yamlCfg[lineStart])) {
-||||||| a86baef3b7
-=======
           while (lineStart < pos &&
                  std::isspace(static_cast<unsigned char>(yamlCfg[lineStart]))) {
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
             indent += yamlCfg[lineStart];
             lineStart++;
           }

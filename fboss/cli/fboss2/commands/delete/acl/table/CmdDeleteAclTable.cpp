@@ -14,58 +14,6 @@
 #include "fboss/cli/fboss2/commands/config/acl/AclConfigUtils.h"
 
 #include <fmt/format.h>
-<<<<<<< HEAD
-#include <iostream>
-#include <set>
-#include <stdexcept>
-#include <string>
-#include <utility>
-#include <vector>
-#include "fboss/agent/gen-cpp2/switch_config_types.h"
-#include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
-#include "fboss/cli/fboss2/session/ConfigSession.h"
-#include "fboss/cli/fboss2/utils/HostInfo.h"
-
-namespace facebook::fboss {
-
-AclTableDeleteArgs::AclTableDeleteArgs(std::vector<std::string> v) {
-  if (v.size() != 1) {
-    throw std::invalid_argument(
-        fmt::format("Expected <table-name>, got {} argument(s)", v.size()));
-  }
-  tableName_ = v[0];
-  data_ = std::move(v);
-}
-
-CmdDeleteAclTableTraits::RetType CmdDeleteAclTable::queryClient(
-    const HostInfo& /* hostInfo */,
-    const ObjectArgType& args) {
-  auto& session = ConfigSession::getInstance();
-  auto& swConfig = *session.getAgentConfig().sw();
-
-  auto [table, groupName] =
-      acl_utils::resolveAclTable(swConfig, args.getTableName());
-
-  // Every rule in the table is about to stop existing, so its traffic-policy
-  // actions have to go with it. checkTrafficPolicyAclsExistInConfig walks both
-  // policies and rejects a matcher naming a missing AclEntry, so a leftover
-  // would make the next commit fail.
-  const auto ruleNames = acl_utils::ruleNamesOfTable(*table);
-  const auto entryCount = ruleNames.size();
-  const auto strippedMatchers =
-      acl_utils::stripMatchersForRules(swConfig, ruleNames);
-
-  // resolveAclTable() already proved the table exists in this group; erase it
-  // by the pointer it handed back rather than searching again by name.
-  auto& tables =
-      *acl_utils::findAclTableGroupOrThrow(swConfig, groupName).aclTables();
-  tables.erase(tables.begin() + (table - tables.data()));
-
-  // Removing a table is a hardware teardown rather than an entry edit: the
-  // SAI layer drops the table object and everything in it. A config reload
-  // still suffices, so the level stays HITLESS.
-||||||| a86baef3b7
-=======
 #include <algorithm>
 #include <iostream>
 #include <set>
@@ -135,7 +83,6 @@ CmdDeleteAclTableTraits::RetType CmdDeleteAclTable::queryClient(
       tables.end());
 
   // A hardware teardown, but a config reload applies it, so HITLESS.
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
   session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   return fmt::format(

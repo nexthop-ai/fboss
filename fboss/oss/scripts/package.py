@@ -101,9 +101,7 @@ FORWARDING_LIBS = []
 # BGP and Open/R install rather than leaving binaries in the build tree
 # (`install(TARGETS bgp_bin DESTINATION sbin)`), so their binaries come from
 # the getdeps install tree instead of build/fboss.
-BGP_BINARIES = [
-    "bgp",
-]
+BGP_BINARIES = ["bgp"]
 
 # Deps from the getdeps manifests that COMMON_LIBS does not already cover.
 BGP_LIBS = [
@@ -116,16 +114,9 @@ BGP_LIBS = [
     "zstd",
 ]
 
-OPENR_BINARIES = [
-    "openr",
-]
+OPENR_BINARIES = ["openr"]
 
-OPENR_LIBS = [
-    "openr",
-    "fb303",
-    "fbthrift",
-    "re2",
-]
+OPENR_LIBS = ["openr", "fb303", "fbthrift", "re2"]
 
 FORWARDING_TEST_BINARIES = [
     "fboss-platform-mapping-gen",
@@ -228,25 +219,8 @@ def _find_getdeps_libs(
     """Find shared libraries for the given packages under the getdeps installed directory."""
     libs = {}
     for pkg in packages:
-<<<<<<< HEAD
-        # Find all matching package directories and pick the most recent one.
-        pkg_dirs = sorted(
-            installed_dir.glob(f"{pkg}-*"),
-            key=lambda p: p.stat().st_mtime,
-            reverse=True,
-        )
-        if not pkg_dirs:
-||||||| a86baef3b7
-        pkg_dirs = sorted(
-            installed_dir.glob(f"{pkg}-*"),
-            key=lambda p: p.stat().st_mtime,
-            reverse=True,
-        )
-        if not pkg_dirs:
-=======
         pkg_dir = _find_installed_pkg_dir(build_dir, pkg)
         if pkg_dir is None:
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
             print(f"Warning: no .so libraries found for {pkg}")
             continue
 
@@ -325,9 +299,7 @@ def _find_installed_pkg_dir(build_dir: pathlib.Path, pkg: str) -> pathlib.Path |
         return exact
 
     pkg_dirs = sorted(
-        installed.glob(f"{pkg}-*"),
-        key=lambda p: p.stat().st_mtime,
-        reverse=True,
+        installed.glob(f"{pkg}-*"), key=lambda p: p.stat().st_mtime, reverse=True
     )
     if not pkg_dirs:
         return None
@@ -418,16 +390,7 @@ def _build_target(target: str, build_dir: pathlib.Path):
         test_extras = PLATFORM_TEST_EXTRA
     elif target == "agent-benchmarks":
         bins = AGENT_BENCHMARK_BINARIES
-<<<<<<< HEAD
         extras = {OSS_DIR / "hw_benchmark_tests": "share/hw_benchmark_tests"}
-||||||| a86baef3b7
-        extras = {
-            OSS_DIR / "hw_benchmark_tests": "share/hw_benchmark_tests",
-        }
-=======
-        extras = {
-            OSS_DIR / "hw_benchmark_tests": "share/hw_benchmark_tests",
-        }
     elif target == "bgp":
         bins = BGP_BINARIES
         libs = BGP_LIBS + COMMON_LIBS
@@ -439,7 +402,6 @@ def _build_target(target: str, build_dir: pathlib.Path):
         libs = OPENR_LIBS + COMMON_LIBS
         bin_dirs = _find_installed_bin_dirs(build_dir, "openr")
         require_bins = True
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 
     if bin_dirs is None:
         bin_dirs = [build_dir / "build" / "fboss"]

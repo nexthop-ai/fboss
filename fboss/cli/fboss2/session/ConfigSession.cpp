@@ -16,7 +16,6 @@
 #include <folly/json/dynamic.h>
 #include <folly/json/json.h>
 #include <glog/logging.h>
-#include <neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
 #include <pwd.h>
 #include <sys/types.h>
 #include <thrift/lib/cpp2/folly_dynamic/folly_dynamic.h>
@@ -45,6 +44,7 @@
 #include "fboss/cli/fboss2/session/FbossServiceUtil.h"
 #include "fboss/cli/fboss2/session/Git.h"
 #include "fboss/cli/fboss2/utils/CmdClientUtils.h"
+#include "fboss/cli/fboss2/utils/ConfigFileUtils.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
 #include "fboss/cli/fboss2/utils/PortMap.h"
 
@@ -59,6 +59,17 @@ namespace fs = std::filesystem;
 namespace facebook::fboss {
 
 namespace { // anonymous namespace
+
+cli::ConfigSessionMetadata parseMetadata(const std::string& content) {
+  const auto json = folly::parseJson(content);
+  cli::ConfigSessionMetadata metadata;
+  facebook::thrift::from_dynamic(
+      metadata,
+      json,
+      facebook::thrift::dynamic_format::PORTABLE,
+      facebook::thrift::format_adherence::LENIENT);
+  return metadata;
+}
 
 /*
  * Atomically update a symlink to point to a new target.
@@ -611,7 +622,6 @@ void ConfigSession::saveConfig(
     cli::ServiceType service,
     cli::ConfigActionLevel actionLevel) {
   // Serialize whichever typed config this service owns and stage it to that
-<<<<<<< HEAD
   // domain's session file.
   std::string prettyJson;
   std::string sessionPath;
@@ -629,36 +639,6 @@ void ConfigSession::saveConfig(
         loadBgpConfig();
       }
       prettyJson = utils::serializeToPrettyJson(*bgpConfig_);
-||||||| a86baef3b7
-  if (!configLoaded_) {
-    throw std::runtime_error("No config loaded to save");
-=======
-  // domain's session file. The round-trip through serialize -> parse ->
-  // toPrettyJson is needed because SimpleJSONSerializer emits Thrift maps with
-  // integer keys (e.g. clientIdToAdminDistance) as string keys; going through
-  // facebook::thrift::to_dynamic() directly would keep integer keys and make
-  // folly::toPrettyJson() fail (JSON object keys must be strings).
-  std::string prettyJson;
-  std::string sessionPath;
-  switch (service) {
-    case cli::ServiceType::AGENT: {
-      if (!agentConfig_) {
-        throw std::runtime_error("No config loaded to save");
-      }
-      auto json = apache::thrift::SimpleJSONSerializer::serialize<std::string>(
-          *agentConfig_);
-      prettyJson = folly::toPrettyJson(folly::parseJson(json));
-      sessionPath = getSessionConfigPath();
-      break;
-    }
-    case cli::ServiceType::BGP: {
-      if (!bgpConfig_) {
-        loadBgpConfig();
-      }
-      auto json = apache::thrift::SimpleJSONSerializer::serialize<std::string>(
-          *bgpConfig_);
-      prettyJson = folly::toPrettyJson(folly::parseJson(json));
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
       sessionPath = getBgpSessionConfigPath();
       break;
     }
@@ -835,13 +815,7 @@ void ConfigSession::loadMetadata() {
   // Parse JSON with symbolic enum names using fbthrift's folly_dynamic API
   // LENIENT adherence allows parsing both string names and integer values
   try {
-    folly::dynamic json = folly::parseJson(content);
-    cli::ConfigSessionMetadata metadata;
-    facebook::thrift::from_dynamic(
-        metadata,
-        json,
-        facebook::thrift::dynamic_format::PORTABLE,
-        facebook::thrift::format_adherence::LENIENT);
+    const auto metadata = parseMetadata(content);
     requiredActions_ = *metadata.action();
     commands_ = *metadata.commands();
     base_ = *metadata.base();
@@ -959,19 +933,8 @@ ConfigSession::applyServiceActions(
     switch (level) {
       case cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART:
       case cli::ConfigActionLevel::SERVICE_RESTART:
-<<<<<<< HEAD
         serviceNames[service] = fbossServiceUtil_->restartService(
             service, level, /*waitForReady=*/true);
-||||||| a86baef3b7
-      case cli::ConfigActionLevel::AGENT_COLDBOOT:
-      case cli::ConfigActionLevel::AGENT_WARMBOOT:
-      case cli::ConfigActionLevel::BGP_RESTART:
-        serviceNames[service] =
-            fbossServiceUtil_->restartService(service, level);
-=======
-        serviceNames[service] =
-            fbossServiceUtil_->restartService(service, level);
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         break;
       case cli::ConfigActionLevel::HITLESS:
         serviceNames[service] =
@@ -1024,15 +987,6 @@ void ConfigSession::initializeSession(SessionInit init) {
     commands_.clear();
     requiredActions_.clear();
     agentConfig_.reset();
-<<<<<<< HEAD
-
-    if (init == SessionInit::ReadOnly) {
-      return; // leave ~/.fboss2 alone
-    }
-||||||| a86baef3b7
-    configLoaded_ = false;
-=======
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 
     if (init == SessionInit::ReadOnly) {
       return; // leave ~/.fboss2 alone
@@ -1414,14 +1368,8 @@ ConfigSession::rolledBackActionLevels(const std::string& resolvedSha) const {
       return levels;
     }
     try {
-      folly::dynamic json = folly::parseJson(
-          git_->fileAtRevision(commit.sha1, kMetadataGitRelPath));
-      cli::ConfigSessionMetadata metadata;
-      facebook::thrift::from_dynamic(
-          metadata,
-          json,
-          facebook::thrift::dynamic_format::PORTABLE,
-          facebook::thrift::format_adherence::LENIENT);
+      const auto metadata =
+          parseMetadata(git_->fileAtRevision(commit.sha1, kMetadataGitRelPath));
       for (const auto& [service, level] : *metadata.action()) {
         auto it = levels.find(service);
         if (it == levels.end() ||
@@ -1527,13 +1475,7 @@ std::string ConfigSession::rollback(
   // target commit's: a later rollback undoing this one crosses the same
   // changes and reads this action map to pick its own level.
   try {
-    folly::dynamic json = folly::parseJson(targetMetadataData);
-    cli::ConfigSessionMetadata metadata;
-    facebook::thrift::from_dynamic(
-        metadata,
-        json,
-        facebook::thrift::dynamic_format::PORTABLE,
-        facebook::thrift::format_adherence::LENIENT);
+    auto metadata = parseMetadata(targetMetadataData);
     metadata.action() = actions;
     targetMetadataData = folly::toPrettyJson(
         facebook::thrift::to_dynamic(

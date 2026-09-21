@@ -91,17 +91,13 @@ function (add_sai_sdk_dependencies name)
     endforeach ()
   endif ()
 
-<<<<<<< HEAD
   # SAI-blob binaries link multi-GB; confine to the monobuild's heavy_link pool. No-op if unset (dev builds).
   if (NH_HEAVY_LINK_POOL)
     set_target_properties(${name} PROPERTIES JOB_POOL_LINK ${NH_HEAVY_LINK_POOL})
   endif ()
-||||||| a86baef3b7
-=======
   if(ARGC GREATER 1)
     register_npu_sdk_metadata_post_build(${name} "${ARGV1}")
   endif()
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 endfunction ()
 
 function (strtok str delim out_list)

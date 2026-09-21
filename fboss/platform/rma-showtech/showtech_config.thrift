@@ -61,10 +61,10 @@ struct ShowtechConfig {
   5: list<FanSpinnerDevice> fanspinners;
   6: list<string> i2cDumpDevices;
   7: optional SwitchCardPowerGoodStatus scPowerGood;
-<<<<<<< HEAD
   8: list<string> additionalServices;
   9: list<string> additionalServiceUnits;
   10: list<FileSource> configFiles;
+  11: optional list<I2CDeviceRegDic> i2cDumpDeviceRegs;
 }
 
 // A named file to collect verbatim under the `config` section.
@@ -76,10 +76,6 @@ struct ShowtechConfig {
 struct FileSource {
   1: string name;
   2: string path;
-||||||| a86baef3b7
-=======
-  8: optional list<I2CDeviceRegDic> i2cDumpDeviceRegs;
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 }
 
 // GPIO (General Purpose Input/Output) configuration.

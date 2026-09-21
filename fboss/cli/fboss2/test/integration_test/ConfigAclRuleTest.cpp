@@ -363,42 +363,6 @@ TEST_F(ConfigAclRuleTest, SetDestinationMac) {
   });
 }
 
-<<<<<<< HEAD
-// DISABLED: an empty `qualifiers` list does NOT expand to the full
-// ASIC-supported set — SaiAclTableManager::getSupportedQualifierSet() returns
-// a hardcoded per-ASIC default, and the Broadcom set omits ETHER_TYPE (added
-// only for Tomahawk6) and OUTER_VLAN (never; TH5 table create breaks with it,
-// CS00012342272). On the NH4010F/TH5 CI DUTs the table is therefore created
-// without these fields; committing an entry that uses them makes brcm-sai
-// reject create_acl_entry, SaiApi::create throws SaiApiError, and the hw
-// agent terminates (SIGABRT) — the commit is lost and both agents cold-boot.
-// Re-enable once the agent rejects unsupported qualifiers gracefully or the
-// CI platform's table supports these fields.
-TEST_F(ConfigAclRuleTest, DISABLED_SetEtherType) {
-  // EtherType::IPv4 = 0x0800
-  runSet("ethertype", {"ipv4"}, [](auto& e) {
-    EXPECT_EQ(e["etherType"].asInt(), 0x0800);
-  });
-}
-
-TEST_F(ConfigAclRuleTest, DISABLED_SetVlan) {
-  runSet("vlan", {"100"}, [](auto& e) { EXPECT_EQ(e["vlanID"].asInt(), 100); });
-}
-
-||||||| a86baef3b7
-TEST_F(ConfigAclRuleTest, SetEtherType) {
-  // EtherType::IPv4 = 0x0800
-  runSet("ethertype", {"ipv4"}, [](auto& e) {
-    EXPECT_EQ(e["etherType"].asInt(), 0x0800);
-  });
-}
-
-TEST_F(ConfigAclRuleTest, SetVlan) {
-  runSet("vlan", {"100"}, [](auto& e) { EXPECT_EQ(e["vlanID"].asInt(), 100); });
-}
-
-=======
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 TEST_F(ConfigAclRuleTest, SetIpType) {
   // cfg::IpType::IP6 = 3
   runSet(

@@ -321,32 +321,8 @@ std::vector<std::string> FbossServiceUtil::reloadConfig(
 }
 
 std::string FbossServiceUtil::restartTypeName(
-<<<<<<< HEAD
-||||||| a86baef3b7
-std::vector<std::string> FbossServiceUtil::restartService(
-=======
     cli::ServiceType service,
     cli::ConfigActionLevel level) {
-  // The action level is generic; what it means is decided per service. Only
-  // the agent distinguishes a warmboot from a coldboot -- bgpd has neither, so
-  // every restart level is a plain restart for it.
-  switch (level) {
-    case cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART:
-      return service == cli::ServiceType::AGENT ? "coldboot" : "restart";
-    case cli::ConfigActionLevel::SERVICE_RESTART:
-      return service == cli::ServiceType::AGENT ? "warmboot" : "restart";
-    case cli::ConfigActionLevel::HITLESS:
-      // Not expected: HITLESS is applied via reloadConfig(), not restart.
-      return "reload";
-  }
-  return "restart";
-}
-
-std::vector<std::string> FbossServiceUtil::restartService(
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
-    cli::ServiceType service,
-    cli::ConfigActionLevel level) {
-<<<<<<< HEAD
   // The action level is generic; what it means is decided per service. Only
   // the agent distinguishes a warmboot from a coldboot -- bgpd has neither, so
   // every restart level is a plain restart for it.
@@ -387,25 +363,6 @@ std::vector<std::string> FbossServiceUtil::restartService(
     cli::ServiceType service,
     cli::ConfigActionLevel level,
     bool waitForReady) {
-||||||| a86baef3b7
-  std::string restartType;
-  switch (level) {
-    case cli::ConfigActionLevel::AGENT_COLDBOOT:
-      restartType = "coldboot";
-      break;
-    case cli::ConfigActionLevel::AGENT_WARMBOOT:
-      restartType = "warmboot";
-      break;
-    case cli::ConfigActionLevel::BGP_RESTART:
-      restartType = "restart";
-      break;
-    case cli::ConfigActionLevel::HITLESS:
-      // Not expected: HITLESS is applied via reloadConfig(), not restart.
-      restartType = "reload";
-      break;
-  }
-=======
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
   const std::string restartType = restartTypeName(service, level);
 
   auto services = getServicesToRestart(service);

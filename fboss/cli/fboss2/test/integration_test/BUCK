@@ -13,11 +13,7 @@ oncall("fboss_oss")
 #
 # Unlike the Python-based CLI tests, these C++ tests directly invoke the CLI
 # library code rather than spawning a subprocess.
-<<<<<<< HEAD
 # bazelify: extra_dep = //fboss/cli/fboss2:cmd-list-config-impl-oss
-||||||| a86baef3b7
-=======
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 # bazelify: extra_dep = //neteng/fboss/bgp/if:bgp_thrift
 cpp_binary(
     name = "fboss2_integration_test",

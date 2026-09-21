@@ -13,9 +13,9 @@ import threading
 import time
 import xml.etree.ElementTree as ET
 from argparse import ArgumentParser, Namespace
-<<<<<<< HEAD
 from contextlib import suppress
 from datetime import datetime, timezone
+from pathlib import Path
 
 from nh_test_xml_utils import (
     emit_test_boundary,
@@ -29,12 +29,7 @@ from nh_test_xml_utils import (
     StreamTee,
     write_synthetic_failure_xml,
 )
-||||||| a86baef3b7
-from datetime import datetime
-=======
-from datetime import datetime
-from pathlib import Path
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
+from npu_sdk_utils import materialize_agent_config, NPU_SDK_METADATA_FILENAME
 
 from fboss_test_runner.constants import (
     ALL_SIMUALTOR_ASICS_STR,
@@ -88,12 +83,7 @@ from fboss_test_runner.runners.utils import (
     load_from_file,
     test_matches_any_regex,
 )
-<<<<<<< HEAD
 from fboss_test_runner.services.fboss_agent_utils import FBOSS_AGENT_VOLATILE_STATE_DIR
-||||||| a86baef3b7
-=======
-from npu_sdk_utils import materialize_agent_config, NPU_SDK_METADATA_FILENAME
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 
 _YELLOW = "\033[1;33m"
 _RED = "\033[1;31m"
@@ -1434,32 +1424,20 @@ class TestRunner(abc.ABC):
                 exit_code=os.EX_TEMPFAIL, setup_failure=str(error), error=error
             )
 
-<<<<<<< HEAD
         # Test execution failures are not setup failures. Let them propagate so
         # callers do not report a runner crash as SETUP_FAILED.
-        start_time = datetime.now()
-        # results is the list[GtestResult] for the console/CSV summary;
-        # test_results is the list of per-test XML strings for the
-        # aggregated XML report.
-        results, test_results = self._run_tests(tests_to_run, conf_file, args)
-        end_time = datetime.now()
-||||||| a86baef3b7
-        # Test execution failures are not setup failures. Let them propagate so
-        # callers do not report a runner crash as SETUP_FAILED.
-        start_time = datetime.now()
-        results = self._run_tests(tests_to_run, conf_file, args)
-        end_time = datetime.now()
-=======
         original_arg_config = args.config
         if conf_file:
             args.config = conf_file
         try:
             start_time = datetime.now()
-            results = self._run_tests(tests_to_run, conf_file, args)
+            # results is the list[GtestResult] for the console/CSV summary;
+            # test_results is the list of per-test XML strings for the
+            # aggregated XML report.
+            results, test_results = self._run_tests(tests_to_run, conf_file, args)
             end_time = datetime.now()
         finally:
             args.config = original_arg_config
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         delta_time = end_time - start_time
         print(
             f"Running all tests took {delta_time} between {start_time} and {end_time}",
