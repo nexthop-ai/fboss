@@ -7,7 +7,9 @@ from typing import Any
 from fboss.lib.asic_config_v3.base_generator import BaseAsicConfigGenerator
 from fboss.lib.asic_config_v3.paths import AsicConfigPaths
 from fboss.lib.platform_mapping_v2.platform_mapping_v2 import PlatformMappingParser
-from fboss.lib.platform_mapping_v2.read_files_utils import read_all_vendor_data
+from fboss.lib.platform_mapping_v2.read_files_utils import (
+    discover_platform_mapping_inputs,
+)
 
 
 class BroadcomDnxGenerator(BaseAsicConfigGenerator):
@@ -51,7 +53,7 @@ class BroadcomDnxGenerator(BaseAsicConfigGenerator):
             "platform_mapping_name", self.platform_name
         )
         self.parser = PlatformMappingParser(
-            read_all_vendor_data(self.paths.platform_mapping_dir), mapping_name
+            discover_platform_mapping_inputs(self.paths.platforms_dir), mapping_name
         )
 
     @property
