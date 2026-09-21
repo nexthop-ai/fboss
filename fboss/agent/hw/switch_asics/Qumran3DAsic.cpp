@@ -302,6 +302,7 @@ bool Qumran3DAsic::isSupported(Feature feature) const {
     // _brcm_sai_switch_dnx_acl_traps_init() rejects the attribute with
     // SAI_STATUS_ATTR_NOT_SUPPORTED_0 and fails sai_create_switch().
     case HwAsic::Feature::NO_RX_REASON_TRAP:
+    case HwAsic::Feature::TAJO_RX_SERDES_PARAMETERS:
       return false;
   }
   return false;
