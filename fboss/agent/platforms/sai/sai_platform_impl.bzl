@@ -105,6 +105,7 @@ def sai_platform_impl():
             "//fboss/agent:monolithic_agent_initializer",
             "//fboss/agent:setup_thrift_prod",
             "//fboss/agent/hw/sai/api:sai_traced_api",
+            "//fboss/oss:jemalloc_config",
         ] + select({
             "//fboss/agent/hw/sai:is_bcm": ["@sai_impl//:sai_impl"],
             "//fboss/agent/hw/sai:is_fake": ["//fboss/agent/hw/sai/fake:fake_sai"],
@@ -139,6 +140,7 @@ def sai_platform_impl():
             "//fboss/agent:load_agent_config",
             "//fboss/agent/hw/sai/api:sai_traced_api",
             "//fboss/agent/hw/sai/hw_test:agent_hw_test_thrift_handler",
+            "//fboss/oss:jemalloc_config",
         ] + select({
             "//fboss/agent/hw/sai:is_bcm": ["@sai_impl//:sai_impl"],
             "//fboss/agent/hw/sai:is_fake": ["//fboss/agent/hw/sai/fake:fake_sai"],

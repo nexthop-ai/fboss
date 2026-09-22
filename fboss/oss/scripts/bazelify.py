@@ -2495,6 +2495,19 @@ class BuildFileGenerator:
         srcs = srcs + [h for h in hdrs if h not in srcs]
 
         deps = self.resolver.resolve_all(target)
+
+        # Match fbcode's allocator startup defaults, as CMakeLists.txt does for
+        # every EXECUTABLE target: the object defines jemalloc's malloc_conf
+        # (background_thread, dirty_decay_ms, ...). Without it a jemalloc that
+        # the runtime supplies -- the fboss-sim image LD_PRELOADs one -- runs on
+        # library defaults, so freed spans are never purged while the process is
+        # idle. Binaries only, mirroring the cmake loop, and not the library
+        # itself.
+        jemalloc_config = "//fboss/oss:jemalloc_config"
+        if target.buck_path.lstrip("/") != "fboss/oss" and jemalloc_config not in deps:
+            deps.append(jemalloc_config)
+            deps.sort()
+
         copts = self._get_copts(target)
 
         lines = ["cc_binary("]
