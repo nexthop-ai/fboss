@@ -49,6 +49,19 @@ for _ in $(seq 1 60); do
 done
 dex "$FB show port" 2>/dev/null | grep -q eth1/1/1 || {
   echo "FATAL: agent not ready"
+  # "not ready" on its own says nothing about why. Dump what the agent and the
+  # CLI actually reported, plus the allocator state, so a CI failure here is
+  # diagnosable without a local repro.
+  echo "---- fboss2 show port (stdout+stderr) ----"
+  dex "$FB show port" 2>&1 | tail -30 || true
+  echo "---- agent processes ----"
+  dex "ps -eo pid,comm,args | grep -E 'agent|fboss' | grep -v grep" 2>&1 | tail -20 || true
+  echo "---- agent log tail ----"
+  dex "tail -100 /var/facebook/logs/fboss/wedge_agent.log" 2>&1 || true
+  echo "---- allocator ----"
+  dex 'P=$(pidof wedge_agent fboss_sw_agent | cut -d" " -f1); echo "pid=$P"; \
+    grep jemalloc /proc/$P/maps || echo "(no jemalloc mapping)"; \
+    nm $(readlink /proc/$P/exe) 2>/dev/null | grep malloc_conf || echo "(no malloc_conf symbol)"' 2>&1 || true
   exit 1
 }
 
