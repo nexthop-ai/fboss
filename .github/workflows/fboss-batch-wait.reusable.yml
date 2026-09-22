@@ -133,8 +133,10 @@ jobs:
                       # test executing, and those have no test logs to look at.
                       # Classify them so the report doesn't read as a regression.
                       entries=$(nh te batch show "$bid" 2>/dev/null)
-                      prep=$(echo "$entries" | grep -c 'prep_failed')
-                      runf=$(echo "$entries" | grep -c 'run_failed')
+                      # grep -c prints 0 but exits 1 on no match, which under
+                      # errexit kills the whole polling loop mid-cycle.
+                      prep=$(echo "$entries" | grep -c 'prep_failed' || true)
+                      runf=$(echo "$entries" | grep -c 'run_failed' || true)
                       if [ "$((prep + runf))" -ge "$failed" ] && [ "$((prep + runf))" -gt 0 ]; then
                         if [ "$runf" -eq 0 ]; then
                           FAILED_DETAIL[i]="prepare failed, no tests ran"
