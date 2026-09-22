@@ -105,9 +105,6 @@ TEST_F(ConfigBgpNeighborTest, SetTimersHoldTimeAndCommit) {
   EXPECT_EQ((*peer)["bgp_peer_timers"]["hold_time_seconds"].asInt(), 90);
 }
 
-<<<<<<< HEAD
-||||||| a86baef3b7
-=======
 TEST_F(ConfigBgpNeighborTest, GracefulRestartKeepsInheritedHoldTime) {
   // bgpd takes a peer's whole timers struct once any field of it is set, so
   // the first per-neighbor timer must carry the inherited hold time along
@@ -170,7 +167,6 @@ TEST_F(ConfigBgpNeighborTest, RouteLimitWarningKeepsUnlimitedCap) {
   EXPECT_EQ((*peer)["pre_filter"]["warning_limit"].asInt(), 30000);
 }
 
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 TEST_F(ConfigBgpNeighborTest, DeleteNeighborAndCommit) {
   // Land a neighbor in the system config, then delete it through a second
   // commit and verify it is gone from the promoted config.

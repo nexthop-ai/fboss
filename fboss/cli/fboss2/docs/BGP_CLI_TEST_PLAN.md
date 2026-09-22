@@ -81,16 +81,7 @@ fboss2 config protocol bgp peer-group RSW-RTSW-V6 disable-ipv4-afi true
 # Peer configuration (with explicit disable_ipv4_afi: false preserved)
 fboss2 config protocol bgp neighbor 2401:db00:501c::/64 remote-asn 65000
 fboss2 config protocol bgp neighbor 2401:db00:501c::/64 bind-addr address 2401:db00:501c::a
-<<<<<<< HEAD
-fboss2 config protocol bgp neighbor 2401:db00:501c::/64 connect-mode PASSIVE
-||||||| a86baef3b7
-fboss2 config protocol bgp peer 2401:db00:501c::/64 remote-asn 65000
-fboss2 config protocol bgp peer 2401:db00:501c::/64 local-addr 2401:db00:501c::a
-fboss2 config protocol bgp peer 2401:db00:501c::/64 passive true
-fboss2 config protocol bgp peer 2401:db00:501c::/64 disable-ipv4-afi false
-=======
 fboss2 config protocol bgp neighbor 2401:db00:501c::/64 passive true
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 fboss2 config protocol bgp neighbor 2401:db00:501c::/64 afi disable-ipv4-afi false
 ```
 
@@ -148,18 +139,7 @@ diff <(jq -S . /tmp/rsw_bgp_nao.txt) <(jq -S . ~/.fboss2/bgp_config.json)
 | Neighbor | `config protocol bgp neighbor <addr> remote-asn <asn>` | Set remote AS |
 | Neighbor | `config protocol bgp neighbor <addr> peer-group <name>` | Assign to peer group |
 | Neighbor | `config protocol bgp neighbor <addr> bind-addr address <addr>` | Set local address |
-<<<<<<< HEAD
-| Neighbor | `config protocol bgp neighbor <addr> connect-mode <PASSIVE|ACTIVE>` | Set connect mode |
-||||||| a86baef3b7
-| Peer | `config protocol bgp peer <addr> remote-asn <asn>` | Set remote AS |
-| Peer | `config protocol bgp peer <addr> peer-group <name>` | Assign to peer group |
-| Peer | `config protocol bgp peer <addr> local-addr <addr>` | Set local address |
-| Peer | `config protocol bgp peer <addr> passive <bool>` | Set passive mode |
-| Peer | `config protocol bgp peer <addr> disable-ipv4-afi <bool>` | Disable IPv4 AFI |
-| Peer | `config protocol bgp peer <addr> link-bandwidth <bw>` | Set link bandwidth |
-=======
 | Neighbor | `config protocol bgp neighbor <addr> passive <true|false>` | Listen-only (true) or listen-and-connect (false) session |
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 | Neighbor | `delete protocol bgp neighbor <addr>` | Delete a neighbor |
 | Neighbor | `config protocol bgp neighbor <addr> afi disable-ipv4-afi <bool>` | Disable IPv4 AFI |
 | Neighbor | `config protocol bgp neighbor <addr> link-bandwidth <bw>` | Set link bandwidth |

@@ -9,6 +9,7 @@
  */
 
 #include "fboss/cli/fboss2/commands/config/TrafficPolicyUtils.h"
+#include "fboss/cli/fboss2/commands/config/traffic_counter/TrafficCounterConfigUtils.h"
 
 #include <fmt/format.h>
 #include <folly/Conv.h>
@@ -542,6 +543,14 @@ std::string applyAction(
   assertNotInOtherPolicy(swConfig, matcher, kind);
   auto& action = upsertMatcher(policyFor(swConfig, kind), matcher);
   row.set(action, values);
+
+  // A counter action names an entry of trafficCounters; the agent rejects a
+  // config whose action points at a counter that was never declared. Declare
+  // it here so naming a counter is enough, and leave an existing declaration
+  // (and its counter types) untouched.
+  if (row.key == kActionCounter) {
+    utils::ensureTrafficCounterDeclared(swConfig, *action.counter());
+  }
 
   return fmt::format(
       "Set {} traffic-policy action '{}'{}{} on matcher '{}'",

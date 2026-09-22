@@ -80,13 +80,6 @@ TEST_F(ConfigAclTest, DeleteTableCascadesAndCommits) {
   XLOG(INFO) << "[Step 2] Adding a rule with a dataplane action";
   result = runCli({"config", "acl", "rule", kTable, kRule, "dscp", "46"});
   ASSERT_EQ(result.exitCode, 0) << result.stderr;
-<<<<<<< HEAD
-  // The rule-side action writes the dataPlaneTrafficPolicy matcher this
-  // test needs the delete to cascade into.
-  result = runCli(
-      {"config", "acl", "rule", kTable, kRule, "action", "set-dscp", "32"});
-||||||| a86baef3b7
-=======
   // The traffic-policy verb writes the dataPlaneTrafficPolicy matcher this
   // test needs the delete to cascade into.
   result = runCli(
@@ -98,7 +91,6 @@ TEST_F(ConfigAclTest, DeleteTableCascadesAndCommits) {
        "action",
        "set-dscp",
        "32"});
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
   ASSERT_EQ(result.exitCode, 0) << result.stderr;
   commitConfig();
 

@@ -64,7 +64,6 @@ add_executable(fboss2_cmd_config_test
   fboss/cli/fboss2/test/config/CmdDeleteCoppTrafficPolicyMatchActionTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteDataPlaneTrafficPolicyMatchActionTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteDhcpTest.cpp
-  fboss/cli/fboss2/test/config/CmdDeleteCoppCpuTrafficPolicyMatchActionTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteCoppReasonTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteInterfaceDhcpRelayTest.cpp
   fboss/cli/fboss2/test/config/CmdDeleteInterfaceIpv6NdpTest.cpp

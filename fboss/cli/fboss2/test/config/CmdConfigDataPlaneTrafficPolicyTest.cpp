@@ -95,6 +95,36 @@ TEST_F(CmdConfigDataPlaneTrafficPolicyTestFixture, setCounter) {
   EXPECT_EQ(*dataPlaneAction(kRule).counter(), "queue-per-host-queue-0-l2");
 }
 
+TEST_F(CmdConfigDataPlaneTrafficPolicyTestFixture, setCounterDeclaresCounter) {
+  apply({"counter", "cnt-new"});
+  auto& counters =
+      *ConfigSession::getInstance().getAgentConfig().sw()->trafficCounters();
+  ASSERT_EQ(counters.size(), 1);
+  EXPECT_EQ(*counters[0].name(), "cnt-new");
+}
+
+TEST_F(
+    CmdConfigDataPlaneTrafficPolicyTestFixture,
+    setCounterPreservesDeclaredCounter) {
+  setupTestableConfigSession(cmdPrefix_, "");
+  auto& counters =
+      *ConfigSession::getInstance().getAgentConfig().sw()->trafficCounters();
+  cfg::TrafficCounter counter;
+  counter.name() = "cnt-new";
+  counter.types() = {cfg::CounterType::BYTES};
+  counters.push_back(counter);
+
+  CmdConfigDataPlaneTrafficPolicy cmd;
+  HostInfo host("testhost");
+  cmd.queryClient(
+      host,
+      traffic_policy::TrafficPolicyArgs(
+          {"match", kRule, "action", "counter", "cnt-new"}));
+
+  ASSERT_EQ(counters.size(), 1);
+  EXPECT_THAT(*counters[0].types(), ElementsAre(cfg::CounterType::BYTES));
+}
+
 TEST_F(CmdConfigDataPlaneTrafficPolicyTestFixture, setTcAcceptsNine) {
   // Shipped CPU policies use tc 9, so the acl-rule side's 0-7 cap would be
   // wrong here; the thrift byte range is what applies.

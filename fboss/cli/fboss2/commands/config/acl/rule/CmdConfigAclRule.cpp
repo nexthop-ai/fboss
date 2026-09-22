@@ -14,7 +14,6 @@
 #include "fboss/cli/fboss2/CmdHandler.cpp"
 #include "fboss/cli/fboss2/commands/config/acl/AclConfigUtils.h"
 #include "fboss/cli/fboss2/commands/config/acl/rule/AclRuleAttrs.h"
-#include "fboss/cli/fboss2/commands/config/traffic_counter/TrafficCounterConfigUtils.h"
 
 #include <fmt/format.h>
 #include <folly/String.h>
@@ -34,28 +33,14 @@ std::string aclRuleConfigHelpText() {
       "<table-name> <rule-name> <attr> <value> [<extra>] "
       "creates the rule if missing; <attr> is one of: " +
       aclRuleAttrKeysCsv() +
-<<<<<<< HEAD
       ". The lookup-class-* attrs take a class id or name, as "
       "`config interface <intf> lookup-class` does"
       ". For 'action', <value> is one of: " +
       aclRuleActionKeysCsv() +
-      " (with an attr-specific final token: queue id / dscp / tc / "
-      "mirror name / counter name; 'redirect' takes 'nexthop <ip>'; "
-      "permit/deny/deny-data-and-control-plane/trap-to-cpu/copy-to-cpu take no "
-      "value).";
-||||||| a86baef3b7
-      ". For 'action', <value> is one of: " + aclRuleActionKeysCsv() +
-      " (with an attr-specific final token: queue id / dscp / tc / "
-      "mirror name / counter name; 'redirect' takes 'nexthop <ip>'; "
-      "permit/deny/deny-data-and-control-plane/trap-to-cpu/copy-to-cpu take no "
-      "value).";
-=======
-      ". For 'action', <value> is one of: " + aclRuleActionKeysCsv() +
       " (all take no further value). Richer actions (send-to-queue, set-dscp, "
       "set-tc, mirror, counter, to-cpu, redirect, ...) are set with `config "
       "copp traffic-policy` or `config data-plane traffic-policy`, which name "
       "the policy the action belongs to.";
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
   return kText;
 }
 
@@ -104,59 +89,6 @@ CmdConfigAclRuleTraits::RetType CmdConfigAclRule::queryClient(
 
   args.applyTo(*eit);
 
-<<<<<<< HEAD
-  // MatchAction-typed action sub-attrs (send-to-queue, set-dscp, set-tc,
-  // mirror-ingress, mirror-egress, counter, trap/copy-to-cpu, redirect)
-  // live on dataPlaneTrafficPolicy.matchToAction, keyed by rule name —
-  // not on the AclEntry. Locate or create the MatchToAction for this
-  // rule and apply the action to it.
-  if (args.isMatchAction()) {
-    if (!swConfig.dataPlaneTrafficPolicy()) {
-      swConfig.dataPlaneTrafficPolicy() = cfg::TrafficPolicyConfig{};
-    }
-    auto& mtaList = *swConfig.dataPlaneTrafficPolicy()->matchToAction();
-    auto mit = std::find_if(
-        mtaList.begin(), mtaList.end(), [&](const cfg::MatchToAction& mta) {
-          return *mta.matcher() == args.getRuleName();
-        });
-    if (mit == mtaList.end()) {
-      cfg::MatchToAction fresh;
-      fresh.matcher() = args.getRuleName();
-      mtaList.push_back(std::move(fresh));
-      mit = std::prev(mtaList.end());
-    }
-    args.applyActionTo(*mit->action());
-    if (const auto& counterName = mit->action()->counter()) {
-      utils::ensureTrafficCounterDeclared(swConfig, *counterName);
-    }
-  }
-
-||||||| a86baef3b7
-  // MatchAction-typed action sub-attrs (send-to-queue, set-dscp, set-tc,
-  // mirror-ingress, mirror-egress, counter, trap/copy-to-cpu, redirect)
-  // live on dataPlaneTrafficPolicy.matchToAction, keyed by rule name —
-  // not on the AclEntry. Locate or create the MatchToAction for this
-  // rule and apply the action to it.
-  if (args.isMatchAction()) {
-    if (!swConfig.dataPlaneTrafficPolicy()) {
-      swConfig.dataPlaneTrafficPolicy() = cfg::TrafficPolicyConfig{};
-    }
-    auto& mtaList = *swConfig.dataPlaneTrafficPolicy()->matchToAction();
-    auto mit = std::find_if(
-        mtaList.begin(), mtaList.end(), [&](const cfg::MatchToAction& mta) {
-          return *mta.matcher() == args.getRuleName();
-        });
-    if (mit == mtaList.end()) {
-      cfg::MatchToAction fresh;
-      fresh.matcher() = args.getRuleName();
-      mtaList.push_back(std::move(fresh));
-      mit = std::prev(mtaList.end());
-    }
-    args.applyActionTo(*mit->action());
-  }
-
-=======
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
   // AclEntry mutations are applied at runtime via processAclTableGroupDelta
   // in SaiAclTableManager; SaiSwitch has no warmboot-prohibited guard for
   // ACL entry attributes, so every supported attribute is HITLESS.

@@ -85,7 +85,6 @@ cpp_unittest(
         "CmdDeleteBgpPeerGroupTest.cpp",
         "CmdDeleteBgpPolicyAsPathListTest.cpp",
         "CmdDeleteBgpPolicyCommunityListTest.cpp",
-        "CmdDeleteCoppCpuTrafficPolicyMatchActionTest.cpp",
         "ProfileValidationTest.cpp",
     ],
     headers = [

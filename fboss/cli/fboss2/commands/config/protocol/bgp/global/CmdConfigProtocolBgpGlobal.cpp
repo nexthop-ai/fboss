@@ -13,26 +13,6 @@
 #include "fboss/cli/fboss2/CmdHandler.cpp"
 
 #include <fmt/core.h>
-<<<<<<< HEAD
-#include <neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
-#include <cstddef>
-#include <cstdint>
-#include <functional>
-#include <iostream>
-#include <limits>
-#include <map>
-#include <ostream>
-#include <stdexcept>
-#include <string>
-#include <string_view>
-#include <vector>
-#include "fboss/cli/fboss2/commands/config/protocol/bgp/BgpCliValueParsers.h"
-#include "fboss/cli/fboss2/session/ConfigSession.h"
-#include "fboss/cli/fboss2/utils/CmdUtilsCommon.h"
-#include "fboss/cli/fboss2/utils/HostInfo.h"
-#include "fmt/format.h"
-||||||| a86baef3b7
-=======
 #include <folly/IPAddress.h>
 #include <cstddef>
 #include <cstdint>
@@ -55,7 +35,6 @@
 #else
 #include <neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
 #endif
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 
 namespace facebook::fboss {
 
@@ -94,167 +73,6 @@ using bgpcli::Result;
 // Each handler mutates the typed bgp::thrift::BgpConfig directly. Field names
 // map 1:1 to bgp_config.thrift, so the compiler validates them.
 
-<<<<<<< HEAD
-Result applyRouterId(BgpConfig& cfg, const Tokens& values) {
-  if (values.size() != 1) {
-    return err("Error: router-id requires <ip-address>");
-  }
-  cfg.router_id() = values[0];
-  return ok(fmt::format("Successfully set BGP router-id to: {}", values[0]));
-}
-
-Result applyLocalAsn(BgpConfig& cfg, const Tokens& values) {
-  if (values.size() != 1) {
-    return err("Error: local-asn requires <asn>");
-  }
-  auto asn = bgpcli::parseAsn4Byte(values[0]);
-  if (!asn) {
-    return err(
-        fmt::format(
-            "Error: Invalid local-asn value '{}'; expected an unsigned "
-            "4-byte ASN",
-            values[0]));
-  }
-  cfg.local_as_4_byte() = *asn;
-  return ok(fmt::format("Successfully set BGP local-asn to: {}", *asn));
-}
-
-Result applyConfedAsn(BgpConfig& cfg, const Tokens& values) {
-  if (values.size() != 1) {
-    return err("Error: confed-asn requires <asn>");
-  }
-  auto asn = bgpcli::parseAsn4Byte(values[0]);
-  if (!asn) {
-    return err(
-        fmt::format(
-            "Error: Invalid confed-asn value '{}'; expected an unsigned "
-            "4-byte ASN",
-            values[0]));
-  }
-  cfg.local_confed_as_4_byte() = *asn;
-  return ok(
-      fmt::format("Successfully set BGP confederation AS number to: {}", *asn));
-}
-
-Result applyHoldTime(BgpConfig& cfg, const Tokens& values) {
-  if (values.size() != 1) {
-    return err("Error: hold-time requires <seconds>");
-  }
-  auto seconds = parseNonNegInt32(values[0]);
-  if (!seconds) {
-    return err(fmt::format("Error: Invalid hold-time value '{}'", values[0]));
-  }
-  cfg.hold_time() = *seconds;
-  return ok(
-      fmt::format("Successfully set BGP hold-time to: {} seconds", *seconds));
-}
-
-Result applyGracefulRestartTime(BgpConfig& cfg, const Tokens& values) {
-  if (values.size() != 1) {
-    return err("Error: graceful-restart-time requires <seconds>");
-  }
-  auto seconds = parseNonNegInt32(values[0]);
-  if (!seconds) {
-    return err(
-        fmt::format(
-            "Error: graceful-restart-time must be a non-negative integer "
-            "that fits in int32, got '{}'",
-            values[0]));
-  }
-  cfg.graceful_restart_convergence_seconds() = *seconds;
-  return ok(
-      fmt::format(
-          "Successfully set BGP graceful-restart-time to: {} seconds",
-          *seconds));
-}
-
-Result applyCountConfedsInAsPathLen(BgpConfig& cfg, const Tokens& values) {
-  if (values.size() != 1) {
-    return err("Error: count-confeds-in-as-path-len requires <true|false>");
-  }
-  auto enable = parseBool(values[0]);
-  if (!enable) {
-    return err(
-        fmt::format(
-            "Error: Invalid value '{}'; expected true or false", values[0]));
-  }
-  cfg.count_confeds_in_as_path_len() = *enable;
-  return ok(
-      fmt::format(
-          "Successfully {} count-confeds-in-as-path-len",
-          *enable ? "enabled" : "disabled"));
-}
-
-Result applyRibAllocatedPathIds(BgpConfig& cfg, const Tokens& values) {
-  if (values.size() != 1) {
-    return err("Error: rib-allocated-path-ids requires <true|false>");
-  }
-  auto enable = parseBool(values[0]);
-  if (!enable) {
-    return err(
-        fmt::format(
-            "Error: Invalid value '{}'; expected true or false", values[0]));
-  }
-  // enable_rib_allocated_path_id lives inside the nested bgp_setting_config.
-  cfg.bgp_setting_config().ensure().enable_rib_allocated_path_id() = *enable;
-  return ok(
-      fmt::format(
-          "Successfully {} rib-allocated-path-ids",
-          *enable ? "enabled" : "disabled"));
-}
-
-// Shared implementation for the switch-limit attributes, which differ only in
-// the field setter, the field name in the success message, and the upper bound
-// (i64 fields use INT64_MAX; the i32 max_golden_vips field uses INT32_MAX so an
-// out-of-range value is rejected rather than silently truncated). All limits
-// must be non-negative.
-Result applyInt64Limit(
-    BgpConfig& cfg,
-    const Tokens& values,
-    std::string_view attrName,
-    std::string_view fieldName,
-    int64_t maxValue,
-    const std::function<void(BgpConfig&, int64_t)>& setter) {
-  if (values.size() != 1) {
-    return err(fmt::format("Error: {} requires <value>", attrName));
-  }
-  auto limit = parseInt<int64_t>(values[0]);
-  if (!limit) {
-    return err(
-        fmt::format("Error: Invalid {} value '{}'", attrName, values[0]));
-  }
-  if (*limit < 0 || *limit > maxValue) {
-    return err(
-        fmt::format(
-            "Error: {} value '{}' is out of range [0, {}]",
-            attrName,
-            values[0],
-            maxValue));
-  }
-  setter(cfg, *limit);
-  return ok(
-      fmt::format(
-          "Successfully set switch_limit_config {} to: {}", fieldName, *limit));
-}
-
-Result applyOverloadProtectionMode(BgpConfig& cfg, const Tokens& values) {
-  if (values.size() != 1) {
-    return err("Error: switch-limit-overload-protection-mode requires <mode>");
-  }
-  auto mode = parseInt<int32_t>(values[0]);
-  if (!mode) {
-    return err(
-        fmt::format(
-            "Error: Invalid overload-protection-mode value '{}'", values[0]));
-  }
-  cfg.switch_limit_config().ensure().overload_protection_mode() =
-      static_cast<bgp::thrift::OverloadProtectionMode>(*mode);
-  return ok(
-      fmt::format(
-          "Successfully set switch_limit_config overload_protection_mode to: {}",
-          *mode));
-||||||| a86baef3b7
-=======
 // bgpd constructs an IPAddress from router_id at config load (a bad string
 // fails the load) and later calls asV4() on it, so only an IPv4 address is
 // safe to persist. Stored normalized.
@@ -447,7 +265,6 @@ Result applyOverloadProtectionMode(BgpConfig& cfg, const Tokens& values) {
       fmt::format(
           "Successfully set switch_limit_config overload_protection_mode to: {}",
           static_cast<int32_t>(mode)));
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 }
 
 Result applyNetwork6(BgpConfig& cfg, const Tokens& values) {

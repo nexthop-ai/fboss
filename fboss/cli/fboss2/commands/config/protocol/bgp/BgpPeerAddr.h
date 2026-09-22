@@ -11,34 +11,6 @@
 #pragma once
 
 #include <folly/IPAddress.h>
-<<<<<<< HEAD
-#include <neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
-#include <optional>
-#include <string>
-#include <vector>
-
-/**
- * Peer-address helpers shared by the BGP neighbor commands (`config protocol
- * bgp neighbor` / `delete protocol bgp neighbor`).
- *
- * peer_addr is the identity of a BgpPeer, but the same address can be spelled
- * many ways (2001:DB8::1 vs 2001:db8::1), and passive listening sessions may
- * use prefix notation (2001:db8::/64, per bgp_config.thrift). Both commands
- * normalize the CLI-supplied address once and compare stored entries in
- * normalized form so every spelling addresses the same peer.
- */
-namespace facebook::fboss::bgpcli {
-
-// Normalize an address (or prefix, for passive listening sessions) to its
-// canonical string form. nullopt if the input parses as neither.
-inline std::optional<std::string> normalizeBgpPeerAddr(const std::string& s) {
-  if (auto addr = folly::IPAddress::tryFromString(s)) {
-    return addr->str();
-  }
-  if (auto network = folly::IPAddress::tryCreateNetwork(
-          s, /* defaultCidr */ -1, /* applyMask */ false)) {
-||||||| a86baef3b7
-=======
 #include <optional>
 #include <string>
 #include <vector>
@@ -74,7 +46,6 @@ inline std::optional<std::string> normalizeBgpPeerAddr(const std::string& s) {
   }
   if (auto network = folly::IPAddress::tryCreateNetwork(
           s, /* defaultCidr */ -1, /* applyMask */ true)) {
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
     return folly::IPAddress::networkToString(*network);
   }
   return std::nullopt;
