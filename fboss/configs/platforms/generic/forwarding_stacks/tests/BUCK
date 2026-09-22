@@ -3,6 +3,7 @@ load("@fbsource//tools/build_defs/testinfra:network_access_utils.bzl", "network_
 
 oncall("fboss_oss")
 
+# bazelify: exclude
 cpp_unittest(
     name = "feature_default_command_args_config_test",
     srcs = ["FeatureDefaultCommandArgsConfigTest.cpp"],
