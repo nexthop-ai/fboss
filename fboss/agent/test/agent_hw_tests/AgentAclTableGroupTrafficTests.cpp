@@ -342,14 +342,17 @@ class AgentAclTableGroupTrafficTest : public AgentHwTest {
     return std::make_pair(testType, dstIP);
   }
 
-  std::pair<uint64_t, uint64_t> pktCounterHelper() {
+  std::pair<uint64_t, uint64_t> pktCounterHelper(bool waitForStats = false) {
     auto kCounterName = utility::kCounterName();
-    auto dscpAclPkts = utility::getAclInOutPackets(getSw(), kCounterName);
-
     auto ttlCounterName = utility::getQueuePerHostTtlCounterName();
-    auto ttlAclPkts = utility::getAclInOutPackets(getSw(), ttlCounterName);
-
-    return std::make_pair(dscpAclPkts, ttlAclPkts);
+    if (waitForStats) {
+      return std::make_pair(
+          utility::waitForAndGetAclInOutPackets(getSw(), kCounterName),
+          utility::waitForAndGetAclInOutPackets(getSw(), ttlCounterName));
+    }
+    return std::make_pair(
+        utility::getAclInOutPackets(getSw(), kCounterName),
+        utility::getAclInOutPackets(getSw(), ttlCounterName));
   }
 
   template <typename AddrT>
@@ -357,7 +360,7 @@ class AgentAclTableGroupTrafficTest : public AgentHwTest {
     auto [testType, dstIP] = testTypeAndIpHelper<AddrT>();
     XLOG(DBG2) << "TestType: " << testType;
 
-    auto beforeAclPkts = pktCounterHelper();
+    auto beforeAclPkts = pktCounterHelper(/*waitForStats=*/true);
     sendAllPacketshelper<AddrT>(dstIP, frontPanel, 0);
 
     WITH_RETRIES({
@@ -375,7 +378,7 @@ class AgentAclTableGroupTrafficTest : public AgentHwTest {
           (2 * (utility::kUdpPorts().size() + utility::kTcpPorts().size())));
     });
 
-    auto intermediateAclPkts = pktCounterHelper();
+    auto intermediateAclPkts = pktCounterHelper(/*waitForStats=*/true);
     sendAllPacketshelper<AddrT>(dstIP, frontPanel, utility::kIcpDscp());
 
     WITH_RETRIES({
