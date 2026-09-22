@@ -44,11 +44,17 @@ git commit -m "Initial fboss-sim runtime config" --quiet
 
 # 4. Configure services to use jemalloc instead of glibc malloc
 # jemalloc is more robust against memory corruption issues in fake SAI
+#
+# MALLOC_CONF carries the same startup defaults that fboss/oss/JemallocConfig.cpp
+# compiles into the binaries. A preloaded jemalloc resolves its malloc_conf
+# symbol before the executable's definition can matter, so without this the
+# agents run on library defaults: background_thread off, and therefore no
+# decay at all while the process is idle.
 echo "→ Configuring jemalloc for all agent services..."
 for service in wedge_agent.service fboss_sw_agent.service fboss_hw_agent@.service; do
   if [ -f /usr/lib/systemd/system/$service ]; then
     echo "  - Configuring $service"
-    sed -i '/Environment="LD_LIBRARY_PATH/a Environment="LD_PRELOAD=/usr/lib64/libjemalloc.so.2"' \
+    sed -i '/Environment="LD_LIBRARY_PATH/a Environment="LD_PRELOAD=/usr/lib64/libjemalloc.so.2"\nEnvironment="MALLOC_CONF=background_thread:true,metadata_thp:auto,dirty_decay_ms:1000,muzzy_decay_ms:0"' \
       /usr/lib/systemd/system/$service
   fi
 done

@@ -276,6 +276,7 @@ LimitNOFILE=10000000
 Environment="PATH=/opt/fboss/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
 Environment="LD_LIBRARY_PATH=/opt/fboss/lib"
 Environment="LD_PRELOAD=/usr/lib64/libjemalloc.so.2"
+Environment="MALLOC_CONF=background_thread:true,metadata_thp:auto,dirty_decay_ms:1000,muzzy_decay_ms:0"
 WorkingDirectory=/opt/fboss
 ExecStart=/bin/bash -c 'source /opt/fboss/bin/setup_fboss_env && exec /opt/fboss/bin/wedge_agent-sai_impl --fsdb_client_ssl_preferred=false --thrift_ssl_policy=disabled --tun_intf=false'
 Restart=always
