@@ -18,33 +18,11 @@ Example:
 
 import argparse
 import json
+import shlex
 import sys
 from typing import Any
 
 
-<<<<<<< HEAD
-def escape_shell_arg(arg: str) -> str:
-    """Escape argument for shell usage.
-
-    Backslash-escapes the characters that stay special inside double quotes
-    (backslash, double quote, dollar, backtick) so free-form fields like
-    descriptions cannot terminate the quoted string or trigger expansion in
-    the generated script.
-    """
-    if " " in arg or '"' in arg or "'" in arg or any(c in arg for c in "!$`\\"):
-        escaped = (
-            arg.replace("\\", "\\\\")
-            .replace('"', '\\"')
-            .replace("$", "\\$")
-            .replace("`", "\\`")
-        )
-        return f'"{escaped}"'
-    return arg
-||||||| a86baef3b7
-def escape_shell_arg(arg: str) -> str:
-    """Escape argument for shell usage."""
-    return shlex.quote(str(arg))
-=======
 def escape_shell_arg(arg: Any) -> str:
     """Quote a JSON-sourced value for the generated shell script.
 
@@ -53,60 +31,30 @@ def escape_shell_arg(arg: Any) -> str:
     and identifiers unchanged, so valid input produces identical output.
     """
     return shlex.quote(str(arg))
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 
 
-<<<<<<< HEAD
-||||||| a86baef3b7
-def _generate_global_basic_commands(config: Dict[str, Any]) -> List[str]:
-=======
 def _shell_bool(value: Any) -> str:
     return escape_shell_arg(str(value).lower())
 
 
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 def _generate_global_basic_commands(config: dict[str, Any]) -> list[str]:
     """Generate basic global BGP commands."""
     commands = []
     if "router_id" in config:
         commands.append(
-            f"config protocol bgp global router-id {escape_shell_arg(str(config['router_id']))}"
+            f"config protocol bgp global router-id {escape_shell_arg(config['router_id'])}"
         )
     if "local_as_4_byte" in config:
         commands.append(
-<<<<<<< HEAD
-            f"config protocol bgp global local-asn {config['local_as_4_byte']}"
-||||||| a86baef3b7
-            f"config protocol bgp global local-asn {escape_shell_arg(str(config['local_as_4_byte']))}"
-=======
             f"config protocol bgp global local-asn {escape_shell_arg(config['local_as_4_byte'])}"
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         )
     if "hold_time" in config:
-<<<<<<< HEAD
-        commands.append(f"config protocol bgp global hold-time {config['hold_time']}")
-||||||| a86baef3b7
-        commands.append(
-            f"config protocol bgp global hold-time {escape_shell_arg(str(config['hold_time']))}"
-        )
-=======
         commands.append(
             f"config protocol bgp global hold-time {escape_shell_arg(config['hold_time'])}"
         )
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
     if "local_confed_as_4_byte" in config:
         commands.append(
-<<<<<<< HEAD
-            f"config protocol bgp global confed-asn {config['local_confed_as_4_byte']}"
-||||||| a86baef3b7
-            f"config protocol bgp global confed-asn {escape_shell_arg(str(config['local_confed_as_4_byte']))}"
-        )
-    if "cluster_id" in config:
-        commands.append(
-            f"config protocol bgp global cluster-id {escape_shell_arg(config['cluster_id'])}"
-=======
             f"config protocol bgp global confed-asn {escape_shell_arg(config['local_confed_as_4_byte'])}"
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         )
     return commands
 
@@ -118,23 +66,17 @@ def _generate_network6_commands(networks: list[dict[str, Any]]) -> list[str]:
         prefix = network.get("prefix", "")
         if not prefix:
             continue
-        cmd_parts = [f"config protocol bgp global network6 add {prefix}"]
+        cmd_parts = [
+            f"config protocol bgp global network6 add {escape_shell_arg(prefix)}"
+        ]
         if "policy_name" in network:
             cmd_parts.append(f"policy {escape_shell_arg(network['policy_name'])}")
         if "install_to_fib" in network:
             cmd_parts.append(f"install-to-fib {_shell_bool(network['install_to_fib'])}")
         if "minimum_supporting_routes" in network:
-<<<<<<< HEAD
-            cmd_parts.append(f"min-routes {network['minimum_supporting_routes']}")
-||||||| a86baef3b7
-            cmd_parts.append(
-                f"min-routes {escape_shell_arg(str(network['minimum_supporting_routes']))}"
-            )
-=======
             cmd_parts.append(
                 f"min-routes {escape_shell_arg(network['minimum_supporting_routes'])}"
             )
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         commands.append(" ".join(cmd_parts))
     return commands
 
@@ -144,43 +86,19 @@ def _generate_switch_limit_commands(switch_limit: dict[str, Any]) -> list[str]:
     commands = []
     if "prefix_limit" in switch_limit:
         commands.append(
-<<<<<<< HEAD
-            f"config protocol bgp global switch-limit {switch_limit['prefix_limit']}"
-||||||| a86baef3b7
-            f"config protocol bgp global switch-limit {escape_shell_arg(str(switch_limit['prefix_limit']))}"
-=======
             f"config protocol bgp global switch-limit {escape_shell_arg(switch_limit['prefix_limit'])}"
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         )
     if "total_path_limit" in switch_limit:
         commands.append(
-<<<<<<< HEAD
-            f"config protocol bgp global switch-limit-total-path {switch_limit['total_path_limit']}"
-||||||| a86baef3b7
-            f"config protocol bgp global switch-limit-total-path {escape_shell_arg(str(switch_limit['total_path_limit']))}"
-=======
             f"config protocol bgp global switch-limit-total-path {escape_shell_arg(switch_limit['total_path_limit'])}"
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         )
     if "max_golden_vips" in switch_limit:
         commands.append(
-<<<<<<< HEAD
-            f"config protocol bgp global switch-limit-max-golden-vips {switch_limit['max_golden_vips']}"
-||||||| a86baef3b7
-            f"config protocol bgp global switch-limit-max-golden-vips {escape_shell_arg(str(switch_limit['max_golden_vips']))}"
-=======
             f"config protocol bgp global switch-limit-max-golden-vips {escape_shell_arg(switch_limit['max_golden_vips'])}"
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         )
     if "overload_protection_mode" in switch_limit:
         commands.append(
-<<<<<<< HEAD
-            f"config protocol bgp global switch-limit-overload-protection-mode {switch_limit['overload_protection_mode']}"
-||||||| a86baef3b7
-            f"config protocol bgp global switch-limit-overload-protection-mode {escape_shell_arg(str(switch_limit['overload_protection_mode']))}"
-=======
             f"config protocol bgp global switch-limit-overload-protection-mode {escape_shell_arg(switch_limit['overload_protection_mode'])}"
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         )
     return commands
 
@@ -203,13 +121,7 @@ def _generate_peer_group_basic_commands(
     commands = []
     if "remote_as_4_byte" in peer_group:
         commands.append(
-<<<<<<< HEAD
-            f"config protocol bgp peer-group {escaped_name} remote-asn {peer_group['remote_as_4_byte']}"
-||||||| a86baef3b7
-            f"config protocol bgp peer-group {escaped_name} remote-asn {escape_shell_arg(str(peer_group['remote_as_4_byte']))}"
-=======
             f"config protocol bgp peer-group {escaped_name} remote-asn {escape_shell_arg(peer_group['remote_as_4_byte'])}"
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         )
     if "description" in peer_group:
         commands.append(
@@ -257,43 +169,19 @@ def _generate_peer_group_timer_commands(
     commands = []
     if timers.get("hold_time_seconds"):
         commands.append(
-<<<<<<< HEAD
-            f"config protocol bgp peer-group {escaped_name} timers hold-time {timers['hold_time_seconds']}"
-||||||| a86baef3b7
-            f"config protocol bgp peer-group {escaped_name} timers hold-time {escape_shell_arg(str(timers['hold_time_seconds']))}"
-=======
             f"config protocol bgp peer-group {escaped_name} timers hold-time {escape_shell_arg(timers['hold_time_seconds'])}"
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         )
     if timers.get("keep_alive_seconds"):
         commands.append(
-<<<<<<< HEAD
-            f"config protocol bgp peer-group {escaped_name} timers keepalive {timers['keep_alive_seconds']}"
-||||||| a86baef3b7
-            f"config protocol bgp peer-group {escaped_name} timers keepalive {escape_shell_arg(str(timers['keep_alive_seconds']))}"
-=======
             f"config protocol bgp peer-group {escaped_name} timers keepalive {escape_shell_arg(timers['keep_alive_seconds'])}"
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         )
     if "out_delay_seconds" in timers:
         commands.append(
-<<<<<<< HEAD
-            f"config protocol bgp peer-group {escaped_name} timers out-delay {timers['out_delay_seconds']}"
-||||||| a86baef3b7
-            f"config protocol bgp peer-group {escaped_name} timers out-delay {escape_shell_arg(str(timers['out_delay_seconds']))}"
-=======
             f"config protocol bgp peer-group {escaped_name} timers out-delay {escape_shell_arg(timers['out_delay_seconds'])}"
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         )
     if "withdraw_unprog_delay_seconds" in timers:
         commands.append(
-<<<<<<< HEAD
-            f"config protocol bgp peer-group {escaped_name} timers withdraw-unprog-delay {timers['withdraw_unprog_delay_seconds']}"
-||||||| a86baef3b7
-            f"config protocol bgp peer-group {escaped_name} timers withdraw-unprog-delay {escape_shell_arg(str(timers['withdraw_unprog_delay_seconds']))}"
-=======
             f"config protocol bgp peer-group {escaped_name} timers withdraw-unprog-delay {escape_shell_arg(timers['withdraw_unprog_delay_seconds'])}"
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         )
     return commands
 
@@ -305,23 +193,11 @@ def _generate_peer_group_prefilter_commands(
     commands = []
     if pre_filter.get("max_routes"):
         commands.append(
-<<<<<<< HEAD
-            f"config protocol bgp peer-group {escaped_name} max-routes {pre_filter['max_routes']}"
-||||||| a86baef3b7
-            f"config protocol bgp peer-group {escaped_name} max-routes {escape_shell_arg(str(pre_filter['max_routes']))}"
-=======
             f"config protocol bgp peer-group {escaped_name} max-routes {escape_shell_arg(pre_filter['max_routes'])}"
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         )
     if "warning_limit" in pre_filter:
         commands.append(
-<<<<<<< HEAD
-            f"config protocol bgp peer-group {escaped_name} warning-limit {pre_filter['warning_limit']}"
-||||||| a86baef3b7
-            f"config protocol bgp peer-group {escaped_name} warning-limit {escape_shell_arg(str(pre_filter['warning_limit']))}"
-=======
             f"config protocol bgp peer-group {escaped_name} warning-limit {escape_shell_arg(pre_filter['warning_limit'])}"
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         )
     if "warning_only" in pre_filter:
         commands.append(
@@ -354,22 +230,11 @@ def generate_peer_group_commands(peer_group: dict[str, Any]) -> list[str]:
 
 
 def format_bandwidth(bps: int) -> str:
-<<<<<<< HEAD
-    """Format bandwidth in bps to human-readable format (e.g., 10G)."""
-    if bps >= 1_000_000_000_000 and bps % 1_000_000_000_000 == 0:
-        return f"{bps // 1_000_000_000_000}T"
-||||||| a86baef3b7
-    """Format bandwidth in bps to human-readable format (e.g., 10G)."""
-    if bps >= 1_000_000_000_000 and bps % 1_000_000_000_000 == 0:
-        return f"{bps // 1_000_000_000_000}T"
-    elif bps >= 1_000_000_000 and bps % 1_000_000_000 == 0:
-=======
     """Format bandwidth in bps with the largest exact K/M/G suffix.
 
     Only K, M and G are emitted: those are the multipliers bgpd's
     link-bandwidth parser accepts, so a "T" spelling would not round-trip.
     """
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
     if bps >= 1_000_000_000 and bps % 1_000_000_000 == 0:
         return f"{bps // 1_000_000_000}G"
     if bps >= 1_000_000 and bps % 1_000_000 == 0:
@@ -379,53 +244,6 @@ def format_bandwidth(bps: int) -> str:
     return str(bps)
 
 
-<<<<<<< HEAD
-# (json field, CLI attribute, escape as free-form shell arg) — fields whose
-# value maps 1:1 onto a neighbor attribute token.
-_NEIGHBOR_SCALAR_FIELDS = [
-    ("remote_as_4_byte", "remote-asn", False),
-    ("local_as_4_byte", "local-asn", False),
-    ("peer_group_name", "peer-group", True),
-    ("description", "description", True),
-    ("peer_tag", "peer-tag", True),
-    ("local_addr", "bind-addr address", True),
-    ("ingress_policy_name", "ingress-policy", True),
-    ("egress_policy_name", "egress-policy", True),
-    ("next_hop4", "next-hop4", True),
-    ("next_hop6", "next-hop6", True),
-    ("peer_id", "peer-id", True),
-    ("type", "type", True),
-]
-||||||| a86baef3b7
-def _generate_peer_basic_commands(peer: Dict[str, Any], peer_addr: str) -> List[str]:
-    """Generate basic peer commands (remote-asn, peer-group, description, etc.)."""
-    commands = []
-    if "remote_as_4_byte" in peer:
-        commands.append(
-            f"config protocol bgp peer {peer_addr} remote-asn {escape_shell_arg(str(peer['remote_as_4_byte']))}"
-        )
-    if "peer_group_name" in peer:
-        commands.append(
-            f"config protocol bgp peer {peer_addr} peer-group {escape_shell_arg(peer['peer_group_name'])}"
-        )
-    if "description" in peer:
-        commands.append(
-            f"config protocol bgp peer {peer_addr} description {escape_shell_arg(peer['description'])}"
-        )
-    if "local_addr" in peer:
-        commands.append(
-            f"config protocol bgp peer {peer_addr} local-addr {escape_shell_arg(peer['local_addr'])}"
-        )
-    if "ingress_policy_name" in peer:
-        commands.append(
-            f"config protocol bgp peer {peer_addr} ingress-policy {escape_shell_arg(peer['ingress_policy_name'])}"
-        )
-    if "egress_policy_name" in peer:
-        commands.append(
-            f"config protocol bgp peer {peer_addr} egress-policy {escape_shell_arg(peer['egress_policy_name'])}"
-        )
-    return commands
-=======
 def _printable(text: Any) -> str:
     """A JSON-sourced name made safe for a `#` comment line: no control
     characters, so it cannot break out of the comment."""
@@ -502,61 +320,11 @@ def _generate_scalar_commands(
         if field in obj:
             commands.append(f"{prefix} {cli_name} {escape_shell_arg(obj[field])}")
     return commands
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 
 
-<<<<<<< HEAD
-def _generate_neighbor_basic_commands(peer: dict[str, Any], prefix: str) -> list[str]:
-    """Generate scalar neighbor commands (ASNs, names, policies, addresses)."""
-||||||| a86baef3b7
-def _generate_peer_bool_commands(peer: Dict[str, Any], peer_addr: str) -> List[str]:
-    """Generate boolean flag commands for peer."""
-=======
 def _generate_bool_commands(obj: dict[str, Any], prefix: str) -> list[str]:
     """Generate boolean flag commands for a neighbor or peer group."""
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
     commands = []
-<<<<<<< HEAD
-    for field, cli_name, escape in _NEIGHBOR_SCALAR_FIELDS:
-        if field in peer:
-            value = escape_shell_arg(str(peer[field])) if escape else peer[field]
-            commands.append(f"{prefix} {cli_name} {value}")
-    if "is_passive" in peer:
-        mode = "PASSIVE" if peer["is_passive"] else "ACTIVE"
-        commands.append(f"{prefix} connect-mode {mode}")
-    if "link_bandwidth_bps" in peer:
-        bw = peer["link_bandwidth_bps"]
-||||||| a86baef3b7
-    bool_fields = [
-        ("is_passive", "passive"),
-        ("is_rr_client", "rr-client"),
-        ("next_hop_self", "next-hop-self"),
-        ("v4_over_v6_nexthop", "v4-over-v6-nh"),
-        ("disable_ipv4_afi", "disable-ipv4-afi"),
-        ("advertise_link_bandwidth", "advertise-lbw"),
-    ]
-    for field, cli_name in bool_fields:
-        if field in peer:
-            commands.append(
-                f"config protocol bgp peer {peer_addr} {cli_name} {str(peer[field]).lower()}"
-            )
-    return commands
-
-
-def _generate_peer_nexthop_commands(peer: Dict[str, Any], peer_addr: str) -> List[str]:
-    """Generate next-hop and link-bandwidth commands for peer."""
-    commands = []
-    if "next_hop4" in peer:
-        commands.append(
-            f"config protocol bgp peer {peer_addr} next-hop4 {escape_shell_arg(peer['next_hop4'])}"
-        )
-    if "next_hop6" in peer:
-        commands.append(
-            f"config protocol bgp peer {peer_addr} next-hop6 {escape_shell_arg(peer['next_hop6'])}"
-        )
-    if "link_bandwidth_bps" in peer:
-        bw = peer["link_bandwidth_bps"]
-=======
     for field, cli_name in _BOOL_FIELDS:
         if field in obj:
             commands.append(f"{prefix} {cli_name} {_shell_bool(obj[field])}")
@@ -572,19 +340,7 @@ def _generate_link_bandwidth_commands(obj: dict[str, Any], prefix: str) -> list[
     commands = []
     if "link_bandwidth_bps" in obj:
         bw = obj["link_bandwidth_bps"]
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         bw_str = format_bandwidth(bw) if isinstance(bw, int) else str(bw)
-<<<<<<< HEAD
-        commands.append(f"{prefix} link-bandwidth {bw_str}")
-    if "advertise_link_bandwidth" in peer:
-        commands.append(f"{prefix} advertise-lbw {peer['advertise_link_bandwidth']}")
-    if "receive_link_bandwidth" in peer:
-        commands.append(f"{prefix} receive-lbw {peer['receive_link_bandwidth']}")
-||||||| a86baef3b7
-        commands.append(
-            f"config protocol bgp peer {peer_addr} link-bandwidth {escape_shell_arg(bw_str)}"
-        )
-=======
         commands.append(f"{prefix} link-bandwidth {escape_shell_arg(bw_str)}")
     if "advertise_link_bandwidth" in obj:
         commands.append(
@@ -594,17 +350,9 @@ def _generate_link_bandwidth_commands(obj: dict[str, Any], prefix: str) -> list[
         commands.append(
             f"{prefix} receive-lbw {escape_shell_arg(obj['receive_link_bandwidth'])}"
         )
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
     return commands
 
 
-<<<<<<< HEAD
-def _generate_neighbor_bool_commands(peer: dict[str, Any], prefix: str) -> list[str]:
-    """Generate boolean flag commands for a neighbor."""
-||||||| a86baef3b7
-def _generate_peer_timer_commands(timers: Dict[str, Any], peer_addr: str) -> List[str]:
-    """Generate timer commands for peer."""
-=======
 def _generate_add_path_commands(obj: dict[str, Any], prefix: str) -> list[str]:
     """Generate add-path commands from the AddPath enum (RECEIVE=1, SEND=2, BOTH=3)."""
     if "add_path" not in obj:
@@ -616,39 +364,6 @@ def _generate_add_path_commands(obj: dict[str, Any], prefix: str) -> list[str]:
         else raw
     )
     value = int(value)
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
-    commands = []
-<<<<<<< HEAD
-    bool_fields = [
-        ("is_rr_client", "rr-client"),
-        ("is_confed_peer", "confed-peer"),
-        ("is_redistribute_peer", "redistribute-peer"),
-        ("enhanced_route_refresh", "enhanced-route-refresh"),
-        ("disable_ipv4_afi", "afi disable-ipv4-afi"),
-        ("disable_ipv6_afi", "afi disable-ipv6-afi"),
-        ("v4_over_v6_nexthop", "afi ipv4-over-ipv6-nh"),
-        ("enable_stateful_ha", "graceful-restart stateful-ha"),
-        ("next_hop_self", "next-hop-self"),
-    ]
-    for field, cli_name in bool_fields:
-        if field in peer:
-            commands.append(f"{prefix} {cli_name} {str(peer[field]).lower()}")
-    return commands
-
-
-def _generate_neighbor_add_path_commands(
-    peer: dict[str, Any], prefix: str
-) -> list[str]:
-    """Generate add-path commands from the AddPath enum (RECEIVE=1, SEND=2, BOTH=3)."""
-    if "add_path" not in peer:
-        return []
-    raw = peer["add_path"]
-    value = (
-        {"RECEIVE": 1, "SEND": 2, "BOTH": 3}.get(raw, raw)
-        if isinstance(raw, str)
-        else raw
-    )
-    value = int(value)
     commands = []
     if value & 1:
         commands.append(f"{prefix} add-path receive true")
@@ -657,105 +372,14 @@ def _generate_neighbor_add_path_commands(
     return commands
 
 
-def _generate_neighbor_timer_commands(timers: dict[str, Any], prefix: str) -> list[str]:
-    """Generate timer and graceful-restart commands for a neighbor."""
-    commands = []
-    if "hold_time_seconds" in timers:
-        commands.append(f"{prefix} timers hold-time {timers['hold_time_seconds']}")
-    if "keep_alive_seconds" in timers:
-        commands.append(f"{prefix} timers keepalive {timers['keep_alive_seconds']}")
-    if "out_delay_seconds" in timers:
-        commands.append(f"{prefix} timers out-delay {timers['out_delay_seconds']}")
-    if "withdraw_unprog_delay_seconds" in timers:
-        commands.append(
-            f"{prefix} timers withdraw-unprog-delay {timers['withdraw_unprog_delay_seconds']}"
-        )
-    if "graceful_restart_seconds" in timers:
-        commands.append(
-            f"{prefix} graceful-restart restart-time {timers['graceful_restart_seconds']}"
-        )
-||||||| a86baef3b7
-    if timers.get("hold_time_seconds"):
-        commands.append(
-            f"config protocol bgp peer {peer_addr} hold-time {escape_shell_arg(str(timers['hold_time_seconds']))}"
-        )
-    if timers.get("keep_alive_seconds"):
-        commands.append(
-            f"config protocol bgp peer {peer_addr} timers keepalive {escape_shell_arg(str(timers['keep_alive_seconds']))}"
-        )
-    if "out_delay_seconds" in timers:
-        commands.append(
-            f"config protocol bgp peer {peer_addr} timers out-delay {escape_shell_arg(str(timers['out_delay_seconds']))}"
-        )
-    if "withdraw_unprog_delay_seconds" in timers:
-        commands.append(
-            f"config protocol bgp peer {peer_addr} timers withdraw-unprog-delay {escape_shell_arg(str(timers['withdraw_unprog_delay_seconds']))}"
-        )
-=======
-    if value & 1:
-        commands.append(f"{prefix} add-path receive true")
-    if value & 2:
-        commands.append(f"{prefix} add-path send true")
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
-    return commands
-
-
-<<<<<<< HEAD
-def _generate_neighbor_route_limit_commands(
-    peer: dict[str, Any], prefix: str
-) -> list[str]:
-||||||| a86baef3b7
-def _generate_peer_prefilter_commands(
-    pre_filter: Dict[str, Any], peer_addr: str
-) -> List[str]:
-    """Generate pre_filter commands for peer."""
-=======
 def _generate_timer_commands(timers: dict[str, Any], prefix: str) -> list[str]:
     """Generate timer and graceful-restart commands for a neighbor or peer group."""
     return _generate_scalar_commands(timers, prefix, _TIMER_FIELDS)
 
 
 def _generate_route_limit_commands(obj: dict[str, Any], prefix: str) -> list[str]:
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
     """Generate max-route commands from pre_filter/post_filter."""
     commands = []
-<<<<<<< HEAD
-    pre_filter = peer.get("pre_filter", {})
-    if "max_routes" in pre_filter:
-        commands.append(f"{prefix} max-route pre-filter {pre_filter['max_routes']}")
-    if "warning_limit" in pre_filter:
-        commands.append(
-            f"{prefix} max-route pre-warning-threshold {pre_filter['warning_limit']}"
-        )
-    if "warning_only" in pre_filter:
-        commands.append(
-            f"{prefix} max-route pre-warning-only {str(pre_filter['warning_only']).lower()}"
-        )
-    post_filter = peer.get("post_filter", {})
-    if "max_routes" in post_filter:
-        commands.append(f"{prefix} max-route post-filter {post_filter['max_routes']}")
-    if "warning_limit" in post_filter:
-        commands.append(
-            f"{prefix} max-route post-warning-threshold {post_filter['warning_limit']}"
-        )
-    if "warning_only" in post_filter:
-        commands.append(
-            f"{prefix} max-route post-warning-only {str(post_filter['warning_only']).lower()}"
-        )
-||||||| a86baef3b7
-    if pre_filter.get("max_routes"):
-        commands.append(
-            f"config protocol bgp peer {peer_addr} max-routes {escape_shell_arg(str(pre_filter['max_routes']))}"
-        )
-    if "warning_limit" in pre_filter:
-        commands.append(
-            f"config protocol bgp peer {peer_addr} warning-limit {escape_shell_arg(str(pre_filter['warning_limit']))}"
-        )
-    if "warning_only" in pre_filter:
-        commands.append(
-            f"config protocol bgp peer {peer_addr} warning-only {str(pre_filter['warning_only']).lower()}"
-        )
-=======
     for struct, side in (("pre_filter", "pre"), ("post_filter", "post")):
         limit = obj.get(struct, {})
         for field, suffix, is_bool in _ROUTE_LIMIT_FIELDS:
@@ -766,29 +390,9 @@ def _generate_route_limit_commands(obj: dict[str, Any], prefix: str) -> list[str
                     else escape_shell_arg(limit[field])
                 )
                 commands.append(f"{prefix} max-route {side}-{suffix} {value}")
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
     return commands
 
 
-<<<<<<< HEAD
-||||||| a86baef3b7
-def _generate_peer_id_commands(peer: Dict[str, Any], peer_addr: str) -> List[str]:
-    """Generate peer identification commands."""
-    commands = []
-    if "peer_id" in peer:
-        commands.append(
-            f"config protocol bgp peer {peer_addr} peer-id {escape_shell_arg(peer['peer_id'])}"
-        )
-    if "type" in peer:
-        commands.append(
-            f"config protocol bgp peer {peer_addr} type {escape_shell_arg(peer['type'])}"
-        )
-    return commands
-
-
-def generate_peer_commands(peer: Dict[str, Any]) -> List[str]:
-    """Generate CLI commands for a peer."""
-=======
 def _generate_session_commands(obj: dict[str, Any], prefix: str) -> list[str]:
     """Generate the commands for every field BgpPeer and PeerGroup share."""
     commands = []
@@ -861,7 +465,6 @@ _NEIGHBOR_HANDLED_FIELDS = (
 )
 
 
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 def generate_peer_commands(peer: dict[str, Any]) -> list[str]:
     """Generate `config protocol bgp neighbor` CLI commands for a peer."""
     peer_addr = peer.get("peer_addr", "")
@@ -869,39 +472,11 @@ def generate_peer_commands(peer: dict[str, Any]) -> list[str]:
         return []
 
     prefix = f"config protocol bgp neighbor {escape_shell_arg(peer_addr)}"
-<<<<<<< HEAD
-    commands = []
-    commands.extend(_generate_neighbor_basic_commands(peer, prefix))
-    commands.extend(_generate_neighbor_bool_commands(peer, prefix))
-    commands.extend(_generate_neighbor_add_path_commands(peer, prefix))
-    commands.extend(
-        _generate_neighbor_timer_commands(peer.get("bgp_peer_timers", {}), prefix)
-||||||| a86baef3b7
-    escaped_peer_addr = escape_shell_arg(peer_addr)
-    commands = []
-    commands.extend(_generate_peer_basic_commands(peer, escaped_peer_addr))
-    commands.extend(_generate_peer_bool_commands(peer, escaped_peer_addr))
-    commands.extend(_generate_peer_nexthop_commands(peer, escaped_peer_addr))
-    commands.extend(
-        _generate_peer_timer_commands(
-            peer.get("bgp_peer_timers", {}), escaped_peer_addr
-        )
-=======
     commands = _unconverted_field_warnings(
         peer, _NEIGHBOR_HANDLED_FIELDS, f"neighbor {_printable(peer_addr)}"
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
     )
-<<<<<<< HEAD
-    commands.extend(_generate_neighbor_route_limit_commands(peer, prefix))
-||||||| a86baef3b7
-    commands.extend(
-        _generate_peer_prefilter_commands(peer.get("pre_filter", {}), escaped_peer_addr)
-    )
-    commands.extend(_generate_peer_id_commands(peer, escaped_peer_addr))
-=======
     commands.extend(_generate_scalar_commands(peer, prefix, _NEIGHBOR_SCALAR_FIELDS))
     commands.extend(_generate_session_commands(peer, prefix))
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
     return commands
 
 
@@ -929,19 +504,9 @@ def generate_exec_commands(commands: list[str], binary: str = "fboss2") -> list[
     return exec_commands
 
 
-<<<<<<< HEAD
-def json_to_cli(config: dict[str, Any], binary: str = "fboss2") -> list[str]:
-    """Convert BGP++ JSON config to CLI commands."""
-||||||| a86baef3b7
-def json_to_cli(
-    config: Dict[str, Any], stub: bool = False, binary: str = "fboss2"
-) -> List[str]:
-    """Convert BGP++ JSON config to CLI commands."""
-=======
 def generate_commands(config: dict[str, Any]) -> list[str]:
     """Convert BGP++ JSON config to raw CLI commands (plus `#` warning lines
     for fields that have no CLI equivalent)."""
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
     commands = []
     commands.extend(generate_global_commands(config))
     for peer_group in config.get("peer_groups", []):
@@ -950,19 +515,10 @@ def generate_commands(config: dict[str, Any]) -> list[str]:
         commands.extend(generate_peer_commands(peer))
     return commands
 
-<<<<<<< HEAD
-    return generate_exec_commands(commands, binary)
-||||||| a86baef3b7
-    if stub:
-        return generate_stub_commands(commands, binary)
-
-    return generate_exec_commands(commands, binary)
-=======
 
 def json_to_cli(config: dict[str, Any], binary: str = "fboss2") -> list[str]:
     """Convert BGP++ JSON config to an executable CLI script."""
     return generate_exec_commands(generate_commands(config), binary)
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 
 
 def main() -> int:
@@ -996,33 +552,6 @@ def main() -> int:
         print(f"Error: Invalid JSON in '{args.input}': {e}", file=sys.stderr)
         return 1
 
-<<<<<<< HEAD
-    if args.raw:
-        # Generate raw CLI commands only (no shell wrapper)
-        commands = []
-        commands.extend(generate_global_commands(config))
-        for peer_group in config.get("peer_groups", []):
-            commands.extend(generate_peer_group_commands(peer_group))
-        for peer in config.get("peers", []):
-            commands.extend(generate_peer_commands(peer))
-        output = "\n".join(commands)
-    else:
-        commands = json_to_cli(config, binary=args.binary)
-        output = "\n".join(commands)
-||||||| a86baef3b7
-    if args.raw:
-        # Generate raw CLI commands only (no shell wrapper)
-        commands = []
-        commands.extend(generate_global_commands(config))
-        for peer_group in config.get("peer_groups", []):
-            commands.extend(generate_peer_group_commands(peer_group))
-        for peer in config.get("peers", []):
-            commands.extend(generate_peer_commands(peer))
-        output = "\n".join(commands)
-    else:
-        commands = json_to_cli(config, stub=args.stub, binary=args.binary)
-        output = "\n".join(commands)
-=======
     commands = generate_commands(config)
     # Fields with no CLI equivalent are flagged in the script AND on stderr,
     # so a scripted conversion cannot lose them silently.
@@ -1032,7 +561,6 @@ def main() -> int:
     if not args.raw:
         commands = generate_exec_commands(commands, args.binary)
     output = "\n".join(commands)
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 
     if args.output:
         with open(args.output, "w") as f:

@@ -39,51 +39,30 @@ class EscapeShellArgTest(unittest.TestCase):
         self.assertEqual(result, "simple")
 
     def test_string_with_space_is_quoted(self) -> None:
-        """Strings with spaces should be wrapped in double quotes."""
+        """Strings with spaces should be wrapped in single quotes."""
         result = escape_shell_arg("hello world")
-        self.assertEqual(result, '"hello world"')
+        self.assertEqual(result, "'hello world'")
 
     def test_string_with_special_chars_is_quoted(self) -> None:
-        """Shell specials should be quoted AND escaped so they stay literal."""
+        """Strings with shell special characters should be quoted."""
         result = escape_shell_arg("value$var")
-        self.assertEqual(result, '"value\\$var"')
+        self.assertEqual(result, "'value$var'")
 
     def test_string_with_backslash_is_quoted(self) -> None:
-        """Backslashes should be quoted and doubled to stay literal."""
+        """Strings with backslash should be quoted."""
         result = escape_shell_arg("path\\to\\file")
-        self.assertEqual(result, '"path\\\\to\\\\file"')
+        self.assertEqual(result, "'path\\to\\file'")
 
     def test_empty_string(self) -> None:
-        """Empty string should not be quoted."""
+        """Empty string is quoted as empty single quotes."""
         result = escape_shell_arg("")
-        self.assertEqual(result, "")
-
-    def test_embedded_quotes_and_dollars_escaped(self) -> None:
-        """Specials that stay live inside double quotes must be backslashed."""
-        self.assertEqual(
-            escape_shell_arg('rack "A1" $spine'), '"rack \\"A1\\" \\$spine"'
-        )
-        self.assertEqual(escape_shell_arg("tick `id`"), '"tick \\`id\\`"')
-        self.assertEqual(escape_shell_arg("back\\slash"), '"back\\\\slash"')
+        self.assertEqual(result, "''")
 
     def test_ipv6_address_not_escaped(self) -> None:
         """IPv6 addresses should not be quoted."""
         result = escape_shell_arg("2401:db00:501c::/64")
         self.assertEqual(result, "2401:db00:501c::/64")
 
-<<<<<<< HEAD
-||||||| a86baef3b7
-    def test_command_injection_payload_neutralized(self) -> None:
-        """Command injection payloads should be rendered literal."""
-        result = escape_shell_arg("$(reboot)")
-        self.assertEqual(result, "'$(reboot)'")
-
-    def test_backtick_injection_neutralized(self) -> None:
-        """Backtick command substitution should be rendered literal."""
-        result = escape_shell_arg("`reboot`")
-        self.assertEqual(result, "'`reboot`'")
-
-=======
     def test_command_injection_payload_neutralized(self) -> None:
         """Command injection payloads should be rendered literal."""
         result = escape_shell_arg("$(reboot)")
@@ -99,7 +78,6 @@ class EscapeShellArgTest(unittest.TestCase):
         self.assertEqual(escape_shell_arg("x;id"), "'x;id'")
         self.assertEqual(escape_shell_arg("a&&b|c"), "'a&&b|c'")
 
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 
 class FormatBandwidthTest(unittest.TestCase):
     """Tests for format_bandwidth function."""
@@ -276,7 +254,7 @@ class GeneratePeerGroupCommandsTest(unittest.TestCase):
         peer_group = {"name": "TEST", "description": "Test peer group"}
         commands = generate_peer_group_commands(peer_group)
         self.assertIn(
-            'config protocol bgp peer-group TEST description "Test peer group"',
+            "config protocol bgp peer-group TEST description 'Test peer group'",
             commands,
         )
 
@@ -423,32 +401,14 @@ class GeneratePeerCommandsTest(unittest.TestCase):
         )
 
     def test_is_passive(self) -> None:
-<<<<<<< HEAD
-        """is_passive should generate connect-mode command."""
-||||||| a86baef3b7
-        """is_passive should generate passive command."""
-=======
         """is_passive should generate the passive flag."""
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         peer = {"peer_addr": "2001:db8::1", "is_passive": True}
         commands = generate_peer_commands(peer)
-<<<<<<< HEAD
-        self.assertIn(
-            "config protocol bgp neighbor 2001:db8::1 connect-mode PASSIVE", commands
-        )
-        peer["is_passive"] = False
-        commands = generate_peer_commands(peer)
-        self.assertIn(
-            "config protocol bgp neighbor 2001:db8::1 connect-mode ACTIVE", commands
-||||||| a86baef3b7
-        self.assertIn("config protocol bgp peer 2001:db8::1 passive true", commands)
-=======
         self.assertIn("config protocol bgp neighbor 2001:db8::1 passive true", commands)
         peer["is_passive"] = False
         commands = generate_peer_commands(peer)
         self.assertIn(
             "config protocol bgp neighbor 2001:db8::1 passive false", commands
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         )
 
     def test_disable_ipv4_afi_false_preserved(self) -> None:
@@ -532,14 +492,6 @@ class GeneratePeerCommandsTest(unittest.TestCase):
             "peer_addr": "2001:db8::1",
             "pre_filter": {"max_routes": 45000},
             "post_filter": {"max_routes": 50000, "warning_limit": 48000},
-<<<<<<< HEAD
-||||||| a86baef3b7
-            "pre_filter": {
-                "max_routes": 45000,
-                "warning_limit": 0,
-                "warning_only": False,
-            },
-=======
         }
         commands = generate_peer_commands(peer)
         self.assertIn(
@@ -685,7 +637,6 @@ class GeneratePeerCommandsTest(unittest.TestCase):
                 "warning_limit": 48000,
                 "warning_only": False,
             },
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         }
         expected = [
             "remote-asn 65000",
@@ -733,77 +684,6 @@ class GeneratePeerCommandsTest(unittest.TestCase):
         ]
         prefix = "config protocol bgp neighbor 2001:db8::1"
         commands = generate_peer_commands(peer)
-<<<<<<< HEAD
-        self.assertIn(
-            "config protocol bgp neighbor 2001:db8::1 max-route pre-filter 45000",
-            commands,
-        )
-        self.assertIn(
-            "config protocol bgp neighbor 2001:db8::1 max-route post-filter 50000",
-            commands,
-        )
-        self.assertIn(
-            "config protocol bgp neighbor 2001:db8::1 max-route post-warning-threshold 48000",
-            commands,
-        )
-
-    def test_parity_fields(self) -> None:
-        """Fields carried over from the old peer commands map to the new grammar."""
-        peer = {
-            "peer_addr": "2001:db8::1",
-            "next_hop4": "0.0.0.0",
-            "next_hop6": "2001:db8::a",
-            "next_hop_self": True,
-            "link_bandwidth_bps": "10G",
-            "advertise_link_bandwidth": 1,
-            "receive_link_bandwidth": 1,
-            "peer_id": "test-peer:v6:1",
-            "type": "BGP_MONITOR",
-            "bgp_peer_timers": {"withdraw_unprog_delay_seconds": 5},
-            "pre_filter": {"warning_limit": 100, "warning_only": True},
-        }
-        commands = generate_peer_commands(peer)
-        prefix = "config protocol bgp neighbor 2001:db8::1"
-        self.assertIn(f"{prefix} next-hop4 0.0.0.0", commands)
-        self.assertIn(f"{prefix} next-hop6 2001:db8::a", commands)
-        self.assertIn(f"{prefix} next-hop-self true", commands)
-        self.assertIn(f"{prefix} link-bandwidth 10G", commands)
-        self.assertIn(f"{prefix} advertise-lbw 1", commands)
-        self.assertIn(f"{prefix} receive-lbw 1", commands)
-        self.assertIn(f"{prefix} peer-id test-peer:v6:1", commands)
-        self.assertIn(f"{prefix} type BGP_MONITOR", commands)
-        self.assertIn(f"{prefix} timers withdraw-unprog-delay 5", commands)
-        self.assertIn(f"{prefix} max-route pre-warning-threshold 100", commands)
-        self.assertIn(f"{prefix} max-route pre-warning-only true", commands)
-
-    def test_zero_values_preserved(self) -> None:
-        """Explicit zero timers/limits must not be dropped."""
-        peer = {
-            "peer_addr": "2001:db8::1",
-            "bgp_peer_timers": {"hold_time_seconds": 0, "keep_alive_seconds": 0},
-            "pre_filter": {"max_routes": 0},
-        }
-        commands = generate_peer_commands(peer)
-        prefix = "config protocol bgp neighbor 2001:db8::1"
-        self.assertIn(f"{prefix} timers hold-time 0", commands)
-        self.assertIn(f"{prefix} timers keepalive 0", commands)
-        self.assertIn(f"{prefix} max-route pre-filter 0", commands)
-
-    def test_add_path_symbolic(self) -> None:
-        """add_path serialized as an enum name must not crash the tool."""
-        peer = {"peer_addr": "2001:db8::1", "add_path": "BOTH"}
-        commands = generate_peer_commands(peer)
-        self.assertIn(
-            "config protocol bgp neighbor 2001:db8::1 add-path receive true", commands
-        )
-        self.assertIn(
-            "config protocol bgp neighbor 2001:db8::1 add-path send true", commands
-||||||| a86baef3b7
-        self.assertIn("config protocol bgp peer 2001:db8::1 max-routes 45000", commands)
-        self.assertIn("config protocol bgp peer 2001:db8::1 warning-limit 0", commands)
-        self.assertIn(
-            "config protocol bgp peer 2001:db8::1 warning-only false", commands
-=======
         self.assertEqual(commands, [f"{prefix} {e}" for e in expected])
         # One command per leaf field: nothing in the input was dropped.
         leaf_fields = (
@@ -857,7 +737,6 @@ class GeneratePeerCommandsTest(unittest.TestCase):
         self.assertFalse(any(line.startswith("rm ") for line in script))
         self.assertTrue(
             any(line.startswith("# WARNING: neighbor x?rm") for line in script)
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         )
 
 
@@ -885,15 +764,6 @@ class GenerateScriptCommandsTest(unittest.TestCase):
             "/path/to/fboss2 config protocol bgp global router-id 10.0.0.1", result
         )
 
-<<<<<<< HEAD
-||||||| a86baef3b7
-    def test_stub_commands_contains_stub_env(self) -> None:
-        """Stub commands should set FBOSS_BGP_STUB_MODE."""
-        commands = ["test command"]
-        result = generate_stub_commands(commands, "fboss2")
-        self.assertIn("export FBOSS_BGP_STUB_MODE=1", result)
-
-=======
     def test_exec_commands_keep_warning_comments(self) -> None:
         """A `# WARNING` line is a comment in the script, not a command."""
         commands = [
@@ -910,7 +780,6 @@ class GenerateScriptCommandsTest(unittest.TestCase):
         )
         self.assertTrue(commands[0].startswith("# WARNING: neighbor 2001:db8::1"))
 
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 
 class JsonToCliIntegrationTest(unittest.TestCase):
     """Integration tests for json_to_cli function."""
@@ -1005,7 +874,7 @@ class JsonToCliIntegrationTest(unittest.TestCase):
         config = {"router_id": "$(reboot)"}
         commands = json_to_cli(config, binary="fboss2")
         joined = "\n".join(commands)
-        self.assertIn('router-id "\\$(reboot)"', joined)
+        self.assertIn("router-id '$(reboot)'", joined)
         self.assertNotIn("router-id $(reboot)", joined)
 
     def test_injection_in_peer_addr_neutralized(self) -> None:
@@ -1013,24 +882,6 @@ class JsonToCliIntegrationTest(unittest.TestCase):
         config = {"peers": [{"peer_addr": "$(malicious)", "remote_as_4_byte": 65000}]}
         commands = json_to_cli(config, binary="fboss2")
         joined = "\n".join(commands)
-<<<<<<< HEAD
-        self.assertIn('neighbor "\\$(malicious)"', joined)
-        self.assertNotIn("neighbor $(malicious)", joined)
-||||||| a86baef3b7
-        """Command injection in peer_addr should be single-quoted."""
-        config = {
-            "peers": [
-                {
-                    "peer_addr": "$(malicious)",
-                    "remote_as_4_byte": 65000,
-                }
-            ]
-        }
-        commands = json_to_cli(config, stub=False, binary="fboss2")
-        joined = "\n".join(commands)
-        self.assertIn("peer '$(malicious)'", joined)
-        self.assertNotIn("peer $(malicious)", joined)
-=======
         self.assertIn("neighbor '$(malicious)'", joined)
         self.assertNotIn("neighbor $(malicious)", joined)
 
@@ -1083,7 +934,6 @@ class JsonToCliIntegrationTest(unittest.TestCase):
         self.assertIn("rr-client true", joined)
         self.assertIn("hold-time 90", joined)
         self.assertNotIn("'", joined.split("set -e")[1].split("echo")[0])
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 
 
 if __name__ == "__main__":
