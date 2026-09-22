@@ -73,7 +73,6 @@ def sai_platform_impl():
             "//fboss/agent/platforms/common/icetea800bc:icetea800bc_platform_mapping",
             "//fboss/agent/platforms/common/ladakh800bcls:ladakh800bcls_platform_mapping",
             "//fboss/agent/platforms/common/j4sim:j4sim_platform_mapping",
-            "//fboss/agent/platforms/common/wedge800cact:wedge800cact_platform_mapping",
             "//fboss/agent/platforms/common/yangra2:yangra2_platform_mapping",
             "//fboss/agent/platforms/common/utils:bcm_yaml_config",
             "//fboss/agent/platforms/common/utils:wedge-led-utils",
