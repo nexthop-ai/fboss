@@ -7,6 +7,7 @@
 #include "fboss/agent/mnpu/MultiSwitchHwSwitchHandler.h"
 #include "fboss/lib/CommonFileUtils.h"
 
+#include <chrono>
 #include <thread>
 
 #ifndef IS_OSS
@@ -86,7 +87,22 @@ void SplitSwAgentInitializer::handleExitSignal(
   XLOG(DBG2) << "[Exit] Wait until initialization done ";
   initializer_->waitForInitDone();
   initializer_->stopFunctionScheduler();
+
+#if FOLLY_HAS_COROUTINES
   multiSwitchThriftHandler_->cancelEventSyncers();
+
+  // Drain any in-flight event sink coroutines so they are not touching
+  // SwSwitch state while gracefulExit() runs below. Bounded by a timeout
+  // inside waitForEventSyncers().
+  auto eventSinkStopBegin = steady_clock::now();
+  multiSwitchThriftHandler_->waitForEventSyncers();
+  auto eventSinksStopped = steady_clock::now();
+  XLOG(DBG2) << "[Exit] Event sink stop time "
+             << duration_cast<duration<float>>(
+                    eventSinksStopped - eventSinkStopBegin)
+                    .count();
+#endif
+
   steady_clock::time_point switchGracefulExitBegin = steady_clock::now();
   sw_->gracefulExit(skipWarmBootStateSave);
   steady_clock::time_point switchGracefulExitEnd = steady_clock::now();
@@ -95,12 +111,15 @@ void SplitSwAgentInitializer::handleExitSignal(
                     switchGracefulExitEnd - switchGracefulExitBegin)
                     .count()
              << std::endl;
+
+  auto serverStopBegin = steady_clock::now();
   this->stopServer();
-  steady_clock::time_point servicesStopped = steady_clock::now();
+  auto servicesStopped = steady_clock::now();
   XLOG(DBG2) << "[Exit] Server stop time "
              << duration_cast<duration<float>>(
-                    servicesStopped - switchGracefulExitEnd)
+                    servicesStopped - serverStopBegin)
                     .count();
+
   steady_clock::time_point switchGracefulExit = steady_clock::now();
   XLOG(DBG2)
       << "[Exit] Total graceful Exit time "
