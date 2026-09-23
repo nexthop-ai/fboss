@@ -140,6 +140,22 @@ struct SaiNextHopGroupTraits {
         bool,
         AttributeSplitHorizonEnable,
         StdNullOptDefault<bool>>;
+
+    struct AttributeArsFailPktCount {
+      std::optional<sai_attr_id_t> operator()();
+    };
+    using ArsFailPktCount = SaiExtensionAttribute<
+        sai_uint64_t,
+        AttributeArsFailPktCount,
+        SaiIntDefault<sai_uint64_t>>;
+
+    struct AttributeArsPortReassignCount {
+      std::optional<sai_attr_id_t> operator()();
+    };
+    using ArsPortReassignCount = SaiExtensionAttribute<
+        sai_uint64_t,
+        AttributeArsPortReassignCount,
+        SaiIntDefault<sai_uint64_t>>;
   };
 
   using AdapterKey = NextHopGroupSaiId;
@@ -170,6 +186,8 @@ SAI_ATTRIBUTE_NAME(NextHopGroup, HierarchicalNextHop)
 #endif
 SAI_ATTRIBUTE_NAME(NextHopGroup, ArsNextHopGroupMetaData)
 SAI_ATTRIBUTE_NAME(NextHopGroup, SplitHorizonEnable)
+SAI_ATTRIBUTE_NAME(NextHopGroup, ArsFailPktCount)
+SAI_ATTRIBUTE_NAME(NextHopGroup, ArsPortReassignCount)
 
 #if SAI_API_VERSION >= SAI_VERSION(1, 16, 0)
 // HierarchicalNextHop and HashAlgorithm are CREATE_ONLY attributes, so

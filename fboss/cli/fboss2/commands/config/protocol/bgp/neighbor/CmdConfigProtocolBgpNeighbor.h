@@ -49,6 +49,7 @@ class BgpNeighborConfig : public utils::BaseObjectArgType<std::string> {
   std::vector<std::string> values_;
 };
 
+<<<<<<< HEAD
 // Single handler for the whole `config protocol bgp neighbor` family. The
 // first positional token is the neighbor address, the next one or two tokens
 // name the attribute, and the remaining tokens are its value(s); dispatch and
@@ -66,6 +67,37 @@ struct CmdConfigProtocolBgpNeighborTraits : public WriteCommandTraits {
     // remaining tokens are misparsed.
     cmd.positionals_at_end();
     cmd.add_option("args", args, "<ip-address> [<attribute> <value> ...]");
+||||||| a86baef3b7
+=======
+// The `<attribute> <value>` list the neighbor command accepts, rendered one
+// attribute per line for `neighbor --help`. Generated from the dispatch table
+// in the .cpp, so it cannot drift from what the command actually parses.
+std::string bgpNeighborAttributeHelp();
+
+// The dispatch keys (e.g. "remote-asn", "timers hold-time"), sorted.
+std::vector<std::string> bgpNeighborAttributeNames();
+
+// Single handler for the whole `config protocol bgp neighbor` family. The
+// first positional token is the neighbor address, the next one or two tokens
+// name the attribute, and the remaining tokens are its value(s); dispatch and
+// per-attribute parsing live in the .cpp so adding a new neighbor tunable is
+// a one-entry change rather than a new command class. Mirrors
+// CmdConfigProtocolBgpGlobal.
+struct CmdConfigProtocolBgpNeighborTraits : public WriteCommandTraits {
+  using ParentCmd = CmdConfigProtocolBgp;
+  static void addCliArg(CLI::App& cmd, std::vector<std::string>& args) {
+    // positionals_at_end: once the first positional (the neighbor address,
+    // which never collides with a command name) is consumed, CLI11 stops
+    // classifying later tokens as subcommands. Without this, an attribute
+    // token that matches a sibling command name (e.g. `peer-group`) is
+    // stolen by CLI11's parent-chain subcommand fallthrough and the
+    // remaining tokens are misparsed.
+    cmd.positionals_at_end();
+    cmd.add_option("args", args, "<ip-address> [<attribute> <value> ...]");
+    // The attribute list is long, so it lives in this subcommand's own help
+    // footer rather than in the one-line description shown by the parent.
+    cmd.footer(bgpNeighborAttributeHelp());
+>>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
   }
   using ObjectArgType = BgpNeighborConfig;
   using RetType = std::string;

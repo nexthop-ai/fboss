@@ -41,6 +41,7 @@
 
 #include <folly/ScopeGuard.h>
 #include <folly/logging/xlog.h>
+#include <thrift/lib/cpp/util/EnumUtils.h>
 
 namespace facebook::fboss {
 
@@ -55,7 +56,8 @@ class RibIpRouteUpdate {
   static RibRoute ToAddFn(
       const ThriftRoute& route,
       const AdminDistance distance,
-      RoutingInformationBase::UpdateStatistics& stats) {
+      RoutingInformationBase::UpdateStatistics& stats,
+      const RibRouteTables& ribTables) {
     auto network = facebook::network::toIPAddress(*route.dest()->ip());
     auto mask = static_cast<uint8_t>(*route.dest()->prefixLength());
     std::optional<RouteCounterID> counterID;
@@ -74,16 +76,20 @@ class RibIpRouteUpdate {
 
     if (route.namedRouteDestination().has_value()) {
       const auto& namedDest = *route.namedRouteDestination();
-      if (namedDest.getType() == NamedRouteDestination::Type::nextHopGroup) {
-        const auto& nhgName = *namedDest.nextHopGroup();
+      const auto destType = namedDest.getType();
+      if (destType == NamedRouteDestination::Type::nextHopGroup ||
+          destType == NamedRouteDestination::Type::policyName) {
         if (!route.nextHops()->empty()) {
           throw FbossError(
               "Route cannot specify both nextHops and namedRouteDestination");
         }
+        auto namedNhg = destType == NamedRouteDestination::Type::nextHopGroup
+            ? *namedDest.nextHopGroup()
+            : ribTables.getPolicyDefaultNextHopGroup(*namedDest.policyName());
         auto adminDistance = route.adminDistance().value_or(distance);
         RouteNextHopEntry entry(
             RouteForwardAction::NEXTHOPS, adminDistance, counterID, classID);
-        entry.setNamedNextHopGroup(nhgName);
+        entry.setNamedNextHopGroup(namedNhg);
         return RibRoute{{network, mask}, entry};
       }
     }
@@ -115,7 +121,8 @@ class RibMplsRouteUpdate {
   static RibRoute ToAddFn(
       const ThriftRoute& route,
       const AdminDistance distance,
-      RoutingInformationBase::UpdateStatistics& stats) {
+      RoutingInformationBase::UpdateStatistics& stats,
+      const RibRouteTables& /*ribTables*/) {
     ++stats.mplsRoutesAdded;
     return RibRoute{
         LabelID(folly::copy(route.topLabel().value())),
@@ -375,6 +382,23 @@ void reconstructMySidTableFromSwitchState(
       mySidTable->emplace(cidrV6, mySid);
     }
   }
+}
+
+std::string RibRouteTables::getPolicyDefaultNextHopGroup(
+    const std::string& policyName) const {
+  return synchronizedRouteTables_.withRLock(
+      [&](const auto& routeTables) -> std::string {
+        if (!routeTables.nextHopIDManager) {
+          throw FbossError("NextHopIDManager not initialized");
+        }
+        const auto* policy =
+            routeTables.nextHopIDManager->getPolicy(policyName);
+        if (!policy) {
+          throw FbossError(
+              "Class-based policy '", policyName, "' does not exist");
+        }
+        return policy->defaultNexthopGroup;
+      });
 }
 
 template <typename RibUpdateFn>
@@ -780,7 +804,8 @@ void RibRouteTables::updateFib(
             hwUpdateError.appliedState->getFibsInfoMap(),
             hwUpdateError.appliedState->getMySids(),
             hwUpdateError.appliedState->getLabelForwardingInformationBase(),
-            this);
+            this,
+            hwUpdateError.appliedState->getClassBasedPolicies());
       }
 
       // Reconstruct MySidTable from the applied state
@@ -836,7 +861,8 @@ void RibRouteTables::updateFib(
             hwUpdateError.appliedState->getFibsInfoMap(),
             hwUpdateError.appliedState->getMySids(),
             hwUpdateError.appliedState->getLabelForwardingInformationBase(),
-            this);
+            this,
+            hwUpdateError.appliedState->getClassBasedPolicies());
       }
     }
     throw;
@@ -1241,9 +1267,11 @@ RoutingInformationBase::UpdateStatistics RoutingInformationBase::updateImpl(
       std::for_each(
           toAdd.begin(),
           toAdd.end(),
-          [adminDistanceFromClientID, &stats, &toAddRoutes](const auto& route) {
+          [adminDistanceFromClientID, &stats, &toAddRoutes, this](
+              const auto& route) {
             toAddRoutes.push_back(
-                TraitsType::ToAddFn(route, adminDistanceFromClientID, stats));
+                TraitsType::ToAddFn(
+                    route, adminDistanceFromClientID, stats, ribTables_));
           });
       std::vector<typename TraitsType::RibRouteId> toDelPrefixes;
       toDelPrefixes.reserve(toDelete.size());
@@ -1417,7 +1445,9 @@ RibRouteTables RibRouteTables::fromThrift(
     const std::shared_ptr<MultiSwitchFibInfoMap>& fibsInfoMap,
     const std::shared_ptr<MultiLabelForwardingInformationBase>& labelFib,
     const std::shared_ptr<MultiSwitchMySidMap>& mySidMap,
-    uint32_t ecmpWidth) {
+    uint32_t ecmpWidth,
+    const std::shared_ptr<MultiSwitchClassBasedPolicyMap>&
+        classBasedPolicyMaps) {
   RibRouteTables rib;
   auto lockedRouteTables = rib.synchronizedRouteTables_.wlock();
   lockedRouteTables->ecmpWidth = ecmpWidth;
@@ -1459,7 +1489,12 @@ RibRouteTables RibRouteTables::fromThrift(
     // the out-param and it dies when this scope exits.
     std::unordered_map<NextHopSetID, NextHopSetID> setIdRemap;
     lockedRouteTables->nextHopIDManager->reconstructFromSwitchStateMaps(
-        fibsInfoMap, mySidMap, labelFib, &rib, &setIdRemap);
+        fibsInfoMap,
+        mySidMap,
+        labelFib,
+        &rib,
+        classBasedPolicyMaps,
+        &setIdRemap);
     if (!setIdRemap.empty()) {
       for (auto& [_vrf, routeTable] : lockedRouteTables->routerIDToRouteTable) {
         routeTable.v4NetworkToRoute.forAll([&setIdRemap](auto& ritr) {
@@ -1477,12 +1512,18 @@ RibRouteTables RibRouteTables::fromThrift(
       for (auto& [_prefix, mySid] : lockedRouteTables->mySidTable) {
         auto resolvedId = mySid->getResolvedNextHopsId();
         auto unresolvedId = mySid->getUnresolveNextHopsId();
+        auto backupResolvedId = mySid->getBackupResolvedNextHopsId();
+        auto backupUnresolvedId = mySid->getBackupUnresolveNextHopsId();
         bool changed = remapNextHopSetId(resolvedId, setIdRemap);
         changed |= remapNextHopSetId(unresolvedId, setIdRemap);
+        changed |= remapNextHopSetId(backupResolvedId, setIdRemap);
+        changed |= remapNextHopSetId(backupUnresolvedId, setIdRemap);
         if (changed) {
           mySid = mySid->clone();
           mySid->setResolvedNextHopsId(resolvedId);
           mySid->setUnresolveNextHopsId(unresolvedId);
+          mySid->setBackupResolvedNextHopsId(backupResolvedId);
+          mySid->setBackupUnresolveNextHopsId(backupUnresolvedId);
           mySid->publish();
         }
       }
@@ -1510,10 +1551,17 @@ std::unique_ptr<RoutingInformationBase> RoutingInformationBase::fromThrift(
     const std::shared_ptr<MultiSwitchFibInfoMap>& fibsInfoMap,
     const std::shared_ptr<MultiLabelForwardingInformationBase>& labelFib,
     const std::shared_ptr<MultiSwitchMySidMap>& mySidMap,
-    uint32_t ecmpWidth) {
+    uint32_t ecmpWidth,
+    const std::shared_ptr<MultiSwitchClassBasedPolicyMap>&
+        classBasedPolicyMaps) {
   auto rib = std::make_unique<RoutingInformationBase>();
   rib->ribTables_ = RibRouteTables::fromThrift(
-      ribThrift, fibsInfoMap, labelFib, mySidMap, ecmpWidth);
+      ribThrift,
+      fibsInfoMap,
+      labelFib,
+      mySidMap,
+      ecmpWidth,
+      classBasedPolicyMaps);
   return rib;
 }
 
@@ -1700,6 +1748,82 @@ void RibRouteTables::update(
       cookie);
 }
 
+void RibRouteTables::updateMySidFrrProtection(
+    const SwitchIdScopeResolver* resolver,
+    const std::vector<MySidFrrProtectionUpdate>& toAddOrUpdate,
+    const std::vector<folly::CIDRNetwork>& toDelete,
+    const RibMySidToSwitchStateFunction& ribMySidToSwitchStateFunc,
+    void* cookie) {
+  updateRibMySids([&](const RibMySidUpdater::VrfRouteTables& routeTables,
+                      MySidTable* mySidTable,
+                      NextHopIDManager* nextHopIDManager,
+                      uint32_t ecmpWidth) {
+    if (!nextHopIDManager) {
+      throw FbossError("NextHopIDManager not initialized");
+    }
+    const auto validateMySid = [&](const folly::CIDRNetwork& prefix) {
+      const auto prefixStr = folly::IPAddress::networkToString(prefix);
+      if (!prefix.first.isV6()) {
+        throw FbossError("MySid ", prefixStr, " does not exist");
+      }
+      const folly::CIDRNetworkV6 prefixV6{prefix.first.asV6(), prefix.second};
+      const auto mySidIt = mySidTable->find(prefixV6);
+      if (mySidIt == mySidTable->end()) {
+        throw FbossError("MySid ", prefixStr, " does not exist");
+      }
+      if (mySidIt->second->getType() != MySidType::ADJACENCY_MICRO_SID) {
+        throw FbossError("MySid ", prefixStr, " is not an adjacency MySid");
+      }
+    };
+    for (const auto& update : toAddOrUpdate) {
+      validateMySid(update.mySidPrefix);
+    }
+    for (const auto& prefix : toDelete) {
+      validateMySid(prefix);
+    }
+
+    const auto setBackupNextHops = [&](const folly::CIDRNetwork& cidr,
+                                       const RouteNextHopSet* nextHops) {
+      const folly::CIDRNetworkV6 prefix{cidr.first.asV6(), cidr.second};
+      auto& mySid = mySidTable->at(prefix);
+      const auto oldUnresolvedId = mySid->getBackupUnresolveNextHopsId();
+      const auto oldResolvedId = mySid->getBackupResolvedNextHopsId();
+      std::optional<NextHopSetID> newUnresolvedId;
+      if (nextHops && !nextHops->empty()) {
+        newUnresolvedId =
+            nextHopIDManager->getOrAllocRouteNextHopSetID(*nextHops)
+                .nextHopIdSetIter->second.id;
+      }
+      auto updatedMySid = mySid->clone();
+      updatedMySid->setBackupUnresolveNextHopsId(newUnresolvedId);
+      if (!newUnresolvedId.has_value()) {
+        updatedMySid->setBackupResolvedNextHopsId(std::nullopt);
+      }
+      mySid = std::move(updatedMySid);
+      if (oldUnresolvedId.has_value()) {
+        nextHopIDManager->decrOrDeallocRouteNextHopSetID(*oldUnresolvedId);
+      }
+      if (!newUnresolvedId.has_value() && oldResolvedId.has_value()) {
+        nextHopIDManager->decrOrDeallocRouteNextHopSetID(*oldResolvedId);
+      }
+    };
+    std::set<folly::CIDRNetwork> mySidsToResolve;
+    for (const auto& update : toAddOrUpdate) {
+      setBackupNextHops(update.mySidPrefix, &update.nextHops);
+      mySidsToResolve.insert(update.mySidPrefix);
+    }
+    for (const auto& prefix : toDelete) {
+      setBackupNextHops(prefix, nullptr);
+    }
+    if (!mySidsToResolve.empty()) {
+      RibMySidUpdater updater(
+          routeTables, nextHopIDManager, mySidTable, ecmpWidth);
+      updater.resolve(mySidsToResolve);
+    }
+  });
+  updateFib(resolver, ribMySidToSwitchStateFunc, cookie);
+}
+
 void RibRouteTables::updateMySidsImpl(
     const SwitchIdScopeResolver* resolver,
     const std::vector<MySidWithNextHops>& toAdd,
@@ -1806,6 +1930,16 @@ void RibRouteTables::updateMySidsImpl(
                   existingIt->second->getResolvedNextHopsId()) {
             nextHopIDManager->decrOrDeallocRouteNextHopSetID(*oldResolvedId);
           }
+          if (const auto oldBackupUnresolvedId =
+                  existingIt->second->getBackupUnresolveNextHopsId()) {
+            nextHopIDManager->decrOrDeallocRouteNextHopSetID(
+                *oldBackupUnresolvedId);
+          }
+          if (const auto oldBackupResolvedId =
+                  existingIt->second->getBackupResolvedNextHopsId()) {
+            nextHopIDManager->decrOrDeallocRouteNextHopSetID(
+                *oldBackupResolvedId);
+          }
         }
       }
       (*mySidTable)[cidrV6] = std::move(mySid);
@@ -1821,6 +1955,12 @@ void RibRouteTables::updateMySidsImpl(
             nextHopIDManager->decrOrDeallocRouteNextHopSetID(*id);
           }
           if (const auto id = it->second->getResolvedNextHopsId()) {
+            nextHopIDManager->decrOrDeallocRouteNextHopSetID(*id);
+          }
+          if (const auto id = it->second->getBackupUnresolveNextHopsId()) {
+            nextHopIDManager->decrOrDeallocRouteNextHopSetID(*id);
+          }
+          if (const auto id = it->second->getBackupResolvedNextHopsId()) {
             nextHopIDManager->decrOrDeallocRouteNextHopSetID(*id);
           }
           nextHopIDManager->removeMySidFromNamedNhgs(cidr);
@@ -1905,10 +2045,35 @@ void RoutingInformationBase::updateMySidImpl(
   }
 }
 
+void RoutingInformationBase::updateMySidFrrProtection(
+    const SwitchIdScopeResolver* resolver,
+    const std::vector<MySidFrrProtectionUpdate>& toAddOrUpdate,
+    const std::vector<folly::CIDRNetwork>& toDelete,
+    const RibMySidToSwitchStateFunction& ribMySidToSwitchStateFunc,
+    void* cookie) {
+  updateStateInRibThread([&]() {
+    ribTables_.updateMySidFrrProtection(
+        resolver, toAddOrUpdate, toDelete, ribMySidToSwitchStateFunc, cookie);
+  });
+}
+
 void RoutingInformationBase::updateStateInRibThread(
     const std::function<void()>& fn) {
   ensureRunning();
-  ribUpdateEventBase_.runInEventBaseThreadAndWait([fn] { fn(); });
+  // An exception escaping the event base thread would terminate the process
+  // instead of reaching the caller, so hand it back the way the sibling RIB
+  // entry points do.
+  std::exception_ptr exceptionPtr;
+  ribUpdateEventBase_.runInEventBaseThreadAndWait([&]() {
+    try {
+      fn();
+    } catch (const std::exception&) {
+      exceptionPtr = std::current_exception();
+    }
+  });
+  if (exceptionPtr) {
+    std::rethrow_exception(exceptionPtr);
+  }
 }
 
 template <typename RibUpdateFn>
@@ -1939,7 +2104,8 @@ void RibRouteTables::updateFibNamedNextHopGroups(
             hwUpdateError.appliedState->getFibsInfoMap(),
             hwUpdateError.appliedState->getMySids(),
             hwUpdateError.appliedState->getLabelForwardingInformationBase(),
-            this);
+            this,
+            hwUpdateError.appliedState->getClassBasedPolicies());
       }
     }
     throw;
@@ -2101,6 +2267,48 @@ void RibRouteTables::deleteNamedNextHopGroups(
   updateFibNamedNextHopGroups(stateUpdateFn);
 }
 
+void RibRouteTables::addOrUpdatePolicies(
+    const SwitchIdScopeResolver* resolver,
+    const std::vector<ClassBasedPolicy>& policies,
+    const RibToSwitchStateFunction& ribToSwitchStateFunc,
+    void* cookie) {
+  {
+    auto lockedRouteTables = synchronizedRouteTables_.wlock();
+    if (!lockedRouteTables->nextHopIDManager) {
+      throw FbossError("NextHopIDManager not initialized");
+    }
+    auto* nhIdManager = lockedRouteTables->nextHopIDManager.get();
+    // Reject the whole batch before storing any of it.
+    auto requireNamedNhg = [&](const std::string& policyName,
+                               const std::string& nhgName) {
+      if (!nhIdManager->hasNamedNextHopGroup(nhgName)) {
+        throw FbossError(
+            "Class-based policy '",
+            policyName,
+            "' references non-existent named next-hop group '",
+            nhgName,
+            "'");
+      }
+    };
+    for (const auto& policy : policies) {
+      requireNamedNhg(*policy.name(), *policy.defaultNexthopGroup());
+      for (const auto& [_fc, nhg] : *policy.class2NextHopGroup()) {
+        requireNamedNhg(*policy.name(), nhg.name().value_or(""));
+      }
+    }
+    for (const auto& policy : policies) {
+      nhIdManager->addOrUpdatePolicy(policy);
+    }
+  }
+
+  auto lockedRouteTables = synchronizedRouteTables_.rlock();
+  if (!lockedRouteTables->routerIDToRouteTable.empty()) {
+    auto vrf = lockedRouteTables->routerIDToRouteTable.begin()->first;
+    lockedRouteTables.unlock();
+    updateFib(resolver, vrf, ribToSwitchStateFunc, cookie);
+  }
+}
+
 void RoutingInformationBase::addOrUpdateNamedNextHopGroups(
     const SwitchIdScopeResolver* resolver,
     const std::vector<std::pair<std::string, RouteNextHopSet>>& groups,
@@ -2149,6 +2357,39 @@ void RoutingInformationBase::deleteNamedNextHopGroups(
   if (exceptionPtr) {
     std::rethrow_exception(exceptionPtr);
   }
+}
+
+void RoutingInformationBase::addOrUpdatePolicies(
+    const SwitchIdScopeResolver* resolver,
+    const std::vector<ClassBasedPolicy>& policies,
+    const RibToSwitchStateFunction& ribToSwitchStateFunc,
+    void* cookie) {
+  // Pre-validate before entering the RIB thread so no state is mutated on a bad
+  // request.
+  for (const auto& policy : policies) {
+    if (policy.name()->empty()) {
+      throw FbossError("Class-based policy name cannot be empty");
+    }
+    if (policy.defaultNexthopGroup()->empty()) {
+      throw FbossError(
+          "Class-based policy '",
+          *policy.name(),
+          "' must specify a default next-hop group");
+    }
+    for (const auto& [fc, nhg] : *policy.class2NextHopGroup()) {
+      if (!nhg.name().has_value() || nhg.name()->empty()) {
+        throw FbossError(
+            "Class-based policy '",
+            *policy.name(),
+            "' has no next-hop group name for traffic class ",
+            apache::thrift::util::enumNameSafe(fc));
+      }
+    }
+  }
+  updateStateInRibThread([&]() {
+    ribTables_.addOrUpdatePolicies(
+        resolver, policies, ribToSwitchStateFunc, cookie);
+  });
 }
 
 std::map<int32_t, state::RouteTableFields> RibRouteTables::toThrift() const {

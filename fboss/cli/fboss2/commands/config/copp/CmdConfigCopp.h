@@ -10,17 +10,16 @@
 
 #pragma once
 
-#include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <stdexcept>
 #include <string>
-#include <string_view>
 #include <utility>
 #include <vector>
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/cli/fboss2/CmdHandler.h"
 #include "fboss/cli/fboss2/commands/config/QueueConfigUtils.h"
+#include "fboss/cli/fboss2/commands/config/TrafficPolicyUtils.h"
 #include "fboss/cli/fboss2/utils/CmdUtilsCommon.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
 
@@ -177,8 +176,20 @@ class CoppCpuTrafficPolicyArgs : public utils::BaseObjectArgType<std::string> {
 };
 
 // The `copp` parent node itself is not usable; it only exists to dispatch to
+<<<<<<< HEAD
 // queue, reason, and cpu-traffic-policy. The parent needs a handler (rather
 // than being a pure branch node) so that addCommandBranch() increments depth
+||||||| a86baef3b7
+// queue and reason. The parent needs a handler (rather than being a pure
+// branch node) so that addCommandBranch() increments depth before descending
+// into the leaves — without that, queue and reason would both register
+// their positional args at the same CmdArgsLists slot, and CLI11 parsing
+// collides with siblings of `config` whose names happen to also be valid
+// reason names (e.g. `arp`).
+=======
+// queue, reason, and traffic-policy. The parent needs a handler (rather than
+// being a pure branch node) so that addCommandBranch() increments depth
+>>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 // before descending into the leaves — without that, the children would all
 // register their positional args at the same CmdArgsLists slot, and CLI11
 // parsing collides with siblings of `config` whose names happen to also be
@@ -196,7 +207,13 @@ class CmdConfigCopp : public CmdHandler<CmdConfigCopp, CmdConfigCoppTraits> {
   RetType queryClient(const HostInfo& /* hostInfo */) {
     throw std::runtime_error(
         "Incomplete command, please use 'queue', 'reason', or "
+<<<<<<< HEAD
         "'cpu-traffic-policy' subcommand");
+||||||| a86baef3b7
+        "Incomplete command, please use 'queue' or 'reason' subcommand");
+=======
+        "'traffic-policy' subcommand");
+>>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
   }
 
   void printOutput(const RetType& /* model */) {}
@@ -269,6 +286,7 @@ class CmdConfigCoppReason
   void printOutput(const RetType& logMsg);
 };
 
+<<<<<<< HEAD
 struct CmdConfigCoppCpuTrafficPolicyTraits : public WriteCommandTraits {
   using ParentCmd = CmdConfigCopp;
   using ObjectArgType = CoppCpuTrafficPolicyArgs;
@@ -295,6 +313,31 @@ class CmdConfigCoppCpuTrafficPolicy : public CmdHandler<
  public:
   using ObjectArgType = CmdConfigCoppCpuTrafficPolicyTraits::ObjectArgType;
   using RetType = CmdConfigCoppCpuTrafficPolicyTraits::RetType;
+||||||| a86baef3b7
+=======
+struct CmdConfigCoppTrafficPolicyTraits : public WriteCommandTraits {
+  using ParentCmd = CmdConfigCopp;
+  using ObjectArgType = traffic_policy::TrafficPolicyArgs;
+  using RetType = std::string;
+  static void addCliArg(CLI::App& cmd, std::vector<std::string>& args) {
+    // required() + expected(4, 6) keeps the first four tokens as positionals
+    // whatever they spell (same rationale as CmdConfigCoppReasonTraits), and
+    // allow_extra_args() lets the optional trailing value(s) through.
+    cmd.add_option(
+           "copp_traffic_policy_config", args, traffic_policy::configHelpText())
+        ->required()
+        ->expected(4, 6)
+        ->allow_extra_args();
+  }
+};
+
+class CmdConfigCoppTrafficPolicy : public CmdHandler<
+                                       CmdConfigCoppTrafficPolicy,
+                                       CmdConfigCoppTrafficPolicyTraits> {
+ public:
+  using ObjectArgType = CmdConfigCoppTrafficPolicyTraits::ObjectArgType;
+  using RetType = CmdConfigCoppTrafficPolicyTraits::RetType;
+>>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 
   RetType queryClient(const HostInfo& hostInfo, const ObjectArgType& args);
 

@@ -370,6 +370,7 @@ void CmdConfigCoppReason::printOutput(const RetType& logMsg) {
   std::cout << logMsg << std::endl;
 }
 
+<<<<<<< HEAD
 CmdConfigCoppCpuTrafficPolicyTraits::RetType
 CmdConfigCoppCpuTrafficPolicy::queryClient(
     const HostInfo& /* hostInfo */,
@@ -381,6 +382,24 @@ CmdConfigCoppCpuTrafficPolicy::queryClient(
 }
 
 void CmdConfigCoppCpuTrafficPolicy::printOutput(const RetType& logMsg) {
+||||||| a86baef3b7
+=======
+CmdConfigCoppTrafficPolicyTraits::RetType
+CmdConfigCoppTrafficPolicy::queryClient(
+    const HostInfo& /* hostInfo */,
+    const ObjectArgType& args) {
+  auto& session = ConfigSession::getInstance();
+  auto msg = traffic_policy::applyAction(
+      *session.getAgentConfig().sw(),
+      traffic_policy::PolicyKind::Cpu,
+      args.getMatcherName(),
+      args.getActionTokens());
+  session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
+  return msg;
+}
+
+void CmdConfigCoppTrafficPolicy::printOutput(const RetType& logMsg) {
+>>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
   std::cout << logMsg << std::endl;
 }
 
@@ -388,8 +407,14 @@ void CmdConfigCoppCpuTrafficPolicy::printOutput(const RetType& logMsg) {
 template void CmdHandler<CmdConfigCopp, CmdConfigCoppTraits>::run();
 template void CmdHandler<CmdConfigCoppQueue, CmdConfigCoppQueueTraits>::run();
 template void CmdHandler<CmdConfigCoppReason, CmdConfigCoppReasonTraits>::run();
+<<<<<<< HEAD
 template void CmdHandler<
     CmdConfigCoppCpuTrafficPolicy,
     CmdConfigCoppCpuTrafficPolicyTraits>::run();
+||||||| a86baef3b7
+=======
+template void
+CmdHandler<CmdConfigCoppTrafficPolicy, CmdConfigCoppTrafficPolicyTraits>::run();
+>>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 
 } // namespace facebook::fboss

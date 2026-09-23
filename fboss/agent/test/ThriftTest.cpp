@@ -3383,6 +3383,16 @@ IpPrefix toMySidIpPrefix(const std::string& addr, uint8_t len) {
   return prefix;
 }
 
+facebook::network::thrift::IPPrefix toFrrMySidIpPrefix(
+    const std::string& addr,
+    uint8_t len) {
+  facebook::network::thrift::IPPrefix prefix;
+  prefix.prefixAddress() =
+      facebook::network::toBinaryAddress(folly::IPAddressV6(addr));
+  prefix.prefixLength() = len;
+  return prefix;
+}
+
 MySidEntry makeMySidEntryWithNextHops(
     const std::string& addr,
     uint8_t len,
@@ -3407,6 +3417,141 @@ MySidEntry makeMySidEntryWithNextHops(
 }
 
 } // namespace
+
+TEST_F(ThriftTest, addAdjacencyFrrRejectsMissingMySid) {
+  ThriftHandler handler(sw_);
+  auto protectedObject = std::make_unique<FrrProtectedObject>();
+  protectedObject->mySid() = toFrrMySidIpPrefix("2001:db8::1", 64);
+  NextHopThrift backupNextHop;
+  backupNextHop.address() =
+      facebook::network::toBinaryAddress(folly::IPAddressV6("2001:db8::ff"));
+  backupNextHop.role() = NextHopRole::BACKUP;
+  auto backupNextHops = std::make_unique<std::vector<NextHopThrift>>();
+  backupNextHops->push_back(std::move(backupNextHop));
+
+  EXPECT_THROW(
+      handler.addAdjacencyFrr(
+          std::move(protectedObject), std::move(backupNextHops)),
+      FbossError);
+}
+
+TEST_F(ThriftTestWithNhopIdMgr, addAdjacencyFrrRejectsEmptyBackupNextHops) {
+  auto ribMySidToSwitchStateFunc =
+      createRibMySidToSwitchStateFunction(std::nullopt);
+  state::MySidFields fields;
+  fields.type() = MySidType::ADJACENCY_MICRO_SID;
+  fields.mySid() = toFrrMySidIpPrefix("2001:db8::1", 64);
+  fields.adjacencyInterfaceId() = static_cast<int32_t>(kInterfaceA);
+  fields.isV6() = true;
+  fields.clientId() = ClientID::STATIC_ROUTE;
+  auto mySid = std::make_shared<MySid>(fields);
+  const RouteNextHopSet nextHops{
+      ResolvedNextHop(folly::IPAddress(kNhopAddrA), kInterfaceA, ECMP_WEIGHT)};
+  sw_->getRib()->update(
+      sw_->getScopeResolver(),
+      std::vector<MySidWithNextHops>{{mySid, nextHops, std::nullopt}},
+      {},
+      {},
+      "add adjacency mysid via rib",
+      ribMySidToSwitchStateFunc,
+      sw_);
+
+  ThriftHandler handler(sw_);
+  auto protectedObjectWithBackup = std::make_unique<FrrProtectedObject>();
+  protectedObjectWithBackup->mySid() = toFrrMySidIpPrefix("2001:db8::1", 64);
+  NextHopThrift backupNextHop;
+  backupNextHop.address() =
+      facebook::network::toBinaryAddress(folly::IPAddressV6("2001:db8::ff"));
+  auto backupNextHopsWithBackup =
+      std::make_unique<std::vector<NextHopThrift>>();
+  backupNextHopsWithBackup->push_back(std::move(backupNextHop));
+  handler.addAdjacencyFrr(
+      std::move(protectedObjectWithBackup),
+      std::move(backupNextHopsWithBackup));
+
+  const folly::CIDRNetworkV6 prefix{folly::IPAddressV6("2001:db8::1"), 64};
+  const auto mySidBefore = sw_->getRib()->getMySidTableCopy().at(prefix);
+  ASSERT_TRUE(mySidBefore.backupUnresolveNextHopsId().has_value());
+  const auto backupId = *mySidBefore.backupUnresolveNextHopsId();
+  const auto managerBefore = sw_->getRib()->getNextHopIDManagerCopy();
+  ASSERT_NE(managerBefore, nullptr);
+  const auto backupNextHopsBefore =
+      managerBefore->getNextHops(NextHopSetID(backupId));
+
+  auto protectedObject = std::make_unique<FrrProtectedObject>();
+  protectedObject->mySid() = toFrrMySidIpPrefix("2001:db8::1", 64);
+  auto backupNextHops = std::make_unique<std::vector<NextHopThrift>>();
+
+  EXPECT_THROW(
+      handler.addAdjacencyFrr(
+          std::move(protectedObject), std::move(backupNextHops)),
+      FbossError);
+
+  const auto mySidAfter = sw_->getRib()->getMySidTableCopy().at(prefix);
+  ASSERT_TRUE(mySidAfter.backupUnresolveNextHopsId().has_value());
+  EXPECT_EQ(*mySidAfter.backupUnresolveNextHopsId(), backupId);
+  const auto managerAfter = sw_->getRib()->getNextHopIDManagerCopy();
+  ASSERT_NE(managerAfter, nullptr);
+  EXPECT_EQ(
+      managerAfter->getNextHops(NextHopSetID(backupId)), backupNextHopsBefore);
+}
+
+TEST_F(ThriftTest, deleteAdjacencyFrrRejectsMissingMySid) {
+  ThriftHandler handler(sw_);
+  auto protectedObject = std::make_unique<FrrProtectedObject>();
+  protectedObject->mySid() = toFrrMySidIpPrefix("2001:db8::1", 64);
+
+  EXPECT_THROW(
+      handler.deleteAdjacencyFrr(std::move(protectedObject)), FbossError);
+}
+
+TEST_F(ThriftTest, addAdjacencyFrrRejectsMplsLabel) {
+  ThriftHandler handler(sw_);
+  auto protectedObject = std::make_unique<FrrProtectedObject>();
+  protectedObject->mplsLabel() = 100;
+  auto backupNextHops = std::make_unique<std::vector<NextHopThrift>>();
+
+  EXPECT_THROW(
+      handler.addAdjacencyFrr(
+          std::move(protectedObject), std::move(backupNextHops)),
+      FbossError);
+}
+
+TEST_F(ThriftTest, deleteAdjacencyFrrRejectsMplsLabel) {
+  ThriftHandler handler(sw_);
+  auto protectedObject = std::make_unique<FrrProtectedObject>();
+  protectedObject->mplsLabel() = 100;
+
+  EXPECT_THROW(
+      handler.deleteAdjacencyFrr(std::move(protectedObject)), FbossError);
+}
+
+TEST_F(ThriftTest, addAdjacencyFrrRejectsUnsetProtectedObject) {
+  // An unset union names no protected object. Rejecting it is what keeps the
+  // call from reaching the RIB as an empty update, which would install no
+  // protection and still report success.
+  ThriftHandler handler(sw_);
+  auto protectedObject = std::make_unique<FrrProtectedObject>();
+  NextHopThrift backupNextHop;
+  backupNextHop.address() =
+      facebook::network::toBinaryAddress(folly::IPAddressV6("2001:db8::ff"));
+  backupNextHop.role() = NextHopRole::BACKUP;
+  auto backupNextHops = std::make_unique<std::vector<NextHopThrift>>();
+  backupNextHops->push_back(std::move(backupNextHop));
+
+  EXPECT_THROW(
+      handler.addAdjacencyFrr(
+          std::move(protectedObject), std::move(backupNextHops)),
+      FbossError);
+}
+
+TEST_F(ThriftTest, deleteAdjacencyFrrRejectsUnsetProtectedObject) {
+  ThriftHandler handler(sw_);
+  auto protectedObject = std::make_unique<FrrProtectedObject>();
+
+  EXPECT_THROW(
+      handler.deleteAdjacencyFrr(std::move(protectedObject)), FbossError);
+}
 
 TEST_F(ThriftTest, addMySidEntries) {
   ThriftHandler handler(sw_);

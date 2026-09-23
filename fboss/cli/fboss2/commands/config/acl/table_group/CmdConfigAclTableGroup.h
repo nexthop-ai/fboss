@@ -23,6 +23,7 @@ namespace facebook::fboss {
 // Argument for `config acl table-group <group-name> stage <stage-value>`.
 //
 // <group-name> names an AclTableGroup in sw.aclTableGroups; it is created at
+<<<<<<< HEAD
 //   <stage-value> if absent, provided the config already has at least one
 //   group and no other group holds that stage (see acl_utils).
 // <stage-value> is one of: ingress, ingress-macsec, egress-macsec,
@@ -58,6 +59,45 @@ struct CmdConfigAclTableGroupTraits : public WriteCommandTraits {
            "<group-name> stage <stage-value> where <stage-value> is one "
            "of: ingress, ingress-macsec, egress-macsec, "
            "ingress-post-lookup (or numeric 0-3)")
+||||||| a86baef3b7
+=======
+//   <stage-value> if absent (including the first group on a config with none),
+//   provided no other group holds that stage (see acl_utils).
+// <stage-value> is one of: ingress, ingress-macsec, egress-macsec,
+//   ingress-post-lookup. Whether the ASIC supports a stage is not checked
+//   here; an unsupported one fails at the agent when the config is applied.
+class AclTableGroupConfigArgs : public utils::BaseObjectArgType<std::string> {
+ public:
+  /* implicit */ AclTableGroupConfigArgs( // NOLINT(google-explicit-constructor)
+      std::vector<std::string> v);
+
+  const std::string& getGroupName() const {
+    return groupName_;
+  }
+
+  cfg::AclStage getStage() const {
+    return stage_;
+  }
+
+ private:
+  std::string groupName_;
+  cfg::AclStage stage_{cfg::AclStage::INGRESS};
+};
+
+struct CmdConfigAclTableGroupTraits : public WriteCommandTraits {
+  using ParentCmd = CmdConfigAcl;
+  using ObjectArgType = AclTableGroupConfigArgs;
+  using RetType = std::string;
+  static void addCliArg(CLI::App& cmd, std::vector<std::string>& args) {
+    // required() + expected(3) prevents CLI11 from treating the first
+    // positional (the group name) as a subcommand name.
+    cmd.add_option(
+           "acl_table_group_config",
+           args,
+           "<group-name> stage <stage-value> where <stage-value> is one "
+           "of: ingress, ingress-macsec, egress-macsec, "
+           "ingress-post-lookup")
+>>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         ->required()
         ->expected(3);
   }

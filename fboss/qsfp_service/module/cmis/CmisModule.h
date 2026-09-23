@@ -761,6 +761,8 @@ class CmisModule : public QsfpModule {
 
   void resetDataPath(const std::string& portName) override;
 
+  void resetDatapathProgrammingStateLocked() override;
+
   /*
    * Returns true if the current module is LPO
    */
@@ -1195,8 +1197,6 @@ class CmisModule : public QsfpModule {
   // Sets the sampling percentage for
   // FEC errors if supported by transceiver.
   void setMaxFecSamplingLocked();
-
-  const std::shared_ptr<const TransceiverConfig> tcvrConfig_;
 
   bool supportRemediate_;
   std::map<int32_t, SymErrHistogramBin> getCdbSymbolErrorHistogramLocked(

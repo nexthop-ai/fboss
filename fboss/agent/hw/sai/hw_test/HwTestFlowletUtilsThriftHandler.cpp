@@ -6,10 +6,18 @@
 
 namespace facebook::fboss::utility {
 
+<<<<<<< HEAD
 void HwTestThriftHandler::updateFlowletStats() {
   hwSwitch_->getHwFlowletStats();
 }
 
+||||||| a86baef3b7
+void HwTestThriftHandler::updateFlowletStats() {
+  throw FbossError("Flowlet stats are not supported in SaiSwitch.");
+}
+
+=======
+>>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 cfg::SwitchingMode HwTestThriftHandler::getFwdSwitchingMode(
     std::unique_ptr<state::RouteNextHopEntry> routeNextHopEntry) {
   auto saiSwitch = static_cast<SaiSwitch*>(hwSwitch_);

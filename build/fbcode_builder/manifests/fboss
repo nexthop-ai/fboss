@@ -38,7 +38,6 @@ fmt-python
 libsodium
 googletest
 zstd-python
-fatal
 fbthrift-python
 iproute2
 libusb

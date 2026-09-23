@@ -47,6 +47,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "HwInitAndExit.*G.*",
           "reason": "Flaky test, debugging in T194688608"
         }
@@ -94,6 +98,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         },
         {
@@ -147,6 +155,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "HwInitAndExit.*G.*",
           "reason": "Flaky test, debugging in T194688608"
         }
@@ -195,6 +207,10 @@
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
           "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
         }
     ],
     "brcm/10.2.0.0_odp/tomahawk4/mono": [
@@ -241,6 +257,10 @@
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
           "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
         }
     ],
     "brcm/10.2.0.0_odp/tomahawk4/multi_switch": [
@@ -286,6 +306,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         }
     ],
@@ -413,6 +437,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "runTxSlowPathBenchmark",
           "reason": "Flaky tests, needs investigation/fine tuning of thresholds"
         },
@@ -496,6 +524,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         },
         {
@@ -585,6 +617,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "runTxSlowPathBenchmark",
           "reason": "Flaky tests, needs investigation/fine tuning of thresholds"
         },
@@ -647,6 +683,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
           "reason": "PBR ACL support has not landed yet"
         },
@@ -702,6 +742,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         },
         {
@@ -763,6 +807,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
           "reason": "PBR ACL support has not landed yet"
         },
@@ -811,6 +859,10 @@
         {
           "test_name_regex": "HwInitAndExitVoqBenchmark",
           "reason": "VOQ tests not applicable to fabric"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not applicable to fabric"
         }
     ],
     "brcm/11.7.0.0_dnx_odp/ramon3/mono": [
@@ -825,6 +877,10 @@
         {
           "test_name_regex": "HwInitAndExitVoqBenchmark",
           "reason": "VOQ tests not applicable to fabric"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not applicable to fabric"
         }
     ],
     "brcm/11.7.0.0_dnx_odp/ramon3/multi_switch": [
@@ -839,6 +895,10 @@
         {
           "test_name_regex": "HwInitAndExitVoqBenchmark",
           "reason": "VOQ tests not applicable to fabric"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not applicable to fabric"
         }
     ],
     "brcm/11.7.0.0_odp/tomahawk3_pciegen3": [
@@ -884,6 +944,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         },
         {
@@ -937,6 +1001,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "HwInitAndExit.*G.*",
           "reason": "Flaky test, debugging in T194688608"
         }
@@ -987,6 +1055,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "HwInitAndExit.*G.*",
           "reason": "Flaky test, debugging in T194688608"
         }
@@ -1023,6 +1095,10 @@
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
           "reason": "ARS enhanced mode not available on TH4"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS counter reads need SAI SDK 13.0 or newer"
         }
     ],
     "brcm/11.7.0.0_odp/tomahawk4/mono": [
@@ -1057,6 +1133,10 @@
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
           "reason": "ARS enhanced mode not available on TH4"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS counter reads need SAI SDK 13.0 or newer"
         }
     ],
     "brcm/11.7.0.0_odp/tomahawk4/multi_switch": [
@@ -1091,6 +1171,10 @@
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
           "reason": "ARS enhanced mode not available on TH4"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS counter reads need SAI SDK 13.0 or newer"
         }
     ],
     "brcm/11.7.0.0_odp/tomahawk5": [
@@ -1193,6 +1277,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
           "reason": "PBR ACL support has not landed yet"
         },
@@ -1259,6 +1347,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
           "reason": "PBR ACL support has not landed yet"
         },
@@ -1310,6 +1402,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         },
         {
@@ -1379,6 +1475,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "HwPbrAclStatsCollectionBenchmark",
           "reason": "PBR ACL support has not landed yet"
         },
@@ -1423,6 +1523,10 @@
         {
           "test_name_regex": "HwInitAndExitVoqBenchmark",
           "reason": "VOQ tests not applicable to fabric"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not applicable to fabric"
         }
     ],
     "brcm/12.2.0.0_dnx_odp/ramon3/mono": [
@@ -1437,6 +1541,10 @@
         {
           "test_name_regex": "HwInitAndExitVoqBenchmark",
           "reason": "VOQ tests not applicable to fabric"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not applicable to fabric"
         }
     ],
     "brcm/12.2.0.0_dnx_odp/ramon3/multi_switch": [
@@ -1451,6 +1559,10 @@
         {
           "test_name_regex": "HwInitAndExitVoqBenchmark",
           "reason": "VOQ tests not applicable to fabric"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not applicable to fabric"
         }
     ],
     "brcm/13.0_ea_odp/tomahawk5": [
@@ -1817,6 +1929,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "HwInitAndExit.*G.*",
           "reason": "Flaky test, debugging in T194688608"
         }
@@ -1864,6 +1980,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         },
         {
@@ -1917,6 +2037,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "HwInitAndExit.*G.*",
           "reason": "Flaky test, debugging in T194688608"
         }
@@ -1965,6 +2089,10 @@
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
           "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
         }
     ],
     "brcm/8.2.0.0_odp/tomahawk4/mono": [
@@ -2010,6 +2138,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         }
     ],
@@ -2057,6 +2189,10 @@
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
           "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
         }
     ],
     "brcm/8.2.0.0_odp/tomahawk_pentium": [
@@ -2102,6 +2238,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         },
         {
@@ -2191,6 +2331,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "runTxSlowPathBenchmark",
           "reason": "Flaky tests, needs investigation/fine tuning of thresholds"
         },
@@ -2274,6 +2418,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         },
         {
@@ -2363,6 +2511,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "RxSlowPathArpBenchmark",
           "reason": "not able to generate linerate traffic on cisco asic"
         }
@@ -2410,6 +2562,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         },
         {
@@ -2463,6 +2619,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "RxSlowPathArpBenchmark",
           "reason": "not able to generate linerate traffic on cisco asic"
         }
@@ -2510,6 +2670,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         },
         {
@@ -2563,6 +2727,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "RxSlowPathArpBenchmark",
           "reason": "not able to generate linerate traffic on cisco asic"
         }
@@ -2613,6 +2781,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "RxSlowPathArpBenchmark",
           "reason": "not able to generate linerate traffic on cisco asic"
         }
@@ -2660,6 +2832,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         },
         {
@@ -2717,6 +2893,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "RxSlowPathArpBenchmark",
           "reason": "not able to generate linerate traffic on cisco asic"
         },
@@ -2768,6 +2948,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         },
         {
@@ -2825,6 +3009,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "RxSlowPathArpBenchmark",
           "reason": "not able to generate linerate traffic on cisco asic"
         }
@@ -2872,6 +3060,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         },
         {
@@ -2925,6 +3117,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "RxSlowPathArpBenchmark",
           "reason": "not able to generate linerate traffic on cisco asic"
         }
@@ -2972,6 +3168,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         },
         {
@@ -3033,6 +3233,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "RxSlowPathArpBenchmark",
           "reason": "not able to generate linerate traffic on cisco asic"
         },
@@ -3088,6 +3292,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         },
         {
@@ -3149,6 +3357,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "RxSlowPathArpBenchmark",
           "reason": "not able to generate linerate traffic on cisco asic"
         }
@@ -3196,6 +3408,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         },
         {
@@ -3249,6 +3465,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "RxSlowPathArpBenchmark",
           "reason": "not able to generate linerate traffic on cisco asic"
         }
@@ -3296,6 +3516,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         },
         {
@@ -3353,6 +3577,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "RxSlowPathArpBenchmark",
           "reason": "not able to generate linerate traffic on cisco asic"
         },
@@ -3404,6 +3632,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         },
         {
@@ -3461,6 +3693,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "RxSlowPathArpBenchmark",
           "reason": "not able to generate linerate traffic on cisco asic"
         },
@@ -3515,6 +3751,10 @@
           "reason": "ARS not available on TH"
         },
         {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "ARS not available on TH"
+        },
+        {
           "test_name_regex": "RxSlowPathArpBenchmark",
           "reason": "not able to generate linerate traffic on cisco asic"
         },
@@ -3566,6 +3806,10 @@
         },
         {
           "test_name_regex": "RouteDelHwEcmpGroupScale256x64Benchmark",
+          "reason": "ARS not available on TH"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
           "reason": "ARS not available on TH"
         },
         {
@@ -3625,6 +3869,10 @@
         {
           "test_name_regex": "HwTunManagerProbeAndCleanup",
           "reason": "Produces no benchmark results on Spectrum4 (times out during pre-measurement kernel/state debug dump); blocking conveyor since release 7406, under investigation"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "Flowlet stats benchmarking is unsupported on chenab"
         }
     ],
     "nvda/2505.34/spectrum4/mono": [
@@ -3675,6 +3923,10 @@
         {
           "test_name_regex": "HwTunManagerProbeAndCleanup",
           "reason": "Produces no benchmark results on Spectrum4 (times out during pre-measurement kernel/state debug dump); blocking conveyor since release 7406, under investigation"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "Flowlet stats benchmarking is unsupported on chenab"
         }
     ],
     "nvda/2505.34/spectrum4/multi_switch": [
@@ -3725,6 +3977,10 @@
         {
           "test_name_regex": "HwTunManagerProbeAndCleanup",
           "reason": "Produces no benchmark results on Spectrum4 (times out during pre-measurement kernel/state debug dump); blocking conveyor since release 7406, under investigation"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "Flowlet stats benchmarking is unsupported on chenab"
         }
     ],
     "nvda/2511.36/spectrum4": [
@@ -3775,6 +4031,10 @@
         {
           "test_name_regex": "HwTunManagerProbeAndCleanup",
           "reason": "Produces no benchmark results on Spectrum4 (times out during pre-measurement kernel/state debug dump); blocking conveyor since release 7406, under investigation"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "Flowlet stats benchmarking is unsupported on chenab"
         }
     ],
     "nvda/2511.36/spectrum4/mono": [
@@ -3825,6 +4085,10 @@
         {
           "test_name_regex": "HwTunManagerProbeAndCleanup",
           "reason": "Produces no benchmark results on Spectrum4 (times out during pre-measurement kernel/state debug dump); blocking conveyor since release 7406, under investigation"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "Flowlet stats benchmarking is unsupported on chenab"
         }
     ],
     "nvda/2511.36/spectrum4/multi_switch": [
@@ -3875,6 +4139,10 @@
         {
           "test_name_regex": "HwTunManagerProbeAndCleanup",
           "reason": "Produces no benchmark results on Spectrum4 (times out during pre-measurement kernel/state debug dump); blocking conveyor since release 7406, under investigation"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "Flowlet stats benchmarking is unsupported on chenab"
         }
     ],
     "nvda/2605.37/spectrum4": [
@@ -3925,6 +4193,10 @@
         {
           "test_name_regex": "HwTunManagerProbeAndCleanup",
           "reason": "Produces no benchmark results on Spectrum4 (times out during pre-measurement kernel/state debug dump); blocking conveyor since release 7406, under investigation"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "Flowlet stats benchmarking is unsupported on chenab"
         }
     ],
     "nvda/2605.37/spectrum4/mono": [
@@ -3975,6 +4247,10 @@
         {
           "test_name_regex": "HwTunManagerProbeAndCleanup",
           "reason": "Produces no benchmark results on Spectrum4 (times out during pre-measurement kernel/state debug dump); blocking conveyor since release 7406, under investigation"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "Flowlet stats benchmarking is unsupported on chenab"
         }
     ],
     "nvda/2605.37/spectrum4/multi_switch": [
@@ -4025,6 +4301,10 @@
         {
           "test_name_regex": "HwTunManagerProbeAndCleanup",
           "reason": "Produces no benchmark results on Spectrum4 (times out during pre-measurement kernel/state debug dump); blocking conveyor since release 7406, under investigation"
+        },
+        {
+          "test_name_regex": "HwFlowletStatsCollectionAtScale",
+          "reason": "Flowlet stats benchmarking is unsupported on chenab"
         }
     ]
   },

@@ -1,6 +1,7 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
 #pragma once
+#include <bitset>
 
 #include "fboss/platform/helpers/PlatformUtils.h"
 #include "fboss/platform/rma-showtech/I2cHelper.h"
@@ -30,9 +31,14 @@ class Utils {
   void printNvmeDetails();
   void printPowerGoodDetails();
   void printLogs();
+<<<<<<< HEAD
   void printCrashDetails();
   void printSystemdDetails();
   void printConfigDetails();
+||||||| a86baef3b7
+=======
+  void printDeviceRegistersDetails();
+>>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 
  private:
   const showtech_config::ShowtechConfig& config_;
@@ -48,11 +54,32 @@ class Utils {
   void printCoopConfigFiles() const;
   void printCoopGitHistory() const;
   std::optional<std::tuple<int, int>> getI2cInfoForDevice(
+<<<<<<< HEAD
       const std::string& path);
   std::vector<std::string> getCoredumpPids(const std::string& coreList) const;
+||||||| a86baef3b7
+      const std::string& path);
+=======
+      const std::string& path,
+      bool skipLog = false);
+>>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
   std::pair<int, std::string> execCommandWithLimit(
       const std::string& cmd,
       int maxLines = 5000) const;
+  bool readRegVal(
+      int bus,
+      const std::string& addr,
+      const std::string& regStr,
+      uint8_t& value);
+
+  void printRegValueTable(
+      const std::vector<std::tuple<std::string, int, int>>& parsedItems,
+      size_t nameWidth,
+      const std::optional<std::bitset<8>>& expectedValueBits = std::nullopt);
+
+  void parseRegValue(
+      const uint8_t regValue,
+      const showtech_config::parseRule& rule);
 };
 
 } // namespace facebook::fboss::platform

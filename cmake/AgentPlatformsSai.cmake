@@ -158,8 +158,6 @@ target_link_libraries(sai_platform
   saintpaul_platform_mapping
   led_structs_types_cpp2
   led_mapping_cpp2
-  wedge800cact_platform_mapping
-  m5120csc_platform_mapping
   yangra2_platform_mapping
 )
 
@@ -177,7 +175,8 @@ function(BUILD_SAI_WEDGE_AGENT SAI_IMPL_NAME SAI_IMPL_ARG)
     fboss/agent/platforms/sai/wedge_agent.cpp
   )
 
-  add_sai_sdk_dependencies(wedge_agent-${SAI_IMPL_NAME})
+  add_sai_sdk_dependencies(
+    wedge_agent-${SAI_IMPL_NAME} "${SAI_IMPL_ARG}")
 
   target_link_libraries(wedge_agent-${SAI_IMPL_NAME}
     -Wl,--whole-archive
@@ -210,7 +209,8 @@ function(BUILD_SAI_WEDGE_AGENT SAI_IMPL_NAME SAI_IMPL_ARG)
     fboss/agent/platforms/sai/oss/WedgeHwAgent.cpp
   )
 
-  add_sai_sdk_dependencies(fboss_hw_agent-${SAI_IMPL_NAME})
+  add_sai_sdk_dependencies(
+    fboss_hw_agent-${SAI_IMPL_NAME} "${SAI_IMPL_ARG}")
 
   target_link_libraries(fboss_hw_agent-${SAI_IMPL_NAME}
     -Wl,--whole-archive

@@ -1244,14 +1244,16 @@ TEST_F(ConfigSessionTestFixture, threeWayMergeScenarios) {
     session1.setCommandLine("config interface eth1/1/1 name port0_renamed");
     session1.saveConfig(
         cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
-    session1.commit(localhost());
+    auto result1 = session1.commit(localhost());
+    EXPECT_FALSE(result1.commitSha.empty());
 
     (*session2.getAgentConfig().sw()->ports())[1].description() = "port1_desc";
     session2.setCommandLine("config interface eth1/2/1 description port1_desc");
     session2.saveConfig(
         cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
     EXPECT_NO_THROW(session2.rebase());
-    session2.commit(localhost());
+    auto result2 = session2.commit(localhost());
+    EXPECT_FALSE(result2.commitSha.empty());
 
     std::string content;
     EXPECT_TRUE(folly::readFile(cliConfigPath.c_str(), content));
@@ -1270,14 +1272,18 @@ TEST_F(ConfigSessionTestFixture, threeWayMergeScenarios) {
     session1.setCommandLine("config interface eth1/1/1 description same_value");
     session1.saveConfig(
         cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
-    session1.commit(localhost());
+    auto result1 = session1.commit(localhost());
+    EXPECT_FALSE(result1.commitSha.empty());
 
     (*session2.getAgentConfig().sw()->ports())[0].description() = "same_value";
     session2.setCommandLine("config interface eth1/1/1 description same_value");
     session2.saveConfig(
         cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
     EXPECT_NO_THROW(session2.rebase());
-    session2.commit(localhost());
+    // Rebased session is identical to what session1 committed -> no-op commit
+    // (empty sha, no reload).
+    auto result2 = session2.commit(localhost());
+    EXPECT_TRUE(result2.commitSha.empty());
 
     std::string content;
     EXPECT_TRUE(folly::readFile(cliConfigPath.c_str(), content));
@@ -1296,7 +1302,8 @@ TEST_F(ConfigSessionTestFixture, threeWayMergeScenarios) {
         "config interface eth1/1/1 description user1_value");
     session1.saveConfig(
         cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
-    session1.commit(localhost());
+    auto result1 = session1.commit(localhost());
+    EXPECT_FALSE(result1.commitSha.empty());
 
     (*session2.getAgentConfig().sw()->ports())[0].description() = "user2_value";
     session2.setCommandLine(
@@ -1510,8 +1517,14 @@ TEST_F(ConfigSessionTestFixture, bgpConfigEditPreservesOtherSections) {
   EXPECT_EQ(saved["peer_groups"][0]["name"].asString(), "RACK");
 
   // A BGP restart must be recorded so `config session commit` applies it.
+<<<<<<< HEAD
   // bgpd has no hitless reload, so the recorded level is SERVICE_RESTART (a
   // plain service restart for BGP).
+||||||| a86baef3b7
+=======
+  // bgpd has no hitless reload (and no warmboot), so the recorded level is
+  // SERVICE_RESTART (a plain service restart).
+>>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
   EXPECT_EQ(
       session.getRequiredAction(cli::ServiceType::BGP),
       cli::ConfigActionLevel::SERVICE_RESTART);
@@ -1821,9 +1834,15 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
     EXPECT_CALL(
         *mock,
         restartService(
+<<<<<<< HEAD
             cli::ServiceType::AGENT,
             cli::ConfigActionLevel::SERVICE_RESTART,
             ::testing::_))
+||||||| a86baef3b7
+            cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT))
+=======
+            cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
+>>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         .Times(1);
     session->setCommandLine(
         "config interface eth1/1/1 switchport access vlan 3000");
@@ -1843,9 +1862,15 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
     EXPECT_CALL(
         *mock,
         restartService(
+<<<<<<< HEAD
             cli::ServiceType::AGENT,
             cli::ConfigActionLevel::SERVICE_RESTART,
             ::testing::_))
+||||||| a86baef3b7
+            cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT))
+=======
+            cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
+>>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         .Times(1);
     std::string rollbackSha = session->rollback(localhost(), firstCommitSha);
     EXPECT_FALSE(rollbackSha.empty());
@@ -1863,9 +1888,15 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
     EXPECT_CALL(
         *mock,
         restartService(
+<<<<<<< HEAD
             cli::ServiceType::AGENT,
             cli::ConfigActionLevel::SERVICE_RESTART,
             ::testing::_))
+||||||| a86baef3b7
+            cli::ServiceType::AGENT, cli::ConfigActionLevel::AGENT_WARMBOOT))
+=======
+            cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
+>>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
         .Times(1);
     // No-arg rollback: back to the "Second version" commit.
     std::string rollbackSha = session->rollback(localhost());

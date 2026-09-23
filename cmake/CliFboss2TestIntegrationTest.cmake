@@ -7,6 +7,7 @@
 # binary.
 add_executable(fboss2_integration_test
   fboss/cli/fboss2/oss/config/CmdListImpl.cpp
+  fboss/cli/fboss2/test/integration_test/AgentMemoryReclamationTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigBgpPolicyAsPathListEntryTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigBgpPolicyAsPathListTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigBgpPolicyCommunityListCommunityTest.cpp
@@ -68,6 +69,7 @@ add_executable(fboss2_integration_test
   fboss/cli/fboss2/utils/oss/CmdInitUtils.cpp
   fboss/cli/fboss2/test/integration_test/ConfigIpRouteTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigCoppCpuTrafficPolicyTest.cpp
+  fboss/cli/fboss2/test/integration_test/ConfigCoppTrafficPolicyTest.cpp
   fboss/cli/fboss2/test/integration_test/ShowRouteFilterTest.cpp
 )
 

@@ -14,6 +14,7 @@
 
 #include <fmt/core.h>
 #include <iostream>
+<<<<<<< HEAD
 #include <ostream>
 #include <stdexcept>
 #include <string>
@@ -56,6 +57,53 @@ CmdDeleteProtocolBgpNeighbor::queryClient(
     // Nothing is persisted for an unknown neighbor, so a typo'd delete can't
     // stage an unrelated session change.
     return fmt::format("Error: BGP neighbor {} not found", args.peerAddr());
+||||||| a86baef3b7
+=======
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
+#include "fboss/cli/fboss2/commands/config/protocol/bgp/BgpPeerAddr.h"
+#include "fboss/cli/fboss2/session/ConfigSession.h"
+#include "fboss/cli/fboss2/utils/CmdUtilsCommon.h"
+#include "fboss/cli/fboss2/utils/HostInfo.h"
+#include "fmt/format.h"
+
+namespace facebook::fboss {
+
+// Parse + validate at construction so queryClient stays a thin dispatch.
+// Throwing std::invalid_argument is how the framework surfaces arg parse
+// errors (same mechanism as BgpNeighborConfig).
+BgpNeighborRef::BgpNeighborRef(std::vector<std::string> v)
+    : utils::BaseObjectArgType<std::string>(v) {
+  if (v.size() != 1) {
+    throw std::invalid_argument(
+        "Error: delete protocol bgp neighbor requires exactly one "
+        "<ip-address>");
+  }
+  auto normalized = bgpcli::normalizeBgpPeerAddr(v[0]);
+  if (!normalized) {
+    throw std::invalid_argument(
+        fmt::format("Error: Invalid neighbor address '{}'", v[0]));
+  }
+  peerAddr_ = std::move(*normalized);
+}
+
+CmdDeleteProtocolBgpNeighborTraits::RetType
+CmdDeleteProtocolBgpNeighbor::queryClient(
+    const HostInfo& /* hostInfo */,
+    const ObjectArgType& args) {
+  auto& session = ConfigSession::getInstance();
+  auto& cfg = session.getBgpConfig();
+  auto it = bgpcli::findBgpPeer(cfg, args.peerAddr());
+  if (it == cfg.peers()->end()) {
+    // Delete mirrors add: an absent neighbor is already the requested end
+    // state, so this is a success with a warning. Nothing is saved, so a
+    // typo'd delete can't stage an unrelated session change.
+    return fmt::format(
+        "Warning: BGP neighbor {} does not exist; nothing to delete",
+        args.peerAddr());
+>>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
   }
   cfg.peers()->erase(it);
   session.saveBgpConfig();

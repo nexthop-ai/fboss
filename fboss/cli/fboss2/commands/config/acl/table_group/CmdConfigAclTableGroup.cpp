@@ -46,6 +46,7 @@ const std::unordered_map<std::string_view, cfg::AclStage> kAclStageByName = {
     {kAclStageIngressPostLookup, cfg::AclStage::INGRESS_POST_LOOKUP},
 };
 
+<<<<<<< HEAD
 // Stage names only (case-insensitive). A bare 0-3 would be accepted by the
 // thrift enum but says nothing at the call site about which stage it selects,
 // so the names are the only spelling.
@@ -96,6 +97,53 @@ CmdConfigAclTableGroupTraits::RetType CmdConfigAclTableGroup::queryClient(
   // Creates at the requested stage, or is a no-op when the group already
   // sits there. Any other case throws: a group cannot be moved between
   // stages, and two groups cannot share one.
+||||||| a86baef3b7
+=======
+// Names only, case-insensitive. The thrift enum would take a bare 0-3, but a
+// number in the command line says nothing about which stage it picks.
+cfg::AclStage parseAclStage(const std::string& s) {
+  std::string lower = s;
+  std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+  auto it = kAclStageByName.find(lower);
+  if (it != kAclStageByName.end()) {
+    return it->second;
+  }
+  throw std::invalid_argument(
+      fmt::format(
+          "Invalid stage '{}'. Valid values: ingress, ingress-macsec, "
+          "egress-macsec, ingress-post-lookup",
+          s));
+}
+} // namespace
+
+AclTableGroupConfigArgs::AclTableGroupConfigArgs(std::vector<std::string> v) {
+  if (v.size() != 3) {
+    throw std::invalid_argument(
+        fmt::format(
+            "Expected <group-name> stage <stage-value>, got {} argument(s)",
+            v.size()));
+  }
+  if (v[1] != kAclTableGroupAttrStage) {
+    throw std::invalid_argument(
+        fmt::format(
+            "Unknown attribute '{}' for acl table-group. Valid attrs: stage",
+            v[1]));
+  }
+  groupName_ = v[0];
+  stage_ = parseAclStage(v[2]);
+  data_ = std::move(v);
+}
+
+CmdConfigAclTableGroupTraits::RetType CmdConfigAclTableGroup::queryClient(
+    const HostInfo& /* hostInfo */,
+    const ObjectArgType& args) {
+  auto& session = ConfigSession::getInstance();
+  auto& config = session.getAgentConfig();
+  auto& swConfig = *config.sw();
+
+  acl_utils::requireAclTableGroupMode(config);
+
+>>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
   const bool created = acl_utils::findOrCreateAclTableGroup(
       swConfig, args.getGroupName(), args.getStage());
 

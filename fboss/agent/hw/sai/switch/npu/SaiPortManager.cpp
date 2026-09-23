@@ -1615,7 +1615,9 @@ void SaiPortManager::programSerdes(
       }
     }
     // RX reach is handled by link training
-    if (!rxReachVals.empty() && !linkTrainingEnabled) {
+    if (!rxReachVals.empty() && !linkTrainingEnabled &&
+        (FLAGS_montblanc_precoding ||
+         swPort->getRxPrecoding().value_or(false))) {
       SaiPortSerdesTraits::Attributes::RxReach rxReach;
       rxReach = getSaiRxReach(rxReachVals);
       SaiApiTable::getInstance()->portApi().setAttribute(
