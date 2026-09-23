@@ -16,6 +16,8 @@ class FanServiceHandler : public apache::thrift::ServiceHandler<FanService> {
   void getFanStatuses(FanStatusesResponse&) override;
   void setPwmHold(std::unique_ptr<PwmHoldRequest> req) override;
   void getPwmHold(PwmHoldStatus& status) override;
+  void getControlState(ControlState& state) override;
+  void setPidSetting(std::unique_ptr<PidSettingRequest> request) override;
 
  private:
   std::shared_ptr<ControlLogic> controlLogic_{nullptr};

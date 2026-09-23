@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <optional>
+
 #include "fboss/platform/fan_service/if/gen-cpp2/fan_service_config_types.h"
 
 namespace facebook::fboss::platform::fan_service {
@@ -25,9 +27,22 @@ class PidLogicBase {
   int16_t getLastPwm() const {
     return lastPwm_;
   }
+  // Gains/band change; loop state (history, integral, lastPwm) carries on.
+  virtual void updateSetting(const PidSetting& pidSetting) {
+    pidSetting_ = pidSetting;
+  }
+  const PidSetting& getSetting() const {
+    return pidSetting_;
+  }
+  virtual std::optional<float> integral() const {
+    return std::nullopt;
+  }
+  virtual std::optional<float> derivative() const {
+    return std::nullopt;
+  }
 
  protected:
-  const PidSetting pidSetting_;
+  PidSetting pidSetting_;
   int16_t lastPwm_{0};
 };
 
@@ -40,13 +55,23 @@ class PidLogic : public PidLogicBase {
     }
   }
   int16_t calculatePwm(float measurement) override;
+  // Keeps ki * integral continuous; a ki of 0 never ran anti-windup, so its
+  // integral is meaningless and starts over.
+  void updateSetting(const PidSetting& pidSetting) override;
   float getLastError() const {
     return lastError_;
+  }
+  std::optional<float> integral() const override {
+    return integral_;
+  }
+  std::optional<float> derivative() const override {
+    return lastDerivative_;
   }
 
  private:
   float integral_{0};
   float lastError_{0};
+  float lastDerivative_{0};
   const unsigned int dT_;
 };
 

@@ -163,3 +163,93 @@ TEST(IncrementalPIDLogicTest, Basic) {
   auto newPwm5 = incrementalPidLogic1.calculatePwm(44);
   ASSERT_LT(newPwm5, newPwm4);
 }
+
+TEST(PIDLogicTest, ExposesIntegralAndDerivative) {
+  PidSetting pidSetting;
+  pidSetting.kp() = -4;
+  pidSetting.ki() = -0.06;
+  pidSetting.kd() = 0;
+  pidSetting.setPoint() = 60;
+  pidSetting.negHysteresis() = 2;
+  pidSetting.posHysteresis() = 2;
+
+  PidLogic positional(pidSetting, 5);
+  positional.updateLastPwm(30);
+  // 70 is above the [58, 62] band: error = 62 - 70 = -8, integral = -8 * 5,
+  // derivative = (-8 - 0) / 5. Above the band, anti-windup leaves the integral.
+  EXPECT_EQ(positional.calculatePwm(70), 64);
+  ASSERT_TRUE(positional.integral().has_value());
+  EXPECT_FLOAT_EQ(*positional.integral(), -40);
+  ASSERT_TRUE(positional.derivative().has_value());
+  EXPECT_FLOAT_EQ(*positional.derivative(), -1.6);
+
+  IncrementalPidLogic incremental(pidSetting);
+  incremental.updateLastPwm(30);
+  incremental.calculatePwm(70);
+  EXPECT_FALSE(incremental.integral().has_value());
+  EXPECT_FALSE(incremental.derivative().has_value());
+}
+
+TEST(PIDLogicTest, UpdateSettingKeepsLoopState) {
+  PidSetting pidSetting;
+  pidSetting.kp() = -4;
+  pidSetting.ki() = -0.06;
+  pidSetting.kd() = 0;
+  pidSetting.setPoint() = 60;
+  pidSetting.posHysteresis() = 2;
+  pidSetting.negHysteresis() = 2;
+  auto changed = pidSetting;
+  changed.kp() = -2;
+
+  // 64 sits 2 above the band: error -2 every tick, integral -10 per tick.
+  PidLogic positional(pidSetting, 5);
+  positional.updateLastPwm(10);
+  EXPECT_EQ(positional.calculatePwm(64), 18); // 10 + 8 + 0.6
+  EXPECT_EQ(positional.calculatePwm(64), 27); // 18 + 8 + 1.2
+  positional.updateSetting(changed);
+  EXPECT_FLOAT_EQ(*positional.getSetting().kp(), -2);
+  EXPECT_FLOAT_EQ(*positional.integral(), -20);
+  EXPECT_EQ(positional.getLastPwm(), 27);
+  EXPECT_EQ(positional.calculatePwm(64), 32); // 27 + 4 + 1.8: integral -30
+  EXPECT_FLOAT_EQ(*positional.integral(), -30);
+
+  pidSetting.kp() = 2;
+  pidSetting.ki() = 0.6;
+  IncrementalPidLogic incremental(pidSetting);
+  incremental.updateLastPwm(10);
+  EXPECT_EQ(incremental.calculatePwm(64), 140); // 10 + 2 * (64 - 0) + 2.4
+  EXPECT_EQ(incremental.calculatePwm(64), 142); // + 2.4
+  incremental.updateSetting(changed); // kp -2, ki -0.06
+  // History (64, 64) kept: 142 - 0.24. A fresh loop would give 13.
+  EXPECT_EQ(incremental.calculatePwm(64), 141);
+}
+
+TEST(PIDLogicTest, UpdateSettingRescalesIntegralWithKi) {
+  PidSetting pidSetting;
+  pidSetting.kp() = -4;
+  pidSetting.ki() = -0.06;
+  pidSetting.kd() = 0;
+  pidSetting.setPoint() = 60;
+  pidSetting.posHysteresis() = 2;
+  pidSetting.negHysteresis() = 2;
+  PidLogic positional(pidSetting, 5);
+  positional.updateLastPwm(10);
+  positional.calculatePwm(64);
+  positional.calculatePwm(64);
+  ASSERT_FLOAT_EQ(*positional.integral(), -20);
+
+  auto halved = pidSetting;
+  halved.ki() = -0.03;
+  positional.updateSetting(halved);
+  EXPECT_FLOAT_EQ(*positional.integral(), -40); // ki * integral unchanged
+
+  auto off = pidSetting;
+  off.ki() = 0;
+  positional.updateSetting(off);
+  EXPECT_FLOAT_EQ(*positional.integral(), 0);
+  positional.calculatePwm(64);
+  positional.calculatePwm(64);
+  EXPECT_FLOAT_EQ(*positional.integral(), -20); // accumulates, unused
+  positional.updateSetting(pidSetting);
+  EXPECT_FLOAT_EQ(*positional.integral(), 0); // history from ki 0 dropped
+}

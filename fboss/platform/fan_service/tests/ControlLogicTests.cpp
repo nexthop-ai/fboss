@@ -1,16 +1,19 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
-#include <stdexcept>
+#include <algorithm>
+#include <map>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <thrift/lib/cpp2/protocol/Serializer.h>
 
+#include "fboss/agent/FbossError.h"
 #include "fboss/platform/config_lib/ConfigLib.h"
 #include "fboss/platform/fan_service/Bsp.h"
 #include "fboss/platform/fan_service/ControlLogic.h"
 #include "fboss/platform/fan_service/SensorData.h"
+#include "fboss/platform/fan_service/if/gen-cpp2/fan_service_config_constants.h"
 
 using namespace ::testing;
 using namespace facebook::fboss::platform::fan_service;
@@ -565,6 +568,313 @@ TEST_F(ControlLogicTests, OpticCountersSurviveEmptyOpticData) {
   EXPECT_TRUE(
       fb303::fbData->hasCounter(
           fmt::format("{}.optics_pwm.value", kProfiledOpticType)));
+}
+
+namespace {
+namespace constants =
+    facebook::fboss::platform::fan_service::fan_service_config_constants;
+void expectHealthyTick(MockBsp& mockBsp, const FanServiceConfig& config) {
+  EXPECT_CALL(mockBsp, checkIfInitialSensorDataRead()).WillOnce(Return(true));
+  for (const auto& fan : *config.fans()) {
+    EXPECT_CALL(mockBsp, setFanPwmSysfs(*fan.pwmSysfsPath(), _))
+        .Times(2)
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(mockBsp, turnOnLedSysfs(*fan.goodLedSysfsPath()))
+        .WillOnce(Return(true));
+    EXPECT_CALL(mockBsp, readSysfs(*fan.rpmSysfsPath()))
+        .WillOnce(Return(kDefaultRpm));
+    EXPECT_CALL(mockBsp, readSysfs(*fan.presenceSysfsPath()))
+        .WillOnce(Return(1 /* fan exists */));
+  }
+}
+
+std::map<std::string, SensorControl> sensorsByName(const ControlState& state) {
+  std::map<std::string, SensorControl> byName;
+  for (const auto& sensor : *state.sensors()) {
+    byName[*sensor.name()] = sensor;
+  }
+  return byName;
+}
+} // namespace
+
+TEST_F(ControlLogicTests, OpticRowsCarryTheQsfpReadTimeNotTheTickTime) {
+  // qsfp_service last published an hour ago. The rows must say that, or a
+  // reader cannot tell a live optic from one that stopped reporting.
+  const uint64_t staleQsfpTime = mockBsp_->getCurrentTime() - 3600;
+  for (const auto& optic : *fanServiceConfig_.optics()) {
+    auto opticEntry = sensorData_->getOpticEntry(*optic.opticName());
+    sensorData_->updateOpticEntry(
+        *optic.opticName(), opticEntry->data, staleQsfpTime);
+  }
+
+  expectHealthyTick(*mockBsp_, fanServiceConfig_);
+  controlLogic_->setTransitionValue();
+  controlLogic_->updateControl(sensorData_);
+
+  const auto state = controlLogic_->getControlState();
+  const auto byName = sensorsByName(state);
+  int opticRows = 0;
+  for (const auto& optic : *fanServiceConfig_.optics()) {
+    for (const auto& [opticType, tempToPwm] : *optic.tempToPwmMaps()) {
+      const auto name = *optic.opticName() + ":" + opticType;
+      ASSERT_TRUE(byName.contains(name)) << name;
+      EXPECT_EQ(*byName.at(name).readTime(), staleQsfpTime);
+      opticRows++;
+    }
+  }
+  EXPECT_GT(opticRows, 0);
+  EXPECT_GT(*state.tickTime(), staleQsfpTime);
+}
+
+TEST_F(ControlLogicTests, AnOpticTypeThatDisappearsStopsBeingPublished) {
+  expectFanAccess();
+  controlLogic_->setTransitionValue();
+  controlLogic_->updateControl(sensorData_);
+
+  const auto& optic = fanServiceConfig_.optics()->front();
+  const auto goneType = optic.tempToPwmMaps()->begin()->first;
+  const auto goneName = *optic.opticName() + ":" + goneType;
+  ASSERT_TRUE(
+      sensorsByName(controlLogic_->getControlState()).contains(goneName));
+
+  removeOpticTypeFromSensorData(goneType);
+  controlLogic_->updateControl(sensorData_);
+
+  EXPECT_FALSE(
+      sensorsByName(controlLogic_->getControlState()).contains(goneName));
+}
+
+TEST_F(ControlLogicTests, OpticPidLoopsArePublishedWithTheirSetting) {
+  PidSetting pidSetting;
+  pidSetting.kp() = -4;
+  pidSetting.ki() = -0.06;
+  pidSetting.kd() = 0;
+  pidSetting.setPoint() = 67.0;
+  pidSetting.posHysteresis() = 0.0;
+  pidSetting.negHysteresis() = 3.0;
+  std::vector<std::string> pidOptics;
+  for (auto& optic : *fanServiceConfig_.optics()) {
+    for (const auto& [opticType, _] : *optic.tempToPwmMaps()) {
+      optic.pidSettings()->emplace(opticType, pidSetting);
+      pidOptics.push_back(*optic.opticName() + ":" + opticType);
+    }
+    optic.tempToPwmMaps()->clear();
+    optic.aggregationType() = "OPTIC_AGGREGATION_TYPE_PID";
+  }
+  ASSERT_FALSE(pidOptics.empty());
+
+  expectFanAccess();
+  auto pidControlLogic =
+      std::make_shared<ControlLogic>(fanServiceConfig_, mockBsp_);
+  pidControlLogic->setTransitionValue();
+  pidControlLogic->updateControl(sensorData_);
+
+  const auto byName = sensorsByName(pidControlLogic->getControlState());
+  for (const auto& name : pidOptics) {
+    ASSERT_TRUE(byName.contains(name)) << name;
+    const auto& pid = byName.at(name).pid();
+    ASSERT_TRUE(pid.has_value()) << name;
+    EXPECT_FLOAT_EQ(*pid->setPoint(), *pidSetting.setPoint());
+    EXPECT_FLOAT_EQ(*pid->kp(), *pidSetting.kp());
+    EXPECT_FLOAT_EQ(*pid->ki(), *pidSetting.ki());
+  }
+}
+
+TEST_F(ControlLogicTests, GetControlStateReflectsTheTick) {
+  expectHealthyTick(*mockBsp_, fanServiceConfig_);
+  EXPECT_TRUE(controlLogic_->getControlState().sensors()->empty());
+
+  controlLogic_->setTransitionValue();
+  controlLogic_->updateControl(sensorData_);
+
+  const auto state = controlLogic_->getControlState();
+  EXPECT_FALSE(*state.boostMode());
+  EXPECT_FALSE(state.pwmHold().has_value());
+  EXPECT_EQ(*state.pwmLowerThreshold(), *fanServiceConfig_.pwmLowerThreshold());
+  EXPECT_EQ(*state.pwmUpperThreshold(), *fanServiceConfig_.pwmUpperThreshold());
+  EXPECT_EQ(
+      *state.pwmUpdateIntervalSec(), controlLogic_->getControlFrequency());
+
+  const auto byName = sensorsByName(state);
+  const auto& caches = controlLogic_->getSensorCaches();
+  for (const auto& sensor : *fanServiceConfig_.sensors()) {
+    const auto& name = *sensor.sensorName();
+    ASSERT_TRUE(byName.contains(name)) << name;
+    EXPECT_EQ(*byName.at(name).calculatedPwm(), caches.at(name).targetPwmCache);
+    EXPECT_FLOAT_EQ(*byName.at(name).reading(), caches.at(name).lastReadValue);
+    EXPECT_EQ(*byName.at(name).pwmCalcType(), *sensor.pwmCalcType());
+    EXPECT_FALSE(
+        byName.at(name).pid().has_value()); // table sensors run no loop
+  }
+  for (const auto& optic : *fanServiceConfig_.optics()) {
+    for (const auto& [opticType, tempToPwm] : *optic.tempToPwmMaps()) {
+      const auto name = *optic.opticName() + ":" + opticType;
+      ASSERT_TRUE(byName.contains(name)) << name;
+      EXPECT_FALSE(byName.at(name).pid().has_value());
+    }
+  }
+
+  const auto fanStatuses = controlLogic_->getFanStatuses();
+  ASSERT_EQ(state.zones()->size(), fanServiceConfig_.zones()->size());
+  for (const auto& zoneState : *state.zones()) {
+    const auto& zone = *std::find_if(
+        fanServiceConfig_.zones()->begin(),
+        fanServiceConfig_.zones()->end(),
+        [&](const Zone& z) { return *z.zoneName() == *zoneState.name(); });
+    EXPECT_EQ(*zoneState.aggregationType(), *zone.zoneType());
+    const auto& firstFan = *std::find_if(
+        fanServiceConfig_.fans()->begin(),
+        fanServiceConfig_.fans()->end(),
+        [&](const Fan& f) {
+          return std::find(
+                     zone.fanNames()->begin(),
+                     zone.fanNames()->end(),
+                     *f.fanName()) != zone.fanNames()->end();
+        });
+    EXPECT_EQ(
+        *zoneState.programmedPwm(),
+        *fanStatuses.at(*firstFan.fanName()).pwmToProgram());
+    if (*zone.zoneType() == constants::ZONE_TYPE_MAX()) {
+      ASSERT_TRUE(zoneState.drivingComponent().has_value());
+      EXPECT_EQ(*zoneState.drivingComponent(), zone.sensorNames()->front());
+    } else if (*zone.zoneType() == constants::ZONE_TYPE_AVG()) {
+      EXPECT_FALSE(zoneState.drivingComponent().has_value());
+    }
+  }
+}
+
+TEST_F(ControlLogicTests, GetControlStateReportsPidState) {
+  auto config = fanServiceConfig_;
+  config.controlInterval().ensure();
+  config.controlInterval()->sensorReadInterval() = 5;
+  config.controlInterval()->pwmUpdateInterval() = 5;
+  // INLET_SENSOR reads 30.0 in the fixture: positional loop, above its band.
+  auto& positional = config.sensors()->at(0);
+  positional.pwmCalcType() = constants::SENSOR_PWM_CALC_TYPE_PID();
+  positional.pidSetting()->kp() = -4;
+  positional.pidSetting()->ki() = -0.06;
+  positional.pidSetting()->kd() = 0;
+  positional.pidSetting()->setPoint() = 20;
+  positional.pidSetting()->posHysteresis() = 2;
+  positional.pidSetting()->negHysteresis() = 2;
+  // OUTLET_SENSOR reads 40.5: incremental loop, below its band.
+  auto& incremental = config.sensors()->at(1);
+  incremental.pwmCalcType() = constants::SENSOR_PWM_CALC_TYPE_INCREMENTAL_PID();
+  incremental.pidSetting()->kp() = 2;
+  incremental.pidSetting()->ki() = 0.6;
+  incremental.pidSetting()->kd() = 0;
+  incremental.pidSetting()->setPoint() = 60;
+  incremental.pidSetting()->posHysteresis() = 2;
+  incremental.pidSetting()->negHysteresis() = 2;
+  auto controlLogic = std::make_shared<ControlLogic>(config, mockBsp_);
+  expectHealthyTick(*mockBsp_, config);
+
+  controlLogic->setTransitionValue();
+  controlLogic->updateControl(sensorData_);
+
+  const auto byName = sensorsByName(controlLogic->getControlState());
+  const auto& pos = byName.at(*positional.sensorName());
+  ASSERT_TRUE(pos.pid().has_value());
+  EXPECT_FLOAT_EQ(*pos.pid()->setPoint(), 20);
+  EXPECT_FLOAT_EQ(*pos.pid()->error(), 10); // 30 - 20
+  EXPECT_FLOAT_EQ(*pos.pid()->kp(), -4);
+  EXPECT_TRUE(pos.pid()->integral().has_value());
+  EXPECT_TRUE(pos.pid()->derivative().has_value());
+
+  const auto& inc = byName.at(*incremental.sensorName());
+  ASSERT_TRUE(inc.pid().has_value());
+  EXPECT_FLOAT_EQ(*inc.pid()->error(), -19.5); // 40.5 - 60
+  EXPECT_FALSE(inc.pid()->integral().has_value());
+  EXPECT_FALSE(inc.pid()->derivative().has_value());
+
+  EXPECT_FALSE(
+      byName.at(*config.sensors()->at(2).sensorName()).pid().has_value());
+}
+
+TEST_F(ControlLogicTests, SetPidSettingTakesEffectNextTickAndKeepsLoopState) {
+  auto config = fanServiceConfig_;
+  config.controlInterval().ensure();
+  config.controlInterval()->sensorReadInterval() = 5;
+  config.controlInterval()->pwmUpdateInterval() = 5;
+  auto& sensor = config.sensors()->at(0); // reads 30.0 in the fixture
+  sensor.pwmCalcType() = constants::SENSOR_PWM_CALC_TYPE_INCREMENTAL_PID();
+  sensor.pidSetting()->kp() = 2;
+  sensor.pidSetting()->ki() = 0.6;
+  sensor.pidSetting()->kd() = 0;
+  sensor.pidSetting()->setPoint() =
+      60; // far below the band: the loop keeps pulling down
+  sensor.pidSetting()->posHysteresis() = 2;
+  sensor.pidSetting()->negHysteresis() = 2;
+  auto controlLogic = std::make_shared<ControlLogic>(config, mockBsp_);
+  EXPECT_CALL(*mockBsp_, checkIfInitialSensorDataRead())
+      .WillRepeatedly(Return(true));
+  for (const auto& fan : *config.fans()) {
+    EXPECT_CALL(*mockBsp_, setFanPwmSysfs(*fan.pwmSysfsPath(), _))
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*mockBsp_, turnOnLedSysfs(*fan.goodLedSysfsPath()))
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*mockBsp_, readSysfs(*fan.rpmSysfsPath()))
+        .WillRepeatedly(Return(kDefaultRpm));
+    EXPECT_CALL(*mockBsp_, readSysfs(*fan.presenceSysfsPath()))
+        .WillRepeatedly(Return(1));
+  }
+  controlLogic->setTransitionValue();
+  controlLogic->updateControl(sensorData_);
+  const auto beforeState = controlLogic->getControlState();
+  const auto before = sensorsByName(beforeState).at(*sensor.sensorName());
+  ASSERT_TRUE(before.pid().has_value());
+  EXPECT_FLOAT_EQ(*before.pid()->setPoint(), 60);
+
+  PidSettingRequest changed;
+  changed.sensorName() = *sensor.sensorName();
+  changed.kp() = 4;
+  changed.setPoint() =
+      25; // 30.0 is now above the band: the loop pushes up instead
+  controlLogic->setPidSetting(changed);
+  // Nothing changes until the next tick.
+  EXPECT_FLOAT_EQ(
+      *sensorsByName(controlLogic->getControlState())
+           .at(*sensor.sensorName())
+           .pid()
+           ->setPoint(),
+      60);
+
+  controlLogic->updateControl(sensorData_);
+  const auto after =
+      sensorsByName(controlLogic->getControlState()).at(*sensor.sensorName());
+  EXPECT_FLOAT_EQ(*after.pid()->setPoint(), 25);
+  EXPECT_FLOAT_EQ(*after.pid()->kp(), 4);
+  EXPECT_FLOAT_EQ(*after.pid()->ki(), 0.6); // unset fields keep their value
+  EXPECT_FLOAT_EQ(*after.pid()->posHysteresis(), 2);
+  EXPECT_FLOAT_EQ(*after.pid()->error(), 5); // 30 - 25
+  // Same loop, reading history intact: the delta is ki * (30 - 25) = 3 on top
+  // of the fan PWM fed back into the loop, with no kp * (30 - 0) kick from a
+  // fresh loop.
+  int16_t fedBackPwm = -1;
+  for (const auto& zone : *beforeState.zones()) {
+    for (const auto& z : *config.zones()) {
+      if (*z.zoneName() == *zone.name() &&
+          std::find(
+              z.sensorNames()->begin(),
+              z.sensorNames()->end(),
+              *sensor.sensorName()) != z.sensorNames()->end()) {
+        fedBackPwm = *zone.programmedPwm();
+      }
+    }
+  }
+  ASSERT_NE(fedBackPwm, -1);
+  EXPECT_EQ(*after.calculatedPwm(), fedBackPwm + 3);
+}
+
+TEST_F(ControlLogicTests, SetPidSettingRejectsUnknownAndTableSensors) {
+  PidSettingRequest request;
+  request.sensorName() = "NO_SUCH_SENSOR";
+  EXPECT_THROW(
+      controlLogic_->setPidSetting(request), facebook::fboss::FbossError);
+  // Every sample-config sensor is table driven.
+  request.sensorName() = *fanServiceConfig_.sensors()->at(0).sensorName();
+  EXPECT_THROW(
+      controlLogic_->setPidSetting(request), facebook::fboss::FbossError);
 }
 
 } // namespace facebook::fboss::platform

@@ -29,4 +29,13 @@ void FanServiceHandler::getPwmHold(PwmHoldStatus& status) {
   status.pwm().from_optional(controlLogic_->getFanHold());
 }
 
+void FanServiceHandler::getControlState(ControlState& state) {
+  state = controlLogic_->getControlState();
+}
+
+void FanServiceHandler::setPidSetting(
+    std::unique_ptr<PidSettingRequest> request) {
+  controlLogic_->setPidSetting(*request);
+}
+
 } // namespace facebook::fboss::platform::fan_service

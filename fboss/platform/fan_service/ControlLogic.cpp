@@ -143,20 +143,81 @@ void ControlLogic::controlFan() {
   pBsp_->kickWatchdog();
 }
 
+std::unique_ptr<PidLogicBase> ControlLogic::makePidLogic(
+    const std::string& pwmCalcType,
+    const PidSetting& setting) const {
+  if (pwmCalcType == constants::SENSOR_PWM_CALC_TYPE_PID()) {
+    return std::make_unique<PidLogic>(setting, getControlFrequency());
+  }
+  if (pwmCalcType == constants::SENSOR_PWM_CALC_TYPE_INCREMENTAL_PID()) {
+    return std::make_unique<IncrementalPidLogic>(setting);
+  }
+  return nullptr;
+}
+
+void ControlLogic::setPidSetting(const PidSettingRequest& request) {
+  const auto& sensorName = *request.sensorName();
+  for (const auto& sensor : *config_.sensors()) {
+    if (*sensor.sensorName() != sensorName) {
+      continue;
+    }
+    if (!pidLogics_.contains(sensorName)) {
+      throw facebook::fboss::FbossError(
+          sensorName, " is not PID controlled (", *sensor.pwmCalcType(), ")");
+    }
+    pendingPidSettings_.wlock()->push_back(request);
+    XLOG(INFO) << fmt::format(
+        "{}: PID setting change queued for the next control tick", sensorName);
+    return;
+  }
+  throw facebook::fboss::FbossError(sensorName, " is not a configured sensor");
+}
+
+void ControlLogic::applyPendingPidSettings() {
+  std::vector<PidSettingRequest> pending;
+  pendingPidSettings_.swap(pending);
+  for (const auto& request : pending) {
+    auto logic = pidLogics_.find(*request.sensorName());
+    if (logic == pidLogics_.end()) {
+      continue;
+    }
+    PidSetting setting = logic->second->getSetting();
+    if (request.kp().has_value()) {
+      setting.kp() = *request.kp();
+    }
+    if (request.ki().has_value()) {
+      setting.ki() = *request.ki();
+    }
+    if (request.kd().has_value()) {
+      setting.kd() = *request.kd();
+    }
+    if (request.setPoint().has_value()) {
+      setting.setPoint() = *request.setPoint();
+    }
+    if (request.posHysteresis().has_value()) {
+      setting.posHysteresis() = *request.posHysteresis();
+    }
+    if (request.negHysteresis().has_value()) {
+      setting.negHysteresis() = *request.negHysteresis();
+    }
+    logic->second->updateSetting(setting);
+    XLOG(INFO) << fmt::format(
+        "{}: PID setting applied (kp={} ki={} kd={} setPoint={} band=+{}/-{})",
+        *request.sensorName(),
+        *setting.kp(),
+        *setting.ki(),
+        *setting.kd(),
+        *setting.setPoint(),
+        *setting.posHysteresis(),
+        *setting.negHysteresis());
+  }
+}
+
 void ControlLogic::setupPidLogics() {
   for (const auto& sensor : *config_.sensors()) {
-    if (*sensor.pwmCalcType() == constants::SENSOR_PWM_CALC_TYPE_PID()) {
-      auto pidSetting = *sensor.pidSetting();
-      pidLogics_.emplace(
-          *sensor.sensorName(),
-          std::make_unique<PidLogic>(pidSetting, getControlFrequency()));
-    } else if (
-        *sensor.pwmCalcType() ==
-        constants::SENSOR_PWM_CALC_TYPE_INCREMENTAL_PID()) {
-      auto pidSetting = *sensor.pidSetting();
-      pidLogics_.emplace(
-          *sensor.sensorName(),
-          std::make_unique<IncrementalPidLogic>(pidSetting));
+    if (auto logic =
+            makePidLogic(*sensor.pwmCalcType(), *sensor.pidSetting())) {
+      pidLogics_.emplace(*sensor.sensorName(), std::move(logic));
     }
   }
   for (const auto& optic : *config_.optics()) {
@@ -306,6 +367,14 @@ int ControlLogic::updateSensorPwms(
   return numSensorFailed;
 }
 
+void ControlLogic::eraseOpticTypeReads(const std::string& opticName) {
+  const std::string prefix = opticName + ":";
+  auto it = opticTypeReads_.lower_bound(prefix);
+  while (it != opticTypeReads_.end() && it->first.starts_with(prefix)) {
+    it = opticTypeReads_.erase(it);
+  }
+}
+
 int ControlLogic::updateOpticsPwms(SensorData& sensorData) {
   int numOpticsNoProfile = 0;
   bool readAnyOpticData = false;
@@ -318,6 +387,9 @@ int ControlLogic::updateOpticsPwms(SensorData& sensorData) {
       continue;
     }
     readAnyOpticData = true;
+    // Drop what this optic reported last tick, so a type that has since
+    // disappeared stops being republished.
+    eraseOpticTypeReads(opticName);
 
     int aggOpticPwm = 0;
     const auto& aggregationType = *optic.aggregationType();
@@ -399,6 +471,12 @@ int ControlLogic::updateOpticsPwms(SensorData& sensorData) {
 
         fb303::fbData->setCounter(
             fmt::format(kOpticsPwmValue, opticType), pwmForThis);
+        opticTypeReads_[fmt::format("{}:{}", opticName, opticType)] =
+            OpticTypeRead{
+                maxTemp,
+                maxTempTxvrId,
+                static_cast<int16_t>(pwmForThis),
+                opticEntry->qsfpServiceTimeStamp};
 
         if (pwmForThis > aggOpticPwm) {
           aggOpticPwm = pwmForThis;
@@ -549,12 +627,13 @@ void ControlLogic::programLed(const Fan& fan, bool fanFailed) {
       fmt::format(kLedWriteFailure, *fan.fanName()), !ret);
 }
 
-int16_t ControlLogic::calculateZonePwm(const Zone& zone, bool boostMode) {
+ZoneResult ControlLogic::calculateZonePwm(const Zone& zone, bool boostMode) {
   auto zoneType = *zone.zoneType();
-  int16_t zonePwm{0};
+  ZoneResult result;
+  int16_t& zonePwm = result.pwm;
   int totalPwmConsidered{0};
   for (const auto& sensorName : *zone.sensorNames()) {
-    int16_t pwmForThisSensor;
+    int16_t pwmForThisSensor{0};
     if (sensorReadCaches_.find(sensorName) != sensorReadCaches_.end()) {
       pwmForThisSensor = sensorReadCaches_[sensorName].targetPwmCache;
     } else if (opticReadCaches_.find(sensorName) != opticReadCaches_.end()) {
@@ -563,8 +642,14 @@ int16_t ControlLogic::calculateZonePwm(const Zone& zone, bool boostMode) {
       continue;
     }
     if (zoneType == constants::ZONE_TYPE_MAX()) {
+      if (pwmForThisSensor > zonePwm) {
+        result.driver = sensorName;
+      }
       zonePwm = std::max(zonePwm, pwmForThisSensor);
     } else if (zoneType == constants::ZONE_TYPE_MIN()) {
+      if (pwmForThisSensor < zonePwm) {
+        result.driver = sensorName;
+      }
       zonePwm = std::min(zonePwm, pwmForThisSensor);
     } else if (zoneType == constants::ZONE_TYPE_AVG()) {
       zonePwm += pwmForThisSensor;
@@ -576,8 +661,9 @@ int16_t ControlLogic::calculateZonePwm(const Zone& zone, bool boostMode) {
   if (zoneType == constants::ZONE_TYPE_AVG() && totalPwmConsidered != 0) {
     zonePwm /= totalPwmConsidered;
   }
-  if (boostMode) {
-    zonePwm = std::max(zonePwm, *config_.pwmBoostValue());
+  if (boostMode && *config_.pwmBoostValue() > zonePwm) {
+    zonePwm = *config_.pwmBoostValue();
+    result.driver.reset();
   }
 
   XLOG(INFO) << fmt::format(
@@ -587,7 +673,80 @@ int16_t ControlLogic::calculateZonePwm(const Zone& zone, bool boostMode) {
       zoneType,
       zonePwm);
 
-  return zonePwm;
+  return result;
+}
+
+PidState ControlLogic::pidState(
+    const std::string& logicKey,
+    const PidSetting& setting,
+    float reading) const {
+  PidState pid;
+  pid.setPoint() = *setting.setPoint();
+  pid.error() = reading - *setting.setPoint();
+  pid.kp() = *setting.kp();
+  pid.ki() = *setting.ki();
+  pid.kd() = *setting.kd();
+  pid.posHysteresis() = *setting.posHysteresis();
+  pid.negHysteresis() = *setting.negHysteresis();
+  auto logic = pidLogics_.find(logicKey);
+  if (logic != pidLogics_.end()) {
+    pid.integral().from_optional(logic->second->integral());
+    pid.derivative().from_optional(logic->second->derivative());
+  }
+  return pid;
+}
+
+void ControlLogic::publishControlState(std::vector<ZoneControl> zones) {
+  ControlState state;
+  state.tickTime() = pBsp_->getCurrentTime();
+  state.boostMode() = boostMode_;
+  state.pwmHold().from_optional(fanHoldPwm_.load());
+  state.pwmLowerThreshold() = *config_.pwmLowerThreshold();
+  state.pwmUpperThreshold() = *config_.pwmUpperThreshold();
+  state.pwmUpdateIntervalSec() = getControlFrequency();
+  for (const auto& sensor : *config_.sensors()) {
+    const auto& name = *sensor.sensorName();
+    auto cache = sensorReadCaches_.find(name);
+    if (cache == sensorReadCaches_.end()) {
+      continue;
+    }
+    SensorControl control;
+    control.name() = name;
+    control.reading() = cache->second.lastReadValue;
+    control.readTime() = cache->second.lastUpdatedTime;
+    control.failed() = cache->second.sensorFailed;
+    control.calculatedPwm() = cache->second.targetPwmCache;
+    control.pwmCalcType() = *sensor.pwmCalcType();
+    if (auto logic = pidLogics_.find(name); logic != pidLogics_.end()) {
+      control.pid() = pidState(
+          name, logic->second->getSetting(), cache->second.lastReadValue);
+    }
+    state.sensors()->push_back(std::move(control));
+  }
+  for (const auto& optic : *config_.optics()) {
+    const auto& opticName = *optic.opticName();
+    for (const auto& [opticType, read] : opticTypeReads_) {
+      if (!opticType.starts_with(opticName + ":")) {
+        continue;
+      }
+      const auto type = opticType.substr(opticName.size() + 1);
+      SensorControl control;
+      control.name() = opticType;
+      control.reading() = read.maxTemp;
+      control.readTime() = read.readTime;
+      control.failed() = false;
+      control.calculatedPwm() = read.pwm;
+      control.pwmCalcType() = *optic.aggregationType();
+      auto setting = optic.pidSettings()->find(type);
+      if (setting != optic.pidSettings()->end()) {
+        control.pid() =
+            pidState(opticName + type, setting->second, read.maxTemp);
+      }
+      state.sensors()->push_back(std::move(control));
+    }
+  }
+  state.zones() = std::move(zones);
+  controlState_.swap(state);
 }
 
 void ControlLogic::setTransitionValue() {
@@ -617,6 +776,7 @@ void ControlLogic::setTransitionValue() {
 
 void ControlLogic::updateControl(std::shared_ptr<SensorData> pS) {
   int numFanFailed = 0;
+  applyPendingPidSettings();
 
   // If we have not yet successfully read so far,
   // it does not make sense to update fan PWM out of no data.
@@ -755,9 +915,18 @@ void ControlLogic::updateControl(std::shared_ptr<SensorData> pS) {
 
   // STEP 5: Calculate and program fan PWMs
   bool hasAnyPwmFailure{false};
+  std::vector<ZoneControl> zoneControls;
   fanStatuses_.withWLock([&](auto& fanStatuses) {
     for (const auto& zone : *config_.zones()) {
-      int16_t zonePwm = calculateZonePwm(zone, boostMode_);
+      auto zoneResult = calculateZonePwm(zone, boostMode_);
+      int16_t zonePwm = zoneResult.pwm;
+      ZoneControl zoneControl;
+      zoneControl.name() = *zone.zoneName();
+      zoneControl.aggregationType() = *zone.zoneType();
+      zoneControl.aggregatePwm() = zonePwm;
+      zoneControl.drivingComponent().from_optional(zoneResult.driver);
+      zoneControl.programmedPwm() = zonePwm;
+      bool firstFan = true;
       std::unordered_set<std::string> zoneFans(
           zone.fanNames()->begin(), zone.fanNames()->end());
       for (const auto& fan : *config_.fans()) {
@@ -769,6 +938,10 @@ void ControlLogic::updateControl(std::shared_ptr<SensorData> pS) {
             *zone.slope(),
             *fanStatuses[*fan.fanName()].pwmToProgram(),
             zonePwm);
+        if (firstFan) {
+          zoneControl.programmedPwm() = fanPwm;
+          firstFan = false;
+        }
         bool fanFailed = programFan(zone, fan, fanPwm);
         hasAnyPwmFailure = hasAnyPwmFailure || fanFailed;
         updatePwmState(zone, fanPwm);
@@ -779,6 +952,7 @@ void ControlLogic::updateControl(std::shared_ptr<SensorData> pS) {
           fanStatuses[*fan.fanName()].fanFailed() = fanFailed;
         }
       }
+      zoneControls.push_back(std::move(zoneControl));
     }
 
     // STEP 6: Program fan LEDs
@@ -789,6 +963,7 @@ void ControlLogic::updateControl(std::shared_ptr<SensorData> pS) {
     fb303::fbData->setCounter(kHasFanPwmWriteFailure, hasAnyPwmFailure ? 1 : 0);
     fb303::fbData->setCounter(kHasFanAbsent, hasAnyFanAbsent ? 1 : 0);
   });
+  publishControlState(std::move(zoneControls));
 }
 
 int16_t ControlLogic::calculateFanPwm(

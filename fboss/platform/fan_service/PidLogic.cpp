@@ -21,10 +21,12 @@ int16_t PidLogic::calculatePwm(float measurement) {
   if (error.has_value()) {
     integral_ = integral_ + *error * dT_;
     auto derivative = (*error - lastError_) / dT_;
+    lastDerivative_ = derivative;
     pwmDelta = (*pidSetting_.kp() * error.value()) +
         (*pidSetting_.ki() * integral_) + (*pidSetting_.kd() * derivative);
     newPwm = lastPwm_ + pwmDelta;
   } else {
+    lastDerivative_ = 0;
     newPwm = lastPwm_;
   }
 
@@ -64,6 +66,17 @@ int16_t PidLogic::calculatePwm(float measurement) {
   lastError_ = error.value_or(0);
 
   return newPwm;
+}
+
+void PidLogic::updateSetting(const PidSetting& pidSetting) {
+  const float oldKi = *pidSetting_.ki();
+  const float newKi = *pidSetting.ki();
+  if (oldKi == 0 || newKi == 0) {
+    integral_ = 0;
+  } else if (oldKi != newKi) {
+    integral_ *= oldKi / newKi;
+  }
+  PidLogicBase::updateSetting(pidSetting);
 }
 
 int16_t IncrementalPidLogic::calculatePwm(float measurement) {
