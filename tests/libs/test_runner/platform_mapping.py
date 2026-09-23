@@ -117,15 +117,21 @@ def _platform_mapping_path(config_name: str) -> Path:
     Mappings are generated beside their inputs under
     configs/platforms/<vendor>/<config_name>/platform_mapping/generated/, the
     same tree PlatformDescriptorRegistry (fboss/lib/platforms/PlatformDescriptor.h)
-    scans on the switch.
+    scans on the switch. A hardware-revision variant lives one level deeper,
+    under <vendor>/<base_platform>/variants/<config_name>/.
     """
     base = repo_dir(_PLATFORM_CONFIGS_DIR)
-    pattern = f"*/{config_name}/platform_mapping/generated/platform_mapping.json"
-    found = sorted(base.glob(pattern))
-    if found:
-        return found[0]
+    patterns = (
+        f"*/{config_name}/platform_mapping/generated/platform_mapping.json",
+        f"*/*/variants/{config_name}/platform_mapping/generated/platform_mapping.json",
+    )
+    for pattern in patterns:
+        found = sorted(base.glob(pattern))
+        if found:
+            return found[0]
     raise FileNotFoundError(
-        f"no platform mapping for {config_name!r}: looked for {base}/{pattern}"
+        f"no platform mapping for {config_name!r}: looked for "
+        + " and ".join(f"{base}/{p}" for p in patterns)
     )
 
 

@@ -41,10 +41,13 @@ class BenchmarkTestRunner(BaseHwTestRunner):
             model,
             config_name,
         )
+        config_arg = self._variantized_config_arg(
+            f"./share/hw_bench_configs/{config_name}.agent.materialized_JSON",
+            "/home/netops/variant_hw_bench.agent.materialized_JSON",
+        )
         return (
             "benchmark --agent-run-mode multi_switch"
-            f" --config ./share/hw_bench_configs/{config_name}"
-            f".agent.materialized_JSON{benchmark_skip_known_bad(model)}"
+            f" --config {config_arg}{benchmark_skip_known_bad(model)}"
         )
 
     # Benchmark binaries spin up their own agent (binds thrift port 5909, owns
@@ -168,8 +171,12 @@ class QsfpBenchmarkTestRunner(BenchmarkTestRunner):
     def test_args(self, model: str) -> str:
         config_name = LINK_QSFP_TEST_CONFIG_NAME.get(model, model)
         logger.info("model=%s qsfp_test_config=%s", model, config_name)
+        qsfp_config_arg = self._variantized_config_arg(
+            f"./share/qsfp_test_configs/{config_name}.materialized_JSON",
+            "/home/netops/variant_qsfp_bench.materialized_JSON",
+        )
         return (
             f"benchmark --qsfp"
-            f" --qsfp-config ./share/qsfp_test_configs/{config_name}.materialized_JSON"
+            f" --qsfp-config {qsfp_config_arg}"
             f" --skip-known-bad-tests {config_name}/{QSFP_BENCH_PHY_SDK}"
         )

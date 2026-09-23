@@ -310,6 +310,7 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
             qsfp.setdefault("defaultCommandLineArgs", {})[
                 "subscribe_to_state_from_fsdb"
             ] = "false"
+            self._inject_variant_flags(qsfp)
             with open(local_path, "w", encoding="utf-8") as f:
                 json.dump(qsfp, f, indent=4)
             exit_status, output = self.scp_client.put_file(
@@ -355,7 +356,10 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
         if self._use_generated_config:
             config_arg = self._REMOTE_CONFIG_PATH
         else:
-            config_arg = f"./share/link_test_configs/{self._config_name(model)}.materialized_JSON"
+            config_arg = self._variantized_config_arg(
+                f"./share/link_test_configs/{self._config_name(model)}.materialized_JSON",
+                "/home/netops/variant_link_test.materialized_JSON",
+            )
         qsfp_arg = (
             self._REMOTE_QSFP_CONFIG_PATH
             if self._use_generated_qsfp

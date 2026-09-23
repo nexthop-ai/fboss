@@ -39,6 +39,9 @@ run_all_pytests(
         # Scrapes the upstream on-DUT runner package's runners/*.py for the
         # binary names each runner's BINARIES mirrors.
         "test_runner_deploy": ["//fboss:run_scripts_py"],
+        # Reads fboss_init.sh's flag composition and the descriptors' declared
+        # variantAttributes to check they agree.
+        "test_variant_flags": ["//fboss:variant_flag_inputs"],
         # The bucket modules are exec'd (not imported) to read their
         # test_context, the hw_bench_configs check stats every benchmarked
         # platform's config, and BenchmarkFramework is imported from the

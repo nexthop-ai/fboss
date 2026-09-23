@@ -65,6 +65,18 @@ filegroup(
     srcs = glob(["fboss/oss/scripts/run_scripts/**/*.py"]),
 )
 
+# fboss_init.sh composes the hardware-revision variant gflag that platform
+# descriptors declare; test_variant_flags pins the two together, so it needs
+# both trees in runfiles.
+filegroup(
+    name = "variant_flag_inputs",
+    visibility = ["//fboss/tests:__pkg__"],
+    srcs = glob([
+        "fboss-image/image_builder/templates/centos-09.0/root_files/usr/local/bin/fboss_init.sh",
+        "fboss/configs/platforms/**/platform_mapping/generated/platform_descriptor.json",
+    ]),
+)
+
 filegroup(
     name = "hw_bench_configs",
     visibility = ["//fboss/tests:__pkg__"],

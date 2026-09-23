@@ -140,7 +140,11 @@ class QsfpTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
         if self._use_generated_config:
             return f"qsfp --qsfp-config {self._REMOTE_CONFIG_PATH}"
         config_name = LINK_QSFP_TEST_CONFIG_NAME.get(model, model)
-        return f"qsfp --qsfp-config ./share/qsfp_test_configs/{config_name}.materialized_JSON"
+        config_arg = self._variantized_config_arg(
+            f"./share/qsfp_test_configs/{config_name}.materialized_JSON",
+            "/home/netops/variant_qsfp_test.materialized_JSON",
+        )
+        return f"qsfp --qsfp-config {config_arg}"
 
 
 class LedTestRunner(BaseHwTestRunner):

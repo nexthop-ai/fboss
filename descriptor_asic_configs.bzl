@@ -16,7 +16,7 @@ _DESCRIPTOR_COPIES = [
         platform = "m4062nhp",
     ),
     struct(
-        descriptor = "nexthop/m4062nhp_p1",
+        descriptor = "nexthop/m4062nhp/variants/m4062nhp_p1",
         generated = "nexthop/m4062nhp/asic_config/generated/m4062nhp_p1.yml",
         platform = "m4062nhp",
     ),
@@ -54,7 +54,10 @@ def _check_registry():
     covered = [_copy_path(e.descriptor) for e in _DESCRIPTOR_COPIES]
     uncovered = [
         f
-        for f in native.glob([_PLATFORMS_DIR + "/*/*/platform_mapping/generated/asic_config.yaml"], allow_empty = True)
+        for f in native.glob([
+            _PLATFORMS_DIR + "/*/*/platform_mapping/generated/asic_config.yaml",
+            _PLATFORMS_DIR + "/*/*/variants/*/platform_mapping/generated/asic_config.yaml",
+        ], allow_empty = True)
         if f not in covered
     ]
 

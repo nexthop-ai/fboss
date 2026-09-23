@@ -29,7 +29,11 @@ class SaiTestRunner(BaseHwTestRunner):
     def test_args(self, model: str) -> str:
         config_name = SAI_AGENT_CONFIG_NAME.get(model, model)
         logger.info("model=%s hw_test_config=%s", model, config_name)
-        return f"sai --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON{sai_skip_known_bad(model)}"
+        config_arg = self._variantized_config_arg(
+            f"./share/hw_test_configs/{config_name}.agent.materialized_JSON",
+            "/home/netops/variant_sai_test.agent.materialized_JSON",
+        )
+        return f"sai --config {config_arg}{sai_skip_known_bad(model)}"
     STACK = STACK_FORWARDING
     BINARIES = ("bin/sai_test-sai_impl",)
     REQUIRED_PATHS = (*BINARIES, *STACK_SHARE[STACK])
@@ -144,5 +148,9 @@ class SaiAgentTestRunner(BaseHwTestRunner):
     def test_args(self, model: str) -> str:
         config_name = SAI_AGENT_CONFIG_NAME.get(model, model)
         logger.info("model=%s hw_test_config=%s", model, config_name)
-        return f"sai_agent --config ./share/hw_test_configs/{config_name}.agent.materialized_JSON \
+        config_arg = self._variantized_config_arg(
+            f"./share/hw_test_configs/{config_name}.agent.materialized_JSON",
+            "/home/netops/variant_sai_agent_test.agent.materialized_JSON",
+        )
+        return f"sai_agent --config {config_arg} \
             {sai_skip_known_bad(model)}{self._enable_production_features(model)}"

@@ -94,6 +94,11 @@ def normalize_model(model: str) -> str:
     return model.lower().replace("-", "")
 
 
+# Variant gflags written at boot by fboss_init.sh. Test binaries and the
+# services run_test.py spawns bypass the systemd units' --flagfile, so the
+# harness folds these into each supplied config (run_test.py is upstream-synced).
+_VARIANT_FLAGFILE = "/run/fboss/variant_flags"
+
 # Stale-state cleanup paths — must match AgentDirectoryUtil defaults
 # (fboss/agent/AgentDirectoryUtil.cpp):
 #   getWarmBootDir() = FLAGS_volatile_state_dir + "/warm_boot"
@@ -130,20 +135,80 @@ class BaseHwTestRunner(ABC):
         self.testresult_filepath = "/home/netops/tr.xml"
         self.tc = None
         self._use_generated_config = False
+        self._variant_flags_cache: dict[str, str] | None = None
+        self._variantized_config_cache: dict[str, str] = {}
         self._fboss_logging = None
         self._test_run_timeout_secs: int | None = None
 
-    def _upload_generated_config(self, config: dict) -> None:
+    def _upload_json(self, config: dict, remote_path: str) -> None:
         with tempfile.NamedTemporaryFile("w", suffix=".materialized_JSON", delete=False) as f:
             json.dump(config, f, indent=4)
             local_path = f.name
         try:
-            exit_status, output = self.scp_client.put_file(local_path, self._REMOTE_CONFIG_PATH)
+            exit_status, output = self.scp_client.put_file(local_path, remote_path)
         finally:
             os.unlink(local_path)
         if exit_status != 0:
-            raise RuntimeError(f"Failed to upload generated config: {output}")
+            raise RuntimeError(f"Failed to upload config to {remote_path}: {output}")
+
+    def _upload_generated_config(self, config: dict) -> None:
+        self._inject_variant_flags(config)
+        self._upload_json(config, self._REMOTE_CONFIG_PATH)
         self._use_generated_config = True
+
+    def _variant_flags(self) -> dict[str, str]:
+        """Gflags from the DUT's variant flagfile ({} when it has none)."""
+        if self.ssh_client is None:
+            return {}
+        if self._variant_flags_cache is None:
+            flags: dict[str, str] = {}
+            exit_status, output = self.ssh_client.run_cmd(f"cat {_VARIANT_FLAGFILE} 2>/dev/null")
+            if exit_status == 0:
+                for line in (output or "").splitlines():
+                    line = line.strip()
+                    if not line.startswith("--"):
+                        continue
+                    name, sep, value = line[2:].partition("=")
+                    flags[name] = value if sep else "true"
+            if flags:
+                logger.info("DUT variant flags: %s", flags)
+            self._variant_flags_cache = flags
+        return self._variant_flags_cache
+
+    def _inject_variant_flags(self, config: dict) -> None:
+        flags = self._variant_flags()
+        if flags:
+            config.setdefault("defaultCommandLineArgs", {}).update(flags)
+
+    def _variantized_config_arg(self, config_path: str, upload_path: str) -> str:
+        """Config path to pass to run_test.py: the original when the DUT has no
+        variant flags, else an uploaded copy with the flags folded into
+        defaultCommandLineArgs."""
+        if not self._variant_flags():
+            return config_path
+        if config_path in self._variantized_config_cache:
+            return self._variantized_config_cache[config_path]
+        dut_path = config_path.removeprefix("./")
+        if not dut_path.startswith("/"):
+            dut_path = f"/opt/fboss/{dut_path}"
+        with tempfile.NamedTemporaryFile(suffix=".materialized_JSON", delete=False) as f:
+            local_path = f.name
+        try:
+            exit_status, output = self.scp_client.get_file(dut_path, local_path)
+            if exit_status != 0:
+                raise RuntimeError(f"Failed to fetch {dut_path} for variant flags: {output}")
+            try:
+                with open(local_path, encoding="utf-8") as f:
+                    config = json.load(f)
+            except json.JSONDecodeError as ex:
+                raise RuntimeError(f"Unparseable JSON config at {dut_path}: {ex}") from ex
+        finally:
+            os.unlink(local_path)
+        self._inject_variant_flags(config)
+        self._upload_json(config, upload_path)
+        logger.info("Variant flags injected: %s -> %s", config_path, upload_path)
+        self._variantized_config_cache[config_path] = upload_path
+        return upload_path
 
     @abstractmethod
     def test_args(self, model: str) -> str:

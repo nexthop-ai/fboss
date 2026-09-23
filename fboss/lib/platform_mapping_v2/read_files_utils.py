@@ -370,32 +370,11 @@ def read_port_profile_mapping(
     return PortProfileMapping(ports=ports)
 
 
-def parse_pm_unit_versions(cell: str) -> list[dict[str, int]]:
-    """Parse a Pm_Unit_Versions CSV cell into PmUnitVersionMatch dicts.
-
-    Format: matches separated by ';', fields within a match separated by '&',
-    each field 'name=int' with names productionState, productionSubState,
-    respinVariantIndicator. Example: 'productionState=1'.
-    """
-    valid_fields = {"productionState", "productionSubState", "respinVariantIndicator"}
-    matches = []
-    for match_str in cell.split(";"):
-        match: dict[str, int] = {}
-        for field in match_str.split("&"):
-            name, _, value = field.partition("=")
-            if name not in valid_fields:
-                raise ValueError(f"Invalid PmUnitVersionMatch field: {name}")
-            match[name] = int(value)
-        matches.append(match)
-    return matches
-
-
 def read_platform_descriptor(directory: dict[str, str], prefix: str) -> dict[str, Any]:
     PLATFORM_DESCRIPTOR_SUFFIX = "_platform_descriptor.csv"
     VARIANT_ATTRIBUTES_COLUMN = 5
-    PM_UNIT_VERSIONS_COLUMN = 6
     Column = column_int_enum_generator(
-        "SYSTEM_VENDOR PLATFORM_TYPE PRODUCT_NAME_PREFIXES MODE_NAMES ASIC_TYPE VARIANT_ATTRIBUTES PM_UNIT_VERSIONS"
+        "SYSTEM_VENDOR PLATFORM_TYPE PRODUCT_NAME_PREFIXES MODE_NAMES ASIC_TYPE VARIANT_ATTRIBUTES"
     )
     for index, line in enumerate(
         get_content(directory, prefix + PLATFORM_DESCRIPTOR_SUFFIX).splitlines()
@@ -423,10 +402,6 @@ def read_platform_descriptor(directory: dict[str, str], prefix: str) -> dict[str
         if len(row) > VARIANT_ATTRIBUTES_COLUMN and row[VARIANT_ATTRIBUTES_COLUMN]:
             descriptor["variantAttributes"] = parse_bool_map(
                 row[VARIANT_ATTRIBUTES_COLUMN]
-            )
-        if len(row) > PM_UNIT_VERSIONS_COLUMN and row[PM_UNIT_VERSIONS_COLUMN]:
-            descriptor["pmUnitVersions"] = parse_pm_unit_versions(
-                row[PM_UNIT_VERSIONS_COLUMN]
             )
         return descriptor
     raise ValueError(f"No platform descriptor row found for {prefix}")
