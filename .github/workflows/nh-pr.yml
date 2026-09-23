@@ -20,7 +20,7 @@ permissions:
 
 jobs:
   merge-status:
-    uses: nexthop-ai/nh/.github/workflows/nh-pr.reusable.yml@main
+    uses: nexthop-ai/nh-ci/.github/workflows/nh-pr.reusable.yml@main
     secrets: inherit
     with:
       # Smoke Tests: currently failing due to scheduling issues.
