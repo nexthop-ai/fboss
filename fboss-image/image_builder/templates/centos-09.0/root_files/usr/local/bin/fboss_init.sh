@@ -9,17 +9,13 @@ source /opt/fboss/bin/setup_fboss_env
 FBOSS_SHARE="/opt/fboss/share"
 COOP_DIR="/etc/coop"
 FRUID_FILE="/var/facebook/fboss/fruid.json"
-<<<<<<< HEAD
 CHASSIS_EEPROM_PARSED="/run/devmap/eeproms/CHASSIS_EEPROM_PARSED"
 # Passed as --flagfile by the fboss_sw_agent, fboss_hw_agent@ and qsfp_service
 # units; on tmpfs so it cannot go stale across boots.
 VARIANT_FLAGFILE="/run/fboss/variant_flags"
-||||||| a86baef3b7
-=======
 NPU_SDK_UTILS_TOOL="/opt/fboss/bin/npu_sdk_utils.py"
 NPU_SDK_METADATA="${FBOSS_SHARE}/npu_sdk_metadata.json"
 NPU_HW_AGENT_BINARY="fboss_hw_agent-sai_impl"
->>>>>>> 7645153f2671a8414e17f720188a6810f8fcc177
 
 log() {
   echo "[fboss_init] $1" >&2
