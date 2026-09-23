@@ -18,6 +18,13 @@ target_link_libraries(transceiver_properties_manager
 
 add_executable(transceiver_properties_manager_test
     fboss/qsfp_service/module/properties/test/TransceiverPropertiesManagerTest.cpp
+    fboss/qsfp_service/module/properties/test/NexthopTransceiverPropertiesDriftTest.cpp
+)
+
+# NexthopTransceiverPropertiesDriftTest reads the nexthop.json5 override from
+# the source tree and compares it against the compiled-in default table.
+target_compile_definitions(transceiver_properties_manager_test PRIVATE
+    FBOSS_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
 )
 
 target_link_libraries(transceiver_properties_manager_test

@@ -1,6 +1,7 @@
 {
   "defaultCommandLineArgs": {
     "mode": "nh4010f",
+    "transceiver_properties_config": "/opt/fboss/share/transceiver_properties/nexthop.json5",
     "platform_descriptor_config_path": "/tmp/platform_descriptors/"
   },
   "transceiverConfigOverrides": [],
