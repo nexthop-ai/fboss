@@ -288,6 +288,18 @@
           "address": "0x58",
           "kernelDeviceName": "pmbus",
           "pmUnitScopedName": "PSU2"
+        },
+        {
+          "busName": "SMB_MUX_0@0",
+          "address": "0x50",
+          "kernelDeviceName": "24c02",
+          "pmUnitScopedName": "PSU1_EEPROM"
+        },
+        {
+          "busName": "SMB_MUX_0@1",
+          "address": "0x50",
+          "kernelDeviceName": "24c02",
+          "pmUnitScopedName": "PSU2_EEPROM"
         }
       ]
     }
