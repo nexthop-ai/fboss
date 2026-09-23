@@ -115,6 +115,7 @@ class ResourceAccountant;
 class RemoteNeighborUpdater;
 class EcmpResourceManager;
 class ShelManager;
+class PbrAclManager;
 class FabricLinkMonitoringManager;
 class CpuLatencyManager;
 class StateUpdateValidator;
@@ -285,6 +286,8 @@ class SwSwitch : public HwSwitchCallback {
   void updateLldpStats();
 
   void publishStatsToFsdb();
+
+  void publishIPhyStatesToFsdb(const std::map<PortID, phy::PhyInfo>& phyInfo);
 
   AgentStats fillFsdbStats();
 
@@ -1163,7 +1166,7 @@ class SwSwitch : public HwSwitchCallback {
   /*
    * Reconstruct state modifier from initial switch state.
    */
-  std::vector<StateDelta> reconstructStateFromErmAndShelManager(
+  std::vector<StateDelta> reconstructStateFromManagers(
       const std::shared_ptr<SwitchState>& emptyState,
       const std::shared_ptr<SwitchState>& initialState);
 
@@ -1445,6 +1448,7 @@ class SwSwitch : public HwSwitchCallback {
   std::unique_ptr<SwitchStatsObserver> switchStatsObserver_;
   std::unique_ptr<EcmpResourceManager> ecmpResourceManager_;
   std::unique_ptr<ShelManager> shelManager_;
+  std::unique_ptr<PbrAclManager> pbrAclManager_;
   std::unique_ptr<FabricLinkMonitoringManager> fabricLinkMonitoringManager_;
   bool rxPacketTypeSupported_{false};
   std::unique_ptr<CpuLatencyManager> cpuLatencyManager_;
@@ -1453,6 +1457,11 @@ class SwSwitch : public HwSwitchCallback {
   folly::Synchronized<ConfigAppliedInfo> configAppliedInfo_;
   std::optional<std::chrono::time_point<std::chrono::steady_clock>>
       publishedStatsToFsdbAt_;
+  // updateStats() runs every FLAGS_update_stats_interval_s (1s) but phy info is
+  // only recollected every FLAGS_update_phy_info_interval_s (10s), so iphy
+  // PhyState is published at the collection interval instead of every tick.
+  std::optional<std::chrono::time_point<std::chrono::steady_clock>>
+      publishedIPhyStatesToFsdbAt_;
   std::unique_ptr<MultiSwitchPacketStreamMap> packetStreamMap_;
   std::unique_ptr<SwSwitchWarmBootHelper> swSwitchWarmbootHelper_;
   std::unique_ptr<HwSwitchThriftClientTable> hwSwitchThriftClientTable_;

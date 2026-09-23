@@ -81,7 +81,7 @@ fboss2 config protocol bgp peer-group RSW-RTSW-V6 disable-ipv4-afi true
 # Peer configuration (with explicit disable_ipv4_afi: false preserved)
 fboss2 config protocol bgp neighbor 2401:db00:501c::/64 remote-asn 65000
 fboss2 config protocol bgp neighbor 2401:db00:501c::/64 bind-addr address 2401:db00:501c::a
-fboss2 config protocol bgp neighbor 2401:db00:501c::/64 connect-mode PASSIVE
+fboss2 config protocol bgp neighbor 2401:db00:501c::/64 passive true
 fboss2 config protocol bgp neighbor 2401:db00:501c::/64 afi disable-ipv4-afi false
 ```
 
@@ -139,7 +139,7 @@ diff <(jq -S . /tmp/rsw_bgp_nao.txt) <(jq -S . ~/.fboss2/bgp_config.json)
 | Neighbor | `config protocol bgp neighbor <addr> remote-asn <asn>` | Set remote AS |
 | Neighbor | `config protocol bgp neighbor <addr> peer-group <name>` | Assign to peer group |
 | Neighbor | `config protocol bgp neighbor <addr> bind-addr address <addr>` | Set local address |
-| Neighbor | `config protocol bgp neighbor <addr> connect-mode <PASSIVE|ACTIVE>` | Set connect mode |
+| Neighbor | `config protocol bgp neighbor <addr> passive <true|false>` | Listen-only (true) or listen-and-connect (false) session |
 | Neighbor | `delete protocol bgp neighbor <addr>` | Delete a neighbor |
 | Neighbor | `config protocol bgp neighbor <addr> afi disable-ipv4-afi <bool>` | Disable IPv4 AFI |
 | Neighbor | `config protocol bgp neighbor <addr> link-bandwidth <bw>` | Set link bandwidth |

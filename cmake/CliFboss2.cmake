@@ -403,6 +403,13 @@ add_fbthrift_cpp_library(
     json
 )
 
+add_fbthrift_cpp_library(
+  feature_default_command_args_cpp2
+  fboss/configs/platforms/generic/forwarding_stacks/feature_default_command_args.thrift
+  OPTIONS
+    json
+)
+
 find_package(CLI11 CONFIG REQUIRED)
 
 add_library(fboss2_config_file_utils
@@ -418,6 +425,8 @@ target_link_libraries(fboss2_config_file_utils
 add_library(fboss2_config_gen_lib
   fboss/cli/fboss2/commands/config/gen/PlatformConfigPathUtils.h
   fboss/cli/fboss2/commands/config/gen/PlatformConfigPathUtils.cpp
+  fboss/cli/fboss2/commands/config/gen/FeatureDefaultCommandArgs.h
+  fboss/cli/fboss2/commands/config/gen/FeatureDefaultCommandArgs.cpp
   fboss/cli/fboss2/commands/config/gen/agent/AgentConfigGenUtils.h
   fboss/cli/fboss2/commands/config/gen/agent/AgentConfigGenUtils.cpp
 )
@@ -425,6 +434,7 @@ add_library(fboss2_config_gen_lib
 target_link_libraries(fboss2_config_gen_lib
   acl_config_utils
   agent_config_cpp2
+  feature_default_command_args_cpp2
   fboss_error
   fboss2_config_file_utils
   Folly::folly
@@ -894,6 +904,12 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/copp/CmdConfigCopp.h
   fboss/cli/fboss2/commands/config/copp/CoppUtils.cpp
   fboss/cli/fboss2/commands/config/copp/CoppUtils.h
+  fboss/cli/fboss2/commands/config/data_plane/CmdConfigDataPlane.cpp
+  fboss/cli/fboss2/commands/config/data_plane/CmdConfigDataPlane.h
+  fboss/cli/fboss2/commands/config/data_plane/traffic_policy/CmdConfigDataPlaneTrafficPolicy.cpp
+  fboss/cli/fboss2/commands/config/data_plane/traffic_policy/CmdConfigDataPlaneTrafficPolicy.h
+  fboss/cli/fboss2/commands/config/TrafficPolicyUtils.cpp
+  fboss/cli/fboss2/commands/config/TrafficPolicyUtils.h
   fboss/cli/fboss2/commands/config/dhcp/CmdConfigDhcp.cpp
   fboss/cli/fboss2/commands/config/dhcp/CmdConfigDhcp.h
   fboss/cli/fboss2/commands/config/dhcp/relay_source_override/CmdConfigDhcpRelaySourceOverride.cpp
@@ -1071,14 +1087,22 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/delete/arp/CmdDeleteArp.h
   fboss/cli/fboss2/commands/delete/copp/CmdDeleteCopp.cpp
   fboss/cli/fboss2/commands/delete/copp/CmdDeleteCopp.h
-  fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/CmdDeleteCoppCpuTrafficPolicy.h
-  fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/CmdDeleteCoppCpuTrafficPolicy.cpp
-  fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/match/CmdDeleteCoppCpuTrafficPolicyMatch.cpp
-  fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/match/CmdDeleteCoppCpuTrafficPolicyMatch.h
-  fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/match/action/CmdDeleteCoppCpuTrafficPolicyMatchAction.cpp
-  fboss/cli/fboss2/commands/delete/copp/cpu_traffic_policy/match/action/CmdDeleteCoppCpuTrafficPolicyMatchAction.h
   fboss/cli/fboss2/commands/delete/copp/reason/CmdDeleteCoppReason.cpp
   fboss/cli/fboss2/commands/delete/copp/reason/CmdDeleteCoppReason.h
+  fboss/cli/fboss2/commands/delete/copp/traffic_policy/CmdDeleteCoppTrafficPolicy.cpp
+  fboss/cli/fboss2/commands/delete/copp/traffic_policy/CmdDeleteCoppTrafficPolicy.h
+  fboss/cli/fboss2/commands/delete/copp/traffic_policy/match/CmdDeleteCoppTrafficPolicyMatch.cpp
+  fboss/cli/fboss2/commands/delete/copp/traffic_policy/match/CmdDeleteCoppTrafficPolicyMatch.h
+  fboss/cli/fboss2/commands/delete/copp/traffic_policy/match/action/CmdDeleteCoppTrafficPolicyMatchAction.cpp
+  fboss/cli/fboss2/commands/delete/copp/traffic_policy/match/action/CmdDeleteCoppTrafficPolicyMatchAction.h
+  fboss/cli/fboss2/commands/delete/data_plane/CmdDeleteDataPlane.cpp
+  fboss/cli/fboss2/commands/delete/data_plane/CmdDeleteDataPlane.h
+  fboss/cli/fboss2/commands/delete/data_plane/traffic_policy/CmdDeleteDataPlaneTrafficPolicy.cpp
+  fboss/cli/fboss2/commands/delete/data_plane/traffic_policy/CmdDeleteDataPlaneTrafficPolicy.h
+  fboss/cli/fboss2/commands/delete/data_plane/traffic_policy/match/CmdDeleteDataPlaneTrafficPolicyMatch.cpp
+  fboss/cli/fboss2/commands/delete/data_plane/traffic_policy/match/CmdDeleteDataPlaneTrafficPolicyMatch.h
+  fboss/cli/fboss2/commands/delete/data_plane/traffic_policy/match/action/CmdDeleteDataPlaneTrafficPolicyMatchAction.cpp
+  fboss/cli/fboss2/commands/delete/data_plane/traffic_policy/match/action/CmdDeleteDataPlaneTrafficPolicyMatchAction.h
   fboss/cli/fboss2/commands/delete/dhcp/CmdDeleteDhcp.cpp
   fboss/cli/fboss2/commands/delete/dhcp/CmdDeleteDhcp.h
   fboss/cli/fboss2/commands/delete/dhcp/relay_source_override/CmdDeleteDhcpRelaySourceOverride.cpp

@@ -10,6 +10,8 @@
 
 #include "fboss/agent/test/utils/NetworkAITestUtils.h"
 
+#include <cctype>
+
 #include "fboss/agent/AgentFeatures.h"
 #include "fboss/agent/AsicUtils.h"
 #include "fboss/agent/test/utils/ConfigUtils.h"
@@ -392,7 +394,8 @@ void applyBackendAsicConfig(
             lineStart += 1;
           }
           std::string indent;
-          while (lineStart < pos && std::isspace(yamlCfg[lineStart])) {
+          while (lineStart < pos &&
+                 std::isspace(static_cast<unsigned char>(yamlCfg[lineStart]))) {
             indent += yamlCfg[lineStart];
             lineStart++;
           }

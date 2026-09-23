@@ -49,6 +49,14 @@ class BgpNeighborConfig : public utils::BaseObjectArgType<std::string> {
   std::vector<std::string> values_;
 };
 
+// The `<attribute> <value>` list the neighbor command accepts, rendered one
+// attribute per line for `neighbor --help`. Generated from the dispatch table
+// in the .cpp, so it cannot drift from what the command actually parses.
+std::string bgpNeighborAttributeHelp();
+
+// The dispatch keys (e.g. "remote-asn", "timers hold-time"), sorted.
+std::vector<std::string> bgpNeighborAttributeNames();
+
 // Single handler for the whole `config protocol bgp neighbor` family. The
 // first positional token is the neighbor address, the next one or two tokens
 // name the attribute, and the remaining tokens are its value(s); dispatch and
@@ -66,6 +74,9 @@ struct CmdConfigProtocolBgpNeighborTraits : public WriteCommandTraits {
     // remaining tokens are misparsed.
     cmd.positionals_at_end();
     cmd.add_option("args", args, "<ip-address> [<attribute> <value> ...]");
+    // The attribute list is long, so it lives in this subcommand's own help
+    // footer rather than in the one-line description shown by the parent.
+    cmd.footer(bgpNeighborAttributeHelp());
   }
   using ObjectArgType = BgpNeighborConfig;
   using RetType = std::string;

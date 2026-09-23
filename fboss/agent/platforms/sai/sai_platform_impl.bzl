@@ -73,7 +73,6 @@ def sai_platform_impl():
             "//fboss/agent/platforms/common/icetea800bc:icetea800bc_platform_mapping",
             "//fboss/agent/platforms/common/ladakh800bcls:ladakh800bcls_platform_mapping",
             "//fboss/agent/platforms/common/j4sim:j4sim_platform_mapping",
-            "//fboss/agent/platforms/common/wedge800cact:wedge800cact_platform_mapping",
             "//fboss/agent/platforms/common/yangra2:yangra2_platform_mapping",
             "//fboss/agent/platforms/common/utils:bcm_yaml_config",
             "//fboss/agent/platforms/common/utils:wedge-led-utils",
@@ -106,6 +105,7 @@ def sai_platform_impl():
             "//fboss/agent:monolithic_agent_initializer",
             "//fboss/agent:setup_thrift_prod",
             "//fboss/agent/hw/sai/api:sai_traced_api",
+            "//fboss/oss:jemalloc_config",
         ] + select({
             "//fboss/agent/hw/sai:is_bcm": ["@sai_impl//:sai_impl"],
             "//fboss/agent/hw/sai:is_fake": ["//fboss/agent/hw/sai/fake:fake_sai"],
@@ -140,6 +140,7 @@ def sai_platform_impl():
             "//fboss/agent:load_agent_config",
             "//fboss/agent/hw/sai/api:sai_traced_api",
             "//fboss/agent/hw/sai/hw_test:agent_hw_test_thrift_handler",
+            "//fboss/oss:jemalloc_config",
         ] + select({
             "//fboss/agent/hw/sai:is_bcm": ["@sai_impl//:sai_impl"],
             "//fboss/agent/hw/sai:is_fake": ["//fboss/agent/hw/sai/fake:fake_sai"],

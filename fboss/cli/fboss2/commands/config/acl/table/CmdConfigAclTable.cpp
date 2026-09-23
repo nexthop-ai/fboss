@@ -79,8 +79,6 @@ CmdConfigAclTableTraits::RetType CmdConfigAclTable::queryClient(
   auto& config = session.getAgentConfig();
   auto& swConfig = *config.sw();
 
-  // Same gate as `config acl table-group`: with the flag off the agent never
-  // reads aclTableGroups, so anything written here would be dead config.
   acl_utils::requireAclTableGroupMode(config);
 
   auto& group =
@@ -103,10 +101,9 @@ CmdConfigAclTableTraits::RetType CmdConfigAclTable::queryClient(
   auto& tables = *group.aclTables();
   bool created = false;
   if (!existing) {
-    // Only name and priority. actionTypes, qualifiers and udfGroups stay
-    // empty on purpose: SaiAclTableManager::getQualifierSet and
-    // getActionTypeList expand an empty list to the ASIC's full supported set,
-    // so a partial list here would silently narrow what the table can match.
+    // actionTypes, qualifiers and udfGroups stay empty on purpose: the agent
+    // expands an empty list to the ASIC's full supported set, so a partial
+    // list would silently narrow what the table can match.
     cfg::AclTable fresh;
     fresh.name() = args.getTableName();
     fresh.priority() = args.getPriority();
@@ -116,11 +113,8 @@ CmdConfigAclTableTraits::RetType CmdConfigAclTable::queryClient(
     existing->first->priority() = args.getPriority();
   }
 
-  // HITLESS in the sense that a config reload suffices, but not free: any
-  // change to an existing table's priority makes needsAclTableRecreate() true,
-  // and changedAclTable() then removes every entry, drops the table, recreates
-  // it and re-adds the entries. Traffic falls through to the default action
-  // for the duration.
+  // A config reload applies it, so HITLESS -- though a priority change still
+  // recreates the table (see the returned message).
   session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   if (created) {

@@ -2,6 +2,8 @@
 
 #include "fboss/agent/hw/sai/switch/SaiSrv6MySidManager.h"
 
+#include <vector>
+
 #if SAI_API_VERSION >= SAI_VERSION(1, 12, 0)
 #include "fboss/agent/FbossError.h"
 #include "fboss/agent/FibHelpers.h"
@@ -196,16 +198,34 @@ void SaiSrv6MySidManager::addMySidEntry(
 
   std::optional<SaiMySidEntryHandle::NextHopHandle> nexthopHandle;
 
-  auto resolvedNextHopsId = mySid->getResolvedNextHopsId();
-  if (resolvedNextHopsId) {
-    auto nhops = getNextHops(state, static_cast<int64_t>(*resolvedNextHopsId));
-    if (nhops.size() > 1) {
-      RouteNextHopSet nhopSet(nhops.begin(), nhops.end());
+  const auto resolvedNextHopsId = mySid->getResolvedNextHopsId();
+  const auto backupResolvedNextHopsId = mySid->getBackupResolvedNextHopsId();
+  if (resolvedNextHopsId || backupResolvedNextHopsId) {
+    std::vector<NextHop> nhops;
+    for (const auto& nextHopsId :
+         {resolvedNextHopsId, backupResolvedNextHopsId}) {
+      if (nextHopsId) {
+        const auto resolvedNextHops =
+            getNextHops(state, static_cast<int64_t>(*nextHopsId));
+        nhops.insert(
+            nhops.end(), resolvedNextHops.begin(), resolvedNextHops.end());
+      }
+    }
+    if (nhops.empty()) {
+      throw FbossError("Resolved nhops Id set, but no next hops found");
+    }
+    RouteNextHopSet nhopSet(nhops.begin(), nhops.end());
+    const auto nextHopGroupType = getNextHopGroupType(nhopSet);
+    // A lone next hop is normally programmed directly, but not when it is a
+    // backup: the protection group is what carries standby semantics into
+    // hardware. Collapsing a single backup to a plain next hop would forward
+    // over it as if it were the primary path.
+    if (nhops.size() > 1 || isProtectionNextHopGroupType(nextHopGroupType)) {
       auto nextHopGroupHandle =
           managerTable_->nextHopGroupManager().incRefOrAddNextHopGroup(
-              SaiNextHopGroupKey(nhopSet, std::nullopt));
+              SaiNextHopGroupKey(nhopSet, std::nullopt, nextHopGroupType));
       nexthopHandle = nextHopGroupHandle;
-    } else if (nhops.size() == 1) {
+    } else {
       auto resolvedNh = folly::poly_cast<ResolvedNextHop>(nhops.front());
       std::shared_ptr<SaiSrv6SidListHandle> sidListHandle;
       if (!resolvedNh.srv6SegmentList().empty()) {
@@ -247,8 +267,6 @@ void SaiSrv6MySidManager::addMySidEntry(
         throw FbossError(
             "Expected IP or SRv6 next hop for MySid entry ", mySid->getID());
       }
-    } else {
-      throw FbossError("Resolved nhops Id set, but no next hops found");
     }
   }
 

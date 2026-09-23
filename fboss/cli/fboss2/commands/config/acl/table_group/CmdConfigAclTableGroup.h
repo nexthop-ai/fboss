@@ -23,10 +23,11 @@ namespace facebook::fboss {
 // Argument for `config acl table-group <group-name> stage <stage-value>`.
 //
 // <group-name> names an AclTableGroup in sw.aclTableGroups; it is created at
-//   <stage-value> if absent, provided the config already has at least one
-//   group and no other group holds that stage (see acl_utils).
+//   <stage-value> if absent (including the first group on a config with none),
+//   provided no other group holds that stage (see acl_utils).
 // <stage-value> is one of: ingress, ingress-macsec, egress-macsec,
-//   ingress-post-lookup (or a numeric 0-3).
+//   ingress-post-lookup. Whether the ASIC supports a stage is not checked
+//   here; an unsupported one fails at the agent when the config is applied.
 class AclTableGroupConfigArgs : public utils::BaseObjectArgType<std::string> {
  public:
   /* implicit */ AclTableGroupConfigArgs( // NOLINT(google-explicit-constructor)
@@ -57,7 +58,7 @@ struct CmdConfigAclTableGroupTraits : public WriteCommandTraits {
            args,
            "<group-name> stage <stage-value> where <stage-value> is one "
            "of: ingress, ingress-macsec, egress-macsec, "
-           "ingress-post-lookup (or numeric 0-3)")
+           "ingress-post-lookup")
         ->required()
         ->expected(3);
   }

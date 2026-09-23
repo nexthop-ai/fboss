@@ -13,6 +13,9 @@ CHASSIS_EEPROM_PARSED="/run/devmap/eeproms/CHASSIS_EEPROM_PARSED"
 # Passed as --flagfile by the fboss_sw_agent, fboss_hw_agent@ and qsfp_service
 # units; on tmpfs so it cannot go stale across boots.
 VARIANT_FLAGFILE="/run/fboss/variant_flags"
+NPU_SDK_UTILS_TOOL="/opt/fboss/bin/npu_sdk_utils.py"
+NPU_SDK_METADATA="${FBOSS_SHARE}/npu_sdk_metadata.json"
+NPU_HW_AGENT_BINARY="fboss_hw_agent-sai_impl"
 
 log() {
   echo "[fboss_init] $1" >&2
@@ -87,6 +90,35 @@ copy_config() {
   fi
 }
 
+setup_agent_config() {
+  local src="$1"
+  local dst="${COOP_DIR}/agent.conf"
+
+  if [[ -e $dst ]]; then
+    log "agent.conf already exists at $dst (skipping)"
+    return
+  fi
+
+  if [[ ! -f $src ]]; then
+    log "No agent.conf found at $src (skipping)"
+    return
+  fi
+
+  # Fake-SAI artifacts intentionally do not carry NPU SDK metadata.
+  if [[ ! -f $NPU_SDK_METADATA ]]; then
+    log "No NPU SDK metadata found; keeping the configured SDK version"
+    copy_config "$src" "$dst" "agent.conf"
+    return
+  fi
+
+  python3 "$NPU_SDK_UTILS_TOOL" materialize-agent-config \
+    --config-path "$src" \
+    --metadata-path "$NPU_SDK_METADATA" \
+    --binary-name "$NPU_HW_AGENT_BINARY" \
+    --output-directory "$COOP_DIR"
+  log "Created agent.conf with SDK versions for $NPU_HW_AGENT_BINARY"
+}
+
 generate_fruid() {
   if [[ -s $FRUID_FILE ]]; then
     log "Non-empty fruid.json already exists at $FRUID_FILE (skipping)"
@@ -117,7 +149,7 @@ setup_coop_configs() {
   chmod 2775 "$COOP_DIR"
   setfacl -m g:switching:rwx "$COOP_DIR"
   setfacl -d -m g:switching:rwx -m o::rx "$COOP_DIR"
-  copy_config "${platform_dir}/agent.conf" "${COOP_DIR}/agent.conf" "agent.conf"
+  setup_agent_config "${platform_dir}/agent.conf"
   copy_config "${platform_dir}/qsfp.conf" "${COOP_DIR}/qsfp.conf" "qsfp.conf"
   copy_config "${platform_dir}/led.conf" "${COOP_DIR}/led.conf" "led.conf"
 }

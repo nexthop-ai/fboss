@@ -84,6 +84,9 @@ void PlatformProductInfo::initMode() {
       type_ = *descriptorPlatformType;
       return;
     }
+    // TODO(T288776433): Guard descriptor lookup with the
+    // platform_descriptor_registry feature scope before making it
+    // authoritative.
   }
   if (FLAGS_mode.empty()) {
     auto modelName = getProductName();
@@ -99,35 +102,13 @@ void PlatformProductInfo::initMode() {
     } else if (
         modelName.find("Wedge400") == 0 || modelName.find("WEDGE400") == 0) {
       type_ = PlatformType::PLATFORM_WEDGE400;
-    } else if (
-        modelName.find("Wedge800BACT") == 0 ||
-        modelName.find("WEDGE800BACT") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800BACT;
-    } else if (
-        modelName.find("Wedge800BNHP") == 0 ||
-        modelName.find("WEDGE800BNHP") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800BNHP;
-    } else if (
-        modelName.find("Wedge800CACT") == 0 ||
-        modelName.find("WEDGE800CACT") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800CACT;
-    } else if (
-        modelName.find("Wedge800CNHP") == 0 ||
-        modelName.find("WEDGE800CNHP") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800CNHP;
-    } else if (modelName.find("M5120CSC") == 0) {
-      type_ = PlatformType::PLATFORM_M5120CSC;
-    } else if (
-        modelName.find("Wedge800CNHP") == 0 ||
-        modelName.find("WEDGE800CNHP") == 0) {
-      type_ = PlatformType::PLATFORM_WEDGE800CNHP;
     } else if (modelName.find("DARWIN48V") == 0) {
       type_ = PlatformType::PLATFORM_DARWIN48V;
     } else if (
         modelName.find("Darwin") == 0 || modelName.find("DARWIN") == 0 ||
         modelName.find("DCS-7060") == 0 || modelName.find("Rackhawk") == 0) {
       type_ = PlatformType::PLATFORM_DARWIN;
-    } else if (modelName.find("Wedge") == 0 || modelName.find("WEDGE") == 0) {
+    } else if (modelName == "Wedge" || modelName == "WEDGE") {
       type_ = PlatformType::PLATFORM_WEDGE;
     } else if (modelName.find("SCM-LC") == 0 || modelName.find("LC") == 0) {
       // TODO remove LC once fruid.json is fixed on Galaxy Linecards
@@ -269,15 +250,11 @@ void PlatformProductInfo::initMode() {
         modelName.find("Saintpaul") == 0 || modelName.find("SAINTPAUL") == 0) {
       type_ = PlatformType::PLATFORM_SAINTPAUL;
     } else if (
-        modelName.find("M4062nhp") == 0 || modelName.find("M4062NHP") == 0 ||
         // "Nova4000" is the legacy model name still burned into the EEPROM of
         // early units; keep matching it so those boards map to
         // PLATFORM_M4062NHP.
         modelName.find("Nova4000") == 0) {
       type_ = PlatformType::PLATFORM_M4062NHP;
-    } else if (
-        modelName.find("M4061CLSC") == 0 || modelName.find("M4061clsc") == 0) {
-      type_ = PlatformType::PLATFORM_M4061CLSC;
     } else {
       throw FbossError("invalid model name " + modelName);
     }
@@ -350,14 +327,8 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_NH4220F;
     } else if (FLAGS_mode == "nh5010f") {
       type_ = PlatformType::PLATFORM_NH5010F;
-    } else if (FLAGS_mode == "wedge800bact") {
-      type_ = PlatformType::PLATFORM_WEDGE800BACT;
     } else if (FLAGS_mode == "tahansb800bc" || FLAGS_mode == "tahansb800bcm") {
       type_ = PlatformType::PLATFORM_TAHANSB800BC;
-    } else if (FLAGS_mode == "wedge800cact") {
-      type_ = PlatformType::PLATFORM_WEDGE800CACT;
-    } else if (FLAGS_mode == "m5120csc") {
-      type_ = PlatformType::PLATFORM_M5120CSC;
     } else if (FLAGS_mode == "j4sim") {
       type_ = PlatformType::PLATFORM_J4SIM;
     } else if (
@@ -373,14 +344,6 @@ void PlatformProductInfo::initMode() {
       type_ = PlatformType::PLATFORM_YANGRA2;
     } else if (FLAGS_mode == "saintpaul") {
       type_ = PlatformType::PLATFORM_SAINTPAUL;
-    } else if (FLAGS_mode == "m4062nhp") {
-      type_ = PlatformType::PLATFORM_M4062NHP;
-    } else if (FLAGS_mode == "m4061clsc") {
-      type_ = PlatformType::PLATFORM_M4061CLSC;
-    } else if (FLAGS_mode == "wedge800bnhp") {
-      type_ = PlatformType::PLATFORM_WEDGE800BNHP;
-    } else if (FLAGS_mode == "wedge800cnhp") {
-      type_ = PlatformType::PLATFORM_WEDGE800CNHP;
     } else {
       throw std::runtime_error("invalid mode " + FLAGS_mode);
     }

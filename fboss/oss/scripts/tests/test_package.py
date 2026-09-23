@@ -24,6 +24,22 @@ from fboss.oss.scripts import package
 
 
 class PackageTest(unittest.TestCase):
+    @mock.patch.object(package, "get_platform_descriptor_paths", return_value={})
+    @mock.patch.object(package, "_find_getdeps_libs", return_value={})
+    def test_forwarding_package_includes_npu_sdk_utils(
+        self,
+        _mock_find_getdeps_libs: mock.MagicMock,
+        _mock_get_platform_descriptor_paths: mock.MagicMock,
+    ) -> None:
+        production_files, _ = package._build_target(
+            "forwarding-stack", pathlib.Path("/build")
+        )
+
+        self.assertEqual(
+            "bin/npu_sdk_utils.py",
+            production_files[package.NPU_SDK_UTILS_SCRIPT],
+        )
+
     @mock.patch.object(package, "_find_getdeps_libs", return_value={})
     def test_forwarding_package_includes_platform_descriptors(
         self,
@@ -65,3 +81,103 @@ class PackageTest(unittest.TestCase):
                     "platform_mapping/generated/platform_descriptor.json",
                     archive.getnames(),
                 )
+
+    @mock.patch.object(package, "get_platform_descriptor_paths", return_value={})
+    @mock.patch.object(package, "_find_getdeps_libs", return_value={})
+    def test_forwarding_packages_include_read_only_npu_sdk_metadata(
+        self,
+        _mock_find_getdeps_libs: mock.MagicMock,
+        _mock_get_platform_descriptor_paths: mock.MagicMock,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            build_dir = pathlib.Path(temp_dir)
+            metadata_path = (
+                build_dir / "build" / "fboss" / package.NPU_SDK_METADATA_FILENAME
+            )
+            metadata_path.parent.mkdir(parents=True)
+            metadata_path.write_text("{}\n")
+            metadata_path.chmod(0o444)
+
+            production_files, test_files = package._build_target(
+                "forwarding-stack", build_dir
+            )
+
+            self.assertEqual(
+                package.NPU_SDK_METADATA_ARCHIVE_PATH,
+                production_files[metadata_path],
+            )
+            self.assertEqual(
+                package.NPU_SDK_METADATA_ARCHIVE_PATH,
+                test_files[metadata_path],
+            )
+
+            tar_path = build_dir / "metadata.tar"
+            package.write_tar(
+                str(tar_path),
+                {metadata_path: package.NPU_SDK_METADATA_ARCHIVE_PATH},
+            )
+            with tarfile.open(tar_path) as archive:
+                self.assertEqual(
+                    0o444,
+                    archive.getmember(package.NPU_SDK_METADATA_ARCHIVE_PATH).mode,
+                )
+
+    @mock.patch.object(package, "get_platform_descriptor_paths", return_value={})
+    @mock.patch.object(package, "_find_getdeps_libs", return_value={})
+    def test_forwarding_package_rejects_writable_npu_sdk_metadata(
+        self,
+        _mock_find_getdeps_libs: mock.MagicMock,
+        _mock_get_platform_descriptor_paths: mock.MagicMock,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            build_dir = pathlib.Path(temp_dir)
+            metadata_path = (
+                build_dir / "build" / "fboss" / package.NPU_SDK_METADATA_FILENAME
+            )
+            metadata_path.parent.mkdir(parents=True)
+            metadata_path.write_text("{}\n")
+
+            with self.assertRaisesRegex(RuntimeError, "must be read-only"):
+                package._build_target("forwarding-stack", build_dir)
+
+    def test_finds_unsuffixed_install_dir(self) -> None:
+        """getdeps installs first-party projects without a build-config hash."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            build_dir = pathlib.Path(temp_dir)
+            (build_dir / "installed" / "bgp" / "sbin").mkdir(parents=True)
+
+            self.assertEqual(
+                package._find_installed_pkg_dir(build_dir, "bgp"),
+                build_dir / "installed" / "bgp",
+            )
+
+    def test_prefers_exact_dir_over_another_project(self) -> None:
+        """`folly-*` also matches folly-python, which is a different project."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            build_dir = pathlib.Path(temp_dir)
+            installed = build_dir / "installed"
+            (installed / "folly").mkdir(parents=True)
+            (installed / "folly-python").mkdir()
+
+            self.assertEqual(
+                package._find_installed_pkg_dir(build_dir, "folly"),
+                installed / "folly",
+            )
+
+    def test_falls_back_to_the_hashed_dir(self) -> None:
+        """Third-party projects only ever appear with the hash suffix."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            build_dir = pathlib.Path(temp_dir)
+            hashed = build_dir / "installed" / "boost-uWVzwhvt2_BurxQtUxbB8EM2b8"
+            hashed.mkdir(parents=True)
+
+            self.assertEqual(
+                package._find_installed_pkg_dir(build_dir, "boost"), hashed
+            )
+
+    def test_returns_none_when_absent(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            build_dir = pathlib.Path(temp_dir)
+            (build_dir / "installed").mkdir()
+
+            self.assertIsNone(package._find_installed_pkg_dir(build_dir, "bgp"))

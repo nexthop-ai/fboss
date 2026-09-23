@@ -199,6 +199,11 @@ jobs:
           docker exec $C journalctl -u fboss_sw_agent --no-pager -n 100 || true
           echo "=== wedge_agent.log crash stacks ==="
           docker exec $C bash -c "grep -B5 -A40 'Aborted at\|Check failure' /var/facebook/logs/fboss/wedge_agent.log | tail -150" || true
+          echo "=== fboss_sw_agent allocator ==="
+          docker exec $C bash -c 'P=$(pidof fboss_sw_agent); echo "pid=$P"; \
+            echo "-- jemalloc mappings:"; grep jemalloc /proc/$P/maps || echo "(none)"; \
+            echo "-- allocator env:"; tr "\0" "\n" < /proc/$P/environ | grep -E "LD_PRELOAD|MALLOC_CONF" || echo "(none)"; \
+            echo "-- malloc_conf in the binary:"; nm $(readlink /proc/$P/exe) 2>/dev/null | grep malloc_conf || echo "(none)"' || true
 
       # No docker cleanup steps: the GARM runners are single-use VMs, so the
       # sim/build containers, images, and network die with the machine.

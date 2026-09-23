@@ -18,12 +18,19 @@
 #include <optional>
 #include <string>
 #include <vector>
-#include "fboss/agent/gen-cpp2/agent_config_types_fwd.h"
 #include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
 #include "fboss/cli/fboss2/session/FbossServiceUtil.h"
 #include "fboss/cli/fboss2/session/Git.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
 #include "fboss/cli/fboss2/utils/PortMap.h"
+
+namespace facebook::bgp::thrift {
+class BgpConfig;
+}
+
+namespace facebook::fboss::cfg {
+class AgentConfig;
+}
 
 namespace facebook::fboss {
 

@@ -17,7 +17,6 @@
 
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/cli/fboss2/commands/delete/acl/table/CmdDeleteAclTable.h"
-#include "fboss/cli/fboss2/commands/delete/acl/table_group/CmdDeleteAclTableGroup.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/test/config/CmdConfigTestBase.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
@@ -31,6 +30,7 @@ namespace facebook::fboss {
 // sits in the second group so the "last group" guard can be exercised without
 // tripping first.
 static constexpr auto kSeedConfig = R"({
+  "defaultCommandLineArgs": {"enable_acl_table_group": "true"},
   "sw": {
     "aclTableGroups": [{
       "name": "ingress-ACL-Table-Group",
@@ -72,20 +72,6 @@ static constexpr auto kSeedConfig = R"({
         ]
       }
     }
-  }
-})";
-
-// A single group, so deleting it would leave aclTableGroups empty.
-static constexpr auto kSeedOneGroup = R"({
-  "sw": {
-    "aclTableGroups": [{
-      "name": "ingress-ACL-Table-Group",
-      "stage": 0,
-      "aclTables": [{
-        "name": "AclTable1", "priority": 0, "aclEntries": [],
-        "actionTypes": [], "qualifiers": [], "udfGroups": []
-      }]
-    }]
   }
 })";
 
@@ -147,14 +133,6 @@ class CmdDeleteAclTableTestFixture : public CmdConfigTestBase {
   }
 };
 
-class CmdDeleteAclOneGroupTestFixture : public CmdConfigTestBase {
- public:
-  CmdDeleteAclOneGroupTestFixture()
-      : CmdConfigTestBase(
-            "fboss_acl_group_delete_test_%%%%-%%%%-%%%%-%%%%",
-            kSeedOneGroup) {}
-};
-
 // =============================================================
 // Argument validation
 // =============================================================
@@ -164,9 +142,6 @@ TEST_F(CmdDeleteAclTableTestFixture, argValidation) {
   EXPECT_THROW(
       AclTableDeleteArgs({"AclTable1", "extra"}), std::invalid_argument);
   EXPECT_EQ(AclTableDeleteArgs({"AclTable1"}).getTableName(), "AclTable1");
-
-  EXPECT_THROW(AclTableGroupDeleteArgs({}), std::invalid_argument);
-  EXPECT_EQ(AclTableGroupDeleteArgs({"grp"}).getGroupName(), "grp");
 }
 
 // =============================================================
@@ -217,55 +192,11 @@ TEST_F(CmdDeleteAclTableTestFixture, deleteMissingTableThrows) {
 // delete acl table-group
 // =============================================================
 
-TEST_F(CmdDeleteAclTableTestFixture, deleteGroupTakesItsTablesAndMatchers) {
-  setupTestableConfigSession(
-      "delete acl table-group", "ingress-ACL-Table-Group");
-  CmdDeleteAclTableGroup cmd;
-  HostInfo host("testhost");
-  auto msg = cmd.queryClient(
-      host, AclTableGroupDeleteArgs({"ingress-ACL-Table-Group"}));
-  EXPECT_THAT(msg, HasSubstr("2 table(s)"));
-
-  EXPECT_FALSE(hasGroup("ingress-ACL-Table-Group"));
-  EXPECT_FALSE(hasTable("AclTable1"));
-  EXPECT_FALSE(hasTable("AclTable2"));
-  EXPECT_FALSE(hasDataPlaneMatcher("dp-rule"));
-  EXPECT_FALSE(hasDataPlaneMatcher("other-rule"));
-  EXPECT_FALSE(hasCpuMatcher("cpu-rule"));
-
-  EXPECT_TRUE(hasGroup("egress-ACL-Table-Group"));
-}
-
-TEST_F(CmdDeleteAclTableTestFixture, deleteMissingGroupThrows) {
-  setupTestableConfigSession("delete acl table-group", "nope");
-  CmdDeleteAclTableGroup cmd;
-  HostInfo host("testhost");
-  EXPECT_THROW(
-      cmd.queryClient(host, AclTableGroupDeleteArgs({"nope"})),
-      std::runtime_error);
-}
-
-TEST_F(CmdDeleteAclOneGroupTestFixture, refusesDeletingTheLastGroup) {
-  // updateAclTableGroups throws when aclTableGroups ends up empty, so this
-  // would produce a config that cannot be committed.
-  setupTestableConfigSession(
-      "delete acl table-group", "ingress-ACL-Table-Group");
-  CmdDeleteAclTableGroup cmd;
-  HostInfo host("testhost");
-  EXPECT_THROW(
-      cmd.queryClient(
-          host, AclTableGroupDeleteArgs({"ingress-ACL-Table-Group"})),
-      std::runtime_error);
-
-  auto& groups =
-      *ConfigSession::getInstance().getAgentConfig().sw()->aclTableGroups();
-  EXPECT_EQ(groups.size(), 1u);
-}
-
 // A config with no aclTableGroups at all: both delete commands must throw
 // (there is nothing to delete, and dereferencing the unset field would
 // otherwise crash) and must not invent the field as a side effect.
 static constexpr auto kSeedConfigEmpty = R"({
+  "defaultCommandLineArgs": {"enable_acl_table_group": "true"},
   "sw": {}
 })";
 
@@ -292,21 +223,40 @@ TEST_F(CmdDeleteAclEmptyConfigTestFixture, deleteTableOnEmptyConfigThrows) {
           .has_value());
 }
 
-TEST_F(CmdDeleteAclEmptyConfigTestFixture, deleteGroupOnEmptyConfigThrows) {
-  setupTestableConfigSession(
-      "delete acl table-group", "ingress-ACL-Table-Group");
-  CmdDeleteAclTableGroup cmd;
+// A single table config-wide, so deleting it would drop all classification.
+static constexpr auto kSeedOneTable = R"({
+  "defaultCommandLineArgs": {"enable_acl_table_group": "true"},
+  "sw": {
+    "aclTableGroups": [{
+      "name": "ingress-ACL-Table-Group",
+      "stage": 0,
+      "aclTables": [{
+        "name": "AclTable1", "priority": 0, "aclEntries": [],
+        "actionTypes": [], "qualifiers": [], "udfGroups": []
+      }]
+    }]
+  }
+})";
+
+class CmdDeleteAclOneTableTestFixture : public CmdConfigTestBase {
+ public:
+  CmdDeleteAclOneTableTestFixture()
+      : CmdConfigTestBase(
+            "fboss_acl_last_table_delete_test_%%%%-%%%%-%%%%-%%%%",
+            kSeedOneTable) {}
+};
+
+TEST_F(CmdDeleteAclOneTableTestFixture, refusesDeletingTheLastTable) {
+  setupTestableConfigSession("delete acl table", "AclTable1");
+  CmdDeleteAclTable cmd;
   HostInfo host("testhost");
   EXPECT_THROW(
-      cmd.queryClient(
-          host, AclTableGroupDeleteArgs({"ingress-ACL-Table-Group"})),
+      cmd.queryClient(host, AclTableDeleteArgs({"AclTable1"})),
       std::runtime_error);
-  EXPECT_FALSE(
-      ConfigSession::getInstance()
-          .getAgentConfig()
-          .sw()
-          ->aclTableGroups()
-          .has_value());
+
+  auto& groups =
+      *ConfigSession::getInstance().getAgentConfig().sw()->aclTableGroups();
+  EXPECT_EQ(groups[0].aclTables()->size(), 1u);
 }
 
 } // namespace facebook::fboss

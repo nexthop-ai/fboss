@@ -35,6 +35,7 @@ namespace facebook::fboss {
 class SwitchState;
 class MultiSwitchFibInfoMap;
 class MultiSwitchMySidMap;
+class MultiSwitchClassBasedPolicyMap;
 class SwitchIdScopeResolver;
 class StateDelta;
 
@@ -76,6 +77,11 @@ struct MySidWithNextHops {
   std::shared_ptr<MySid> mySid;
   RouteNextHopSet nextHopSet;
   std::optional<std::string> nextHopGroupName;
+};
+
+struct MySidFrrProtectionUpdate {
+  folly::CIDRNetwork mySidPrefix;
+  RouteNextHopSet nextHops;
 };
 
 // (prefix-key for the MySid, IP of the removed neighbor). Used by the
@@ -148,6 +154,12 @@ class RibRouteTables {
       const std::vector<std::string>& names,
       const std::function<void(const NextHopIDManager*)>& stateUpdateFn);
 
+  void addOrUpdatePolicies(
+      const SwitchIdScopeResolver* resolver,
+      const std::vector<ClassBasedPolicy>& policies,
+      const RibToSwitchStateFunction& ribToSwitchStateFunc,
+      void* cookie);
+
   template <typename RouteType, typename RouteIdType>
   void update(
       const SwitchIdScopeResolver* resolver,
@@ -174,6 +186,13 @@ class RibRouteTables {
       const std::vector<MySidWithNextHops>& toAdd,
       const std::vector<MySidNeighborRemoved>& toUnresolveIfMatch,
       const std::vector<IpPrefix>& toDelete,
+      const RibMySidToSwitchStateFunction& ribMySidToSwitchStateFunc,
+      void* cookie);
+
+  void updateMySidFrrProtection(
+      const SwitchIdScopeResolver* resolver,
+      const std::vector<MySidFrrProtectionUpdate>& toAddOrUpdate,
+      const std::vector<folly::CIDRNetwork>& toDelete,
       const RibMySidToSwitchStateFunction& ribMySidToSwitchStateFunc,
       void* cookie);
 
@@ -251,7 +270,9 @@ class RibRouteTables {
       const std::shared_ptr<MultiSwitchFibInfoMap>& fibsInfoMap,
       const std::shared_ptr<MultiLabelForwardingInformationBase>& labelFib,
       const std::shared_ptr<MultiSwitchMySidMap>& mySidMap,
-      uint32_t ecmpWidth);
+      uint32_t ecmpWidth,
+      const std::shared_ptr<MultiSwitchClassBasedPolicyMap>&
+          classBasedPolicyMaps);
 
   void ensureVrf(RouterID rid);
   std::vector<RouterID> getVrfList() const;
@@ -287,6 +308,8 @@ class RibRouteTables {
   std::map<int32_t, state::RouteTableFields> warmBootState() const;
 
   void updateEcmpOverrides(const StateDelta& delta);
+
+  std::string getPolicyDefaultNextHopGroup(const std::string& policyName) const;
 
  private:
   void updateFib(
@@ -493,6 +516,14 @@ class RoutingInformationBase {
         cookie,
         true /* async */);
   }
+
+  void updateMySidFrrProtection(
+      const SwitchIdScopeResolver* resolver,
+      const std::vector<MySidFrrProtectionUpdate>& toAddOrUpdate,
+      const std::vector<folly::CIDRNetwork>& toDelete,
+      const RibMySidToSwitchStateFunction& ribMySidToSwitchStateFunc,
+      void* cookie);
+
   /*
    * VrfAndNetworkToInterfaceRoute is conceptually a mapping from the pair
    * (RouterID, folly::CIDRNetwork) to the pair (Interface(1),
@@ -570,7 +601,9 @@ class RoutingInformationBase {
       const std::shared_ptr<MultiSwitchFibInfoMap>& fibsInfoMap,
       const std::shared_ptr<MultiLabelForwardingInformationBase>& labelFib,
       const std::shared_ptr<MultiSwitchMySidMap>& mySidMap,
-      uint32_t ecmpWidth);
+      uint32_t ecmpWidth,
+      const std::shared_ptr<MultiSwitchClassBasedPolicyMap>&
+          classBasedPolicyMaps);
 
   void ensureVrf(RouterID rid) {
     ribTables_.ensureVrf(rid);
@@ -653,6 +686,12 @@ class RoutingInformationBase {
   void deleteNamedNextHopGroups(
       const std::vector<std::string>& names,
       const std::function<void(const NextHopIDManager*)>& stateUpdateFn);
+
+  void addOrUpdatePolicies(
+      const SwitchIdScopeResolver* resolver,
+      const std::vector<ClassBasedPolicy>& policies,
+      const RibToSwitchStateFunction& ribToSwitchStateFunc,
+      void* cookie);
 
  private:
   void ensureRunning() const;

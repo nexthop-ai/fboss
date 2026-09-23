@@ -403,6 +403,7 @@ target_link_libraries(
 set(core_libs
   init_hook_registry
   agent_config_cpp2
+  agent_features
   switchinfo_utils
   stats
   utils
@@ -469,6 +470,7 @@ set(core_libs
   thrift_method_rate_limit
   thrift_service_utils
   shel_manager
+  pbr_acl_manager
   state_delta_logger
   switch_state_delta_logger
   dsfnode_utils
@@ -571,6 +573,7 @@ add_library(hw_switch
 )
 
 target_link_libraries(hw_switch
+  agent_features
   fboss_types
   ctrl_cpp2
   fboss_cpp2

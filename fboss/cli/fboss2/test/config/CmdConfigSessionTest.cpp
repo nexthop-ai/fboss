@@ -1244,14 +1244,16 @@ TEST_F(ConfigSessionTestFixture, threeWayMergeScenarios) {
     session1.setCommandLine("config interface eth1/1/1 name port0_renamed");
     session1.saveConfig(
         cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
-    session1.commit(localhost());
+    auto result1 = session1.commit(localhost());
+    EXPECT_FALSE(result1.commitSha.empty());
 
     (*session2.getAgentConfig().sw()->ports())[1].description() = "port1_desc";
     session2.setCommandLine("config interface eth1/2/1 description port1_desc");
     session2.saveConfig(
         cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
     EXPECT_NO_THROW(session2.rebase());
-    session2.commit(localhost());
+    auto result2 = session2.commit(localhost());
+    EXPECT_FALSE(result2.commitSha.empty());
 
     std::string content;
     EXPECT_TRUE(folly::readFile(cliConfigPath.c_str(), content));
@@ -1270,14 +1272,18 @@ TEST_F(ConfigSessionTestFixture, threeWayMergeScenarios) {
     session1.setCommandLine("config interface eth1/1/1 description same_value");
     session1.saveConfig(
         cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
-    session1.commit(localhost());
+    auto result1 = session1.commit(localhost());
+    EXPECT_FALSE(result1.commitSha.empty());
 
     (*session2.getAgentConfig().sw()->ports())[0].description() = "same_value";
     session2.setCommandLine("config interface eth1/1/1 description same_value");
     session2.saveConfig(
         cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
     EXPECT_NO_THROW(session2.rebase());
-    session2.commit(localhost());
+    // Rebased session is identical to what session1 committed -> no-op commit
+    // (empty sha, no reload).
+    auto result2 = session2.commit(localhost());
+    EXPECT_TRUE(result2.commitSha.empty());
 
     std::string content;
     EXPECT_TRUE(folly::readFile(cliConfigPath.c_str(), content));
@@ -1296,7 +1302,8 @@ TEST_F(ConfigSessionTestFixture, threeWayMergeScenarios) {
         "config interface eth1/1/1 description user1_value");
     session1.saveConfig(
         cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
-    session1.commit(localhost());
+    auto result1 = session1.commit(localhost());
+    EXPECT_FALSE(result1.commitSha.empty());
 
     (*session2.getAgentConfig().sw()->ports())[0].description() = "user2_value";
     session2.setCommandLine(
@@ -1510,8 +1517,8 @@ TEST_F(ConfigSessionTestFixture, bgpConfigEditPreservesOtherSections) {
   EXPECT_EQ(saved["peer_groups"][0]["name"].asString(), "RACK");
 
   // A BGP restart must be recorded so `config session commit` applies it.
-  // bgpd has no hitless reload, so the recorded level is SERVICE_RESTART (a
-  // plain service restart for BGP).
+  // bgpd has no hitless reload (and no warmboot), so the recorded level is
+  // SERVICE_RESTART (a plain service restart).
   EXPECT_EQ(
       session.getRequiredAction(cli::ServiceType::BGP),
       cli::ConfigActionLevel::SERVICE_RESTART);

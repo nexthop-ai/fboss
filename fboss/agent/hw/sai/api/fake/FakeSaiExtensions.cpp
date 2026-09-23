@@ -1159,6 +1159,16 @@ SaiNextHopGroupTraits::Attributes::AttributeSplitHorizonEnable::operator()() {
 }
 
 std::optional<sai_attr_id_t>
+SaiNextHopGroupTraits::Attributes::AttributeArsFailPktCount::operator()() {
+  return SAI_NEXT_HOP_GROUP_ATTR_ARS_FAIL_PKT_COUNT;
+}
+
+std::optional<sai_attr_id_t>
+SaiNextHopGroupTraits::Attributes::AttributeArsPortReassignCount::operator()() {
+  return SAI_NEXT_HOP_GROUP_ATTR_ARS_PORT_REASSIGN_COUNT;
+}
+
+std::optional<sai_attr_id_t>
 SaiAclEntryTraits::Attributes::AttributeActionL3SwitchCancel::operator()() {
   return SAI_ACL_ENTRY_ATTR_ACTION_L3_SWITCH_CANCEL;
 }
@@ -1166,11 +1176,6 @@ SaiAclEntryTraits::Attributes::AttributeActionL3SwitchCancel::operator()() {
 std::optional<sai_attr_id_t>
 SaiAclEntryTraits::Attributes::AttributeFieldRouteDestination::operator()() {
   return SAI_ACL_ENTRY_ATTR_FIELD_ROUTE_DST;
-}
-
-std::optional<sai_attr_id_t>
-SaiAclEntryTraits::Attributes::AttributeLabelExtendedWrapper::operator()() {
-  return SAI_ACL_ENTRY_ATTR_EXT_LABEL_EXTENDED;
 }
 
 std::optional<sai_attr_id_t>

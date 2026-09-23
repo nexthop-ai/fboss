@@ -64,18 +64,11 @@ CmdDeleteAclRuleTraits::RetType CmdDeleteAclRule::queryClient(
 
   entries.erase(eit);
 
-  // Drop any MatchToAction attached to this rule, in both the dataplane and
-  // the CPU policy. checkTrafficPolicyAclsExistInConfig walks both, so a
-  // leftover matcher in either makes `config session commit` fail. It would
-  // also silently re-attach on rule re-creation under the same name. A CoPP
-  // matcher needs no CLI to exist: rsw-style base configs ship
-  // cpuTrafficPolicy entries naming rules in aclTableGroups.
+  // Matchers reference rules by name, in both policies. A leftover fails the
+  // next commit and would silently re-attach to a later rule with the same
+  // name. CoPP matchers need no CLI to exist: base configs ship them.
   acl_utils::stripMatchersForRules(swConfig, {args.getRuleName()});
 
-  // Removing an AclEntry takes the same dataplane path as mutating one —
-  // processAclTableGroupDelta in SaiAclTableManager applies the diff at
-  // runtime. SaiSwitch has no warmboot-prohibited guard for ACL entry
-  // removal, so this is HITLESS.
   session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   return fmt::format(

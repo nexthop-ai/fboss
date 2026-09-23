@@ -11,12 +11,14 @@
 #include "fboss/cli/fboss2/commands/config/acl/AclConfigUtils.h"
 
 #include <fmt/format.h>
+
 #include <folly/String.h>
 #include <algorithm>
 #include <iterator>
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include "thrift/lib/cpp/util/EnumUtils.h"
 
 namespace facebook::fboss::acl_utils {
 
@@ -62,12 +64,8 @@ bool findOrCreateAclTableGroup(
         return *g.name() == groupName;
       });
   if (it != groups.end()) {
-    // Refuse to move an existing group between stages. AclTableGroupMap is
-    // keyed by stage (updateAclTableGroups looks the original up with
-    // getNodeIf(*cfgAclTableGroup.stage())), so a stage change reads as the
-    // old group vanishing and an unrelated one appearing. Observed on a TH4
-    // device: committing one restarts the agent and the stage comes back
-    // unchanged, so the CLI must not offer it.
+    // Observed on a TH4 device: committing a stage move restarts the agent
+    // and the stage comes back unchanged, so the CLI must not offer it.
     if (*it->stage() != stage) {
       throw std::runtime_error(
           fmt::format(
@@ -76,8 +74,8 @@ bool findOrCreateAclTableGroup(
               "of one group and creation of another, which it does not apply. "
               "Delete the group and recreate it at the new stage instead",
               groupName,
-              static_cast<int>(*it->stage()),
-              static_cast<int>(stage)));
+              apache::thrift::util::enumNameSafe(*it->stage()),
+              apache::thrift::util::enumNameSafe(stage)));
     }
     return false;
   }
@@ -93,7 +91,7 @@ bool findOrCreateAclTableGroup(
             "the same stage would silently replace it (AclTableGroupMap is "
             "keyed by stage)",
             *clash->name(),
-            static_cast<int>(stage)));
+            apache::thrift::util::enumNameSafe(stage)));
   }
 
   cfg::AclTableGroup fresh;
@@ -187,9 +185,8 @@ std::size_t stripMatchersForRules(
   if (auto dataPlane = swConfig.dataPlaneTrafficPolicy()) {
     strip(*dataPlane);
   }
-  // cpuTrafficPolicy nests the policy one level deeper, and field 1 is
-  // optional: a config may carry rxReasonToQueueOrderedList with no
-  // trafficPolicy at all.
+  // cpuTrafficPolicy nests the policy one level deeper, and trafficPolicy is
+  // optional inside it: a config may carry rxReasonToQueueOrderedList alone.
   if (auto cpu = swConfig.cpuTrafficPolicy()) {
     if (auto cpuPolicy = cpu->trafficPolicy()) {
       strip(*cpuPolicy);

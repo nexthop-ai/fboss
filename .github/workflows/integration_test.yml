@@ -271,9 +271,15 @@ jobs:
             echo "::group::[$DUT] Copy test runner scripts"
             # The DUT image carries the run_scripts from the last stable
             # build; overlay this PR's copy so runner changes are tested too.
-            tar -C fboss/oss/scripts/run_scripts \
-              --exclude=__pycache__ --exclude=unittests \
-              -czf run_scripts.tgz .
+            # npu_sdk_utils.py sits beside run_scripts/, not inside it, but
+            # test_runner.py imports it and both packagers install it as
+            # bin/npu_sdk_utils.py. Overlaying run_scripts/ alone leaves the
+            # DUT with this PR's test_runner and the image's older bin/, so
+            # the import fails before any test runs.
+            tar --exclude=__pycache__ --exclude=unittests \
+              -czf run_scripts.tgz \
+              -C fboss/oss/scripts/run_scripts . \
+              -C "$GITHUB_WORKSPACE/fboss/oss/scripts" npu_sdk_utils.py
             if ! nh dvc scp run_scripts.tgz "$DUT":/tmp/; then
               echo "::warning::Failed to copy run_scripts, trying next DUT"
               nh tb release "$DUT" || true

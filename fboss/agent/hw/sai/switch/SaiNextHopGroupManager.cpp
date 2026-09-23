@@ -76,15 +76,6 @@ bool isEcmpModeARS(std::optional<cfg::SwitchingMode> switchingMode) {
        switchingMode.value() == cfg::SwitchingMode::FLOWLET_QUALITY));
 }
 
-bool isProtectionNextHopGroupType(
-    [[maybe_unused]] sai_next_hop_group_type_t nextHopGroupType) {
-#if SAI_API_VERSION >= SAI_VERSION(1, 16, 0)
-  return nextHopGroupType == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION;
-#else
-  return false;
-#endif
-}
-
 bool isHwProtectionNextHopGroupType(
     [[maybe_unused]] sai_next_hop_group_type_t nextHopGroupType) {
 #if SAI_API_VERSION >= SAI_VERSION(1, 16, 0)
@@ -189,6 +180,27 @@ splitHorizonEnableFor(
 #endif
 }
 } // namespace
+
+bool isProtectionNextHopGroupType(
+    [[maybe_unused]] sai_next_hop_group_type_t nextHopGroupType) {
+#if SAI_API_VERSION >= SAI_VERSION(1, 16, 0)
+  return nextHopGroupType == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION;
+#else
+  return false;
+#endif
+}
+
+sai_next_hop_group_type_t getNextHopGroupType(
+    const RouteNextHopEntry::NextHopSet& nextHops) {
+#if SAI_API_VERSION >= SAI_VERSION(1, 16, 0)
+  if (std::any_of(nextHops.begin(), nextHops.end(), [](const auto& nextHop) {
+        return nextHop.role() == NextHopRole::BACKUP;
+      })) {
+    return SAI_NEXT_HOP_GROUP_TYPE_PROTECTION;
+  }
+#endif
+  return SAI_NEXT_HOP_GROUP_TYPE_ECMP;
+}
 
 SaiNextHopGroupManager::SaiNextHopGroupManager(
     SaiStore* saiStore,
@@ -673,6 +685,41 @@ cfg::SwitchingMode SaiNextHopGroupManager::getNextHopGroupSwitchingMode(
   return cfg::SwitchingMode::FIXED_ASSIGNMENT;
 }
 
+// Reads the ARS specific counters on every next hop group with an ARS object
+// attached and adds them to the switch wide totals.
+//
+// The hardware counters are free running and per group, so each sweep adds a
+// group's delta against its previous reading into an accumulator, and the
+// accumulator is published. Summing the groups live instead would let the
+// total move backwards when a group is deleted. Because the previous reading
+// is kept on the handle:
+//  1. A deleted group leaves what it already contributed in the total, and
+//     its reading goes with it. What it counted since the last sweep is lost,
+//     at most one interval.
+//  2. A new group, or the first sweep after a warm boot, has nothing to
+//     compare against, so its whole reading is taken.
+void SaiNextHopGroupManager::updateStats() {
+  uint64_t failPackets = 0;
+  uint64_t portReassignments = 0;
+  for (const auto& entry : handles_) {
+    auto handle = entry.second.lock();
+    if (!handle) {
+      continue;
+    }
+    auto sinceLastSweep = handle->updateStats();
+    failPackets += sinceLastSweep.failPackets;
+    portReassignments += sinceLastSweep.portReassignments;
+  }
+  arsStats_.l3EcmpDlbFailPackets() =
+      *arsStats_.l3EcmpDlbFailPackets() + failPackets;
+  arsStats_.l3EcmpDlbPortReassignmentCount() =
+      *arsStats_.l3EcmpDlbPortReassignmentCount() + portReassignments;
+}
+
+HwFlowletStats SaiNextHopGroupManager::getHwFlowletStats() const {
+  return arsStats_;
+}
+
 std::vector<EcmpDetails> SaiNextHopGroupManager::getAllEcmpDetails() const {
   std::vector<EcmpDetails> ecmpDetails;
 #if SAI_API_VERSION >= SAI_VERSION(1, 14, 0)
@@ -895,6 +942,53 @@ size_t SaiNextHopGroupHandle::nextHopGroupSize() const {
       std::begin(members_), std::end(members_), [](auto member) {
         return member->isProgrammed();
       });
+}
+
+ArsCounterDelta SaiNextHopGroupHandle::updateStats() {
+#if SAI_API_VERSION >= SAI_VERSION(1, 14, 0)
+  // Computed once rather than on every poll.
+  static const bool haveFailPktCount =
+      SaiNextHopGroupTraits::Attributes::ArsFailPktCount::
+          optionalExtensionAttributeId()
+              .has_value();
+  static const bool havePortReassignCount =
+      SaiNextHopGroupTraits::Attributes::ArsPortReassignCount::
+          optionalExtensionAttributeId()
+              .has_value();
+  if (!nextHopGroup || (!haveFailPktCount && !havePortReassignCount)) {
+    return ArsCounterDelta{};
+  }
+  // The counters are ARS attributes, so only read them when an ARS object is
+  // attached. Leaving arsHwCounter_ alone while detached is what lets a
+  // reattach carry on rather than count the whole history a second time.
+  auto arsObjectId =
+      std::get<std::optional<SaiNextHopGroupTraits::Attributes::ArsObjectId>>(
+          nextHopGroup->attributes());
+  if (!arsObjectId.has_value() || arsObjectId->value() == SAI_NULL_OBJECT_ID) {
+    return ArsCounterDelta{};
+  }
+  auto delta = [](uint64_t now, uint64_t before) {
+    return now >= before ? now - before : now;
+  };
+  auto& nextHopGroupApi = SaiApiTable::getInstance()->nextHopGroupApi();
+  auto adapterKey = nextHopGroup->adapterKey();
+  ArsHwCounter current;
+  if (haveFailPktCount) {
+    current.failPackets = nextHopGroupApi.getAttribute(
+        adapterKey, SaiNextHopGroupTraits::Attributes::ArsFailPktCount{});
+  }
+  if (havePortReassignCount) {
+    current.portReassignments = nextHopGroupApi.getAttribute(
+        adapterKey, SaiNextHopGroupTraits::Attributes::ArsPortReassignCount{});
+  }
+  ArsCounterDelta sinceLastSweep{
+      delta(current.failPackets, arsHwCounter_.failPackets),
+      delta(current.portReassignments, arsHwCounter_.portReassignments)};
+  arsHwCounter_ = current;
+  return sinceLastSweep;
+#else
+  return ArsCounterDelta{};
+#endif
 }
 
 void SaiNextHopGroupHandle::memberAdded(

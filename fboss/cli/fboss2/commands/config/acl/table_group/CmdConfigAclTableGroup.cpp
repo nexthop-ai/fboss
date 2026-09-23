@@ -46,9 +46,8 @@ const std::unordered_map<std::string_view, cfg::AclStage> kAclStageByName = {
     {kAclStageIngressPostLookup, cfg::AclStage::INGRESS_POST_LOOKUP},
 };
 
-// Stage names only (case-insensitive). A bare 0-3 would be accepted by the
-// thrift enum but says nothing at the call site about which stage it selects,
-// so the names are the only spelling.
+// Names only, case-insensitive. The thrift enum would take a bare 0-3, but a
+// number in the command line says nothing about which stage it picks.
 cfg::AclStage parseAclStage(const std::string& s) {
   std::string lower = s;
   std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
@@ -89,13 +88,8 @@ CmdConfigAclTableGroupTraits::RetType CmdConfigAclTableGroup::queryClient(
   auto& config = session.getAgentConfig();
   auto& swConfig = *config.sw();
 
-  // Refuse up front on a config whose agent ignores aclTableGroups, rather
-  // than writing something it will never read.
   acl_utils::requireAclTableGroupMode(config);
 
-  // Creates at the requested stage, or is a no-op when the group already
-  // sits there. Any other case throws: a group cannot be moved between
-  // stages, and two groups cannot share one.
   const bool created = acl_utils::findOrCreateAclTableGroup(
       swConfig, args.getGroupName(), args.getStage());
 

@@ -335,6 +335,10 @@ TIpPrefix sampleIpPrefix(const std::string& cidr) {
   return prefix;
 }
 
+TBgpCommunity sampleCommunity(const SampleCommunity& community) {
+  return sampleCommunity(community.asn, community.value);
+}
+
 TBgpCommunity sampleCommunity(uint16_t asn, uint16_t value) {
   TBgpCommunity community;
   community.asn() = asn;
@@ -388,13 +392,15 @@ TBgpPath sampleBgpPath(const SamplePathSpec& spec) {
 
   neteng::fboss::bgp_attr::TAsPathSeg segment;
   segment.seg_type() = TAsPathSegType::AS_SEQUENCE;
-  segment.asns() = {65301, 65332, 64984, 32934};
+  // Sample ASNs (RFC 6996 private-use range). These samples are published to
+  // the CLI reference wiki and ship in the open-source tree, so they must not
+  // carry real AS numbers or community assignments.
+  segment.asns() = {64712, 65017, 64961, 65108};
   path.as_path() = TAsPath{segment};
 
-  // AS32934.DEFAULT, the community a real default route carries.
-  constexpr uint16_t kDefaultRouteAsn = 65529;
-  constexpr uint16_t kDefaultRouteValue = 15990;
-  path.communities() = {sampleCommunity(kDefaultRouteAsn, kDefaultRouteValue)};
+  // The community a default route carries; the 'show bgp config' sample
+  // defines the matching AS65108.DEFAULT mnemonic for it.
+  path.communities() = {sampleCommunity(kSampleDefaultCommunity)};
 
   return path;
 }
@@ -458,6 +464,81 @@ TRibEntryWithHost sampleRibEntriesWithHost() {
   data.oobName() = "rsw001.p001.f01.abc1.oob";
   data.ip() = "192.0.2.1";
   return data;
+}
+
+NetworkPathWithHost sampleNetworkPaths(
+    SampleRouteDirection direction,
+    const std::string& policyName) {
+  const bool received = direction == SampleRouteDirection::Received;
+
+  auto path = [&](const std::string& nextHop,
+                  int64_t peerAsn,
+                  int32_t localPref,
+                  const std::vector<TBgpCommunity>& communities) {
+    TBgpPath bgpPath;
+    bgpPath.next_hop() = sampleIpPrefix(nextHop);
+    bgpPath.local_pref() = localPref;
+    // BGP_ORIGIN_IGP; the renderer trims the enum prefix and prints "IGP".
+    bgpPath.origin() = 0;
+    bgpPath.med() = 0;
+    bgpPath.communities() = communities;
+    if (!policyName.empty()) {
+      bgpPath.policy_name() = policyName;
+    }
+    /*
+     * Microseconds. Advertised routes are rendered straight out of the
+     * AdjRibOut and carry no last-modified time, so the view prints
+     * "LastModified: Not set"; received ones carry the time the path arrived.
+     */
+    if (received) {
+      bgpPath.last_modified_time() = 1788455780000000;
+    }
+
+    neteng::fboss::bgp_attr::TAsPathSeg segment;
+    segment.seg_type() = TAsPathSegType::AS_CONFED_SEQUENCE;
+    // printAsPath() prefers asns_4_byte and only falls back to the legacy
+    // asns field, so populate the one the renderer actually reads.
+    segment.asns_4_byte() = {peerAsn};
+    bgpPath.as_path() = TAsPath{segment};
+    return bgpPath;
+  };
+
+  /*
+   * The confederation ASNs either side of the session: the peer we receive
+   * from and the peer we advertise to are in different sub-ASes, which is
+   * what makes the two directions distinguishable in the rendered AS path.
+   */
+  constexpr int64_t kUpstreamAsn = 65221;
+  constexpr int64_t kDownstreamAsn = 64650;
+
+  // LIVE, plus the community that identifies the prefix class.
+  const std::vector<TBgpCommunity> aggregateCommunities = {
+      sampleCommunity(kSampleLiveCommunity),
+      sampleCommunity(kSampleAggregateCommunity)};
+  const std::vector<TBgpCommunity> defaultRouteCommunities = {
+      sampleCommunity(kSampleLiveCommunity),
+      sampleCommunity(kSampleDefaultCommunity)};
+
+  NetworkPathWithHost result;
+  if (received) {
+    // What the peer sends us: a default route and a more specific.
+    result.networkPath() = {
+        {sampleIpPrefix("0.0.0.0/0"),
+         {path("192.0.2.11", kUpstreamAsn, 100, defaultRouteCommunities)}},
+        {sampleIpPrefix("203.0.113.7/32"),
+         {path("192.0.2.11", kUpstreamAsn, 90, aggregateCommunities)}}};
+  } else {
+    // What we send the peer: two rack aggregates.
+    result.networkPath() = {
+        {sampleIpPrefix("198.51.100.0/24"),
+         {path("192.0.2.12", kDownstreamAsn, 100, aggregateCommunities)}},
+        {sampleIpPrefix("203.0.113.0/24"),
+         {path("192.0.2.12", kDownstreamAsn, 100, aggregateCommunities)}}};
+  }
+  result.host() = "rsw001.p001.f01.abc1";
+  result.oobName() = "rsw001.p001.f01.abc1.oob";
+  result.ip() = "192.0.2.1";
+  return result;
 }
 
 const std::vector<std::string> printRoutesInformation(

@@ -12,6 +12,7 @@
 
 #include "fboss/agent/hw/sai/api/NextHopGroupApi.h"
 
+#include "fboss/agent/hw/gen-cpp2/hardware_stats_types.h"
 #include "fboss/agent/hw/sai/api/ArsApi.h"
 #include "fboss/agent/hw/sai/api/NextHopApi.h"
 #include "fboss/agent/hw/sai/store/SaiObject.h"
@@ -50,6 +51,11 @@ using SaiNextHop = ConditionSaiObjectType<SaiNextHopTraits>::type;
 using SaiNextHopGroupMemberInfo = std::pair<
     SaiNextHopGroupMemberTraits::AdapterHostKey,
     SaiNextHopGroupMemberTraits::Attributes::Weight>;
+
+sai_next_hop_group_type_t getNextHopGroupType(
+    const RouteNextHopEntry::NextHopSet& nextHops);
+
+bool isProtectionNextHopGroupType(sai_next_hop_group_type_t nextHopGroupType);
 
 struct SaiNextHopGroupKey {
   SaiNextHopGroupKey(
@@ -267,6 +273,15 @@ class NextHopGroupMember {
       managedNextHopGroupMember_;
 };
 
+struct ArsHwCounter {
+  uint64_t failPackets{0};
+  uint64_t portReassignments{0};
+};
+
+// What a group counted between two sweeps, as opposed to what its counters
+// read. Same shape, different meaning, so the distinction is in the name.
+using ArsCounterDelta = ArsHwCounter;
+
 struct SaiNextHopGroupHandle {
   std::shared_ptr<SaiNextHopGroup> nextHopGroup;
   std::vector<std::shared_ptr<NextHopGroupMember>> members_;
@@ -278,6 +293,7 @@ struct SaiNextHopGroupHandle {
   std::set<SaiNextHopGroupMemberInfo> fixedWidthNextHopGroupMembers_;
   uint32_t maxVariableWidthEcmpSize{0};
   std::optional<cfg::SwitchingMode> desiredEcmpSwitchingMode_;
+  ArsHwCounter arsHwCounter_;
   SaiStore* saiStore_{nullptr};
   const SaiPlatform* platform_{nullptr};
   sai_object_id_t adapterKey() const {
@@ -287,6 +303,11 @@ struct SaiNextHopGroupHandle {
     return nextHopGroup->adapterKey();
   }
   size_t nextHopGroupSize() const;
+  // Reads this group's ARS counters off the hardware, stores them in
+  // arsHwCounter_ for the next sweep to compare against, and returns how much
+  // they moved since the previous sweep. Zero for a group with no ARS object
+  // attached, whose counters cannot move.
+  ArsCounterDelta updateStats();
   void memberAdded(
       SaiNextHopGroupMemberInfo memberInfo,
       bool updateHardware = true);
@@ -355,6 +376,8 @@ class SaiNextHopGroupManager {
       const RouteNextHopEntry::NextHopSet& swNextHops);
 
   std::vector<EcmpDetails> getAllEcmpDetails() const;
+  void updateStats();
+  HwFlowletStats getHwFlowletStats() const;
 
  private:
   bool isFixedWidthNextHopGroup(
@@ -378,6 +401,7 @@ class SaiNextHopGroupManager {
   std::optional<cfg::SwitchingMode> primaryArsMode_;
   std::optional<int32_t> minWidthForArsVirtualGroup_;
   EcmpGroupSettingsMap ecmpGroupSettings_;
+  HwFlowletStats arsStats_;
 };
 
 } // namespace facebook::fboss

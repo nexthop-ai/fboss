@@ -14,6 +14,7 @@
 #include "fboss/cli/fboss2/commands/config/acl/AclConfigUtils.h"
 
 #include <fmt/format.h>
+#include <algorithm>
 #include <iostream>
 #include <set>
 #include <stdexcept>
@@ -40,29 +41,48 @@ CmdDeleteAclTableTraits::RetType CmdDeleteAclTable::queryClient(
     const HostInfo& /* hostInfo */,
     const ObjectArgType& args) {
   auto& session = ConfigSession::getInstance();
-  auto& swConfig = *session.getAgentConfig().sw();
+  auto& config = session.getAgentConfig();
+  auto& swConfig = *config.sw();
+
+  acl_utils::requireAclTableGroupMode(config);
 
   auto [table, groupName] =
       acl_utils::resolveAclTable(swConfig, args.getTableName());
 
-  // Every rule in the table is about to stop existing, so its traffic-policy
-  // actions have to go with it. checkTrafficPolicyAclsExistInConfig walks both
-  // policies and rejects a matcher naming a missing AclEntry, so a leftover
-  // would make the next commit fail.
+  std::size_t totalTables = 0;
+  if (swConfig.aclTableGroups().has_value()) {
+    for (const auto& group : *swConfig.aclTableGroups()) {
+      totalTables += group.aclTables()->size();
+    }
+  }
+  if (totalTables == 1) {
+    throw std::runtime_error(
+        fmt::format(
+            "AclTable '{}' is the last ACL table in the config; deleting it "
+            "would drop every ACL and CoPP classification rule. Edit the "
+            "agent config directly if that is intended",
+            args.getTableName()));
+  }
+
+  // Deleting the rules orphans any traffic-policy matcher naming them, and
+  // the agent rejects a config with a dangling matcher.
   const auto ruleNames = acl_utils::ruleNamesOfTable(*table);
   const auto entryCount = ruleNames.size();
   const auto strippedMatchers =
       acl_utils::stripMatchersForRules(swConfig, ruleNames);
 
-  // resolveAclTable() already proved the table exists in this group; erase it
-  // by the pointer it handed back rather than searching again by name.
   auto& tables =
       *acl_utils::findAclTableGroupOrThrow(swConfig, groupName).aclTables();
-  tables.erase(tables.begin() + (table - tables.data()));
+  tables.erase(
+      std::remove_if(
+          tables.begin(),
+          tables.end(),
+          [&](const cfg::AclTable& t) {
+            return *t.name() == args.getTableName();
+          }),
+      tables.end());
 
-  // Removing a table is a hardware teardown rather than an entry edit: the
-  // SAI layer drops the table object and everything in it. A config reload
-  // still suffices, so the level stays HITLESS.
+  // A hardware teardown, but a config reload applies it, so HITLESS.
   session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
 
   return fmt::format(

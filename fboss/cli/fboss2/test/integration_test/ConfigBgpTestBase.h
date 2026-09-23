@@ -34,10 +34,15 @@
 #include <string>
 #include <thread>
 
-#include <neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
 #include "fboss/cli/fboss2/test/integration_test/Fboss2IntegrationTest.h"
 #include "fboss/cli/fboss2/utils/CmdClientUtilsCommon.h"
 #include "neteng/fboss/bgp/if/gen-cpp2/TBgpService.h"
+
+#ifndef IS_OSS
+#include <configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
+#else
+#include <neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
+#endif
 
 namespace facebook::fboss {
 
@@ -47,18 +52,6 @@ class ConfigBgpTestBase : public Fboss2IntegrationTest {
     Fboss2IntegrationTest::SetUp();
     if (bgpDaemonActiveState() != "active") {
       GTEST_SKIP() << "skipping because bgp is not active";
-    }
-    // systemd "active" is a point sample: on an image where bgpd cannot hold
-    // its boot config it flaps activating -> active -> failed, and a single
-    // sample can land inside the brief active window (seen on fboss-sim,
-    // where the sibling tests' samples all landed on inactive and skipped).
-    // Require the daemon to actually answer its thrift RPC before running,
-    // and skip otherwise — the same skip the rest of the flap cycle produces.
-    try {
-      readRunningBgpConfigViaRpc(std::chrono::seconds(10));
-    } catch (const std::exception& ex) {
-      GTEST_SKIP() << "skipping because bgpd is active but not answering its "
-                   << "thrift RPC (flapping unit?): " << ex.what();
     }
     // Snapshot the config bgpd runs with; TearDown restores it, so committed
     // test objects never outlive the test regardless of where it failed.
@@ -110,9 +103,22 @@ class ConfigBgpTestBase : public Fboss2IntegrationTest {
   folly::dynamic readSystemBgpConfig() const {
     std::string content;
     if (!folly::readFile(systemBgpConfigPath().c_str(), content)) {
-      throw std::runtime_error(
-          "Failed to read system BGP config at " + systemBgpConfigPath() +
-          ": " + folly::errnoStr(errno));
+      const int promotedErrno = errno;
+      // On a box where no BGP commit ever happened, the promoted
+      // bgpcpp/bgpcpp.conf doesn't exist yet; the effective config is the
+      // plain file the RPM installed at /etc/coop/bgpcpp.conf (a symlink to
+      // the promoted file afterwards, so it is always safe to read).
+      if (promotedErrno != ENOENT) {
+        throw std::runtime_error(
+            "Failed to read system BGP config at " + systemBgpConfigPath() +
+            ": " + folly::errnoStr(promotedErrno));
+      }
+      if (!folly::readFile(kBgpDaemonConfigPath, content)) {
+        throw std::runtime_error(
+            "Failed to read system BGP config: " + systemBgpConfigPath() +
+            " does not exist and reading " + kBgpDaemonConfigPath +
+            " failed: " + folly::errnoStr(errno));
+      }
     }
     return folly::parseJson(content);
   }
@@ -158,6 +164,7 @@ class ConfigBgpTestBase : public Fboss2IntegrationTest {
         if (std::chrono::steady_clock::now() >= deadline) {
           throw;
         }
+        // NOLINTNEXTLINE(facebook-hte-BadCall-sleep_for)
         std::this_thread::sleep_for(std::chrono::seconds(1));
       }
     }
@@ -309,6 +316,7 @@ class ConfigBgpTestBase : public Fboss2IntegrationTest {
       if (bgpDaemonActiveState() == "active") {
         return true;
       }
+      // NOLINTNEXTLINE(facebook-hte-BadCall-sleep_for)
       std::this_thread::sleep_for(std::chrono::seconds(1));
     }
     return bgpDaemonActiveState() == "active";

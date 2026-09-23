@@ -53,8 +53,8 @@ constexpr uint8_t kBankSelectByteOffset = 126;
 constexpr uint8_t kPageSelectByteOffset = 127;
 
 constexpr int kUsecBetweenPowerModeFlap = 100000;
-constexpr int kUsecBetweenLaneInit = 10000;
-constexpr int kUsecDiagSelectLatchWaitPrbs = 200000;
+constexpr int kUsecBetweenLaneInit = 10000; // 10ms
+constexpr int kUsecDiagSelectLatchWaitPrbs = 350000; // 350 ms
 constexpr int kUsecAfterAppProgramming = 500000;
 constexpr int kUsecDatapathStateUpdateTime = 10000000; // 10 seconds
 constexpr int kUsecDatapathStatePollTime = 500000; // 500 ms
@@ -671,8 +671,11 @@ CmisModule::CmisModule(
     std::shared_ptr<const TransceiverConfig> cfg,
     bool supportRemediate,
     std::string tcvrName)
-    : QsfpModule(std::move(portNames), qsfpImpl, std::move(tcvrName)),
-      tcvrConfig_(std::move(cfg)),
+    : QsfpModule(
+          std::move(portNames),
+          qsfpImpl,
+          std::move(tcvrName),
+          std::move(cfg)),
       supportRemediate_(supportRemediate) {}
 
 CmisModule::~CmisModule() {}
@@ -5400,6 +5403,16 @@ bool CmisModule::isDatapathUpdated(
 
 void CmisModule::resetDataPath(const std::string& portName) {
   resetDataPathWithFunc(portName);
+}
+
+void CmisModule::resetDatapathProgrammingStateLocked() {
+  if (portDatapathStates_.empty()) {
+    return;
+  }
+  QSFP_LOG(INFO, this) << fmt::format(
+      "Discarding datapath programming state for {} port(s) after module reset",
+      portDatapathStates_.size());
+  portDatapathStates_.clear();
 }
 
 bool CmisModule::dataPathProgram(

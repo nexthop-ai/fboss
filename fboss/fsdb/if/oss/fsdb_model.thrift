@@ -12,6 +12,7 @@ include "fboss/qsfp_service/if/qsfp_state.thrift"
 include "fboss/qsfp_service/if/qsfp_stats.thrift"
 include "fboss/fsdb/if/fsdb_common.thrift"
 include "fboss/fsdb/if/te_srv6_agent/te_srv6_agent_stats.thrift"
+include "fboss/lib/phy/phy.thrift"
 include "fboss/platform/sensor_service/sensor_service_stats.thrift"
 include "neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp/bgp_config.thrift"
 include "configerator/structs/neteng/bgp_policy/thrift/rib_policy.thrift"
@@ -31,6 +32,9 @@ struct AgentData {
     switch_reachability.SwitchReachability
   > dsfSwitchReachability = {};
   6: optional agent_info.AgentInfo agentInfo;
+  // ASIC side (iphy) PHY state, keyed by port name. Counterpart to the
+  // external PHY state qsfp_service publishes in QsfpState.phyStates.
+  7: map<string, phy.PhyState> iPhyStates = {};
 }
 
 struct BgpData {
@@ -41,6 +45,11 @@ struct BgpData {
   // key is str() of folly::CIDRNetwork, which matches the prefix in TRibEntry exactly
   5: optional map<string, bgp_route_types.TRibEntry> ribMap;
   6: optional bgp_route_types.TPartialDrainState partialDrainState;
+  /*
+   * Compact, deduplicated form of BGP RIB entries (prefix -> paths). See
+   * bgp_route_types.TCanonicalRibState for the encoding.
+   */
+  7: optional bgp_route_types.TCanonicalRibState canonicalRib;
 }
 
 @thrift.DeprecatedUnvalidatedAnnotations{items = {"thriftpath.root": "1"}}

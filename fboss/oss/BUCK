@@ -2,6 +2,10 @@ load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")
 
 oncall("fboss_oss")
 
+# bazelify: link_whole
+# Nothing references malloc_conf: jemalloc looks the symbol up at init, so
+# selective archive linking would drop the object and the startup defaults
+# with it. cmake links it as $<TARGET_OBJECTS:...> for the same reason.
 cpp_library(
     name = "jemalloc_config",
     srcs = ["JemallocConfig.cpp"],

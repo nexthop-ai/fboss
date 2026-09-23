@@ -26,7 +26,6 @@
 #include <vector>
 #include "fboss/cli/fboss2/commands/config/QueueConfigUtils.h"
 #include "fboss/cli/fboss2/commands/config/copp/CoppUtils.h"
-#include "fboss/cli/fboss2/commands/config/traffic_counter/TrafficCounterConfigUtils.h"
 #include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
@@ -42,20 +41,6 @@ using copp_queue::parseQueueId;
 constexpr std::string_view kSubCmdQueue = "queue";
 constexpr std::string_view kSubCmdOrder = "order";
 
-// Literal tokens and action types accepted by
-// `config copp cpu-traffic-policy match <matcher-name> action <action-type>
-// <value>`.
-constexpr std::string_view kSubCmdMatch = "match";
-constexpr std::string_view kSubCmdAction = "action";
-using copp_cpu_traffic_policy::kActionCounter;
-using copp_cpu_traffic_policy::kActionSendToQueue;
-using copp_cpu_traffic_policy::kActionSetTc;
-using copp_cpu_traffic_policy::kActionUserDefinedTrap;
-
-// SetTcAction.tcValue is a thrift byte (int8_t); values above 127 wrap
-// negative. The real per-ASIC cap is enforced by the agent at apply time.
-constexpr int16_t kMaxTcValue = 127;
-
 } // namespace
 
 CoppQueueArgs::CoppQueueArgs(std::vector<std::string> v) {
@@ -70,72 +55,6 @@ CoppQueueArgs::CoppQueueArgs(std::vector<std::string> v) {
   // drift from `config qos queue-config`'s.
   utils::walkQueueAttributes(v, 1, attributes_, aqmAttributes_);
 
-  data_ = std::move(v);
-}
-
-CoppCpuTrafficPolicyArgs::CoppCpuTrafficPolicyArgs(std::vector<std::string> v) {
-  if (v.size() != 5) {
-    throw std::invalid_argument(
-        fmt::format(
-            "Expected {} <matcher-name> {} <action-type> <value>, got {} "
-            "argument(s)",
-            kSubCmdMatch,
-            kSubCmdAction,
-            v.size()));
-  }
-  if (v[0] != kSubCmdMatch) {
-    throw std::invalid_argument(
-        fmt::format(
-            "Expected '{}' as first token, got '{}'", kSubCmdMatch, v[0]));
-  }
-  if (v[1].empty()) {
-    throw std::invalid_argument("matcher-name must not be empty");
-  }
-  if (v[2] != kSubCmdAction) {
-    throw std::invalid_argument(
-        fmt::format(
-            "Expected '{}' between matcher name and action type, got '{}'",
-            kSubCmdAction,
-            v[2]));
-  }
-  const auto& actionType = v[3];
-  const auto& value = v[4];
-  if (actionType == kActionSendToQueue ||
-      actionType == kActionUserDefinedTrap) {
-    parseQueueId(value, actionType);
-  } else if (actionType == kActionSetTc) {
-    int32_t tcValue = 0;
-    try {
-      tcValue = folly::to<int32_t>(value);
-    } catch (const folly::ConversionError&) {
-      throw std::invalid_argument(
-          fmt::format(
-              "Invalid tc-value '{}': must be an integer in [0, {}]",
-              value,
-              kMaxTcValue));
-    }
-    if (tcValue < 0 || tcValue > kMaxTcValue) {
-      throw std::invalid_argument(
-          fmt::format(
-              "tc-value must be in [0, {}], got {}", kMaxTcValue, tcValue));
-    }
-  } else if (actionType == kActionCounter) {
-    if (value.empty()) {
-      throw std::invalid_argument("counter-name must not be empty");
-    }
-  } else {
-    throw std::invalid_argument(
-        fmt::format(
-            "Invalid action-type '{}': must be one of: {}, {}, {}, {}",
-            actionType,
-            kActionSendToQueue,
-            kActionCounter,
-            kActionSetTc,
-            kActionUserDefinedTrap));
-  }
-  matcherName_ = v[1];
-  actionType_ = actionType;
-  actionValue_ = value;
   data_ = std::move(v);
 }
 
@@ -291,53 +210,6 @@ std::string applyReasonConfig(
       order);
 }
 
-std::string applyCpuTrafficPolicyConfig(
-    cfg::SwitchConfig& swConfig,
-    const CoppCpuTrafficPolicyArgs& args) {
-  if (!swConfig.cpuTrafficPolicy().has_value()) {
-    swConfig.cpuTrafficPolicy() = cfg::CPUTrafficPolicyConfig{};
-  }
-  auto& policy = *swConfig.cpuTrafficPolicy();
-  if (!policy.trafficPolicy().has_value()) {
-    policy.trafficPolicy() = cfg::TrafficPolicyConfig{};
-  }
-  auto& matchToActions = *policy.trafficPolicy()->matchToAction();
-
-  const auto& name = args.getMatcherName();
-  auto it = copp_cpu_traffic_policy::findMatchToAction(matchToActions, name);
-  if (it == matchToActions.end()) {
-    cfg::MatchToAction newEntry;
-    newEntry.matcher() = name;
-    newEntry.action() = cfg::MatchAction{};
-    matchToActions.push_back(std::move(newEntry));
-    it = std::prev(matchToActions.end());
-  }
-
-  auto& action = *it->action();
-  const auto& actionType = args.getActionType();
-  const auto& value = args.getActionValue();
-  if (actionType == kActionSendToQueue) {
-    cfg::QueueMatchAction queueAction;
-    queueAction.queueId() = folly::to<int16_t>(value);
-    action.sendToQueue() = std::move(queueAction);
-  } else if (actionType == kActionCounter) {
-    action.counter() = value;
-    utils::ensureTrafficCounterDeclared(swConfig, value);
-  } else if (actionType == kActionSetTc) {
-    cfg::SetTcAction setTcAction;
-    setTcAction.tcValue() = folly::to<int8_t>(value);
-    action.setTc() = std::move(setTcAction);
-  } else {
-    // kActionUserDefinedTrap
-    cfg::UserDefinedTrapAction trapAction;
-    trapAction.queueId() = folly::to<int16_t>(value);
-    action.userDefinedTrap() = std::move(trapAction);
-  }
-
-  return fmt::format(
-      "Set action '{}' = '{}' for matcher '{}'", actionType, value, name);
-}
-
 } // namespace
 
 CmdConfigCoppQueueTraits::RetType CmdConfigCoppQueue::queryClient(
@@ -370,17 +242,21 @@ void CmdConfigCoppReason::printOutput(const RetType& logMsg) {
   std::cout << logMsg << std::endl;
 }
 
-CmdConfigCoppCpuTrafficPolicyTraits::RetType
-CmdConfigCoppCpuTrafficPolicy::queryClient(
+CmdConfigCoppTrafficPolicyTraits::RetType
+CmdConfigCoppTrafficPolicy::queryClient(
     const HostInfo& /* hostInfo */,
     const ObjectArgType& args) {
   auto& session = ConfigSession::getInstance();
-  auto msg = applyCpuTrafficPolicyConfig(*session.getAgentConfig().sw(), args);
+  auto msg = traffic_policy::applyAction(
+      *session.getAgentConfig().sw(),
+      traffic_policy::PolicyKind::Cpu,
+      args.getMatcherName(),
+      args.getActionTokens());
   session.saveConfig(cli::ServiceType::AGENT, cli::ConfigActionLevel::HITLESS);
   return msg;
 }
 
-void CmdConfigCoppCpuTrafficPolicy::printOutput(const RetType& logMsg) {
+void CmdConfigCoppTrafficPolicy::printOutput(const RetType& logMsg) {
   std::cout << logMsg << std::endl;
 }
 
@@ -388,8 +264,7 @@ void CmdConfigCoppCpuTrafficPolicy::printOutput(const RetType& logMsg) {
 template void CmdHandler<CmdConfigCopp, CmdConfigCoppTraits>::run();
 template void CmdHandler<CmdConfigCoppQueue, CmdConfigCoppQueueTraits>::run();
 template void CmdHandler<CmdConfigCoppReason, CmdConfigCoppReasonTraits>::run();
-template void CmdHandler<
-    CmdConfigCoppCpuTrafficPolicy,
-    CmdConfigCoppCpuTrafficPolicyTraits>::run();
+template void
+CmdHandler<CmdConfigCoppTrafficPolicy, CmdConfigCoppTrafficPolicyTraits>::run();
 
 } // namespace facebook::fboss

@@ -371,7 +371,8 @@ function(BUILD_SAI_AGENT_HW_TEST SAI_IMPL_NAME SAI_IMPL_ARG)
     fboss/agent/test/agent_hw_tests/SaiAgentHwTest.cpp
   )
 
-  add_sai_sdk_dependencies(sai_agent_hw_test-${SAI_IMPL_NAME})
+  add_sai_sdk_dependencies(
+    sai_agent_hw_test-${SAI_IMPL_NAME} "${SAI_IMPL_ARG}")
 
   target_link_libraries(sai_agent_hw_test-${SAI_IMPL_NAME}
     -Wl,--whole-archive
@@ -405,7 +406,8 @@ function(BUILD_SAI_AGENT_HW_TEST SAI_IMPL_NAME SAI_IMPL_ARG)
     fboss/agent/test/agent_hw_tests/SaiAgentHwTest.cpp
   )
 
-  add_sai_sdk_dependencies(sai_agent_scale_test-${SAI_IMPL_NAME})
+  add_sai_sdk_dependencies(
+    sai_agent_scale_test-${SAI_IMPL_NAME} "${SAI_IMPL_ARG}")
 
   target_link_libraries(sai_agent_scale_test-${SAI_IMPL_NAME}
     -Wl,--whole-archive

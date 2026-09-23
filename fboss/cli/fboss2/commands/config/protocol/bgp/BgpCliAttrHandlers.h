@@ -12,9 +12,14 @@
 
 #include <fmt/core.h>
 #include <folly/IPAddress.h>
+#include <folly/String.h>
+#include <algorithm>
+#include <cctype>
 #include <cstddef>
 #include <cstdint>
+#include <exception>
 #include <functional>
+#include <limits>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -218,29 +223,48 @@ AttrHandler<T> ipAttr(
   };
 }
 
-// A non-negative second-valued timer that must fit in int32.
+// The protocol range of a second-valued timer: 0 (disabled) is always
+// accepted, any other value must lie in [min, max]. The default is "anything
+// non-negative that fits in int32"; callers narrow it where the wire format or
+// the daemon does (a 16-bit BGP hold time, a 12-bit graceful-restart time).
+struct SecondsRange {
+  int32_t min = 0;
+  int32_t max = std::numeric_limits<int32_t>::max();
+};
+
+// A second-valued timer: 0 or a value within `range`.
 template <typename T>
 AttrHandler<T> secondsAttr(
     std::string_view name,
-    std::function<void(T&, int32_t)> set) {
-  return
-      [name, set = std::move(set)](T& target, const Tokens& values) -> Result {
-        if (values.size() != 1) {
-          return err(fmt::format("Error: {} requires <seconds>", name));
-        }
-        auto seconds = parseNonNegInt32(values[0]);
-        if (!seconds) {
-          return err(
-              fmt::format(
-                  "Error: {} must be a non-negative integer that fits in "
-                  "int32, got '{}'",
-                  name,
-                  values[0]));
-        }
-        set(target, *seconds);
-        return ok(
-            fmt::format("Successfully set {} to: {} seconds", name, *seconds));
-      };
+    std::function<void(T&, int32_t)> set,
+    SecondsRange range = {}) {
+  return [name, set = std::move(set), range](
+             T& target, const Tokens& values) -> Result {
+    if (values.size() != 1) {
+      return err(fmt::format("Error: {} requires <seconds>", name));
+    }
+    auto seconds = parseNonNegInt32(values[0]);
+    if (!seconds) {
+      return err(
+          fmt::format(
+              "Error: {} must be a non-negative integer that fits in "
+              "int32, got '{}'",
+              name,
+              values[0]));
+    }
+    if (*seconds != 0 && (*seconds < range.min || *seconds > range.max)) {
+      return err(
+          fmt::format(
+              "Error: {} must be 0 or between {} and {} seconds, got {}",
+              name,
+              range.min,
+              range.max,
+              *seconds));
+    }
+    set(target, *seconds);
+    return ok(
+        fmt::format("Successfully set {} to: {} seconds", name, *seconds));
+  };
 }
 
 // A non-negative int64 route-count value (RouteLimit fields).
@@ -276,38 +300,68 @@ AttrHandler<T> rejectedAttr(std::string_view name, std::string_view reason) {
   };
 }
 
-// A bit-rate value: digits with an optional K/M/G multiplier suffix (e.g.
-// "100G"). The thrift field is a string that bgpd's config parser re-parses,
-// so validating the spelling here keeps garbage from reaching the daemon.
+// The spelling bgpd's link-bandwidth parser accepts (parseLinkBandwidthBps in
+// its policy utils): a decimal number with at most one '.', an optional
+// case-insensitive K/M/G multiplier as the last character, or the literal
+// "auto" (bgpd derives the value from the port speed). nullopt if bgpd would
+// reject it.
+inline std::optional<std::string> parseLinkBandwidth(const std::string& raw) {
+  std::string v = folly::trimWhitespace(raw).str();
+  if (v == "auto") {
+    return v;
+  }
+  if (std::count(v.begin(), v.end(), '.') > 1) {
+    return std::nullopt;
+  }
+  std::string number = v;
+  const size_t suffixAt = v.find_first_not_of(".0123456789");
+  if (suffixAt != std::string::npos) {
+    const char suffix =
+        static_cast<char>(std::toupper(static_cast<unsigned char>(v.back())));
+    if (suffixAt != v.size() - 1 ||
+        (suffix != 'K' && suffix != 'M' && suffix != 'G')) {
+      return std::nullopt;
+    }
+    number.pop_back();
+  }
+  if (number.empty() || number == ".") {
+    return std::nullopt;
+  }
+  try {
+    std::stod(number);
+  } catch (const std::exception&) {
+    return std::nullopt;
+  }
+  return v;
+}
+
+// A link-bandwidth value in the spelling bgpd accepts (see
+// parseLinkBandwidth). The thrift field is a string that bgpd re-parses, so
+// the CLI validates with the same rules rather than a stricter subset -- an
+// existing config's "1.5G", "150g" or "auto" must round-trip through the CLI.
 template <typename T>
 AttrHandler<T> bitRateAttr(
     std::string_view name,
     std::function<void(T&, const std::string&)> set) {
-  return [name, set = std::move(set)](
-             T& target, const Tokens& values) -> Result {
-    if (values.size() != 1) {
-      return err(
-          fmt::format("Error: {} requires <bits-per-second>[K|M|G]", name));
-    }
-    const std::string& v = values[0];
-    const size_t digits = v.find_first_not_of("0123456789") == std::string::npos
-        ? v.size()
-        : v.find_first_not_of("0123456789");
-    const bool valid = digits > 0 &&
-        (digits == v.size() ||
-         (digits == v.size() - 1 &&
-          (v.back() == 'K' || v.back() == 'M' || v.back() == 'G')));
-    if (!valid) {
-      return err(
-          fmt::format(
-              "Error: Invalid {} value '{}'; expected digits with an "
-              "optional K/M/G suffix (e.g. 100G)",
-              name,
-              v));
-    }
-    set(target, v);
-    return ok(fmt::format("Successfully set {} to: {}", name, v));
-  };
+  return
+      [name, set = std::move(set)](T& target, const Tokens& values) -> Result {
+        if (values.size() != 1) {
+          return err(
+              fmt::format(
+                  "Error: {} requires <bits-per-second>[K|M|G] or auto", name));
+        }
+        auto v = parseLinkBandwidth(values[0]);
+        if (!v) {
+          return err(
+              fmt::format(
+                  "Error: Invalid {} value '{}'; expected a number with an "
+                  "optional K/M/G suffix (e.g. 100G, 1.5G) or auto",
+                  name,
+                  values[0]));
+        }
+        set(target, *v);
+        return ok(fmt::format("Successfully set {} to: {}", name, *v));
+      };
 }
 
 // A value drawn from a fixed set of names, mapped to an enum by `lookup`

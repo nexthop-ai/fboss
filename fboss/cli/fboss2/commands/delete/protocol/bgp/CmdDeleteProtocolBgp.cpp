@@ -10,7 +10,6 @@
 
 #include "fboss/cli/fboss2/commands/delete/protocol/bgp/CmdDeleteProtocolBgp.h"
 #include <iostream>
-#include <ostream>
 
 #include "fboss/cli/fboss2/CmdHandler.cpp"
 #include "fboss/cli/fboss2/utils/HostInfo.h"

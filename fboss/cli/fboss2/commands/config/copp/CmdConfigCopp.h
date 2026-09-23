@@ -10,50 +10,20 @@
 
 #pragma once
 
-#include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <stdexcept>
 #include <string>
-#include <string_view>
 #include <utility>
 #include <vector>
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/cli/fboss2/CmdHandler.h"
 #include "fboss/cli/fboss2/commands/config/QueueConfigUtils.h"
+#include "fboss/cli/fboss2/commands/config/TrafficPolicyUtils.h"
 #include "fboss/cli/fboss2/utils/CmdUtilsCommon.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
 
 namespace facebook::fboss {
-
-// Shared vocabulary for the copp cpu-traffic-policy match-action commands,
-// used by both the `config` and `delete` command trees so the accepted
-// action-type tokens and the matcher lookup live in one place.
-namespace copp_cpu_traffic_policy {
-
-constexpr std::string_view kActionSendToQueue = "send-to-queue";
-constexpr std::string_view kActionCounter = "counter";
-constexpr std::string_view kActionSetTc = "set-tc";
-constexpr std::string_view kActionUserDefinedTrap = "user-defined-trap";
-
-inline bool isValidActionType(std::string_view actionType) {
-  return actionType == kActionSendToQueue || actionType == kActionCounter ||
-      actionType == kActionSetTc || actionType == kActionUserDefinedTrap;
-}
-
-// Return an iterator to the matchToAction entry for `matcher`, or end().
-inline std::vector<cfg::MatchToAction>::iterator findMatchToAction(
-    std::vector<cfg::MatchToAction>& matchToActions,
-    const std::string& matcher) {
-  return std::find_if(
-      matchToActions.begin(),
-      matchToActions.end(),
-      [&matcher](const cfg::MatchToAction& mta) {
-        return *mta.matcher() == matcher;
-      });
-}
-
-} // namespace copp_cpu_traffic_policy
 
 // Argument for `config copp queue <id> [<attr> <value> ...]`.
 //
@@ -141,44 +111,9 @@ class CoppReasonArgs : public utils::BaseObjectArgType<std::string> {
   std::optional<size_t> order_;
 };
 
-// Argument for
-// `config copp cpu-traffic-policy match <matcher-name> action <action-type>
-// <value>`.
-//
-// <matcher-name> references an ACL defined in the config; the entry in
-// cpuTrafficPolicy.trafficPolicy.matchToAction is created if absent.
-// <action-type> / <value> pairs:
-//   send-to-queue     <queue-id>      (integer 0-255)
-//   counter           <counter-name>  (non-empty string)
-//   set-tc            <tc-value>      (integer 0-127)
-//   user-defined-trap <queue-id>      (integer 0-255)
-class CoppCpuTrafficPolicyArgs : public utils::BaseObjectArgType<std::string> {
- public:
-  /* implicit */
-  CoppCpuTrafficPolicyArgs( // NOLINT(google-explicit-constructor)
-      std::vector<std::string> v);
-
-  const std::string& getMatcherName() const {
-    return matcherName_;
-  }
-
-  const std::string& getActionType() const {
-    return actionType_;
-  }
-
-  const std::string& getActionValue() const {
-    return actionValue_;
-  }
-
- private:
-  std::string matcherName_;
-  std::string actionType_;
-  std::string actionValue_;
-};
-
 // The `copp` parent node itself is not usable; it only exists to dispatch to
-// queue, reason, and cpu-traffic-policy. The parent needs a handler (rather
-// than being a pure branch node) so that addCommandBranch() increments depth
+// queue, reason, and traffic-policy. The parent needs a handler (rather than
+// being a pure branch node) so that addCommandBranch() increments depth
 // before descending into the leaves — without that, the children would all
 // register their positional args at the same CmdArgsLists slot, and CLI11
 // parsing collides with siblings of `config` whose names happen to also be
@@ -196,7 +131,7 @@ class CmdConfigCopp : public CmdHandler<CmdConfigCopp, CmdConfigCoppTraits> {
   RetType queryClient(const HostInfo& /* hostInfo */) {
     throw std::runtime_error(
         "Incomplete command, please use 'queue', 'reason', or "
-        "'cpu-traffic-policy' subcommand");
+        "'traffic-policy' subcommand");
   }
 
   void printOutput(const RetType& /* model */) {}
@@ -269,32 +204,28 @@ class CmdConfigCoppReason
   void printOutput(const RetType& logMsg);
 };
 
-struct CmdConfigCoppCpuTrafficPolicyTraits : public WriteCommandTraits {
+struct CmdConfigCoppTrafficPolicyTraits : public WriteCommandTraits {
   using ParentCmd = CmdConfigCopp;
-  using ObjectArgType = CoppCpuTrafficPolicyArgs;
+  using ObjectArgType = traffic_policy::TrafficPolicyArgs;
   using RetType = std::string;
   static void addCliArg(CLI::App& cmd, std::vector<std::string>& args) {
-    // required() + expected(5) forces CLI11 to route positionals to this
-    // option even when a token would otherwise classify as a subcommand
-    // elsewhere in the tree (same rationale as CmdConfigCoppReasonTraits).
+    // required() + expected(4, 6) keeps the first four tokens as positionals
+    // whatever they spell (same rationale as CmdConfigCoppReasonTraits), and
+    // allow_extra_args() lets the optional trailing value(s) through.
     cmd.add_option(
-           "copp_cpu_traffic_policy_config",
-           args,
-           "match <matcher-name> action <action-type> <value> where "
-           "<action-type> <value> is one of: send-to-queue <queue-id>, "
-           "counter <counter-name>, set-tc <tc-value>, "
-           "user-defined-trap <queue-id>")
+           "copp_traffic_policy_config", args, traffic_policy::configHelpText())
         ->required()
-        ->expected(5);
+        ->expected(4, 6)
+        ->allow_extra_args();
   }
 };
 
-class CmdConfigCoppCpuTrafficPolicy : public CmdHandler<
-                                          CmdConfigCoppCpuTrafficPolicy,
-                                          CmdConfigCoppCpuTrafficPolicyTraits> {
+class CmdConfigCoppTrafficPolicy : public CmdHandler<
+                                       CmdConfigCoppTrafficPolicy,
+                                       CmdConfigCoppTrafficPolicyTraits> {
  public:
-  using ObjectArgType = CmdConfigCoppCpuTrafficPolicyTraits::ObjectArgType;
-  using RetType = CmdConfigCoppCpuTrafficPolicyTraits::RetType;
+  using ObjectArgType = CmdConfigCoppTrafficPolicyTraits::ObjectArgType;
+  using RetType = CmdConfigCoppTrafficPolicyTraits::RetType;
 
   RetType queryClient(const HostInfo& hostInfo, const ObjectArgType& args);
 

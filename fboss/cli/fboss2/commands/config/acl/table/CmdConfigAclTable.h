@@ -26,7 +26,9 @@ namespace facebook::fboss {
 // <table-name>  the table being configured; created in <group-name> if absent.
 // <group-name>  must already exist -- creating a group is `config acl
 //               table-group`'s job.
-// <value>       is a non-negative int16.
+// <value>       is a non-negative int16. The agent stores it but today's
+//               parallel ACL groups ignore it for hardware ordering, and
+//               changing it on an existing table recreates the table.
 class AclTableConfigArgs : public utils::BaseObjectArgType<std::string> {
  public:
   /* implicit */ AclTableConfigArgs( // NOLINT(google-explicit-constructor)

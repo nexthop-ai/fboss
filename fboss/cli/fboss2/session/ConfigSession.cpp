@@ -16,7 +16,6 @@
 #include <folly/json/dynamic.h>
 #include <folly/json/json.h>
 #include <glog/logging.h>
-#include <neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
 #include <pwd.h>
 #include <sys/types.h>
 #include <thrift/lib/cpp2/folly_dynamic/folly_dynamic.h>
@@ -48,6 +47,12 @@
 #include "fboss/cli/fboss2/utils/ConfigFileUtils.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
 #include "fboss/cli/fboss2/utils/PortMap.h"
+
+#ifndef IS_OSS
+#include <configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
+#else
+#include <neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
+#endif
 
 namespace fs = std::filesystem;
 
@@ -982,10 +987,6 @@ void ConfigSession::initializeSession(SessionInit init) {
     commands_.clear();
     requiredActions_.clear();
     agentConfig_.reset();
-
-    if (init == SessionInit::ReadOnly) {
-      return; // leave ~/.fboss2 alone
-    }
 
     if (init == SessionInit::ReadOnly) {
       return; // leave ~/.fboss2 alone
