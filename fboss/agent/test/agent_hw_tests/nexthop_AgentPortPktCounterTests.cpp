@@ -54,6 +54,7 @@ class AgentPortPktCounterTest : public AgentHwTest {
  protected:
   static bool phyLoopbackSupported(PlatformType platform) {
     switch (platform) {
+      case PlatformType::PLATFORM_M4062NHP:
       case PlatformType::PLATFORM_NH4220F:
       case PlatformType::PLATFORM_NH4010F:
       case PlatformType::PLATFORM_MONTBLANC:
