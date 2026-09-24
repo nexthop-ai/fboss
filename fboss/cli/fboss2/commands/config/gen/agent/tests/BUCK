@@ -24,6 +24,7 @@ cpp_unittest(
     external_deps = ["CLI11"],
 )
 
+# bazelify: exclude
 cpp_unittest(
     name = "agent_config_parity_test",
     srcs = ["AgentConfigParityTest.cpp"],
