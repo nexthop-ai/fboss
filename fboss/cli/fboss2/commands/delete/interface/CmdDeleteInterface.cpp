@@ -56,8 +56,14 @@ const std::unordered_set<std::string> kKnownDeleteAttributes = [] {
 }();
 
 const std::string kValidDeleteAttrs = fmt::format(
+<<<<<<< HEAD
     "description, loopback-mode, lookup-class, mtu, queue-config, {}, "
     "ip-address, ipv6-address",
+||||||| 7645153f26
+    "loopback-mode, lookup-class, queue-config, {}, ip-address, ipv6-address",
+=======
+    "description, loopback-mode, lookup-class, mtu, queue-config, {}, ip-address, ipv6-address",
+>>>>>>> cc7af323e3175590867f4cb7f3c15757cf5df0d3
     folly::join(", ", lldpAttrNames()));
 
 std::string portLabel(const cfg::Port& port) {

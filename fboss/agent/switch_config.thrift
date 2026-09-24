@@ -1088,6 +1088,10 @@ struct QosMap {
   7: optional map<i16, i16> trafficClassToVoqId;
   //  dot1q priority code point to traffic class
   8: optional list<PcpQosMap> pcpMaps;
+  // Maps a traffic class to a CBFC virtual channel (UE Spec 1.0.2 section
+  // 5.2). Receiver-side classification: decides which VC's credit counters an
+  // arriving packet is charged against.
+  9: optional map<i16, i16> trafficClassToVcId;
 }
 
 struct QosRule {
@@ -1181,6 +1185,7 @@ typedef string BufferPoolConfigName
 typedef string PortFlowletConfigName
 
 typedef string LlrConfigName
+typedef string CbfcConfigName
 
 typedef string FirmwareName
 
@@ -1474,6 +1479,10 @@ struct Port {
 
   /* Lookup class assigned to packets ingressing on this port. */
   47: optional AclLookupClassPort userMetaData;
+  // Names an entry in SwitchConfig.cbfcConfigs. Deliberately on Port rather
+  // than nested inside PortPfc: CBFC and PFC are independent mechanisms that
+  // may coexist (UE Spec 1.0.2 section 5.2.3).
+  48: optional CbfcConfigName cbfcConfigName;
 }
 
 enum LacpPortRate {
@@ -2244,6 +2253,47 @@ struct BufferPoolConfig {
 const i16 PORT_PG_VALUE_MAX = 7;
 const i16 PFC_PRIORITY_VALUE_MAX = 7;
 
+// max CBFC virtual channel index per port (UE Spec 1.0.2 section 5.2.3,
+// SAI_VIRTUAL_CHANNEL_ATTR_INDEX range 0-31)
+const i16 PORT_VC_VALUE_MAX = 31;
+
+// Configuration for one CBFC virtual channel on a port (UE Spec 1.0.2
+// section 5.2). A VC is not a buffer: it is the per-link, per-channel credit
+// relationship with the peer. Lossless delivery comes from the sender holding
+// credit before it transmits, so unlike a PortPgConfig there is no headroom,
+// no resume offset and no watchdog.
+struct PortVcConfig {
+  // Virtual channel index, 0..PORT_VC_VALUE_MAX.
+  1: i16 id;
+  2: optional string name;
+  // Enable credit-gated transmission on this VC (CBFC_SENDER_ENABLE). Set
+  // per VC, so one port can carry both lossless and best-effort VCs.
+  3: bool senderEnable = false;
+  // Enable credit accounting for traffic arriving on this VC
+  // (CBFC_RECEIVER_ENABLE).
+  4: bool receiverEnable = false;
+  // Credits guaranteed to this VC, the analogue of PortPgConfig.minLimitBytes.
+  // This is a floor, not an allocation: it lands on the SDK's VC_MIN_LIMIT and
+  // does not cap the VC. The ceiling is CbfcConfig.senderCreditLimit, shared by
+  // every VC on the port.
+  //
+  // There is deliberately no shared-threshold field. SAI defines
+  // THRESHOLD_MODE / SHARED_{DYNAMIC,STATIC}_TH on the credit profile, the
+  // analogue of PortPgConfig.scalingFactor, but brcm-sai 16.0_ea_odp rejects
+  // all three.
+  5: optional i64 reservedCreditSize;
+}
+
+// CBFC configuration for a set of ports, named by Port.cbfcConfigName.
+struct CbfcConfig {
+  1: list<PortVcConfig> virtualChannels;
+  // Total credits the port may have outstanding across all its VCs
+  // (SAI_PORT_ATTR_CBFC_SENDER_CREDIT_LIMIT). Port-scoped rather than per-VC,
+  // and the closest analogue of the ingress buffer pool shared by every PG.
+  // Optional: the SDK treats an unset limit as no port ceiling configured.
+  2: optional i64 senderCreditLimit;
+}
+
 // Defines PG (priority group) configuration for ports
 // This configuration defines the PG buffer settings for given port(s)
 struct PortPgConfig {
@@ -2757,4 +2807,6 @@ struct SwitchConfig {
   // Named UEC Link Layer Retry (LLR) profiles, referenced per-port by
   // Port.llrConfigName (UE Spec 1.0.2 section 5.1).
   61: optional map<LlrConfigName, LlrConfig> llrConfigs;
+  // Named CBFC configurations, referenced by Port.cbfcConfigName.
+  62: optional map<CbfcConfigName, CbfcConfig> cbfcConfigs;
 }
