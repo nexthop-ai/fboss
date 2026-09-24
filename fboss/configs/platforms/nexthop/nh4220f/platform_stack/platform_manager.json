@@ -30,7 +30,7 @@
           "subSystemDeviceId": "0x0001",
           "i2cAdapterBlockConfigs": [
             {
-              "pmUnitScopedNamePrefix":"SCM_IOB_I2C",
+              "pmUnitScopedNamePrefix": "SCM_IOB_I2C",
               "deviceName": "i2c_master",
               "csrOffsetCalc": "0x40000 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 0,
@@ -63,7 +63,29 @@
         "SMB_SLOT@0": {
           "slotType": "SMB_SLOT"
         }
-      }
+      },
+      "embeddedSensorConfigs": [
+        {
+          "pmUnitScopedName": "CPU_TEMP",
+          "sysfsPath": "/sys/bus/pci/drivers/k10temp/0000:00:18.3"
+        },
+        {
+          "pmUnitScopedName": "NVME_TEMP",
+          "sysfsPath": "/sys/class/nvme/nvme0"
+        },
+        {
+          "pmUnitScopedName": "NIC_TEMP",
+          "sysfsPath": "/sys/bus/pci/devices/0000:02:00.0"
+        },
+        {
+          "pmUnitScopedName": "DIMM1_TEMP",
+          "sysfsPath": "/run/nexthop_bsp/sensors/DIMM1_TEMP"
+        },
+        {
+          "pmUnitScopedName": "DIMM2_TEMP",
+          "sysfsPath": "/run/nexthop_bsp/sensors/DIMM2_TEMP"
+        }
+      ]
     },
     "SMB": {
       "pluggedInSlotType": "SMB_SLOT",
@@ -93,20 +115,20 @@
           ],
           "i2cAdapterBlockConfigs": [
             {
-              "pmUnitScopedNamePrefix":"SMB_IOB_I2C",
+              "pmUnitScopedNamePrefix": "SMB_IOB_I2C",
               "deviceName": "i2c_master",
               "csrOffsetCalc": "0x40000 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 0,
               "numAdapters": 5
             },
             {
-              "pmUnitScopedNamePrefix":"SMB_OSFP_I2C",
+              "pmUnitScopedNamePrefix": "SMB_OSFP_I2C",
               "deviceName": "i2c_master",
               "csrOffsetCalc": "0x40a00 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 1,
               "numAdapters": 64
             }
-        ],
+          ],
           "xcvrCtrlBlockConfigs": [
             {
               "pmUnitScopedNamePrefix": "OSFP",
@@ -300,6 +322,90 @@
           "address": "0x50",
           "kernelDeviceName": "24c02",
           "pmUnitScopedName": "PSU2_EEPROM"
+        },
+        {
+          "busName": "SMB_MUX_1@0",
+          "address": "0x60",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC1"
+        },
+        {
+          "busName": "SMB_MUX_3@0",
+          "address": "0x61",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC2"
+        },
+        {
+          "busName": "SMB_MUX_1@0",
+          "address": "0x62",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC3"
+        },
+        {
+          "busName": "SMB_MUX_3@0",
+          "address": "0x62",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC4"
+        },
+        {
+          "busName": "SMB_MUX_1@0",
+          "address": "0x63",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC5"
+        },
+        {
+          "busName": "SMB_MUX_1@0",
+          "address": "0x72",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC6"
+        },
+        {
+          "busName": "SMB_MUX_3@0",
+          "address": "0x63",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC7"
+        },
+        {
+          "busName": "SMB_MUX_3@0",
+          "address": "0x72",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC8"
+        },
+        {
+          "busName": "SMB_MUX_1@0",
+          "address": "0x74",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC9"
+        },
+        {
+          "busName": "SMB_MUX_3@0",
+          "address": "0x75",
+          "kernelDeviceName": "raa228228",
+          "pmUnitScopedName": "DCDC10"
+        },
+        {
+          "busName": "SMB_MUX_1@1",
+          "address": "0x70",
+          "kernelDeviceName": "pmbus",
+          "pmUnitScopedName": "DCDC0"
+        },
+        {
+          "busName": "SMB_MUX_0@2",
+          "address": "0x60",
+          "kernelDeviceName": "pmbus",
+          "pmUnitScopedName": "IBV_DCDC0"
+        },
+        {
+          "busName": "SMB_MUX_0@2",
+          "address": "0x61",
+          "kernelDeviceName": "pmbus",
+          "pmUnitScopedName": "IBV_DCDC1"
+        },
+        {
+          "busName": "SMB_MUX_0@2",
+          "address": "0x62",
+          "kernelDeviceName": "pmbus",
+          "pmUnitScopedName": "IBV_DCDC2"
         }
       ]
     }
@@ -335,6 +441,25 @@
     "/run/devmap/sensors/PSU1": "/SMB_SLOT@0/[PSU1]",
     "/run/devmap/sensors/PSU2": "/SMB_SLOT@0/[PSU2]",
     "/run/devmap/sensors/FAN_CTRL": "/SMB_SLOT@0/[FAN_CTRL]",
+    "/run/devmap/sensors/DCDC1": "/SMB_SLOT@0/[DCDC1]",
+    "/run/devmap/sensors/DCDC2": "/SMB_SLOT@0/[DCDC2]",
+    "/run/devmap/sensors/DCDC3": "/SMB_SLOT@0/[DCDC3]",
+    "/run/devmap/sensors/DCDC4": "/SMB_SLOT@0/[DCDC4]",
+    "/run/devmap/sensors/DCDC5": "/SMB_SLOT@0/[DCDC5]",
+    "/run/devmap/sensors/DCDC6": "/SMB_SLOT@0/[DCDC6]",
+    "/run/devmap/sensors/DCDC7": "/SMB_SLOT@0/[DCDC7]",
+    "/run/devmap/sensors/DCDC8": "/SMB_SLOT@0/[DCDC8]",
+    "/run/devmap/sensors/DCDC9": "/SMB_SLOT@0/[DCDC9]",
+    "/run/devmap/sensors/DCDC10": "/SMB_SLOT@0/[DCDC10]",
+    "/run/devmap/sensors/DCDC0": "/SMB_SLOT@0/[DCDC0]",
+    "/run/devmap/sensors/IBV_DCDC0": "/SMB_SLOT@0/[IBV_DCDC0]",
+    "/run/devmap/sensors/IBV_DCDC1": "/SMB_SLOT@0/[IBV_DCDC1]",
+    "/run/devmap/sensors/IBV_DCDC2": "/SMB_SLOT@0/[IBV_DCDC2]",
+    "/run/devmap/sensors/DIMM1_TEMP": "/[DIMM1_TEMP]",
+    "/run/devmap/sensors/DIMM2_TEMP": "/[DIMM2_TEMP]",
+    "/run/devmap/sensors/CPU_TEMP": "/[CPU_TEMP]",
+    "/run/devmap/sensors/NVME_TEMP": "/[NVME_TEMP]",
+    "/run/devmap/sensors/NIC_TEMP": "/[NIC_TEMP]",
     "/run/devmap/xcvrs/xcvr_io_1": "/SMB_SLOT@0/[SMB_OSFP_I2C_1]",
     "/run/devmap/xcvrs/xcvr_ctrl_1": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_1]",
     "/run/devmap/xcvrs/xcvr_io_2": "/SMB_SLOT@0/[SMB_OSFP_I2C_2]",
@@ -487,6 +612,7 @@
     "tmp464",
     "lm90",
     "adm1266",
-    "pmbus"
+    "pmbus",
+    "isl68137"
   ]
 }
