@@ -2,7 +2,7 @@
 # Bazel sh_test wrapper for the cFBOSS kernel-dataplane validation.
 #
 # Runs inside the Monobuild's `bazel test //fboss/...` sweep, against the very
-# cfboss-image.tar.xz produced earlier in the same build (declared as a data
+# nh-fboss-cfboss.tar.xz produced earlier in the same build (declared as a data
 # dependency).
 #
 # Steps: load the image, boot the systemd container, run the 7 dataplane
@@ -11,7 +11,7 @@ set -euo pipefail
 
 # Runfiles-relative paths (sh_test runs from the runfiles root; the //fboss
 # package materializes under fboss/, matching the device_integration_test idiom).
-IMAGE_TAR="fboss/cfboss-image.tar.xz"
+IMAGE_TAR="fboss/nh-fboss-cfboss.tar.xz"
 RUN_SCRIPT="fboss/cfboss/scripts/run_cfboss.sh"
 VALIDATE_SCRIPT="fboss/cfboss/tests/validate_dataplane.sh"
 

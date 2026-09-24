@@ -645,7 +645,7 @@ distro_build(
         '."fboss-platform-stack" = {"download": ("file:" + $stage + "/cfboss-platform-stack.tar")}',
         '."fboss-forwarding-stack" = {"download": ("file:" + $stage + "/cfboss-forwarding-stack.tar")}',
     ]),
-    outs_map = {"cfboss-image.tar.xz": "fboss/fboss-image/cfboss-image.tar.xz"},
+    outs_map = {"nh-fboss-cfboss.tar.xz": "fboss/fboss-image/nh-fboss-cfboss.tar.xz"},
     visibility = ["//visibility:public"],
 )
 
@@ -653,7 +653,7 @@ sh_test(
     name = "cfboss_dataplane_test",
     srcs = ["cfboss/tests/run_cfboss_dataplane_test.sh"],
     data = [
-        ":cfboss-image.tar.xz",
+        ":nh-fboss-cfboss.tar.xz",
         "cfboss/scripts/run_cfboss.sh",
         "cfboss/tests/validate_dataplane.sh",
     ],
@@ -688,4 +688,4 @@ upload_build_artifact("nh-fboss-cisco-s1.iso", extra_tags = ["only-for-nightly"]
 upload_build_artifact("nh-fboss-cisco-s1.tar")
 upload_build_artifact("fboss_forwarding_stack_tests_cisco_s1.tar.zst")
 upload_build_artifact("fboss_platform_stack_tests.tar.zst")
-upload_build_artifact("cfboss-image.tar.xz")
+upload_build_artifact("nh-fboss-cfboss.tar.xz")

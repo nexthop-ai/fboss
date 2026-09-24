@@ -5,7 +5,7 @@
 #   version         Image tag (default: "latest" -- matches kiwi <containerconfig tag>).
 #   container-name  Container name (default: cfboss-${USER}).
 #
-# Assumes the image is already loaded into docker (docker load < cfboss-image.tar.xz).
+# Assumes the image is already loaded into docker (docker load < nh-fboss-cfboss.tar.xz).
 # Runs systemd as PID-1.
 set -euo pipefail
 

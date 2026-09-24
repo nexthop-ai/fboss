@@ -4,7 +4,7 @@
 # What it does:
 #   Runs `fboss-image build fboss-image/cfboss.json`, which drives the kiwi
 #   pipeline (platform-stack + forwarding-stack + kiwi --type docker) and emits
-#   fboss-image/cfboss-image.tar.xz — a `docker load`-ready archive. The container
+#   fboss-image/nh-fboss-cfboss.tar.xz — a `docker load`-ready archive. The container
 #   image config (CMD=/sbin/init, ENV PATH/LD_LIBRARY_PATH/MALLOC_*) is baked
 #   in via <containerconfig> in the kiwi XML.
 #
@@ -12,7 +12,7 @@
 #   cfboss/scripts/build_local_cfboss.sh
 #
 # After this script finishes, load and launch the container with:
-#   docker load < fboss-image/cfboss-image.tar.xz
+#   docker load < fboss-image/nh-fboss-cfboss.tar.xz
 #   cfboss/scripts/run_cfboss.sh latest
 #
 # Requirements: python3, docker, jq.
@@ -22,7 +22,7 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "$SCRIPT_DIR/../.." && pwd)"
 
 MANIFEST_DIR="$REPO_ROOT/fboss-image"
-IMAGE_TAR="$MANIFEST_DIR/cfboss-image.tar.xz"
+IMAGE_TAR="$MANIFEST_DIR/nh-fboss-cfboss.tar.xz"
 FBOSS_IMAGE="$REPO_ROOT/fboss-image/distro_cli/fboss-image"
 
 if [ ! -x "$FBOSS_IMAGE" ]; then
