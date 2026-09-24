@@ -19,132 +19,21 @@
  */
 
 #include <folly/Conv.h>
-<<<<<<< HEAD
 #include <folly/ScopeGuard.h>
-||||||| 7645153f26
-=======
->>>>>>> cc7af323e3175590867f4cb7f3c15757cf5df0d3
 #include <folly/logging/xlog.h>
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <optional>
-<<<<<<< HEAD
-#include <set>
-||||||| 7645153f26
-=======
->>>>>>> cc7af323e3175590867f4cb7f3c15757cf5df0d3
 #include <string>
 #include <utility>
 #include <vector>
 #include "fboss/cli/fboss2/test/integration_test/Fboss2IntegrationTest.h"
 
 using namespace facebook::fboss;
+using ::testing::HasSubstr;
 
 class DeleteInterfaceTest : public Fboss2IntegrationTest {
  protected:
-  // Interface ID of the SVI backing `vlanId` in a running config, if any.
-  static std::optional<int> interfaceIdForVlan(
-      const folly::dynamic& config,
-      int vlanId) {
-    if (!config.isObject() || !config.count("sw") ||
-        !config["sw"].count("interfaces")) {
-      return std::nullopt;
-    }
-    for (const auto& i : config["sw"]["interfaces"]) {
-      if (i.count("vlanID") && i["vlanID"].asInt() == vlanId &&
-          i.count("intfID")) {
-        return i["intfID"].asInt();
-      }
-    }
-    return std::nullopt;
-  }
-
-  static bool hasVlan(const folly::dynamic& config, int vlanId) {
-    if (!config.isObject() || !config.count("sw") ||
-        !config["sw"].count("vlans")) {
-      return false;
-    }
-    for (const auto& v : config["sw"]["vlans"]) {
-      if (v.count("id") && v["id"].asInt() == vlanId) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  static bool vlanPresent(const folly::dynamic& config, int vlanId) {
-    return hasVlan(config, vlanId) &&
-        interfaceIdForVlan(config, vlanId).has_value();
-  }
-
-  static bool vlanGone(const folly::dynamic& config, int vlanId) {
-    return !hasVlan(config, vlanId) &&
-        !interfaceIdForVlan(config, vlanId).has_value();
-  }
-
-  // First VLAN ID in [2, 4094] unused in the running config. Mirrors the
-  // picker in DeleteVlanTest — the harness has no shared one.
-  int pickUnusedVlanId() const {
-    auto config = getRunningConfig();
-    std::set<int> used;
-    if (config.isObject() && config.count("sw")) {
-      const auto& sw = config["sw"];
-      if (sw.count("defaultVlan")) {
-        used.insert(sw["defaultVlan"].asInt());
-      }
-      for (const auto& [array, field] :
-           {std::pair<const char*, const char*>{"ports", "ingressVlan"},
-            {"vlanPorts", "vlanID"},
-            {"interfaces", "vlanID"},
-            {"vlans", "id"}}) {
-        if (!sw.count(array)) {
-          continue;
-        }
-        for (const auto& item : sw[array]) {
-          if (item.count(field)) {
-            used.insert(item[field].asInt());
-          }
-        }
-      }
-    }
-    for (int id = 2; id <= 4094; ++id) {
-      if (!used.count(id)) {
-        return id;
-      }
-    }
-    return 0;
-  }
-
-  // Drops a VLAN left behind by an aborted run. The happy path has already
-  // cascaded it away, so this is normally a no-op. Must not throw: callers
-  // invoke this from SCOPE_EXIT during test teardown.
-  void deleteVlanIfPresent(int vlanId) const noexcept {
-    try {
-      if (!hasVlan(getRunningConfig(), vlanId)) {
-        return;
-      }
-      auto result = runCli({"delete", "vlan", std::to_string(vlanId)});
-      if (result.exitCode != 0) {
-        XLOG(WARN) << "cleanup: delete vlan " << vlanId
-                   << " failed, discarding session: " << result.stderr;
-        discardSession();
-        return;
-      }
-      auto commit = runCli({"config", "session", "commit"});
-      if (commit.exitCode != 0) {
-        XLOG(WARN) << "cleanup: commit after delete vlan " << vlanId
-                   << " failed, discarding session: " << commit.stderr;
-        discardSession();
-      }
-    } catch (const std::exception& e) {
-      XLOG(WARN) << "cleanup: delete vlan " << vlanId << " threw: " << e.what();
-      discardSession();
-    } catch (...) {
-      XLOG(WARN) << "cleanup: delete vlan " << vlanId
-                 << " threw an unknown exception";
-      discardSession();
-    }
-  }
-
   // Setters record what they touch so TearDown can reset the attribute via
   // the delete CLI even when a test fails midway, keeping the shared DUT
   // clean. The delete command is idempotent, so re-deleting an attribute the
@@ -175,39 +64,6 @@ class DeleteInterfaceTest : public Fboss2IntegrationTest {
   void setDescription(
       const std::string& interfaceName,
       const std::string& value) {
-<<<<<<< HEAD
-    touched_.emplace_back(interfaceName, "description");
-    auto result =
-        runCli({"config", "interface", interfaceName, "description", value});
-    ASSERT_EQ(result.exitCode, 0)
-        << "Failed to set description=" << value << ": " << result.stderr;
-    commitConfig();
-  }
-
-  // Description of a port in the running config, or empty when unset.
-  std::string descriptionOf(const std::string& interfaceName) const {
-    auto config = getRunningConfig();
-    for (const auto& port : config["sw"]["ports"]) {
-      if (port.count("name") && port["name"].asString() == interfaceName) {
-        return port.count("description") ? port["description"].asString()
-                                         : std::string();
-      }
-    }
-    return {};
-  }
-
-  // mtu of the L3 interface belonging to a port, or 0 when unset.
-  int mtuOf(const std::string& interfaceName) const {
-    auto intfId = getInterfaceIdForPort(interfaceName);
-    auto config = getRunningConfig();
-    for (const auto& intf : config["sw"]["interfaces"]) {
-      if (intf.count("intfID") && intf["intfID"].asInt() == intfId) {
-        return intf.count("mtu") ? static_cast<int>(intf["mtu"].asInt()) : 0;
-      }
-    }
-    return 0;
-||||||| 7645153f26
-=======
     // Remember the prior description so TearDown can put it back. Unlike
     // loopback-mode / lldp, "delete" is not the right restore: a shared DUT
     // port may already have had a real description before the test overwrote
@@ -265,7 +121,6 @@ class DeleteInterfaceTest : public Fboss2IntegrationTest {
     ASSERT_EQ(result.exitCode, 0)
         << "Failed to set mtu=" << mtu << ": " << result.stderr;
     commitConfig();
->>>>>>> cc7af323e3175590867f4cb7f3c15757cf5df0d3
   }
 
   void deleteInterfaceAttrs(
@@ -435,46 +290,6 @@ TEST_F(DeleteInterfaceTest, DeleteLldpExpectedValue) {
 // command has to reach into both objects; covering them together exercises
 // each reset path plus the multi-attribute dispatch in one commit cycle.
 //
-<<<<<<< HEAD
-// mtu is restored explicitly rather than through TearDown: TearDown deletes
-// attributes, which is the correct reset for loopback-mode and lldp (default
-// is absent) but not for mtu, which a real DUT sets to a non-default value.
-// ---------------------------------------------------------------------------
-
-TEST_F(DeleteInterfaceTest, DeleteDescriptionAndMtu) {
-  std::string ifName = getRandomInterfacePortName();
-  XLOG(INFO) << "Using interface: " << ifName;
-
-  const int originalMtu = mtuOf(ifName);
-  XLOG(INFO) << "  original mtu: " << originalMtu;
-
-  setDescription(ifName, "fboss2-it-description");
-  auto result = runCli({"config", "interface", ifName, "mtu", "9000"});
-  ASSERT_EQ(result.exitCode, 0) << result.stderr;
-  commitConfig();
-  ASSERT_EQ(descriptionOf(ifName), "fboss2-it-description");
-  ASSERT_EQ(mtuOf(ifName), 9000);
-
-  deleteInterfaceAttrs(ifName, {"description", "mtu"});
-  EXPECT_EQ(descriptionOf(ifName), std::string())
-      << "description should be absent from the running config after delete";
-  EXPECT_EQ(mtuOf(ifName), 0)
-      << "mtu should be absent from the running config after delete";
-
-  if (originalMtu != 0) {
-    XLOG(INFO) << "Restoring mtu " << originalMtu;
-    result = runCli(
-        {"config",
-         "interface",
-         ifName,
-         "mtu",
-         folly::to<std::string>(originalMtu)});
-    ASSERT_EQ(result.exitCode, 0) << result.stderr;
-    commitConfig();
-    EXPECT_EQ(mtuOf(ifName), originalMtu);
-  }
-||||||| 7645153f26
-=======
 // Prior description and mtu are captured by setDescription / setMtu and
 // restored in TearDown (delete alone is wrong for mtu: DUTs usually ship
 // with a non-default value).
@@ -494,7 +309,6 @@ TEST_F(DeleteInterfaceTest, DeleteDescriptionAndMtu) {
       << "description should be absent from the running config after delete";
   EXPECT_EQ(mtuOf(ifName), 0)
       << "mtu should be absent from the running config after delete";
->>>>>>> cc7af323e3175590867f4cb7f3c15757cf5df0d3
 }
 
 // ---------------------------------------------------------------------------
@@ -621,7 +435,8 @@ TEST_F(DeleteInterfaceTest, DeleteWholePortRemovesCreatedSubport) {
 
 TEST_F(DeleteInterfaceTest, DeleteL3InterfaceByIdCascadesVlan) {
   const int vlanId = pickUnusedVlanId();
-  ASSERT_NE(vlanId, 0) << "No VLAN ID free in [2, 4094] on this switch";
+  ASSERT_NE(vlanId, 0) << "No VLAN ID free in [" << kTestVlanMin << ", "
+                       << kTestVlanMax << "] on this switch";
   // Guards an abort between the commit below and the delete, which would
   // otherwise leave the VLAN and its interface's TUN device on the DUT.
   SCOPE_EXIT {
@@ -636,9 +451,25 @@ TEST_F(DeleteInterfaceTest, DeleteL3InterfaceByIdCascadesVlan) {
   waitForAgentReady();
 
   XLOG(INFO) << "[Step 2] Find the interface backing VLAN " << id;
-  auto config = waitForRunningConfig(
-      [vlanId](const folly::dynamic& c) { return vlanPresent(c, vlanId); });
-  auto intfId = interfaceIdForVlan(config, vlanId);
+  auto config = waitForRunningConfig([vlanId](const folly::dynamic& c) {
+    if (!c.isObject() || !c.count("sw") || !c["sw"].count("interfaces")) {
+      return false;
+    }
+    for (const auto& i : c["sw"]["interfaces"]) {
+      if (i.count("vlanID") && i["vlanID"].asInt() == vlanId) {
+        return true;
+      }
+    }
+    return false;
+  });
+  std::optional<int> intfId;
+  for (const auto& i : config["sw"]["interfaces"]) {
+    if (i.count("vlanID") && i["vlanID"].asInt() == vlanId &&
+        i.count("intfID")) {
+      intfId = i["intfID"].asInt();
+      break;
+    }
+  }
   ASSERT_TRUE(intfId.has_value())
       << "VLAN " << id << " has no backing interface in the running config";
   XLOG(INFO) << "  interface ID: " << *intfId;
@@ -654,9 +485,41 @@ TEST_F(DeleteInterfaceTest, DeleteL3InterfaceByIdCascadesVlan) {
   waitForAgentReady();
 
   XLOG(INFO) << "[Step 4] Check the interface and VLAN " << id << " are gone";
-  config = waitForRunningConfig(
-      [vlanId](const folly::dynamic& c) { return vlanGone(c, vlanId); });
-  EXPECT_TRUE(vlanGone(config, vlanId))
-      << "VLAN " << id << " or its interface still in running config";
+  config = waitForRunningConfig([vlanId](const folly::dynamic& c) {
+    if (!c.isObject() || !c.count("sw")) {
+      return false;
+    }
+    const auto& sw = c["sw"];
+    if (sw.count("vlans")) {
+      for (const auto& v : sw["vlans"]) {
+        if (v.count("id") && v["id"].asInt() == vlanId) {
+          return false;
+        }
+      }
+    }
+    if (sw.count("interfaces")) {
+      for (const auto& i : sw["interfaces"]) {
+        if (i.count("vlanID") && i["vlanID"].asInt() == vlanId) {
+          return false;
+        }
+      }
+    }
+    return true;
+  });
+  XLOG(INFO) << "TEST PASSED";
+}
+
+// ---------------------------------------------------------------------------
+// Test: an interface ID that matches nothing is rejected, and leaves no
+// staged change behind.
+// ---------------------------------------------------------------------------
+
+TEST_F(DeleteInterfaceTest, DeleteUnknownInterfaceIdFails) {
+  auto del = runCli({"delete", "interface", "65535"});
+  discardSession();
+
+  EXPECT_NE(del.exitCode, 0) << "unknown interface ID should be rejected";
+  EXPECT_THAT(del.stderr + del.stdout, HasSubstr("not found in configuration"))
+      << "should fail on resolution, not on some later error";
   XLOG(INFO) << "TEST PASSED";
 }

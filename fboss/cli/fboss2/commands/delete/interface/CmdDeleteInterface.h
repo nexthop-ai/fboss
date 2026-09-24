@@ -54,13 +54,7 @@ struct CmdDeleteInterfaceTraits : public WriteCommandTraits {
     cmd.add_option(
         "interface_delete_config",
         args,
-<<<<<<< HEAD
         "<port-name|intf-name|intf-id>... [description|loopback-mode|lookup-class|mtu|lldp-expected-*|ip-address <cidr>|ipv6-address <cidr>]");
-||||||| 7645153f26
-        "<port-list> [loopback-mode|lookup-class|lldp-expected-*|ip-address <cidr>|ipv6-address <cidr>]");
-=======
-        "<port-list> [description|loopback-mode|lookup-class|mtu|lldp-expected-*|ip-address <cidr>|ipv6-address <cidr>]");
->>>>>>> cc7af323e3175590867f4cb7f3c15757cf5df0d3
   }
   using ObjectArgType = InterfaceDeleteConfig;
   using RetType = std::string;
