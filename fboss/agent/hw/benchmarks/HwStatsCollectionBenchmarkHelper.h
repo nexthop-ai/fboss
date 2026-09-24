@@ -39,13 +39,20 @@ inline int statsCollectionBenchmarkIterations(const AgentEnsemble* ensemble) {
     // 100 iterations.
     return 100;
   }
-  if (ensemble->getSw()->getSwitchInfoTable().haveL3Switches() &&
-      checkSameAndGetAsicForTesting(
-          ensemble->getSw()->getHwAsicTable()->getL3Asics())
-              ->getAsicVendor() == HwAsic::AsicVendor::ASIC_VENDOR_CHENAB) {
-    // TODO(Chenab): 10'000 iterations take 30 minutes on Chenab. Debug this
-    // slowness
-    return 1000;
+  if (ensemble->getSw()->getSwitchInfoTable().haveL3Switches()) {
+    auto l3Asic = checkSameAndGetAsicForTesting(
+        ensemble->getSw()->getHwAsicTable()->getL3Asics());
+    if (l3Asic->getAsicVendor() == HwAsic::AsicVendor::ASIC_VENDOR_CHENAB) {
+      // TODO(Chenab): 10'000 iterations take 30 minutes on Chenab. Debug this
+      // slowness
+      return 1000;
+    }
+    if (l3Asic->getAsicType() == cfg::AsicType::ASIC_TYPE_TOMAHAWK6) {
+      // TODO(TH6): updateStats() measures around 120ms per call on TH6, so
+      // 10'000 iterations overrun the test runner's timeout. Sample less until
+      // that per-call cost is understood.
+      return 1000;
+    }
   }
   return 10'000;
 }
@@ -177,39 +184,6 @@ inline void runStatsCollectionBenchmark(bool alwaysCollectVoqStats = false) {
         ensemble->getSw(),
         ensemble->getSw()->getHwAsicTable()->isFeatureSupportedOnAllAsic(
             HwAsic::Feature::RESERVED_ENCAP_INDEX_RANGE));
-<<<<<<< HEAD
-    // For VOQ switches we have 2K - 4K remote system ports (each with 4-8
-    // VOQs). This is >10x of local ports on NPU platforms. Therefore, only run
-    // 100 iterations.
-    iterations = 100;
-  } else if (ensemble->getSw()->getSwitchInfoTable().haveL3Switches()) {
-    auto l3Asic = checkSameAndGetAsicForTesting(
-        ensemble->getSw()->getHwAsicTable()->getL3Asics());
-    if (l3Asic->getAsicVendor() == HwAsic::AsicVendor::ASIC_VENDOR_CHENAB) {
-      // TODO(Chenab): 10'000 iterations take 30 minutes on Chenab. Debug this
-      // slowness
-      iterations = 1000;
-    } else if (l3Asic->getAsicType() == cfg::AsicType::ASIC_TYPE_TOMAHAWK6) {
-      // TODO(TH6): updateStats() measures around 120ms per call on TH6, so
-      // 10'000 iterations overrun the test runner's timeout. Sample less until
-      // that per-call cost is understood.
-      iterations = 1000;
-    }
-||||||| 7645153f26
-    // For VOQ switches we have 2K - 4K remote system ports (each with 4-8
-    // VOQs). This is >10x of local ports on NPU platforms. Therefore, only run
-    // 100 iterations.
-    iterations = 100;
-  } else if (ensemble->getSw()->getSwitchInfoTable().haveL3Switches()) {
-    if (checkSameAndGetAsicForTesting(
-            ensemble->getSw()->getHwAsicTable()->getL3Asics())
-            ->getAsicVendor() == HwAsic::AsicVendor::ASIC_VENDOR_CHENAB) {
-      // TODO(Chenab): 10'000 iterations take 30 minutes on Chenab. Debug this
-      // slowness
-      iterations = 1000;
-    }
-=======
->>>>>>> cc7af323e3175590867f4cb7f3c15757cf5df0d3
   }
   const int iterations = statsCollectionBenchmarkIterations(ensemble.get());
 

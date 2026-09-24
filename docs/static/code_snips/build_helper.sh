@@ -1,11 +1,5 @@
-<<<<<<< HEAD
 # shellcheck shell=bash
-# By default, `build-helper.py` will use SAI version 1.18.1. If you are planning
-||||||| 7645153f26
-# By default, `build-helper.py` will use SAI version 1.18.1. If you are planning
-=======
 # By default, `build-helper.py` will use SAI version 1.19.0. If you are planning
->>>>>>> cc7af323e3175590867f4cb7f3c15757cf5df0d3
 # on building against a different version of SAI, you must add another param to
 # the build-helper.py command
 
