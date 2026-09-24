@@ -420,16 +420,10 @@ const CommandTree& kConfigCommandTree() {
                           "description, peer-tag, ingress-policy, "
                           "egress-policy, rr-client, confed-peer, "
                           "redistribute-peer, enhanced-route-refresh, "
-<<<<<<< HEAD
-                          "connect-mode, next-hop-self, add-path send|receive, "
-||||||| 7645153f26
-                          "Configure BGP peer group",
-=======
                           "route-refresh, remove-private-as, "
                           "enforce-first-as, passive, next-hop-self, "
                           "ttl-security-hops, link-bandwidth, "
                           "advertise-lbw, receive-lbw, add-path send|receive, "
->>>>>>> cc7af323e3175590867f4cb7f3c15757cf5df0d3
                           "afi disable-ipv4-afi|disable-ipv6-afi|"
                           "ipv4-over-ipv6-nh, "
                           "graceful-restart restart-time|stateful-ha, "
@@ -873,7 +867,6 @@ const CommandTree& kConfigCommandTree() {
                     "Delete a BGP peer-group: <name>",
                     commandHandler<CmdDeleteProtocolBgpPeerGroup>,
                     argRegistrar<CmdDeleteProtocolBgpPeerGroupTraits>,
-<<<<<<< HEAD
                 },
                 {
                     "policy",
@@ -895,14 +888,6 @@ const CommandTree& kConfigCommandTree() {
                          argRegistrar<
                              CmdDeleteProtocolBgpPolicyCommunityListTraits>,
                      }},
-||||||| 7645153f26
-                   "neighbor",
-                   "Delete a BGP neighbor: <ip-address>",
-                   commandHandler<CmdDeleteProtocolBgpNeighbor>,
-                   argRegistrar<CmdDeleteProtocolBgpNeighborTraits>,
-               }},
-=======
->>>>>>> cc7af323e3175590867f4cb7f3c15757cf5df0d3
                 }},
            },
            {

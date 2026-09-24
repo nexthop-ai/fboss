@@ -104,9 +104,6 @@ TEST_F(ConfigBgpPeerGroupTest, SetTimersHoldTimeAndCommit) {
       << "bgpd's running config has no peer-group " << kGroup;
   ASSERT_TRUE(group->count("bgp_peer_timers"));
   EXPECT_EQ((*group)["bgp_peer_timers"]["hold_time_seconds"].asInt(), 90);
-<<<<<<< HEAD
-||||||| 7645153f26
-=======
   // bgpd applies the group's timers struct to its members as a whole, so the
   // fields the user did not set must carry the global defaults (hold/3
   // keepalive), not the thrift default of 0 that would disable keepalives.
@@ -171,7 +168,6 @@ TEST_F(ConfigBgpPeerGroupTest, RouteLimitWarningKeepsUnlimitedCap) {
   ASSERT_TRUE(group->count("pre_filter"));
   EXPECT_EQ((*group)["pre_filter"]["max_routes"].asInt(), 0);
   EXPECT_EQ((*group)["pre_filter"]["warning_limit"].asInt(), 30000);
->>>>>>> cc7af323e3175590867f4cb7f3c15757cf5df0d3
 }
 
 TEST_F(ConfigBgpPeerGroupTest, DeleteGroupAndCommit) {
