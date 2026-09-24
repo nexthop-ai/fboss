@@ -294,17 +294,9 @@ def _find_installed_pkg_dir(build_dir: pathlib.Path, pkg: str) -> pathlib.Path |
     so it must not be narrowed to an exact name match.
     """
     pkg_dirs = sorted(
-<<<<<<< HEAD
-        installed.glob(f"{pkg}-*"), key=lambda p: p.stat().st_mtime, reverse=True
-||||||| 7645153f26
-        installed.glob(f"{pkg}-*"),
-        key=lambda p: p.stat().st_mtime,
-        reverse=True,
-=======
         (build_dir / "installed").glob(f"{pkg}-*"),
         key=lambda p: p.stat().st_mtime,
         reverse=True,
->>>>>>> cc7af323e3175590867f4cb7f3c15757cf5df0d3
     )
     if not pkg_dirs:
         return None
