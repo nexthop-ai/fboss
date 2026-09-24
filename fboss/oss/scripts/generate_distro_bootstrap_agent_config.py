@@ -145,10 +145,12 @@ PLATFORM_CODENAME: dict[str, str] = {
     "crownedeagle": "wedge800bnhp",
     "friscoeagle": "wedge800cnhp",
     "blackkite": "nh4220f",
+    "bluekite": "m4061nhp",
     "sunbird": "m4340nhp",
 }
 
 CODENAMES_REQUIRING_PLATFORM_DESCRIPTOR = {
+    "m4061nhp",
     "m4062nhp",
     "m4340nhp",
     "nh4010f",

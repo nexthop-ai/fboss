@@ -56,6 +56,7 @@ class AgentPortPktCounterTest : public AgentHwTest {
     switch (platform) {
       case PlatformType::PLATFORM_M4062NHP:
       case PlatformType::PLATFORM_NH4220F:
+      case PlatformType::PLATFORM_M4061NHP:
       case PlatformType::PLATFORM_NH4010F:
       case PlatformType::PLATFORM_MONTBLANC:
         return false;
