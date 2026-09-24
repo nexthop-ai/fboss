@@ -9,7 +9,22 @@ import os
 from pathlib import Path
 
 from tests.libs.test_runner.base import normalize_model
+from tests.libs.test_runner.platform_configs import LINK_QSFP_TEST_CONFIG_NAME
 from tests.libs.test_runner.platform_mapping import load_platform_mapping, repo_dir
+from tests.libs.test_runner.variants import (
+    cage_of,
+    CageInfo,
+    MAX_VARIANT,
+    Variant,
+    VariantError,
+    VariantNotApplicable,
+    VariantResolution,
+    derive_variant_chain,
+    is_well_formed,
+    load_full_platform_mapping,
+    parse_variant,
+    resolve_pairs,
+)
 
 logger = logging.getLogger("test_runner")
 
@@ -41,12 +56,6 @@ def _scaled_test_run_timeout(n_ports: int) -> int:
     return max(_DEFAULT_TEST_RUN_TIMEOUT_SECS, _TEST_RUN_TIMEOUT_PER_PORT_SECS * n_ports)
 
 
-def _cage_of(port_name: str) -> str:
-    """Transceiver cage a port name belongs to: eth1/25/5 -> eth1/25."""
-    parts = port_name.split("/")
-    return "/".join(parts[:2]) if len(parts) >= 3 else port_name
-
-
 def neighbor_pairs(ports: list[str], pairs: dict[str, str]) -> list[tuple[str, str]]:
     """Resolve real neighbors for this pass's ports, once per cable.
 
@@ -57,11 +66,11 @@ def neighbor_pairs(ports: list[str], pairs: dict[str, str]) -> list[tuple[str, s
     """
     ports_by_cage: dict[str, list[str]] = {}
     for port in ports:
-        ports_by_cage.setdefault(_cage_of(port), []).append(port)
+        ports_by_cage.setdefault(cage_of(port), []).append(port)
 
     peer_cage = {}
     for port, peer in pairs.items():
-        a, z = _cage_of(port), _cage_of(peer)
+        a, z = cage_of(port), cage_of(peer)
         if a != z:
             peer_cage[a] = z
 
@@ -92,17 +101,99 @@ class CablingAwareRunnerMixin:
     _PORTS_INFO_ENV_VAR = "TEST_PORTS_INFO"
     _SNAKE_PAIRS_ENV_VAR = "TEST_SNAKE_PAIRS"
 
+    _VARIANT_SUMMARY_PREFIX = "TEST"
+
     def __init__(self):
         super().__init__()
         self._cached_base_config = None
         self._cached_port_map = None
+        self._cached_full_mapping = None
         self._media_by_port: dict[str, str | None] = {}
         self._media_tech_by_port: dict[str, str | None] = {}
         self._transmitter_tech_by_port: dict[str, str | None] = {}
         self._is_copper_by_port: dict[str, bool | None] = {}
+        self._host_speeds_by_port: dict[str, list[int] | None] = {}
+        # Set by _run_cabling_aware per pass; None on the max path.
+        self._pass_variant_resolution: VariantResolution | None = None
+
+    @classmethod
+    def _config_name(cls, model: str) -> str:
+        return LINK_QSFP_TEST_CONFIG_NAME.get(model, model)
+
+    def _variant_name(self) -> str:
+        return (self.tc or {}).get("variant") or "max"
+
+    def _is_variant_run(self) -> bool:
+        """Answered without the platform mapping: the no-cabling-data guards
+        run before a model is guaranteed."""
+        return self._variant_name().lower() != "max"
+
+    def _report_variant_skip(self, reason: str, skip_tr_xml: bool) -> bool:
+        """Report a variant this DUT cannot run as an all-skipped result.
+
+        A run that leaves no tr.xml is recorded as FILE_ERR by the executor,
+        and these wrappers are scheduled fleet-wide, so a platform lacking a
+        variant has to look skipped rather than broken.
+        """
+        logger.info("%s", reason)
+        if not skip_tr_xml:
+            self._merge_junit_results([], skipped=[(self._variant_name(), reason)])
+            self.normalize_test_results_file()
+        return True
+
+    def _requested_variant(self, config_name: str) -> Variant:
+        """The requested variant from test_context["variant"]; absent means max.
+
+        A well-formed variant this platform's mapping cannot program raises
+        VariantNotApplicable (wrappers are scheduled fleet-wide); a malformed
+        string stays a hard error.
+        """
+        if not self._is_variant_run():
+            # The max path must not depend on the platform mapping: a model
+            # whose mapping is missing still has to run at max.
+            return MAX_VARIANT
+        value = self._variant_name()
+        cages = self._full_platform_mapping(config_name)
+        if not cages:
+            raise RuntimeError(f"platform mapping for {config_name} yielded no cages")
+        try:
+            return parse_variant(value, derive_variant_chain(cages))
+        except VariantError as e:
+            if is_well_formed(value):
+                raise VariantNotApplicable(f"variant {value} is not supported on this platform: {e}") from e
+            raise
+
+    def _full_platform_mapping(self, config_name: str) -> dict[str, CageInfo]:
+        if self._cached_full_mapping is None:
+            self._cached_full_mapping = load_full_platform_mapping(config_name)
+        return self._cached_full_mapping
+
+    def _resolve_variant_pairs(
+        self, pairs: dict[str, str], variant: Variant, config_name: str
+    ) -> VariantResolution:
+        """Resolve snake pairs for a non-max variant; requires _load_cabling to
+        have populated the per-port module data first."""
+        resolution = resolve_pairs(
+            pairs,
+            variant,
+            self._full_platform_mapping(config_name),
+            self._host_speeds_by_port,
+            self._is_copper_by_port,
+        )
+        logger.info(resolution.summary(self._VARIANT_SUMMARY_PREFIX))
+        return resolution
 
     def _load_snake_pairs(self) -> dict[str, str]:
         return _load_json_pairs(os.getenv(self._SNAKE_PAIRS_ENV_VAR))
+
+    def _pass_pairs(self, ports: list[str]) -> dict[str, str]:
+        """Snake pairs with both ends inside this pass's port set."""
+        allowed = set(ports)
+        return {
+            port: peer
+            for port, peer in self._load_snake_pairs().items()
+            if port in allowed and peer in allowed
+        }
 
     def _load_base_config_and_port_map(self, base_config_dir: Path, config_name: str) -> tuple[dict, dict]:
         """Load and cache the base config JSON + platform-mapping port map.
@@ -159,6 +250,7 @@ class CablingAwareRunnerMixin:
             )
             for p, info in cabling.items()
         }
+        self._host_speeds_by_port = {p: info.get("host_speeds") for p, info in cabling.items()}
         return all_ports, optics_ports, media_by_port
 
     def _gate_filters(
@@ -231,14 +323,37 @@ class CablingAwareRunnerMixin:
         # including the cabling-aware one, and pads a failing run at most once.
         cabling_path = os.getenv(self._PORTS_INFO_ENV_VAR)
         if not cabling_path:
+            # Refuse to silently run the max config under a variant test name.
+            if self._is_variant_run():
+                return self._report_variant_skip(
+                    "variant runs require TEST_PORTS_INFO cabling data", skip_tr_xml
+                )
             return super()._run_test_impl(test_context, skip_tr_xml)
         return self._run_cabling_aware(cabling_path, test_context, skip_tr_xml)
 
     def _run_cabling_aware(self, cabling_path, test_context, skip_tr_xml):
         # setup()/deploy already ran in the base run_test() before this call.
         model = normalize_model(self.tc["model"])
+        config_name = self._config_name(model)
         all_ports, optics_ports, media_by_port = self._load_cabling(cabling_path)
-        self._test_run_timeout_secs = _scaled_test_run_timeout(len(all_ports))
+        # Both gates run before any DUT mutation, so reporting a skip here
+        # cannot discard results: nothing has executed yet.
+        try:
+            variant = self._requested_variant(config_name)
+            if not variant.is_max:
+                pairs = self._load_snake_pairs()
+                if not pairs:
+                    raise VariantNotApplicable(
+                        "variant runs require TEST_SNAKE_PAIRS cabling data"
+                    )
+                # Zero supported pairs is missing coverage, not a failure.
+                resolution = self._resolve_variant_pairs(pairs, variant, config_name)
+                if resolution.supported == 0:
+                    raise VariantNotApplicable(resolution.summary(self._VARIANT_SUMMARY_PREFIX))
+        except VariantNotApplicable as e:
+            return self._report_variant_skip(str(e), skip_tr_xml)
+        # Breakout multiplies the port count, so scale the timeout with it.
+        self._test_run_timeout_secs = _scaled_test_run_timeout(len(all_ports) * variant.factor)
         logger.info(
             "test-run-timeout %ds for %d cabled ports", self._test_run_timeout_secs, len(all_ports)
         )
@@ -295,7 +410,23 @@ class CablingAwareRunnerMixin:
         ran_labels = []
         pre_test_called = False
         try:
-            for label, filter_value, ports in passes:
+            for pass_index, (label, filter_value, ports) in enumerate(passes):
+                # Decide per-pass variant viability here (not by raising out
+                # of pre_test) so earlier pass results survive.
+                self._pass_variant_resolution = None
+                if not variant.is_max:
+                    resolution = self._resolve_variant_pairs(
+                        self._pass_pairs(ports), variant, config_name
+                    )
+                    if not resolution.expanded_pairs:
+                        reason = f"no pair supports variant {variant.name} among this pass's ports"
+                        logger.info("Skipping %s pass: %s", label, reason)
+                        skipped.extend(
+                            (pattern, reason)
+                            for pattern in ([filter_value] if gtest_filter else filter_value)
+                        )
+                        continue
+                    self._pass_variant_resolution = resolution
                 if gtest_filter:
                     self.tc["gtest_filter"] = filter_value
                 else:
@@ -311,7 +442,7 @@ class CablingAwareRunnerMixin:
                 ran_labels.append(label)
                 if not success:
                     logger.error("%s %s pass failed; aborting remaining passes", type(self).__name__, label)
-                    for _, remaining, _ in passes[len(ran_labels):]:
+                    for _, remaining, _ in passes[pass_index + 1:]:
                         skipped.extend(
                             (pattern, "earlier pass failed; run aborted")
                             for pattern in ([remaining] if gtest_filter else remaining)

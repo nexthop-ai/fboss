@@ -54,6 +54,12 @@ run_all_pytests(
             "agent_hw/benchmarks/*.py",
             "qsfp/*.py",
         ]),
+        # Imports the variant wrapper files (via load_test_context) to check
+        # each one names a variant some shipped platform can actually run.
+        "test_variants": glob([
+            "link/*.py",
+            "qsfp/*.py",
+        ]),
     },
     deps = [
         ":test_runner",

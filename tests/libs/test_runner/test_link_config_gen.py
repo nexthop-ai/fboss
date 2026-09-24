@@ -185,7 +185,74 @@ class TestOverlayCabling:
     def test_vlan_band_overflow_raises(self):
         big_map = {
             f"eth1/{cage}/1": PortInfo(logical_id=cage, profile_id=39, speed=800000, profiles={39: 800000})
-            for cage in range(1, 300)
+            for cage in range(1, 2200)
         }
         with pytest.raises(ValueError, match="ran out of vlans"):
             LinkTestRunner._overlay_cabling(_base_config(["eth1/9/1"]), PAIRS, big_map)
+
+    def test_full_breakout_on_high_port_count_platform_fits_vlan_band(self):
+        # 128 cages (m4062nhp, the fleet's widest) at an 8-way breakout is 1024
+        # synthesized ports, well past the 513 any shipping platform reaches.
+        port_map = {
+            f"eth1/{cage}/{sub}": PortInfo(
+                logical_id=cage * 10 + sub, profile_id=23, speed=100000, profiles={23: 100000}
+            )
+            for cage in range(1, 129)
+            for sub in range(1, 9)
+        }
+        pairs = {}
+        for a in range(1, 129, 2):
+            for sub in range(1, 9):
+                pa, pz = f"eth1/{a}/{sub}", f"eth1/{a + 1}/{sub}"
+                pairs[pa] = pz
+                pairs[pz] = pa
+        # mgmt=False: the fixture's mgmt port name would collide with cage 33.
+        base = _base_config(["eth1/9/1"], mgmt=False)
+        out1 = LinkTestRunner._overlay_cabling(copy.deepcopy(base), pairs, port_map)
+        out2 = LinkTestRunner._overlay_cabling(base, pairs, port_map)
+        assert out1 == out2
+        _assert_consistent(out1)
+        enabled = [p for p in out1["sw"]["ports"] if p["portType"] == 0 and p["state"] == 2]
+        assert len(enabled) == 1024
+
+    def test_profile_overrides_set_speed_and_profile(self):
+        port_map = dict(PORT_MAP)
+        port_map["eth1/1/1"] = PortInfo(
+            logical_id=301, profile_id=39, speed=800000, profiles={39: 800000, 25: 200000}
+        )
+        port_map["eth1/1/3"] = PortInfo(logical_id=311, profile_id=25, speed=200000, profiles={25: 200000})
+        port_map["eth1/2/1"] = PortInfo(
+            logical_id=302, profile_id=39, speed=800000, profiles={39: 800000, 25: 200000}
+        )
+        port_map["eth1/2/3"] = PortInfo(logical_id=312, profile_id=25, speed=200000, profiles={25: 200000})
+        pairs = {
+            "eth1/1/1": "eth1/2/1",
+            "eth1/2/1": "eth1/1/1",
+            "eth1/1/3": "eth1/2/3",
+            "eth1/2/3": "eth1/1/3",
+        }
+        overrides = {name: 25 for name in pairs}
+        out = LinkTestRunner._overlay_cabling(
+            _base_config(["eth1/9/1"]), pairs, port_map, profile_overrides=overrides
+        )
+        _assert_consistent(out)
+        ports = {p["name"]: p for p in out["sw"]["ports"] if p["portType"] == 0}
+        for name, peer in pairs.items():
+            assert ports[name]["profileID"] == 25
+            assert ports[name]["speed"] == 200000
+            assert ports[name]["expectedLLDPValues"] == {"2": peer}
+        # Uncabled-cage fillers keep their default max profile.
+        assert ports["eth1/3/1"]["profileID"] == 39
+        assert ports["eth1/3/1"]["state"] == 1
+
+    def test_profile_override_unsupported_raises(self):
+        with pytest.raises(ValueError, match="does not support profile"):
+            LinkTestRunner._overlay_cabling(
+                _base_config(["eth1/9/1"]), PAIRS, PORT_MAP, profile_overrides={"eth1/1/1": 23}
+            )
+
+    def test_max_output_unchanged_by_override_plumbing(self):
+        base = _base_config(["eth1/9/1"])
+        out_default = LinkTestRunner._overlay_cabling(copy.deepcopy(base), PAIRS, PORT_MAP)
+        out_none = LinkTestRunner._overlay_cabling(base, PAIRS, PORT_MAP, profile_overrides=None)
+        assert out_default == out_none

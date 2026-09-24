@@ -14,7 +14,6 @@ from typing import NamedTuple
 from tests.libs.test_runner.base import BaseHwTestRunner, normalize_model
 from tests.libs.test_runner.cabling import CablingAwareRunnerMixin
 from tests.libs.test_runner.deploy import STACK_FORWARDING, STACK_SHARE
-from tests.libs.test_runner.platform_configs import LINK_QSFP_TEST_CONFIG_NAME
 from tests.libs.test_runner.platform_mapping import load_platform_mapping, PortInfo
 
 logger = logging.getLogger("test_runner")
@@ -29,6 +28,8 @@ class _PortTemplate(NamedTuple):
 
 class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
     """Runner for link tests."""
+
+    _VARIANT_SUMMARY_PREFIX = "LINK TEST"
 
     # Must stay in step with the PRBS_*_TEST instantiations in AgentEnsemblePrbsTest.cpp.
     _MEDIA_INTERFACE_TOKENS = (
@@ -181,10 +182,6 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
         return kept, skipped
 
     @classmethod
-    def _config_name(cls, model: str) -> str:
-        return LINK_QSFP_TEST_CONFIG_NAME.get(model, model)
-
-    @classmethod
     def _synthesize_port(
         cls,
         base_json: dict,
@@ -192,10 +189,13 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
         name: str,
         vlan_id: int,
         template: _PortTemplate,
+        profile_id: int | None = None,
     ) -> dict:
         info = port_map.get(name)
         if info is None:
             raise ValueError(f"netbox port {name} is not in the platform mapping")
+        if profile_id is not None and profile_id not in info.profiles:
+            raise ValueError(f"port {name} does not support profile {profile_id}")
         sw = base_json["sw"]
         # The agent requires every port to own exactly one interface, so a synthesized
         # port needs a matching vlan, vlanPort and interface too.
@@ -205,8 +205,8 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
                 "logicalID": info.logical_id,
                 "name": name,
                 "state": 2,
-                "speed": info.speed,
-                "profileID": info.profile_id,
+                "speed": info.speed if profile_id is None else info.profiles[profile_id],
+                "profileID": info.profile_id if profile_id is None else profile_id,
                 "ingressVlan": vlan_id,
                 "portType": 0,
                 "expectedLLDPValues": {},
@@ -241,6 +241,7 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
         base_json: dict,
         pairs: dict[str, str],
         port_map: dict[str, PortInfo],
+        profile_overrides: dict[str, int] | None = None,
     ) -> dict:
         if not pairs:
             raise ValueError("refusing to generate link test config: no cabling pairs")
@@ -264,12 +265,16 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
         ]
         for port in sw["ports"]:
             port["expectedLLDPValues"] = {}
-        used_vlans = {v["id"] for v in sw["vlans"]}
-        # Allocate from the "type-1" interface band (2000-2251).
-        free_vlans = (v for v in range(2000, 2252) if v not in used_vlans)
+        used_vlans = {v["id"] for v in sw["vlans"]} | {sw.get("defaultVlan")}
+        # "Type-1" interface band; wider than the historical 2000-2251 so
+        # full 8-way breakout fits, capped below 4094.
+        free_vlans = (v for v in range(2000, 4094) if v not in used_vlans)
+        overrides = profile_overrides or {}
         try:
             for name, peer in pairs.items():
-                port = cls._synthesize_port(base_json, port_map, name, next(free_vlans), template)
+                port = cls._synthesize_port(
+                    base_json, port_map, name, next(free_vlans), template, overrides.get(name)
+                )
                 port["expectedLLDPValues"] = {cls._LLDP_PORT_TAG: peer}
             # The SDK exposes SAI port objects for every cage's default port
             # regardless of config, and warmboot aborts on port objects the
@@ -289,7 +294,7 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
                 port["state"] = 1
         except StopIteration:
             raise ValueError(
-                "ran out of vlans in the 2000-2251 band while synthesizing ports"
+                "ran out of vlans in the 2000-4093 band while synthesizing ports"
             ) from None
         return base_json
 
@@ -349,7 +354,16 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
 
         config_name = self._config_name(model)
         base_config, port_map = self._load_base_config_and_port_map(self._BASE_CONFIG_DIR, config_name)
-        config = self._overlay_cabling(copy.deepcopy(base_config), pairs, port_map)
+        # Set by _run_cabling_aware for this pass; None on the max path, which
+        # is the only way pre_test is reached without one.
+        resolution = self._pass_variant_resolution
+        profile_overrides = None
+        if resolution is not None:
+            pairs = resolution.expanded_pairs
+            profile_overrides = resolution.profile_overrides
+        config = self._overlay_cabling(
+            copy.deepcopy(base_config), pairs, port_map, profile_overrides
+        )
         self._upload_generated_config(config)
 
     def test_args(self, model: str) -> str:

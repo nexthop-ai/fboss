@@ -2,19 +2,24 @@
 
 import copy
 import logging
+from collections.abc import Mapping
 from pathlib import Path
+from types import MappingProxyType
 
 from tests.libs.test_runner.base import BaseHwTestRunner
 from tests.libs.test_runner.cabling import CablingAwareRunnerMixin, neighbor_pairs
 from tests.libs.test_runner.deploy import STACK_FORWARDING, STACK_SHARE
 from tests.libs.test_runner.platform_configs import LINK_QSFP_TEST_CONFIG_NAME
 from tests.libs.test_runner.platform_mapping import media_speed_mbps, PortInfo
+from tests.libs.test_runner.variants import cage_of, CageResolution, resolve_cage
 
 logger = logging.getLogger("test_runner")
 
 
 class QsfpTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
     """Runner for QSFP hardware tests."""
+
+    _VARIANT_SUMMARY_PREFIX = "QSFP TEST"
 
     STACK = STACK_FORWARDING
     BINARIES = ("bin/qsfp_hw_test",)
@@ -109,19 +114,51 @@ class QsfpTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
         narrow_port = min((a_port, z_port), key=lambda p: port_map[p].speed)
         return self._port_profile_id(narrow_port, port_map)
 
-    def _build_cabled_config(self, base_config: dict, ports: list[str], port_map: dict, pairs: dict) -> dict:
+    def _build_cabled_config(
+        self,
+        base_config: dict,
+        ports: list[str],
+        port_map: dict,
+        pairs: dict,
+        resolution=None,
+        variant_cages: Mapping[str, CageResolution] = MappingProxyType({}),
+    ) -> dict:
         config = copy.deepcopy(base_config)
         cabled = []
+        # Self-pairs carry the variant per cage, not per cable: the qsfp tests are
+        # per transceiver and HwPortUtils builds its cabled set per PortID.
+        emitted = set()
         for port in ports:
-            cabled.append(
-                {"aPortName": port, "zPortName": port, "profileID": self._port_profile_id(port, port_map)}
-            )
+            for name, profile_id in self._self_pair_ports(port, port_map, variant_cages):
+                if name in emitted:
+                    continue
+                emitted.add(name)
+                cabled.append({"aPortName": name, "zPortName": name, "profileID": profile_id})
         # Appended after every self-pair, on purpose: the hw test's neighbor map is
         # keyed by transceiver id and last-write-wins, so a real pair must come after
         # that transceiver's self-pair to actually take effect.
-        neighbors = neighbor_pairs(ports, pairs)
-        for a, z in neighbors:
-            cabled.append({"aPortName": a, "zPortName": z, "profileID": self._pair_profile_id(a, z, port_map)})
+        if resolution is None:
+            neighbors = neighbor_pairs(ports, pairs)
+            for a, z in neighbors:
+                cabled.append({"aPortName": a, "zPortName": z, "profileID": self._pair_profile_id(a, z, port_map)})
+        else:
+            # One entry per active subport with the variant profile; excluded
+            # pairs keep no neighbor entry. getCabledPortsAndProfiles honors
+            # these per PortID (HwPortUtils.cpp); only the transceiver-keyed
+            # neighbor map collapses them, harmless since a cage's subports
+            # share one peer transceiver.
+            cages_in_pass = {cage_of(p) for p in ports}
+            neighbors = []
+            for a in sorted(resolution.expanded_pairs):
+                z = resolution.expanded_pairs[a]
+                if a > z:
+                    continue
+                if cage_of(a) not in cages_in_pass or cage_of(z) not in cages_in_pass:
+                    continue
+                neighbors.append((a, z))
+                cabled.append(
+                    {"aPortName": a, "zPortName": z, "profileID": resolution.profile_overrides[a]}
+                )
         config["qsfpTestConfig"]["cabledPortPairs"] = cabled
         logger.info("qsfp cabled pairs: %d neighbor pairs added for %d ports", len(neighbors), len(ports))
         # Skip discovery-time firmware upgrade: fails when fboss_firmware.yaml is missing.
@@ -130,10 +167,36 @@ class QsfpTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
         args["firmware_upgrade_on_tcvr_insert"] = "false"
         return config
 
+    def _self_pair_ports(
+        self, port: str, port_map: dict, variant_cages: Mapping[str, CageResolution]
+    ) -> list[tuple[str, int]]:
+        """(port name, profile) per self-pair: the cage's active subports at the
+        variant profile when this cage alone can run it, else the port as-is."""
+        cage = variant_cages.get(cage_of(port))
+        if cage is not None and cage.ok:
+            return [(f"{cage_of(port)}/{sub}", cage.profile_id) for sub in cage.subports]
+        return [(port, self._port_profile_id(port, port_map))]
+
     def _prepare_pass(self, model: str, ports: list[str]) -> None:
-        config_name = LINK_QSFP_TEST_CONFIG_NAME.get(model, model)
+        config_name = self._config_name(model)
         base_config, port_map = self._load_base_config_and_port_map(self._BASE_CONFIG_DIR, config_name)
-        config = self._build_cabled_config(base_config, ports, port_map, self._load_snake_pairs())
+        resolution = self._pass_variant_resolution
+        variant_cages = {}
+        if resolution is not None:
+            cages = self._full_platform_mapping(config_name)
+            variant_cages = {
+                cage_of(p): resolve_cage(
+                    p,
+                    resolution.variant,
+                    cages,
+                    self._host_speeds_by_port,
+                    self._is_copper_by_port,
+                )
+                for p in ports
+            }
+        config = self._build_cabled_config(
+            base_config, ports, port_map, self._load_snake_pairs(), resolution, variant_cages
+        )
         self._upload_generated_config(config)
 
     def test_args(self, model: str) -> str:
