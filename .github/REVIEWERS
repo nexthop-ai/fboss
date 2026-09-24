@@ -1,0 +1,42 @@
+# REVIEWERS — AI reviewer authorization and skills by filepath.
+#
+# Consumed by nh/.github/workflows/ai-review-pr.reusable.yml (via
+# .github/workflows/ai-review.yml). Each line is:
+#
+#   <glob-pattern> <CATEGORY> [skill=<name>] ...
+#
+# Categories: REVIEW (non-blocking COMMENT review, the default), APPROVE,
+# MERGE. Glob semantics follow CODEOWNERS: '**' spans directory separators,
+# '*' and '?' do not, a trailing '/' means everything under that directory.
+# The LAST matching pattern wins per file, and ONLY that rule's skill= list
+# applies to the file, so a more specific rule must repeat the skills of the
+# broader one it overrides. `skill=<name>` makes the reviewer load
+# .claude/skills/<name>/SKILL.md for files matching the pattern.
+#
+# This file is always read from the PR's base branch, so a PR cannot grant
+# itself powers or attach a skill it just added. A PR touching this file is
+# always REVIEW.
+
+# fboss2 config/delete CLI, generic: writer-vs-consumer checks,
+# service-level integration-test assertions, delete semantics.
+fboss/cli/fboss2/commands/config/**                          REVIEW  skill=fboss2-cli-review
+fboss/cli/fboss2/commands/delete/**                          REVIEW  skill=fboss2-cli-review
+fboss/cli/fboss2/session/**                                  REVIEW  skill=fboss2-cli-review
+fboss/cli/fboss2/test/config/**                              REVIEW  skill=fboss2-cli-review
+fboss/cli/fboss2/test/integration_test/**                    REVIEW  skill=fboss2-cli-review
+fboss/cli/fboss2/CmdListConfig.cpp                           REVIEW  skill=fboss2-cli-review
+fboss/cli/fboss2/test/TestableConfigSession.h                REVIEW  skill=fboss2-cli-review
+fboss/cli/fboss2/test/Cmd*Config*Test.cpp                    REVIEW  skill=fboss2-cli-review
+
+# BGP CLI: generic checks plus the locator for the bgpd consumer,
+# which lives outside this repo.
+fboss/cli/fboss2/commands/config/protocol/bgp/**             REVIEW  skill=fboss2-cli-review skill=fboss2-bgp-cli-review
+fboss/cli/fboss2/commands/delete/protocol/bgp/**             REVIEW  skill=fboss2-cli-review skill=fboss2-bgp-cli-review
+fboss/cli/fboss2/tools/bgp_json_to_cli.py                    REVIEW  skill=fboss2-cli-review skill=fboss2-bgp-cli-review
+fboss/cli/fboss2/tools/tests/**                              REVIEW  skill=fboss2-cli-review skill=fboss2-bgp-cli-review
+fboss/cli/fboss2/test/config/*Bgp*                           REVIEW  skill=fboss2-cli-review skill=fboss2-bgp-cli-review
+fboss/cli/fboss2/test/integration_test/*Bgp*                 REVIEW  skill=fboss2-cli-review skill=fboss2-bgp-cli-review
+
+.github/REVIEWERS                                            REVIEW
+.github/ai-review-prompt.md                                  REVIEW
+.github/workflows/ai-review.yml                              REVIEW

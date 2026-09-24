@@ -19,6 +19,8 @@ Then read only what the diff actually touches:
 | `fboss/platform/`, platform configs, sensor/fan | `fboss/skills/fboss-code-standards/references/platform-config-patterns.md` |
 | `fboss/agent/hw/sai/`, vendor SDK glue | `fboss/skills/fboss-code-standards/references/sai-sdk-patterns.md` |
 | tests, or changes affecting coverage | `fboss/skills/fboss-code-standards/references/testing-patterns.md` |
+| `fboss/cli/fboss2/` config/delete commands, session, or their tests | `.claude/skills/fboss2-cli-review/SKILL.md` (NH-owned; run its checks A-E as one more reviewer, id = check number) |
+| `fboss/cli/fboss2/commands/{config,delete}/protocol/bgp/`, `tools/bgp_json_to_cli.py`, or BGP CLI tests | also `.claude/skills/fboss2-bgp-cli-review/SKILL.md` (where the bgpd consumer lives; the checks stay A-E) |
 | any C++ or build file | `fboss/skills/fboss-code-standards/references/general-patterns.md` |
 | cross-cutting: SwSwitch + HwSwitch together, state, counters, build targets, symbol exports, or 3+ directories | `fboss/skills/fboss-review/references/fboss-specific-reviewers.md` |
 
