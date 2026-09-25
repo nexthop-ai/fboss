@@ -8,6 +8,7 @@
 #include "fboss/lib/bsp/janga800bic/Janga800bicBspPlatformMapping.h"
 #include "fboss/lib/bsp/ladakh800bcls/Ladakh800bclsBspPlatformMapping.h"
 #include "fboss/lib/bsp/leh800bcls/Leh800bclsBspPlatformMapping.h"
+#include "fboss/lib/bsp/m4052actm/M4052ACTMBspPlatformMapping.h"
 #include "fboss/lib/bsp/m4062nhp/M4062nhpBspPlatformMapping.h"
 #include "fboss/lib/bsp/meru800bfa/Meru800bfaBspPlatformMapping.h"
 #include "fboss/lib/bsp/meru800bia/Meru800biaBspPlatformMapping.h"
@@ -241,5 +242,36 @@ SaintpaulSystemContainer::getInstance() {
   return _saintpaulSystemContainer.try_get();
 }
 
+<<<<<<< HEAD
+||||||| cc7af323e3
+using M4062nhpSystemContainer =
+    BspGenericSystemContainer<M4062nhpBspPlatformMapping>;
+folly::Singleton<M4062nhpSystemContainer> _m4062nhpSystemContainer;
+template <>
+std::shared_ptr<M4062nhpSystemContainer>
+M4062nhpSystemContainer::getInstance() {
+  return _m4062nhpSystemContainer.try_get();
+}
+
+=======
+using M4052ACTMSystemContainer =
+    BspGenericSystemContainer<M4052ACTMBspPlatformMapping>;
+folly::Singleton<M4052ACTMSystemContainer> _m4052actmSystemContainer;
+template <>
+std::shared_ptr<M4052ACTMSystemContainer>
+M4052ACTMSystemContainer::getInstance() {
+  return _m4052actmSystemContainer.try_get();
+}
+
+using M4062nhpSystemContainer =
+    BspGenericSystemContainer<M4062nhpBspPlatformMapping>;
+folly::Singleton<M4062nhpSystemContainer> _m4062nhpSystemContainer;
+template <>
+std::shared_ptr<M4062nhpSystemContainer>
+M4062nhpSystemContainer::getInstance() {
+  return _m4062nhpSystemContainer.try_get();
+}
+
+>>>>>>> f430fe62b2d0bf4fccb3e210641e994c3f410848
 } // namespace fboss
 } // namespace facebook
