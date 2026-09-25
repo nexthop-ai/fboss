@@ -203,6 +203,9 @@ TEST_F(TunnelIpInIpTest, DeleteDecapTunnel) {
   const std::string dstIp = findIpv6OnIntf(intfId);
   const std::string tunnelId = "integration-test-decap-delete";
 
+  // ttl-mode pipe: an unset ttl-mode defaults to UNIFORM, and Cisco SAI
+  // rejects a P2MP tunnel term on a UNIFORM decap-TTL tunnel with
+  // SAI_STATUS_NOT_IMPLEMENTED, which aborts the hw agent.
   auto result = runCli(
       {"config",
        "tunnel",
@@ -211,6 +214,8 @@ TEST_F(TunnelIpInIpTest, DeleteDecapTunnel) {
        tunnelId,
        "destination",
        dstIp,
+       "ttl-mode",
+       "pipe",
        "underlay-intf-id",
        std::to_string(intfId)});
   ASSERT_EQ(result.exitCode, 0) << "Create failed: " << result.stderr;
@@ -229,8 +234,10 @@ TEST_F(TunnelIpInIpTest, DeleteDecapTunnel) {
 }
 
 // ---------------------------------------------------------------------------
-// Positive: reset an optional attr (ttl-mode) on a decap tunnel and confirm it
-// is gone from the running config while destination survives.
+// Positive: reset an optional attr (source) on a decap tunnel and confirm it
+// is gone from the running config while destination and ttl-mode survive.
+// Resets source rather than ttl-mode: resetting ttl-mode reverts it to
+// UNIFORM, which Cisco SAI cannot program for a P2MP decap tunnel term.
 // ---------------------------------------------------------------------------
 
 TEST_F(TunnelIpInIpTest, ResetOptionalAttrOnDecapTunnel) {
@@ -246,6 +253,8 @@ TEST_F(TunnelIpInIpTest, ResetOptionalAttrOnDecapTunnel) {
        tunnelId,
        "destination",
        dstIp,
+       "source",
+       "2001:db8:cafe::2",
        "ttl-mode",
        "pipe",
        "underlay-intf-id",
@@ -255,32 +264,33 @@ TEST_F(TunnelIpInIpTest, ResetOptionalAttrOnDecapTunnel) {
   trackTunnel(tunnelId, "decap");
   auto created = waitForTunnelInRunningConfig(tunnelId, true);
   ASSERT_TRUE(created.has_value());
-  // Guard against a vacuous post-reset check: ttlMode must actually be
+  // Guard against a vacuous post-reset check: srcIp must actually be
   // serialized in the running config before we reset it.
-  ASSERT_TRUE(created->count("ttlMode"))
-      << "ttl-mode not present in running config after create";
+  ASSERT_TRUE(created->count("srcIp"))
+      << "source not present in running config after create";
 
-  XLOG(INFO) << "[Step 2] Resetting ttl-mode...";
+  XLOG(INFO) << "[Step 2] Resetting source...";
   result =
-      runCli({"delete", "tunnel", "ip-in-ip", "decap", tunnelId, "ttl-mode"});
+      runCli({"delete", "tunnel", "ip-in-ip", "decap", tunnelId, "source"});
   ASSERT_EQ(result.exitCode, 0) << "Reset failed: " << result.stderr;
   commitConfig();
 
-  // ttlMode should be gone; dstIp should remain.
+  // srcIp should be gone; dstIp and ttlMode should remain.
   std::optional<folly::dynamic> tunnel;
   const auto deadline =
       std::chrono::steady_clock::now() + std::chrono::seconds(60);
   while (std::chrono::steady_clock::now() < deadline) {
     tunnel = findTunnelInRunningConfig(tunnelId);
-    if (tunnel.has_value() && !tunnel->count("ttlMode")) {
+    if (tunnel.has_value() && !tunnel->count("srcIp")) {
       break;
     }
     std::this_thread::sleep_for(std::chrono::seconds(2));
   }
   ASSERT_TRUE(tunnel.has_value());
-  EXPECT_FALSE(tunnel->count("ttlMode"))
-      << "ttl-mode should be unset after reset";
+  EXPECT_FALSE(tunnel->count("srcIp")) << "source should be unset after reset";
   EXPECT_EQ((*tunnel)["dstIp"].asString(), dstIp);
+  EXPECT_TRUE(tunnel->count("ttlMode"))
+      << "ttl-mode should survive a source reset";
 }
 
 // ---------------------------------------------------------------------------
