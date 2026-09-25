@@ -3,6 +3,10 @@ name: AI Review
 on:
   issue_comment:
     types: [created]
+  # pull_request_target so the workflow and REVIEWERS classification run from
+  # the base branch; the PR head is only ever read as data, never executed.
+  pull_request_target:
+    types: [opened, ready_for_review]
   workflow_dispatch:
     inputs:
       pr_number:
@@ -14,7 +18,7 @@ on:
         required: false
         type: string
       use_strict_model:
-        description: "Use strict model (Opus 4.5) instead of general model (Sonnet 4.5)"
+        description: "Use strict model instead of general model"
         required: false
         type: boolean
         default: false
@@ -26,20 +30,26 @@ permissions:
 
 jobs:
   review:
-    # Only run if:
-    # 1. Comment contains /ai_review (or /ai_review_strict) AND it's on a PR, OR
-    # 2. Triggered manually via workflow_dispatch
+    # Run on /ai_review PR comments, on PRs opened non-draft or marked ready
+    # for review (skipped downstream unless a REVIEWERS pattern matches), or
+    # on manual dispatch. Upstream syncs and release-branch ports touch
+    # fboss/** like any other PR, so REVIEWERS cannot filter them; skip them
+    # here by title.
     if: |
       (github.event_name == 'issue_comment' &&
        github.event.issue.pull_request != null &&
        contains(github.event.comment.body, '/ai_review')) ||
+      (github.event_name == 'pull_request_target' &&
+       github.event.pull_request.draft == false &&
+       !startsWith(github.event.pull_request.title, '[sync]') &&
+       !startsWith(github.event.pull_request.title, '[port]')) ||
       github.event_name == 'workflow_dispatch'
     uses: nexthop-ai/nh/.github/workflows/ai-review-pr.reusable.yml@main
     with:
-      pr_number: ${{ fromJSON(github.event.inputs.pr_number || '0') }}
+      pr_number: ${{ github.event.pull_request.number || fromJSON(github.event.inputs.pr_number || '0') }}
       repository: ${{ github.event.inputs.repository || '' }}
       use_strict_model: ${{ github.event.inputs.use_strict_model == 'true' }}
-      force: true
+      force: ${{ github.event_name != 'pull_request_target' }}
       prompt_repo: ${{ github.event.repository.name }}
       app_client_id: ${{ vars.AI_REVIEW_CLIENT_ID }}
     secrets: inherit

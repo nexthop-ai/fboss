@@ -17,6 +17,10 @@
 # itself powers or attach a skill it just added. A PR touching this file is
 # always REVIEW.
 
+# Base rule: every FBOSS change gets an automatic comment-only review on PR
+# open. Keep it first so the more specific rules below override it.
+fboss/**                                                     REVIEW
+
 # fboss2 config/delete CLI, generic: writer-vs-consumer checks,
 # service-level integration-test assertions, delete semantics.
 fboss/cli/fboss2/commands/config/**                          REVIEW  skill=fboss2-cli-review
