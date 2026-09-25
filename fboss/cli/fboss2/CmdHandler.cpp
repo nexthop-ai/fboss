@@ -71,7 +71,7 @@ void printTabular(
 
     if (errStr.empty()) {
       cmd.printOutput(data);
-    } else {
+    } else if constexpr (!CmdTypeT::Traits::IS_LOCAL_COMMAND) {
       err << errStr << std::endl << std::endl;
     }
   }
@@ -90,7 +90,7 @@ void printJson(
     auto [host, data, errStr] = result.get();
     if (errStr.empty()) {
       hostResults[host] = data;
-    } else {
+    } else if constexpr (!CmdTypeT::Traits::IS_LOCAL_COMMAND) {
       err << host << "::" << std::endl << std::string(80, '=') << std::endl;
       err << errStr << std::endl << std::endl;
     }
@@ -117,7 +117,7 @@ void printAggregate(
                   << facebook::fboss::performAggregation<CmdTypeT>(
                          data, parsedAgg, validAggMap)
                   << std::endl;
-      } else {
+      } else if constexpr (!CmdTypeT::Traits::IS_LOCAL_COMMAND) {
         std::cerr << host << "::" << std::endl
                   << std::string(80, '=') << std::endl;
         std::cerr << errStr << std::endl << std::endl;
@@ -132,7 +132,7 @@ void printAggregate(
         hostAggResults.push_back(
             facebook::fboss::performAggregation<CmdTypeT>(
                 data, parsedAgg, validAggMap));
-      } else {
+      } else if constexpr (!CmdTypeT::Traits::IS_LOCAL_COMMAND) {
         std::cerr << host << "::" << std::endl
                   << std::string(80, '=') << std::endl;
         std::cerr << errStr << std::endl << std::endl;
@@ -321,11 +321,15 @@ void CmdHandler<CmdTypeT, CmdTypeTraits>::runHelper() {
   while (!executionFailures.empty()) {
     auto [host, errStr] = executionFailures.front();
     executionFailures.pop();
-    XLOG(ERR) << host << " - Error in command execution: " << errStr;
     if (!combinedErrors.empty()) {
       combinedErrors += "; ";
     }
-    combinedErrors += fmt::format("{}: {}", host, errStr);
+    if constexpr (CmdTypeT::Traits::IS_LOCAL_COMMAND) {
+      combinedErrors += errStr;
+    } else {
+      XLOG(ERR) << host << " - Error in command execution: " << errStr;
+      combinedErrors += fmt::format("{}: {}", host, errStr);
+    }
   }
   if (!combinedErrors.empty()) {
     throw std::runtime_error(combinedErrors);

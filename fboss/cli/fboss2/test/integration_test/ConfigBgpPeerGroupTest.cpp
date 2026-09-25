@@ -104,6 +104,70 @@ TEST_F(ConfigBgpPeerGroupTest, SetTimersHoldTimeAndCommit) {
       << "bgpd's running config has no peer-group " << kGroup;
   ASSERT_TRUE(group->count("bgp_peer_timers"));
   EXPECT_EQ((*group)["bgp_peer_timers"]["hold_time_seconds"].asInt(), 90);
+  // bgpd applies the group's timers struct to its members as a whole, so the
+  // fields the user did not set must carry the global defaults (hold/3
+  // keepalive), not the thrift default of 0 that would disable keepalives.
+  ASSERT_TRUE(running.count("hold_time"));
+  EXPECT_EQ(
+      (*group)["bgp_peer_timers"]["keep_alive_seconds"].asInt(),
+      running["hold_time"].asInt() / 3);
+}
+
+TEST_F(ConfigBgpPeerGroupTest, SetPassiveAndCommit) {
+  discardSession();
+  clearBgpSession();
+  stagePeerGroup({kGroup, "passive", "true"});
+  commitAndGetSha();
+  ASSERT_TRUE(waitForBgpDaemonActive())
+      << "bgpd did not return active after commit; state="
+      << bgpDaemonActiveState();
+  auto running = readRunningBgpConfigViaRpc();
+  const auto* group = findGroup(running, kGroup);
+  ASSERT_NE(group, nullptr)
+      << "bgpd's running config has no peer-group " << kGroup;
+  ASSERT_TRUE(group->count("is_passive"));
+  EXPECT_TRUE((*group)["is_passive"].asBool());
+}
+
+TEST_F(ConfigBgpPeerGroupTest, SessionKnobsAndCommit) {
+  // The per-session knobs bgpd resolves peer > group (remove-private-as,
+  // ttl-security-hops) reach the daemon's running config via the same path.
+  discardSession();
+  clearBgpSession();
+  stagePeerGroup({kGroup, "remove-private-as", "true"});
+  stagePeerGroup({kGroup, "ttl-security-hops", "2"});
+  commitAndGetSha();
+  ASSERT_TRUE(waitForBgpDaemonActive())
+      << "bgpd did not return active after commit; state="
+      << bgpDaemonActiveState();
+  auto running = readRunningBgpConfigViaRpc();
+  const auto* group = findGroup(running, kGroup);
+  ASSERT_NE(group, nullptr)
+      << "bgpd's running config has no peer-group " << kGroup;
+  ASSERT_TRUE(group->count("remove_private_as"));
+  EXPECT_TRUE((*group)["remove_private_as"].asBool());
+  ASSERT_TRUE(group->count("ttl_security_hops"));
+  EXPECT_EQ((*group)["ttl_security_hops"].asInt(), 2);
+}
+
+TEST_F(ConfigBgpPeerGroupTest, RouteLimitWarningKeepsUnlimitedCap) {
+  // A warning threshold on a group with no route limit must not introduce the
+  // 12000-route thrift default: bgpd reads max_routes 0 as unlimited, which
+  // is what the group's members had before the edit.
+  discardSession();
+  clearBgpSession();
+  stagePeerGroup({kGroup, "max-route", "pre-warning-threshold", "30000"});
+  commitAndGetSha();
+  ASSERT_TRUE(waitForBgpDaemonActive())
+      << "bgpd did not return active after commit; state="
+      << bgpDaemonActiveState();
+  auto running = readRunningBgpConfigViaRpc();
+  const auto* group = findGroup(running, kGroup);
+  ASSERT_NE(group, nullptr)
+      << "bgpd's running config has no peer-group " << kGroup;
+  ASSERT_TRUE(group->count("pre_filter"));
+  EXPECT_EQ((*group)["pre_filter"]["max_routes"].asInt(), 0);
+  EXPECT_EQ((*group)["pre_filter"]["warning_limit"].asInt(), 30000);
 }
 
 TEST_F(ConfigBgpPeerGroupTest, DeleteGroupAndCommit) {

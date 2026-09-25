@@ -10,59 +10,66 @@
 #include <fmt/format.h>
 #include <stdexcept>
 #include <string>
+#include "fboss/agent/gen-cpp2/switch_config_types.h"
 
 namespace facebook::fboss {
 
 inline std::string algorithmIntToToken(int enumValue) {
-  switch (enumValue) {
-    case 1:
+  switch (static_cast<cfg::HashingAlgorithm>(enumValue)) {
+    case cfg::HashingAlgorithm::CRC16_CCITT:
       return "crc16-ccitt";
-    case 3:
+    case cfg::HashingAlgorithm::CRC32_LO:
       return "crc32-lo";
-    case 4:
+    case cfg::HashingAlgorithm::CRC32_HI:
       return "crc32-hi";
-    case 5:
+    case cfg::HashingAlgorithm::CRC32_ETHERNET_LO:
       return "crc32-ethernet-lo";
-    case 6:
+    case cfg::HashingAlgorithm::CRC32_ETHERNET_HI:
       return "crc32-ethernet-hi";
-    case 7:
+    case cfg::HashingAlgorithm::CRC32_KOOPMAN_LO:
       return "crc32-koopman-lo";
-    case 8:
+    case cfg::HashingAlgorithm::CRC32_KOOPMAN_HI:
       return "crc32-koopman-hi";
-    case 9:
+    case cfg::HashingAlgorithm::CRC:
       return "crc";
-    default:
-      throw std::runtime_error(
-          fmt::format("Unknown HashingAlgorithm enum value {}", enumValue));
   }
+  throw std::runtime_error(
+      fmt::format("Unknown HashingAlgorithm enum value {}", enumValue));
 }
 
 // fieldKey is the fieldSelection JSON key: "ipv4Fields", "ipv6Fields",
 // "transportFields", or "mplsFields".
 inline std::string fieldIntToToken(const std::string& fieldKey, int enumValue) {
-  if (fieldKey == "ipv4Fields" || fieldKey == "ipv6Fields") {
-    switch (enumValue) {
-      case 1:
+  if (fieldKey == "ipv4Fields") {
+    switch (static_cast<cfg::IPv4Field>(enumValue)) {
+      case cfg::IPv4Field::SOURCE_ADDRESS:
         return "src-ip";
-      case 2:
+      case cfg::IPv4Field::DESTINATION_ADDRESS:
         return "dst-ip";
-      case 3:
+    }
+  } else if (fieldKey == "ipv6Fields") {
+    switch (static_cast<cfg::IPv6Field>(enumValue)) {
+      case cfg::IPv6Field::SOURCE_ADDRESS:
+        return "src-ip";
+      case cfg::IPv6Field::DESTINATION_ADDRESS:
+        return "dst-ip";
+      case cfg::IPv6Field::FLOW_LABEL:
         return "flow-label";
     }
   } else if (fieldKey == "transportFields") {
-    switch (enumValue) {
-      case 1:
+    switch (static_cast<cfg::TransportField>(enumValue)) {
+      case cfg::TransportField::SOURCE_PORT:
         return "src-port";
-      case 2:
+      case cfg::TransportField::DESTINATION_PORT:
         return "dst-port";
     }
   } else if (fieldKey == "mplsFields") {
-    switch (enumValue) {
-      case 1:
+    switch (static_cast<cfg::MPLSField>(enumValue)) {
+      case cfg::MPLSField::TOP_LABEL:
         return "top";
-      case 2:
+      case cfg::MPLSField::SECOND_LABEL:
         return "second";
-      case 3:
+      case cfg::MPLSField::THIRD_LABEL:
         return "third";
     }
   }

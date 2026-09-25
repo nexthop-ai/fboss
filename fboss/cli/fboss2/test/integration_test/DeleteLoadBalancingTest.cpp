@@ -8,8 +8,7 @@
  * The restore step is not re-verified per-field — the config-side round-trip
  * is ConfigLoadBalancingTest's coverage; this test only checks the entry is
  * present again. The lag subcommand shares the removal implementation and is
- * covered by CmdDeleteLoadBalancing unit tests; LAG hash updates are not
- * exercised on DUTs (see the disabled LAG cases in ConfigLoadBalancingTest).
+ * covered by CmdDeleteLoadBalancing unit tests;
  *
  * Requirements:
  *   - FBOSS agent is running with a valid configuration that already contains
@@ -87,6 +86,77 @@ class DeleteLoadBalancingTest : public Fboss2IntegrationTest {
     }
     return AssertionSuccess();
   }
+
+  // Stages the config CLI calls that rebuild the captured entry. Leaves the
+  // session staged; the caller commits.
+  AssertionResult stageEcmpRestore(const folly::dynamic& original) {
+    auto algorithm = runCliOk(
+        {"config",
+         "load-balancing",
+         "ecmp",
+         "hash-algorithm",
+         algorithmIntToToken(original["algorithm"].asInt())});
+    if (!algorithm) {
+      return algorithm;
+    }
+    static const std::map<std::string, std::string> kAttrByKey = {
+        {"ipv4Fields", "hash-fields-ipv4"},
+        {"ipv6Fields", "hash-fields-ipv6"},
+        {"transportFields", "hash-fields-transport"},
+        {"mplsFields", "hash-fields-mpls"},
+    };
+    for (const auto& [fieldKey, attr] : kAttrByKey) {
+      auto fields = runCliOk(
+          {"config",
+           "load-balancing",
+           "ecmp",
+           attr,
+           restoreTokens(original, fieldKey)});
+      if (!fields) {
+        return fields;
+      }
+    }
+    if (original.count("seed")) {
+      auto seed = runCliOk(
+          {"config",
+           "load-balancing",
+           "ecmp",
+           "hash-seed",
+           std::to_string(original["seed"].asInt())});
+      if (!seed) {
+        return seed;
+      }
+    }
+    return AssertionSuccess();
+  }
+
+  // The delete is committed before the restore runs, so a fatal assertion in
+  // between would otherwise leave the DUT without its ECMP load-balancer.
+  // armRestore() records the entry to put back; the test clears it once the
+  // restore has been committed.
+  void armRestore(const folly::dynamic& original) {
+    pendingRestore_ = original;
+  }
+
+  void clearRestore() {
+    pendingRestore_ = nullptr;
+  }
+
+  void TearDown() override {
+    if (!pendingRestore_.isNull()) {
+      if (stageEcmpRestore(pendingRestore_)) {
+        commitConfig();
+      } else {
+        XLOG(ERR) << "TearDown failed to restore the ECMP load-balancer";
+      }
+    }
+    Fboss2IntegrationTest::TearDown();
+  }
+
+ private:
+  // The ECMP load-balancer captured before the delete was committed, restored
+  // in TearDown if the test did not get far enough to commit the restore.
+  folly::dynamic pendingRestore_{nullptr};
 };
 
 TEST_F(DeleteLoadBalancingTest, DeleteThenRestoreEcmp) {
@@ -108,6 +178,7 @@ TEST_F(DeleteLoadBalancingTest, DeleteThenRestoreEcmp) {
 
   XLOG(INFO) << "[Step 2] Delete the ECMP load-balancer and commit";
   ASSERT_TRUE(runCliOk({"delete", "load-balancing", "ecmp"}));
+  armRestore(original);
   commitConfig();
   waitForAgentReady();
 
@@ -121,36 +192,9 @@ TEST_F(DeleteLoadBalancingTest, DeleteThenRestoreEcmp) {
   }
 
   XLOG(INFO) << "[Step 4] Restore the original ECMP load-balancer";
-  ASSERT_TRUE(runCliOk(
-      {"config",
-       "load-balancing",
-       "ecmp",
-       "hash-algorithm",
-       algorithmIntToToken(original["algorithm"].asInt())}));
-  for (const std::string fieldKey :
-       {"ipv4Fields", "ipv6Fields", "transportFields", "mplsFields"}) {
-    static const std::map<std::string, std::string> kAttrByKey = {
-        {"ipv4Fields", "hash-fields-ipv4"},
-        {"ipv6Fields", "hash-fields-ipv6"},
-        {"transportFields", "hash-fields-transport"},
-        {"mplsFields", "hash-fields-mpls"},
-    };
-    ASSERT_TRUE(runCliOk(
-        {"config",
-         "load-balancing",
-         "ecmp",
-         kAttrByKey.at(fieldKey),
-         restoreTokens(original, fieldKey)}));
-  }
-  if (original.count("seed")) {
-    ASSERT_TRUE(runCliOk(
-        {"config",
-         "load-balancing",
-         "ecmp",
-         "hash-seed",
-         std::to_string(original["seed"].asInt())}));
-  }
+  ASSERT_TRUE(stageEcmpRestore(original));
   commitConfig();
+  clearRestore();
   waitForAgentReady();
 
   // Presence check only: per-field config round-trip correctness is

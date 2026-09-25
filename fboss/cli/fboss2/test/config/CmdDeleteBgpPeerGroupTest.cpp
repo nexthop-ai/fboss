@@ -1,6 +1,5 @@
 // (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
 
-#include <configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -14,6 +13,12 @@
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/test/config/CmdConfigTestBase.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
+
+#ifndef IS_OSS
+#include <configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
+#else
+#include <neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
+#endif
 
 using namespace ::testing;
 
@@ -100,19 +105,39 @@ TEST_F(CmdDeleteBgpPeerGroupTestFixture, deleteExistingGroup) {
   EXPECT_TRUE(sessionFileExists());
 }
 
-TEST_F(CmdDeleteBgpPeerGroupTestFixture, deleteUnknownGroupRejected) {
+// Delete mirrors add: an absent target is a success with a warning, never an
+// error, so a replayed script stays idempotent.
+TEST_F(CmdDeleteBgpPeerGroupTestFixture, deleteUnknownGroupWarns) {
   auto result = del({"NO-SUCH-GROUP"});
   EXPECT_THAT(
-      result, HasSubstr("Error: BGP peer-group NO-SUCH-GROUP not found"));
-  // Nothing was persisted for the failed delete.
+      result,
+      HasSubstr(
+          "Warning: BGP peer-group NO-SUCH-GROUP does not exist; nothing to "
+          "delete"));
+  EXPECT_THAT(result, Not(HasSubstr("Error:")));
+  // Nothing changed, so nothing is staged.
   EXPECT_FALSE(sessionFileExists())
-      << "session file should not exist after rejected delete";
+      << "session file should not exist after a no-op delete";
+}
+
+TEST_F(CmdDeleteBgpPeerGroupTestFixture, deleteTwiceIsIdempotent) {
+  configure({"SPINE", "remote-asn", "65000"});
+  EXPECT_THAT(del({"SPINE"}), HasSubstr("Successfully deleted"));
+  EXPECT_TRUE(groups().empty());
+
+  auto again = del({"SPINE"});
+  EXPECT_THAT(
+      again,
+      HasSubstr(
+          "Warning: BGP peer-group SPINE does not exist; nothing to delete"));
+  EXPECT_THAT(again, Not(HasSubstr("Error:")));
+  EXPECT_TRUE(groups().empty());
 }
 
 TEST_F(CmdDeleteBgpPeerGroupTestFixture, deleteUnknownLeavesOthersIntact) {
   configure({"SPINE", "remote-asn", "65000"});
   auto result = del({"LEAF"});
-  EXPECT_THAT(result, HasSubstr("not found"));
+  EXPECT_THAT(result, HasSubstr("does not exist"));
   ASSERT_EQ(groups().size(), 1);
   EXPECT_EQ(*groups()[0].name(), "SPINE");
 }

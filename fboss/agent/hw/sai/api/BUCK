@@ -106,6 +106,7 @@ cpp_library(
         "Types.h",
         "UdfApi.h",
         "VendorSwitchApi.h",
+        "VirtualChannelApi.h",
         "VirtualRouterApi.h",
         "VlanApi.h",
         "WredApi.h",
