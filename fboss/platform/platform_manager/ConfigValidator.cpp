@@ -112,10 +112,7 @@ bool ConfigValidator::isValidSlotTypeConfig(
     XLOG(ERR) << "SlotTypeConfig must have either IDPROM or PmUnit name";
     return false;
   }
-  // With sysfsPath the BSP instantiates the IDPROM, so there is no address for
-  // platform_manager to use.
-  if (slotTypeConfig.idpromConfig() &&
-      !slotTypeConfig.idpromConfig()->sysfsPath()) {
+  if (slotTypeConfig.idpromConfig()) {
     try {
       I2cAddr(*slotTypeConfig.idpromConfig()->address());
     } catch (std::invalid_argument& e) {
@@ -391,28 +388,6 @@ bool ConfigValidator::isValidI2cAdaptersFromCpu(
   if (hasVirtual && hasExact) {
     XLOG(ERR)
         << "i2cAdaptersFromCpu must not mix CPU_BUS@N virtual names with exact adapter names";
-    return false;
-  }
-  return true;
-}
-
-bool ConfigValidator::isValidIdpromSysfsPath(
-    const IdpromConfig& idpromConfig,
-    const std::string& slotName) {
-  if (!idpromConfig.sysfsPath()->starts_with("/")) {
-    XLOG(ERR) << fmt::format(
-        "IDPROM sysfsPath '{}' in SlotTypeConfig '{}' must be absolute",
-        *idpromConfig.sysfsPath(),
-        slotName);
-    return false;
-  }
-  // sysfsPath already makes the IDPROM's location revision independent, so
-  // pairing it with a bus is a sign the config means two different things.
-  if (!idpromConfig.busName()->empty()) {
-    XLOG(ERR) << fmt::format(
-        "IDPROM in SlotTypeConfig '{}' sets both sysfsPath and busName '{}'",
-        slotName,
-        *idpromConfig.busName());
     return false;
   }
   return true;
@@ -1016,12 +991,7 @@ bool ConfigValidator::isValid(const PlatformConfig& config) {
       return false;
     }
     // Validate IDPROM busName is directly connected (no MUX/FPGA in between)
-    if (slotTypeConfig.idpromConfig() &&
-        slotTypeConfig.idpromConfig()->sysfsPath()) {
-      if (!isValidIdpromSysfsPath(*slotTypeConfig.idpromConfig(), slotName)) {
-        return false;
-      }
-    } else if (slotTypeConfig.idpromConfig()) {
+    if (slotTypeConfig.idpromConfig()) {
       const auto& busName = *slotTypeConfig.idpromConfig()->busName();
       int index = 0;
       bool isIncomingBus =

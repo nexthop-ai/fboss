@@ -331,17 +331,7 @@ std::optional<std::string> PlatformExplorer::getPmUnitNameFromSlot(
     std::string eepromPath;
 
     uint16_t eepromOffset = *idpromConfig.offset();
-    if (idpromConfig.sysfsPath()) {
-      // The BSP instantiates this IDPROM and publishes a handle for it, so
-      // there is no bus to resolve and no device to create here. Record the
-      // path the same way createI2cDevice() would, so DevicePath-based
-      // consumers such as the /run/devmap symlinks still resolve.
-      dataStore_.updateSysfsPath(
-          Utils().createDevicePath(slotPath, "IDPROM"),
-          *idpromConfig.sysfsPath());
-      eepromPath = fmt::format("{}/eeprom", *idpromConfig.sysfsPath());
-    } else if (
-        (platformConfig_.platformName().value() == "MERU800BFA" ||
+    if ((platformConfig_.platformName().value() == "MERU800BFA" ||
          platformConfig_.platformName().value() == "MERU800BIA" ||
          platformConfig_.platformName().value() == "ICECUBE800BANW" ||
          platformConfig_.platformName().value() == "BLACKWOLF800BANW" ||
