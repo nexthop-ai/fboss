@@ -322,7 +322,6 @@ target_link_libraries(qsfp_bsp_core
   meru800bfa_bsp
   montblanc_bsp
   icecube800bc_bsp
-  m4062nhp_bsp
   icetea800bc_bsp
   minipack3bta_bsp
   minipack3n_bsp
@@ -338,13 +337,8 @@ target_link_libraries(qsfp_bsp_core
   ladakh800bcls_bsp
   leh800bcls_bsp
   saintpaul_bsp
-<<<<<<< HEAD
-||||||| cc7af323e3
-  m4062nhp_bsp
-=======
   m4052actm_bsp
   m4062nhp_bsp
->>>>>>> f430fe62b2d0bf4fccb3e210641e994c3f410848
   device_mdio
   fpga_device
   phy_management_base
