@@ -110,8 +110,11 @@ line-level commentary.
   - `LGTM.`
   - `Minor nits. Posted 3 comments.`
   - `Found an unhandled SAI error in the warmboot path. Posted 2 comments.`
-- Under the verdict, name the reviewers you ran (numbers from the dispatch table), then every finding that
-  cleared the verifier's 0.7 threshold, as a table:
+- Under the verdict, write `**For the humans:**` followed by 1-3 plain sentences for someone who has not
+  read the review comments: what the comments add up to, why it matters, and whether it must be fixed
+  before merge. No file paths, line numbers, reviewer numbers, or tables; if it needs more than 3
+  sentences, the detail belongs in the table. Omit it when the verdict is `LGTM.`
+- Then list every finding that cleared the verifier's 0.7 threshold, as a table:
 
   | File:Line | Reviewer | Severity | Issue | Confidence |
   |---|---|---|---|---|
@@ -119,14 +122,26 @@ line-level commentary.
   One row per finding, not per inline comment. A finding with no line to anchor to — a stale PR
   description, a file that should exist and does not, a whole-diff design judgment — still gets a row;
   put `PR body`, `design`, or the nearest related path in the first column. Credit every reviewer that
-  found it, so a row two reviewers hit independently reads `5 + 10`. Sort by severity, then confidence.
+  found it by name, so a row two reviewers hit independently reads `Silent Failure + Testing`. Sort by
+  severity, then confidence.
   The row is a pointer: the explanation and any code suggestion stay in the inline comment where there
   is one. If nothing cleared 0.7, write `No findings >= 0.7.` and skip the table.
-- Then list what the verifier dropped, one line each:
-  `<file:line> — <issue> (reviewer <N>, <confidence before> -> <after>) — <why dropped>`.
-  Restrict it to findings a reader might otherwise expect to see flagged: pre-existing outside this diff,
-  an established pattern in the surrounding code (say how many nearby files share it), or simply below 0.7
-  after calibration. This is what shows the calibration actually ran, and it stops the next run re-raising
-  the same point. Omit the section entirely if nothing was dropped.
+- End the body with this collapsed block, using the summary text exactly as written:
+
+  ```
+  <details><summary>Review details</summary>
+
+  Reviewers run: <reviewer names, e.g. Reliability, Silent Failure, Agent Architecture, fboss2 CLI>
+
+  Dropped by the verifier:
+  - <file:line> — <issue> (reviewer <name>, <confidence before> -> <after>) — <why dropped>
+
+  </details>
+  ```
+
+  In "Dropped by the verifier", list only findings a reader might expect to see flagged but that you
+  decided not to post, with a short reason (for example: already in the code before this PR, same pattern
+  in many nearby files, or not confident enough). This lets the next review skip them. If nothing was
+  dropped, leave that part out but keep "Reviewers run".
 - If the review itself hit a problem (truncated diff, tool errors), say so in the verdict line
 - Submit with the event type given in the submission instructions above; never use "REQUEST_CHANGES"
