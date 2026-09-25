@@ -190,8 +190,9 @@ enable_hw_agents() {
   fi
   for i in $(seq ${num_hw_agents}); do
     systemctl enable "fboss_hw_agent@$((i - 1)).service"
-    # Calling systemctl start inside a starting systemd service deadlocks
-    systemctl start "fboss_hw_agent@$((i - 1)).service" &
+    # Synchronous systemctl start inside a starting systemd service deadlocks on
+    # dependency resolution. --no-block enqueues to start the job.
+    systemctl start --no-block "fboss_hw_agent@$((i - 1)).service"
   done
 }
 

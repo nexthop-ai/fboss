@@ -56,12 +56,25 @@ dex "$FB show port" 2>/dev/null | grep -q eth1/1/1 || {
   dex "$FB show port" 2>&1 | tail -30 || true
   echo "---- agent processes ----"
   dex "ps -eo pid,comm,args | grep -E 'agent|fboss' | grep -v grep" 2>&1 | tail -20 || true
-  echo "---- agent log tail ----"
-  dex "tail -100 /var/facebook/logs/fboss/wedge_agent.log" 2>&1 || true
+  echo "---- systemd unit status ----"
+  dex "systemctl status fboss_sw_agent 'fboss_hw_agent@0' fboss_init fboss-create-veths --no-pager" 2>&1 || true
+  echo "---- systemd journal logs ----"
+  dex "journalctl -u fboss_sw_agent -u 'fboss_hw_agent@0' -u fboss_init -u fboss-create-veths --no-pager -n 50" 2>&1 || true
+  echo "---- agent logs ----"
+  dex 'for f in /var/facebook/logs/fboss/fboss_sw_agent.log /var/facebook/logs/fboss/fboss_hw_agent*.log /var/facebook/logs/fboss/wedge_agent.log; do
+    if [ -f "$f" ]; then
+      echo "=== $f tail ==="
+      tail -50 "$f"
+    fi
+  done' 2>&1 || true
   echo "---- allocator ----"
-  dex 'P=$(pidof wedge_agent fboss_sw_agent | cut -d" " -f1); echo "pid=$P"; \
-    grep jemalloc /proc/$P/maps || echo "(no jemalloc mapping)"; \
-    nm $(readlink /proc/$P/exe) 2>/dev/null | grep malloc_conf || echo "(no malloc_conf symbol)"' 2>&1 || true
+  dex 'P=$(pidof fboss_sw_agent fboss_hw_agent fboss_hw_agent-sai_impl wedge_agent | cut -d" " -f1); echo "pid=$P"; \
+    if [ -n "$P" ]; then \
+      grep jemalloc /proc/$P/maps || echo "(no jemalloc mapping)"; \
+      nm $(readlink /proc/$P/exe) 2>/dev/null | grep malloc_conf || echo "(no malloc_conf symbol)"; \
+    else \
+      echo "(no running agent process to inspect)"; \
+    fi' 2>&1 || true
   exit 1
 }
 
