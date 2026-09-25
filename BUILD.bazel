@@ -385,6 +385,7 @@ _NH_FBOSS_BROADCOM_XGS_BUILD_INFO = {
 
 distro_build(
     name = "nh-fboss-broadcom-xgs",
+    needs = "fboss_image",
     nexthop_build_info = _NH_FBOSS_BROADCOM_XGS_BUILD_INFO,
     deps = _NH_FBOSS_BROADCOM_XGS_DEPS,
     manifest = "nh-fboss-broadcom-xgs.json",
@@ -451,6 +452,7 @@ _NH_FBOSS_BROADCOM_TH6_BUILD_INFO = {
 
 distro_build(
     name = "nh-fboss-broadcom-th6",
+    needs = "fboss_image",
     nexthop_build_info = _NH_FBOSS_BROADCOM_TH6_BUILD_INFO,
     deps = _NH_FBOSS_BROADCOM_TH6_DEPS,
     manifest = "nh-fboss-broadcom-th6.json",
@@ -517,6 +519,7 @@ _NH_FBOSS_BROADCOM_DNX_BUILD_INFO = {
 
 distro_build(
     name = "nh-fboss-broadcom-dnx",
+    needs = "fboss_image",
     nexthop_build_info = _NH_FBOSS_BROADCOM_DNX_BUILD_INFO,
     deps = _NH_FBOSS_BROADCOM_DNX_DEPS,
     manifest = "nh-fboss-broadcom-dnx.json",
@@ -581,6 +584,7 @@ _NH_FBOSS_CISCO_S1_BUILD_INFO = {
 
 distro_build(
     name = "nh-fboss-cisco-s1",
+    needs = "fboss_image",
     nexthop_build_info = _NH_FBOSS_CISCO_S1_BUILD_INFO,
     deps = _NH_FBOSS_CISCO_S1_DEPS,
     manifest = "nh-fboss-cisco-s1.json",
@@ -634,7 +638,8 @@ distro_build(
 )
 
 distro_build(
-    name = "cfboss-image-composition",
+    name = "nh-fboss-cfboss",
+    needs = "fboss_image",
     deps = [
         "cfboss-platform-stack.tar",
         "cfboss-forwarding-stack.tar",
@@ -646,6 +651,7 @@ distro_build(
         '."fboss-forwarding-stack" = {"download": ("file:" + $stage + "/cfboss-forwarding-stack.tar")}',
     ]),
     outs_map = {"nh-fboss-cfboss.tar.xz": "fboss/fboss-image/nh-fboss-cfboss.tar.xz"},
+    srcs = ["fboss/oss/scripts/fake-sai-devel.tar.zstd"],
     visibility = ["//visibility:public"],
 )
 

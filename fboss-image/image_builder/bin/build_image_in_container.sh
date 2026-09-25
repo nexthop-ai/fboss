@@ -36,6 +36,17 @@ AFTER_PKGS_EXECUTE_FILE=""
 # User configurable variables
 DEPS_DIR="" # Component artifacts directory
 
+# root/ is created by root inside this container. Clear it on exit to not leave
+# root-owned garbage lying around.
+cleanup_overlay() {
+  if [ -n "${DESCRIPTION_DIR}" ]; then
+    rm -rf "${DESCRIPTION_DIR}/root"
+  fi
+}
+trap cleanup_overlay EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
 mkdir -p "${LOG_DIR}"
 LOG_FILE="${LOG_DIR}/build_image_in_container.log"
 
@@ -79,6 +90,18 @@ update_docker() {
   # Install kiwi to the system site-packages visible under -s.
   KIWI_SITE_PKG=$(python3 -s -c "import site; print(site.getsitepackages()[0])")
   python3 -m pip install kiwi --target "${KIWI_SITE_PKG}"
+
+  # Cap mksquashfs's cache to 4G from 25% of physical RAM to support
+  # concurrent image compositions. Keep in sync with //bazel_lib:fboss_image
+  for _mksq in /usr/sbin/mksquashfs /usr/bin/mksquashfs; do
+    if [ -x "${_mksq}" ] && [ ! -e "${_mksq}.real" ]; then
+      mv "${_mksq}" "${_mksq}.real"
+      printf '#!/bin/bash\nexec "%s.real" "$@" -mem 4G\n' "${_mksq}" >"${_mksq}"
+      chmod +x "${_mksq}"
+      dprint "Capped ${_mksq} cache at -mem 4G"
+      break
+    fi
+  done
 }
 
 # Remove shim's fallback bootloader from the install ISO's ESP: it registers an

@@ -5,9 +5,16 @@ load("//bazel_lib:heavy_genrule.bzl", "heavy_genrule")
 # already present. Prepend this to the `cmd` of any genrule / heavy_genrule
 # that invokes the fboss builder, and list "//fboss:fboss_builder_docker"
 # in that rule's srcs so $(location ...) resolves.
+# flock serializes concurrent genrules loading the same image like
+# image compositions. /var/tmp is outside the sandbox.
 LOAD_FBOSS_BUILDER_CMD = """
         if ! docker images | grep -q fboss_builder; then
-            cat $(location //fboss:fboss_builder_docker) | docker image load
+            (
+                flock 9
+                if ! docker images | grep -q fboss_builder; then
+                    cat $(location //fboss:fboss_builder_docker) | docker image load
+                fi
+            ) 9>/var/tmp/.fboss_builder_load.lock
         fi
 """
 
@@ -82,7 +89,7 @@ _COMPONENT_FILTER = (
 # Absolute so distro_build() works from any package that builds through the fboss builder.
 _TOOLS = [
     "//bazel_lib:ln_or_cp",
-    "//fboss:fboss_builder_docker",  # also serialises fboss-image runs, which share scratch directories
+    "//fboss:fboss_builder_docker",
     "//fboss/fboss-image/distro_cli:builder",
     "//fboss:nh-fboss-manifests",
 ]
@@ -93,7 +100,18 @@ _LIST_COMPONENTS = ["bsps", "other_dependencies"]
 # Resource sets that saturate the machine, so no other distro_build action runs alongside.
 _SERIALIZED = ["exclusive", "all_cpus"]
 
-_BUILD_INFO = "fboss/fboss-image/image_builder/templates/centos-09.0/root_files/etc/nexthop_build_info"
+_IMAGE_BUILDER = "fboss/fboss-image/image_builder"
+
+# Build products, excluded from //fboss:image_builder, so a sandboxed action starts
+# without them. kiwi's own scratch ("root") is excluded there too and it recreates it.
+_IMAGE_BUILDER_SCRATCH = ["deps_staging", "output", "logs"]
+
+_BUILD_INFO = "%s/templates/centos-09.0/root_files/etc/nexthop_build_info" % _IMAGE_BUILDER
+
+_BUILDER_IMAGE_SOURCES = [
+    "//fboss:fboss/oss/docker/Dockerfile",
+    "//fboss:fboss/oss/scripts/build_docker.sh",
+]
 
 # volatile-status keys every image records in /etc/nexthop_build_info.
 _BUILD_INFO_COMMON_KEYS = [
@@ -154,12 +172,31 @@ def distro_build(
             actions whose `needs` saturates the machine, since a smaller action may run alongside
             another one that is still reading it.
         needs: heavy_genrule resource set.
-        tags: Extra tags; "no-sandbox" is always set.
+        tags: Extra tags
         visibility: Target visibility.
     """
     stem = manifest.removesuffix(".json")
     stage_dir = "%s/.distro_build/%s" % (native.package_name(), name)
     stage = "../../" + stage_dir  # relative to fboss/fboss-image, where the manifest is read
+    is_image_composition = component == None
+
+    # A composition runs sandboxed so it can run concurrently. FBOSS_ROOT stops
+    # the CLI resolving __file__ back to the real checkout, escaping the sandbox.
+    # tar makes the sandbox files real instead of symlinks, which docker can't
+    # use.
+    prepare = ""
+    if is_image_composition:
+        prepare = """
+        export FBOSS_ROOT="${{PWD}}/fboss"
+        tar -chf "{tarball}" -C {src} .
+        tar -xf "{tarball}" -C {src}
+        rm -f "{tarball}"
+        mkdir -p {scratch}
+        """.format(
+            src = _IMAGE_BUILDER,
+            tarball = "%s/image_builder.tar" % stage_dir,
+            scratch = " ".join(['"%s/%s"' % (_IMAGE_BUILDER, name) for name in _IMAGE_BUILDER_SCRATCH]),
+        )
     patched = "%s.%s.generated.json" % (native.package_name().replace("/", "_"), name)
 
     basenames = [_basename(dep) for dep in deps]
@@ -210,6 +247,7 @@ def distro_build(
 
     cmd = LOAD_FBOSS_BUILDER_CMD + FREE_UP_DISK_IN_CI_CMD + """
         mkdir -p "{stage_dir}"
+        {prepare}
         {staging}
         {setup}
         {info}
@@ -221,6 +259,7 @@ def distro_build(
         {copies}
     """.format(
         stage_dir = stage_dir,
+        prepare = prepare,
         staging = staging,
         setup = setup,
         info = info,
@@ -231,16 +270,19 @@ def distro_build(
         component = component or "",
         copies = "\n        ".join(copies),
     )
-    shared = ["fboss/fboss-image/distro_cli/.artifacts"] if needs in _SERIALIZED else []
+    # Image compositions are sandboxed. Component builds are not for speed.
+    action_tags = ["requires-network"] if is_image_composition else ["no-sandbox"]
+
+    shared = [] if is_image_composition else (["fboss/fboss-image/distro_cli/.artifacts"] if needs in _SERIALIZED else [])
     cmd += delete_build_products_in_ci([stage_dir] + cleanup + shared)
 
     heavy_genrule(
         name = name,
         stamp = True,
         needs = needs,
-        srcs = _TOOLS + (["//fboss:image_builder"] if component == None else []) + deps + srcs,
+        srcs = _TOOLS + ((["//fboss:image_builder"] + _BUILDER_IMAGE_SOURCES) if is_image_composition else []) + deps + srcs,
         outs = outs_map.keys(),
         cmd = cmd,
-        tags = ["no-sandbox"] + tags,
+        tags = action_tags + tags,
         visibility = visibility,
     )

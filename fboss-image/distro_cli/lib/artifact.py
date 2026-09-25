@@ -9,6 +9,7 @@
 
 import hashlib
 import logging
+import os
 import shutil
 import tempfile
 from collections.abc import Callable
@@ -169,11 +170,17 @@ class ArtifactStore:
             self._get_stored_files_in_dir(metadata_dir),
         )
 
-    def _move_to_dir(self, source: Path, dest_dir: Path) -> None:
-        """Move a file or directory contents to destination directory.
+    @staticmethod
+    def _link_or_copy(source: str, dest: str) -> None:
+        try:
+            os.link(source, dest)
+        except OSError:
+            shutil.copy(source, dest)
 
-        Uses move instead of copy for better performance when source and dest
-        are on the same filesystem.
+    def _move_to_dir(self, source: Path, dest_dir: Path) -> None:
+        """Store a file or directory tree in the destination directory.
+
+        Files are hardlinked when possible to save multi-GB copies.
 
         Args:
             source: Source file or directory
@@ -181,13 +188,14 @@ class ArtifactStore:
         """
         dest_path = dest_dir / source.name
         if source.is_dir():
-            # For directories, copy the entire tree
+            # For directories, store the entire tree
             if dest_path.exists():
                 shutil.rmtree(dest_path)
-            shutil.copytree(str(source), str(dest_path))
+            shutil.copytree(
+                str(source), str(dest_path), copy_function=self._link_or_copy
+            )
         else:
-            # For files, copy directly
-            shutil.copy(str(source), str(dest_path))
+            self._link_or_copy(str(source), str(dest_path))
 
     def invalidate(self, store_key: str) -> None:
         """Remove an artifact from the store.
