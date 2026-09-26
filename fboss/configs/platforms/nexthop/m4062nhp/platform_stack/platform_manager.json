@@ -36,7 +36,7 @@
           "i2cAdapterBlockConfigs": [
             {
               "pmUnitScopedNamePrefix": "SCM_IOB_I2C",
-              "deviceName": "i2c_master",
+              "deviceName": "nh_i2c_master",
               "csrOffsetCalc": "0x40000 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 0,
               "numAdapters": 10
@@ -45,7 +45,7 @@
           "infoRomConfigs": [
             {
               "pmUnitScopedName": "SCM_IOB_INFO_ROM",
-              "deviceName": "fpga_info_iob",
+              "deviceName": "nh_fpga_info_iob",
               "csrOffset": "0x0000"
             }
           ]
@@ -126,14 +126,14 @@
           "i2cAdapterBlockConfigs": [
             {
               "pmUnitScopedNamePrefix": "SMB0_IOB_I2C",
-              "deviceName": "i2c_master",
+              "deviceName": "nh_i2c_master",
               "csrOffsetCalc": "0x40000 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 0,
               "numAdapters": 4
             },
             {
               "pmUnitScopedNamePrefix": "SMB0_OSFP_I2C",
-              "deviceName": "i2c_master",
+              "deviceName": "nh_i2c_master",
               "csrOffsetCalc": "0x40800 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 1,
               "numAdapters": 64
@@ -171,7 +171,7 @@
           "ledCtrlBlockConfigs": [
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-              "deviceName": "port_led",
+              "deviceName": "nh_port_led",
               "csrOffsetCalc": "0x60",
               "numPorts": 8,
               "ledPerPort": 1,
@@ -179,7 +179,7 @@
             },
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-              "deviceName": "port_led",
+              "deviceName": "nh_port_led",
               "csrOffsetCalc": "0x64",
               "numPorts": 8,
               "ledPerPort": 1,
@@ -187,7 +187,7 @@
             },
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-              "deviceName": "port_led",
+              "deviceName": "nh_port_led",
               "csrOffsetCalc": "0x68",
               "numPorts": 8,
               "ledPerPort": 1,
@@ -195,7 +195,7 @@
             },
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-              "deviceName": "port_led",
+              "deviceName": "nh_port_led",
               "csrOffsetCalc": "0x6c",
               "numPorts": 8,
               "ledPerPort": 1,
@@ -203,7 +203,7 @@
             },
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-              "deviceName": "port_led",
+              "deviceName": "nh_port_led",
               "csrOffsetCalc": "0x70",
               "numPorts": 8,
               "ledPerPort": 1,
@@ -211,7 +211,7 @@
             },
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-              "deviceName": "port_led",
+              "deviceName": "nh_port_led",
               "csrOffsetCalc": "0x74",
               "numPorts": 8,
               "ledPerPort": 1,
@@ -219,7 +219,7 @@
             },
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-              "deviceName": "port_led",
+              "deviceName": "nh_port_led",
               "csrOffsetCalc": "0x78",
               "numPorts": 8,
               "ledPerPort": 1,
@@ -227,7 +227,7 @@
             },
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-              "deviceName": "port_led",
+              "deviceName": "nh_port_led",
               "csrOffsetCalc": "0x7c",
               "numPorts": 8,
               "ledPerPort": 1,
@@ -246,7 +246,7 @@
           "xcvrCtrlBlockConfigs": [
             {
               "pmUnitScopedNamePrefix": "QSFP",
-              "deviceName": "xcvr_ctrl",
+              "deviceName": "nh_xcvr_ctrl",
               "csrOffsetCalc": "0x0",
               "startPort": 129,
               "numPorts": 1
@@ -255,7 +255,7 @@
           "infoRomConfigs": [
             {
               "pmUnitScopedName": "SMB0_IOB_INFO_ROM",
-              "deviceName": "fpga_info_iob",
+              "deviceName": "nh_fpga_info_iob",
               "csrOffset": "0x0000"
             }
           ]
@@ -279,7 +279,7 @@
           "i2cAdapterBlockConfigs": [
             {
               "pmUnitScopedNamePrefix": "SMB1_IOB_I2C",
-              "deviceName": "i2c_master",
+              "deviceName": "nh_i2c_master",
               "csrOffsetCalc": "0x40000 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 0,
               "numAdapters": 4
@@ -293,7 +293,7 @@
             },
             {
               "pmUnitScopedNamePrefix": "SMB1_TEMP_I2C",
-              "deviceName": "i2c_master",
+              "deviceName": "nh_i2c_master",
               "csrOffsetCalc": "0x40C00 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 6,
               "numAdapters": 1
@@ -307,56 +307,56 @@
             },
             {
               "pmUnitScopedNamePrefix": "SMB1_OSFP_I2C",
-              "deviceName": "i2c_master",
+              "deviceName": "nh_i2c_master",
               "csrOffsetCalc": "0x41400 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 1,
               "numAdapters": 8
             },
             {
               "pmUnitScopedNamePrefix": "SMB1_OSFP_I2C",
-              "deviceName": "i2c_master",
+              "deviceName": "nh_i2c_master",
               "csrOffsetCalc": "0x43400 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 9,
               "numAdapters": 8
             },
             {
               "pmUnitScopedNamePrefix": "SMB1_OSFP_I2C",
-              "deviceName": "i2c_master",
+              "deviceName": "nh_i2c_master",
               "csrOffsetCalc": "0x42400 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 17,
               "numAdapters": 8
             },
             {
               "pmUnitScopedNamePrefix": "SMB1_OSFP_I2C",
-              "deviceName": "i2c_master",
+              "deviceName": "nh_i2c_master",
               "csrOffsetCalc": "0x44400 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 25,
               "numAdapters": 8
             },
             {
               "pmUnitScopedNamePrefix": "SMB1_OSFP_I2C",
-              "deviceName": "i2c_master",
+              "deviceName": "nh_i2c_master",
               "csrOffsetCalc": "0x47400 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 33,
               "numAdapters": 8
             },
             {
               "pmUnitScopedNamePrefix": "SMB1_OSFP_I2C",
-              "deviceName": "i2c_master",
+              "deviceName": "nh_i2c_master",
               "csrOffsetCalc": "0x45400 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 41,
               "numAdapters": 8
             },
             {
               "pmUnitScopedNamePrefix": "SMB1_OSFP_I2C",
-              "deviceName": "i2c_master",
+              "deviceName": "nh_i2c_master",
               "csrOffsetCalc": "0x48400 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 49,
               "numAdapters": 8
             },
             {
               "pmUnitScopedNamePrefix": "SMB1_OSFP_I2C",
-              "deviceName": "i2c_master",
+              "deviceName": "nh_i2c_master",
               "csrOffsetCalc": "0x46400 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 57,
               "numAdapters": 8
@@ -365,7 +365,7 @@
           "ledCtrlBlockConfigs": [
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-              "deviceName": "port_led",
+              "deviceName": "nh_port_led",
               "csrOffsetCalc": "0x90",
               "numPorts": 8,
               "ledPerPort": 1,
@@ -373,7 +373,7 @@
             },
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-              "deviceName": "port_led",
+              "deviceName": "nh_port_led",
               "csrOffsetCalc": "0x94",
               "numPorts": 8,
               "ledPerPort": 1,
@@ -381,7 +381,7 @@
             },
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-              "deviceName": "port_led",
+              "deviceName": "nh_port_led",
               "csrOffsetCalc": "0x98",
               "numPorts": 8,
               "ledPerPort": 1,
@@ -389,7 +389,7 @@
             },
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-              "deviceName": "port_led",
+              "deviceName": "nh_port_led",
               "csrOffsetCalc": "0x9c",
               "numPorts": 8,
               "ledPerPort": 1,
@@ -397,7 +397,7 @@
             },
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-              "deviceName": "port_led",
+              "deviceName": "nh_port_led",
               "csrOffsetCalc": "0x80",
               "numPorts": 8,
               "ledPerPort": 1,
@@ -405,7 +405,7 @@
             },
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-              "deviceName": "port_led",
+              "deviceName": "nh_port_led",
               "csrOffsetCalc": "0x84",
               "numPorts": 8,
               "ledPerPort": 1,
@@ -413,7 +413,7 @@
             },
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-              "deviceName": "port_led",
+              "deviceName": "nh_port_led",
               "csrOffsetCalc": "0x88",
               "numPorts": 8,
               "ledPerPort": 1,
@@ -421,7 +421,7 @@
             },
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-              "deviceName": "port_led",
+              "deviceName": "nh_port_led",
               "csrOffsetCalc": "0x8c",
               "numPorts": 8,
               "ledPerPort": 1,
@@ -431,7 +431,7 @@
           "xcvrCtrlBlockConfigs": [
             {
               "pmUnitScopedNamePrefix": "OSFP",
-              "deviceName": "xcvr_ctrl",
+              "deviceName": "nh_xcvr_ctrl",
               "csrOffsetCalc": "0x0",
               "startPort": 1,
               "numPorts": 128
@@ -440,7 +440,7 @@
           "infoRomConfigs": [
             {
               "pmUnitScopedName": "SMB1_IOB_INFO_ROM",
-              "deviceName": "fpga_info_iob",
+              "deviceName": "nh_fpga_info_iob",
               "csrOffset": "0x0000"
             }
           ]
@@ -924,26 +924,16 @@
   },
   "chassisEepromDevicePath": "/SMB_SLOT@0/[IDPROM]",
   "numXcvrs": 129,
-  "bspKmodsRpmName": "nexthop_bsp_kmods",
-  "bspKmodsRpmVersion": "1.0.0-1",
+  "bspKmodsRpmName": "fboss_bsp_kmods",
+  "bspKmodsRpmVersion": "4.4.2-1",
   "nonBspKmodsToLoad": [
     "i2c_i801",
     "i2c_piix4",
     "spd5118",
     "i2c_mux",
-    "fbiob_pci",
-    "nh_fpga_i2c",
-    "nh_fpga_mux",
-    "nh_fpga_info",
-    "nh_fpga_asic_temp",
-    "nh_fpga_fan",
-    "nh_fpga_led",
-    "nh_fpga_port_led",
-    "nh_fpga_psu",
     "tmp464",
     "adm1266",
-    "pmbus",
-    "nh_xcvr_ctrl"
+    "pmbus"
   ],
   "versionedPmUnitConfigs": {
     "SMB": [
@@ -972,14 +962,14 @@
               "i2cAdapterBlockConfigs": [
                 {
                   "pmUnitScopedNamePrefix": "SMB0_IOB_I2C",
-                  "deviceName": "i2c_master",
+                  "deviceName": "nh_i2c_master",
                   "csrOffsetCalc": "0x40000 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
                   "startAdapterIndex": 0,
                   "numAdapters": 4
                 },
                 {
                   "pmUnitScopedNamePrefix": "SMB0_OSFP_I2C",
-                  "deviceName": "i2c_master",
+                  "deviceName": "nh_i2c_master",
                   "csrOffsetCalc": "0x40800 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
                   "startAdapterIndex": 1,
                   "numAdapters": 64
@@ -1017,7 +1007,7 @@
               "ledCtrlBlockConfigs": [
                 {
                   "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-                  "deviceName": "port_led",
+                  "deviceName": "nh_port_led",
                   "csrOffsetCalc": "0x60",
                   "numPorts": 8,
                   "ledPerPort": 1,
@@ -1025,7 +1015,7 @@
                 },
                 {
                   "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-                  "deviceName": "port_led",
+                  "deviceName": "nh_port_led",
                   "csrOffsetCalc": "0x64",
                   "numPorts": 8,
                   "ledPerPort": 1,
@@ -1033,7 +1023,7 @@
                 },
                 {
                   "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-                  "deviceName": "port_led",
+                  "deviceName": "nh_port_led",
                   "csrOffsetCalc": "0x68",
                   "numPorts": 8,
                   "ledPerPort": 1,
@@ -1041,7 +1031,7 @@
                 },
                 {
                   "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-                  "deviceName": "port_led",
+                  "deviceName": "nh_port_led",
                   "csrOffsetCalc": "0x6c",
                   "numPorts": 8,
                   "ledPerPort": 1,
@@ -1049,7 +1039,7 @@
                 },
                 {
                   "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-                  "deviceName": "port_led",
+                  "deviceName": "nh_port_led",
                   "csrOffsetCalc": "0x70",
                   "numPorts": 8,
                   "ledPerPort": 1,
@@ -1057,7 +1047,7 @@
                 },
                 {
                   "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-                  "deviceName": "port_led",
+                  "deviceName": "nh_port_led",
                   "csrOffsetCalc": "0x74",
                   "numPorts": 8,
                   "ledPerPort": 1,
@@ -1065,7 +1055,7 @@
                 },
                 {
                   "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-                  "deviceName": "port_led",
+                  "deviceName": "nh_port_led",
                   "csrOffsetCalc": "0x78",
                   "numPorts": 8,
                   "ledPerPort": 1,
@@ -1073,7 +1063,7 @@
                 },
                 {
                   "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-                  "deviceName": "port_led",
+                  "deviceName": "nh_port_led",
                   "csrOffsetCalc": "0x7c",
                   "numPorts": 8,
                   "ledPerPort": 1,
@@ -1092,7 +1082,7 @@
               "xcvrCtrlBlockConfigs": [
                 {
                   "pmUnitScopedNamePrefix": "QSFP",
-                  "deviceName": "xcvr_ctrl",
+                  "deviceName": "nh_xcvr_ctrl",
                   "csrOffsetCalc": "0x0",
                   "startPort": 129,
                   "numPorts": 1
@@ -1101,7 +1091,7 @@
               "infoRomConfigs": [
                 {
                   "pmUnitScopedName": "SMB0_IOB_INFO_ROM",
-                  "deviceName": "fpga_info_iob",
+                  "deviceName": "nh_fpga_info_iob",
                   "csrOffset": "0x0000"
                 }
               ]
@@ -1125,7 +1115,7 @@
               "i2cAdapterBlockConfigs": [
                 {
                   "pmUnitScopedNamePrefix": "SMB1_IOB_I2C",
-                  "deviceName": "i2c_master",
+                  "deviceName": "nh_i2c_master",
                   "csrOffsetCalc": "0x40000 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
                   "startAdapterIndex": 0,
                   "numAdapters": 4
@@ -1146,14 +1136,14 @@
                 },
                 {
                   "pmUnitScopedNamePrefix": "SMB1_TEMP_I2C",
-                  "deviceName": "i2c_master",
+                  "deviceName": "nh_i2c_master",
                   "csrOffsetCalc": "0x40C00 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
                   "startAdapterIndex": 6,
                   "numAdapters": 1
                 },
                 {
                   "pmUnitScopedNamePrefix": "SMB1_OSFP_I2C",
-                  "deviceName": "i2c_master",
+                  "deviceName": "nh_i2c_master",
                   "csrOffsetCalc": "0x41400 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
                   "startAdapterIndex": 1,
                   "numAdapters": 64
@@ -1162,7 +1152,7 @@
               "ledCtrlBlockConfigs": [
                 {
                   "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-                  "deviceName": "port_led",
+                  "deviceName": "nh_port_led",
                   "csrOffsetCalc": "0x90",
                   "numPorts": 8,
                   "ledPerPort": 1,
@@ -1170,7 +1160,7 @@
                 },
                 {
                   "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-                  "deviceName": "port_led",
+                  "deviceName": "nh_port_led",
                   "csrOffsetCalc": "0x94",
                   "numPorts": 8,
                   "ledPerPort": 1,
@@ -1178,7 +1168,7 @@
                 },
                 {
                   "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-                  "deviceName": "port_led",
+                  "deviceName": "nh_port_led",
                   "csrOffsetCalc": "0x98",
                   "numPorts": 8,
                   "ledPerPort": 1,
@@ -1186,7 +1176,7 @@
                 },
                 {
                   "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-                  "deviceName": "port_led",
+                  "deviceName": "nh_port_led",
                   "csrOffsetCalc": "0x9c",
                   "numPorts": 8,
                   "ledPerPort": 1,
@@ -1194,7 +1184,7 @@
                 },
                 {
                   "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-                  "deviceName": "port_led",
+                  "deviceName": "nh_port_led",
                   "csrOffsetCalc": "0x80",
                   "numPorts": 8,
                   "ledPerPort": 1,
@@ -1202,7 +1192,7 @@
                 },
                 {
                   "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-                  "deviceName": "port_led",
+                  "deviceName": "nh_port_led",
                   "csrOffsetCalc": "0x84",
                   "numPorts": 8,
                   "ledPerPort": 1,
@@ -1210,7 +1200,7 @@
                 },
                 {
                   "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-                  "deviceName": "port_led",
+                  "deviceName": "nh_port_led",
                   "csrOffsetCalc": "0x88",
                   "numPorts": 8,
                   "ledPerPort": 1,
@@ -1218,7 +1208,7 @@
                 },
                 {
                   "pmUnitScopedNamePrefix": "SMB_PORT_LED",
-                  "deviceName": "port_led",
+                  "deviceName": "nh_port_led",
                   "csrOffsetCalc": "0x8c",
                   "numPorts": 8,
                   "ledPerPort": 1,
@@ -1228,7 +1218,7 @@
               "xcvrCtrlBlockConfigs": [
                 {
                   "pmUnitScopedNamePrefix": "OSFP",
-                  "deviceName": "xcvr_ctrl",
+                  "deviceName": "nh_xcvr_ctrl",
                   "csrOffsetCalc": "0x0",
                   "startPort": 1,
                   "numPorts": 128
@@ -1237,7 +1227,7 @@
               "infoRomConfigs": [
                 {
                   "pmUnitScopedName": "SMB1_IOB_INFO_ROM",
-                  "deviceName": "fpga_info_iob",
+                  "deviceName": "nh_fpga_info_iob",
                   "csrOffset": "0x0000"
                 }
               ]
