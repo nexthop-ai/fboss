@@ -1715,7 +1715,8 @@ void SaiPortManager::programSerdes(
     auto newTxFirMain =
         std::get<std::optional<SaiPortSerdesTraits::Attributes::TxFirMain>>(
             serdesAttributes);
-    if (swPort->getZeroPreemphasis() && newTxFirMain.has_value()) {
+    if (swPort->getZeroPreemphasis() && supportsZeroPreemphasis &&
+        newTxFirMain.has_value()) {
       // Broadcom rejects *creating* a port serdes object with TxFirMain set to
       // 0. When zero preemphasis is requested (e.g. HW loopback tests) and the
       // serdes is being created from scratch (such as during a VCO change that

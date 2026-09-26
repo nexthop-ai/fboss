@@ -8,6 +8,7 @@
 #include "fboss/lib/bsp/janga800bic/Janga800bicBspPlatformMapping.h"
 #include "fboss/lib/bsp/ladakh800bcls/Ladakh800bclsBspPlatformMapping.h"
 #include "fboss/lib/bsp/leh800bcls/Leh800bclsBspPlatformMapping.h"
+#include "fboss/lib/bsp/m4052actm/M4052ACTMBspPlatformMapping.h"
 #include "fboss/lib/bsp/m4062nhp/M4062nhpBspPlatformMapping.h"
 #include "fboss/lib/bsp/meru800bfa/Meru800bfaBspPlatformMapping.h"
 #include "fboss/lib/bsp/meru800bia/Meru800biaBspPlatformMapping.h"
@@ -156,26 +157,7 @@ folly::Singleton<Icecube800bcSystemContainer> _icecube800bcSystemContainer;
 template <>
 std::shared_ptr<Icecube800bcSystemContainer>
 Icecube800bcSystemContainer::getInstance() {
-  // Not Nexthop-owned code; suppressing here only because this line falls
-  // inside the diff context of an adjacent M4062nhp addition and trips
-  // reviewdog. See the M4062nhp block below for why instance-form try_get()
-  // is the correct idiom for folly::Singleton.
-  // NOLINTNEXTLINE(readability-static-accessed-through-instance)
   return _icecube800bcSystemContainer.try_get();
-}
-
-using M4062nhpSystemContainer =
-    BspGenericSystemContainer<M4062nhpBspPlatformMapping>;
-folly::Singleton<M4062nhpSystemContainer> _m4062nhpSystemContainer;
-template <>
-std::shared_ptr<M4062nhpSystemContainer>
-M4062nhpSystemContainer::getInstance() {
-  // Calling try_get() via the singleton instance (rather than the static
-  // form folly::Singleton<T>::try_get()) is required by folly/Singleton.h:
-  // it ensures _m4062nhpSystemContainer is used so the linker cannot GC it,
-  // since its ctor is what registers the singleton with the SingletonVault.
-  // NOLINTNEXTLINE(readability-static-accessed-through-instance)
-  return _m4062nhpSystemContainer.try_get();
 }
 
 using Icetea800bcSystemContainer =
@@ -239,6 +221,29 @@ template <>
 std::shared_ptr<SaintpaulSystemContainer>
 SaintpaulSystemContainer::getInstance() {
   return _saintpaulSystemContainer.try_get();
+}
+
+using M4052ACTMSystemContainer =
+    BspGenericSystemContainer<M4052ACTMBspPlatformMapping>;
+folly::Singleton<M4052ACTMSystemContainer> _m4052actmSystemContainer;
+template <>
+std::shared_ptr<M4052ACTMSystemContainer>
+M4052ACTMSystemContainer::getInstance() {
+  return _m4052actmSystemContainer.try_get();
+}
+
+using M4062nhpSystemContainer =
+    BspGenericSystemContainer<M4062nhpBspPlatformMapping>;
+folly::Singleton<M4062nhpSystemContainer> _m4062nhpSystemContainer;
+template <>
+std::shared_ptr<M4062nhpSystemContainer>
+M4062nhpSystemContainer::getInstance() {
+  // Calling try_get() via the singleton instance (rather than the static
+  // form folly::Singleton<T>::try_get()) is required by folly/Singleton.h:
+  // it ensures _m4062nhpSystemContainer is used so the linker cannot GC it,
+  // since its ctor is what registers the singleton with the SingletonVault.
+  // NOLINTNEXTLINE(readability-static-accessed-through-instance)
+  return _m4062nhpSystemContainer.try_get();
 }
 
 } // namespace fboss
