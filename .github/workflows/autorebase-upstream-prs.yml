@@ -1,0 +1,57 @@
+name: Autorebase Upstream PRs
+
+# Weekly sweep of open facebook/fboss PRs labelled both "CLA Signed" and
+# "nexthop": every PR whose author has commented `/autorebase` (comments from
+# anyone else are ignored) gets rebase-upstream-pr.yml dispatched with
+# rebase_onto=main. PRs targeting a branch other than main (stacked PRs) are
+# skipped; the rebase workflow moves them with their root, and they become
+# eligible on their own once they retarget main. See
+# .github/scripts/autorebase_upstream_prs.py for the full eligibility rules.
+
+on:
+  schedule:
+    # Sunday 20:00 UTC: 13:00 PDT / 12:00 PST.
+    - cron: "0 20 * * 0"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Only report which PRs would be rebased; dispatch nothing"
+        type: boolean
+        default: false
+      pr:
+        description: "Evaluate a single upstream PR number instead of sweeping (optional)"
+        type: string
+        default: ""
+
+concurrency:
+  group: autorebase-upstream-prs
+  cancel-in-progress: false
+
+jobs:
+  sweep:
+    name: Dispatch /autorebase rebases
+    if: github.repository_owner == 'nexthop-ai'
+    runs-on: k8s-nano
+    permissions:
+      contents: read  # fetch the sweep script
+      actions: write  # gh workflow run rebase-upstream-pr.yml
+    steps:
+      - name: Sweep upstream PRs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPSTREAM_GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          DISPATCH_GH_TOKEN: ${{ github.token }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          PR: ${{ inputs.pr }}
+        run: |
+          args=()
+          if [[ "$DRY_RUN" == "true" ]]; then
+            args+=(--dry-run)
+          fi
+          if [[ -n "$PR" ]]; then
+            args+=(--pr "$PR")
+          fi
+          # Same commit as this workflow file, so a dispatch from a branch runs that branch's script.
+          gh api "repos/${GITHUB_REPOSITORY}/contents/.github/scripts/autorebase_upstream_prs.py?ref=${GITHUB_SHA}" \
+            -H "Accept: application/vnd.github.raw" > autorebase_upstream_prs.py
+          python3 autorebase_upstream_prs.py "${args[@]}"
