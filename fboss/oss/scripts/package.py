@@ -6,6 +6,7 @@
 import argparse
 import concurrent.futures
 import glob
+import json
 import os
 import pathlib
 import stat
@@ -36,6 +37,7 @@ TARGET_NAMES = (
     "openr",
 )
 NPU_SDK_METADATA_FILENAME = "npu_sdk_metadata.json"
+NPU_HW_AGENT_BINARY = "fboss_hw_agent-sai_impl"
 NPU_SDK_METADATA_ARCHIVE_PATH = f"share/{NPU_SDK_METADATA_FILENAME}"
 NPU_SDK_UTILS_SCRIPT = SCRIPTS_DIR / "npu_sdk_utils.py"
 
@@ -368,6 +370,24 @@ def _resolve_binaries(
     return resolved
 
 
+def _npu_sdk_metadata_path(
+    build_dir: pathlib.Path, required_binaries: list[str]
+) -> pathlib.Path | None:
+    """Return the NPU SDK metadata to ship, or None if it lacks required entries."""
+    metadata_path = build_dir / "build" / "fboss" / NPU_SDK_METADATA_FILENAME
+    if not metadata_path.is_file():
+        return None
+    if stat.S_IMODE(metadata_path.stat().st_mode) != 0o444:
+        raise RuntimeError(f"NPU SDK metadata must be read-only: {metadata_path}")
+    # Variants share one scratch, so the file may only hold entries recorded by
+    # another variant; only ship it when it covers the binaries we package.
+    metadata = json.loads(metadata_path.read_text())
+    if any(binary not in metadata for binary in required_binaries):
+        print(f"Skipping {metadata_path}: no entry for one of {required_binaries}")
+        return None
+    return metadata_path
+
+
 def _build_target(target: str, build_dir: pathlib.Path):
     """Return mappings for a given target and build_dir
 
@@ -433,12 +453,13 @@ def _build_target(target: str, build_dir: pathlib.Path):
     test_files.update(test_extras)
 
     if target in ("agent-benchmarks", "forwarding-stack"):
-        metadata_path = build_dir / "build" / "fboss" / NPU_SDK_METADATA_FILENAME
-        if metadata_path.is_file():
-            if stat.S_IMODE(metadata_path.stat().st_mode) != 0o444:
-                raise RuntimeError(
-                    f"NPU SDK metadata must be read-only: {metadata_path}"
-                )
+        metadata_path = _npu_sdk_metadata_path(
+            build_dir,
+            AGENT_BENCHMARK_BINARIES
+            if target == "agent-benchmarks"
+            else [NPU_HW_AGENT_BINARY],
+        )
+        if metadata_path is not None:
             prod_files[metadata_path] = NPU_SDK_METADATA_ARCHIVE_PATH
             if target == "forwarding-stack":
                 test_files[metadata_path] = NPU_SDK_METADATA_ARCHIVE_PATH

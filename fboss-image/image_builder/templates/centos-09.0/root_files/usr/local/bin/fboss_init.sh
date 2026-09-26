@@ -116,7 +116,7 @@ setup_agent_config() {
     --metadata-path "$NPU_SDK_METADATA" \
     --binary-name "$NPU_HW_AGENT_BINARY" \
     --output-directory "$COOP_DIR"
-  log "Created agent.conf with SDK versions for $NPU_HW_AGENT_BINARY"
+  log "Created agent.conf for $NPU_HW_AGENT_BINARY"
 }
 
 generate_fruid() {

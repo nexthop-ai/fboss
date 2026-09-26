@@ -53,26 +53,19 @@ class NpuSdkMetadataTest(unittest.TestCase):
                         "builtAt": "2026-09-13T02:00:00Z",
                         "npuSaiImpl": "SAI_BRCM_IMPL",
                         "npuSaiSdkSelector": "SAI_VERSION_11_7_0_0_ODP",
-                        "sdkVersion": {
-                            "asicSdk": "6.5.30-4",
-                            "saiSdk": "11.7.0.0_odp",
-                        },
+                        "sdkVersion": {"asicSdk": "6.5.30-4", "saiSdk": "11.7.0.0_odp"},
                     },
                     "sai_test-sai_impl": {
                         "builtAt": "2026-09-13T01:00:00Z",
                         "npuSaiImpl": "SAI_BRCM_IMPL",
                         "npuSaiSdkSelector": "SAI_VERSION_13_3_0_0_ODP",
-                        "sdkVersion": {
-                            "asicSdk": "6.5.32",
-                            "saiSdk": "13.3.0.0_odp",
-                        },
+                        "sdkVersion": {"asicSdk": "6.5.32", "saiSdk": "13.3.0.0_odp"},
                     },
                 },
                 json.loads(path.read_text()),
             )
             self.assertEqual(
-                npu_sdk_utils.READ_ONLY_MODE,
-                stat.S_IMODE(path.stat().st_mode),
+                npu_sdk_utils.READ_ONLY_MODE, stat.S_IMODE(path.stat().st_mode)
             )
 
     def test_remove_preserves_other_binary_and_deletes_empty_manifest(self) -> None:
@@ -90,10 +83,24 @@ class NpuSdkMetadataTest(unittest.TestCase):
                 )
 
             npu_sdk_utils.remove_binary_metadata(path, "fboss_hw_agent-sai_impl")
-            self.assertEqual(
-                {"sai_test-sai_impl"},
-                set(json.loads(path.read_text())),
-            )
+            self.assertEqual({"sai_test-sai_impl"}, set(json.loads(path.read_text())))
 
             npu_sdk_utils.remove_binary_metadata(path, "sai_test-sai_impl")
             self.assertFalse(path.exists())
+
+    def test_materialize_missing_binary_entry(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            directory = pathlib.Path(temp_dir)
+            metadata_path = directory / "npu_sdk_metadata.json"
+            metadata_path.write_text(json.dumps({"sai_test-sai_impl": {}}))
+            config = {"sw": {"sdkVersion": {"asicSdk": "configured"}}}
+            config_path = directory / "agent.conf"
+            config_path.write_text(json.dumps(config))
+            output_directory = directory / "out"
+            output_directory.mkdir()
+
+            npu_sdk_utils.materialize_agent_config(
+                config_path, metadata_path, "fboss_hw_agent-sai_impl", output_directory
+            )
+            output_path = output_directory / config_path.name
+            self.assertEqual(config, json.loads(output_path.read_text()))

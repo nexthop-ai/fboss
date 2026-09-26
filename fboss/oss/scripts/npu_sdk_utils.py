@@ -20,14 +20,18 @@ import json
 import os
 import pathlib
 import stat
+import sys
 import tempfile
 from collections.abc import Mapping, Sequence
 from datetime import datetime, timezone
 
-
 READ_ONLY_MODE = stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH
 NPU_HW_AGENT_BINARY = "fboss_hw_agent-sai_impl"
 NPU_SDK_METADATA_FILENAME = "npu_sdk_metadata.json"
+
+
+class MissingBinaryMetadataError(ValueError):
+    pass
 
 
 def _load_json_object(path: pathlib.Path, description: str) -> dict[str, object]:
@@ -51,9 +55,7 @@ def _read_metadata(path: pathlib.Path) -> dict[str, object]:
 def _write_metadata(path: pathlib.Path, metadata: Mapping[str, object]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     descriptor, temporary_path = tempfile.mkstemp(
-        dir=path.parent,
-        prefix=f".{path.name}.",
-        text=True,
+        dir=path.parent, prefix=f".{path.name}.", text=True
     )
     try:
         with os.fdopen(descriptor, "w") as output:
@@ -69,9 +71,7 @@ def _write_metadata(path: pathlib.Path, metadata: Mapping[str, object]) -> None:
 
 
 def _update_metadata(
-    path: pathlib.Path,
-    binary_name: str,
-    entry: Mapping[str, object] | None,
+    path: pathlib.Path, binary_name: str, entry: Mapping[str, object] | None
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     lock_path = path.with_name(f".{path.name}.lock")
@@ -106,10 +106,7 @@ def record_binary_metadata(
         {
             "npuSaiImpl": npu_sai_impl,
             "npuSaiSdkSelector": npu_sai_sdk_selector,
-            "sdkVersion": {
-                "asicSdk": asic_sdk_version,
-                "saiSdk": sai_sdk_version,
-            },
+            "sdkVersion": {"asicSdk": asic_sdk_version, "saiSdk": sai_sdk_version},
             "builtAt": built_at
             or datetime.now(timezone.utc)
             .isoformat(timespec="seconds")
@@ -129,7 +126,7 @@ def load_binary_sdk_version(
     metadata = _load_json_object(metadata_path, "NPU SDK metadata")
     entry = metadata.get(binary_name)
     if not isinstance(entry, dict):
-        raise ValueError(
+        raise MissingBinaryMetadataError(
             f"NPU SDK metadata has no entry for binary '{binary_name}': {metadata_path}"
         )
 
@@ -162,7 +159,12 @@ def materialize_agent_config(
     if not isinstance(sw_config, dict):
         raise ValueError(f"Agent config has no sw object: {config_path}")
 
-    sw_config["sdkVersion"] = load_binary_sdk_version(metadata_path, binary_name)
+    try:
+        sw_config["sdkVersion"] = load_binary_sdk_version(metadata_path, binary_name)
+    except MissingBinaryMetadataError as error:
+        # Shared build scratches can ship metadata recorded only for other
+        # binaries; keep the configured SDK version instead of failing.
+        print(f"WARNING: {error}; keeping the configured SDK version", file=sys.stderr)
     output_path = output_directory / config_path.name
     with output_path.open("w") as output:
         json.dump(config, output, indent=2)

@@ -81,14 +81,16 @@ class NpuSdkConfigTest(unittest.TestCase):
             output["sw"]["sdkVersion"],
         )
 
-    def test_rejects_missing_binary_metadata(self) -> None:
-        with self.assertRaisesRegex(ValueError, "missing-sai-binary"):
-            materialize_agent_config(
-                self.config_path,
-                self.metadata_path,
-                "missing-sai-binary",
-                self.output_directory,
-            )
+    def test_missing_binary_entry_keeps_configured_version(self) -> None:
+        output_path = materialize_agent_config(
+            self.config_path,
+            self.metadata_path,
+            "missing-sai-binary",
+            self.output_directory,
+        )
+
+        output = json.loads(output_path.read_text())
+        self.assertEqual(self.config["sw"]["sdkVersion"], output["sw"]["sdkVersion"])
 
     def test_rejects_missing_metadata_file(self) -> None:
         self.metadata_path.unlink()
