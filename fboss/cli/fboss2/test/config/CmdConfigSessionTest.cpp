@@ -1056,15 +1056,26 @@ TEST_F(ConfigSessionTestFixture, defaultConstructorWithEnvOverride) {
   // Now getInstance() will use the default constructor with test paths!
   auto& session = ConfigSession::getInstance();
 
-  // Verify session was created successfully
-  EXPECT_TRUE(session.sessionExists());
+  // Construction only creates the session directory; the agent session is
+  // materialized on first access.
   EXPECT_TRUE(fs::exists(sessionDir));
-  EXPECT_TRUE(fs::exists(sessionConfig));
+  EXPECT_FALSE(session.sessionExists());
 
   // Verify the system config path uses the overridden base directory
   EXPECT_EQ(
       session.getSystemConfigPath(),
       (getTestEtcDir() / "coop" / "agent.conf").string());
+
+  // The default constructor discovers the agent's config path by asking the
+  // agent for its "config" option.
+  EXPECT_CALL(getMockAgent(), getOption(::testing::_, ::testing::_))
+      .WillOnce([&](std::string& path, std::unique_ptr<std::string> key) {
+        EXPECT_EQ(*key, "config");
+        path = session.getSystemConfigPath();
+      });
+  session.getAgentConfig();
+  EXPECT_TRUE(session.sessionExists());
+  EXPECT_TRUE(fs::exists(sessionConfig));
 
   // Verify content was copied correctly
   std::string systemContent = readFile(cliConfigPath);
