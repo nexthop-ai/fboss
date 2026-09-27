@@ -62,7 +62,6 @@ namespace facebook::fboss {
 
 namespace { // anonymous namespace
 
-<<<<<<< HEAD
 cli::ConfigSessionMetadata parseMetadata(const std::string& content) {
   const auto json = folly::parseJson(content);
   cli::ConfigSessionMetadata metadata;
@@ -74,101 +73,6 @@ cli::ConfigSessionMetadata parseMetadata(const std::string& content) {
   return metadata;
 }
 
-/*
- * Atomically update a symlink to point to a new target.
- * This creates a temporary symlink and then atomically renames it over the
- * existing symlink, ensuring there's no window where the symlink doesn't exist.
- *
- * @param symlinkPath The path to the symlink to update
- * @param newTarget The new target for the symlink
- * @throws std::runtime_error if the operation fails
- */
-void atomicSymlinkUpdate(
-    const std::string& symlinkPath,
-    const std::string& newTarget) {
-  std::error_code ec;
-  fs::path symlinkFsPath(symlinkPath);
-
-  // Generate a unique temporary path in the same directory as the target
-  // symlink, we'll then atomically rename it to the final symlink name.
-  auto now = std::chrono::system_clock::now().time_since_epoch();
-  auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(now).count();
-  std::string tmpLinkName = fmt::format("fboss2_tmp_{}_{}", getpid(), ns);
-  fs::path tempSymlinkPath = symlinkFsPath.parent_path() / tmpLinkName;
-
-  // Create new symlink with temporary name
-  fs::create_symlink(newTarget, tempSymlinkPath, ec);
-  if (ec) {
-    throw std::runtime_error(
-        fmt::format(
-            "Failed to create temporary symlink {} to {}: {}",
-            tempSymlinkPath.string(),
-            newTarget,
-            ec.message()));
-  }
-
-  // Atomically replace the old symlink with the new one
-  fs::rename(tempSymlinkPath, symlinkPath, ec);
-  if (ec) {
-    // Clean up temp symlink
-    fs::remove(tempSymlinkPath);
-    throw std::runtime_error(
-        fmt::format(
-            "Failed to atomically update symlink {}: {}",
-            symlinkPath,
-            ec.message()));
-  }
-}
-
-||||||| f430fe62b2
-/*
- * Atomically update a symlink to point to a new target.
- * This creates a temporary symlink and then atomically renames it over the
- * existing symlink, ensuring there's no window where the symlink doesn't exist.
- *
- * @param symlinkPath The path to the symlink to update
- * @param newTarget The new target for the symlink
- * @throws std::runtime_error if the operation fails
- */
-void atomicSymlinkUpdate(
-    const std::string& symlinkPath,
-    const std::string& newTarget) {
-  std::error_code ec;
-  fs::path symlinkFsPath(symlinkPath);
-
-  // Generate a unique temporary path in the same directory as the target
-  // symlink, we'll then atomically rename it to the final symlink name.
-  auto now = std::chrono::system_clock::now().time_since_epoch();
-  auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(now).count();
-  std::string tmpLinkName = fmt::format("fboss2_tmp_{}_{}", getpid(), ns);
-  fs::path tempSymlinkPath = symlinkFsPath.parent_path() / tmpLinkName;
-
-  // Create new symlink with temporary name
-  fs::create_symlink(newTarget, tempSymlinkPath, ec);
-  if (ec) {
-    throw std::runtime_error(
-        fmt::format(
-            "Failed to create temporary symlink {} to {}: {}",
-            tempSymlinkPath.string(),
-            newTarget,
-            ec.message()));
-  }
-
-  // Atomically replace the old symlink with the new one
-  fs::rename(tempSymlinkPath, symlinkPath, ec);
-  if (ec) {
-    // Clean up temp symlink
-    fs::remove(tempSymlinkPath);
-    throw std::runtime_error(
-        fmt::format(
-            "Failed to atomically update symlink {}: {}",
-            symlinkPath,
-            ec.message()));
-  }
-}
-
-=======
->>>>>>> 2d934aedf2d14c62cdb037e74ea20268bf538ade
 std::string getUsername() {
   const char* user = std::getenv("USER");
   if (user != nullptr && !std::string(user).empty()) {

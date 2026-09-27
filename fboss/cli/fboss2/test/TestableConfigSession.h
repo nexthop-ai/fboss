@@ -66,17 +66,12 @@ class TestableConfigSession : public ConfigSession {
     mockSystemdFactory_ = std::move(factory);
   }
 
-<<<<<<< HEAD
   // Stubs the agent readiness probe restartService() waits on, so tests with a
   // mock systemd do not poll a real agent over thrift. Defaults to "ready".
   void setAgentReadyProbe(FbossServiceUtil::AgentReadyProbe probe) {
     agentReadyProbe_ = std::move(probe);
   }
 
-  void ensureFbossServiceUtil(const HostInfo& /*hostInfo*/) override {
-||||||| f430fe62b2
-  void ensureFbossServiceUtil(const HostInfo& /*hostInfo*/) override {
-=======
   void setConfigPathResolver(ConfigPathResolver resolver) {
     configPathResolver_ = std::move(resolver);
   }
@@ -84,7 +79,6 @@ class TestableConfigSession : public ConfigSession {
   void ensureFbossServiceUtil(
       const HostInfo& /*hostInfo*/,
       bool /*needsAgentState*/) override {
->>>>>>> 2d934aedf2d14c62cdb037e74ea20268bf538ade
     if (!fbossServiceUtil_) {
       if (mockSystemdFactory_) {
         auto probe = agentReadyProbe_
