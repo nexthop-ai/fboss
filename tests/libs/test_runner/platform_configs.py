@@ -21,12 +21,14 @@ SAI_AGENT_CONFIG_NAME: dict[str, str] = {
     "nhbw800f": "wedge800bact",
     "nhcw800f": "wedge800cact",
     "nh4215f": "m4062nhp",
+    "nh4240f": "m4061nhp",
 }
 
 # Model → config name override for link/QSFP tests (omit when they match).
 LINK_QSFP_TEST_CONFIG_NAME: dict[str, str] = {
     "minipack3": "montblanc",
     "nh4215f": "m4062nhp",
+    "nh4240f": "m4061nhp",
     "nhbw800f": "wedge800bact",
     "nhcw800f": "wedge800cact",
 }
@@ -50,6 +52,7 @@ SAI_KNOWN_BAD_KEY: dict[str, str] = {
     "nh4010f": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
     "nh4215f": "brcm/14.2.0.0_odp/14.2.0.0_odp/tomahawk6",
     "nh4220f": "brcm/14.2.0.0_odp/14.2.0.0_odp/tomahawk6",
+    "nh4240f": "brcm/14.2.0.0_odp/14.2.0.0_odp/tomahawk6",
 }
 
 # --enable-production-features key per model (SaiAgentTestRunner).
@@ -63,6 +66,7 @@ PROD_FEATURES_KEY: dict[str, str] = {
     "nh4010f": "tomahawk5",
     "nh4215f": "tomahawk6",
     "nh4220f": "tomahawk6",
+    "nh4240f": "tomahawk6",
 }
 
 
