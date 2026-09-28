@@ -41,3 +41,25 @@ jobs:
     with:
       branch: ${{ matrix.branch }}
     secrets: inherit
+
+  # Stamps the PRs and Jira tickets that shipped in this nightly. The annotator
+  # lives in nh (nightly-build-annotate.yml) and reads this run's builds from
+  # Nexis; workflow_run cannot cross repos, so it is dispatched from here. Runs
+  # whatever the build outcome: per-branch build status in Nexis decides what
+  # gets stamped, and a failed branch must not silence the passing ones. Only a
+  # scheduled run is a nightly; a manual run of this workflow stamps nothing.
+  annotate:
+    name: Annotate PRs and Jira
+    needs: nightly
+    if: ${{ !cancelled() && github.event_name == 'schedule' }}
+    runs-on: k8s-nano
+    # Annotation is best-effort; a dispatch failure must not red the nightly.
+    continue-on-error: true
+    permissions: {}
+    steps:
+      - name: Dispatch nh nightly-build-annotate
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+        run: |
+          gh workflow run nightly-build-annotate.yml --repo nexthop-ai/nh --ref main \
+            -f run_id="${{ github.run_id }}" -f nightly=fboss -f dry_run=false
