@@ -283,6 +283,16 @@ target_link_libraries(m4062nhp_bsp
   FBThrift::thriftcpp2
 )
 
+add_library(m4340nhp_bsp
+  fboss/lib/bsp/m4340nhp/M4340nhpBspPlatformMapping.cpp
+)
+
+target_link_libraries(m4340nhp_bsp
+  bsp_platform_mapping
+  bsp_platform_mapping_cpp2
+  FBThrift::thriftcpp2
+)
+
 add_library(m4052actm_bsp
 	fboss/lib/bsp/m4052actm/M4052ACTMBspPlatformMapping.cpp
 )
@@ -339,6 +349,7 @@ target_link_libraries(qsfp_bsp_core
   saintpaul_bsp
   m4052actm_bsp
   m4062nhp_bsp
+  m4340nhp_bsp
   device_mdio
   fpga_device
   phy_management_base

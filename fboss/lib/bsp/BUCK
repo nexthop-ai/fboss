@@ -111,6 +111,7 @@ cpp_library(
         "//fboss/lib:gpiod_line",
         "//fboss/lib/bsp/icecube800bc:icecube800bc_bsp",
         "//fboss/lib/bsp/m4062nhp:m4062nhp_bsp",
+        "//fboss/lib/bsp/m4340nhp:m4340nhp_bsp",
         "//fboss/lib/bsp/icetea800bc:icetea800bc_bsp",
         "//fboss/lib/bsp/janga800bic:janga800bic_bsp",
         "//fboss/lib/bsp/ladakh800bcls:ladakh800bcls_bsp",
