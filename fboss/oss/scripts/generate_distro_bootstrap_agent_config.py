@@ -741,7 +741,7 @@ def generate_config(
         "staticIp2MplsRoutes": [],
         "portQueueConfigs": {},
         "switchSettings": {
-            "l2LearningMode": 1,
+            "l2LearningMode": 0,
             "qcmEnable": False,
             "ptpTcEnable": False,
             "l2AgeTimerSeconds": 300,
