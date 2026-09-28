@@ -316,79 +316,79 @@
           "numOutgoingChannels": 4
         },
         {
-          "busName": "SMB_MUX_0@3",
+          "busName": "SMB_MUX_1@3",
           "address": "0x48",
           "kernelDeviceName": "tmp464",
           "pmUnitScopedName": "SWITCH_CARD_TEMP_SENSOR"
         },
         {
-          "busName": "SMB_MUX_0@3",
+          "busName": "SMB_MUX_1@3",
           "address": "0x49",
           "kernelDeviceName": "tmp468",
           "pmUnitScopedName": "SWITCH_CARD_TEMP_SENSOR_1"
         },
         {
-          "busName": "SMB_MUX_0@3",
+          "busName": "SMB_MUX_1@3",
           "address": "0x4a",
           "kernelDeviceName": "tmp468",
           "pmUnitScopedName": "SWITCH_CARD_TEMP_SENSOR_2"
         },
         {
-          "busName": "SMB_MUX_0@3",
+          "busName": "SMB_MUX_1@3",
           "address": "0x4b",
           "kernelDeviceName": "tmp468",
           "pmUnitScopedName": "SWITCH_CARD_TEMP_SENSOR_3"
         },
         {
-          "busName": "SMB_MUX_1@0",
+          "busName": "SMB_MUX_0@0",
           "address": "0x5a",
           "kernelDeviceName": "pmbus",
           "pmUnitScopedName": "PSU1"
         },
         {
-          "busName": "SMB_MUX_1@0",
+          "busName": "SMB_MUX_0@0",
           "address": "0x52",
           "kernelDeviceName": "24c02",
           "pmUnitScopedName": "PSU1_EEPROM"
         },
         {
-          "busName": "SMB_MUX_1@1",
+          "busName": "SMB_MUX_0@1",
           "address": "0x5a",
           "kernelDeviceName": "pmbus",
           "pmUnitScopedName": "PSU2"
         },
         {
-          "busName": "SMB_MUX_1@1",
+          "busName": "SMB_MUX_0@1",
           "address": "0x52",
           "kernelDeviceName": "24c02",
           "pmUnitScopedName": "PSU2_EEPROM"
         },
         {
-          "busName": "SMB_MUX_1@2",
+          "busName": "SMB_MUX_0@2",
           "address": "0x5a",
           "kernelDeviceName": "pmbus",
           "pmUnitScopedName": "PSU3"
         },
         {
-          "busName": "SMB_MUX_1@2",
+          "busName": "SMB_MUX_0@2",
           "address": "0x52",
           "kernelDeviceName": "24c02",
           "pmUnitScopedName": "PSU3_EEPROM"
         },
         {
-          "busName": "SMB_MUX_1@3",
+          "busName": "SMB_MUX_0@3",
           "address": "0x5a",
           "kernelDeviceName": "pmbus",
           "pmUnitScopedName": "PSU4"
         },
         {
-          "busName": "SMB_MUX_1@3",
+          "busName": "SMB_MUX_0@3",
           "address": "0x52",
           "kernelDeviceName": "24c02",
           "pmUnitScopedName": "PSU4_EEPROM"
         },
         {
-          "busName": "SMB_MUX_3@0",
+          "busName": "SMB_MUX_2@0",
           "address": "0x4c",
           "kernelDeviceName": "lm90",
           "pmUnitScopedName": "MGMT_TEMP_SENSOR"
@@ -575,9 +575,9 @@
     "/run/devmap/xcvrs/xcvr_ctrl_63": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_63]",
     "/run/devmap/xcvrs/xcvr_io_64": "/SMB_SLOT@0/[SMB_OSFP_I2C_64]",
     "/run/devmap/xcvrs/xcvr_ctrl_64": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_64]",
-    "/run/devmap/xcvrs/xcvr_io_65": "/SMB_SLOT@0/[SMB_MUX_3@1]",
+    "/run/devmap/xcvrs/xcvr_io_65": "/SMB_SLOT@0/[SMB_MUX_2@1]",
     "/run/devmap/xcvrs/xcvr_ctrl_65": "/SMB_SLOT@0/[QSFP_XCVR_CTRL_PORT_65]",
-    "/run/devmap/xcvrs/xcvr_io_66": "/SMB_SLOT@0/[SMB_MUX_3@2]",
+    "/run/devmap/xcvrs/xcvr_io_66": "/SMB_SLOT@0/[SMB_MUX_2@2]",
     "/run/devmap/xcvrs/xcvr_ctrl_66": "/SMB_SLOT@0/[QSFP_XCVR_CTRL_PORT_66]"
   },
   "chassisEepromDevicePath": "/SMB_SLOT@0/[IDPROM]",
