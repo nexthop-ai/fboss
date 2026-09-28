@@ -76,58 +76,30 @@ class CmdDeleteVlanTestFixture : public CmdConfigTestBase {
   cfg::SwitchConfig& swConfig() {
     return *ConfigSession::getInstance().getAgentConfig().sw();
   }
-
-  // Runs 'delete vlan <id>' through the handler.
-  std::string deleteVlan(const std::string& id) {
-    CmdDeleteVlan cmd;
-    HostInfo hostInfo("testhost");
-    VlanId arg({id});
-    return cmd.queryClient(hostInfo, arg);
-  }
 };
 
 // ============================================================================
-// delete vlan — refuse matrix + not-found. The referrer checks live in the
-// command (VlanManager::deleteVlan is unconditional), so drive queryClient.
+// VlanManager::deleteVlan — refuse matrix + not-found
 // ============================================================================
 
 TEST_F(CmdDeleteVlanTestFixture, refuseNotFound) {
   setupTestableConfigSession(cmdPrefix_, "999");
-  EXPECT_THROW(deleteVlan("999"), FbossError);
-  // Nothing was touched.
-  EXPECT_EQ(swConfig().vlans()->size(), 5);
+  EXPECT_THROW(VlanManager::deleteVlan(swConfig(), VlanID(999)), FbossError);
 }
 
 TEST_F(CmdDeleteVlanTestFixture, refuseDefaultVlan) {
   setupTestableConfigSession(cmdPrefix_, "1");
-  EXPECT_THROW(deleteVlan("1"), FbossError);
-  EXPECT_NE(VlanManager::findVlan(swConfig(), VlanID(1)), nullptr);
+  EXPECT_THROW(VlanManager::deleteVlan(swConfig(), VlanID(1)), FbossError);
 }
 
 TEST_F(CmdDeleteVlanTestFixture, refuseIngressVlanPort) {
   setupTestableConfigSession(cmdPrefix_, "200");
   try {
-    deleteVlan("200");
+    VlanManager::deleteVlan(swConfig(), VlanID(200));
     FAIL() << "expected FbossError";
   } catch (const FbossError& e) {
     EXPECT_THAT(std::string(e.what()), HasSubstr("eth1/1/1"));
   }
-  EXPECT_NE(VlanManager::findVlan(swConfig(), VlanID(200)), nullptr);
-}
-
-// The primitive itself has no referrer checks: it removes whatever it is
-// pointed at (the cascade in 'delete interface' relies on this) and is a
-// no-op on a VLAN that does not exist.
-TEST_F(CmdDeleteVlanTestFixture, vlanManagerDeleteVlanIsUnconditional) {
-  setupTestableConfigSession(cmdPrefix_, "200");
-  EXPECT_NO_THROW(VlanManager::deleteVlan(swConfig(), VlanID(999)));
-  EXPECT_EQ(swConfig().vlans()->size(), 5);
-
-  VlanManager::deleteVlan(swConfig(), VlanID(200));
-  EXPECT_EQ(VlanManager::findVlan(swConfig(), VlanID(200)), nullptr);
-  // The port's ingressVlan is left dangling — refusing that is the command's
-  // job, which is exactly why 'delete vlan' checks before calling this.
-  EXPECT_EQ(*swConfig().ports()->at(0).ingressVlan(), 200);
 }
 
 // An interface's vlanID must reference an existing VLAN, so a routed SVI
