@@ -59,6 +59,20 @@ py_test(
     main = "fboss/oss/scripts/check_test_filter_overlap.py",
 )
 
+py_test(
+    name = "cisco_asic_config_test",
+    srcs = ["fboss/oss/scripts/check_cisco_asic_config.py"],
+    args = [
+        "$(location fboss/oss/hw_test_configs/wedge800cact.agent.materialized_JSON)",
+        "$(location fboss/oss/hw_bench_configs/wedge800cact.agent.materialized_JSON)",
+    ],
+    data = [
+        "fboss/oss/hw_test_configs/wedge800cact.agent.materialized_JSON",
+        "fboss/oss/hw_bench_configs/wedge800cact.agent.materialized_JSON",
+    ],
+    main = "fboss/oss/scripts/check_cisco_asic_config.py",
+)
+
 filegroup(
     name = "run_scripts_py",
     visibility = ["//fboss/tests:__pkg__"],
