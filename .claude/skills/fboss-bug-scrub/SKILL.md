@@ -35,7 +35,9 @@ python3 fboss/.claude/skills/fboss-bug-scrub/scripts/build_csv.py "$OUT"   # -> 
 `fetch.sh` needs `acli` authenticated (`acli jira auth status`) and reachability
 to `qpn.sw.internal.nexthop.ai`. It writes `j1.json j2.json j3.json`
 (epic children), `j4all.json` (all open `stars-ai-triage-auto`), `top{7,30,90}.json`
-(QPN heavy hitters), `cat4.keys`, and `meta/<KEY>.json` (created/components/parent).
+(QPN heavy hitters), `cat4.keys`, `platforms.jsonl` (per-model hit breakdown),
+`platform_pairs/` (one file per ticket, model+testbed pairs), and `meta/<KEY>.json`
+(created/components/parent).
 
 ## Category 4 is defined by QPN, not by the label
 
@@ -51,6 +53,86 @@ status rule; mention them to the user as a watch list rather than dropping silen
 
 Agent/led_service crashes that are not CLI code still count: if STARS filed the
 failure under `package=cli` it hurts the CLI pass rate, which is the metric.
+
+## Per-platform hit breakdown
+
+`hit_count` alone hides whether a bug is single-platform or fleet-wide, which is
+the first thing the team asks. QPN exposes it per ticket:
+
+```bash
+curl -sf "https://qpn.sw.internal.nexthop.ai/api/v1/stars/top-bugs/timeline?ticket_id=NOS-16533&group_by=model&os=fboss&package=cli&days=90&source=t_recs"
+# -> {"groups":[...],"points":[{"time":...,"counts":{"NH-CW800-F":12,...}}, ...]}
+```
+
+Sum `points[].counts` per group for the per-platform hit count; the total
+reconciles exactly with `top-bugs`' `hit_count` for the same window. (`model=<name>`
+also filters `/top-bugs`, one request per platform, but the timeline returns the
+whole breakdown in one request per ticket — `fetch.sh` uses it for the 90-day
+window and writes `platforms.jsonl` as `{key, days, totals:{model: n}}`.)
+`groups` includes an `other` bucket for models outside the top N — keep it, but
+don't count it as a platform.
+
+`build_csv.py` renders that into a single **Platforms 90d** column, keyed by the
+testbed codename prefix rather than the raw model name: `"fris 668, wdg 514,
+crow 99, other 21"`. Wedge BACT/CACT both map to `wdg` and are merged; `other` is
+the bucket for models outside the top N. Only tickets that appear in QPN get a
+value; cat 1/2 rows (no QPN hits) stay blank. One column, not two — 7d/90d side
+by side made the sheet too wide, and prefixes beat full names for width too.
+
+The model→prefix map is derived on each run, not hardcoded: `/top-bugs/hits` pairs
+every event's `model` with its `testbed`, so `fetch.sh` writes those pairs under
+`platform_pairs/` (one file per ticket — concurrent appends of >4KB lines are not
+atomic) and `build_csv.py` takes the most common testbed prefix per model (falling
+back to the full name for a model it never saw). Current derived map:
+Minipack3→fboss, NH-4010-F→gold, NH-4215-F→stlr, NH-4220-F→blkt, NH-BW800-F→crow,
+NH-CW800-F→fris, Wedge800BACT/CACT→wdg.
+
+## Fingerprints: verify the rules, don't trust the hit count
+
+Every STARS ticket carries a fingerprint id. It lives in the STARS comment titles
+(ADF `expand` nodes → `attrs.title`, "STARS Backfill Summary — N matches,
+fingerprint F"), so a `.text`-only flatten misses it — grep the raw ticket JSON
+for `fingerprint (\d+)`. Then fetch the actual rules:
+
+```bash
+export no_proxy=127.0.0.1,localhost,.internal.nexthop.ai,.nexthop.ai
+curl -sf https://stars.sw.internal.nexthop.ai/v1/fingerprint/<ID>
+```
+
+The response gives `regex_rules` (the real matchers), `created_by`, `created_at`,
+`state`, `hit_count`, `last_hit_time` and `recent_events`. Judge a fingerprint by
+`regex_rules`, **not** by its hit count:
+
+- **Good** — a `classname` plus a specific `log` symbol or a stack-trace regex
+  (mangled `_ZN…` symbols). E.g. fp3700 = `FunctionStateUpdate::onError …
+  {0,300} … SwSwitch::handlePendingUpdates`; fp4377 = classname
+  `^TunnelIpInIpTest$` + `SaiTunnelManager17addP2MPTunnelTerm` +
+  `sai_tunnel_term_table_entry`.
+- **Bad / weak** — `log`-only with no `classname` (fp3988 = `SaiStore.{0,10}
+  checkUnexpectedUnclaimedWarmbootHandles`), a literal `xml`/`reason` harness
+  string with no test/class scope, or a hardcoded value (fp3509 = `Port
+  'eth1/1/5' not found in getAllPortInfo`). The generic harness strings are the
+  tell: `Agent did not become ready within 180 seconds` (fp3538), `Agent crashed
+  during test: … dumped core (status=6/ABRT)` (fp3930).
+
+Two traps that will mislead you:
+
+- The `reason:` / `job:` line in a STARS comment is the **test-harness** message,
+  not the fingerprint rule. A stack-trace fingerprint still shows `reason: …
+  Agent did not become ready within 180 seconds`.
+- A large backfill match count is **not** evidence of a bad fingerprint — a
+  specific stack-trace regex legitimately matches thousands of occurrences of one
+  crash. Judge by rule scope; never by the count.
+
+The ticket description appendix also carries `Model metadata: <llm>` (which model
+triaged it — gemini-3.8-flash, claude-opus-5, claude-sonnet-5, …) and
+`Fingerprinting / counting notes:` (the scope the model chose, e.g. "Error-only
+umbrella scope (no classname)"). `created_by` is only the actor (`mabel` /
+`stars-triage-bot`), not the LLM. The Sept 16 2026 change nh#31627 discouraged
+symptom trackers, so fingerprints created before then are more often weak.
+
+Flag weak ones in the sheet's notes column: fp id, actor/LLM, the raw
+`regex_rules`, the defect, and "re-fingerprint".
 
 ## Ranking (what `order.json` should encode)
 
@@ -86,10 +168,17 @@ gws sheets spreadsheets values update \
 ```
 
 `build_csv.py` also emits `body.json` (CSV as `{"values": [...]}` with the
-Jira ID turned into a `HYPERLINK` formula). Freeze/bold row 1, wrap columns
-Title/Notes and add a basic filter with one `spreadsheets batchUpdate`
+Jira ID turned into a `HYPERLINK` formula). Freeze/bold row 1, wrap the
+Title/Notes and Platforms columns, and add a basic filter with one `spreadsheets batchUpdate`
 (sheetId from `spreadsheets get`). Check the sheet is empty first with a
 `values get`; never overwrite a sheet the team has edited without asking.
+
+`build_csv.py` writes the whole ranked grid (18 columns, A–R). The team's `triage` tab keeps a
+hand-maintained per-row column to the right; put fingerprint verdicts there
+(header "Triage / fingerprint notes") and re-apply wrap/width to that column.
+Read the tab's column A first to map key → row, then write the whole column in one
+`values update`; an off-by-one silently puts every note on the wrong row, so read
+it back and check each note against its ticket.
 
 ## Gotchas
 
@@ -109,3 +198,9 @@ Title/Notes and add a basic filter with one `spreadsheets batchUpdate`
 - STARS ticket titles name the test; the crash is in the summary text. Two
   tickets on the same test (e.g. NOS-16533 / NOS-16529) are often first and
   second crash of one incident.
+- Fingerprint ids and backfill counts live in the STARS comment titles
+  (`attrs.title` of ADF `expand` nodes), not in `.text`; `jq '[.. | .text?]'`
+  finds neither — grep the raw JSON for `fingerprint (\d+)`. Per-test crashes are
+  filed under the test class, so a `TunnelIpInIpTest` ticket can carry either a
+  stack-trace fingerprint or a bare "Agent did not become ready within 180
+  seconds" one — check `regex_rules` to tell them apart.
