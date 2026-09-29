@@ -117,6 +117,15 @@ jobs:
         with:
           bazelisk-cache: true
 
+      # Monobuild builds with --action_env=NH_CLOUD_PROVIDER=<provider>. The
+      # variable is part of every action's remote cache key, so this build has
+      # to pass the same value to reuse what Monobuild uploads.
+      - name: Detect cloud provider
+        id: cloud
+        if: steps.nh-fboss-pin.outcome == 'success'
+        continue-on-error: true
+        uses: nexthop-ai/nh/.github/actions/detect-cloud-provider@main
+
       # Normally a remote-cache hit: Monobuild builds this target on every
       # fboss PR. The timeout caps a cold miss, which compiles bgp++ outright.
       - name: Build the bgpd RPM (//BGP:distro_bgpd.rpm)
@@ -124,8 +133,16 @@ jobs:
         if: steps.nh-fboss-pin.outcome == 'success'
         continue-on-error: true
         timeout-minutes: 30
+        env:
+          NH_CLOUD_PROVIDER: ${{ steps.cloud.outputs.provider }}
         run: |
-          (cd nh && bazel build //BGP:distro_bgpd.rpm)
+          action_env=()
+          if [ -n "${NH_CLOUD_PROVIDER}" ]; then
+            action_env=("--action_env=NH_CLOUD_PROVIDER=${NH_CLOUD_PROVIDER}")
+          else
+            echo "::warning::cloud provider unknown; the bgpd RPM build will miss Monobuild's remote cache entries"
+          fi
+          (cd nh && bazel build "${action_env[@]}" //BGP:distro_bgpd.rpm)
           mkdir -p .build_dir/downloads
           cp nh/bazel-bin/BGP/distro_bgpd.rpm .build_dir/downloads/
 
