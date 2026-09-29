@@ -157,6 +157,7 @@ heavy_genrule(
         "platform_helpers_platform_name_lib_test",
         "platform_manager_config_validator_test",
         "platform_manager_data_store_test",
+        "platform_manager_exploration_errors_test",
         "platform_manager_i2c_explorer_test",
         "platform_manager_platform_explorer_test",
         "platform_manager_presence_checker_test",
@@ -202,6 +203,7 @@ fboss_unit_test(name = "platform_data_corral_sw_test", tags = ["not-for-ci"])
 fboss_unit_test(name = "platform_helpers_platform_name_lib_test", tags = ["not-for-ci"])
 fboss_unit_test(name = "platform_manager_config_validator_test", tags = ["not-for-ci"])
 fboss_unit_test(name = "platform_manager_data_store_test", tags = ["not-for-ci"])
+fboss_unit_test(name = "platform_manager_exploration_errors_test", tags = ["not-for-ci"])
 fboss_unit_test(name = "platform_manager_i2c_explorer_test", tags = ["not-for-ci"])
 fboss_unit_test(name = "platform_manager_platform_explorer_test", tags = ["not-for-ci"])
 fboss_unit_test(name = "platform_manager_presence_checker_test", tags = ["not-for-ci"])
