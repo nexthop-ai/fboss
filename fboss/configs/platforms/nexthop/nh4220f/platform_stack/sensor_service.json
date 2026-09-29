@@ -759,52 +759,6 @@
           "compute": "@/1000.0"
         },
         {
-          "name": "IBV_DCDC0_VIN",
-          "sysfsPath": "/run/devmap/sensors/IBV_DCDC0/in1_input",
-          "type": 1,
-          "thresholds": {
-            "minAlarmVal": 37.5,
-            "lowerCriticalVal": 33.5
-          },
-          "compute": "@/1000.0"
-        },
-        {
-          "name": "IBV_DCDC0_VOUT",
-          "sysfsPath": "/run/devmap/sensors/IBV_DCDC0/in2_input",
-          "type": 1,
-          "thresholds": {
-            "maxAlarmVal": 13.5,
-            "upperCriticalVal": 14.5
-          },
-          "compute": "@/1000.0"
-        },
-        {
-          "name": "IBV_DCDC0_IOUT",
-          "sysfsPath": "/run/devmap/sensors/IBV_DCDC0/curr1_input",
-          "type": 2,
-          "thresholds": {
-            "maxAlarmVal": 190,
-            "upperCriticalVal": 240
-          },
-          "compute": "@/1000.0"
-        },
-        {
-          "name": "IBV_DCDC0_POUT",
-          "sysfsPath": "/run/devmap/sensors/IBV_DCDC0/power1_input",
-          "type": 0,
-          "compute": "@/1000000"
-        },
-        {
-          "name": "IBV_DCDC0_TEMP",
-          "sysfsPath": "/run/devmap/sensors/IBV_DCDC0/temp1_input",
-          "type": 3,
-          "thresholds": {
-            "maxAlarmVal": 110,
-            "upperCriticalVal": 130
-          },
-          "compute": "@/1000.0"
-        },
-        {
           "name": "IBV_DCDC1_VIN",
           "sysfsPath": "/run/devmap/sensors/IBV_DCDC1/in1_input",
           "type": 1,

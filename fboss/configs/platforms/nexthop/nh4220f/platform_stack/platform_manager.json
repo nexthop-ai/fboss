@@ -391,12 +391,6 @@
         },
         {
           "busName": "SMB_MUX_0@2",
-          "address": "0x60",
-          "kernelDeviceName": "pmbus",
-          "pmUnitScopedName": "IBV_DCDC0"
-        },
-        {
-          "busName": "SMB_MUX_0@2",
           "address": "0x61",
           "kernelDeviceName": "pmbus",
           "pmUnitScopedName": "IBV_DCDC1"
@@ -452,7 +446,6 @@
     "/run/devmap/sensors/DCDC9": "/SMB_SLOT@0/[DCDC9]",
     "/run/devmap/sensors/DCDC10": "/SMB_SLOT@0/[DCDC10]",
     "/run/devmap/sensors/DCDC0": "/SMB_SLOT@0/[DCDC0]",
-    "/run/devmap/sensors/IBV_DCDC0": "/SMB_SLOT@0/[IBV_DCDC0]",
     "/run/devmap/sensors/IBV_DCDC1": "/SMB_SLOT@0/[IBV_DCDC1]",
     "/run/devmap/sensors/IBV_DCDC2": "/SMB_SLOT@0/[IBV_DCDC2]",
     "/run/devmap/sensors/DIMM1_TEMP": "/[DIMM1_TEMP]",
