@@ -1,9 +1,10 @@
 load("@rules_python//python:defs.bzl", "py_test")
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
 load("@rules_shell//shell:sh_library.bzl", "sh_library")
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//fboss:bootstrap_agent_configs.bzl", "register_bootstrap_agent_config_tests")
 load("//fboss:descriptor_asic_configs.bzl", "register_descriptor_asic_config_tests")
-load("//fboss:fboss_build_types.bzl", "FREE_UP_DISK", "LOAD_FBOSS_BUILDER_CMD", "distro_build", "fboss_unit_test")
+load("//fboss:fboss_build_types.bzl", "FREE_UP_DISK", "LOAD_FBOSS_BUILDER_CMD", "SELECT_REGION_CMD", "distro_build", "fboss_unit_test")
 load("//bazel_lib:heavy_genrule.bzl", "heavy_genrule")
 load("//bazel_lib:upload_artifact.bzl", "upload_build_artifact")
 
@@ -112,7 +113,7 @@ genrule(
     ] + glob(["build/**"],
         exclude=["build/**/*.pyc"]),
     outs = ["fboss_builder.tar"],
-    cmd = """
+    cmd = SELECT_REGION_CMD + """
         $(location //fboss/fboss-image/distro_cli:scripts/build_and_tag_docker.sh)
         docker save -o fboss_builder.tar fboss_builder:latest
         mv fboss_builder.tar $(RULEDIR)
@@ -124,6 +125,35 @@ sh_library(
     name = "run_in_builder",
     visibility = ["//visibility:public"],
     srcs = ["fboss/oss/scripts/run_in_builder.sh"],
+    # Written by set-region.sh; absent until a region is selected.
+    data = glob(
+        [
+            "fboss/oss/scripts/region.env",
+            "fboss/oss/scripts/region.repo",
+        ],
+        allow_empty = True,
+    ),
+)
+
+# The per-region config files, plus the two links when a region is already
+# selected (absent otherwise). Input of the sandboxed image compositions.
+filegroup(
+    name = "region_config",
+    visibility = ["//visibility:public"],
+    srcs = glob(["fboss/oss/scripts/regions/*"]) + glob(
+        [
+            "fboss/oss/scripts/region.env",
+            "fboss/oss/scripts/region.repo",
+        ],
+        allow_empty = True,
+    ),
+)
+
+# bazel run //fboss:set_region -- <region>
+sh_binary(
+    name = "set_region",
+    srcs = ["fboss/oss/scripts/set-region.sh"],
+    data = glob(["fboss/oss/scripts/regions/*"]),
 )
 
 heavy_genrule(

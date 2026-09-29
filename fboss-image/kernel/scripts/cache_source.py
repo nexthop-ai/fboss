@@ -15,12 +15,11 @@ tarball is fetched by ``spectool``/``rpmbuild`` *inside the build container*,
 where the getdeps package is not mounted -- so we cannot import it and instead
 re-use the same, deliberately tiny, convention here:
 
-  * same bucket + endpoint (``vol-shared/fboss/static_deps``);
+  * same mirror, from the same ``NH_STATIC_DEPS_*`` environment variables
+    (empty disables it);
   * same object key (the upstream URL with non-alnum chars mapped to ``_``), so
     the kernel tarball shares one mirror namespace with everything getdeps caches;
   * read over HTTP, best-effort write-back via ``aws s3 cp --no-sign-request``.
-
-Keep the constants below in sync with ``fetcher.py`` if the mirror ever moves.
 
 Usage:
     cache_source.py fetch --url <upstream_url> --dest SOURCES/linux-6.11.1.tar.xz
@@ -38,10 +37,10 @@ import sys
 import urllib.error
 import urllib.request
 
-# Mirror of the constants in build/fbcode_builder/getdeps/fetcher.py.
-_STATIC_DEPS_HTTP = "http://bucket.internal.nexthop.ai:7480/vol-shared/fboss/static_deps"
-_STATIC_DEPS_S3 = "s3://vol-shared/fboss/static_deps"
-_STATIC_DEPS_ENDPOINT = "http://bucket.internal.nexthop.ai:7480"
+# The same variables fetcher.py reads, set by region.env; empty disables the mirror.
+_STATIC_DEPS_HTTP = os.environ.get("NH_STATIC_DEPS_HTTP", "")
+_STATIC_DEPS_S3 = os.environ.get("NH_STATIC_DEPS_S3", "")
+_STATIC_DEPS_ENDPOINT = os.environ.get("NH_STATIC_DEPS_ENDPOINT", "")
 
 
 def _object_name(url: str) -> str:
@@ -60,6 +59,9 @@ def fetch(url: str, dest: str) -> int:
     A 404 (not cached), a network error, or the mirror being unreachable all
     just mean "fetch upstream"; we never retry the mirror.
     """
+    if not _STATIC_DEPS_HTTP:
+        print("[cache_source] no mirror configured for this region; fetching upstream")
+        return 1
     mirror = "%s/%s" % (_STATIC_DEPS_HTTP, _object_name(url))
     tmp = dest + ".tmp"
     try:
@@ -86,6 +88,9 @@ def prime(url: str, src: str) -> int:
     """
     if not os.path.isfile(src):
         print("[cache_source] nothing to prime: %s missing" % src)
+        return 0
+    if not _STATIC_DEPS_S3 or not _STATIC_DEPS_ENDPOINT:
+        print("[cache_source] no mirror configured for this region; skipping upload")
         return 0
     if shutil.which("aws") is None:
         print("[cache_source] aws CLI not present; skipping mirror upload")

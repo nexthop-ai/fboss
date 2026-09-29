@@ -9,4 +9,5 @@ if [ "$1" = "bash" ]; then
 fi
 
 docker run $interactive --rm --volume $PWD:/var/FBOSS/fboss --volume $HOME/.config/gh:/root/.config/gh \
-  --env BASH_ENV=/root/.bashrc fboss_builder /bin/bash -c "$@"
+  --env BASH_ENV=/root/.bashrc --env-file "$(dirname "$0")/region.env" \
+  --volume "$(dirname "$0")/region.repo:/etc/yum.repos.d/local_mirror.repo" fboss_builder /bin/bash -c "$@"

@@ -1,3 +1,5 @@
+load("//fboss:fboss_build_types.bzl", "SELECT_REGION_CMD")
+
 exports_files([
     "build.sh",
     "Dockerfile",
@@ -23,7 +25,7 @@ genrule(
     srcs = [":distro_infra_files"],
     outs = ["distro_infra_image.tar"],
     tags = ["no-sandbox"],
-    cmd = """
+    cmd = SELECT_REGION_CMD + """
         set -euo pipefail
 
         IMAGE_NAME="fboss_distro_infra"

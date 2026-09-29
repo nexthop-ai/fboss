@@ -25,6 +25,8 @@ jobs:
         run: sudo rm -rf ${{ github.workspace }}/*
       - name: Check out repository code
         uses: actions/checkout@v7
+      - name: Select build region
+        uses: ./.github/actions/select-region
       - name: Run Docker-based build for FBOSS
         run: >
           sudo

@@ -48,6 +48,16 @@ KiwiTools)
   ;;
 esac
 
+# Point the baseurl at this region's mirror (NH_RPM_MIRROR, from
+# fboss/oss/scripts/region.env), or drop it when there is none so dnf uses the
+# metalink only. Kiwi writes "baseurl = url" (ConfigParser); accept either spacing.
+if [ -n "${NH_RPM_MIRROR:-}" ]; then
+  # & would expand to the whole match in sed; escape it.
+  sed -i -E "s|^(baseurl[[:space:]]*=[[:space:]]*)https?://[^/]+|\1${NH_RPM_MIRROR//&/\\&}|" "$repo_file"
+else
+  sed -i -E '/^baseurl[[:space:]]*=/d' "$repo_file"
+fi
+
 # Append the upstream fallback and the same tuning knobs local_mirror.repo uses.
 # These lines land under the section header Kiwi already wrote.
 cat >>"$repo_file" <<EOF

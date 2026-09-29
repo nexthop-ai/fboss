@@ -5,7 +5,7 @@
 FROM quay.io/centos/centos:stream9
 
 # Nexthop-only: prefer Nexthop's CentOS/EPEL mirror during construction
-COPY fboss/oss/docker/local_mirror.repo* /etc/yum.repos.d/
+COPY fboss/oss/scripts/region.repo /etc/yum.repos.d/local_mirror.repo
 
 # Install all runtime dependencies in a single layer
 # - epel-release: provides EPEL repository for jemalloc

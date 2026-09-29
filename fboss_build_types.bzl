@@ -1,13 +1,18 @@
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//bazel_lib:heavy_genrule.bzl", "heavy_genrule")
 
+# Shell snippet that selects the build region when the CI passes one with
+# --action_env=NH_CLOUD_PROVIDER=<region>. Without it the links written by an
+# earlier selection stay in place; there is no default. No `$` here, so it
+# works in genrule and heavy_genrule alike.
+SELECT_REGION_CMD = """
+        fboss/fboss/oss/scripts/set-region.sh --from-env
+"""
+
 # Shell snippet that loads the fboss_builder docker image if it is not
-# already present. Prepend this to the `cmd` of any genrule / heavy_genrule
-# that invokes the fboss builder, and list "//fboss:fboss_builder_docker"
-# in that rule's srcs so $(location ...) resolves.
-# flock serializes concurrent genrules loading the same image like
-# image compositions. /var/tmp is outside the sandbox.
-LOAD_FBOSS_BUILDER_CMD = """
+# already present. flock serializes concurrent genrules loading the same
+# image, like image compositions. /var/tmp is outside the sandbox.
+_LOAD_IMAGE_CMD = """
         if ! docker images | grep -q fboss_builder; then
             (
                 flock 9
@@ -17,6 +22,14 @@ LOAD_FBOSS_BUILDER_CMD = """
             ) 9>/var/tmp/.fboss_builder_load.lock
         fi
 """
+
+# Region selection + image load, for the no-sandbox builder genrules. Prepend
+# to the `cmd` of any heavy_genrule that invokes the fboss builder, and list
+# "//fboss:fboss_builder_docker" in that rule's srcs so $(location ...)
+# resolves. Sandboxed compositions use _LOAD_IMAGE_CMD instead: set-region.sh
+# is not among their inputs and writes to the source tree, which a sandbox
+# mounts read-only, so distro_build makes their region links in the sandbox .
+LOAD_FBOSS_BUILDER_CMD = SELECT_REGION_CMD + _LOAD_IMAGE_CMD
 
 def delete_build_products_in_ci(paths):
     """Snippet that deletes `paths` from the build scratch during a CI build.
@@ -183,7 +196,9 @@ def distro_build(
     # A composition runs sandboxed so it can run concurrently. FBOSS_ROOT stops
     # the CLI resolving __file__ back to the real checkout, escaping the sandbox.
     # tar makes the sandbox files real instead of symlinks, which docker can't
-    # use.
+    # use. The region links are build state, not inputs, so the sandbox starts
+    # without them: recreate them here from NH_CLOUD_PROVIDER (//fboss:region_config
+    # provides the regions/ files, and the links too when one was selected).
     prepare = ""
     if is_image_composition:
         prepare = """
@@ -192,6 +207,18 @@ def distro_build(
         tar -xf "{tarball}" -C {src}
         rm -f "{tarball}"
         mkdir -p {scratch}
+
+        if [ -n "${{NH_CLOUD_PROVIDER:-}}" ]; then
+            if [ ! -f "fboss/fboss/oss/scripts/regions/${{NH_CLOUD_PROVIDER}}.env" ]; then
+                echo "distro_build: unknown region '${{NH_CLOUD_PROVIDER}}'" >&2
+                exit 1
+            fi
+            ln -sfn "regions/${{NH_CLOUD_PROVIDER}}.env" fboss/fboss/oss/scripts/region.env
+            ln -sfn "regions/local_mirror.${{NH_CLOUD_PROVIDER}}.repo" fboss/fboss/oss/scripts/region.repo
+        elif [ ! -e fboss/fboss/oss/scripts/region.env ]; then
+            echo "ERROR: no build region selected; pass --action_env=NH_CLOUD_PROVIDER=<region>" >&2
+            exit 1
+        fi
         """.format(
             src = _IMAGE_BUILDER,
             tarball = "%s/image_builder.tar" % stage_dir,
@@ -245,7 +272,7 @@ def distro_build(
         else:
             copies.append("$(execpath //bazel_lib:ln_or_cp) %s $(location %s)" % (src, out))
 
-    cmd = LOAD_FBOSS_BUILDER_CMD + FREE_UP_DISK_IN_CI_CMD + """
+    cmd = (_LOAD_IMAGE_CMD if is_image_composition else LOAD_FBOSS_BUILDER_CMD) + FREE_UP_DISK_IN_CI_CMD + """
         mkdir -p "{stage_dir}"
         {prepare}
         {staging}
@@ -280,7 +307,7 @@ def distro_build(
         name = name,
         stamp = True,
         needs = needs,
-        srcs = _TOOLS + ((["//fboss:image_builder"] + _BUILDER_IMAGE_SOURCES) if is_image_composition else []) + deps + srcs,
+        srcs = _TOOLS + ((["//fboss:image_builder", "//fboss:region_config"] + _BUILDER_IMAGE_SOURCES) if is_image_composition else []) + deps + srcs,
         outs = outs_map.keys(),
         cmd = cmd,
         tags = action_tags + tags,

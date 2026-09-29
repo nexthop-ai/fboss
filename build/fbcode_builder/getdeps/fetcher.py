@@ -1104,9 +1104,10 @@ def _mirror_urls(url: str) -> list[str]:
 # mirror self-populates. This keeps CI off flaky upstreams (e.g. ftpmirror.gnu.org)
 # WITHOUT editing every manifest URL (which would churn and cause merge
 # conflicts on every upstream sync).
-_STATIC_DEPS_HTTP = "http://bucket.internal.nexthop.ai:7480/vol-shared/fboss/static_deps"
-_STATIC_DEPS_S3 = "s3://vol-shared/fboss/static_deps"
-_STATIC_DEPS_ENDPOINT = "http://bucket.internal.nexthop.ai:7480"
+# Set by fboss/oss/scripts/region.env; empty disables the mirror.
+_STATIC_DEPS_HTTP = os.environ.get("NH_STATIC_DEPS_HTTP", "")
+_STATIC_DEPS_S3 = os.environ.get("NH_STATIC_DEPS_S3", "")
+_STATIC_DEPS_ENDPOINT = os.environ.get("NH_STATIC_DEPS_ENDPOINT", "")
 
 
 def _static_deps_object_name(url: str) -> str:
@@ -1185,6 +1186,8 @@ class ArchiveFetcher(Fetcher):
         """Best-effort: publish the just-downloaded artifact to the internal
         static_deps mirror so later builds fetch it from there instead of the
         (possibly flaky) upstream. Never fails the build."""
+        if not _STATIC_DEPS_S3 or not _STATIC_DEPS_ENDPOINT:
+            return
         if shutil.which("aws") is None:
             return
         obj = "%s/%s" % (_STATIC_DEPS_S3, _static_deps_object_name(self.url))
@@ -1214,7 +1217,7 @@ class ArchiveFetcher(Fetcher):
         # Nexthop: local/loopback artifacts (e.g. the proprietary SAI impl
         # served from http://localhost:8000/) must bypass the shared mirror
         # entirely -- never looked up there, never uploaded there.
-        use_mirror = not _is_local_url(self.url)
+        use_mirror = bool(_STATIC_DEPS_HTTP) and not _is_local_url(self.url)
 
         # Nexthop: try the internal static_deps mirror first. A 404 (not cached),
         # a checksum mismatch (stale copy), or the mirror being unreachable all

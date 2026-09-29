@@ -28,6 +28,8 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Select build region
+      uses: ./.github/actions/select-region
     - name: Build FBOSS Docker image (with registry cache)
       shell: bash
       env:

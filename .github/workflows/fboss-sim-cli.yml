@@ -98,6 +98,8 @@ jobs:
           token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
           submodules: true
           submodule-list: "BGP fboss"
+      - name: Select build region
+        uses: ./.github/actions/select-region
 
       # bgpd builds against fboss's stable hashes, so it must be built against
       # the same fboss as the image or the thrift ABI can skew (see #1242).

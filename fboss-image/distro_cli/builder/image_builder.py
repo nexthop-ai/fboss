@@ -324,6 +324,9 @@ class ImageBuilder:
         volumes = {
             self.image_builder_dir: Path("/image_builder"),
             Path("/dev"): Path("/dev"),
+            get_abs_path("fboss/oss/scripts/region.repo"): Path(
+                "/etc/yum.repos.d/local_mirror.repo"
+            ),
         }
 
         if self.output_dir:
@@ -399,6 +402,7 @@ class ImageBuilder:
                 image=FBOSS_BUILDER_IMAGE,
                 command=command,
                 volumes=volumes,
+                env_file=get_abs_path("fboss/oss/scripts/region.env"),
                 privileged=True,
             )
 

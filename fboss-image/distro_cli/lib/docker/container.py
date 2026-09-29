@@ -19,6 +19,7 @@ def run_container(  # noqa: PLR0913
     command: list[str],
     volumes: dict[Path, Path] | None = None,
     env: dict[str, str] | None = None,
+    env_file: Path | None = None,
     privileged: bool = False,
     interactive: bool = False,
     ephemeral: bool = True,
@@ -33,6 +34,7 @@ def run_container(  # noqa: PLR0913
         command: Command to execute in container (as list)
         volumes: Dictionary mapping host paths to container paths
         env: Dictionary of environment variables
+        env_file: KEY=VALUE file loaded into the container environment (docker --env-file)
         privileged: Run container in privileged mode
         interactive: Run container in interactive mode (-it)
         ephemeral: Remove container after it exits (--rm, default: True)
@@ -76,6 +78,9 @@ def run_container(  # noqa: PLR0913
     if volumes:
         for host_path, container_path in volumes.items():
             cmd.extend(["-v", f"{host_path}:{container_path}"])
+
+    if env_file:
+        cmd.extend(["--env-file", str(env_file)])
 
     if env:
         for key, value in env.items():

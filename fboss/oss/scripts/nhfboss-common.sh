@@ -65,24 +65,35 @@ export SCCACHE_LOG=info
 export SCCACHE_DIST_REQUEST_TIMEOUT=2700
 export SCCACHE_IDLE_TIMEOUT=2700
 
+# Region endpoints (NH_*): normally loaded with --env-file by the launcher;
+# fill them in for containers started without it.
+if [[ -z ${NH_SCCACHE_ENDPOINT+x} ]]; then
+  if [[ ! -f $COMMON_SCRIPT_DIR/region.env ]]; then
+    echo "ERROR: no build region selected; run: bazel run //fboss:set_region -- <region>"
+    exit 1
+  fi
+  set -a
+  # shellcheck source=region.env
+  source "$COMMON_SCRIPT_DIR/region.env"
+  set +a
+fi
+
 # Detect if distributed sccache is available and configure accordingly
-SCCACHE_SCHEDULER_HOST=sccache.us-west-1.nexthop.ai
-SCCACHE_SCHEDULER_PORT=10600
-SCCACHE_DIST_CONFIG="$COMMON_SCRIPT_DIR/sccache-dist.toml"
+SCCACHE_DIST_CONFIG="$COMMON_SCRIPT_DIR/$NH_SCCACHE_DIST_CONF"
 # Check if the scheduler is actually responding to API requests, not just accepting TCP connections
-# Extract the auth token from the config file
+# Extract the scheduler URL and auth token from the config file
+SCCACHE_SCHEDULER_URL=$(sed -n 's/^scheduler_url = "\(.*\)"$/\1/p' "$SCCACHE_DIST_CONFIG")
 SCCACHE_AUTH_TOKEN=$(grep '^token = ' "$SCCACHE_DIST_CONFIG" | sed 's/^token = "\(.*\)"$/\1/')
-if [[ -z $SCCACHE_AUTH_TOKEN ]]; then
-  echo "ERROR: Failed to extract auth token from $SCCACHE_DIST_CONFIG"
-  echo 'Expected format: token = "..."'
+if [[ -z $SCCACHE_SCHEDULER_URL || -z $SCCACHE_AUTH_TOKEN ]]; then
+  echo "ERROR: Failed to extract scheduler_url and token from $SCCACHE_DIST_CONFIG"
   exit 1
 fi
-curl_output=$(curl -s -o /dev/null -w '%{http_code}' -m 2 -H "Authorization: Bearer $SCCACHE_AUTH_TOKEN" "http://$SCCACHE_SCHEDULER_HOST:$SCCACHE_SCHEDULER_PORT/api/v1/scheduler/status" 2>&1)
+curl_output=$(curl -s -o /dev/null -w '%{http_code}' -m 2 -H "Authorization: Bearer $SCCACHE_AUTH_TOKEN" "$SCCACHE_SCHEDULER_URL/api/v1/scheduler/status" 2>&1)
 curl_exit_code=$?
 http_code="${curl_output##*$'\n'}"
 
 if [[ $http_code != "200" ]]; then
-  echo "ERROR: sccache scheduler at $SCCACHE_SCHEDULER_HOST:$SCCACHE_SCHEDULER_PORT is not responding!"
+  echo "ERROR: sccache scheduler at $SCCACHE_SCHEDULER_URL is not responding!"
   if [[ $http_code == "000" ]] || [[ $curl_exit_code -ne 0 ]]; then
     echo "Connection failed (curl exit code: $curl_exit_code)"
     if [[ $curl_output != "000" ]]; then
@@ -95,9 +106,9 @@ if [[ $http_code != "200" ]]; then
   exit 1
 fi
 
-echo "Using sccache scheduler: $SCCACHE_SCHEDULER_HOST"
+echo "Using sccache scheduler: $SCCACHE_SCHEDULER_URL"
 
-export SCCACHE_CONF="$COMMON_SCRIPT_DIR/sccache-dist.toml"
+export SCCACHE_CONF="$SCCACHE_DIST_CONFIG"
 # With distributed sccache, we can use high parallelism for compilation
 # but linking is local and memory-intensive, so limit it to 2 jobs
 
@@ -147,16 +158,21 @@ echo "Using $COMPILE_JOBS compile jobs and $LINK_JOBS link jobs"
 
 export num_jobs=$((LINK_JOBS > COMPILE_JOBS ? LINK_JOBS : COMPILE_JOBS))
 
-ENDPOINT_HOST=bucket.internal.nexthop.ai
-ENDPOINT_PORT=7480
-if timeout 1 bash -c ">/dev/tcp/$ENDPOINT_HOST/$ENDPOINT_PORT" 2>/dev/null; then
-  export SCCACHE_BUCKET=sccache
-  export SCCACHE_ENDPOINT=$ENDPOINT_HOST:$ENDPOINT_PORT
-  export SCCACHE_S3_KEY_PREFIX=fboss
-  export SCCACHE_REGION=auto
-  export AWS_ACCESS_KEY_ID=R74SNIY3OLH45CN19OWC
-  export AWS_SECRET_ACCESS_KEY=4rsA7lOZU0JbX81SZSTQ3nDs2ZslKlcvPdIgdOMP
-  echo "Using sccache bucket: $ENDPOINT_HOST:$ENDPOINT_PORT/$SCCACHE_BUCKET/$SCCACHE_S3_KEY_PREFIX"
+# Object cache. The endpoint must be this region's: the probe would also succeed
+# against the other region over the VPN.
+if timeout 1 bash -c ">/dev/tcp/${NH_SCCACHE_ENDPOINT%%:*}/${NH_SCCACHE_ENDPOINT##*:}" 2>/dev/null; then
+  export SCCACHE_BUCKET="$NH_SCCACHE_BUCKET"
+  export SCCACHE_ENDPOINT="$NH_SCCACHE_ENDPOINT"
+  export SCCACHE_S3_KEY_PREFIX="$NH_SCCACHE_S3_KEY_PREFIX"
+  export SCCACHE_REGION="$NH_SCCACHE_REGION"
+  # sccache speaks plain HTTP to a schemeless endpoint unless told otherwise.
+  [[ -z $NH_SCCACHE_S3_USE_SSL ]] || export SCCACHE_S3_USE_SSL="$NH_SCCACHE_S3_USE_SSL"
+  if [[ -n $NH_SCCACHE_AWS_ACCESS_KEY_ID ]]; then
+    # Ceph needs static keys; on real S3 they stay empty and sccache uses IMDS.
+    export AWS_ACCESS_KEY_ID="$NH_SCCACHE_AWS_ACCESS_KEY_ID"
+    export AWS_SECRET_ACCESS_KEY="$NH_SCCACHE_AWS_SECRET_ACCESS_KEY"
+  fi
+  echo "Using sccache bucket: $SCCACHE_ENDPOINT/$SCCACHE_BUCKET/$SCCACHE_S3_KEY_PREFIX"
 fi
 
 # Note: Because COMPILE_JOBS and LINK_JOBS depend on SERVER_RAM_GB, and they're

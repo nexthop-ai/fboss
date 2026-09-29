@@ -319,6 +319,12 @@ def run_fboss_build(  # noqa: PLR0912, PLR0915
     use_stable_hashes()
 
     cmd_args = ["sudo", "docker", "run"]
+    # This region's build endpoints and dnf mirror config.
+    scripts_dir = os.path.dirname(os.path.realpath(__file__))
+    cmd_args.extend(["--env-file", os.path.join(scripts_dir, "region.env")])
+    cmd_args.extend(
+        ["-v", f"{scripts_dir}/region.repo:/etc/yum.repos.d/local_mirror.repo"]
+    )
     # Add build environment variables, if any.
     for ev in env_vars:
         if ":" not in ev:

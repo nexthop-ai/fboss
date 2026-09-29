@@ -12,6 +12,7 @@ from pathlib import Path
 
 from distro_cli.lib.docker.container import run_container
 from distro_cli.lib.docker.image import build_fboss_builder_image
+from distro_cli.lib.paths import get_abs_path
 
 from .exceptions import BuildError
 
@@ -59,11 +60,19 @@ def execute_build_in_container(
 
     logger.info(f"Running in container: {' '.join(cmd_list)}")
 
+    # This region's dnf mirror config replaces the one baked into the image.
+    region_repo = {
+        get_abs_path("fboss/oss/scripts/region.repo"): Path(
+            "/etc/yum.repos.d/local_mirror.repo"
+        )
+    }
+
     try:
         exit_code = run_container(
             image=image_name,
             command=cmd_list,
-            volumes=volumes,
+            volumes={**volumes, **region_repo},
+            env_file=get_abs_path("fboss/oss/scripts/region.env"),
             privileged=True,
             working_dir=working_dir,
         )

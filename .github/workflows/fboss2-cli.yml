@@ -49,6 +49,8 @@ jobs:
         run: sudo rm -rf ${{ github.workspace }}/*
       - name: Check out repository code
         uses: actions/checkout@v7
+      - name: Select build region
+        uses: ./.github/actions/select-region
       - name: Build fake-SAI agent and fboss2 targets
         run: >
           sudo

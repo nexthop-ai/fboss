@@ -21,7 +21,8 @@ RUN if [ -n "$http_proxy" ]; then \
 RUN mkdir -p /var/extras
 
 # Nexthop-only
-COPY fboss/oss/docker/local_mirror.repo* /etc/yum.repos.d/
+# The selected region's dnf mirror config (see //fboss:set_region), build time only.
+COPY fboss/oss/scripts/region.repo /etc/yum.repos.d/local_mirror.repo
 
 RUN dnf install -y 'dnf-command(config-manager)' && \
     dnf config-manager --set-enabled crb && \

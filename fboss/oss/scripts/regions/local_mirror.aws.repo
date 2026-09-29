@@ -1,0 +1,147 @@
+# Same repositories as local_mirror.cloudstack.repo for regions without a local
+# mirror: CentOS / EPEL come from the upstream metalinks, the kmods SIG from
+# mirror.stream.centos.org.
+
+[local-baseos]
+name=CentOS Stream $releasever - BaseOS
+metalink=https://mirrors.centos.org/metalink?repo=centos-baseos-$stream&arch=$basearch&protocol=https,http
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+gpgcheck=1
+repo_gpgcheck=0
+metadata_expire=6h
+countme=1
+enabled=1
+cost=500
+timeout=15
+
+[local-appstream]
+name=CentOS Stream $releasever - AppStream
+metalink=https://mirrors.centos.org/metalink?repo=centos-appstream-$stream&arch=$basearch&protocol=https,http
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+gpgcheck=1
+repo_gpgcheck=0
+metadata_expire=6h
+countme=1
+enabled=1
+cost=500
+timeout=15
+
+[local-NFV]
+name=Centos Stream $releasever - NFV
+metalink=https://mirrors.centos.org/metalink?repo=centos-nfv-$stream&arch=$basearch&protocol=https,http
+gpgcheck=0
+repo_gpgcheck=0
+metadata_expire=6h
+countme=1
+enabled=1
+cost=500
+timeout=15
+
+[local-CRB]
+name=Centos Stream $releasever - CRB
+metalink=https://mirrors.centos.org/metalink?repo=centos-crb-$stream&arch=$basearch&protocol=https,http
+gpgcheck=0
+repo_gpgcheck=0
+metadata_expire=6h
+countme=1
+enabled=1
+cost=500
+timeout=15
+
+[local-HighAvailability]
+name=Centos Stream $releasever - High Availability
+metalink=https://mirrors.centos.org/metalink?repo=centos-highavailability-$stream&arch=$basearch&protocol=https,http
+gpgcheck=0
+repo_gpgcheck=0
+metadata_expire=6h
+countme=1
+enabled=1
+cost=500
+timeout=15
+
+[local-RT]
+name=Centos Stream $releasever - RT
+metalink=https://mirrors.centos.org/metalink?repo=centos-rt-$stream&arch=$basearch&protocol=https,http
+gpgcheck=0
+repo_gpgcheck=0
+metadata_expire=6h
+countme=1
+enabled=1
+cost=500
+timeout=15
+
+[local-ResilientStorage]
+name=Centos Stream $releasever - Resilient Storage
+metalink=https://mirrors.centos.org/metalink?repo=centos-resilientstorage-$stream&arch=$basearch&protocol=https,http
+gpgcheck=0
+repo_gpgcheck=0
+metadata_expire=6h
+countme=1
+enabled=1
+cost=500
+timeout=15
+
+[local-epel]
+name=Extra Packages for Enterprise Linux $releasever - $basearch
+metalink=https://mirrors.fedoraproject.org/metalink?repo=epel-$releasever&arch=$basearch&infra=$infra&content=$contentdir
+enabled=1
+gpgcheck=0
+countme=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-$releasever
+cost=500
+timeout=15
+
+[local-epel-debuginfo]
+name=Extra Packages for Enterprise Linux $releasever - $basearch - Debug
+metalink=https://mirrors.fedoraproject.org/metalink?repo=epel-debug-$releasever&arch=$basearch&infra=$infra&content=$contentdir
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-$releasever
+gpgcheck=1
+cost=500
+timeout=15
+
+[local-epel-source]
+name=Extra Packages for Enterprise Linux $releasever - $basearch - Source
+metalink=https://mirrors.fedoraproject.org/metalink?repo=epel-source-$releasever&arch=$basearch&infra=$infra&content=$contentdir
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-$releasever
+gpgcheck=1
+cost=500
+timeout=15
+
+# CentOS Kmods SIG kernel-6.12 has no mirrormanager metalink, so the upstream
+# fallback is a second baseurl pointing at the canonical SIG mirror.
+[local-centos-kmods-kernel-6.12]
+name=CentOS - Kmods - Kernel - 6.12
+baseurl=http://mirror.stream.centos.org/SIGs/$releasever/kmods/$basearch/kernel-6.12
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Kmods
+gpgcheck=1
+repo_gpgcheck=0
+metadata_expire=6h
+countme=1
+enabled=1
+exclude=kernel-headers,kernel-cross-headers
+cost=500
+timeout=15
+
+[local-centos-kmods-kernel-6.12-source]
+name=CentOS - Kmods - Kernel - 6.12 - Source
+baseurl=http://mirror.stream.centos.org/SIGs/$releasever/kmods/source/kernel-6.12
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Kmods
+gpgcheck=1
+repo_gpgcheck=0
+metadata_expire=6h
+enabled=0
+cost=500
+timeout=15
+
+[local-centos-kmods-kernel-6.12-debug]
+name=CentOS - Kmods - Kernel - 6.12 - Debug
+baseurl=http://mirror.stream.centos.org/SIGs/$releasever/kmods/$basearch/kernel-6.12/debug
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Kmods
+gpgcheck=1
+repo_gpgcheck=0
+metadata_expire=6h
+enabled=0
+cost=500
+timeout=15
