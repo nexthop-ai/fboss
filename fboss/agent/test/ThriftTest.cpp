@@ -5158,3 +5158,27 @@ TEST_F(ThriftTest, routeCounterUpdatedWhenNamedNhgChanges) {
   ASSERT_NE(nullptr, rt);
   EXPECT_EQ(rt->getForwardInfo().getCounterID(), "nhg_two");
 }
+
+// Interfaces without addresses contribute no interface routes, but the default
+// VRF must still exist so route clients (BGP, the fboss2 integration tests)
+// can program routes after the config is applied.
+TEST_F(ThriftTest, addUnicastRoutesWithoutInterfaceAddresses) {
+  auto config = testConfigA();
+  for (auto& intf : *config.interfaces()) {
+    intf.ipAddresses()->clear();
+  }
+  sw_->applyConfig("interfaces without addresses", config);
+
+  auto vrfs = sw_->getRib()->getVrfList();
+  EXPECT_NE(std::find(vrfs.begin(), vrfs.end(), RouterID(0)), vrfs.end());
+
+  ThriftHandler handler(sw_);
+  auto routes = std::make_unique<std::vector<UnicastRoute>>();
+  UnicastRoute route;
+  route.dest() = ipPrefix("2001:db8::/64");
+  route.action() = RouteForwardAction::DROP;
+  route.adminDistance() = AdminDistance::EBGP;
+  routes->push_back(std::move(route));
+  EXPECT_NO_THROW(handler.addUnicastRoutes(
+      static_cast<int16_t>(ClientID::BGPD), std::move(routes)));
+}

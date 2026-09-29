@@ -993,6 +993,16 @@ shared_ptr<SwitchState> ThriftConfigApplier::run() {
         convertMySidConfig(*mySidConfig, buildPortNameToInterfaceIdMap(*cfg_));
   }
 
+  // intfRouteTables_ only gets a VRF entry from interfaces that carry a
+  // non-link-local address, and RIB reconfigure() keeps exactly the VRFs in
+  // this map. A config whose interfaces have no addresses would therefore
+  // drop the default VRF (seeded by SwSwitch::init for the min ALPM state),
+  // leaving route clients with "VRF 0 not configured". The default VRF must
+  // exist on any L3 switch regardless of interface addressing.
+  if (scopeResolver_.hasL3()) {
+    intfRouteTables_[RouterID(0)];
+  }
+
   if (routeUpdater_) {
     routeUpdater_->setRoutesToConfig(
         intfRouteTables_,
