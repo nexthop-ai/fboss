@@ -1,3 +1,7 @@
+import pytest
+
+pytestmark = pytest.mark.topology("fboss-snake")
+
 # copied from fboss/fboss/oss/hw_sanity_tests/t0_ensemble_link_tests.conf
 test_context = {
     "filters": [

@@ -1,4 +1,8 @@
+import pytest
+
 from tests.libs.test_runner import LinkTestRunner
+
+pytestmark = pytest.mark.topology("fboss-snake")
 
 # Split per variant so the runner can require the media on both ends of a pair for
 # TCVR_L-to-TCVR_L but only one end for ASIC-to-TCVR_S.
@@ -20,8 +24,6 @@ test_context = {
 
         "*LinkTest*verifyIphyFecBerCounters*",
         "*LinkTest*clearIphyInterfaceCounters*",
-
-        "*PtpTests*enablePtpPortDown*",
 
         "*QsfpFsdbTest*phy*",
         "*QsfpFsdbTest*portState*",

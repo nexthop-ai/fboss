@@ -1,3 +1,7 @@
+import pytest
+
+pytestmark = pytest.mark.topology("fboss-standalone")
+
 # Claimed first so the family-specific buckets below can exclude it: VOQ and
 # fabric benchmarks are only linked for Broadcom and are unsupported on most
 # platforms, where this bucket skips wholesale.

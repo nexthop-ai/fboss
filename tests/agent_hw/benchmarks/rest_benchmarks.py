@@ -6,7 +6,11 @@ some bucket instead of silently going unrun.
 
 import os
 
+import pytest
+
 from tests.libs.test_runner.filter_utils import catch_all_filters
+
+pytestmark = pytest.mark.topology("fboss-standalone")
 
 
 def _build_test_context():

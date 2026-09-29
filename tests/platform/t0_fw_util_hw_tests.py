@@ -1,3 +1,7 @@
+import pytest
+
+pytestmark = pytest.mark.topology("fboss-standalone")
+
 # Firmware utility hardware tests
 test_context = {
     "filters": [

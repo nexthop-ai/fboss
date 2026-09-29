@@ -1,3 +1,7 @@
+import pytest
+
+pytestmark = pytest.mark.topology("fboss-standalone")
+
 # Sensor service hardware tests
 test_context = {
     "filters": [

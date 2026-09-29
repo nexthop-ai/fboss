@@ -1,6 +1,10 @@
 import importlib.util
 import os
 
+import pytest
+
+pytestmark = pytest.mark.topology("fboss-standalone")
+
 
 def _module_inclusion_filters(filepath):
     """Return the inclusion regexes from a test module's test_context filters.

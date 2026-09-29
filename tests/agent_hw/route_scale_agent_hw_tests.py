@@ -1,6 +1,10 @@
 """Route-scale agent_hw tests, split into their own suite and run at INFO FBOSS
 logging so their logs stay under the T-Recs ingest size limit."""
 
+import pytest
+
+pytestmark = pytest.mark.topology("fboss-standalone")
+
 test_context = {
     "filters": [
         "*RouteScale*",

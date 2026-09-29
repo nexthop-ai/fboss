@@ -1,7 +1,11 @@
 """8x100G breakout variant of t0_qsfp_hw_tests.py:
 unsupported pairs are excluded and a platform with no supported pair reports SKIP."""
 
+import pytest
+
 from tests.qsfp.t0_qsfp_hw_tests import test_context as _base_context
+
+pytestmark = pytest.mark.topology("fboss-has-xcvrs")
 
 test_context = {**_base_context, "variant": "8x100G"}
 

@@ -1,3 +1,7 @@
+import pytest
+
+pytestmark = pytest.mark.topology("fboss-has-xcvrs")
+
 # Passing QSFP HW tests for wdg104 (Wedge800BACT)
 # wedge800bnhp/physdk-credo-0.7.2/credo-0.7.2
 # Config: wedge800bact.materialized_JSON

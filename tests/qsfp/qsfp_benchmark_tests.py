@@ -1,3 +1,7 @@
+import pytest
+
+pytestmark = pytest.mark.topology("fboss-has-xcvrs")
+
 # Runs every qsfp benchmark; platform gating lives in qsfp_bench config, not
 # here. Stated explicitly because BenchmarkTestRunner now passes a filter file,
 # and an empty one selects nothing.

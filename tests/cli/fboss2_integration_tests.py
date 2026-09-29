@@ -1,3 +1,7 @@
+import pytest
+
+pytestmark = pytest.mark.topology("fboss-standalone")
+
 # fboss2 CLI integration tests.
 #
 # Runs the fboss2_integration_test gtest binary (bundled in

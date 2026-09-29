@@ -1,3 +1,7 @@
+import pytest
+
+pytestmark = pytest.mark.topology("fboss-standalone")
+
 # Weutil hardware tests (EEPROM/wedge utility)
 test_context = {
     "filters": [

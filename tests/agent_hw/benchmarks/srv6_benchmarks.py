@@ -1,3 +1,7 @@
+import pytest
+
+pytestmark = pytest.mark.topology("fboss-standalone")
+
 # Split out from route_scale so its skips stay isolated: SRv6 is unsupported on
 # current platforms, so this bucket skips wholesale.
 test_context = {

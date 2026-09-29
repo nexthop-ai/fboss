@@ -17,6 +17,11 @@ from tests.libs.test_runner import (
 
 
 def pytest_configure(config):
+    config.addinivalue_line(
+        "markers",
+        "topology(tet): Test Engine Topology the testbed must provide; read by the "
+        "testcase-service scanner for scheduling only",
+    )
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(name)s: %(message)s",

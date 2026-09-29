@@ -1,3 +1,7 @@
+import pytest
+
+pytestmark = pytest.mark.topology("fboss-standalone")
+
 # Platform hardware tests - runs all platform_hw_test gtest cases
 test_context = {
     "filters": [

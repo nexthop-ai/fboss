@@ -1,3 +1,7 @@
+import pytest
+
+pytestmark = pytest.mark.topology("fboss-standalone")
+
 # Platform manager hardware tests
 # NOTE: run_test.py automatically stops platform_manager, sensor_service,
 # fan_service, data_corral_service, qsfp_service, and led_service before

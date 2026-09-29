@@ -1,3 +1,7 @@
+import pytest
+
+pytestmark = pytest.mark.topology("fboss-standalone")
+
 test_context = {
     "filters": [
         "*MacLearning*",

@@ -1,3 +1,7 @@
+import pytest
+
+pytestmark = pytest.mark.topology("fboss-has-xcvrs")
+
 # Wildcard filters based on fboss/oss/hw_sanity_tests/t0_qsfp_hw_tests.conf
 # Using wildcards because test class names vary by platform
 # (e.g., HwTransceiverResetTest vs HwTransceiverResetBmcLiteTest)
