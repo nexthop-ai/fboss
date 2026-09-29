@@ -20,9 +20,7 @@ from pathlib import Path
 from nh_test_xml_utils import (
     emit_test_boundary,
     exit_info,
-    find_core_dumps_since,
     find_recent_core_dump,
-    find_unclean_unit_exits,
     inject_failure_into_xml,
     inject_streams_into_xml,
     pipe_to_tee,
@@ -67,6 +65,12 @@ from fboss_test_runner.constants import (
     XGS_SIMULATOR_ASICS,
     XGS_SIMULATOR_ENV,
 )
+from fboss_test_runner.crash_detection import (
+    core_is_from,
+    describe_core_dump,
+    find_unclean_unit_exits,
+    list_core_dumps,
+)
 from fboss_test_runner.reporters.console_reporter import ConsoleReporter
 from fboss_test_runner.reporters.csv_reporter import CsvReporter
 from fboss_test_runner.reporters.json_reporter import JsonReporter
@@ -102,18 +106,6 @@ def _print_deprecation_banner(lines: list[str]) -> None:
     for line in lines:
         print(f"* {_YELLOW}{line.ljust(width - 4)}{_RED} *")
     print(f"{border}{_RESET}\n", flush=True)
-
-
-# The kernel truncates the process name embedded in a core file name
-# (systemd-coredump: core.<comm>.<uid>.<boot>.<pid>.<ts>[.zst]) to
-# TASK_COMM_LEN - 1 characters.
-_TASK_COMM_LEN = 15
-
-
-def _core_is_from(core_path: str, exe_name: str) -> bool:
-    """True if the core file at `core_path` was dumped by `exe_name`."""
-    name = os.path.basename(core_path)
-    return name.startswith(f"core.{exe_name[:_TASK_COMM_LEN]}.") or exe_name in name
 
 
 def _wipe_agent_warmboot_state(services: list[str]) -> None:
@@ -309,25 +301,38 @@ class TestRunner(abc.ABC):
         pass
 
     def _apply_agent_crash(
-        self, run_outcome: RunOutcome, test_prefix: str, test_to_run: str, reason: str
+        self,
+        run_outcome: RunOutcome,
+        test_prefix: str,
+        test_to_run: str,
+        reason: str,
+        cores: list[str] | None = None,
     ) -> None:
         """Downgrade a test to FAILED because an agent crashed while it ran.
 
         The gtest binary reported its own verdict (often OK: the CLI suite's
         `waitForAgentReady()` rides through a crash + `RestartSec` retry), so
-        both the in-memory results and the per-test XML are rewritten.
+        both the in-memory results and the per-test XML are rewritten. A
+        SKIPPED test is downgraded too: a crash in its window is a real
+        failure regardless of what it did. The binary's own output is kept
+        -- it is the only transcript of the run -- with the verdict appended.
+        Core paths go to the banner only: the failure message is what result
+        databases classify failures on, and they cap it at a few hundred
+        characters.
         """
         message = f"Agent crashed during test: {reason}"
-        print(
-            f"########## AGENT CRASH detected during {test_prefix}{test_to_run}: "
-            f"{reason} -- marking test FAILED",
-            flush=True,
+        core_note = f" (core dump(s): {', '.join(cores)})" if cores else ""
+        banner = (
+            f"########## CRASH detected during {test_prefix}{test_to_run}: "
+            f"{reason}{core_note} -- marking test FAILED"
         )
+        print(banner, flush=True)
         for result in run_outcome.results:
             if result.status in (GtestStatus.OK, GtestStatus.SKIPPED):
                 result.status = GtestStatus.FAILED
         run_outcome.console_output = "\n".join(
-            result.as_log_line() for result in run_outcome.results
+            [run_outcome.console_output.rstrip("\n"), banner]
+            + [result.as_log_line() for result in run_outcome.results]
         )
         if os.path.exists(self.TESTRESULT_CURRENT_RUN_FILE):
             inject_failure_into_xml(
@@ -934,11 +939,15 @@ class TestRunner(abc.ABC):
             performs on purpose does not register, and a console logout
             bouncing serial-getty (Restart=always, exit 0) does not either.
             Units the runner masked are inactive and produce nothing.
-          * A new core file appeared, from anything but the test binary
-            itself (that one already failed on its own). Deliberately not
+          * A core file that was not there before the binary started, from
+            anything but the test binary itself (that one already failed on
+            its own). Comparing sets rather than mtimes charges one core to
+            exactly one test even when systemd-coredump finishes writing it
+            after the check or the next test starts a second later. Not
             limited to agent cores: any process dumping core on a production
             image while a test runs makes that result untrustworthy.
         """
+        cores_before = list_core_dumps()
         start_time = time.time()
         run_outcome = self._run_test(
             conf_file,
@@ -949,16 +958,24 @@ class TestRunner(abc.ABC):
         )
         reasons = find_unclean_unit_exits(start_time)
         own_binary = os.path.basename(self._get_test_binary_name())
-        cores = [
+        cores = sorted(
             core
-            for core in find_core_dumps_since(start_time)
-            if not _core_is_from(core, own_binary)
+            for core in list_core_dumps() - cores_before
+            if not core_is_from(core, own_binary)
+        )
+        core_reasons = [describe_core_dump(core) for core in cores]
+        # A core summary names the unit and the crash; the journal's
+        # "<unit> main process dumped core" line for the same unit only
+        # repeats the first half, so drop it to stay within the reason cap.
+        reasons = [
+            r
+            for r in reasons
+            if not any(c.startswith(r.split()[0]) for c in core_reasons)
         ]
-        if cores:
-            reasons.append(f"new core dump(s): {', '.join(cores)}")
+        reasons.extend(core_reasons)
         if reasons:
             self._apply_agent_crash(
-                run_outcome, test_prefix, test_to_run, "; ".join(reasons)
+                run_outcome, test_prefix, test_to_run, "; ".join(reasons), cores
             )
         return run_outcome
 

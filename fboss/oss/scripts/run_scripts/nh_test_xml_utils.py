@@ -9,11 +9,9 @@ this module holds the test-infra-specific helpers (stream tee, exit-info
 classifier, XML stream injection, synthetic-failure XML emitter, etc.).
 """
 
-import json
 import os
 import re
 import signal
-import subprocess
 import time
 import xml.etree.ElementTree as ET
 from contextlib import suppress
@@ -315,109 +313,6 @@ def find_recent_core_dump(
         if time.monotonic() >= deadline:
             return None
         time.sleep(poll_interval_sec)
-
-
-def find_core_dumps_since(start_time: float) -> list[str]:
-    """Return every core file with mtime >= start_time, newest first.
-
-    Unlike `find_recent_core_dump` this does not poll and returns all
-    matches, so a caller can check whether *any* process dumped core during
-    a window (e.g. while a test ran against the production agents) and name
-    each core in the failure reason.
-    """
-    cutoff = start_time - _CORE_DUMP_MTIME_SLACK_SEC
-    return [path for _, path in _scan_core_dumps(cutoff)]
-
-
-# systemd (PID 1) logs one line per main-process exit of every unit, e.g.
-#   "fboss_hw_agent@0.service: Main process exited, code=dumped, status=6/ABRT"
-# The unit name is also carried in the UNIT journal field. Parsing this line is
-# preferable to `systemctl show -p NRestarts/Result`: NRestarts only moves for
-# Restart=-triggered restarts (so a manual restart followed by a crash reads
-# "unchanged"), and Result is reset to "success" the moment the unit is
-# started again, so by the time a check runs after the test the crash has
-# already been papered over. The journal keeps the record.
-_MAIN_PROCESS_EXIT_RE = re.compile(
-    r"^(?P<unit>\S+): Main process exited, code=(?P<code>\w+), "
-    r"status=(?P<status>\d+)/(?P<name>\S+)$"
-)
-_OOM_KILL_RE = re.compile(
-    r"^(?P<unit>\S+): A process of this unit has been killed by the OOM killer"
-)
-
-# Exits systemd's own `systemctl stop/restart` produces on a well-behaved unit:
-# a clean exit, or termination by the stop signal (SIGTERM; SIGINT/SIGHUP for
-# units that set KillSignal=) either as a signal death or as the 128+N status
-# a shell/python wrapper returns when it relays it.
-_GRACEFUL_SIGNALS = frozenset({"TERM", "INT", "HUP"})
-_GRACEFUL_EXIT_STATUSES = frozenset(
-    {0, 128 + signal.SIGTERM, 128 + signal.SIGINT, 128 + signal.SIGHUP}
-)
-
-
-def _classify_unit_exit(message: str) -> str | None:
-    """Return a human-readable reason if `message` (a PID 1 journal line)
-    records an unclean main-process exit of a unit, else None."""
-    m = _OOM_KILL_RE.match(message)
-    if m:
-        return f"{m['unit']} killed by the OOM killer"
-    m = _MAIN_PROCESS_EXIT_RE.match(message)
-    if not m:
-        return None
-    code, status, name = m["code"], int(m["status"]), m["name"]
-    if code == "exited" and status in _GRACEFUL_EXIT_STATUSES:
-        return None
-    if code == "killed" and name in _GRACEFUL_SIGNALS:
-        return None
-    what = {"dumped": "dumped core", "killed": "was killed", "exited": "exited"}.get(
-        code, code
-    )
-    return f"{m['unit']} main process {what} (status={status}/{name})"
-
-
-def find_unclean_unit_exits(start_time: float) -> list[str]:
-    """Return one reason per systemd unit whose main process died uncleanly
-    since `start_time` (crash, abort, OOM kill, non-zero exit), oldest first.
-
-    Reads PID 1's journal records for the window. Clean stops and restarts --
-    the ones the test infrastructure and the fboss2 CLI perform on purpose --
-    exit 0 or die by SIGTERM and are not reported, so bouncing a unit inside
-    the window is fine; only an exit systemd would count as a failure is.
-    Returns [] when journalctl is unavailable or fails (workstations, the
-    fboss-sim container).
-    """
-    since = int(start_time - _CORE_DUMP_MTIME_SLACK_SEC)
-    try:
-        result = subprocess.run(
-            [
-                "journalctl",
-                "-q",
-                "--no-pager",
-                "-o",
-                "json",
-                f"--since=@{since}",
-                "_PID=1",
-            ],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-    except OSError:
-        return []
-    if result.returncode != 0:
-        return []
-    reasons: list[str] = []
-    for line in result.stdout.splitlines():
-        try:
-            message = json.loads(line).get("MESSAGE")
-        except (ValueError, AttributeError):
-            continue
-        if not isinstance(message, str):
-            continue
-        reason = _classify_unit_exit(message)
-        if reason:
-            reasons.append(reason)
-    return reasons
 
 
 def write_synthetic_failure_xml(
