@@ -11,6 +11,13 @@ name: Rebase Upstream PR
 # all-or-nothing. On unresolved conflicts or a build/test failure, we hand off to
 # the @mabel Slack bot in #sw-fboss-automation.
 #
+# Git/GitHub access runs as the PR author when the repo holds a
+# <AUTHOR>_UPSTREAM_REBASE secret (author login minus '-nexthop', upper-cased,
+# e.g. HILLOL_UPSTREAM_REBASE) that authenticates and can push to both
+# nexthop-ai/fboss and private-fboss; the rebased commits and force-pushes are
+# then attributed to the author. A missing, expired/revoked, or under-scoped
+# secret falls back to the shared rabbit-nexthop PAT.
+#
 # Conflict handoffs are resumable: cleanly rebased levels are staged on their
 # <branch>-rebase-wip branches as they complete; after the conflicted level is
 # resolved and pushed to its -rebase-wip branch, re-dispatching with
@@ -56,9 +63,46 @@ env:
   MABEL: "U0AKL814NKB"
 
 jobs:
+  # Pick the PAT for this run: the PR author's own <AUTHOR>_UPSTREAM_REBASE
+  # secret when it exists and works, else RABBIT_NEXTHOP_PAT. Only the secret
+  # *name* is emitted (job outputs cannot carry secret values); consumers index
+  # the secrets context with it.
+  resolve-token:
+    name: Resolve PAT
+    if: github.repository_owner == 'nexthop-ai'
+    runs-on: k8s-nano
+    outputs:
+      token_secret: ${{ steps.pick.outputs.token_secret }}
+      git_name: ${{ steps.pick.outputs.git_name }}
+      git_email: ${{ steps.pick.outputs.git_email }}
+    steps:
+      # Same commit as this workflow file, so a dispatch from a branch runs that branch's script.
+      - name: Fetch resolver script
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/${GITHUB_REPOSITORY}/contents/.github/scripts/resolve_upstream_pat.sh?ref=${GITHUB_SHA}" \
+            -H "Accept: application/vnd.github.raw" > resolve_upstream_pat.sh
+          chmod +x resolve_upstream_pat.sh
+      - name: Derive the author's secret name
+        id: author
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./resolve_upstream_pat.sh derive "${{ inputs.pr_number }}"
+      - name: Validate the author's PAT (fall back to rabbit)
+        id: pick
+        env:
+          CANDIDATE: ${{ secrets[steps.author.outputs.secret_name] }}
+          SECRET_NAME: ${{ steps.author.outputs.secret_name }}
+          LOGIN: ${{ steps.author.outputs.login }}
+          AUTHOR_USER: ${{ steps.author.outputs.user }}
+          HEAD_AUTHOR: ${{ steps.author.outputs.head_author }}
+        run: ./resolve_upstream_pat.sh pick
+
   rebase:
     name: Rebase PR
     if: github.repository_owner == 'nexthop-ai'
+    needs: resolve-token
     runs-on: k8s-micro
     outputs:
       pr_branch: ${{ steps.rebase.outputs.pr_branch }}
@@ -87,19 +131,19 @@ jobs:
         uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
         with:
           fetch-depth: 0
-          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          token: ${{ secrets[needs.resolve-token.outputs.token_secret || 'RABBIT_NEXTHOP_PAT'] }}
 
       - name: Configure Git
         run: |
-          git config --global user.name "rabbit-nexthop"
-          git config --global user.email "rabbit@nexthop.ai"
+          git config --global user.name "${{ needs.resolve-token.outputs.git_name }}"
+          git config --global user.email "${{ needs.resolve-token.outputs.git_email }}"
           git config --global merge.conflictstyle zdiff3
           git config --global diff.algorithm histogram
 
       - name: Rebase upstream PR
         id: rebase
         env:
-          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          GH_TOKEN: ${{ secrets[needs.resolve-token.outputs.token_secret || 'RABBIT_NEXTHOP_PAT'] }}
         run: |
           .github/scripts/rebase_upstream_pr.py rebase "${{ inputs.pr_number }}" \
             --onto "${{ inputs.rebase_onto }}" \
@@ -243,20 +287,20 @@ jobs:
   # leaving a half-updated stack.
   update-pr:
     name: Update PR branches
-    needs: [rebase, build-and-test]
+    needs: [resolve-token, rebase, build-and-test]
     if: needs.build-and-test.result == 'success'
     runs-on: k8s-micro
     steps:
       - name: Checkout
         uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
         with:
-          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          token: ${{ secrets[needs.resolve-token.outputs.token_secret || 'RABBIT_NEXTHOP_PAT'] }}
       # A leased dry-run pass over every branch runs first, so the update is
       # all-or-nothing: if any PR branch moved since the rebase started,
       # nothing is pushed.
       - name: Force-push rebased commits to PR branches
         env:
-          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          GH_TOKEN: ${{ secrets[needs.resolve-token.outputs.token_secret || 'RABBIT_NEXTHOP_PAT'] }}
           LEVELS: ${{ needs.rebase.outputs.levels }}
           TEST_BRANCH: ${{ needs.rebase.outputs.test_branch }}
         run: .github/scripts/rebase_upstream_pr.py push
@@ -267,7 +311,7 @@ jobs:
       - name: Heal stack declarations in PR bodies
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          GH_TOKEN: ${{ secrets[needs.resolve-token.outputs.token_secret || 'RABBIT_NEXTHOP_PAT'] }}
           LEVELS: ${{ needs.rebase.outputs.levels }}
         run: .github/scripts/rebase_upstream_pr.py heal
 
@@ -277,14 +321,14 @@ jobs:
   # (including a resume) would be refused.
   cleanup:
     name: Cleanup
-    needs: [rebase, update-pr]
+    needs: [resolve-token, rebase, update-pr]
     if: always()
     runs-on: k8s-micro
     steps:
       - name: Checkout
         uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
         with:
-          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          token: ${{ secrets[needs.resolve-token.outputs.token_secret || 'RABBIT_NEXTHOP_PAT'] }}
       # test_branch is emitted before the rebase itself, so gate on has_conflicts
       # rather than test_branch != '' -- on conflicts it's never pushed.
       - name: Delete test branch
@@ -299,7 +343,7 @@ jobs:
       - name: Delete staged wip branches
         if: needs.update-pr.result == 'success'
         env:
-          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          GH_TOKEN: ${{ secrets[needs.resolve-token.outputs.token_secret || 'RABBIT_NEXTHOP_PAT'] }}
           LEVELS: ${{ needs.rebase.outputs.levels }}
         run: |
           set -euo pipefail
@@ -309,7 +353,7 @@ jobs:
       - name: Release stack lock
         if: needs.rebase.outputs.lock_ref != ''
         env:
-          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          GH_TOKEN: ${{ secrets[needs.resolve-token.outputs.token_secret || 'RABBIT_NEXTHOP_PAT'] }}
           LOCK_REF: ${{ needs.rebase.outputs.lock_ref }}
         run: gh api -X DELETE "repos/nexthop-ai/fboss/git/refs/${LOCK_REF#refs/}" || true
 
@@ -318,14 +362,14 @@ jobs:
   # (PR timeline archaeology), so per-branch revert commands ship in the message.
   notify-success:
     name: Notify author (PRs updated)
-    needs: [rebase, update-pr]
+    needs: [resolve-token, rebase, update-pr]
     if: needs.update-pr.result == 'success'
     runs-on: k8s-nano
     steps:
       - name: Checkout
         uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
         with:
-          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          token: ${{ secrets[needs.resolve-token.outputs.token_secret || 'RABBIT_NEXTHOP_PAT'] }}
       - name: DM author on Slack (channel fallback)
         env:
           WEBHOOK: ${{ secrets.SW_FBOSS_AUTOMATION_SLACK_WEBHOOK_URL }}
@@ -342,14 +386,14 @@ jobs:
   # ─── @mabel handoffs ──────────────────────────────────────────────────────
   notify-conflicts:
     name: Notify @mabel (conflicts)
-    needs: rebase
+    needs: [resolve-token, rebase]
     if: needs.rebase.outputs.has_conflicts == 'true'
     runs-on: k8s-nano
     steps:
       - name: Checkout
         uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
         with:
-          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          token: ${{ secrets[needs.resolve-token.outputs.token_secret || 'RABBIT_NEXTHOP_PAT'] }}
       - name: Prompt @mabel to resolve conflicts
         env:
           WEBHOOK: ${{ secrets.SW_FBOSS_AUTOMATION_SLACK_WEBHOOK_URL }}
@@ -367,14 +411,14 @@ jobs:
 
   notify-build-failure:
     name: Notify @mabel (build/test failed)
-    needs: [rebase, build-and-test, fboss-sim-test]
+    needs: [resolve-token, rebase, build-and-test, fboss-sim-test]
     if: always() && needs.rebase.outputs.has_conflicts == 'false' && (needs.build-and-test.result == 'failure' || needs.fboss-sim-test.result == 'failure')
     runs-on: k8s-nano
     steps:
       - name: Checkout
         uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
         with:
-          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          token: ${{ secrets[needs.resolve-token.outputs.token_secret || 'RABBIT_NEXTHOP_PAT'] }}
       - name: Prompt @mabel to investigate failure
         env:
           WEBHOOK: ${{ secrets.SW_FBOSS_AUTOMATION_SLACK_WEBHOOK_URL }}
@@ -388,14 +432,14 @@ jobs:
 
   notify-dropped-commits:
     name: Notify @mabel (dropped commits)
-    needs: rebase
+    needs: [resolve-token, rebase]
     if: needs.rebase.outputs.dropped_commits == 'true'
     runs-on: k8s-nano
     steps:
       - name: Checkout
         uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
         with:
-          token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          token: ${{ secrets[needs.resolve-token.outputs.token_secret || 'RABBIT_NEXTHOP_PAT'] }}
       - name: Warn @mabel about dropped commits
         env:
           WEBHOOK: ${{ secrets.SW_FBOSS_AUTOMATION_SLACK_WEBHOOK_URL }}

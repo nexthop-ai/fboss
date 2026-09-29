@@ -30,8 +30,11 @@ search index, which can be stale):
     Comments from anyone else — including maintainers — are ignored, so
     nobody else can make the rebase run.
 
-Requires UPSTREAM_GH_TOKEN (read facebook/fboss) and DISPATCH_GH_TOKEN
-(actions:write on the repo running the rebase workflow, $GITHUB_REPOSITORY).
+Requires UPSTREAM_GH_TOKEN (read facebook/fboss) and, unless --plan or --dry-run
+is given, DISPATCH_GH_TOKEN (actions:write on the repo running the rebase
+workflow, $GITHUB_REPOSITORY). With --plan FILE the eligible PR numbers are
+written to FILE as a JSON list and nothing is dispatched; the workflow then
+dispatches each one as its author (see resolve_upstream_pat.sh).
 """
 
 from __future__ import annotations
@@ -141,13 +144,14 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--dry-run", action="store_true", help="Report what would be dispatched; dispatch nothing")
     parser.add_argument("--pr", type=int, help="Evaluate a single upstream PR instead of searching")
+    parser.add_argument("--plan", metavar="FILE", help="Write eligible PR numbers to FILE as JSON; dispatch nothing")
     args = parser.parse_args()
 
     upstream_token = os.environ.get("UPSTREAM_GH_TOKEN", "")
     dispatch_token = os.environ.get("DISPATCH_GH_TOKEN", "")
     repo = os.environ.get("GITHUB_REPOSITORY", "")
     ref = os.environ.get("GITHUB_REF_NAME") or "main"
-    if not upstream_token or (not args.dry_run and not (dispatch_token and repo)):
+    if not upstream_token or (not (args.dry_run or args.plan) and not (dispatch_token and repo)):
         print("❌ ERROR: UPSTREAM_GH_TOKEN, DISPATCH_GH_TOKEN and GITHUB_REPOSITORY are required", file=sys.stderr)
         return 1
 
@@ -169,7 +173,7 @@ def main() -> int:
             skipped.append((number, reason))
             info(f"#{number}: skip — {reason}")
             continue
-        if args.dry_run:
+        if args.dry_run or args.plan:
             info(f"#{number}: would dispatch {REBASE_WORKFLOW} (rebase_onto={BASE_BRANCH})")
             dispatched.append(number)
             continue
@@ -181,9 +185,13 @@ def main() -> int:
             print(f"❌ ERROR: #{number}: dispatch failed: {e}", file=sys.stderr)
             failed.append(number)
 
+    if args.plan:
+        with open(args.plan, "w") as f:
+            json.dump(dispatched, f)
+
     summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary_path:
-        verb = "Would dispatch" if args.dry_run else "Dispatched"
+        verb = "Would dispatch" if args.dry_run else "Eligible" if args.plan else "Dispatched"
         lines = ["## /autorebase sweep\n", f"**{verb}:** {len(dispatched)}\n"]
         lines += [f"- [#{n}](https://github.com/{UPSTREAM_REPO}/pull/{n})\n" for n in dispatched]
         if failed:

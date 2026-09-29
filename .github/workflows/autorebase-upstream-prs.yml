@@ -7,6 +7,13 @@ name: Autorebase Upstream PRs
 # skipped; the rebase workflow moves them with their root, and they become
 # eligible on their own once they retarget main. See
 # .github/scripts/autorebase_upstream_prs.py for the full eligibility rules.
+#
+# Each dispatch runs as the PR author: the sweep resolves the author's
+# <AUTHOR>_UPSTREAM_REBASE secret with the same resolve_upstream_pat.sh the
+# rebase workflow uses, so the rebase run is triggered by the author rather
+# than by github-actions. A missing, expired or under-scoped secret falls back
+# to RABBIT_NEXTHOP_PAT; the dispatched run resolves its own git/GitHub
+# identity the same way.
 
 on:
   schedule:
@@ -29,25 +36,23 @@ concurrency:
 
 jobs:
   sweep:
-    name: Dispatch /autorebase rebases
+    name: Find /autorebase PRs
     if: github.repository_owner == 'nexthop-ai'
     runs-on: k8s-nano
     permissions:
       contents: read  # fetch the sweep script
-      actions: write  # gh workflow run rebase-upstream-pr.yml
+    outputs:
+      plan: ${{ steps.plan.outputs.plan }}
     steps:
       - name: Sweep upstream PRs
+        id: plan
         env:
           GH_TOKEN: ${{ github.token }}
-          UPSTREAM_GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
-          DISPATCH_GH_TOKEN: ${{ github.token }}
-          DRY_RUN: ${{ inputs.dry_run }}
+          # facebook/fboss is public; the workflow token can read it.
+          UPSTREAM_GH_TOKEN: ${{ github.token }}
           PR: ${{ inputs.pr }}
         run: |
-          args=()
-          if [[ "$DRY_RUN" == "true" ]]; then
-            args+=(--dry-run)
-          fi
+          args=(--plan plan.json)
           if [[ -n "$PR" ]]; then
             args+=(--pr "$PR")
           fi
@@ -55,3 +60,63 @@ jobs:
           gh api "repos/${GITHUB_REPOSITORY}/contents/.github/scripts/autorebase_upstream_prs.py?ref=${GITHUB_SHA}" \
             -H "Accept: application/vnd.github.raw" > autorebase_upstream_prs.py
           python3 autorebase_upstream_prs.py "${args[@]}"
+          echo "plan=$(cat plan.json)" >> "$GITHUB_OUTPUT"
+
+  dispatch:
+    name: Dispatch rebase
+    needs: sweep
+    if: needs.sweep.outputs.plan != '[]' && inputs.dry_run != true
+    runs-on: k8s-nano
+    permissions:
+      contents: read  # fetch the resolver script
+      actions: write  # fallback dispatch with the workflow token
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        pr: ${{ fromJson(needs.sweep.outputs.plan) }}
+    steps:
+      - name: Fetch resolver script
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/${GITHUB_REPOSITORY}/contents/.github/scripts/resolve_upstream_pat.sh?ref=${GITHUB_SHA}" \
+            -H "Accept: application/vnd.github.raw" > resolve_upstream_pat.sh
+          chmod +x resolve_upstream_pat.sh
+      - name: Derive the author's secret name
+        id: author
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./resolve_upstream_pat.sh derive "${{ matrix.pr }}"
+      - name: Validate the author's PAT (fall back to rabbit)
+        id: pick
+        env:
+          CANDIDATE: ${{ secrets[steps.author.outputs.secret_name] }}
+          SECRET_NAME: ${{ steps.author.outputs.secret_name }}
+          LOGIN: ${{ steps.author.outputs.login }}
+          AUTHOR_USER: ${{ steps.author.outputs.user }}
+          HEAD_AUTHOR: ${{ steps.author.outputs.head_author }}
+        run: ./resolve_upstream_pat.sh pick
+      # The author's PAT may lack actions:write on this repo; the workflow
+      # token then dispatches, and the rebase run still resolves the author's
+      # PAT for its git/GitHub work.
+      - name: Dispatch rebase-upstream-pr.yml as the author
+        env:
+          GH_TOKEN: ${{ secrets[steps.pick.outputs.token_secret] }}
+          FALLBACK_GH_TOKEN: ${{ github.token }}
+          TOKEN_SECRET: ${{ steps.pick.outputs.token_secret }}
+          PR: ${{ matrix.pr }}
+        run: |
+          set -uo pipefail
+          dispatch() {
+            gh workflow run rebase-upstream-pr.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME" \
+              -f "pr_number=${PR}" -f "rebase_onto=main"
+          }
+          if dispatch; then
+            echo "#${PR}: dispatched as ${TOKEN_SECRET}"
+            echo "- [#${PR}](https://github.com/facebook/fboss/pull/${PR}): dispatched as ${TOKEN_SECRET}" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::#${PR}: dispatch as ${TOKEN_SECRET} failed -- retrying with the workflow token"
+            GH_TOKEN="$FALLBACK_GH_TOKEN" dispatch
+            echo "- [#${PR}](https://github.com/facebook/fboss/pull/${PR}): dispatched with the workflow token (${TOKEN_SECRET} could not dispatch)" >> "$GITHUB_STEP_SUMMARY"
+          fi
