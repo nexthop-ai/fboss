@@ -191,6 +191,7 @@ class QsfpTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
                     cages,
                     self._host_speeds_by_port,
                     self._is_copper_by_port,
+                    self._host_apps_by_port,
                 )
                 for p in ports
             }

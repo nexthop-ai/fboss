@@ -7,8 +7,9 @@ are electrical breakouts of the cage. The chain of valid variants is derived
 from the platform's own mapping rather than hardcoded. Resolution is
 per snake pair: a pair that cannot support the requested variant is excluded
 from the generated configuration (never reconfigured to max) with a reason of
-``platform``, ``module`` or ``peer``. A cage also resolves on its own, for the
-qsfp tests, where ``peer`` does not apply.
+``platform``, ``module`` or ``peer``. ``module`` means the transceiver does not
+advertise a CMIS application at the subport speed over the subport's host lanes.
+A cage also resolves on its own, for the qsfp tests, where ``peer`` does not apply.
 """
 
 import json
@@ -56,6 +57,14 @@ class Variant:
 
 
 MAX_VARIANT = Variant(name="max", factor=1, speed_mbps=None)
+
+# One advertised CMIS application as the host sees it: (aggregate speed in Mbps,
+# host lane count), from TEST_PORTS_INFO ``host_apps``.
+HostApp = tuple[int, int]
+
+
+def format_host_apps(apps: list[HostApp]) -> str:
+    return ", ".join(f"{speed // 1000}Gx{lanes}" for speed, lanes in apps)
 
 
 def parse_variant(value: str, chain: list[Variant]) -> Variant:
@@ -237,16 +246,32 @@ def resolve_cage(
     cages: Mapping[str, CageInfo],
     host_speeds: Mapping[str, list[int] | None],
     is_copper: Mapping[str, bool | None],
+    host_apps: Mapping[str, list[HostApp] | None] | None = None,
 ) -> CageResolution:
-    """Whether this cage alone can run the variant, ignoring its peer."""
+    """Whether this cage alone can run the variant, ignoring its peer.
+
+    The module check prefers ``host_apps`` (speed and host lanes) and falls back
+    to the speed-only ``host_speeds`` for ports without it.
+    """
     cage = cages.get(cage_of(port))
     if cage is None:
         return CageResolution(False, "platform", f"{port} cage is not in the platform mapping")
     pid, subs, why = _cage_profile(cage_of(port), cage, variant, is_copper.get(port))
     if pid is None:
         return CageResolution(False, "platform", why)
-    # Advertised host-interface speeds constrain only when explicit; None or an
-    # empty advertisement means unknown and is unconstrained.
+    # Advertisements constrain only when explicit; None or an empty advertisement
+    # means unknown and is unconstrained.
+    apps = (host_apps or {}).get(port)
+    if apps:
+        want = (variant.speed_mbps, cage.lanes // variant.factor)
+        if want not in apps:
+            return CageResolution(
+                False,
+                "module",
+                f"{port} module advertises {format_host_apps(apps)}, "
+                f"not {want[0] // 1000}G over {want[1]} lanes",
+            )
+        return CageResolution(True, profile_id=pid, subports=subs)
     advertised = host_speeds.get(port)
     if advertised and variant.speed_mbps not in advertised:
         return CageResolution(
@@ -264,12 +289,13 @@ def resolve_pair(
     cages: dict[str, CageInfo],
     host_speeds: Mapping[str, list[int] | None],
     is_copper: Mapping[str, bool | None],
+    host_apps: Mapping[str, list[HostApp] | None] | None = None,
 ) -> PairResolution:
     """Resolve one snake pair (named by lane-1 ports) for a non-max variant."""
     profiles = {}
     subs_by_end = {}
     for end in (port, peer):
-        cage_result = resolve_cage(end, variant, cages, host_speeds, is_copper)
+        cage_result = resolve_cage(end, variant, cages, host_speeds, is_copper, host_apps)
         if not cage_result.ok:
             return PairResolution(False, cage_result.reason, cage_result.detail)
         profiles[end] = cage_result.profile_id
@@ -317,6 +343,7 @@ def resolve_pairs(
     cages: dict[str, CageInfo],
     host_speeds: Mapping[str, list[int] | None],
     is_copper: Mapping[str, bool | None],
+    host_apps: Mapping[str, list[HostApp] | None] | None = None,
 ) -> VariantResolution:
     """Resolve every snake pair for a non-max variant.
 
@@ -332,7 +359,7 @@ def resolve_pairs(
         seen.add(port)
         seen.add(peer)
         res.total += 1
-        pr = resolve_pair(port, peer, variant, cages, host_speeds, is_copper)
+        pr = resolve_pair(port, peer, variant, cages, host_speeds, is_copper, host_apps)
         if not pr.ok:
             reason = pr.reason or "platform"
             res.excluded_by_reason[reason] = res.excluded_by_reason.get(reason, 0) + 1

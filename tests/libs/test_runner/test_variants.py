@@ -254,6 +254,57 @@ class TestResolvePair:
         res = resolve_pair("eth1/1/1", "eth1/2/1", V4X200, CAGES, host_speeds, {})
         assert not res.ok and res.reason == "module" and "eth1/2/1" in res.detail
 
+    def test_module_host_apps_need_the_subport_lane_count(self):
+        # 2x400G runs 400G over 4 host lanes; 400G over 2 (200G/lane) cannot carry it
+        # even though host_speeds alone would accept it.
+        a1t6 = [(200000, 1), (400000, 2), (800000, 4), (1600000, 8)]
+        speeds = {"eth1/1/1": [200000, 400000, 800000, 1600000]}
+        res = resolve_pair(
+            "eth1/1/1", "eth1/2/1", V2X400, CAGES, speeds, {}, host_apps={"eth1/1/1": a1t6}
+        )
+        assert not res.ok and res.reason == "module"
+        assert res.detail == (
+            "eth1/1/1 module advertises 200Gx1, 400Gx2, 800Gx4, 1600Gx8, not 400G over 4 lanes"
+        )
+
+    def test_module_host_apps_match_is_ok(self):
+        host_apps = {"eth1/1/1": [(400000, 4), (800000, 8)], "eth1/2/1": [(400000, 4)]}
+        res = resolve_pair(
+            "eth1/1/1", "eth1/2/1", V2X400, CAGES, NO_CONSTRAINTS, {}, host_apps=host_apps
+        )
+        assert res.ok
+
+    def test_module_host_apps_take_precedence_over_host_speeds(self):
+        # host_speeds alone would exclude this port; the lane-aware host_apps wins.
+        res = resolve_pair(
+            "eth1/1/1", "eth1/2/1", V2X400, CAGES,
+            {"eth1/1/1": [800000]}, {}, host_apps={"eth1/1/1": [(400000, 4)]},
+        )
+        assert res.ok
+
+    def test_module_falls_back_to_host_speeds_without_host_apps(self):
+        speeds = {"eth1/2/1": [100000, 800000]}
+        for host_apps in (None, {}, {"eth1/2/1": None}, {"eth1/2/1": []}):
+            res = resolve_pair(
+                "eth1/1/1", "eth1/2/1", V4X200, CAGES, speeds, {}, host_apps=host_apps
+            )
+            assert not res.ok and res.reason == "module", host_apps
+
+    def test_module_host_apps_both_peers_checked_independently(self):
+        host_apps = {"eth1/1/1": [(100000, 1)], "eth1/2/1": [(200000, 1)]}
+        res = resolve_pair(
+            "eth1/1/1", "eth1/2/1", V8X100, CAGES, NO_CONSTRAINTS, {}, host_apps=host_apps
+        )
+        assert not res.ok and res.reason == "module" and "eth1/2/1" in res.detail
+
+    def test_resolve_pairs_threads_host_apps(self):
+        host_apps = {"eth1/1/1": [(100000, 2)]}
+        res = resolve_pairs(
+            {"eth1/1/1": "eth1/2/1", "eth1/2/1": "eth1/1/1"},
+            V8X100, CAGES, NO_CONSTRAINTS, {}, host_apps=host_apps,
+        )
+        assert res.supported == 0 and res.excluded_by_reason == {"module": 1}
+
     def test_peer_profile_mismatch(self, monkeypatch):
         # Give the peer cage a second 200G/2-lane profile so its pick differs.
         alt = dict(_PROFILES)
@@ -418,3 +469,22 @@ class TestVariantSkipReporting:
         )
         assert runner._run_test_impl({}, skip_tr_xml=False) == "ran"
         assert not recorded
+
+
+class TestLoadCablingHostApps:
+    def test_host_apps_load_as_tuples_and_missing_is_unknown(self, tmp_path):
+        ports_info = tmp_path / "ports_info.json"
+        ports_info.write_text(json.dumps({
+            "eth1/1/1": {"media_technology": "PASSIVE_CU", "host_apps": [[400000, 2], [800000, 4]]},
+            "eth1/2/1": {"media_technology": "PASSIVE_CU", "host_apps": None},
+            "eth1/3/1": {"media_technology": "PASSIVE_CU", "host_apps": []},
+            "eth1/4/1": {"media_technology": "PASSIVE_CU"},
+        }))
+        runner = QsfpTestRunner()
+        runner._load_cabling(str(ports_info))
+        assert runner._host_apps_by_port == {
+            "eth1/1/1": [(400000, 2), (800000, 4)],
+            "eth1/2/1": None,
+            "eth1/3/1": None,
+            "eth1/4/1": None,
+        }

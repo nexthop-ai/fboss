@@ -14,6 +14,7 @@ from tests.libs.test_runner.platform_mapping import load_platform_mapping, repo_
 from tests.libs.test_runner.variants import (
     cage_of,
     CageInfo,
+    HostApp,
     MAX_VARIANT,
     Variant,
     VariantError,
@@ -113,6 +114,7 @@ class CablingAwareRunnerMixin:
         self._transmitter_tech_by_port: dict[str, str | None] = {}
         self._is_copper_by_port: dict[str, bool | None] = {}
         self._host_speeds_by_port: dict[str, list[int] | None] = {}
+        self._host_apps_by_port: dict[str, list[HostApp] | None] = {}
         # Set by _run_cabling_aware per pass; None on the max path.
         self._pass_variant_resolution: VariantResolution | None = None
 
@@ -179,6 +181,7 @@ class CablingAwareRunnerMixin:
             self._full_platform_mapping(config_name),
             self._host_speeds_by_port,
             self._is_copper_by_port,
+            self._host_apps_by_port,
         )
         logger.info(resolution.summary(self._VARIANT_SUMMARY_PREFIX))
         return resolution
@@ -251,6 +254,11 @@ class CablingAwareRunnerMixin:
             for p, info in cabling.items()
         }
         self._host_speeds_by_port = {p: info.get("host_speeds") for p, info in cabling.items()}
+        # [[speed_mbps, host_lanes], ...]; absent from files written before nhtools emitted it.
+        self._host_apps_by_port = {
+            p: [(speed, lanes) for speed, lanes in apps] if (apps := info.get("host_apps")) else None
+            for p, info in cabling.items()
+        }
         return all_ports, optics_ports, media_by_port
 
     def _gate_filters(
