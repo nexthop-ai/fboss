@@ -286,7 +286,7 @@
             },
             {
               "pmUnitScopedNamePrefix": "SMB1_DCDC_I2C",
-              "deviceName": "i2c_master",
+              "deviceName": "nh_i2c_master",
               "csrOffsetCalc": "0x40800 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 4,
               "numAdapters": 2
@@ -300,7 +300,7 @@
             },
             {
               "pmUnitScopedNamePrefix": "SMB1_MEZZ_I2C",
-              "deviceName": "i2c_master",
+              "deviceName": "nh_i2c_master",
               "csrOffsetCalc": "0x40E00 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
               "startAdapterIndex": 7,
               "numAdapters": 2
@@ -1122,14 +1122,14 @@
                 },
                 {
                   "pmUnitScopedNamePrefix": "SMB1_DCDC_I2C",
-                  "deviceName": "i2c_master",
+                  "deviceName": "nh_i2c_master",
                   "csrOffsetCalc": "0x40800 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
                   "startAdapterIndex": 4,
                   "numAdapters": 2
                 },
                 {
                   "pmUnitScopedNamePrefix": "SMB1_MEZZ_I2C",
-                  "deviceName": "i2c_master",
+                  "deviceName": "nh_i2c_master",
                   "csrOffsetCalc": "0x40E00 + ({adapterIndex} - {startAdapterIndex}) * 0x200",
                   "startAdapterIndex": 7,
                   "numAdapters": 2
