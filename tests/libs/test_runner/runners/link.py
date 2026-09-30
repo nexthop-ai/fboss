@@ -312,9 +312,12 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
                 raise RuntimeError(f"Failed to fetch system qsfp config: {output}")
             with open(local_path, encoding="utf-8") as f:
                 qsfp = json.load(f)
-            qsfp.setdefault("defaultCommandLineArgs", {})[
-                "subscribe_to_state_from_fsdb"
-            ] = "false"
+            args = qsfp.setdefault("defaultCommandLineArgs", {})
+            args["subscribe_to_state_from_fsdb"] = "false"
+            # Remediation hard-resets optics whose ports have been down >120s,
+            # counting time a test holds them down (e.g. PRBS); its ASIC-PRBS
+            # exemption needs the FSDB subscription disabled above.
+            args["remediation_enabled"] = "false"
             self._inject_variant_flags(qsfp)
             with open(local_path, "w", encoding="utf-8") as f:
                 json.dump(qsfp, f, indent=4)
