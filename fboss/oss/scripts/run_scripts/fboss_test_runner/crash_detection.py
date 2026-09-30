@@ -185,6 +185,27 @@ _CORE_SKIP_FRAME_RE = re.compile(
 _MANGLED_BACKREF_RE = re.compile(r"S[0-9A-Z]*_")
 _CORE_STACK_FRAMES = 3
 _CORE_INFO_TIMEOUT_SEC = 30
+_UNSET: object = object()
+
+
+def _core_headers(info: str) -> tuple[str | None, str | None]:
+    """Extract (unit, signal_name) from `coredumpctl info` headers."""
+    unit = signal_name = None
+    for line in info.splitlines():
+        m = _CORE_HEADER_RE.match(line)
+        if not m:
+            if line.strip().startswith("Stack trace of thread"):
+                break
+            continue
+        key, val = m["key"], m["val"].strip()
+        if key == "Unit":
+            unit = val
+        elif key == "Signal":
+            sm = _CORE_SIGNAL_RE.match(val)
+            signal_name = f"SIG{sm['name']}" if sm else val
+        elif key in ("Executable", "Command Line") and not unit:
+            unit = os.path.basename(val.split()[0])
+    return unit, signal_name
 
 
 def _core_pid_from_name(core_path: str) -> str | None:
@@ -277,20 +298,12 @@ def _summarize_core_stack(info: str) -> str:
     the way the process died. Stable across hits: no addresses, pids or
     template arguments.
     """
-    unit = signal_name = None
+    unit, signal_name = _core_headers(info)
     frames: list[str] = []
     in_stack = False
     for line in info.splitlines():
         if not in_stack:
-            m = _CORE_HEADER_RE.match(line)
-            if m and m["key"] == "Unit":
-                unit = m["val"].strip()
-            elif m and m["key"] == "Signal":
-                sm = _CORE_SIGNAL_RE.match(m["val"].strip())
-                signal_name = f"SIG{sm['name']}" if sm else m["val"].strip()
-            elif m and m["key"] in ("Executable", "Command Line") and not unit:
-                unit = os.path.basename(m["val"].strip().split()[0])
-            elif line.strip().startswith("Stack trace of thread"):
+            if line.strip().startswith("Stack trace of thread"):
                 in_stack = True
             continue
         m = _CORE_FRAME_RE.match(line)
@@ -306,13 +319,8 @@ def _summarize_core_stack(info: str) -> str:
     return f"{unit or 'unknown unit'} {signal_name or 'crashed'} in {where}"
 
 
-def describe_core_dump(core_path: str) -> str:
-    """One-line description of the crash behind a core, stable across hits.
-
-    Falls back to naming the core file when coredumpctl is unavailable or
-    has no record for it (workstations, the fboss-sim container).
-    """
-    fallback = f"core {os.path.basename(core_path)}"
+def get_core_dump_info(core_path: str) -> str | None:
+    """Return raw `coredumpctl info` text for `core_path`, or None if unavailable."""
     matches = [f"COREDUMP_FILENAME={core_path}"]
     pid = _core_pid_from_name(core_path)
     if pid:
@@ -327,7 +335,66 @@ def describe_core_dump(core_path: str) -> str:
                 timeout=_CORE_INFO_TIMEOUT_SEC,
             )
         except (OSError, subprocess.TimeoutExpired):
-            return fallback
+            return None
         if result.returncode == 0 and "Stack trace of thread" in result.stdout:
-            return _summarize_core_stack(result.stdout)
+            return result.stdout
+    return None
+
+
+def extract_core_stack_trace(info: str) -> str | None:
+    """Extract and demangle all thread stack traces from `coredumpctl info`."""
+    lines: list[str] = []
+    in_stack = False
+    for line in info.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("Stack trace of thread"):
+            in_stack = True
+            lines.append(stripped)
+            continue
+        if in_stack:
+            m = _CORE_FRAME_RE.match(line)
+            if m:
+                formatted_line = line
+                sym = m["sym"]
+                if sym.startswith("_Z"):
+                    demangled = _demangle_short(sym)
+                    formatted_line = line.replace(sym, demangled, 1)
+                lines.append("  " + formatted_line.strip())
+            elif stripped == "":
+                lines.append("")
+            elif not line.startswith(" ") and not line.startswith("\t"):
+                in_stack = False
+    trace = "\n".join(lines).strip()
+    return trace if trace else None
+
+
+def format_core_dump_stack(core_path: str, info: str | None = _UNSET) -> str | None:
+    """Format full stack trace(s) from `coredumpctl info` for a core file."""
+    if info is _UNSET:
+        info = get_core_dump_info(core_path)
+    if not info:
+        return None
+    stack = extract_core_stack_trace(info)
+    if not stack:
+        return None
+    unit, signal_name = _core_headers(info)
+    desc = (
+        f"{unit} ({signal_name})"
+        if unit and signal_name
+        else unit or signal_name or "crashed"
+    )
+    return f"Core dump: {core_path} [{desc}]\n{stack}"
+
+
+def describe_core_dump(core_path: str, info: str | None = _UNSET) -> str:
+    """One-line description of the crash behind a core, stable across hits.
+
+    Falls back to naming the core file when coredumpctl is unavailable or
+    has no record for it (workstations, the fboss-sim container).
+    """
+    fallback = f"core {os.path.basename(core_path)}"
+    if info is _UNSET:
+        info = get_core_dump_info(core_path)
+    if info:
+        return _summarize_core_stack(info)
     return fallback

@@ -357,3 +357,102 @@ def test_core_pid_from_name():
         == "31"
     )
     assert _mod._core_pid_from_name("/var/core/core.1234") is None
+
+
+def test_get_core_dump_info():
+    with _patched_coredumpctl(UNCLAIMED_WB_HANDLES):
+        assert _mod.get_core_dump_info(_CORE) == UNCLAIMED_WB_HANDLES
+    with patch.object(_mod.subprocess, "run", side_effect=FileNotFoundError):
+        assert _mod.get_core_dump_info(_CORE) is None
+    with _patched_coredumpctl("no stack trace here", returncode=0):
+        assert _mod.get_core_dump_info(_CORE) is None
+
+
+def test_extract_core_stack_trace():
+    trace = _mod.extract_core_stack_trace(UNCLAIMED_WB_HANDLES)
+    assert trace is not None
+    assert "Stack trace of thread 752240:" in trace
+    # C++ symbols are demangled in-place
+    assert "facebook::fboss::SaiStore::checkUnexpectedUnclaimedWarmbootHandles" in trace
+    assert (
+        "_ZNK8facebook5fboss8SaiStore39checkUnexpectedUnclaimedWarmbootHandlesEv"
+        not in trace
+    )
+    assert "facebook::fboss::SaiSwitch::initialStateApplied" in trace
+
+
+def test_extract_core_stack_trace_multi_thread():
+    info = (
+        "           PID: 42 (bgpd)\n"
+        "        Signal: 6 (ABRT)\n"
+        "    Executable: /opt/bgp/bin/bgpd\n"
+        "          Unit: bgpd.service\n"
+        "\n"
+        "Stack trace of thread 42:\n"
+        "                #0  0x00007f00 _ZNSt6thread4joinEv (libstdc++.so.6 + 0x1)\n"
+        "                #1  0x00007f01 main (bgpd + 0x2)\n"
+        "\n"
+        "Stack trace of thread 43:\n"
+        "                #0  0x00007f02 _ZN3bgp7ignoredEv (bgpd + 0x3)\n"
+        "\n"
+        "ELF object binary architecture: AMD x86-64\n"
+    )
+    trace = _mod.extract_core_stack_trace(info)
+    assert trace is not None
+    assert "Stack trace of thread 42:" in trace
+    assert "std::thread::join" in trace
+    assert "main" in trace
+    assert "Stack trace of thread 43:" in trace
+    assert "bgp::ignored" in trace
+    assert "ELF object" not in trace
+
+
+def test_format_core_dump_stack():
+    formatted = _mod.format_core_dump_stack(_CORE, info=UNCLAIMED_WB_HANDLES)
+    assert formatted is not None
+    assert formatted.startswith(
+        f"Core dump: {_CORE} [fboss_hw_agent@0.service (SIGABRT)]\n"
+    )
+    assert "Stack trace of thread 752240:" in formatted
+    assert (
+        "facebook::fboss::SaiStore::checkUnexpectedUnclaimedWarmbootHandles"
+        in formatted
+    )
+
+    # Empty or missing info returns None
+    assert _mod.format_core_dump_stack(_CORE, info="") is None
+    assert _mod.format_core_dump_stack(_CORE, info="no stack here") is None
+
+
+def test_describe_core_dump_with_precomputed_info():
+    # Pass precomputed info directly, ensuring no subprocess is run
+    with patch.object(_mod.subprocess, "run") as mock_run:
+        summary = _mod.describe_core_dump(_CORE, info=UNCLAIMED_WB_HANDLES)
+        assert summary.startswith(
+            "fboss_hw_agent@0.service SIGABRT in SaiStore::checkUnexpectedUnclaimedWarmbootHandles"
+        )
+        mock_run.assert_not_called()
+
+        # Explicitly passing info=None (fetch attempted and failed) does not trigger another fetch
+        fallback = _mod.describe_core_dump(_CORE, info=None)
+        assert (
+            fallback
+            == "core core.fboss_hw_agent-.0.61556c93.752068.1790547375000000.zst"
+        )
+        mock_run.assert_not_called()
+
+        # Similarly, format_core_dump_stack with info=None returns None without running subprocess
+        assert _mod.format_core_dump_stack(_CORE, info=None) is None
+        mock_run.assert_not_called()
+
+
+def test_core_headers():
+    unit, sig = _mod._core_headers(UNCLAIMED_WB_HANDLES)
+    assert unit == "fboss_hw_agent@0.service"
+    assert sig == "SIGABRT"
+
+    # Fallback to executable basename when Unit is not present
+    info_no_unit = "Signal: 11 (SEGV)\nExecutable: /opt/fboss/bin/bgpd\n"
+    unit, sig = _mod._core_headers(info_no_unit)
+    assert unit == "bgpd"
+    assert sig == "SIGSEGV"

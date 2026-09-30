@@ -951,13 +951,15 @@ class TestCrashDetection:
 
     _OLD_CORE = "/var/lib/systemd/coredump/core.fboss_sw_agent.0.x.9.9.zst"
 
-    def _reason(self, runner, exits, cores, summaries=None):
+    def _reason(self, runner, exits, cores, summaries=None, stacks=None):
         """Run one guarded test and return the crash reason handed to
         _apply_agent_crash, or None if it was not called. `summaries` maps a
-        core path to what `describe_core_dump` says about it."""
+        core path to what `describe_core_dump` says about it. `stacks` maps a
+        core path to its formatted stack trace."""
         outcome = RunOutcome("", [GtestResult("cold_boot.HwT.t", GtestStatus.OK, 1)])
         listings = iter([{self._OLD_CORE}, {self._OLD_CORE, *cores}])
         summaries = summaries or {}
+        stacks = stacks or {}
         with (
             patch(f"{self._MOD}.time.time", return_value=1.0),
             patch.object(runner, "_run_test", return_value=outcome),
@@ -967,8 +969,16 @@ class TestCrashDetection:
                 f"{self._MOD}.list_core_dumps", side_effect=lambda: next(listings)
             ) as c,
             patch(
+                f"{self._MOD}.get_core_dump_info",
+                side_effect=lambda core: f"info for {core}",
+            ),
+            patch(
                 f"{self._MOD}.describe_core_dump",
-                side_effect=lambda core: summaries.get(core, f"core {core}"),
+                side_effect=lambda core, *_, **__: summaries.get(core, f"core {core}"),
+            ),
+            patch(
+                f"{self._MOD}.format_core_dump_stack",
+                side_effect=lambda core, *_, **__: stacks.get(core),
             ),
         ):
             assert (
@@ -982,9 +992,10 @@ class TestCrashDetection:
         apply.assert_called_once()
         assert apply.call_args[0][:3] == (outcome, "cold_boot.", "HwT.t")
         # the core paths ride along for the banner, never in the reason
-        assert apply.call_args[0][4] == sorted(
-            core for core in cores if "sai_test-sai_im" not in core
-        )
+        expected_cores = sorted(core for core in cores if "sai_test-sai_im" not in core)
+        assert apply.call_args[0][4] == expected_cores
+        expected_stacks = [stacks[c] for c in expected_cores if c in stacks]
+        assert apply.call_args[0][5] == expected_stacks
         return apply.call_args[0][3]
 
     def test_unit_crash_is_reported(self, runner):
@@ -1082,3 +1093,57 @@ class TestCrashDetection:
         assert outcome.console_output.endswith(
             "\n".join(r.as_log_line() for r in outcome.results)
         )
+
+    def test_apply_injects_core_stack_trace_into_xml_and_console(
+        self, runner, tmp_path
+    ):
+        xml_file = tmp_path / "tr_current_run.xml"
+        xml_file.write_bytes(
+            b'<?xml version="1.0" encoding="UTF-8"?>\n'
+            b'<testsuites tests="1" failures="0" disabled="0" errors="0" time="1">\n'
+            b'  <testsuite name="HwT" tests="1" failures="0" disabled="0" errors="0" time="1">\n'
+            b'    <testcase name="t" status="run" result="completed" time="1" classname="HwT"/>\n'
+            b"  </testsuite>\n</testsuites>\n"
+        )
+        runner.TESTRESULT_CURRENT_RUN_FILE = str(xml_file)
+        outcome = RunOutcome(
+            "gtest line 1\n", [GtestResult("cold_boot.HwT.t", GtestStatus.OK, 1)]
+        )
+        stack = (
+            "Core dump: /var/core/core.1 [fboss_hw_agent@0.service (SIGABRT)]\n"
+            "Stack trace of thread 100:\n"
+            "  #0 0x123 abort (libc.so.6)\n"
+            "  #1 0x456 facebook::fboss::SaiStore::check (fboss_hw_agent)\n"
+        )
+        with patch.object(runner, "_collect_rma_showtech"):
+            runner._apply_agent_crash(
+                outcome,
+                "cold_boot.",
+                "HwT.t",
+                "fboss_hw_agent@0.service SIGABRT in SaiStore::check",
+                cores=["/var/core/core.1"],
+                core_stacks=[stack],
+            )
+        assert outcome.results[0].status == GtestStatus.FAILED
+        assert stack in outcome.console_output
+
+        # Verify failure in XML contains the stack trace
+        root = ET.fromstring(xml_file.read_bytes())
+        failure = next(root.iter("testcase")).find("failure")
+        assert failure is not None
+        assert "Agent crashed during test:" in failure.get("message")
+        assert stack in failure.text
+
+    def test_foreign_cores_include_stack_traces(self, runner):
+        hw = "/var/lib/systemd/coredump/core.fboss_hw_agent-.0.x.1.2.zst"
+        hw_stack = (
+            f"Core dump: {hw} [fboss_hw_agent@0.service (SIGABRT)]\nStack trace..."
+        )
+        reason = self._reason(
+            runner,
+            [],
+            [hw],
+            summaries={hw: "fboss_hw_agent@0.service SIGABRT in SaiStore::check"},
+            stacks={hw: hw_stack},
+        )
+        assert reason == "fboss_hw_agent@0.service SIGABRT in SaiStore::check"

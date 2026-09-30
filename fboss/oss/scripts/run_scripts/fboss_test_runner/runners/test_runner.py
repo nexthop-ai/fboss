@@ -69,6 +69,8 @@ from fboss_test_runner.crash_detection import (
     core_is_from,
     describe_core_dump,
     find_unclean_unit_exits,
+    format_core_dump_stack,
+    get_core_dump_info,
     list_core_dumps,
 )
 from fboss_test_runner.reporters.console_reporter import ConsoleReporter
@@ -307,6 +309,7 @@ class TestRunner(abc.ABC):
         test_to_run: str,
         reason: str,
         cores: list[str] | None = None,
+        core_stacks: list[str] | None = None,
     ) -> None:
         """Downgrade a test to FAILED because an agent crashed while it ran.
 
@@ -327,20 +330,30 @@ class TestRunner(abc.ABC):
             f"{reason}{core_note} -- marking test FAILED"
         )
         print(banner, flush=True)
+        if core_stacks:
+            for stack in core_stacks:
+                print(stack, flush=True)
         for result in run_outcome.results:
             if result.status in (GtestStatus.OK, GtestStatus.SKIPPED):
                 result.status = GtestStatus.FAILED
+        banner_lines = [banner]
+        if core_stacks:
+            banner_lines.extend(core_stacks)
         run_outcome.console_output = "\n".join(
-            [run_outcome.console_output.rstrip("\n"), banner]
+            [run_outcome.console_output.rstrip("\n")]
+            + banner_lines
             + [result.as_log_line() for result in run_outcome.results]
         )
         if os.path.exists(self.TESTRESULT_CURRENT_RUN_FILE):
-            inject_failure_into_xml(
-                self.TESTRESULT_CURRENT_RUN_FILE,
-                message,
+            failure_text = (
                 f"{message}\n\nThe test binary reported its own result, but a "
                 "production agent crashed (and was restarted by systemd) while "
-                "the test was running, so the result is not trustworthy.",
+                "the test was running, so the result is not trustworthy."
+            )
+            if core_stacks:
+                failure_text += "\n\n" + "\n\n".join(core_stacks)
+            inject_failure_into_xml(
+                self.TESTRESULT_CURRENT_RUN_FILE, message, failure_text
             )
         self._collect_rma_showtech(test_to_run)
 
@@ -963,7 +976,14 @@ class TestRunner(abc.ABC):
             for core in list_core_dumps() - cores_before
             if not core_is_from(core, own_binary)
         )
-        core_reasons = [describe_core_dump(core) for core in cores]
+        core_reasons = []
+        core_stacks = []
+        for core in cores:
+            info = get_core_dump_info(core)
+            core_reasons.append(describe_core_dump(core, info=info))
+            stack = format_core_dump_stack(core, info=info)
+            if stack:
+                core_stacks.append(stack)
         # A core summary names the unit and the crash; the journal's
         # "<unit> main process dumped core" line for the same unit only
         # repeats the first half, so drop it to stay within the reason cap.
@@ -975,7 +995,12 @@ class TestRunner(abc.ABC):
         reasons.extend(core_reasons)
         if reasons:
             self._apply_agent_crash(
-                run_outcome, test_prefix, test_to_run, "; ".join(reasons), cores
+                run_outcome,
+                test_prefix,
+                test_to_run,
+                "; ".join(reasons),
+                cores,
+                core_stacks,
             )
         return run_outcome
 
