@@ -11,6 +11,7 @@
 #pragma once
 
 #include <functional>
+#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,14 +27,15 @@ namespace facebook::fboss {
 // This allows tests to inject custom paths and control the singleton instance
 class TestableConfigSession : public ConfigSession {
  public:
+  using ConfigPathResolver =
+      std::function<std::string(cli::ServiceType service)>;
+
   TestableConfigSession(
       std::string sessionConfigDir,
       std::string systemConfigDir,
       SessionInit init = SessionInit::CreateIfAbsent)
-      : ConfigSession(
-            std::move(sessionConfigDir),
-            std::move(systemConfigDir),
-            init) {}
+      : ConfigSession(std::move(sessionConfigDir), systemConfigDir, init),
+        systemConfigDir_(std::move(systemConfigDir)) {}
 
   // Constructor with mock FbossServiceUtil
   TestableConfigSession(
@@ -42,8 +44,9 @@ class TestableConfigSession : public ConfigSession {
       std::unique_ptr<FbossServiceUtil> fbossServiceUtil)
       : ConfigSession(
             std::move(sessionConfigDir),
-            std::move(systemConfigDir),
-            std::move(fbossServiceUtil)) {}
+            systemConfigDir,
+            std::move(fbossServiceUtil)),
+        systemConfigDir_(std::move(systemConfigDir)) {}
 
   // Expose protected setInstance() for testing
   using ConfigSession::setInstance;
@@ -63,6 +66,7 @@ class TestableConfigSession : public ConfigSession {
     mockSystemdFactory_ = std::move(factory);
   }
 
+<<<<<<< HEAD
   // Stubs the agent readiness probe restartService() waits on, so tests with a
   // mock systemd do not poll a real agent over thrift. Defaults to "ready".
   void setAgentReadyProbe(FbossServiceUtil::AgentReadyProbe probe) {
@@ -70,6 +74,17 @@ class TestableConfigSession : public ConfigSession {
   }
 
   void ensureFbossServiceUtil(const HostInfo& /*hostInfo*/) override {
+||||||| f430fe62b2
+  void ensureFbossServiceUtil(const HostInfo& /*hostInfo*/) override {
+=======
+  void setConfigPathResolver(ConfigPathResolver resolver) {
+    configPathResolver_ = std::move(resolver);
+  }
+
+  void ensureFbossServiceUtil(
+      const HostInfo& /*hostInfo*/,
+      bool /*needsAgentState*/) override {
+>>>>>>> 2d934aedf2d14c62cdb037e74ea20268bf538ade
     if (!fbossServiceUtil_) {
       if (mockSystemdFactory_) {
         auto probe = agentReadyProbe_
@@ -99,7 +114,23 @@ class TestableConfigSession : public ConfigSession {
     return commandLine_;
   }
 
+  std::string queryLocalServiceConfigPath(
+      cli::ServiceType service) const override {
+    if (configPathResolver_) {
+      return configPathResolver_(service);
+    }
+    switch (service) {
+      case cli::ServiceType::AGENT:
+        return systemConfigDir_ + "/agent.conf";
+      case cli::ServiceType::BGP:
+        return systemConfigDir_ + "/bgpcpp.conf";
+    }
+    throw std::runtime_error("Unknown service type");
+  }
+
  private:
+  std::string systemConfigDir_;
+  ConfigPathResolver configPathResolver_;
   std::string commandLine_;
   bool multiSwitchOverride_{false};
   std::vector<int> switchIndexesOverride_{0};

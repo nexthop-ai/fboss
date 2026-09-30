@@ -82,6 +82,7 @@ cpp_unittest(
         "CmdDeleteTrafficCounterTest.cpp",
         "CmdDeleteTunnelIpInIpTest.cpp",
         "CmdDeleteVlanTest.cpp",
+        "ConfigFileManagerTest.cpp",
         "ConfigSessionSystemdTest.cpp",
         "CmdDeleteBgpPolicyAsPathListTest.cpp",
         "CmdDeleteBgpPolicyCommunityListTest.cpp",
