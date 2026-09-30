@@ -60,6 +60,7 @@ class MockAgentCounters : public AgentCountersIf {
 class MockFbossCtrlAgent : public apache::thrift::ServiceHandler<FbossCtrl> {
  public:
   MOCK_METHOD(void, reloadConfig, ());
+  MOCK_METHOD(void, getOption, (std::string&, std::unique_ptr<std::string>));
   MOCK_METHOD(void, getAclTableGroup, (AclTableThrift&));
   MOCK_METHOD(void, getNdpTable, (std::vector<NdpEntryThrift>&));
 
