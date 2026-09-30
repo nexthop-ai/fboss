@@ -144,7 +144,14 @@ jobs:
           else
             echo "::warning::cloud provider unknown; the bgpd RPM build will miss Monobuild's remote cache entries"
           fi
-          (cd nh && bazel build "${action_env[@]}" //BGP:distro_bgpd.rpm)
+          # timeout-minutes kills this step's shell but not bazel: the client
+          # and its daemonized server keep building into nh/ and race the
+          # rm in the next step ("Directory not empty"). Cancel the build
+          # ourselves first -- SIGINT is bazel's Ctrl-C, which stops the
+          # server's actions and lets the client exit -- inside the step's
+          # 30 minutes.
+          (cd nh && timeout --signal=INT --kill-after=2m 27m \
+            bazel build "${action_env[@]}" //BGP:distro_bgpd.rpm)
           mkdir -p .build_dir/downloads
           cp nh/bazel-bin/BGP/distro_bgpd.rpm .build_dir/downloads/
 
@@ -152,7 +159,14 @@ jobs:
       # Docker build context.
       - name: Drop the nh checkout before the image build
         if: always() && steps.nh-checkout.outcome == 'success'
-        run: sudo rm -rf nh
+        run: |
+          # Stop nh's bazel server so nothing is still writing into nh/ while
+          # it is deleted. Best effort: bazel may be absent if setup-bazel was
+          # skipped, and a server that is still mid-build would block this.
+          if [ -d nh ] && command -v bazel >/dev/null; then
+            (cd nh && timeout 2m bazel shutdown) || true
+          fi
+          sudo rm -rf nh
 
       # buildx exports the layer cache to FBOSS_SIM_CACHE_REF; Harbor serves
       # pulls anonymously but authenticates writes.
