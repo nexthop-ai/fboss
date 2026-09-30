@@ -25,7 +25,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v6
       - name: Select build region
-        uses: ./.github/actions/select-region
+        uses: nexthop-ai/nh-ci/.github/actions/select-region@main
 
       # Build the fake-SAI agents, fboss2 targets, and fsdb into
       # <workspace>/.build_dir (read by fboss-sim-docker-package.py). Also

@@ -26,7 +26,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v7
       - name: Select build region
-        uses: ./.github/actions/select-region
+        uses: nexthop-ai/nh-ci/.github/actions/select-region@main
       - name: Run Docker-based build for FBOSS
         run: >
           sudo

@@ -29,7 +29,7 @@ runs:
   using: composite
   steps:
     - name: Select build region
-      uses: ./.github/actions/select-region
+      uses: nexthop-ai/nh-ci/.github/actions/select-region@main
     - name: Build FBOSS Docker image (with registry cache)
       shell: bash
       env:
