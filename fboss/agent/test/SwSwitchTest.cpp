@@ -545,6 +545,25 @@ TEST_F(SwSwitchTest, overlappingUpdatesWithExit) {
   blockingUpdates.join();
 }
 
+// Split-agent exit stops SwSwitch before the thrift server, so a syncFib can
+// still be running; its ScopeGuard calls stopLoggingRouteUpdates() after
+// stop() destroyed the RouteUpdateLogger.
+TEST_F(SwSwitchTest, routeUpdateLoggingDuringExit) {
+  const std::string kIdentifier{"fboss-agent-warmboot-BGPD"};
+  std::atomic<bool> done{false};
+  std::thread syncFibLogging([this, &done, &kIdentifier] {
+    while (!done) {
+      sw->logRouteUpdates("::", 0, kIdentifier);
+      sw->stopLoggingRouteUpdates(kIdentifier);
+    }
+  });
+  sw->gracefulExit();
+  done = true;
+  syncFibLogging.join();
+  sw->logRouteUpdates("0.0.0.0", 0, kIdentifier);
+  sw->stopLoggingRouteUpdates(kIdentifier);
+}
+
 TEST_F(SwSwitchTest, multiSwitchFb303Stats) {
   std::map<SwitchID, const HwAsic*> asicMap;
   CounterCache counters(sw);

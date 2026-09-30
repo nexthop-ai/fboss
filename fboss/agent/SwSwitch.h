@@ -789,10 +789,15 @@ class SwSwitch : public HwSwitchCallback {
   }
 
   /*
-   * Get the RouteUpdateLogger object
+   * Run fn on the RouteUpdateLogger. No-op once stop() has destroyed it:
+   * thrift route calls (e.g. an in-flight syncFib) can outlive stop().
    */
-  RouteUpdateLogger* getRouteUpdateLogger() {
-    return routeUpdateLogger_.get();
+  template <typename Fn>
+  void withRouteUpdateLogger(Fn&& fn) {
+    auto logger = routeUpdateLogger_.rlock();
+    if (*logger) {
+      fn(**logger);
+    }
   }
 
   LinkAggregationManager* getLagManager() {
@@ -1409,7 +1414,7 @@ class SwSwitch : public HwSwitchCallback {
   std::unique_ptr<TamManager> tamManager_;
   std::unique_ptr<MPLSHandler> mplsHandler_;
   std::unique_ptr<PacketLogger> packetLogger_;
-  std::unique_ptr<RouteUpdateLogger> routeUpdateLogger_;
+  folly::Synchronized<std::unique_ptr<RouteUpdateLogger>> routeUpdateLogger_;
   std::unique_ptr<StateDeltaLogger> stateDeltaLogger_;
   std::unique_ptr<LinkAggregationManager> lagManager_;
   std::unique_ptr<ResolvedNexthopMonitor> resolvedNexthopMonitor_;

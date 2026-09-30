@@ -2437,22 +2437,23 @@ void ThriftHandler::startLoggingRouteUpdates(
     std::unique_ptr<RouteUpdateLoggingInfo> info) {
   auto log = LOG_THRIFT_CALL_WITH_STATS(DBG1, sw_->stats());
   ensureConfigured(__func__);
-  auto* routeUpdateLogger = sw_->getRouteUpdateLogger();
   folly::IPAddress addr = toIPAddress(*info->prefix()->ip());
   uint8_t mask = static_cast<uint8_t>(*info->prefix()->prefixLength());
   RouteUpdateLoggingInstance loggingInstance{
       RoutePrefix<folly::IPAddress>{addr, mask},
       *info->identifier(),
       *info->exact()};
-  routeUpdateLogger->startLoggingForPrefix(loggingInstance);
+  sw_->withRouteUpdateLogger(
+      [&](auto& logger) { logger.startLoggingForPrefix(loggingInstance); });
 }
 
 void ThriftHandler::startLoggingMplsRouteUpdates(
     std::unique_ptr<MplsRouteUpdateLoggingInfo> info) {
   auto log = LOG_THRIFT_CALL_WITH_STATS(DBG1, sw_->stats());
   ensureConfigured(__func__);
-  auto* routeUpdateLogger = sw_->getRouteUpdateLogger();
-  routeUpdateLogger->startLoggingForLabel(*info->label(), *info->identifier());
+  sw_->withRouteUpdateLogger([&](auto& logger) {
+    logger.startLoggingForLabel(*info->label(), *info->identifier());
+  });
 }
 
 void ThriftHandler::stopLoggingRouteUpdates(
@@ -2460,42 +2461,46 @@ void ThriftHandler::stopLoggingRouteUpdates(
     std::unique_ptr<std::string> identifier) {
   auto log = LOG_THRIFT_CALL_WITH_STATS(DBG1, sw_->stats());
   ensureConfigured(__func__);
-  auto* routeUpdateLogger = sw_->getRouteUpdateLogger();
   folly::IPAddress addr = toIPAddress(*prefix->ip());
   uint8_t mask = static_cast<uint8_t>(*prefix->prefixLength());
-  routeUpdateLogger->stopLoggingForPrefix(addr, mask, *identifier);
+  sw_->withRouteUpdateLogger([&](auto& logger) {
+    logger.stopLoggingForPrefix(addr, mask, *identifier);
+  });
 }
 
 void ThriftHandler::stopLoggingAnyRouteUpdates(
     std::unique_ptr<std::string> identifier) {
   auto log = LOG_THRIFT_CALL_WITH_STATS(DBG1, sw_->stats());
   ensureConfigured(__func__);
-  auto* routeUpdateLogger = sw_->getRouteUpdateLogger();
-  routeUpdateLogger->stopLoggingForIdentifier(*identifier);
+  sw_->withRouteUpdateLogger(
+      [&](auto& logger) { logger.stopLoggingForIdentifier(*identifier); });
 }
 
 void ThriftHandler::stopLoggingAnyMplsRouteUpdates(
     std::unique_ptr<std::string> identifier) {
   auto log = LOG_THRIFT_CALL_WITH_STATS(DBG1, sw_->stats());
   ensureConfigured(__func__);
-  auto* routeUpdateLogger = sw_->getRouteUpdateLogger();
-  routeUpdateLogger->stopLabelLoggingForIdentifier(*identifier);
+  sw_->withRouteUpdateLogger(
+      [&](auto& logger) { logger.stopLabelLoggingForIdentifier(*identifier); });
 }
 
 void ThriftHandler::stopLoggingMplsRouteUpdates(
     std::unique_ptr<MplsRouteUpdateLoggingInfo> info) {
   auto log = LOG_THRIFT_CALL_WITH_STATS(DBG1, sw_->stats());
   ensureConfigured(__func__);
-  auto* routeUpdateLogger = sw_->getRouteUpdateLogger();
-  routeUpdateLogger->stopLoggingForLabel(*info->label(), *info->identifier());
+  sw_->withRouteUpdateLogger([&](auto& logger) {
+    logger.stopLoggingForLabel(*info->label(), *info->identifier());
+  });
 }
 
 void ThriftHandler::getRouteUpdateLoggingTrackedPrefixes(
     std::vector<RouteUpdateLoggingInfo>& infos) {
   auto log = LOG_THRIFT_CALL_WITH_STATS(DBG1, sw_->stats());
   ensureConfigured(__func__);
-  auto* routeUpdateLogger = sw_->getRouteUpdateLogger();
-  for (const auto& tracked : routeUpdateLogger->getTrackedPrefixes()) {
+  std::vector<RouteUpdateLoggingInstance> trackedPrefixes;
+  sw_->withRouteUpdateLogger(
+      [&](auto& logger) { trackedPrefixes = logger.getTrackedPrefixes(); });
+  for (const auto& tracked : trackedPrefixes) {
     RouteUpdateLoggingInfo info;
     IpPrefix prefix;
     *prefix.ip() = toBinaryAddress(tracked.prefix.network());
@@ -2511,8 +2516,10 @@ void ThriftHandler::getMplsRouteUpdateLoggingTrackedLabels(
     std::vector<MplsRouteUpdateLoggingInfo>& infos) {
   auto log = LOG_THRIFT_CALL_WITH_STATS(DBG1, sw_->stats());
   ensureConfigured(__func__);
-  auto* routeUpdateLogger = sw_->getRouteUpdateLogger();
-  for (const auto& tracked : routeUpdateLogger->gettTrackedLabels()) {
+  LabelsTracker::TrackedLabelsInfo trackedLabels;
+  sw_->withRouteUpdateLogger(
+      [&](auto& logger) { trackedLabels = logger.gettTrackedLabels(); });
+  for (const auto& tracked : trackedLabels) {
     MplsRouteUpdateLoggingInfo info;
     *info.identifier() = tracked.first;
     info.label() = tracked.second.value();

@@ -491,7 +491,7 @@ SwSwitch::SwSwitch(
       tamManager_(new TamManager(this)),
       mplsHandler_(new MPLSHandler(this)),
       packetLogger_(new PacketLogger(this)),
-      routeUpdateLogger_(new RouteUpdateLogger(this)),
+      routeUpdateLogger_(std::make_unique<RouteUpdateLogger>(this)),
       resolvedNexthopMonitor_(new ResolvedNexthopMonitor(this)),
       resolvedNexthopProbeScheduler_(new ResolvedNexthopProbeScheduler(this)),
       remoteNeighborUpdater_(new RemoteNeighborUpdater(this)),
@@ -662,7 +662,9 @@ void SwSwitch::stop(bool isGracefulStop, bool revertToMinAlpmState) {
   ipv6_.reset();
 
   packetLogger_.reset();
-  routeUpdateLogger_.reset();
+  // Waits out in-flight thrift users (see withRouteUpdateLogger()); the old
+  // logger is destroyed after the lock is released.
+  routeUpdateLogger_.exchange(nullptr);
 
   if (heartbeatWatchdog_) {
     heartbeatWatchdog_->stop();
@@ -1792,11 +1794,12 @@ void SwSwitch::logRouteUpdates(
       RoutePrefix<folly::IPAddress>{folly::IPAddress{addr}, mask},
       identifier,
       false};
-  routeUpdateLogger_->startLoggingForPrefix(r);
+  withRouteUpdateLogger([&](auto& logger) { logger.startLoggingForPrefix(r); });
 }
 
 void SwSwitch::stopLoggingRouteUpdates(const std::string& identifier) {
-  routeUpdateLogger_->stopLoggingForIdentifier(identifier);
+  withRouteUpdateLogger(
+      [&](auto& logger) { logger.stopLoggingForIdentifier(identifier); });
 }
 
 void SwSwitch::registerStateObserver(
