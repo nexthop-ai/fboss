@@ -1,7 +1,7 @@
 name: NH PR
 
 on:
-  pull_request:
+  pull_request_target:
   merge_group:
 
 concurrency:
