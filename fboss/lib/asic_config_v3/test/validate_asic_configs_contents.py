@@ -23,14 +23,15 @@ import os
 import sys
 import unittest
 from enum import Enum
-from typing import Any, NamedTuple, Optional
+from typing import Any, ClassVar, NamedTuple, Optional
 from unittest.mock import patch
 
 import yaml
+from yaml.nodes import MappingNode, ScalarNode, SequenceNode
+
 from fboss.lib.asic_config_v3.base_generator import resolve_variant_config
 from fboss.lib.asic_config_v3.gen import get_generator
 from fboss.lib.asic_config_v3.paths import AsicConfigPaths, discover_platforms
-from yaml.nodes import MappingNode, ScalarNode, SequenceNode
 
 
 class ComparisonResult(Enum):
@@ -84,35 +85,46 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
     # truth is the YAML embedded in a materialized agent config. Keyed by the
     # variant's effective ``config_gen_type`` so that any platform declaring
     # one of these gen types is picked up without editing this table.
-    _MATERIALIZED_REFERENCE_DIRS = {
-        "HW_TEST": os.path.join("oss", "hw_test_configs"),
+    _MATERIALIZED_REFERENCE_DIRS: ClassVar[dict[str, str]] = {
+        "HW_TEST": os.path.join("oss", "hw_test_configs")
     }
     _MATERIALIZED_REFERENCE_SUFFIX = ".agent.materialized_JSON"
-    _MATERIALIZED_YAML_PATH = (
-        "platform",
-        "chip",
-        "asicConfig",
-        "common",
-        "yamlConfig",
-    )
+    _MATERIALIZED_YAML_PATH = ("platform", "chip", "asicConfig", "common", "yamlConfig")
     _MAX_DIFF_LINES = 200
 
     def _output_filename(self, platform: str, variant: str, extension: str) -> str:
         suffix = f"_{variant}" if variant else ""
         return f"{platform}{suffix}{extension}"
 
-    def _read_materialized_reference(self, path: str) -> str:
+    def _read_materialized_reference(self, path: str, extension: str = ".yml") -> str:
+        """Reference contents embedded in a materialized agent config.
+
+        XGS generators emit YAML, stored as the string at
+        ``platform.chip.asicConfig.common.yamlConfig``. DNX generators emit the
+        JSON document ``{"common": {"config": {...}}}``, stored as the mapping at
+        ``platform.chip.asicConfig.common``; it is re-serialized the way the
+        generator does so the two compare like for like.
+        """
         with open(path, encoding="utf-8") as f:
             value: Any = json.load(f)
 
-        for key in self._MATERIALIZED_YAML_PATH:
+        keys = self._MATERIALIZED_YAML_PATH
+        if extension == ".json":
+            # Stop at "common": the DNX config is a mapping, not a YAML string.
+            keys = keys[:-1]
+        for key in keys:
             if not isinstance(value, dict) or key not in value:
                 raise ValueError(
-                    f"Materialized config {path} does not contain "
-                    f"{'.'.join(self._MATERIALIZED_YAML_PATH)}"
+                    f"Materialized config {path} does not contain {'.'.join(keys)}"
                 )
             value = value[key]
 
+        if extension == ".json":
+            if not isinstance(value, dict):
+                raise ValueError(
+                    f"Materialized config {path} has a non-mapping ASIC config"
+                )
+            return json.dumps({"common": value}, indent=2)
         if not isinstance(value, str):
             raise ValueError(f"Materialized config {path} has a non-string YAML config")
         return value
@@ -140,13 +152,14 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
         paths: AsicConfigPaths,
         materialized_relative_path: Optional[str],
         output_filename: str,
+        extension: str = ".yml",
     ) -> tuple[str, str]:
         if materialized_relative_path:
             materialized_path = os.path.join(
                 paths.fboss_root, materialized_relative_path
             )
             return materialized_relative_path, self._read_materialized_reference(
-                materialized_path
+                materialized_path, extension
             )
 
         synced_relative_path = os.path.join(
@@ -168,10 +181,7 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
             )
         if isinstance(node, MappingNode):
             entries = [
-                (
-                    self._canonicalize_yaml_node(key),
-                    self._canonicalize_yaml_node(value),
-                )
+                (self._canonicalize_yaml_node(key), self._canonicalize_yaml_node(value))
                 for key, value in node.value
             ]
             return ("mapping", node.tag, tuple(sorted(entries, key=repr)))
@@ -183,9 +193,15 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
             for document in yaml.compose_all(contents)
         )
 
-    def _compare(self, generated: str, reference: str) -> ComparisonResult:
+    def _compare(
+        self, generated: str, reference: str, extension: str = ".yml"
+    ) -> ComparisonResult:
         if generated == reference:
             return ComparisonResult.BYTE_MATCH
+        if extension == ".json":
+            if json.loads(generated) == json.loads(reference):
+                return ComparisonResult.SEMANTIC_MATCH
+            return ComparisonResult.CONTENT_MISMATCH
         if self._canonicalize_yaml(generated) == self._canonicalize_yaml(reference):
             return ComparisonResult.SEMANTIC_MATCH
         return ComparisonResult.CONTENT_MISMATCH
@@ -213,10 +229,7 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
             ),
             file=sys.stderr,
         )
-        print(
-            "  ".join("-" * width for width in widths),
-            file=sys.stderr,
-        )
+        print("  ".join("-" * width for width in widths), file=sys.stderr)
         for row in rows:
             print(
                 "  ".join(
@@ -276,7 +289,21 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
         output_dir: str,
     ) -> tuple[Optional[GeneratedOutput], Optional[VariantVerification]]:
         display_variant = variant or "<default>"
-        output_filename = self._output_filename(platform, variant, ".yml")
+        try:
+            generator = get_generator(platform, variant, platform_config, paths)
+        except Exception as error:
+            return (
+                None,
+                VariantVerification(
+                    ComparisonRecord(
+                        platform, variant, "<not compared>", "GENERATION_ERROR"
+                    ),
+                    error=f"{platform}/{display_variant}: generation failed: {error}",
+                ),
+            )
+        output_filename = self._output_filename(
+            platform, variant, generator.output_extension
+        )
         generated_path = os.path.join(output_dir, output_filename)
         try:
             with open(generated_path, encoding="utf-8") as f:
@@ -306,7 +333,6 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
             return GeneratedOutput(output_filename, checked_in), None
 
         try:
-            generator = get_generator(platform, variant, platform_config, paths)
             generated = generator.generate()
         except Exception as error:
             return (
@@ -319,28 +345,8 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
                 ),
             )
 
-        expected_output_filename = self._output_filename(
-            platform, variant, generator.output_extension
-        )
-        if output_filename != expected_output_filename:
-            return (
-                None,
-                VariantVerification(
-                    ComparisonRecord(
-                        platform, variant, "<not compared>", "GENERATION_ERROR"
-                    ),
-                    error=(
-                        f"{platform}/{display_variant}: expected YAML output but "
-                        f"generator uses {generator.output_extension}"
-                    ),
-                ),
-            )
-
         stale_generated_file = generated_path if generated != checked_in else None
-        return (
-            GeneratedOutput(output_filename, generated, stale_generated_file),
-            None,
-        )
+        return (GeneratedOutput(output_filename, generated, stale_generated_file), None)
 
     def _verify_variant(
         self,
@@ -361,22 +367,28 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
 
         generated = generated_output.contents
         output_filename = generated_output.filename
+        extension = os.path.splitext(output_filename)[1]
         stale_generated_file = generated_output.stale_generated_file
 
         materialized_relative_path = self._materialized_reference_path(
             platform, variant, platform_config
         )
+        if materialized_relative_path is None and extension == ".json":
+            # Synced ASIC configs exist only for YAML (XGS) generators. A JSON
+            # (DNX) variant is verified against a materialized agent config, so
+            # only variants with a HW_TEST config_gen_type have a reference.
+            return VariantVerification(
+                ComparisonRecord(platform, variant, "<none>", "NO_REFERENCE"),
+                stale_generated_file=stale_generated_file,
+            )
         try:
             reference_path, reference = self._read_reference(
-                paths, materialized_relative_path, output_filename
+                paths, materialized_relative_path, output_filename, extension
             )
         except FileNotFoundError as error:
             return VariantVerification(
                 ComparisonRecord(
-                    platform,
-                    variant,
-                    str(error.filename),
-                    "REFERENCE_MISSING",
+                    platform, variant, str(error.filename), "REFERENCE_MISSING"
                 ),
                 stale_generated_file=stale_generated_file,
                 error=(
@@ -397,12 +409,12 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
             )
 
         try:
-            result = self._compare(generated, reference)
-        except yaml.YAMLError as error:
+            result = self._compare(generated, reference, extension)
+        except (yaml.YAMLError, json.JSONDecodeError) as error:
             return VariantVerification(
                 ComparisonRecord(platform, variant, reference_path, "PARSE_ERROR"),
                 stale_generated_file=stale_generated_file,
-                error=(f"{platform}/{display_variant}: failed to parse YAML: {error}"),
+                error=(f"{platform}/{display_variant}: failed to parse: {error}"),
             )
 
         record = ComparisonRecord(platform, variant, reference_path, result.value)
@@ -482,8 +494,7 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
 
     def test_comparison_result_classification(self) -> None:
         self.assertEqual(
-            self._compare("key: value\n", "key: value\n"),
-            ComparisonResult.BYTE_MATCH,
+            self._compare("key: value\n", "key: value\n"), ComparisonResult.BYTE_MATCH
         )
         self.assertEqual(
             self._compare("first: 1\nsecond: 2\n", "second: 2\nfirst: 1\n"),
@@ -511,12 +522,13 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
         )
         stderr = io.StringIO()
 
-        with patch("sys.stderr", stderr):
-            with self.assertRaisesRegex(
-                AssertionError,
-                "1 ASIC config v3 variant.*test_platform/test_variant",
-            ):
-                self._assert_verification_success(results)
+        with (
+            patch("sys.stderr", stderr),
+            self.assertRaisesRegex(
+                AssertionError, "1 ASIC config v3 variant.*test_platform/test_variant"
+            ),
+        ):
+            self._assert_verification_success(results)
 
         output = stderr.getvalue()
         self.assertIn("CONTENT_MISMATCH platform variants:", output)
