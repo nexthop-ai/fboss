@@ -63,6 +63,42 @@ class FdbManagerTest : public ManagerTestBase {
     applyNewState(newState);
   }
 
+  struct UnclaimedFdbEntries {
+    SaiFdbTraits::FdbEntry dynamicEntry;
+    SaiFdbTraits::FdbEntry staticEntry;
+    sai_object_id_t bridgePortId{};
+  };
+
+  // Creates entries directly in the fake SAI, as a prior agent run would have
+  // left them, and reloads them into the store as unclaimed warm boot handles.
+  UnclaimedFdbEntries createUnclaimedFdbEntries() {
+    auto vlanId = saiManagerTable->vlanManager()
+                      .getVlanHandle(VlanID(0))
+                      ->vlan->adapterKey();
+    auto bridgePortId = static_cast<sai_object_id_t>(
+        saiManagerTable->portManager()
+            .getPortHandle(PortID(intf0.remoteHosts[0].id))
+            ->bridgePort->adapterKey());
+    SaiFdbTraits::FdbEntry dynamicEntry{
+        1, vlanId, folly::MacAddress{"00:11:11:11:11:12"}};
+    SaiFdbTraits::FdbEntry staticEntry{
+        1, vlanId, folly::MacAddress{"00:11:11:11:11:13"}};
+    saiApiTable->fdbApi().create<SaiFdbTraits>(
+        dynamicEntry, {SAI_FDB_ENTRY_TYPE_DYNAMIC, bridgePortId, std::nullopt});
+    saiApiTable->fdbApi().create<SaiFdbTraits>(
+        staticEntry, {SAI_FDB_ENTRY_TYPE_STATIC, bridgePortId, std::nullopt});
+
+    auto& fdbStore = saiStore->get<SaiFdbTraits>();
+    EXPECT_EQ(fdbStore.size(), 0u);
+    fdbStore.reload(nullptr, nullptr);
+    // FakeSai always reports fdb Type as STATIC, so set it on the store object
+    // only (skipHwWrite).
+    fdbStore.get(dynamicEntry)
+        ->setAttribute(
+            SaiFdbTraits::Attributes::Type(SAI_FDB_ENTRY_TYPE_DYNAMIC), true);
+    return {dynamicEntry, staticEntry, bridgePortId};
+  }
+
   TestInterface intf0;
 
   static folly::MacAddress kMac() {
@@ -145,4 +181,42 @@ TEST_F(FdbManagerTest, getL2EntriesTest) {
     }
   }
   EXPECT_TRUE(found);
+}
+
+// With SOFTWARE learning an unclaimed dynamic entry must still be released,
+// else checkUnexpectedUnclaimedWarmbootHandles() aborts the agent.
+TEST_F(FdbManagerTest, removeUnclaimedDynamicEntriesSoftwareLearning) {
+  saiManagerTable->bridgeManager().setL2LearningMode(
+      cfg::L2LearningMode::SOFTWARE);
+  auto [dynamicEntry, staticEntry, bridgePortId] = createUnclaimedFdbEntries();
+  auto& fdbStore = saiStore->get<SaiFdbTraits>();
+  ASSERT_TRUE(fdbStore.hasUnexpectedUnclaimedWarmbootHandles());
+
+  saiManagerTable->fdbManager().removeUnclaimedDynanicEntries();
+
+  EXPECT_EQ(fdbStore.get(dynamicEntry), nullptr);
+  EXPECT_NE(fdbStore.get(staticEntry), nullptr);
+  // The static entry is still unclaimed by switch state.
+  EXPECT_TRUE(fdbStore.hasUnexpectedUnclaimedWarmbootHandles());
+  // release() drops the store's handle but must not touch hardware.
+  EXPECT_EQ(
+      saiApiTable->fdbApi().getAttribute(
+          dynamicEntry, SaiFdbTraits::Attributes::BridgePortId{}),
+      bridgePortId);
+}
+
+TEST_F(FdbManagerTest, removeUnclaimedDynamicEntriesHardwareLearning) {
+  saiManagerTable->bridgeManager().setL2LearningMode(
+      cfg::L2LearningMode::HARDWARE);
+  auto [dynamicEntry, staticEntry, bridgePortId] = createUnclaimedFdbEntries();
+  auto& fdbStore = saiStore->get<SaiFdbTraits>();
+
+  saiManagerTable->fdbManager().removeUnclaimedDynanicEntries();
+
+  EXPECT_EQ(fdbStore.get(dynamicEntry), nullptr);
+  EXPECT_NE(fdbStore.get(staticEntry), nullptr);
+  EXPECT_EQ(
+      saiApiTable->fdbApi().getAttribute(
+          dynamicEntry, SaiFdbTraits::Attributes::BridgePortId{}),
+      bridgePortId);
 }

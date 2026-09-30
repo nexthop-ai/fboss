@@ -457,28 +457,22 @@ std::shared_ptr<SaiFdbEntry> SaiFdbManager::createSaiObject(
   return store.setObject(key, attributes, publisherKey);
 }
 
+// Even with SOFTWARE learning, switch state can miss dynamic entries the ASIC
+// holds, e.g. learn events dropped on the CPU port or while sw agent is down.
 void SaiFdbManager::removeUnclaimedDynanicEntries() {
   auto l2LearningMode = managerTable_->bridgeManager().getL2LearningMode();
-  if (l2LearningMode == cfg::L2LearningMode::SOFTWARE) {
-    return;
-  }
-  // in hardware learning, switch state will not hold corresponding
-  // mac table entry for dynamic entries. because learning events are
-  // not dispatched to software switch.
-  // in software learning, switch state will hold corresponding mac table
-  // entry for dynamic entries. because learning events are are always
-  // dispatched to software switch.
-  // static fdb entries must always be claimed from switch state.
-  // dynamic entries may be discovered both during cold boot and warm boot
-  // for warm boot, dynamic entries may exist if agent warmboots before entries
-  // expire. for cold boot, learning begins as soon as ports come up and store
-  // is reloaded even on cold boot.
   saiStore_->get<SaiFdbTraits>().removeUnclaimedWarmbootHandlesIf(
-      [](const auto& fdbEntry) {
+      [l2LearningMode](const auto& fdbEntry) {
         auto type =
             std::get<SaiFdbTraits::Attributes::Type>(fdbEntry->attributes());
         if (type.value() != SAI_FDB_ENTRY_TYPE_DYNAMIC) {
           return false;
+        }
+        if (l2LearningMode == cfg::L2LearningMode::SOFTWARE) {
+          XLOGF(
+              WARN,
+              "Releasing dynamic fdb entry not claimed by switch state: {}",
+              *fdbEntry);
         }
         // do not attempt to delete in hardware but remove from store.
         fdbEntry->release();
