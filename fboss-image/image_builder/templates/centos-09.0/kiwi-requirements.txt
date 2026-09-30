@@ -1,0 +1,6 @@
+# pip requirements for the kiwi installed into the build container for this
+# template's OS release.
+#
+# kiwi >= 11.1.0 passes --align-end to sgdisk (OSInside/kiwi#3067), which needs
+# gdisk >= 1.0.9; CentOS Stream 9 ships gdisk 1.0.7.
+kiwi<11.1.0
