@@ -676,7 +676,13 @@ void CredoMacsecUtil::getSdkState(QsfpServiceAsyncClient* fbMacsecHandler) {
       ? FLAGS_filename
       : FLAGS_filename.substr(slashPos + 1);
 
-  bool rc = fbMacsecHandler->sync_getSdkState(basename);
+  bool rc = false;
+  try {
+    rc = fbMacsecHandler->sync_getSdkState(basename);
+  } catch (const std::exception& ex) {
+    printf("getSdkState failed: %s\n", ex.what());
+    return;
+  }
   printf(
       "SAI state dump to file %s%s was %s",
       kSdkDumpDir,
