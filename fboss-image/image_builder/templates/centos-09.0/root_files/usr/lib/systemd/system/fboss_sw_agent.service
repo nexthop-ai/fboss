@@ -24,7 +24,7 @@ ExecStart=/bin/bash -c 'source /opt/fboss/bin/setup_fboss_env && exec /opt/fboss
 Restart=always
 RestartSec=30
 TimeoutStartSec=180s
-TimeoutStopSec=30s
+TimeoutStopSec=90s
 
 StandardOutput=append:/var/facebook/logs/fboss/fboss_sw_agent.log
 StandardError=append:/var/facebook/logs/fboss/fboss_sw_agent.log
