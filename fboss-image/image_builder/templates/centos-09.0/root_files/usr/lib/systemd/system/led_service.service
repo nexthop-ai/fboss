@@ -2,7 +2,8 @@
 [Unit]
 Description=FBOSS LED Service
 After=platform_manager.service
-<<<<<<< HEAD
+After=fsdb.service
+After=qsfp_service.service
 After=rc-local.service
 Wants=fboss_init.service
 After=fboss_init.service
@@ -18,24 +19,6 @@ Environment="PATH=/opt/fboss/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/b
 Environment="LD_LIBRARY_PATH=/opt/fboss/lib"
 WorkingDirectory=/opt/fboss
 ExecStart=/bin/bash -c 'source /opt/fboss/bin/setup_fboss_env && exec /opt/fboss/bin/led_service $$([ -f /run/fboss/variant_flags ] && echo --flagfile=/run/fboss/variant_flags)'
-||||||| 2d934aedf2
-=======
-After=fsdb.service
-After=qsfp_service.service
-After=rc-local.service
-Wants=fboss_init.service
-After=fboss_init.service
-
-[Service]
-Type=simple
-LimitNOFILE=10000000
-LimitCORE=32G
-
-Environment="PATH=/opt/fboss/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
-Environment="LD_LIBRARY_PATH=/opt/fboss/lib"
-WorkingDirectory=/opt/fboss
-ExecStart=/bin/bash -c 'source /opt/fboss/bin/setup_fboss_env && exec /opt/fboss/bin/led_service'
->>>>>>> c159a235eb72e66ed3ecb2241637e8cf3230a78a
 
 Restart=always
 RestartSec=30

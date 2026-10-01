@@ -1877,17 +1877,6 @@ SaiPortManager::serdesAttributesFromSwPinConfigs(
   [[maybe_unused]] auto numExpectedTxLanes = 0;
   auto numExpectedRxLanes = 0;
   for (const auto& pinConfig : pinConfigs) {
-<<<<<<< HEAD
-    // Lanes without TX settings keep the SDK's default taps, so zero
-    // preemphasis must program explicit zeros or the link stays up.
-    std::optional<phy::TxSettings> txSettings = pinConfig.tx().to_optional();
-    if (!txSettings.has_value() && zeroPreemphasis) {
-      txSettings = phy::TxSettings{};
-    }
-    if (auto tx = txSettings ? &txSettings.value() : nullptr) {
-||||||| 2d934aedf2
-    if (auto tx = pinConfig.tx()) {
-=======
 #if defined(BRCM_SAI_SDK_GTE_13_0) ||            \
     (SAI_API_VERSION >= SAI_VERSION(1, 14, 0) && \
      !defined(BRCM_SAI_SDK_XGS_AND_DNX))
@@ -1901,8 +1890,13 @@ SaiPortManager::serdesAttributesFromSwPinConfigs(
     if (skipSerdesProgramming) {
       continue;
     }
-    if (auto tx = pinConfig.tx()) {
->>>>>>> c159a235eb72e66ed3ecb2241637e8cf3230a78a
+    // Lanes without TX settings keep the SDK's default taps, so zero
+    // preemphasis must program explicit zeros or the link stays up.
+    std::optional<phy::TxSettings> txSettings = pinConfig.tx().to_optional();
+    if (!txSettings.has_value() && zeroPreemphasis) {
+      txSettings = phy::TxSettings{};
+    }
+    if (auto tx = txSettings ? &txSettings.value() : nullptr) {
       ++numExpectedTxLanes;
       if (platform_->getAsic()->getAsicType() ==
               cfg::AsicType::ASIC_TYPE_YUBA ||

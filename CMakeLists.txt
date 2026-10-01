@@ -1590,14 +1590,8 @@ add_dependencies(fboss_platform_services
   rma-showtech
   # Unit Tests
   platform_config_lib_config_lib_test
-<<<<<<< HEAD
   # NH TODO platform_manager_device_path_resolver_test
-||||||| 2d934aedf2
-  platform_manager_device_path_resolver_test
-=======
   reboot_cause_finder_impl_test
-  platform_manager_device_path_resolver_test
->>>>>>> c159a235eb72e66ed3ecb2241637e8cf3230a78a
   platform_manager_platform_explorer_test
   platform_data_corral_sw_test
   platform_manager_utils_test

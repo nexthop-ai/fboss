@@ -294,12 +294,8 @@ bool Jericho3Asic::isSupported(Feature feature) const {
     case HwAsic::Feature::ACL_DST_IPV6_WORD_QUALIFIERS:
     case HwAsic::Feature::SLL_HLL_DISCARD_COUNTERS:
     case HwAsic::Feature::NEXT_HOP_GROUP_MEMBER_MONITORED_OBJECT:
-<<<<<<< HEAD
-    case HwAsic::Feature::TAJO_RX_SERDES_PARAMETERS:
-||||||| 2d934aedf2
-=======
     case HwAsic::Feature::ISOLATION_GROUP:
->>>>>>> c159a235eb72e66ed3ecb2241637e8cf3230a78a
+    case HwAsic::Feature::TAJO_RX_SERDES_PARAMETERS:
       return false;
   }
   return false;
