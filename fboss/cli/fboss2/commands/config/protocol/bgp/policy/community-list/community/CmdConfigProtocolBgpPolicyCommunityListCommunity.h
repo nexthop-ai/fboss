@@ -55,8 +55,7 @@ class BgpCommunityListCommunityConfig
 };
 
 // The community (member) level of the community-list family as its own CLI11
-// subcommand; the parent's parsed args arrive through the ancestor-args tuple,
-// mirroring CmdConfigProtocolBgpPolicyAsPathListEntry.
+// subcommand; the parent's parsed args arrive through the ancestor-args tuple.
 struct CmdConfigProtocolBgpPolicyCommunityListCommunityTraits
     : public WriteCommandTraits {
   using ParentCmd = CmdConfigProtocolBgpPolicyCommunityList;

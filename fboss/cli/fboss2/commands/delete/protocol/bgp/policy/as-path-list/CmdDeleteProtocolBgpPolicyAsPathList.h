@@ -20,30 +20,6 @@
 
 namespace facebook::fboss {
 
-<<<<<<< HEAD
-// Parsed `delete protocol bgp policy as-path-list <name>`, validated at
-// construction. The name is the list's identity, matched exactly the same way
-// the config command stores it. Mirrors BgpPeerGroupRef.
-class BgpAsPathListRef : public utils::BaseObjectArgType<std::string> {
- public:
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  /* implicit */ BgpAsPathListRef(std::vector<std::string> v);
-  const std::string& listName() const {
-    return listName_;
-  }
-  const static utils::ObjectArgTypeId id =
-      utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_MESSAGE;
-
- private:
-  std::string listName_;
-};
-
-struct CmdDeleteProtocolBgpPolicyAsPathListTraits : public WriteCommandTraits {
-  using ParentCmd = CmdDeleteProtocolBgpPolicy;
-  static void addCliArg(CLI::App& cmd, std::vector<std::string>& args) {
-    cmd.add_option("args", args, "<name>");
-||||||| 2d934aedf2
-=======
 // Parsed `delete protocol bgp policy as-path-list <name> [regex <regex>]`,
 // validated at construction. The name is the list's identity, matched exactly
 // the same way the config command stores it; the optional `regex` selector
@@ -75,7 +51,6 @@ struct CmdDeleteProtocolBgpPolicyAsPathListTraits : public WriteCommandTraits {
   using ParentCmd = CmdDeleteProtocolBgpPolicy;
   static void addCliArg(CLI::App& cmd, std::vector<std::string>& args) {
     cmd.add_option("args", args, "<name> [regex <regex>]");
->>>>>>> c159a235eb72e66ed3ecb2241637e8cf3230a78a
   }
   using ObjectArgType = BgpAsPathListRef;
   using RetType = std::string;

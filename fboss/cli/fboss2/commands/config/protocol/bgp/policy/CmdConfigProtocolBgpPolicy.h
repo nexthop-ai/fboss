@@ -10,7 +10,6 @@
 
 #pragma once
 
-<<<<<<< HEAD
 #include <string>
 #include <variant>
 #include "fboss/cli/fboss2/CmdHandler.h"
@@ -20,21 +19,9 @@
 namespace facebook::fboss {
 
 // Grouping node for `config protocol bgp policy <object-type> ...`. Holds no
-// state of its own; the per-object-type dispatchers (as-path-list,
-// community-list, and later prefix-list/routing-policy) are its subcommands.
-// Mirrors CmdConfigProtocolBgp.
-||||||| 2d934aedf2
-=======
-#include "fboss/cli/fboss2/CmdHandler.h"
-#include "fboss/cli/fboss2/commands/config/protocol/bgp/CmdConfigProtocolBgp.h"
-
-namespace facebook::fboss {
-
-// Grouping node for `config protocol bgp policy <object-type> ...`. Holds no
 // state of its own; the per-object-type dispatchers (as-path-list, and later
 // community-list/prefix-list/routing-policy) are its subcommands. Mirrors
 // CmdConfigProtocolBgp.
->>>>>>> c159a235eb72e66ed3ecb2241637e8cf3230a78a
 struct CmdConfigProtocolBgpPolicyTraits : public WriteCommandTraits {
   using ParentCmd = CmdConfigProtocolBgp;
   using ObjectArgType = std::monostate;
