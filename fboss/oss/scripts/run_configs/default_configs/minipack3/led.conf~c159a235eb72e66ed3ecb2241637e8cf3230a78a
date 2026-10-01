@@ -1,6 +1,0 @@
-{
-  "defaultCommandLineArgs": {
-    "mode": "montblanc"
-  },
-  "ledControlledThroughService": true
-}
