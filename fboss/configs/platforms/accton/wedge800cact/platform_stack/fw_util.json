@@ -162,7 +162,8 @@
             "programmer_type": "linux_spi:dev=",
             "programmer": "/run/devmap/flashes/MCB_SPI_MASTER_4_DEVICE_1",
             "chip": [
-              "W25X20"
+              "W25X20",
+              "MX25L2005(C)/MX25L2006E"
             ]
           }
         }
@@ -182,7 +183,8 @@
           "programmer_type": "linux_spi:dev=",
           "programmer": "/run/devmap/flashes/MCB_SPI_MASTER_4_DEVICE_1",
           "chip": [
-            "W25X20"
+            "W25X20",
+            "MX25L2005(C)/MX25L2006E"
           ]
         }
       },
@@ -192,7 +194,8 @@
           "programmer_type": "linux_spi:dev=",
           "programmer": "/run/devmap/flashes/MCB_SPI_MASTER_4_DEVICE_1",
           "chip": [
-            "W25X20"
+            "W25X20",
+            "MX25L2005(C)/MX25L2006E"
           ]
         }
       },
