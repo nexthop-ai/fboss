@@ -153,15 +153,17 @@ TEST_F(DeletePfcTest, DeleteChainLeafInward) {
   // headroom-bytes is optional in the config schema but not to the hw agent:
   // SaiBufferManager::setupIngressBufferPool dereferences it unguarded once a
   // priority group binds the pool, and the agent crash-loops without it.
+  // Keep the pool small: on TH5 a near-ITM-sized pool on top of the agent's
+  // default egress pool oversubscribes the MMU and SAI rejects the PG bind.
   runOk(
       {"config",
        "qos",
        "buffer-pool",
        kPool,
        "shared-bytes",
-       "78773528",
+       "1048576",
        "headroom-bytes",
-       "4405376"});
+       "65536"});
   runOk(
       {"config",
        "qos",
