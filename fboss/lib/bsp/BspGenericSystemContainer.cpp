@@ -9,6 +9,7 @@
 #include "fboss/lib/bsp/ladakh800bcls/Ladakh800bclsBspPlatformMapping.h"
 #include "fboss/lib/bsp/leh800bcls/Leh800bclsBspPlatformMapping.h"
 #include "fboss/lib/bsp/m4052actm/M4052ACTMBspPlatformMapping.h"
+#include "fboss/lib/bsp/m4061nhp/M4061nhpBspPlatformMapping.h"
 #include "fboss/lib/bsp/m4062nhp/M4062nhpBspPlatformMapping.h"
 #include "fboss/lib/bsp/m4340nhp/M4340nhpBspPlatformMapping.h"
 #include "fboss/lib/bsp/meru800bfa/Meru800bfaBspPlatformMapping.h"
@@ -245,6 +246,18 @@ M4062nhpSystemContainer::getInstance() {
   // since its ctor is what registers the singleton with the SingletonVault.
   // NOLINTNEXTLINE(readability-static-accessed-through-instance)
   return _m4062nhpSystemContainer.try_get();
+}
+
+using M4061nhpSystemContainer =
+    BspGenericSystemContainer<M4061nhpBspPlatformMapping>;
+folly::Singleton<M4061nhpSystemContainer> _m4061nhpSystemContainer;
+template <>
+std::shared_ptr<M4061nhpSystemContainer>
+M4061nhpSystemContainer::getInstance() {
+  // Instance-form try_get() keeps the singleton referenced so the linker
+  // cannot drop its registration with the SingletonVault.
+  // NOLINTNEXTLINE(readability-static-accessed-through-instance)
+  return _m4061nhpSystemContainer.try_get();
 }
 
 using M4340nhpSystemContainer =

@@ -6,6 +6,7 @@
 #include "fboss/lib/bsp/janga800bic/Janga800bicBspPlatformMapping.h"
 #include "fboss/lib/bsp/ladakh800bcls/Ladakh800bclsBspPlatformMapping.h"
 #include "fboss/lib/bsp/leh800bcls/Leh800bclsBspPlatformMapping.h"
+#include "fboss/lib/bsp/m4061nhp/M4061nhpBspPlatformMapping.h"
 #include "fboss/lib/bsp/m4062nhp/M4062nhpBspPlatformMapping.h"
 #include "fboss/lib/bsp/m4340nhp/M4340nhpBspPlatformMapping.h"
 #include "fboss/lib/bsp/meru800bfa/Meru800bfaBspPlatformMapping.h"
@@ -99,6 +100,13 @@ TEST_F(BspPlatformMapTest, checkNumPimTransceivers) {
   EXPECT_EQ(m4340nhpBspPlatformMap.numTransceivers(), 66);
   EXPECT_TRUE(m4340nhpBspPlatformMap.hasTcvrMapping(66));
   EXPECT_EQ(m4340nhpBspPlatformMap.getLedId(66, 1), 66);
+  // Check M4061nhp: 64 OSFP + 1 QSFP28 mgmt port
+  auto m4061nhpBspPlatformMap = M4061nhpBspPlatformMapping();
+  EXPECT_EQ(m4061nhpBspPlatformMap.numPims(), 1);
+  EXPECT_EQ(m4061nhpBspPlatformMap.numTransceivers(), 65);
+  EXPECT_TRUE(m4061nhpBspPlatformMap.hasTcvrMapping(65));
+  EXPECT_FALSE(m4061nhpBspPlatformMap.hasTcvrMapping(66));
+  EXPECT_EQ(m4061nhpBspPlatformMap.getLedId(65, 1), 65);
 }
 
 } // namespace facebook::fboss

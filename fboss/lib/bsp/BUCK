@@ -110,6 +110,7 @@ cpp_library(
         "//fboss/lib:common_file_utils",
         "//fboss/lib:gpiod_line",
         "//fboss/lib/bsp/icecube800bc:icecube800bc_bsp",
+        "//fboss/lib/bsp/m4061nhp:m4061nhp_bsp",
         "//fboss/lib/bsp/m4062nhp:m4062nhp_bsp",
         "//fboss/lib/bsp/m4340nhp:m4340nhp_bsp",
         "//fboss/lib/bsp/icetea800bc:icetea800bc_bsp",
