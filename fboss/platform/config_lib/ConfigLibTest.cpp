@@ -19,6 +19,7 @@ const std::string kTahan800bc = "tahan800bc";
 const std::string kBlackwolf800banw = "blackwolf800banw";
 const std::string kIcecube = "icecube";
 const std::string kM4062nhp = "m4062nhp";
+const std::string kM4340nhp = "m4340nhp";
 const std::string kNh4220f = "nh4220f";
 const std::string kM4061nhp = "m4061nhp";
 const std::string kSample = "sample";
@@ -97,6 +98,7 @@ TEST(ConfigLibTest, Basic) {
   EXPECT_NO_THROW(ConfigLib().getBspTestConfig(kBlackwolf800banw));
   EXPECT_NO_THROW(ConfigLib().getBspTestConfig(kM4062nhp));
   EXPECT_NO_THROW(ConfigLib().getBspTestConfig(kM4061nhp));
+  EXPECT_NO_THROW(ConfigLib().getBspTestConfig(kM4340nhp));
   EXPECT_THROW(
       ConfigLib().getBspTestConfig(kNonExistentPlatform), std::out_of_range);
 
