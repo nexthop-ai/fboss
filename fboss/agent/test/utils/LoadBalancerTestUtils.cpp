@@ -440,6 +440,39 @@ bool isTrafficSprayedImpl(
   return sprayed;
 }
 
+bool isWithinMemberShareBounds(
+    const std::map<std::string, uint64_t>& memberCounters,
+    const MemberShareBounds& bounds) {
+  const uint64_t numMembers = memberCounters.size();
+  uint64_t total = 0;
+  for (const auto& [member, counter] : memberCounters) {
+    total += counter;
+  }
+  if (!numMembers || !total) {
+    XLOG(INFO) << fmt::format(
+        "No traffic to check the share of, members: {} total: {}",
+        numMembers,
+        total);
+    return false;
+  }
+  bool withinBounds = true;
+  for (const auto& [member, counter] : memberCounters) {
+    const auto scaled = 100 * numMembers * counter;
+    if (scaled < uint64_t(bounds.floorPct) * total ||
+        scaled > uint64_t(bounds.ceilPct) * total) {
+      XLOG(INFO) << fmt::format(
+          "Member {} carried {}, outside {}%-{}% of the fair share {}",
+          member,
+          counter,
+          bounds.floorPct,
+          bounds.ceilPct,
+          total / numMembers);
+      withinBounds = false;
+    }
+  }
+  return withinBounds;
+}
+
 template <typename PortIdT, typename PortStatsT>
 std::pair<uint64_t, uint64_t> getHighestAndLowestBytes(
     const std::map<PortIdT, PortStatsT>& portIdToStats) {

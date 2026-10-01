@@ -83,19 +83,27 @@ class AgentFlowletSourcePortPruneTest : public AgentFlowletSwitchingTest {
   }
 
  protected:
-  static constexpr int kMaxDlbLoadBalanceDeviationPct = 25;
+  // Balance is asserted as each member's share of the fair share rather than
+  // as a min/max ratio: the ratio compares the two extremes and so compounds
+  // their noise, which tightens the bound as the group narrows. The mean lies
+  // between the extremes, so a 25% min/max deviation implies every member is
+  // within [80%, 125%] of the fair share.
+  static constexpr utility::MemberShareBounds kEvenDlbShareBounds{80, 125};
   // A pruned member hands its whole share to a single survivor rather than
-  // spreading it, so that survivor carries roughly twice what the others do.
-  // Measured at every width, including widths needing no padding.
-  static constexpr int kPrunedDlbLoadBalanceDeviationPct = 125;
+  // spreading it, so with one of N+1 members pruned the absorber lands at
+  // 2N/(N+1) of the fair share. Measured at every width, including widths
+  // needing no padding.
+  static constexpr utility::MemberShareBounds kPrunedDlbShareBounds{25, 200};
   // Injecting from a member skews DLB even with nothing pruned. DLB steers on
   // measured port load and the ingress port is carrying the injected burst
   // under PHY loopback, so it looks busy and is given less: measured 27% to
-  // 39% across widths, against under 5% when the ingress sits outside the
-  // group. The spread is the mechanism working, not a defect, so the bound is
-  // only here to catch a member dropping out entirely -- which the member
-  // count assertion covers more directly.
-  static constexpr int kMemberIngressDlbDeviationPct = 125;
+  // 39% min/max spread across widths, against under 5% when the ingress sits
+  // outside the group. The spread is the mechanism working, not a defect, so
+  // the band is only here to catch a member dropping out entirely -- which the
+  // member count assertion covers more directly.
+  static constexpr utility::MemberShareBounds kMemberIngressDlbShareBounds{
+      25,
+      200};
 
   static constexpr int kFlowCount = 2048;
   static constexpr int kPacketsPerFlow = 8;
@@ -123,19 +131,6 @@ class AgentFlowletSourcePortPruneTest : public AgentFlowletSwitchingTest {
     // spreads across members.
     SecondaryMultiFlow,
   };
-
-  // Widths that are not a multiple of four map flows onto members unevenly
-  // enough that the sampling noise at kFlowCount shows up: measured ~8% at five
-  // and six members against ~0.4% at four. The wider bound absorbs that.
-  //
-  // It is deliberately *not* justified by secondary padding. Padding keeps
-  // every member reachable but does not visibly skew the distribution -- with
-  // pruning off, five and six member groups measure even. The 2:1 case is
-  // pruning, and that uses kPrunedDlbLoadBalanceDeviationPct instead.
-  static int hashSpreadBoundPct(int ecmpWidth) {
-    return ecmpWidth % 4 == 0 ? kMaxDlbLoadBalanceDeviationPct
-                              : kPrunedDlbLoadBalanceDeviationPct;
-  }
 
   std::optional<size_t> maxRequiredInterfacePorts() const override {
     return std::nullopt;
@@ -227,9 +222,9 @@ class AgentFlowletSourcePortPruneTest : public AgentFlowletSwitchingTest {
   // expectedMembersWithTraffic
   //   How many members other than the ingress must carry a share. Defaults to
   //   the whole group, less the ingress when the ingress is a member.
-  // maxDeviationPct
-  //   If set, the lightest and heaviest forwarding member must be within this
-  //   percentage of each other. Unset skips the balance check.
+  // shareBounds
+  //   If set, every forwarding member must carry a share of the traffic within
+  //   these bounds of the fair share. Unset skips the balance check.
   // assertMemberCount
   //   Set false where which members forward cannot be pinned down: a DLB burst
   //   quantises onto flowlet sets, and a single flow can land on the ingress
@@ -240,7 +235,7 @@ class AgentFlowletSourcePortPruneTest : public AgentFlowletSwitchingTest {
       TrafficType traffic,
       bool expectPruned,
       std::optional<int> expectedMembersWithTraffic = std::nullopt,
-      std::optional<int> maxDeviationPct = std::nullopt,
+      std::optional<utility::MemberShareBounds> shareBounds = std::nullopt,
       bool assertMemberCount = true) {
     const bool ingressIsMember = ingressPortIdx < ecmpWidth;
     const bool dlbExpected = traffic == TrafficType::Dlb;
@@ -282,8 +277,7 @@ class AgentFlowletSourcePortPruneTest : public AgentFlowletSwitchingTest {
       int64_t egressed = 0;
       int64_t ingressEgressed = 0;
       int membersWithTraffic = 0;
-      int64_t lowestDelta = std::numeric_limits<int64_t>::max();
-      int64_t highestDelta = 0;
+      std::map<std::string, uint64_t> forwardedByMember;
       for (int i = 0; i < ecmpWidth; i++) {
         auto port = testPorts[i];
         auto delta = *statsAfter.at(port).outUnicastPkts_() -
@@ -294,9 +288,11 @@ class AgentFlowletSourcePortPruneTest : public AgentFlowletSwitchingTest {
         } else if (delta > 0) {
           membersWithTraffic++;
         }
+        // A member carrying nothing is left out: it would fail the floor and
+        // also pull the fair share down for the members that do forward. The
+        // member count assertion is what catches a member dropping out.
         if (delta > 0) {
-          lowestDelta = std::min(lowestDelta, delta);
-          highestDelta = std::max(highestDelta, delta);
+          forwardedByMember.emplace(fmt::format("{}", port), delta);
         }
         egressed += delta;
         XLOG(DBG2) << "Ecmp egress port " << i << " (" << port << "): delta "
@@ -329,21 +325,31 @@ class AgentFlowletSourcePortPruneTest : public AgentFlowletSwitchingTest {
         }
       }
       // Every member prune did not exclude has to carry a share. This is a
-      // count, not a balance check -- how evenly they share is
-      // maxDeviationPct's job, and padding makes an even split impossible at
-      // some widths.
+      // count, not a balance check -- how evenly they share is shareBounds'
+      // job, and padding makes an even split impossible at some widths.
       if (assertMemberCount) {
         EXPECT_EVENTUALLY_EQ(
             expectedMembersWithTraffic.value_or(
                 ingressIsMember ? ecmpWidth - 1 : ecmpWidth),
             membersWithTraffic);
       }
-      if (maxDeviationPct.has_value() && highestDelta > 0) {
-        XLOG(DBG2) << "Load spread lowest " << lowestDelta << ", highest "
+      if (shareBounds.has_value() && !forwardedByMember.empty()) {
+        uint64_t lowestDelta = forwardedByMember.begin()->second;
+        uint64_t highestDelta = lowestDelta;
+        for (const auto& member : forwardedByMember) {
+          if (member.second < lowestDelta) {
+            lowestDelta = member.second;
+          }
+          if (member.second > highestDelta) {
+            highestDelta = member.second;
+          }
+        }
+        XLOG(DBG2) << "Load spread across " << forwardedByMember.size()
+                   << " members, lowest " << lowestDelta << ", highest "
                    << highestDelta;
         EXPECT_EVENTUALLY_TRUE(
-            utility::isDeviationWithinThreshold(
-                lowestDelta, highestDelta, *maxDeviationPct));
+            utility::isWithinMemberShareBounds(
+                forwardedByMember, *shareBounds));
       }
     });
   }
@@ -385,7 +391,7 @@ TEST_F(
         TrafficType::Dlb,
         true,
         kEcmpWidth - 1 /* ingress is excluded from the count */,
-        kPrunedDlbLoadBalanceDeviationPct);
+        kPrunedDlbShareBounds);
   };
 
   verifyAcrossWarmBoots(setup, verify);
@@ -412,7 +418,7 @@ TEST_F(AgentFlowletSourcePortPruneTest, VerifyArsSourcePortPruneDisabled) {
         TrafficType::Dlb,
         false,
         kEcmpWidth - 1 /* the count excludes the ingress, pruned or not */,
-        kMemberIngressDlbDeviationPct);
+        kMemberIngressDlbShareBounds);
   };
 
   verifyAcrossWarmBoots(setup, verify);
@@ -1175,7 +1181,7 @@ TEST_F(
         TrafficType::Dlb,
         false,
         kEcmpWidth,
-        kMaxDlbLoadBalanceDeviationPct);
+        kEvenDlbShareBounds);
     sendFlowsAndVerifyPrune(
         kEcmpWidth,
         kFrontPanelPortForTest,
@@ -1189,7 +1195,7 @@ TEST_F(
         TrafficType::SecondaryMultiFlow,
         false,
         kEcmpWidth,
-        hashSpreadBoundPct(kEcmpWidth));
+        kEvenDlbShareBounds);
     // Phases 4-6, ingress on a member: same three bursts with the ingress
     // inside the group, so split horizon can act on it.
     sendFlowsAndVerifyPrune(
@@ -1198,7 +1204,7 @@ TEST_F(
         TrafficType::Dlb,
         false,
         kEcmpWidth - 1 /* the count excludes the ingress */,
-        kMemberIngressDlbDeviationPct);
+        kMemberIngressDlbShareBounds);
     // Nothing is pruned, so the hash may pick the ingress itself -- and the
     // helper counts the ingress separately, which would read as zero members.
     // Phase 2 already pins the one member property with an ingress outside the
@@ -1217,7 +1223,7 @@ TEST_F(
         TrafficType::SecondaryMultiFlow,
         false,
         kEcmpWidth - 1 /* ingress is excluded from the count */,
-        hashSpreadBoundPct(kEcmpWidth));
+        kEvenDlbShareBounds);
   };
 
   verifyAcrossWarmBoots(setup, verify);
@@ -1244,7 +1250,7 @@ TEST_F(
         TrafficType::Dlb,
         false,
         kEcmpWidth,
-        kMaxDlbLoadBalanceDeviationPct);
+        kEvenDlbShareBounds);
     sendFlowsAndVerifyPrune(
         kEcmpWidth,
         kFrontPanelPortForTest,
@@ -1258,7 +1264,7 @@ TEST_F(
         TrafficType::SecondaryMultiFlow,
         false,
         kEcmpWidth,
-        hashSpreadBoundPct(kEcmpWidth));
+        kEvenDlbShareBounds);
     // Phases 4-6, ingress on a member: same three bursts with the ingress
     // inside the group, so split horizon can act on it.
     sendFlowsAndVerifyPrune(
@@ -1267,7 +1273,7 @@ TEST_F(
         TrafficType::Dlb,
         false,
         kEcmpWidth - 1 /* the count excludes the ingress */,
-        kMemberIngressDlbDeviationPct);
+        kMemberIngressDlbShareBounds);
     // Nothing is pruned, so the hash may pick the ingress itself -- and the
     // helper counts the ingress separately, which would read as zero members.
     // Phase 2 already pins the one member property with an ingress outside the
@@ -1286,7 +1292,7 @@ TEST_F(
         TrafficType::SecondaryMultiFlow,
         false,
         kEcmpWidth - 1 /* ingress is excluded from the count */,
-        hashSpreadBoundPct(kEcmpWidth));
+        kEvenDlbShareBounds);
   };
 
   verifyAcrossWarmBoots(setup, verify);
@@ -1313,7 +1319,7 @@ TEST_F(
         TrafficType::Dlb,
         false,
         kEcmpWidth,
-        kMaxDlbLoadBalanceDeviationPct);
+        kEvenDlbShareBounds);
     sendFlowsAndVerifyPrune(
         kEcmpWidth,
         kFrontPanelPortForTest,
@@ -1327,7 +1333,7 @@ TEST_F(
         TrafficType::SecondaryMultiFlow,
         false,
         kEcmpWidth,
-        hashSpreadBoundPct(kEcmpWidth));
+        kEvenDlbShareBounds);
     // Phases 4-6, ingress on a member: same three bursts with the ingress
     // inside the group, so split horizon can act on it.
     sendFlowsAndVerifyPrune(
@@ -1336,7 +1342,7 @@ TEST_F(
         TrafficType::Dlb,
         false,
         kEcmpWidth - 1 /* the count excludes the ingress */,
-        kMemberIngressDlbDeviationPct);
+        kMemberIngressDlbShareBounds);
     // Nothing is pruned, so the hash may pick the ingress itself -- and the
     // helper counts the ingress separately, which would read as zero members.
     // Phase 2 already pins the one member property with an ingress outside the
@@ -1355,7 +1361,7 @@ TEST_F(
         TrafficType::SecondaryMultiFlow,
         false,
         kEcmpWidth - 1 /* ingress is excluded from the count */,
-        hashSpreadBoundPct(kEcmpWidth));
+        kEvenDlbShareBounds);
   };
 
   verifyAcrossWarmBoots(setup, verify);
@@ -1384,7 +1390,7 @@ TEST_F(
         TrafficType::Dlb,
         false,
         kEcmpWidth,
-        kMaxDlbLoadBalanceDeviationPct);
+        kEvenDlbShareBounds);
     sendFlowsAndVerifyPrune(
         kEcmpWidth,
         kFrontPanelPortForTest,
@@ -1398,7 +1404,7 @@ TEST_F(
         TrafficType::SecondaryMultiFlow,
         false,
         kEcmpWidth,
-        hashSpreadBoundPct(kEcmpWidth));
+        kEvenDlbShareBounds);
     // Phases 4-6, ingress on a member: same three bursts with the ingress
     // inside the group, so split horizon can act on it.
     sendFlowsAndVerifyPrune(
@@ -1407,7 +1413,7 @@ TEST_F(
         TrafficType::Dlb,
         true,
         kEcmpWidth - 1 /* the count excludes the ingress */,
-        kPrunedDlbLoadBalanceDeviationPct);
+        kPrunedDlbShareBounds);
     sendFlowsAndVerifyPrune(
         kEcmpWidth,
         kEcmpMemberInjectionPort,
@@ -1421,7 +1427,7 @@ TEST_F(
         TrafficType::SecondaryMultiFlow,
         true,
         kEcmpWidth - 1 /* ingress is excluded from the count */,
-        kPrunedDlbLoadBalanceDeviationPct);
+        kPrunedDlbShareBounds);
   };
 
   verifyAcrossWarmBoots(setup, verify);
@@ -1453,7 +1459,7 @@ TEST_F(
         TrafficType::Dlb,
         false,
         kEcmpWidth,
-        kMaxDlbLoadBalanceDeviationPct);
+        kEvenDlbShareBounds);
     sendFlowsAndVerifyPrune(
         kEcmpWidth,
         kFrontPanelPortForTest,
@@ -1467,7 +1473,7 @@ TEST_F(
         TrafficType::SecondaryMultiFlow,
         false,
         kEcmpWidth,
-        hashSpreadBoundPct(kEcmpWidth));
+        kEvenDlbShareBounds);
     // Phases 4-6, ingress on a member: same three bursts with the ingress
     // inside the group, so split horizon can act on it.
     sendFlowsAndVerifyPrune(
@@ -1476,7 +1482,7 @@ TEST_F(
         TrafficType::Dlb,
         true,
         kEcmpWidth - 1 /* the count excludes the ingress */,
-        kPrunedDlbLoadBalanceDeviationPct);
+        kPrunedDlbShareBounds);
     sendFlowsAndVerifyPrune(
         kEcmpWidth,
         kEcmpMemberInjectionPort,
@@ -1490,7 +1496,7 @@ TEST_F(
         TrafficType::SecondaryMultiFlow,
         true,
         kEcmpWidth - 1 /* ingress is excluded from the count */,
-        kPrunedDlbLoadBalanceDeviationPct);
+        kPrunedDlbShareBounds);
   };
 
   verifyAcrossWarmBoots(setup, verify);
@@ -1517,7 +1523,7 @@ TEST_F(
         TrafficType::Dlb,
         false,
         kEcmpWidth,
-        kMaxDlbLoadBalanceDeviationPct);
+        kEvenDlbShareBounds);
     sendFlowsAndVerifyPrune(
         kEcmpWidth,
         kFrontPanelPortForTest,
@@ -1531,7 +1537,7 @@ TEST_F(
         TrafficType::SecondaryMultiFlow,
         false,
         kEcmpWidth,
-        hashSpreadBoundPct(kEcmpWidth));
+        kEvenDlbShareBounds);
     // Phases 4-6, ingress on a member: same three bursts with the ingress
     // inside the group, so split horizon can act on it.
     sendFlowsAndVerifyPrune(
@@ -1540,7 +1546,7 @@ TEST_F(
         TrafficType::Dlb,
         true,
         kEcmpWidth - 1 /* the count excludes the ingress */,
-        kPrunedDlbLoadBalanceDeviationPct);
+        kPrunedDlbShareBounds);
     sendFlowsAndVerifyPrune(
         kEcmpWidth,
         kEcmpMemberInjectionPort,
@@ -1554,7 +1560,7 @@ TEST_F(
         TrafficType::SecondaryMultiFlow,
         true,
         kEcmpWidth - 1 /* ingress is excluded from the count */,
-        kPrunedDlbLoadBalanceDeviationPct);
+        kPrunedDlbShareBounds);
   };
 
   verifyAcrossWarmBoots(setup, verify);
@@ -1636,7 +1642,7 @@ TEST_F(AgentFlowletSprayGroupPruneTest, VerifySprayGroupNoPruneSpreadsEvenly) {
         TrafficType::Dlb,
         false,
         kEcmpWidth,
-        kMaxDlbLoadBalanceDeviationPct);
+        kEvenDlbShareBounds);
     sendFlowsAndVerifyPrune(
         kEcmpWidth,
         kFrontPanelPortForTest,
@@ -1650,7 +1656,7 @@ TEST_F(AgentFlowletSprayGroupPruneTest, VerifySprayGroupNoPruneSpreadsEvenly) {
         TrafficType::SecondaryMultiFlow,
         false,
         kEcmpWidth,
-        hashSpreadBoundPct(kEcmpWidth));
+        kEvenDlbShareBounds);
     // Phases 4-6, ingress on a member: same three bursts with the ingress
     // inside the group, so split horizon could act on it if it were on.
     sendFlowsAndVerifyPrune(
@@ -1659,7 +1665,7 @@ TEST_F(AgentFlowletSprayGroupPruneTest, VerifySprayGroupNoPruneSpreadsEvenly) {
         TrafficType::Dlb,
         false,
         kEcmpWidth - 1 /* ingress is excluded from the count */,
-        kPrunedDlbLoadBalanceDeviationPct);
+        kPrunedDlbShareBounds);
     sendFlowsAndVerifyPrune(
         kEcmpWidth,
         kEcmpMemberInjectionPort,
@@ -1673,7 +1679,7 @@ TEST_F(AgentFlowletSprayGroupPruneTest, VerifySprayGroupNoPruneSpreadsEvenly) {
         TrafficType::SecondaryMultiFlow,
         false,
         kEcmpWidth - 1 /* ingress is excluded from the count */,
-        hashSpreadBoundPct(kEcmpWidth));
+        kEvenDlbShareBounds);
   };
 
   verifyAcrossWarmBoots(setup, verify);
@@ -1705,7 +1711,7 @@ TEST_F(
         TrafficType::Dlb,
         false,
         kEcmpWidth,
-        kMaxDlbLoadBalanceDeviationPct);
+        kEvenDlbShareBounds);
     sendFlowsAndVerifyPrune(
         kEcmpWidth,
         kFrontPanelPortForTest,
@@ -1719,7 +1725,7 @@ TEST_F(
         TrafficType::SecondaryMultiFlow,
         false,
         kEcmpWidth,
-        hashSpreadBoundPct(kEcmpWidth));
+        kEvenDlbShareBounds);
     // Phases 4-6, ingress on a member: the ingress must now carry nothing, and
     // its share redistributes onto a single survivor.
     sendFlowsAndVerifyPrune(

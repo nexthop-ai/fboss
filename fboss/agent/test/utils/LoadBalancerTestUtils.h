@@ -187,6 +187,19 @@ struct MemberShareBounds {
   int ceilPct{200};
 };
 
+/*
+ * The same fair share check as isTrafficSprayedImpl, for callers that have
+ * already reduced their stats to one counter per member - typically the
+ * increment over a burst, in packets or in bytes.
+ *
+ * A member expected to carry nothing, such as an ingress a split horizon group
+ * has pruned, must be left out by the caller: it would fail the floor, and it
+ * would also pull the fair share down for the members that do forward.
+ */
+bool isWithinMemberShareBounds(
+    const std::map<std::string, uint64_t>& memberCounters,
+    const MemberShareBounds& bounds);
+
 template <typename PortStatsT>
 uint64_t getPortOutBytes(const PortStatsT& stats);
 
