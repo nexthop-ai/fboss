@@ -109,6 +109,14 @@ class HwTransceiverUtils {
   static void verifyCopper800gProfile(
       const TcvrState& tcvrState,
       const std::vector<MediaInterfaceId>& mediaInterfaces);
+  // The 200G/lane copper breakout family (CR1_200G/CR2_400G/CR4_800G). Media
+  // codes are only checked on active cables: qsfp_service reports every
+  // passive DAC as CR8_400G.
+  static void verifyCopper200gPerLaneProfile(
+      const TcvrState& tcvrState,
+      const std::vector<MediaInterfaceId>& mediaInterfaces,
+      MediaInterfaceCode expectedActiveCode,
+      ActiveCuHostInterfaceCode expectedActiveCuCode);
   static void verifyCopper1600gProfile(
       const TcvrState& tcvrState,
       const std::vector<MediaInterfaceId>& mediaInterfaces);
