@@ -17,6 +17,7 @@ constexpr auto kMorgan800cc = "morgan800cc";
 constexpr auto kJanga800bic = "janga800bic";
 constexpr auto kTahan800bc = "tahan800bc";
 constexpr auto kM4062nhp = "m4062nhp";
+constexpr auto kM4061nhp = "m4061nhp";
 } // namespace
 
 namespace facebook::fboss::platform::data_corral_service {
@@ -152,7 +153,8 @@ TEST(ConfigValidatorTest, RealConfigsValid) {
         kMontblanc,
         kMorgan800cc,
         kTahan800bc,
-        kM4062nhp}) {
+        kM4062nhp,
+        kM4061nhp}) {
     XLOG(INFO) << "Validating config for " << platform;
     LedManagerConfig config;
     auto configJson =

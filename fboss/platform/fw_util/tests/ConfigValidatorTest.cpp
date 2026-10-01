@@ -830,7 +830,7 @@ TEST(ConfigValidatorTest, RealConfigsValid) {
   // Regression coverage: committed fw_util configs must pass full validation.
   // Loads each baked config via ConfigLib so a malformed committed config is
   // caught in CI.
-  for (const auto& platform : {"m4062nhp"}) {
+  for (const auto& platform : {"m4062nhp", "m4061nhp"}) {
     XLOG(INFO) << "Validating fw_util config for " << platform;
     FwUtilConfig config;
     apache::thrift::SimpleJSONSerializer::deserialize<FwUtilConfig>(

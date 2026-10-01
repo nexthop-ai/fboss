@@ -1400,7 +1400,7 @@ TEST(ConfigValidatorTest, RealConfigsValid) {
   // Regression coverage: committed sensor_service configs must pass full
   // validation. Loads each baked config via ConfigLib so a malformed
   // committed config is caught in CI.
-  for (const auto& platform : {"m4062nhp"}) {
+  for (const auto& platform : {"m4062nhp", "m4061nhp"}) {
     XLOG(INFO) << "Validating sensor_service config for " << platform;
     SensorConfig config;
     apache::thrift::SimpleJSONSerializer::deserialize<SensorConfig>(
