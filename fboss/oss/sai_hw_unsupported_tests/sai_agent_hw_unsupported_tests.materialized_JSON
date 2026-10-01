@@ -4298,15 +4298,6 @@
         },
         {
           "test_name_regex": "AgentTrafficPfcGenTest.verifyIngressPriorityGroupWatermarks$"
-        },
-        {
-          "test_name_regex": "AgentTrafficPfcTest.verifyPfcWithZeroGlobalHeadRoomCfg$"
-        },
-        {
-          "test_name_regex": "AgentTrafficPfcZeroPgHeadroomTest.verifyPfcWithZeroPgHeadRoomCfg$"
-        },
-        {
-          "test_name_regex": "AgentTrafficPfcZeroPgHeadroomTest.verifyWithScaleCfgInCongestionDrops$"
         }
     ],
     "leaba/25.5.4210/25.5.4210/graphene200/multi_switch": [
