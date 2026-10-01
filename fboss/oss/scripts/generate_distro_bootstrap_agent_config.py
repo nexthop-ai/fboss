@@ -741,7 +741,7 @@ def generate_config(
         "staticIp2MplsRoutes": [],
         "portQueueConfigs": {},
         "switchSettings": {
-            "l2LearningMode": 0,
+            "l2LearningMode": 1,
             "qcmEnable": False,
             "ptpTcEnable": False,
             "l2AgeTimerSeconds": 300,
@@ -765,7 +765,7 @@ def generate_config(
     asic_common = _load_asic_config(asic_config_source, codename, script_path)
 
     default_command_line_args = {
-        "check_wb_handles": "true",
+        "check_wb_handles": "false",
         "cleanup_probed_kernel_data": "true",
         "counter_refresh_interval": "0",
         "disable_neighbor_updates": "false",
