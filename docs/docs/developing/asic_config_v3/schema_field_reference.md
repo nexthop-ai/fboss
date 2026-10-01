@@ -50,35 +50,15 @@ following fields.
 
 | Field | Description |
 |---|---|
-<<<<<<< HEAD
 | `asic_config_params` | Parameters controlling generator behavior, listed in the next table. |
 | `port_config` | XGS. Front-panel port settings: `default_speed` (in Mbps), `speed_to_fec` (mapping from speed to FEC mode), `enable` (the value emitted for `PC_PORT.ENABLE`), and `pc_port_overrides` (extra `PC_PORT` key/value lines emitted verbatim, for example `LINK_TRAINING`). This object is distinct from the DNX `port_config` string inside `asic_config_params`. |
 | `cpu_port` | XGS. CPU port settings: `speed` (in Mbps) and `num_lanes`. |
 | `mgmt_port` | XGS. Management port settings: `enabled` (whether the port is emitted at all), `enable` (the `PC_PORT.ENABLE` value), `in_port_block` (include the port in the `PORT` MTU range), and `speed_variants` (per-speed settings keyed by speed). |
 | `mgmt_port_overrides` | XGS. List of platform overrides of the ASIC-level management port defaults (`logical_id`, `physical_id`, `speed`, `num_lanes`, and `fec`), overriding the port at the same index. Entries beyond the defaults list declare additional ports and must be complete. Duplicate logical or physical port identifiers are rejected. |
-| `port_mapping_overrides` | XGS. Adjustments to the logical-to-physical port mapping formula: `core_range` (which cores participate, for example `"0-15,48-63"`), `num_lp_ports_on_even_core`, `num_logical_ports_per_datapath`, `lp_start_step_offset`, `lp_offset_simple`, and `special_core_offset_apply_all`. |
+| `port_mapping_overrides` | XGS. Adjustments to the logical-to-physical port mapping formula: `core_range` (which cores participate, for example `"0-15,48-63"`), `num_lp_ports_on_even_core`, `num_logical_ports_per_datapath`, `lp_start_step_offset`, `lp_offset_simple`, `special_core_offset_apply_all`, and `exclude_logical_ports` (logical port IDs omitted from `PC_PORT_PHYS_MAP`, `PC_PORT`, and `PORT`, for front-panel ports that are not populated on the platform). |
 | `platform_sai_overrides` | XGS. Platform-level SAI settings. These take precedence within the layered `global` sources and override the ASIC-level SAI overrides. |
 | `platform_sdk_overrides` | DNX. Platform-level SOC properties applied on top of the ASIC `base_sdk_settings` and declarative tables. Keys carry their SOC suffix inline. |
 | `device_config_overrides` | XGS. Key/value pairs written to the `DEVICE_CONFIG` output table, for example clock frequencies. |
-||||||| 2d934aedf2
-| `asic_config_params` | Parameters controlling generator behavior: `config_type` (output format), `config_gen_type` (generation profile, for example `DEFAULT`), `exact_match` (enables exact-match forwarding table entries), and `mmu_lossless` (enables MMU lossless mode for PFC and RDMA workloads). |
-| `port_config` | Front-panel port settings: `default_speed` (in Mbps), `speed_to_fec` (mapping from speed to FEC mode), `enable` (the value emitted for `PC_PORT.ENABLE`), and `pc_port_overrides` (extra `PC_PORT` key/value lines emitted verbatim, for example `LINK_TRAINING`). |
-| `cpu_port` | CPU port settings: `speed` (in Mbps) and `num_lanes`. |
-| `mgmt_port` | Management port settings: `enabled` (whether the port is emitted at all), `enable` (the `PC_PORT.ENABLE` value), `in_port_block` (include the port in the `PORT` MTU range), and `speed_variants` (per-speed settings keyed by speed). |
-| `mgmt_port_overrides` | Platform overrides of the ASIC-level management port defaults: `logical_id`, `physical_id`, `speed`, `num_lanes`, and `fec`. |
-| `port_mapping_overrides` | Adjustments to the logical-to-physical port mapping formula: `core_range` (which cores participate, for example `"0-15,48-63"`), `num_lp_ports_on_even_core`, `num_logical_ports_per_datapath`, `lp_start_step_offset`, `lp_offset_simple`, and `special_core_offset_apply_all`. |
-| `platform_sai_overrides` | Platform-level SAI settings. These take precedence within the layered `global` sources and override the ASIC-level SAI overrides. |
-| `device_config_overrides` | Key/value pairs written to the `DEVICE_CONFIG` output table, for example clock frequencies. |
-=======
-| `asic_config_params` | Parameters controlling generator behavior: `config_type` (output format), `config_gen_type` (generation profile, for example `DEFAULT`), `exact_match` (enables exact-match forwarding table entries), and `mmu_lossless` (enables MMU lossless mode for PFC and RDMA workloads). |
-| `port_config` | Front-panel port settings: `default_speed` (in Mbps), `speed_to_fec` (mapping from speed to FEC mode), `enable` (the value emitted for `PC_PORT.ENABLE`), and `pc_port_overrides` (extra `PC_PORT` key/value lines emitted verbatim, for example `LINK_TRAINING`). |
-| `cpu_port` | CPU port settings: `speed` (in Mbps) and `num_lanes`. |
-| `mgmt_port` | Management port settings: `enabled` (whether the port is emitted at all), `enable` (the `PC_PORT.ENABLE` value), `in_port_block` (include the port in the `PORT` MTU range), and `speed_variants` (per-speed settings keyed by speed). |
-| `mgmt_port_overrides` | Platform overrides of the ASIC-level management port defaults: `logical_id`, `physical_id`, `speed`, `num_lanes`, and `fec`. |
-| `port_mapping_overrides` | Adjustments to the logical-to-physical port mapping formula: `core_range` (which cores participate, for example `"0-15,48-63"`), `num_lp_ports_on_even_core`, `num_logical_ports_per_datapath`, `lp_start_step_offset`, `lp_offset_simple`, `special_core_offset_apply_all`, and `exclude_logical_ports` (logical port IDs omitted from `PC_PORT_PHYS_MAP`, `PC_PORT`, and `PORT`, for front-panel ports that are not populated on the platform). |
-| `platform_sai_overrides` | Platform-level SAI settings. These take precedence within the layered `global` sources and override the ASIC-level SAI overrides. |
-| `device_config_overrides` | Key/value pairs written to the `DEVICE_CONFIG` output table, for example clock frequencies. |
->>>>>>> c159a235eb72e66ed3ecb2241637e8cf3230a78a
 | `features` | Boolean toggles for optional configuration sections: `generate_dlb_config`, `generate_dlb_ecmp_config`, `generate_low_clock_freq_settings`, and `generate_autoload_board_settings`. Absent flags default to disabled. |
 | `conditional_settings` | Platform-level conditional settings, evaluated after the ASIC-level ones so that platform values take precedence. |
 | `preamble_file` | XGS. Path, relative to the `asic_config_v3` directory, of a preamble file prepended to the generated YAML. Honored only when the ASIC declares `preamble_support: true`. |
