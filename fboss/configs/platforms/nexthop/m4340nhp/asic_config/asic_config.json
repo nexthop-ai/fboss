@@ -353,6 +353,11 @@
         }
     },
     "variants": {
-        "default": {}
+        "default": {},
+        "hw_test": {
+            "asic_config_params": {
+                "config_gen_type": "HW_TEST"
+            }
+        }
     }
 }
