@@ -29,6 +29,10 @@ class _PortTemplate(NamedTuple):
 class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
     """Runner for link tests."""
 
+    # A passive DAC cannot carry 200G/lane, so a breakout variant that asks for
+    # it will never link. Exclude those cages rather than report a dead link.
+    _VARIANT_PASSIVE_CU_MAX_LANE_SPEED_MBPS = 106_250
+
     _VARIANT_SUMMARY_PREFIX = "LINK TEST"
 
     # Must stay in step with the PRBS_*_TEST instantiations in AgentEnsemblePrbsTest.cpp.

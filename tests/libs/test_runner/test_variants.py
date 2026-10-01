@@ -297,6 +297,21 @@ class TestResolvePair:
         )
         assert not res.ok and res.reason == "module" and "eth1/2/1" in res.detail
 
+    def test_passive_cu_lane_cap_applies_when_host_apps_match(self):
+        # A passive DAC can advertise a lane rate it cannot carry; the cap still excludes it.
+        host_apps = {"eth1/1/1": [(100000, 1)], "eth1/2/1": [(100000, 1)]}
+        media_tech = {"eth1/1/1": "PASSIVE_CU", "eth1/2/1": "OPTICAL_SMF"}
+        res = resolve_pair(
+            "eth1/1/1", "eth1/2/1", V8X100, CAGES, NO_CONSTRAINTS, {},
+            host_apps=host_apps, media_tech=media_tech, max_passive_cu_lane_speed=50_000,
+        )
+        assert not res.ok and res.reason == "cable" and "eth1/1/1" in res.detail
+        uncapped = resolve_pair(
+            "eth1/1/1", "eth1/2/1", V8X100, CAGES, NO_CONSTRAINTS, {},
+            host_apps=host_apps, media_tech=media_tech,
+        )
+        assert uncapped.ok
+
     def test_resolve_pairs_threads_host_apps(self):
         host_apps = {"eth1/1/1": [(100000, 2)]}
         res = resolve_pairs(

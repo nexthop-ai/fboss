@@ -170,6 +170,11 @@ class CablingAwareRunnerMixin:
             self._cached_full_mapping = load_full_platform_mapping(config_name)
         return self._cached_full_mapping
 
+    # Cap on the lane rate a passive DAC may be asked to run in a breakout
+    # variant. None means unconstrained: the qsfp tests program the module and
+    # do not need the link, so only the link runner sets this.
+    _VARIANT_PASSIVE_CU_MAX_LANE_SPEED_MBPS: int | None = None
+
     def _resolve_variant_pairs(
         self, pairs: dict[str, str], variant: Variant, config_name: str
     ) -> VariantResolution:
@@ -182,6 +187,8 @@ class CablingAwareRunnerMixin:
             self._host_speeds_by_port,
             self._is_copper_by_port,
             self._host_apps_by_port,
+            media_tech=self._media_tech_by_port,
+            max_passive_cu_lane_speed=self._VARIANT_PASSIVE_CU_MAX_LANE_SPEED_MBPS,
         )
         logger.info(resolution.summary(self._VARIANT_SUMMARY_PREFIX))
         return resolution

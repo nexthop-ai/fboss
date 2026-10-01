@@ -1,0 +1,14 @@
+"""2x800G breakout variant of t0_link_hw_tests.py:
+unsupported pairs are excluded and a platform with no supported pair reports SKIP."""
+
+import pytest
+
+from tests.link.t0_link_hw_tests import test_context as _base_context
+
+pytestmark = pytest.mark.topology("fboss-snake")
+
+test_context = {**_base_context, "variant": "2x800G"}
+
+
+def test_t0_link_hw_tests_2x800g(link_test_runner):
+    assert link_test_runner.run_test(test_context)

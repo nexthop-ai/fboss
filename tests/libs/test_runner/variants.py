@@ -142,7 +142,7 @@ def load_full_platform_mapping(config_name: str) -> dict[str, CageInfo]:
 @dataclass
 class PairResolution:
     ok: bool
-    reason: str | None = None  # "platform" | "module" | "peer"
+    reason: str | None = None  # "platform" | "module" | "cable" | "peer"
     detail: str = ""
     # (subport on port's cage, subport at the same lane offset on peer's cage)
     subport_pairs: list[tuple[str, str]] = field(default_factory=list)
@@ -247,6 +247,8 @@ def resolve_cage(
     host_speeds: Mapping[str, list[int] | None],
     is_copper: Mapping[str, bool | None],
     host_apps: Mapping[str, list[HostApp] | None] | None = None,
+    media_tech: Mapping[str, str | None] | None = None,
+    max_passive_cu_lane_speed: int | None = None,
 ) -> CageResolution:
     """Whether this cage alone can run the variant, ignoring its peer.
 
@@ -271,14 +273,26 @@ def resolve_cage(
                 f"{port} module advertises {format_host_apps(apps)}, "
                 f"not {want[0] // 1000}G over {want[1]} lanes",
             )
-        return CageResolution(True, profile_id=pid, subports=subs)
-    advertised = host_speeds.get(port)
-    if advertised and variant.speed_mbps not in advertised:
-        return CageResolution(
-            False,
-            "module",
-            f"{port} module advertises {sorted(advertised)} Mbps, not {variant.speed_mbps}",
-        )
+    else:
+        advertised = host_speeds.get(port)
+        if advertised and variant.speed_mbps not in advertised:
+            return CageResolution(
+                False,
+                "module",
+                f"{port} module advertises {sorted(advertised)} Mbps, not {variant.speed_mbps}",
+            )
+    # A passive DAC carries no SerDes of its own, so it cannot run a lane rate
+    # the cable was not built for. Only callers that need the link to actually
+    # come up pass a cap: qsfp programs the module and never links.
+    if max_passive_cu_lane_speed is not None and (media_tech or {}).get(port) == "PASSIVE_CU":
+        lane_speed = variant.speed_mbps // (cage.lanes // variant.factor)
+        if lane_speed > max_passive_cu_lane_speed:
+            return CageResolution(
+                False,
+                "cable",
+                f"{port} is a passive copper cable; {lane_speed} Mbps/lane "
+                f"exceeds the {max_passive_cu_lane_speed} Mbps/lane it can carry",
+            )
     return CageResolution(True, profile_id=pid, subports=subs)
 
 
@@ -290,12 +304,23 @@ def resolve_pair(
     host_speeds: Mapping[str, list[int] | None],
     is_copper: Mapping[str, bool | None],
     host_apps: Mapping[str, list[HostApp] | None] | None = None,
+    media_tech: Mapping[str, str | None] | None = None,
+    max_passive_cu_lane_speed: int | None = None,
 ) -> PairResolution:
     """Resolve one snake pair (named by lane-1 ports) for a non-max variant."""
     profiles = {}
     subs_by_end = {}
     for end in (port, peer):
-        cage_result = resolve_cage(end, variant, cages, host_speeds, is_copper, host_apps)
+        cage_result = resolve_cage(
+            end,
+            variant,
+            cages,
+            host_speeds,
+            is_copper,
+            host_apps,
+            media_tech=media_tech,
+            max_passive_cu_lane_speed=max_passive_cu_lane_speed,
+        )
         if not cage_result.ok:
             return PairResolution(False, cage_result.reason, cage_result.detail)
         profiles[end] = cage_result.profile_id
@@ -344,6 +369,8 @@ def resolve_pairs(
     host_speeds: Mapping[str, list[int] | None],
     is_copper: Mapping[str, bool | None],
     host_apps: Mapping[str, list[HostApp] | None] | None = None,
+    media_tech: Mapping[str, str | None] | None = None,
+    max_passive_cu_lane_speed: int | None = None,
 ) -> VariantResolution:
     """Resolve every snake pair for a non-max variant.
 
@@ -359,7 +386,17 @@ def resolve_pairs(
         seen.add(port)
         seen.add(peer)
         res.total += 1
-        pr = resolve_pair(port, peer, variant, cages, host_speeds, is_copper, host_apps)
+        pr = resolve_pair(
+            port,
+            peer,
+            variant,
+            cages,
+            host_speeds,
+            is_copper,
+            host_apps,
+            media_tech=media_tech,
+            max_passive_cu_lane_speed=max_passive_cu_lane_speed,
+        )
         if not pr.ok:
             reason = pr.reason or "platform"
             res.excluded_by_reason[reason] = res.excluded_by_reason.get(reason, 0) + 1
