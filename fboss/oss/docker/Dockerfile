@@ -40,7 +40,7 @@ RUN dnf install -y 'dnf-command(config-manager)' && \
     libzstd libzstd-devel lz4-devel ncurses-devel ninja-build \
     openssl openssl-devel openssl-libs \
     re2 re2-devel snappy-devel xxhash-devel xz-devel zlib-devel zlib-static \
-    libxml2-devel expat-devel wget git sudo lsof `basename "$USER_SHELL"` \
+    libxml2-devel expat-devel wget git sudo lsof unzip `basename "$USER_SHELL"` \
     libcap-devel libmount-devel libpciaccess-devel \
     umoci skopeo
 
@@ -149,6 +149,18 @@ RUN chmod 600 /etc/shadow
 RUN curl -L "https://github.com/nexthop-ai/sccache/releases/download/v12/sccache-0.12.0-$(uname -m)-unknown-linux-musl.zst" | \
     zstdmt -d > /usr/local/bin/sccache && \
     chmod +x /usr/local/bin/sccache
+
+# Nexthop-only: the AWS CLI, used by getdeps and the kernel build to publish
+# artifacts to the in-region static_deps mirror. Install the self-contained v2
+# bundle, not the v1 pip/dnf package: v1 runs on the system Python and breaks
+# once the pip installs above pull in urllib3>=2.
+ARG AWSCLI_VERSION=2.22.35
+RUN curl -fsSL --retry 5 --retry-delay 5 --retry-connrefused -o /tmp/awscliv2.zip \
+      "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m)-${AWSCLI_VERSION}.zip" && \
+    unzip -q -o /tmp/awscliv2.zip -d /tmp && \
+    /tmp/aws/install && \
+    rm -rf /tmp/aws /tmp/awscliv2.zip && \
+    aws --version
 
 # Install Bazelisk (auto-downloads the correct Bazel version)
 RUN dnf install -y java-11-openjdk-devel && \
