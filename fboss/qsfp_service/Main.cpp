@@ -1,12 +1,8 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-#include <thrift/lib/cpp2/server/ThriftServer.h> // NOLINT(misc-include-cleaner)
-
-#include <unistd.h>
-
 #include <folly/executors/FunctionScheduler.h>
 #include <folly/logging/Init.h>
-#include <folly/logging/LoggerDB.h>
+#include <thrift/lib/cpp2/server/ThriftServer.h> // NOLINT(misc-include-cleaner)
 
 #include "fboss/qsfp_service/PortManager.h"
 #include "fboss/qsfp_service/QsfpServer.h"
@@ -115,8 +111,5 @@ int main(int argc, char** argv) {
   // Start the server loop
   doServerLoop(server, handler);
 
-  // _exit(): skip global destructors, which re-drive still-live EventBases
-  // and abort. Exit 0 only if the signal-driven shutdown completed.
-  folly::LoggerDB::get().flushAllHandlers();
-  _exit(signalHandler.shutdownComplete() ? 0 : 1);
+  return 0;
 }

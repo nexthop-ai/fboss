@@ -4,7 +4,6 @@
 #include "fboss/qsfp_service/QsfpServiceHandler.h"
 
 #include <folly/init/Init.h>
-#include <folly/logging/xlog.h>
 
 namespace facebook::fboss {
 
@@ -27,14 +26,7 @@ int doServerLoop(
 void stopQsfpServerGracefully(
     std::shared_ptr<apache::thrift::ThriftServer> thriftServer) {
   thriftServer->stopListening();
-  // stop() alone is async; use StopController so exit() in main() doesn't
-  // race still-running IO workers.
-  auto stopController = thriftServer->getStopController();
-  if (auto lockedPtr = stopController.lock()) {
-    lockedPtr->stop();
-  } else {
-    XLOG(WARNING) << "Unable to stop Thrift Server";
-  }
+  thriftServer->stop();
 }
 
 } // namespace facebook::fboss
