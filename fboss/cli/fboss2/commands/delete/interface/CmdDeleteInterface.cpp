@@ -66,22 +66,6 @@ InterfaceDeleteConfig::InterfaceDeleteConfig(const std::vector<std::string>& v)
           kValidDeleteAttrs) {
   auto portNames = parseTokens(v);
 
-  // If no known attribute delimited the port list, catch a mistyped attribute:
-  // interface names always contain '/' (e.g. "eth1/1/1"); attribute names never
-  // do but do contain '-'.
-  if (attributes_.empty()) {
-    for (const auto& tok : portNames) {
-      if (tok.find('-') != std::string::npos &&
-          tok.find('/') == std::string::npos) {
-        throw std::invalid_argument(
-            fmt::format(
-                "Unknown delete attribute '{}'. Valid attributes are: {}",
-                tok,
-                kValidDeleteAttrs));
-      }
-    }
-  }
-
   // Validate ip-address / ipv6-address values as CIDR networks.
   for (const auto& [attr, value] : attributes_) {
     if (attr == "ip-address" || attr == "ipv6-address") {
@@ -90,7 +74,7 @@ InterfaceDeleteConfig::InterfaceDeleteConfig(const std::vector<std::string>& v)
   }
 
   // Resolve port names to InterfaceList (throws if any port is not found).
-  interfaces_ = utils::InterfaceList(std::move(portNames));
+  resolveInterfaces(portNames);
 }
 
 CmdDeleteInterfaceTraits::RetType CmdDeleteInterface::queryClient(
