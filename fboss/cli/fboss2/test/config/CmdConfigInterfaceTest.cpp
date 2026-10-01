@@ -320,9 +320,7 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigValueIsAttributeThrows) {
   }
 }
 
-// Test unknown attribute name - unknown attribute must appear AFTER a known
-// attribute to trigger the error. Otherwise, unknown tokens are treated as
-// port names and fail during port resolution.
+// Test unknown attribute name appearing after a known attribute.
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigUnknownAttributeThrows) {
   setupTestableConfigSession();
   try {
@@ -336,12 +334,153 @@ TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigUnknownAttributeThrows) {
   }
 }
 
-// Test non-existent port throws
+// An unknown attribute with no known attribute before it has nothing to end
+// the port list, so it lands in the port list. It must not be reported as a
+// missing port (NOS-11765): the message names it and offers the attributes.
+TEST_F(
+    CmdConfigInterfaceTestFixture,
+    interfaceConfigUnknownLeadingAttributeNotReportedAsMissingPort) {
+  setupTestableConfigSession();
+  try {
+    InterfacesConfig config({"eth1/1/1", "lookup-clas", "10,11"});
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_THAT(
+        e.what(),
+        HasSubstr(
+            "Neither a configured interface nor a valid attribute: "
+            "lookup-clas, 10,11."));
+    EXPECT_THAT(e.what(), HasSubstr("Valid attributes are"));
+    EXPECT_THAT(e.what(), Not(HasSubstr("not found in configuration")));
+    EXPECT_THAT(e.what(), Not(HasSubstr("eth1/1/1")));
+  }
+}
+
+// A leading unknown token with no hint in its spelling of what it was meant
+// to be gets the same message: every token the CLI could not use is listed.
+TEST_F(
+    CmdConfigInterfaceTestFixture,
+    interfaceConfigUnknownLeadingTokenListsEveryUnusedToken) {
+  setupTestableConfigSession();
+  try {
+    InterfacesConfig config({"eth1/1/1", "speed", "100000"});
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_THAT(
+        e.what(),
+        HasSubstr(
+            "Neither a configured interface nor a valid attribute: "
+            "speed, 100000."));
+    EXPECT_THAT(e.what(), Not(HasSubstr("eth1/1/1")));
+  }
+}
+
+// A *known* attribute later in the command ends the port list at itself, so a
+// bad attribute to its left still sits in the port list and must still be
+// reported as an attribute.
+TEST_F(
+    CmdConfigInterfaceTestFixture,
+    interfaceConfigUnknownAttributeBeforeKnownOneReportsAttribute) {
+  setupTestableConfigSession();
+  try {
+    InterfacesConfig config(
+        {"eth1/1/1", "lookup-clas", "10,11", "mtu", "9000"});
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_THAT(
+        e.what(),
+        HasSubstr(
+            "Neither a configured interface nor a valid attribute: "
+            "lookup-clas, 10,11."));
+    EXPECT_THAT(e.what(), Not(HasSubstr("not found in configuration")));
+  }
+}
+
+// Same, for a token the shape rule cannot classify: the hint must survive a
+// known attribute appearing later in the command.
+TEST_F(
+    CmdConfigInterfaceTestFixture,
+    interfaceConfigAmbiguousTokenBeforeKnownAttributeHintsAttributes) {
+  setupTestableConfigSession();
+  try {
+    InterfacesConfig config({"eth1/1/1", "speed", "100000", "mtu", "9000"});
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_THAT(
+        e.what(),
+        HasSubstr(
+            "Neither a configured interface nor a valid attribute: "
+            "speed, 100000."));
+    EXPECT_THAT(e.what(), Not(HasSubstr("not found in configuration")));
+  }
+}
+
+// A bad attribute is reported even when several valid ports precede it.
+TEST_F(
+    CmdConfigInterfaceTestFixture,
+    interfaceConfigUnknownAttributeAfterMultiplePorts) {
+  setupTestableConfigSession();
+  try {
+    InterfacesConfig config({"eth1/1/1", "eth1/2/1", "lookup-clas", "10,11"});
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_THAT(
+        e.what(),
+        HasSubstr(
+            "Neither a configured interface nor a valid attribute: "
+            "lookup-clas, 10,11."));
+    EXPECT_THAT(e.what(), Not(HasSubstr("eth1/")));
+  }
+}
+
+// A missing port and a bad attribute in one command are both listed, in the
+// order given, so neither mistake hides the other.
+TEST_F(
+    CmdConfigInterfaceTestFixture,
+    interfaceConfigListsMissingPortAndUnknownAttributeTogether) {
+  setupTestableConfigSession();
+  try {
+    InterfacesConfig config({"eth1/99/1", "lookup-clas", "10"});
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_THAT(
+        e.what(),
+        HasSubstr(
+            "Neither a configured interface nor a valid attribute: "
+            "eth1/99/1, lookup-clas, 10."));
+  }
+}
+
+// A hyphenated name that resolves is a real interface, not an attribute: the
+// attribute check must only fire on names that failed to resolve.
+TEST_F(
+    CmdConfigInterfaceTestFixture,
+    interfaceConfigHyphenatedInterfaceNameNotTreatedAsAttribute) {
+  setupTestableConfigSession(cmdPrefix_, "3001 name my-uplink");
+  auto cmd = CmdConfigInterface();
+  InterfacesConfig rename({"3001", "name", "my-uplink"});
+  cmd.queryClient(localhost(), rename);
+
+  InterfacesConfig bare({"my-uplink"});
+  EXPECT_EQ(bare.getInterfaces().size(), 1);
+
+  InterfacesConfig withAttr({"my-uplink", "mtu", "9000"});
+  EXPECT_EQ(withAttr.getInterfaces().size(), 1);
+}
+
+// Test non-existent port throws, naming the port.
 TEST_F(CmdConfigInterfaceTestFixture, interfaceConfigNonExistentPortThrows) {
   setupTestableConfigSession();
-  EXPECT_THROW(
-      InterfacesConfig({"eth1/99/1", "description", "Test"}),
-      std::invalid_argument);
+  try {
+    InterfacesConfig config({"eth1/99/1", "description", "Test"});
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_THAT(
+        e.what(),
+        HasSubstr(
+            "Neither a configured interface nor a valid attribute: "
+            "eth1/99/1."));
+  }
 }
 
 // ============================================================================

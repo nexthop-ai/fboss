@@ -114,8 +114,9 @@ InterfacesConfig::InterfacesConfig(const std::vector<std::string>& v)
   const bool allowMissing = findProfileValue(getAttributes()).has_value();
 
   // Now resolve the port names to InterfaceList. Unless allowMissing is set,
-  // this throws if any port is not found.
-  interfaces_ = utils::InterfaceList(std::move(portNames), allowMissing);
+  // this throws if any port is not found -- reported as an unknown attribute
+  // when the unresolved name is really a mistyped attribute.
+  resolveInterfaces(portNames, allowMissing);
 }
 
 namespace {

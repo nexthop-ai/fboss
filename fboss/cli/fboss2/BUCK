@@ -1163,6 +1163,7 @@ cpp_library(
         "commands/config/dhcp/reply_source_override/CmdConfigDhcpReplySourceOverride.cpp",
         "commands/config/history/CmdConfigHistory.cpp",
         "commands/config/interface/CmdConfigInterface.cpp",
+        "commands/config/interface/InterfaceAttrArgsBase.cpp",
         "commands/config/interface/ProfileValidation.cpp",
         "commands/config/interface/ipv6/CmdConfigInterfaceIpv6.cpp",
         "commands/config/interface/ipv6/ndp/CmdConfigInterfaceIpv6Ndp.cpp",

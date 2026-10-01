@@ -103,6 +103,23 @@ class InterfaceAttrArgsBase : public utils::MultiArgsConfigType {
                 std::move(validAttrs)}),
         interfaces_(std::vector<std::string>{}) {}
 
+  /*
+   * Resolves the leading object names into interfaces_.
+   *
+   * parseTokens() ends the object-name list at the first *known* attribute, so
+   * a mistyped attribute (or one this build does not know yet) stays in the
+   * object-name list and the resolver reports it as a port missing from the
+   * config. That reads as "my port disappeared" when the real problem is the
+   * attribute name.
+   *
+   * On failure, every name that did not resolve is listed as being neither.
+   * Both facts are established by then; which one the user meant is not
+   * something the spelling can settle, so no attempt is made to guess.
+   */
+  void resolveInterfaces(
+      const std::vector<std::string>& names,
+      bool allowMissing = false);
+
   utils::InterfaceList interfaces_;
 };
 

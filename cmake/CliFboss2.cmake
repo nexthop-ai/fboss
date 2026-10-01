@@ -925,6 +925,7 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/dhcp/reply_source_override/CmdConfigDhcpReplySourceOverride.h
   fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.cpp
   fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h
+  fboss/cli/fboss2/commands/config/interface/InterfaceAttrArgsBase.cpp
   fboss/cli/fboss2/commands/config/interface/InterfaceAttrArgsBase.h
   fboss/cli/fboss2/commands/config/interface/InterfaceIpUtils.h
   fboss/cli/fboss2/commands/config/interface/ProfileValidation.cpp

@@ -308,9 +308,17 @@ TEST_F(CmdDeleteInterfaceTestFixture, queryClientDescriptionAndMtuTogether) {
 
 TEST_F(CmdDeleteInterfaceTestFixture, unknownAttrRejected) {
   setupTestableConfigSession(cmdPrefix_, "eth1/1/1 unknown-attr");
-  EXPECT_THROW(
-      InterfaceDeleteConfig({"eth1/1/1", "unknown-attr"}),
-      std::invalid_argument);
+  try {
+    InterfaceDeleteConfig config({"eth1/1/1", "unknown-attr"});
+    FAIL() << "Expected std::invalid_argument";
+  } catch (const std::invalid_argument& e) {
+    EXPECT_THAT(
+        e.what(),
+        HasSubstr(
+            "Neither a configured interface nor a valid delete attribute: "
+            "unknown-attr."));
+    EXPECT_THAT(e.what(), Not(HasSubstr("not found in configuration")));
+  }
 }
 
 // ---------------------------------------------------------------------------
