@@ -598,10 +598,10 @@ SaiPortTraits::Attributes::AttributeHyperPortMemberList::operator()() {
 std::optional<sai_attr_id_t> SaiPortTraits::Attributes::
     AttributeCablePropagationDelayMediaType::operator()() {
 // Unsupported on TU1, which is XGS 15.x only. TH5/TH6 do support it, so 16.0
-// and later must not be caught by the TU1 exclusion.
+// and later, and 15.4 GA (TH6), must not be caught by the TU1 exclusion.
 #if defined(BRCM_SAI_SDK_GTE_13_0) &&       \
     (!defined(BRCM_SAI_SDK_XGS_GTE_15_0) || \
-     defined(BRCM_SAI_SDK_XGS_GTE_16_0))
+     defined(BRCM_SAI_SDK_XGS_GTE_16_0) || defined(SAI_VERSION_15_4_0_0_ODP))
   return SAI_PORT_ATTR_EXT_CABLE_PROPAGATION_DELAY_MEDIA_TYPE;
 #else
   return std::nullopt;
