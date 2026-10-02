@@ -21,6 +21,7 @@
 namespace facebook::fboss {
 
 // Parsed `as-path-list <name> [<attribute> <value> ...]`, validated at
+<<<<<<< HEAD
 // construction. An AsPathList is keyed by <name>. The list's entries are their
 // own subcommand (CmdConfigProtocolBgpPolicyAsPathListEntry), not attributes.
 //
@@ -59,6 +60,53 @@ struct CmdConfigProtocolBgpPolicyAsPathListTraits : public WriteCommandTraits {
     // No positionals_at_end() here: CLI11 must stay free to classify the
     // `entry` token as this command's subcommand rather than swallowing it
     // into args. See CmdConfigProtocolBgpPolicyRoutingPolicyTraits.
+||||||| 2d934aedf2
+=======
+// construction. An AsPathList is keyed by <name>. Its patterns are a flat
+// string list in the daemon, so they are flat `regex` attributes here (one per
+// invocation), not nested entries.
+//
+// Grammar (from the FBOSS proposed syntax):
+//   as-path-list <name>                          (create/select list)
+//   as-path-list <name> description <string>     (list attribute)
+//   as-path-list <name> regex <regex>            (append to as_paths, the
+//                                                 field bgpd matches on)
+//   as-path-list <name> boolean-operator <AND|OR> (also written through to
+//                                                 every term referencing
+//                                                 the list)
+class BgpAsPathListConfig : public utils::BaseObjectArgType<std::string> {
+ public:
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  /* implicit */ BgpAsPathListConfig(std::vector<std::string> v);
+  const std::string& listName() const {
+    return listName_;
+  }
+  const std::string& attr() const {
+    return attr_;
+  }
+  const std::vector<std::string>& values() const {
+    return values_;
+  }
+  const static utils::ObjectArgTypeId id =
+      utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_MESSAGE;
+
+ private:
+  std::string listName_;
+  std::string attr_; // matched dispatch key ("" = bare create)
+  std::vector<std::string> values_;
+};
+
+// The list level of the `config protocol bgp policy as-path-list` family;
+// dispatch and per-attribute parsing live in the .cpp so a new tunable is a
+// one-entry change. Mirrors CmdConfigProtocolBgpPolicyRoutingPolicy, whose
+// nested level (term / entry) is likewise its own subcommand.
+struct CmdConfigProtocolBgpPolicyAsPathListTraits : public WriteCommandTraits {
+  using ParentCmd = CmdConfigProtocolBgpPolicy;
+  static void addCliArg(CLI::App& cmd, std::vector<std::string>& args) {
+    // Stops CLI11 from classifying attribute tokens as subcommands once the
+    // list name is consumed. See CmdConfigProtocolBgpNeighborTraits.
+    cmd.positionals_at_end();
+>>>>>>> c159a235eb72e66ed3ecb2241637e8cf3230a78a
     cmd.add_option("args", args, "<name> [<attribute> <value> ...]");
   }
   using ObjectArgType = BgpAsPathListConfig;

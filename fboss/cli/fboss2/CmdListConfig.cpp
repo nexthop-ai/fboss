@@ -449,6 +449,7 @@ const CommandTree& kConfigCommandTree() {
                           commandHandler<CmdConfigProtocolBgpPolicy>,
                           argRegistrar<CmdConfigProtocolBgpPolicyTraits>,
                           {{
+<<<<<<< HEAD
                                "as-path-list",
                                "Configure BGP AS-path list: <name> "
                                "[<attribute> <value> ...] (description)",
@@ -487,6 +488,18 @@ const CommandTree& kConfigCommandTree() {
                                        CmdConfigProtocolBgpPolicyCommunityListCommunityTraits>,
                                }},
                            }},
+||||||| 2d934aedf2
+=======
+                              "as-path-list",
+                              "Configure BGP AS-path list: <name> "
+                              "[<attribute> <value> ...] (description, "
+                              "regex, boolean-operator)",
+                              commandHandler<
+                                  CmdConfigProtocolBgpPolicyAsPathList>,
+                              argRegistrar<
+                                  CmdConfigProtocolBgpPolicyAsPathListTraits>,
+                          }},
+>>>>>>> c159a235eb72e66ed3ecb2241637e8cf3230a78a
                       },
                   },
               },
@@ -874,6 +887,7 @@ const CommandTree& kConfigCommandTree() {
                     commandHandler<CmdDeleteProtocolBgpPolicy>,
                     argTypeHandler<CmdDeleteProtocolBgpPolicyTraits>,
                     {{
+<<<<<<< HEAD
                          "as-path-list",
                          "Delete a BGP AS-path list: <name>",
                          commandHandler<CmdDeleteProtocolBgpPolicyAsPathList>,
@@ -888,6 +902,16 @@ const CommandTree& kConfigCommandTree() {
                          argRegistrar<
                              CmdDeleteProtocolBgpPolicyCommunityListTraits>,
                      }},
+||||||| 2d934aedf2
+=======
+                        "as-path-list",
+                        "Delete a BGP AS-path list, or one of its regexes: "
+                        "<name> [regex <regex>]",
+                        commandHandler<CmdDeleteProtocolBgpPolicyAsPathList>,
+                        argRegistrar<
+                            CmdDeleteProtocolBgpPolicyAsPathListTraits>,
+                    }},
+>>>>>>> c159a235eb72e66ed3ecb2241637e8cf3230a78a
                 }},
            },
            {

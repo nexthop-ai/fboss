@@ -3170,8 +3170,14 @@ shared_ptr<Port> ThriftConfigApplier::updatePort(
       virtualChannels.push_back(std::move(vcFields));
     }
     if (auto limit = it->second.senderCreditLimit()) {
-      if (*limit < 0) {
-        throw FbossError("Invalid senderCreditLimit ", *limit);
+      if (*limit < 0 ||
+          *limit > cfg::switch_config_constants::
+                       PORT_CBFC_SENDER_CREDIT_LIMIT_MAX()) {
+        throw FbossError(
+            "Invalid senderCreditLimit ",
+            *limit,
+            ", must be 0..",
+            cfg::switch_config_constants::PORT_CBFC_SENDER_CREDIT_LIMIT_MAX());
       }
       cbfcSenderCreditLimit = *limit;
     }
@@ -4910,6 +4916,10 @@ shared_ptr<AclEntry> ThriftConfigApplier::createAcl(
   }
   if (auto ttl = config->ttl()) {
     newAcl->setTtl(AclTtl(*ttl->value(), *ttl->mask()));
+  }
+  if (auto mplsLabel0Ttl = config->mplsLabel0Ttl()) {
+    newAcl->setMplsLabel0Ttl(
+        AclTtl(*mplsLabel0Ttl->value(), *mplsLabel0Ttl->mask()));
   }
   if (auto lookupClassL2 = config->lookupClassL2()) {
     newAcl->setLookupClassL2(*lookupClassL2);

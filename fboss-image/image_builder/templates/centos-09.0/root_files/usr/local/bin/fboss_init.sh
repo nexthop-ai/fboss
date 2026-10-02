@@ -152,6 +152,7 @@ setup_coop_configs() {
   setup_agent_config "${platform_dir}/agent.conf"
   copy_config "${platform_dir}/qsfp.conf" "${COOP_DIR}/qsfp.conf" "qsfp.conf"
   copy_config "${platform_dir}/led.conf" "${COOP_DIR}/led.conf" "led.conf"
+<<<<<<< HEAD
 }
 
 get_eeprom_field() {
@@ -178,6 +179,9 @@ set_variant_flags() {
   mkdir -p "$(dirname "$VARIANT_FLAGFILE")"
   echo "--hwrev_state${state}_substate${substate}_respin${respin}=true" >"$VARIANT_FLAGFILE"
   log "Wrote $VARIANT_FLAGFILE"
+||||||| 2d934aedf2
+=======
+>>>>>>> c159a235eb72e66ed3ecb2241637e8cf3230a78a
 }
 
 enable_hw_agents() {
