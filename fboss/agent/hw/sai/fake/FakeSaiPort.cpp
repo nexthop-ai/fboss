@@ -59,6 +59,7 @@ sai_status_t create_port_fn(
   std::optional<uint32_t> prbsPolynomial;
   std::optional<int32_t> prbsConfig;
   std::optional<sai_object_id_t> ingressAcl;
+  std::optional<sai_object_id_t> isolationGroup;
   std::optional<sai_object_id_t> ingressMacsecAcl;
   std::optional<sai_object_id_t> egressMacsecAcl;
   std::optional<uint16_t> systemPortId;
@@ -206,6 +207,9 @@ sai_status_t create_port_fn(
         break;
       case SAI_PORT_ATTR_INGRESS_ACL:
         ingressAcl = attr_list[i].value.oid;
+        break;
+      case SAI_PORT_ATTR_ISOLATION_GROUP:
+        isolationGroup = attr_list[i].value.oid;
         break;
       case SAI_PORT_ATTR_INGRESS_MACSEC_ACL:
         ingressMacsecAcl = attr_list[i].value.oid;
@@ -357,6 +361,9 @@ sai_status_t create_port_fn(
   }
   if (egressSampleMirrorList.size()) {
     port.egressSampleMirrorList = egressSampleMirrorList;
+  }
+  if (isolationGroup.has_value()) {
+    port.isolationGroup = isolationGroup.value();
   }
   if (ingressAcl.has_value()) {
     port.ingressAcl = ingressAcl.value();
@@ -673,6 +680,9 @@ sai_status_t set_port_attribute_fn(
       break;
     case SAI_PORT_ATTR_PRBS_CONFIG:
       port.prbsConfig = attr->value.s32;
+      break;
+    case SAI_PORT_ATTR_ISOLATION_GROUP:
+      port.isolationGroup = attr->value.oid;
       break;
     case SAI_PORT_ATTR_INGRESS_ACL:
       port.ingressAcl = attr->value.oid;
@@ -1127,6 +1137,9 @@ sai_status_t get_port_attribute_fn(
         attr[i].value.rx_state.error_count = port.prbsRxState.error_count;
         break;
 #endif
+      case SAI_PORT_ATTR_ISOLATION_GROUP:
+        attr[i].value.oid = port.isolationGroup;
+        break;
       case SAI_PORT_ATTR_INGRESS_ACL:
         attr[i].value.oid = port.ingressAcl;
         break;

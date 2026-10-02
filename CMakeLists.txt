@@ -306,7 +306,7 @@ find_package(Glog REQUIRED)
 include_directories(${GLOG_INCLUDE_DIRS})
 find_package(folly CONFIG REQUIRED)
 include_directories(${FOLLY_INCLUDE_DIR})
-find_package(Boost REQUIRED COMPONENTS container filesystem)
+find_package(Boost REQUIRED COMPONENTS container filesystem regex)
 include_directories(${Boost_INCLUDE_DIR})
 find_package(fb303 CONFIG REQUIRED)
 find_package(fizz CONFIG REQUIRED)
@@ -1591,6 +1591,7 @@ add_dependencies(fboss_platform_services
   # Unit Tests
   platform_config_lib_config_lib_test
   # NH TODO platform_manager_device_path_resolver_test
+  reboot_cause_finder_impl_test
   platform_manager_platform_explorer_test
   platform_data_corral_sw_test
   platform_manager_utils_test

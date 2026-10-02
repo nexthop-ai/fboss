@@ -32073,12 +32073,6 @@
           "test_name_regex": "AgentSrv6MidpointTest/[01].dropPacketUASidIsLastSid$"
         },
         {
-          "test_name_regex": "AgentSrv6DecapTest/[01].verifySrv6DecapEcnMarking$"
-        },
-        {
-          "test_name_regex": "AgentSrv6DecapTest/[01].sendPacketForDecap$"
-        },
-        {
           "test_name_regex": "AgentMacSwLearningModeTest.VerifyDefaultSwAgingForPort$"
         },
         {
@@ -32652,12 +32646,6 @@
         },
         {
           "test_name_regex": "AgentSrv6MidpointTest/[01].dropPacketUASidIsLastSid$"
-        },
-        {
-          "test_name_regex": "AgentSrv6DecapTest/[01].verifySrv6DecapEcnMarking$"
-        },
-        {
-          "test_name_regex": "AgentSrv6DecapTest/[01].sendPacketForDecap$"
         },
         {
           "test_name_regex": "AgentMacSwLearningModeTest.VerifyDefaultSwAgingForPort$"

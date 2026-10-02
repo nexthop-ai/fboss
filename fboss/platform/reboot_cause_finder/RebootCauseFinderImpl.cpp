@@ -3,24 +3,43 @@
 #include "fboss/platform/reboot_cause_finder/RebootCauseFinderImpl.h"
 
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <ctime>
 #include <filesystem>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include <fmt/format.h>
+#include <folly/Conv.h>
 #include <folly/FileUtil.h>
+#include <folly/String.h>
 #include <folly/dynamic.h>
 #include <folly/json.h>
 #include <folly/logging/xlog.h>
 #include <gflags/gflags.h>
+#include <thrift/lib/cpp/util/EnumUtils.h>
 #include <thrift/lib/cpp2/protocol/Serializer.h>
 
 DEFINE_bool(
     clear_reboot_causes,
     false,
     "Clear reboot causes from all providers after reading");
+
+// Measured on minipack3n fboss332669634.ash7: a BMC power cycle at 19:51:57
+// reached btime at 20:17:51, a gap of 1554s, nearly all of it POST plus a PXE
+// attempt timing out before falling back to local disk. 1800 would have left
+// four minutes of margin. Too large only risks admitting an older event, which
+// nearest-to-btime selection already handles; too small silently misses the
+// cause.
+DEFINE_int32(
+    max_downtime_sec,
+    3600,
+    "How far before boot start to look for a kernel panic or a manual reboot. "
+    "Must cover shutdown, POST and bootloader, not the power-off duration: a "
+    "long outage leaves no log line at all and is reported by the hardware "
+    "providers instead.");
 
 namespace facebook::fboss::platform::reboot_cause_finder {
 
@@ -29,15 +48,33 @@ namespace {
 constexpr auto kHistoryDir = "/var/facebook/fboss/reboot_history";
 constexpr auto kProcBootIdPath = "/proc/sys/kernel/random/boot_id";
 
+// These three are properties of the kernel, systemd and kdump, identical on
+// every platform, so they are constants rather than per-platform config.
+constexpr auto kProcStatPath = "/proc/stat";
+// Scanning /var/crash turns up the processed subdir itself. It is scanned in
+// its own right, so it is not a dump name that failed to parse.
+constexpr auto kProcessedDirName = "processed";
+
+constexpr auto kKernelPanicProvider = "KernelPanic";
+constexpr auto kManualRebootProvider = "ManualReboot";
+
+// systemd-logind writes this on the normal shutdown path.
+constexpr auto kManualRebootPattern = "System is rebooting";
+
+// Programs which perform reboot.
+constexpr std::array<folly::StringPiece, 2> kManualRebootPrograms{
+    "systemd-logind",
+    "systemd"};
+
 // The kernel regenerates this UUID on every boot, including kexec. It is not
 // virtualized per namespace, and fboss platform services run as RootDirectory
 // sandboxes rather than nspawn containers, so the value read here is the
 // host's on both classic and NetOS Native.
 // Empty when unreadable. The guard cannot be established without it, so the
 // caller does nothing rather than risk a destructive clear.
-std::string readBootId() {
+std::string readBootId(const std::string& bootIdPath) {
   std::string contents;
-  if (!folly::readFile(kProcBootIdPath, contents)) {
+  if (!folly::readFile(bootIdPath.c_str(), contents)) {
     return {};
   }
   return folly::trimWhitespace(contents).str();
@@ -57,15 +94,17 @@ std::string recordFilenameSuffix(const std::string& bootId) {
 // as holding no record: the first says we cannot tell whether this boot was
 // handled, the second says it was not. Collapsing them would let an unreadable
 // dir look like a fresh boot and re-clear providers on every run.
-std::optional<bool> recordExistsForBoot(const std::string& bootId) {
+std::optional<bool> recordExistsForBoot(
+    const std::string& historyDir,
+    const std::string& bootId) {
   std::error_code ec;
-  std::filesystem::directory_iterator it(kHistoryDir, ec);
+  std::filesystem::directory_iterator it(historyDir, ec);
   if (ec == std::errc::no_such_file_or_directory) {
     return false;
   }
   if (ec) {
     XLOG(ERR) << fmt::format(
-        "Failed to read history dir '{}': {}", kHistoryDir, ec.message());
+        "Failed to read history dir '{}': {}", historyDir, ec.message());
     return std::nullopt;
   }
 
@@ -82,7 +121,7 @@ std::optional<bool> recordExistsForBoot(const std::string& bootId) {
     if (ec) {
       XLOG(ERR) << fmt::format(
           "Failed while scanning history dir '{}': {}",
-          kHistoryDir,
+          historyDir,
           ec.message());
       return std::nullopt;
     }
@@ -103,6 +142,34 @@ bool shouldClearProviders(bool recorded) {
     return false;
   }
   return true;
+}
+
+reboot_cause_config::RebootCauseProviderAttempt makeAttempt(
+    const std::string& name,
+    reboot_cause_config::RebootCauseProviderStatus status,
+    const std::string& detail,
+    std::vector<reboot_cause_config::RebootCause> causes = {}) {
+  reboot_cause_config::RebootCauseProviderAttempt attempt;
+  attempt.name() = name;
+  attempt.status() = status;
+  attempt.detail() = detail;
+  attempt.causes() = std::move(causes);
+  return attempt;
+}
+
+std::string summariseAttempts(
+    const std::vector<reboot_cause_config::RebootCauseProviderAttempt>&
+        attempts) {
+  std::vector<std::string> parts;
+  parts.reserve(attempts.size());
+  for (const auto& a : attempts) {
+    parts.push_back(
+        fmt::format(
+            "{}={}",
+            *a.name(),
+            apache::thrift::util::enumNameSafe(*a.status())));
+  }
+  return folly::join(", ", parts);
 }
 
 int64_t toEpochMs(std::time_t t) {
@@ -141,13 +208,370 @@ std::optional<std::time_t> parseProviderDate(const std::string& s) {
 
 } // namespace
 
-RebootCauseFinderImpl::RebootCauseFinderImpl(
-    const reboot_cause_config::RebootCauseConfig& config)
-    : config_(config) {}
+// Exposed for unit tests; see tests/RebootCauseFinderImplTest.cpp.
+namespace detail {
 
-std::vector<reboot_cause_config::RebootCause>
-RebootCauseFinderImpl::readProvider(
+const std::vector<std::string>& manualRebootLogPaths() {
+  static const std::vector<std::string> kPaths = {
+      "/var/log/messages",
+      "/var/log/secure",
+  };
+  return kPaths;
+}
+
+// Boot start in epoch seconds. std::nullopt when it cannot be established,
+// which disables the log-derived causes: guessing a boot time would let an
+// event from the wrong boot be reported as this boot's cause.
+std::optional<int64_t> readBootTimeSec(const std::string& procStatPath) {
+  std::string contents;
+  if (!folly::readFile(procStatPath.c_str(), contents)) {
+    XLOG(ERR) << fmt::format("Failed to read '{}'", procStatPath);
+    return std::nullopt;
+  }
+
+  std::vector<folly::StringPiece> lines;
+  folly::split('\n', contents, lines);
+
+  int64_t btime = 0;
+  bool found = false;
+  for (const auto& line : lines) {
+    if (folly::StringPiece(line).startsWith("btime ") &&
+        folly::tryTo<int64_t>(folly::trimWhitespace(line.subpiece(6)))
+            .hasValue()) {
+      btime = *folly::tryTo<int64_t>(folly::trimWhitespace(line.subpiece(6)));
+      found = true;
+      break;
+    }
+  }
+  if (!found) {
+    XLOG(ERR) << fmt::format("No usable btime line in '{}'", procStatPath);
+    return std::nullopt;
+  }
+
+  // btime is wall clock minus uptime, so a badly skewed clock can put it in
+  // the future. The window would then be nonsense.
+  const auto now = static_cast<int64_t>(
+      std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+  if (btime > now) {
+    XLOG(ERR) << fmt::format(
+        "btime {} is in the future (now {}); skipping log-derived causes",
+        btime,
+        now);
+    return std::nullopt;
+  }
+  return btime;
+}
+
+reboot_cause_config::RebootCause makeCause(
+    const std::string& description,
+    std::time_t occurredAt) {
+  reboot_cause_config::RebootCause cause;
+  cause.description() = description;
+  cause.occurredAtMs() = toEpochMs(occurredAt);
+  cause.occurredAtPacific() = pacificString(occurredAt);
+  return cause;
+}
+
+// Only events inside [btime - window, btime) can have caused this boot.
+// Anything at or after btime belongs to the boot we are running in, and
+// anything older belongs to an earlier boot.
+bool inBootWindow(std::time_t when, int64_t btimeSec, int64_t windowSec) {
+  const auto t = static_cast<int64_t>(when);
+  return t < btimeSec && t >= btimeSec - windowSec;
+}
+
+// Crash dirs are named "%Y-%m-%dT%H:%M:%S%Z" or "%Y-%m-%d-%H:%M:%S".
+// Any %Z is ignored; see below.
+std::optional<std::time_t> parseCrashDirName(const std::string& name) {
+  std::tm tm{};
+  if (strptime(name.c_str(), "%Y-%m-%dT%H:%M:%S", &tm) == nullptr) {
+    tm = {};
+    if (strptime(name.c_str(), "%Y-%m-%d-%H:%M:%S", &tm) == nullptr) {
+      return std::nullopt;
+    }
+  }
+
+  // The producer wrote this name with localtime() on this host, so mktime()
+  // on the same host is the exact inverse -- the zone text carries no
+  // information mktime does not already have. tm{} zero-inits tm_isdst to 0,
+  // which would assert "not daylight", so it must be set to -1 explicitly.
+  //
+  // The one case this cannot resolve is the hour repeated at the DST
+  // fall-back, where mktime picks one of the two candidates.
+  tm.tm_isdst = -1;
+
+  const auto when = std::mktime(&tm);
+  if (when == -1) {
+    return std::nullopt;
+  }
+  return when;
+}
+
+// the dump is written by the crash kernel or by post-boot processing, so it
+// can fall after btime even though the panic preceded it.
+// A dump can be in either directory, so both are searched.
+const std::vector<std::string>& kernelPanicCrashDirs() {
+  static const std::vector<std::string> kDirs = {
+      "/var/crash",
+      "/var/crash/processed",
+  };
+  return kDirs;
+}
+
+// Folds the nearest-to-btime match in one directory into best/bestName.
+// Returns false only when the directory is present but could not be read; an
+// absent directory is the normal case on a switch that has never panicked and
+// must not be reported as a failure.
+bool scanCrashDir(
+    const std::string& crashDir,
+    int64_t btimeSec,
+    int64_t windowSec,
+    std::optional<std::time_t>& best,
+    std::string& bestName) {
+  std::error_code ec;
+  std::filesystem::directory_iterator it(crashDir, ec);
+  if (ec == std::errc::no_such_file_or_directory) {
+    return true;
+  }
+  if (ec) {
+    XLOG(ERR) << fmt::format(
+        "Failed to open crash dir '{}': {}", crashDir, ec.message());
+    return false;
+  }
+
+  const std::filesystem::directory_iterator end;
+  while (it != end) {
+    // directory_iterator yields files and symlinks too. A dump is always a
+    // directory, and a file whose name merely starts with a timestamp (a
+    // tarball of several dumps, say) need not denote that instant at all.
+    // The error_code overload is the non-throwing one; it returns false if
+    // the type cannot be determined, which is the answer we want anyway.
+    std::error_code dirEc;
+    if (it->is_directory(dirEc)) {
+      const auto name = it->path().filename().string();
+      const auto when =
+          name == kProcessedDirName ? std::nullopt : parseCrashDirName(name);
+      if (when) {
+        if (inBootWindow(*when, btimeSec, windowSec) &&
+            (!best || *when > *best)) {
+          best = *when;
+          bestName = name;
+        }
+      } else if (name != kProcessedDirName) {
+        // A name we cannot read is a panic we cannot report, so say so rather
+        // than skipping in silence.
+        XLOG(ERR) << fmt::format(
+            "Unrecognised crash dir name '{}' in '{}'", name, crashDir);
+      }
+    }
+
+    it.increment(ec);
+    if (ec) {
+      XLOG(ERR) << fmt::format(
+          "Failed while scanning crash dir '{}': {}", crashDir, ec.message());
+      return false;
+    }
+  }
+  return true;
+}
+
+reboot_cause_config::RebootCauseProviderAttempt readKernelPanic(
+    const std::vector<std::string>& crashDirs,
+    int64_t btimeSec,
+    int64_t windowSec) {
+  auto status = reboot_cause_config::RebootCauseProviderStatus::OK;
+  std::optional<std::time_t> best;
+  std::string bestName;
+  for (const auto& crashDir : crashDirs) {
+    // Keep scanning the remaining dirs: a cause found elsewhere is still
+    // worth reporting, but the attempt is no longer a clean read.
+    if (!scanCrashDir(crashDir, btimeSec, windowSec, best, bestName)) {
+      status = reboot_cause_config::RebootCauseProviderStatus::READ_FAILED;
+    }
+  }
+
+  std::vector<reboot_cause_config::RebootCause> causes;
+  if (best) {
+    // The description is a stable name so consumers can group on it; the
+    // crash dir varies per instance and belongs in rawValue.
+    auto cause = makeCause("Kernel Panic", *best);
+    cause.rawValue() = bestName;
+    causes.push_back(std::move(cause));
+  }
+  return makeAttempt(
+      kKernelPanicProvider,
+      status,
+      folly::join(", ", crashDirs),
+      std::move(causes));
+}
+
+// Syslog carries no year. Try the boot's year, then the one before: a reboot
+// logged 23:55 on Dec 31 is read by a finder that booted on Jan 1.
+std::optional<std::time_t> parseSyslogTimestamp(
+    const std::string& line,
+    int64_t btimeSec) {
+  // Most lines in a live log were written after boot. For those the prior
+  // year is always <= btime, so without an age bound they would resolve to
+  // an instant a year old rather than being rejected. Live logs rotate
+  // daily, so nothing legitimately this old is in one.
+  constexpr int64_t kMaxAgeSec = 180 * 24 * 60 * 60;
+
+  std::tm tm{};
+  if (strptime(line.c_str(), "%b %d %H:%M:%S", &tm) == nullptr) {
+    return std::nullopt;
+  }
+
+  std::tm btimeTm{};
+  const auto btimeT = static_cast<std::time_t>(btimeSec);
+  localtime_r(&btimeT, &btimeTm);
+
+  for (int year : {btimeTm.tm_year, btimeTm.tm_year - 1}) {
+    std::tm candidate = tm;
+    candidate.tm_year = year;
+    candidate.tm_isdst = -1;
+    const auto when = std::mktime(&candidate);
+    if (when == -1) {
+      continue;
+    }
+    const auto delta = btimeSec - static_cast<int64_t>(when);
+    if (delta >= 0 && delta <= kMaxAgeSec) {
+      return when;
+    }
+  }
+  return std::nullopt;
+}
+
+// Nearest to boot start wins, across every cause in the given attempts.
+// Returns the provider alongside the cause, because a cause on its own does
+// not say which provider found it.
+std::optional<reboot_cause_config::DeterminedCause> selectNearestToBoot(
+    const std::vector<reboot_cause_config::RebootCauseProviderAttempt>&
+        attempts) {
+  std::optional<reboot_cause_config::DeterminedCause> best;
+  for (const auto& attempt : attempts) {
+    for (const auto& cause : *attempt.causes()) {
+      if (!best || *cause.occurredAtMs() > *best->cause()->occurredAtMs()) {
+        reboot_cause_config::DeterminedCause determined;
+        determined.providerName() = *attempt.name();
+        determined.cause() = cause;
+        best = determined;
+      }
+    }
+  }
+  return best;
+}
+
+// A syslog line is "<mon> <day> <hh:mm:ss> <host> <program>[<pid>]: <msg>".
+// Everything from <msg> on is untrusted: sshd records each remote command
+// verbatim into these same files, so a line quoting the phrase is
+// indistinguishable from the announcement unless the program field is
+// checked. Grepping for the phrase is exactly what an operator investigating
+// a reboot does, and that grep lands in the window it would then poison.
+bool isManualRebootLine(folly::StringPiece line) {
+  size_t i = 0;
+  const auto skipSpaces = [&] {
+    while (i < line.size() && line[i] == ' ') {
+      ++i;
+    }
+  };
+  // Four fields precede the program: month, day, time, host. The day is
+  // space padded to two columns ("Sep  4"), so runs of spaces collapse.
+  for (int field = 0; field < 4; ++field) {
+    skipSpaces();
+    if (i >= line.size()) {
+      return false;
+    }
+    while (i < line.size() && line[i] != ' ') {
+      ++i;
+    }
+  }
+  skipSpaces();
+
+  const size_t programStart = i;
+  while (i < line.size() && line[i] != ':' && line[i] != ' ') {
+    ++i;
+  }
+  if (i >= line.size() || line[i] != ':') {
+    return false;
+  }
+  auto program = line.subpiece(programStart, i - programStart);
+  ++i;
+
+  if (const auto bracket = program.find('[');
+      bracket != folly::StringPiece::npos) {
+    program = program.subpiece(0, bracket);
+  }
+  if (std::find(
+          kManualRebootPrograms.begin(),
+          kManualRebootPrograms.end(),
+          program) == kManualRebootPrograms.end()) {
+    return false;
+  }
+
+  skipSpaces();
+  return line.subpiece(i).startsWith(kManualRebootPattern);
+}
+
+reboot_cause_config::RebootCauseProviderAttempt readManualReboot(
+    const std::vector<std::string>& logPaths,
+    int64_t btimeSec,
+    int64_t windowSec) {
+  auto status = reboot_cause_config::RebootCauseProviderStatus::OK;
+  std::vector<reboot_cause_config::RebootCause> causes;
+  std::optional<std::time_t> best;
+
+  for (const auto& logPath : logPaths) {
+    // An absent path is normal: which file systemd-logind lands in depends on
+    // the image's rsyslog routing. A path that exists but will not read is a
+    // failure, and folly::readFile reports both the same way, so presence is
+    // checked separately.
+    std::error_code ec;
+    const bool present = std::filesystem::exists(logPath, ec);
+    if (ec) {
+      XLOG(ERR) << fmt::format(
+          "Failed to stat '{}': {}", logPath, ec.message());
+      status = reboot_cause_config::RebootCauseProviderStatus::READ_FAILED;
+      continue;
+    }
+    if (!present) {
+      continue;
+    }
+
+    std::string contents;
+    if (!folly::readFile(logPath.c_str(), contents)) {
+      XLOG(ERR) << fmt::format("Failed to read '{}'", logPath);
+      status = reboot_cause_config::RebootCauseProviderStatus::READ_FAILED;
+      continue;
+    }
+
+    std::vector<folly::StringPiece> lines;
+    folly::split('\n', contents, lines);
+
+    for (const auto& line : lines) {
+      if (!isManualRebootLine(line)) {
+        continue;
+      }
+      const auto when = parseSyslogTimestamp(line.str(), btimeSec);
+      if (when && inBootWindow(*when, btimeSec, windowSec) &&
+          (!best || *when > *best)) {
+        best = when;
+      }
+    }
+  }
+
+  if (best) {
+    causes.push_back(makeCause("Manual x86 Reboot", *best));
+  }
+  return makeAttempt(
+      kManualRebootProvider,
+      status,
+      folly::join(", ", logPaths),
+      std::move(causes));
+}
+
+reboot_cause_config::RebootCauseProviderAttempt readProvider(
     const reboot_cause_config::RebootCauseProviderConfig& providerConfig) {
+  auto status = reboot_cause_config::RebootCauseProviderStatus::OK;
   std::vector<reboot_cause_config::RebootCause> causes;
 
   std::string contents;
@@ -156,14 +580,18 @@ RebootCauseFinderImpl::readProvider(
         "Failed to read reboot causes from provider '{}' at path '{}'",
         *providerConfig.name(),
         *providerConfig.sysfsReadPath());
-    return causes;
+    status = reboot_cause_config::RebootCauseProviderStatus::READ_FAILED;
+    return makeAttempt(
+        *providerConfig.name(),
+        status,
+        *providerConfig.sysfsReadPath(),
+        std::move(causes));
   }
 
   try {
     auto json = folly::parseJson(contents);
     for (const auto& causeJson : json["causes"]) {
       reboot_cause_config::RebootCause cause;
-      cause.providerName() = *providerConfig.name();
       cause.description() = causeJson["description"].asString();
 
       auto dateStr = causeJson["date"].asString();
@@ -185,10 +613,35 @@ RebootCauseFinderImpl::readProvider(
         "Failed to parse reboot causes from provider '{}': {}",
         *providerConfig.name(),
         ex.what());
+    // Causes already in the vector are whole -- a cause is pushed only once
+    // every field is set -- so the throw truncates the list rather than
+    // corrupting a member of it. They are kept, and PARSE_FAILED records
+    // that more may have followed.
+    status = reboot_cause_config::RebootCauseProviderStatus::PARSE_FAILED;
   }
 
-  return causes;
+  return makeAttempt(
+      *providerConfig.name(),
+      status,
+      *providerConfig.sysfsReadPath(),
+      std::move(causes));
 }
+
+} // namespace detail
+
+RebootCauseFinderImpl::Paths RebootCauseFinderImpl::defaultPaths() {
+  return Paths{
+      kHistoryDir,
+      kProcStatPath,
+      kProcBootIdPath,
+      detail::kernelPanicCrashDirs(),
+      detail::manualRebootLogPaths()};
+}
+
+RebootCauseFinderImpl::RebootCauseFinderImpl(
+    const reboot_cause_config::RebootCauseConfig& config,
+    Paths paths)
+    : config_(config), paths_(std::move(paths)) {}
 
 void RebootCauseFinderImpl::clearProvider(
     const reboot_cause_config::RebootCauseProviderConfig& providerConfig) {
@@ -200,39 +653,23 @@ void RebootCauseFinderImpl::clearProvider(
   }
 }
 
-reboot_cause_config::RebootCause RebootCauseFinderImpl::determineCause(
-    const std::optional<reboot_cause_config::RebootCause>& primaryCause) {
-  if (primaryCause.has_value()) {
-    return *primaryCause;
-  }
-
-  // No provider reported a cause.
-  auto now =
-      std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-  reboot_cause_config::RebootCause unknown;
-  unknown.providerName() = "None";
-  unknown.description() = "Unknown";
-  unknown.occurredAtMs() = toEpochMs(now);
-  unknown.occurredAtPacific() = pacificString(now);
-  return unknown;
-}
-
 void RebootCauseFinderImpl::determineRebootCause() {
   // Anything that re-runs this binary within a boot (a manual invocation, a
   // platform_stack push, a restart of whatever unit owns it) would otherwise
   // record a reboot that never happened and, worse, clear the providers that
   // still hold the real boot's causes. Only the first run of a boot is
   // meaningful.
-  const auto bootId = readBootId();
+  const auto bootId = readBootId(paths_.bootId);
   if (bootId.empty()) {
     XLOG(ERR) << fmt::format(
         "Failed to read boot id from '{}'. Doing nothing: without it a fresh "
-        "boot is indistinguishable from a restart, and clearing the providers "
-        "would risk discarding a real boot's causes.",
-        kProcBootIdPath);
+        "boot is indistinguishable from a re-run of this binary within the "
+        "same boot, and clearing the providers would risk discarding a real "
+        "boot's causes.",
+        paths_.bootId);
     return;
   }
-  const auto alreadyHandled = recordExistsForBoot(bootId);
+  const auto alreadyHandled = recordExistsForBoot(paths_.historyDir, bootId);
   if (!alreadyHandled.has_value()) {
     XLOG(ERR) << "Doing nothing: cannot tell whether this boot was already "
                  "handled, so clearing the providers would risk discarding a "
@@ -257,20 +694,56 @@ void RebootCauseFinderImpl::determineRebootCause() {
         return *a.priority() < *b.priority();
       });
 
-  std::vector<reboot_cause_config::RebootCause> allCauses;
-  std::optional<reboot_cause_config::RebootCause> primaryCause;
+  // A panic names the failure and a manual reboot names the actor; the CPLD
+  // reports only the mechanism (some generic warm-reset bit) for both. So
+  // these outrank every hardware provider and are collected first. They are
+  // not config providers: their paths and patterns come from systemd and
+  // kdump and are the same on every platform.
+  std::vector<reboot_cause_config::RebootCauseProviderAttempt> attempts;
+  int64_t bootTimeMs = 0;
+  std::optional<reboot_cause_config::DeterminedCause> determined;
+
+  const auto btime = detail::readBootTimeSec(paths_.procStat);
+  if (btime) {
+    bootTimeMs = toEpochMs(static_cast<std::time_t>(*btime));
+    const int64_t window = FLAGS_max_downtime_sec;
+
+    std::vector<reboot_cause_config::RebootCauseProviderAttempt> software;
+    software.push_back(
+        detail::readKernelPanic(paths_.crashDirs, *btime, window));
+    software.push_back(
+        detail::readManualReboot(paths_.logPaths, *btime, window));
+
+    // Nearest to boot start wins, not whichever reader ran first. A panic and
+    // a later operator reboot can both fall inside one window; the reboot is
+    // then the cause and the panic belongs to the boot before it.
+    determined = detail::selectNearestToBoot(software);
+    attempts.insert(attempts.end(), software.begin(), software.end());
+  } else {
+    // Without boot start there is no window, so neither implicit provider can
+    // be evaluated. Say so rather than letting their absence read as "looked
+    // and found nothing".
+    for (const auto* name : {kKernelPanicProvider, kManualRebootProvider}) {
+      attempts.push_back(makeAttempt(
+          name,
+          reboot_cause_config::RebootCauseProviderStatus::SKIPPED,
+          "boot time unavailable"));
+    }
+  }
+
   for (const auto& providerConfig : providerConfigs) {
     XLOG(INFO) << fmt::format("Reading provider '{}'", *providerConfig.name());
-    auto causes = readProvider(providerConfig);
-    // Providers are read in priority order, so the first provider that reports
-    // a cause is the highest-priority one; its first cause is the candidate.
-    if (!primaryCause.has_value() && !causes.empty()) {
-      primaryCause = causes.front();
+    auto attempt = detail::readProvider(providerConfig);
+    // Providers are sorted by priority, so the first one to report anything
+    // is the highest-priority hardware answer. It only applies when neither
+    // implicit provider found a cause.
+    if (!determined.has_value() && !attempt.causes()->empty()) {
+      reboot_cause_config::DeterminedCause d;
+      d.providerName() = *providerConfig.name();
+      d.cause() = attempt.causes()->front();
+      determined = d;
     }
-    allCauses.insert(
-        allCauses.end(),
-        std::make_move_iterator(causes.begin()),
-        std::make_move_iterator(causes.end()));
+    attempts.push_back(std::move(attempt));
   }
 
   reboot_cause_config::RebootCauseRecord record;
@@ -280,9 +753,15 @@ void RebootCauseFinderImpl::determineRebootCause() {
                               .count();
   record.detectedAtPacific() =
       pacificString(std::chrono::system_clock::to_time_t(now));
-  record.determinedCause() = determineCause(primaryCause);
-  record.allCauses() = allCauses;
+  // Left unset when nothing was found. A placeholder cause would have to
+  // carry a placeholder timestamp, and that timestamp necessarily postdates
+  // the boot it claims to explain.
+  if (determined.has_value()) {
+    record.determinedCause() = *determined;
+  }
   record.bootId() = bootId;
+  record.bootTimeMs() = bootTimeMs;
+  record.providersAttempted() = attempts;
 
   // Writing the record is what arms the guard, so it has to succeed before
   // anything destructive happens. If it failed, the providers stay latched and
@@ -297,19 +776,27 @@ void RebootCauseFinderImpl::determineRebootCause() {
     }
   }
 
-  XLOG(INFO) << fmt::format(
-      "Determined reboot cause: '{}' [Provider: {}]",
-      *record.determinedCause()->description(),
-      *record.determinedCause()->providerName());
+  if (record.determinedCause().has_value()) {
+    XLOG(INFO) << fmt::format(
+        "Determined reboot cause: '{}' [Provider: {}]",
+        *record.determinedCause()->cause()->description(),
+        *record.determinedCause()->providerName());
+  } else {
+    XLOG(INFO) << fmt::format(
+        "No reboot cause determined. Providers attempted: {}",
+        summariseAttempts(attempts));
+  }
 }
 
 bool RebootCauseFinderImpl::persistResult(
     const reboot_cause_config::RebootCauseRecord& record) {
   std::error_code ec;
-  std::filesystem::create_directories(kHistoryDir, ec);
+  std::filesystem::create_directories(paths_.historyDir, ec);
   if (ec) {
     XLOG(ERR) << fmt::format(
-        "Failed to create history dir '{}': {}", kHistoryDir, ec.message());
+        "Failed to create history dir '{}': {}",
+        paths_.historyDir,
+        ec.message());
     return false;
   }
 
@@ -317,7 +804,7 @@ bool RebootCauseFinderImpl::persistResult(
   // only there to keep the directory readable.
   auto filePath = fmt::format(
       "{}/reboot-cause-{}{}",
-      kHistoryDir,
+      paths_.historyDir,
       filenameStamp(
           std::chrono::system_clock::to_time_t(
               std::chrono::system_clock::now())),

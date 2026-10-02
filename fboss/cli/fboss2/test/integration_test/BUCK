@@ -26,7 +26,6 @@ cpp_binary(
         "ConfigBgpGlobalTest.cpp",
         "ConfigBgpNeighborTest.cpp",
         "ConfigBgpPeerGroupTest.cpp",
-        "ConfigBgpPolicyAsPathListEntryTest.cpp",
         "ConfigBgpPolicyAsPathListTest.cpp",
         "ConfigBgpPolicyCommunityListCommunityTest.cpp",
         "ConfigBgpPolicyCommunityListTest.cpp",

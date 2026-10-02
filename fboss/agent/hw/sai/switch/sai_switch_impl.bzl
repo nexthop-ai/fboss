@@ -50,6 +50,7 @@ _COMMON_SRCS = [
     "SaiUdfManager.cpp",
     "SaiVlanManager.cpp",
     "SaiVirtualRouterManager.cpp",
+    "SaiVirtualChannelManager.cpp",
     "SaiWredManager.cpp",
     "SaiTunnelManager.cpp",
     "SaiSrv6MySidManager.cpp",

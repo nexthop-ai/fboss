@@ -266,6 +266,7 @@ enum EtherType {
   ARP = 0x0806,
   LACP = 0x8809,
   AIFM = 0x88B6,
+  MPLS = 0x8847,
 }
 
 struct Ttl {
@@ -706,6 +707,13 @@ struct AclEntry {
 
   /* Match lookup class assigned to the packet's ingress port. */
   39: optional AclLookupClassPort lookupClassPort;
+
+  /*
+   * Match the TTL of the outermost MPLS label. Distinct from ttl, which
+   * matches the IP header TTL. Pair with etherType MPLS to scope the match to
+   * MPLS traffic.
+   */
+  40: optional Ttl mplsLabel0Ttl;
 }
 
 enum AclTableActionType {
@@ -756,6 +764,7 @@ enum AclTableQualifier {
   DST_IPV6_WORD3 = 30,
   DST_IPV6_WORD2 = 31,
   LOOKUP_CLASS_PORT = 32,
+  MPLS_LABEL0_TTL = 33,
 }
 
 enum AclTableGroupBindPoint {
@@ -2256,6 +2265,10 @@ const i16 PFC_PRIORITY_VALUE_MAX = 7;
 // max CBFC virtual channel index per port (UE Spec 1.0.2 section 5.2.3,
 // SAI_VIRTUAL_CHANNEL_ATTR_INDEX range 0-31)
 const i16 PORT_VC_VALUE_MAX = 31;
+
+// max CBFC sender port credit limit, S_P_CL (UE Spec 1.0.2 Table 5-27,
+// same range on SAI_PORT_ATTR_CBFC_SENDER_CREDIT_LIMIT)
+const i64 PORT_CBFC_SENDER_CREDIT_LIMIT_MAX = 1048575;
 
 // Configuration for one CBFC virtual channel on a port (UE Spec 1.0.2
 // section 5.2). A VC is not a buffer: it is the per-link, per-channel credit
