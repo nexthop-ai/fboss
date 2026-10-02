@@ -304,6 +304,8 @@ bool Qumran3DAsic::isSupported(Feature feature) const {
     // SAI_STATUS_ATTR_NOT_SUPPORTED_0 and fails sai_create_switch().
     case HwAsic::Feature::NO_RX_REASON_TRAP:
     case HwAsic::Feature::TAJO_RX_SERDES_PARAMETERS:
+    case HwAsic::Feature::ISOLATION_GROUP:
+    case HwAsic::Feature::SAI_ACL_MPLS_LABEL0_TTL:
       return false;
   }
   return false;
