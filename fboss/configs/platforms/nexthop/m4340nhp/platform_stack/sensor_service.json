@@ -2665,7 +2665,7 @@
             "upperCriticalVal": 3.63,
             "lowerCriticalVal": 2.97
           },
-          "compute": "@/1000.0"
+          "compute": "(6/5)*@/1000.0"
         },
         {
           "name": "DCDC15_POS3V3_EAST_IOUT",
@@ -2702,7 +2702,7 @@
             "upperCriticalVal": 3.63,
             "lowerCriticalVal": 2.97
           },
-          "compute": "@/1000.0"
+          "compute": "(6/5)*@/1000.0"
         },
         {
           "name": "DCDC16_POS3V3_WEST_IOUT",
