@@ -81,7 +81,9 @@ jobs:
             sleep 2
           done
           echo "❌ Agent not ready"
-          docker exec fboss_sim_runtime_${USER} tail -n 50 /var/facebook/logs/fboss/wedge_agent.log || true
+          # Split mode (the default) logs to sw_agent.log + hw_agent0.log, not
+          # to the mono-mode wedge_agent.log path.
+          docker exec fboss_sim_runtime_${USER} bash -c 'for f in /var/facebook/logs/fboss/*.log; do [ -e "$f" ] || continue; echo "=== $f ==="; tail -n 50 "$f"; done' || true
           exit 1
 
       - name: Run fboss2 integration test

@@ -199,7 +199,10 @@ jobs:
             sleep 2
           done
           echo "❌ Agent not ready after 60s"
-          docker exec fboss_sim_runtime_${USER} tail -n 50 /var/facebook/logs/fboss/wedge_agent.log || true
+          # Every agent unit logs to its own file (wedge_agent.log in mono
+          # mode, sw_agent.log + hw_agent0.log in split mode), so dump all of
+          # them instead of assuming the mono-mode path exists.
+          docker exec fboss_sim_runtime_${USER} bash -c 'for f in /var/facebook/logs/fboss/*.log; do [ -e "$f" ] || continue; echo "=== $f ==="; tail -n 50 "$f"; done' || true
           exit 1
 
       - name: Detect changed files
@@ -218,8 +221,8 @@ jobs:
 
       # The cleanup step below destroys the runtime container, so on a
       # readiness or integration-test failure capture both agents' journals,
-      # restart counts, and the crash stacks from wedge_agent.log while the
-      # container still exists.
+      # restart counts, and the crash stacks from every agent log file while
+      # the container still exists.
       - name: Dump fboss-sim agent diagnostics on failure
         if: failure()
         run: |
@@ -230,8 +233,16 @@ jobs:
           docker exec $C journalctl -u 'fboss_hw_agent@0' --no-pager -n 300 || true
           echo "=== journalctl fboss_sw_agent ==="
           docker exec $C journalctl -u fboss_sw_agent --no-pager -n 100 || true
-          echo "=== wedge_agent.log crash stacks ==="
-          docker exec $C bash -c "grep -B5 -A40 'Aborted at\|Check failure' /var/facebook/logs/fboss/wedge_agent.log | tail -150" || true
+          echo "=== agent logs: tails and crash stacks ==="
+          docker exec $C bash -c 'for f in /var/facebook/logs/fboss/*.log; do [ -e "$f" ] || continue; echo "--- $f ---"; tail -n 100 "$f"; grep -B5 -A40 -E "Aborted at|Check failure|Segmentation" "$f" | tail -150; done' || true
+          echo "=== kernel log: the SEGV faulting IP ==="
+          # The agents are folly-symbolized, but the sim binaries ship without
+          # the frames needed to walk a stack, so the in-process trace stops at
+          # the signal handler. dmesg gives the faulting instruction pointer,
+          # which can be resolved against the built binary.
+          docker exec $C dmesg | tail -40 || true
+          echo "=== core dumps ==="
+          docker exec $C bash -c 'ls -l /var/lib/systemd/coredump 2>/dev/null; coredumpctl list --no-pager 2>/dev/null | tail -10' || true
           echo "=== fboss_sw_agent allocator ==="
           docker exec $C bash -c 'P=$(pidof fboss_sw_agent); echo "pid=$P"; \
             echo "-- jemalloc mappings:"; grep jemalloc /proc/$P/maps || echo "(none)"; \
