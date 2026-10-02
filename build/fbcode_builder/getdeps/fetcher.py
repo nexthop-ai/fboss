@@ -24,7 +24,6 @@ from collections.abc import Iterator
 from datetime import datetime
 from pathlib import Path, PurePosixPath
 from typing import NamedTuple, TYPE_CHECKING
-from urllib.error import HTTPError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
@@ -33,13 +32,6 @@ from .envfuncs import Env
 from .errors import TransientFailure
 from .getdeps_platform import HostType, is_windows
 from .runcmd import run_cmd
-
-
-# Nexthop: raised when a download source returns HTTP 404, i.e. the artifact is
-# simply absent at that source (as opposed to a transient/network error). Lets
-# callers fall back to another source without retrying the missing one.
-class ArtifactNotFound(Exception):
-    pass
 
 if TYPE_CHECKING:
     from .buildopts import BuildOptions
@@ -1031,11 +1023,6 @@ def download_url_to_file_with_progress(url: str, file_name: str | Path) -> None:
                         progress.write_update(total, amount)
                         chunk = res.read(chunk_size)
             except (OSError, IOError) as exc:  # noqa: B014
-                # Nexthop: a 404 means the artifact is not at this URL (e.g. not
-                # cached on the internal mirror). Signal that distinctly so the
-                # caller can fall back to another source without retrying.
-                if isinstance(exc, HTTPError) and exc.code == 404:
-                    raise ArtifactNotFound("%s not found (HTTP 404)" % url)
                 # Downloading from within Meta's network needs to use a proxy.
                 if shutil.which("fwdproxy-config") is None:
                     print(
@@ -1065,73 +1052,23 @@ def download_url_to_file_with_progress(url: str, file_name: str | Path) -> None:
         print(f"{headers}")
 
 
-# Nexthop: ftpmirror.gnu.org is a round-robin redirector to volunteer GNU
-# mirrors and frequently returns transient 5xx errors (e.g. "502 Bad Gateway")
-# when it picks an unhealthy backend. Retrying the same URL does not help much
-# since it keeps resolving to the redirector. For GNU downloads, fall back
-# across several known-good mirrors so a single flaky mirror does not fail the
-# build. The sha256 of the downloaded file is always verified afterwards, so
-# any mirror serving the same artifact is safe.
-_GNU_MIRROR_PREFIXES = (
-    "https://ftpmirror.gnu.org/gnu/",
-    "https://mirrors.kernel.org/gnu/",
-    "https://ftp.gnu.org/gnu/",
-)
+# Nexthop: fetch third-party archives through the in-region pkgproxy, which
+# caches any public https URL. https://HOST/PATH is requested as
+# $NH_PKGPROXY_URL/url/sha256/<manifest sha256>/HOST/PATH. pkgproxy verifies the
+# digest (a mismatch is a 502 and is never cached) and redirects hits to the
+# object in S3. Any failure falls back to the manifest URL.
+# Set by fboss/oss/scripts/region.env; empty disables it.
+_PKGPROXY_URL = os.environ.get("NH_PKGPROXY_URL", "").rstrip("/")
 
 
-def _mirror_urls(url: str) -> list[str]:
-    """Return ``url`` plus equivalent fallback URLs on alternate mirrors.
-
-    For GNU downloads this yields the same artifact on several mirrors, with the
-    originally-configured URL first. For any other URL it returns ``[url]``
-    unchanged.
-    """
-    for prefix in _GNU_MIRROR_PREFIXES:
-        if url.startswith(prefix):
-            rel = url[len(prefix) :]
-            urls = [url]
-            for mirror in _GNU_MIRROR_PREFIXES:
-                candidate = mirror + rel
-                if candidate not in urls:
-                    urls.append(candidate)
-            return urls
-    return [url]
-
-
-# Nexthop: internal read-through cache of third-party download artifacts. We
-# try this mirror first (it is fast and reliable) and fall back to the upstream
-# URL on a miss; on a miss we also upload the freshly-fetched artifact so the
-# mirror self-populates. This keeps CI off flaky upstreams (e.g. ftpmirror.gnu.org)
-# WITHOUT editing every manifest URL (which would churn and cause merge
-# conflicts on every upstream sync).
-# Set by fboss/oss/scripts/region.env; empty disables the mirror.
-_STATIC_DEPS_HTTP = os.environ.get("NH_STATIC_DEPS_HTTP", "")
-_STATIC_DEPS_S3 = os.environ.get("NH_STATIC_DEPS_S3", "")
-_STATIC_DEPS_ENDPOINT = os.environ.get("NH_STATIC_DEPS_ENDPOINT", "")
-
-
-def _static_deps_object_name(url: str) -> str:
-    """A unique, mechanical mirror key derived from the upstream URL.
-
-    Every non-alphanumeric character (``:``, ``/``, ``?`` ...) maps to ``_`` so
-    the whole URL becomes one flat, collision-free filename that still reflects
-    the original. Two manifests pointing at the same URL share one mirror entry;
-    a version bump changes the URL and therefore the key (so the mirror is
-    re-populated automatically).
-    """
-    return re.sub(r"[^A-Za-z0-9._-]", "_", url)
-
-
-def _is_local_url(url: str) -> bool:
-    """Whether ``url`` is served from the local machine (loopback).
-
-    Such artifacts (e.g. the proprietary SAI implementation served by a local
-    HTTP server at http://localhost:8000/) are per-build and/or non-public, so
-    they must never be looked up on, nor uploaded to, the shared static_deps
-    mirror.
-    """
-    host = (urlparse(url).hostname or "").lower()
-    return host in ("localhost", "127.0.0.1", "::1")
+def _pkgproxy_url(url: str, sha256: str) -> str | None:
+    parsed = urlparse(url)
+    # Only public https URLs on the default port: this excludes e.g. the
+    # proprietary SAI impl served from http://localhost:8000/.
+    if not _PKGPROXY_URL or parsed.scheme != "https" or parsed.port is not None:
+        return None
+    proxied = f"{_PKGPROXY_URL}/url/sha256/{sha256}/{parsed.hostname}{parsed.path}"
+    return f"{proxied}?{parsed.query}" if parsed.query else proxied
 
 
 class ArchiveFetcher(Fetcher):
@@ -1179,92 +1116,36 @@ class ArchiveFetcher(Fetcher):
         download_dir.mkdir(parents=True, exist_ok=True)
         return os.fspath(download_dir)
 
-    def _static_deps_url(self) -> str:
-        return "%s/%s" % (_STATIC_DEPS_HTTP, _static_deps_object_name(self.url))
-
-    def _maybe_upload_to_mirror(self) -> None:
-        """Best-effort: publish the just-downloaded artifact to the internal
-        static_deps mirror so later builds fetch it from there instead of the
-        (possibly flaky) upstream. Never fails the build."""
-        if not _STATIC_DEPS_S3 or not _STATIC_DEPS_ENDPOINT:
-            return
-        if shutil.which("aws") is None:
-            return
-        obj = "%s/%s" % (_STATIC_DEPS_S3, _static_deps_object_name(self.url))
-        try:
-            print("Uploading %s to internal mirror %s" % (self.file_name, obj))
-            subprocess.run(
-                [
-                    "aws",
-                    "--endpoint-url",
-                    _STATIC_DEPS_ENDPOINT,
-                    "--no-sign-request",
-                    "s3",
-                    "cp",
-                    self.file_name,
-                    obj,
-                ],
-                check=True,
-                capture_output=True,
-                timeout=600,
-            )
-        except Exception as exc:
-            print("Note: mirror upload failed (ignored): %s" % exc)
-
     def _download(self) -> None:
         self._download_dir()
-
-        # Nexthop: local/loopback artifacts (e.g. the proprietary SAI impl
-        # served from http://localhost:8000/) must bypass the shared mirror
-        # entirely -- never looked up there, never uploaded there.
-        use_mirror = bool(_STATIC_DEPS_HTTP) and not _is_local_url(self.url)
-
-        # Nexthop: try the internal static_deps mirror first. A 404 (not cached),
-        # a checksum mismatch (stale copy), or the mirror being unreachable all
-        # just mean "fetch upstream"; we never retry the mirror.
-        mirror_missed = False
-        if use_mirror:
-            static_url = self._static_deps_url()
+        # Nexthop: try pkgproxy once; on any failure (404 = route disabled,
+        # 502 = upstream down and not cached or digest mismatch, unreachable)
+        # fetch the manifest URL as upstream getdeps does.
+        proxy_url = _pkgproxy_url(self.url, self.sha256)
+        if proxy_url:
             try:
-                download_url_to_file_with_progress(static_url, self.file_name)
+                download_url_to_file_with_progress(proxy_url, self.file_name)
                 self._verify_hash()
                 return
-            except ArtifactNotFound:
-                print("%s not on internal mirror; fetching upstream" % self.url)
-                mirror_missed = True
-            except TransientFailure as tf:
-                print("internal mirror unavailable (%s); fetching upstream" % tf)
             except Exception as exc:
-                print("internal mirror copy unusable (%s); fetching upstream" % exc)
+                print(f"pkgproxy fetch failed ({exc}); fetching {self.url}")
                 if os.path.exists(self.file_name):
                     os.unlink(self.file_name)
-                mirror_missed = True
-
-        # Upstream: the configured URL, rotating across alternate GNU mirrors
-        # (see _mirror_urls) so a single flaky mirror does not fail the build.
-        urls = _mirror_urls(self.url)
-        max_attempts = 6
+        max_attempts = 5
         delay = 1
         for attempt in range(max_attempts):
-            url = urls[attempt % len(urls)]
             try:
-                download_url_to_file_with_progress(url, self.file_name)
+                download_url_to_file_with_progress(self.url, self.file_name)
                 break
-            except (ArtifactNotFound, TransientFailure) as err:
+            except TransientFailure as tf:
                 if attempt < max_attempts - 1:
                     delay *= 2
                     delay_with_jitter = delay * (1 + random.random() * 0.1)
                     time.sleep(min(delay_with_jitter, 10))
                 else:
-                    print(f"Failed after retries: {err}")
+                    print(f"Failed after retries: {tf}")
                     raise
         self._verify_hash()
-
-        # The mirror was missing this artifact -- publish it for next time.
-        # (use_mirror is False for local/loopback URLs, so they are never
-        # uploaded to the shared bucket.)
-        if use_mirror and mirror_missed:
-            self._maybe_upload_to_mirror()
 
     def clean(self) -> None:
         if Path(self.src_dir).exists():

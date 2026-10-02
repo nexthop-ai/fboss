@@ -82,9 +82,8 @@ class _Server:
 
 
 class TestObjectName(unittest.TestCase):
-    def test_matches_getdeps_convention(self):
-        # Must be byte-identical to getdeps' _static_deps_object_name so the
-        # kernel tarball shares the mirror namespace.
+    def test_key_is_stable(self):
+        # Must not change: the kernel tarball is already seeded under this key.
         self.assertEqual(
             _cs()._object_name(_KERNEL_URL),
             "https___cdn.kernel.org_pub_linux_kernel_v6.x_linux-6.11.1.tar.xz",

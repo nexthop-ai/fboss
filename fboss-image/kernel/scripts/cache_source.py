@@ -8,17 +8,14 @@
 
 """Read-through / write-back cache for the kernel source tarball.
 
-This is the in-container counterpart to the getdeps ``static_deps`` mirror in
-``build/fbcode_builder/getdeps/fetcher.py`` (``ArchiveFetcher``). getdeps already
-fronts every third-party download with the internal mirror, but the kernel
-tarball is fetched by ``spectool``/``rpmbuild`` *inside the build container*,
-where the getdeps package is not mounted -- so we cannot import it and instead
-re-use the same, deliberately tiny, convention here:
+getdeps fetches its third-party downloads through pkgproxy (``NH_PKGPROXY_URL``,
+see ``build/fbcode_builder/getdeps/fetcher.py``), but the kernel tarball is
+fetched by ``spectool``/``rpmbuild`` *inside the build container*, so it still
+uses the older ``static_deps`` mirror, with a deliberately tiny convention:
 
-  * same mirror, from the same ``NH_STATIC_DEPS_*`` environment variables
+  * the mirror comes from the ``NH_STATIC_DEPS_*`` environment variables
     (empty disables it);
-  * same object key (the upstream URL with non-alnum chars mapped to ``_``), so
-    the kernel tarball shares one mirror namespace with everything getdeps caches;
+  * the object key is the upstream URL with non-alnum chars mapped to ``_``;
   * read over HTTP, best-effort write-back via ``aws s3 cp --no-sign-request``.
 
 Usage:
@@ -46,8 +43,8 @@ _STATIC_DEPS_ENDPOINT = os.environ.get("NH_STATIC_DEPS_ENDPOINT", "")
 def _object_name(url: str) -> str:
     """Flat, collision-free mirror key derived from the upstream URL.
 
-    Identical to getdeps' ``_static_deps_object_name``: every non-alphanumeric
-    character maps to ``_`` so the whole URL becomes one filename. A version
+    Every non-alphanumeric character maps to ``_`` so the whole URL becomes one
+    filename (the key getdeps used before it moved to pkgproxy). A version
     bump changes the URL and therefore the key, so the mirror re-populates itself.
     """
     return re.sub(r"[^A-Za-z0-9._-]", "_", url)
@@ -83,8 +80,8 @@ def fetch(url: str, dest: str) -> int:
 def prime(url: str, src: str) -> int:
     """Best-effort upload of ``src`` to the mirror under ``url``'s key.
 
-    Mirrors getdeps' ``_maybe_upload_to_mirror``: gated on the ``aws`` CLI being
-    present, ``--no-sign-request``, and never fails the build. Always returns 0.
+    Gated on the ``aws`` CLI being present, ``--no-sign-request``, and never
+    fails the build. Always returns 0.
     """
     if not os.path.isfile(src):
         print("[cache_source] nothing to prime: %s missing" % src)
