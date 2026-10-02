@@ -447,8 +447,9 @@ void SaiTamManager::addXgsMirrorOnDropReport(
       report, SAI_TAM_TRANSPORT_TYPE_PORT, folly::MacAddress(destMac));
   // 0 means "do not truncate". It still has to be passed explicitly
   // TruncateSize is part of SaiTamCollectorTraits::AdapterHostKey and warm boot
-  // re-derives that key from HW GETs. 16.0 implements it and returns 0
-#if defined(BRCM_SAI_SDK_XGS_GTE_16_0)
+  // re-derives that key from HW GETs. 15.4 GA and 16.0 implement it and
+  // return 0
+#if defined(BRCM_SAI_SDK_XGS_GTE_16_0) || defined(SAI_VERSION_15_4_0_0_ODP)
   const std::optional<uint16_t> truncateSize{0};
 #else
   const std::optional<uint16_t> truncateSize{std::nullopt};
