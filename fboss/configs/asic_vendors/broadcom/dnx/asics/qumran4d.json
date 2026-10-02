@@ -150,6 +150,7 @@
             "port_init_speed_ce.BCM9943X": "100000",
             "port_init_speed_d3c.BCM9943X": "800000",
             "port_init_speed_eventor.BCM9943X": "100000",
+            "port_init_speed_fabric.BCM9943X": "106250",
             "port_init_speed_le.BCM9943X": "50000",
             "port_init_speed_rcy.BCM9943X": "100000",
             "port_init_speed_sat.BCM9943X": "400000",

@@ -13,7 +13,7 @@
             "multistage_role": "NONE"
         },
         "platform_sdk_overrides": {
-            "appl_param_rcy_mirror_ports_range.BCM9943X": "585-649",
+            "appl_param_rcy_mirror_ports_range.BCM9943X": "585-650",
             "rcy_mirror_to_forward_port_map_585.BCM9943X": "1",
             "rcy_mirror_to_forward_port_map_586.BCM9943X": "9",
             "rcy_mirror_to_forward_port_map_587.BCM9943X": "17",
@@ -78,6 +78,8 @@
             "rcy_mirror_to_forward_port_map_646.BCM9943X": "489",
             "rcy_mirror_to_forward_port_map_647.BCM9943X": "497",
             "rcy_mirror_to_forward_port_map_648.BCM9943X": "505",
+            "rcy_mirror_to_forward_port_map_649.BCM9943X": "513",
+            "rcy_mirror_to_forward_port_map_650.BCM9943X": "517",
             "sai_eventor_port_lane_base": "1000",
             "sai_global_scoped_rcy_port": "555",
             "sai_recycle_port_lane_base": "640",
@@ -349,6 +351,8 @@
             "ucode_port_646.BCM9943X": "RCY_MIRROR.140:core_1.134:datapath_0",
             "ucode_port_647.BCM9943X": "RCY_MIRROR.142:core_1.135:datapath_1",
             "ucode_port_648.BCM9943X": "RCY_MIRROR.144:core_1.136:datapath_1",
+            "ucode_port_649.BCM9943X": "RCY_MIRROR.146:core_0.137:datapath_0",
+            "ucode_port_650.BCM9943X": "RCY_MIRROR.146:core_4.137:datapath_0",
             "dpp_db_path": "/opt/fboss/db"
         }
     },
