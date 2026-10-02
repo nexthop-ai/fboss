@@ -24,6 +24,7 @@ _EMPTY_ASIC_CONFIG = ":empty_asic_config"
 _GENERATED_PLATFORMS = [
     struct(platform = "m4061nhp", vendor = "nexthop", mapping_codename = None, asic_codename = "m4061nhp"),
     struct(platform = "m4062nhp", vendor = "nexthop", mapping_codename = None, asic_codename = "m4062nhp"),
+    struct(platform = "m4340nhp", vendor = "nexthop", mapping_codename = None, asic_codename = "m4340nhp"),
     struct(platform = "minipack3", vendor = "celestica", mapping_codename = "montblanc", asic_codename = "montblanc"),
     struct(platform = "nh4010f", vendor = "nexthop", mapping_codename = None, asic_codename = "nh4010f"),
     struct(platform = "nh4220f", vendor = "nexthop", mapping_codename = None, asic_codename = "nh4220f"),

@@ -110,7 +110,42 @@ INTERFACE_MTU = 9000
 
 # switch_config.thrift PortType, as spelled in the Port_Type CSV column.
 PORT_TYPE_INTERFACE = "0"
+PORT_TYPE_RECYCLE = "3"
 PORT_TYPE_MANAGEMENT = "4"
+PORT_TYPE_EVENTOR = "5"
+
+# switch_config.thrift PortState
+PORT_STATE_DISABLED = 1
+PORT_STATE_ENABLED = 2
+
+# fboss_common.thrift PlatformType, needed for the VOQ switch's own DSF node.
+PLATFORM_TYPE: dict[str, int] = {"m4340nhp": 59, "nh5010f": 995}
+
+# VOQ (DSF) settings for a standalone switch: one DSF node (itself, switchId 0).
+VOQ_SWITCH_ID = 0
+# System port id = logical port id + offset, while the platform-created CPU
+# system ports keep their raw ids, so each VOQ platform's offset must clear
+# them: Q4D creates 17 (ids 0-16). The range must cover every logical port id
+# plus the offset.
+VOQ_SYSTEM_PORT_OFFSET: dict[str, int] = {"m4340nhp": 17}
+
+
+def _system_port_offset(codename: str, switch_type: int) -> int:
+    """System-port offset for a VOQ platform; NPU platforms have no system ports."""
+    if switch_type != SWITCH_TYPE_VOQ:
+        return 0
+    if codename not in VOQ_SYSTEM_PORT_OFFSET:
+        raise ValueError(
+            f"VOQ_SYSTEM_PORT_OFFSET has no system-port offset for VOQ platform {codename}"
+        )
+    return VOQ_SYSTEM_PORT_OFFSET[codename]
+
+
+VOQ_SYSTEM_PORT_RANGE_MAX = 1024
+DSF_NODE_TYPE_INTERFACE_NODE = 2
+DSF_NODE_SCHEDULING_DEFAULT = 1000  # QueueScheduling.INTERNAL
+INTERFACE_TYPE_VLAN = 1
+INTERFACE_TYPE_SYSTEM_PORT = 2
 
 # Shown in the Description column of "fboss2 show interface". These ports read
 # "down" with an empty cage, which is easily mistaken for the BMC/CPU
@@ -471,7 +506,7 @@ def _build_management_ports(selected_rows: list[dict[str, str]]) -> list[dict]:
                 "logicalID": int(row.get("Global_PortID", "0").strip()),
                 "name": row.get("Port_Name", "").strip(),
                 "description": MANAGEMENT_PORT_DESCRIPTION,
-                "state": 1,  # DISABLED
+                "state": PORT_STATE_DISABLED,
                 "speed": speed,
                 "profileID": profile_id,
                 "minFrameSize": 64,
@@ -492,13 +527,164 @@ def _build_management_ports(selected_rows: list[dict[str, str]]) -> list[dict]:
     return ports
 
 
+def _select_internal_ports(
+    ppm_rows: list[dict[str, str]], port_type: str
+) -> list[dict[str, str]]:
+    """All RECYCLE / EVENTOR rows of a DNX port profile mapping, by port id.
+
+    These have no front-panel cage, so every row is kept (no "/1" filter).
+    """
+    selected = [
+        row
+        for row in ppm_rows
+        if row.get("Port_Type", "0").strip() == port_type
+        and row.get("Supported_Port_Profiles", "").strip()
+    ]
+    selected.sort(key=lambda r: int(r.get("Global_PortID", "0").strip()))
+    return selected
+
+
+def _inband_port_id(ppm_rows: list[dict[str, str]]) -> int:
+    """The GLOBAL-scope recycle port a VOQ switch uses to reach its own CPU path.
+
+    The agent CHECKs that switchInfo/dsfNode carry an inbandPortId; on DNX it is
+    the recycle port with Scope=1 (blackwolf800banw: rcy 35, meru800bia: rcy 1).
+    """
+    candidates = [
+        int(row.get("Global_PortID", "0").strip())
+        for row in _select_internal_ports(ppm_rows, PORT_TYPE_RECYCLE)
+        if row.get("Scope", "0").strip() == "1"
+    ]
+    if len(candidates) != 1:
+        raise ValueError(
+            "VOQ platform needs exactly one GLOBAL-scope (Scope=1) recycle port "
+            f"for inbandPortId, found {candidates}"
+        )
+    return candidates[0]
+
+
+def _build_internal_ports(ppm_rows: list[dict[str, str]]) -> list[dict]:
+    """Build the recycle and eventor port entries of a VOQ switch.
+
+    The SDK creates these at init like the management ports, so they must be
+    in the SwitchState. Recycle ports are ENABLED (the GLOBAL one carries the
+    inband CPU path); eventor ports are DISABLED until eventor is in use.
+    """
+    ports = []
+    for port_type, state, routable in (
+        (PORT_TYPE_RECYCLE, PORT_STATE_ENABLED, True),
+        (PORT_TYPE_EVENTOR, PORT_STATE_DISABLED, False),
+    ):
+        for row in _select_internal_ports(ppm_rows, port_type):
+            profile_id, speed = _choose_profile(
+                row.get("Supported_Port_Profiles", "").strip()
+            )
+            scope_str = row.get("Scope", "0").strip()
+            ports.append(
+                {
+                    "logicalID": int(row.get("Global_PortID", "0").strip()),
+                    "name": row.get("Port_Name", "").strip(),
+                    "state": state,
+                    "speed": speed,
+                    "profileID": profile_id,
+                    "minFrameSize": 64,
+                    "maxFrameSize": PORT_MAX_FRAME_SIZE,
+                    "parserType": 1,
+                    "routable": routable,
+                    "ingressVlan": 4094,
+                    "pause": {"rx": False, "tx": False},
+                    "sFlowIngressRate": 0,
+                    "sFlowEgressRate": 0,
+                    "loopbackMode": 0,
+                    "portType": int(port_type),
+                    "drainState": 0,
+                    "scope": int(scope_str) if scope_str.isdigit() else 0,
+                    "conditionalEntropyRehash": False,
+                }
+            )
+    return ports
+
+
+def _system_port_interface(port: dict, system_port_offset: int) -> dict:
+    """SYSTEM_PORT interface for one VOQ port.
+
+    On a VOQ switch the agent derives each port's interface itself
+    (ApplyThriftConfig::processInterfaceForPortForVoqSwitches): interface id ==
+    system port id == logical port id + system-port offset.
+    """
+    return {
+        "intfID": port["logicalID"] + system_port_offset,
+        "routerID": 0,
+        "vlanID": 0,
+        "ipAddresses": [],
+        "mtu": INTERFACE_MTU,
+        "isVirtual": False,
+        "isStateSyncDisabled": False,
+        "type": INTERFACE_TYPE_SYSTEM_PORT,
+        "scope": port["scope"],
+    }
+
+
+def _build_voq_switch_settings(
+    switch_id_to_switch_info: dict,
+    codename: str,
+    ppm_rows: list[dict[str, str]],
+    system_port_offset: int,
+) -> dict:
+    """Add the DSF fields to switchInfo and return the switch's own dsfNode.
+
+    A standalone VOQ switch is a one-node DSF fabric; the agent CHECKs for its
+    own dsfNodes entry, the system-port ranges/offsets and the inbandPortId.
+    """
+    max_port_id = max(
+        int(row.get("Global_PortID", "0").strip())
+        for row in ppm_rows
+        if row.get("Global_PortID", "").strip().isdigit()
+    )
+    if max_port_id + system_port_offset >= VOQ_SYSTEM_PORT_RANGE_MAX:
+        raise ValueError(
+            f"logical port {max_port_id} + offset {system_port_offset} "
+            f"exceeds the system port range [0, {VOQ_SYSTEM_PORT_RANGE_MAX})"
+        )
+    if codename not in PLATFORM_TYPE:
+        raise ValueError(
+            f"PLATFORM_TYPE has no PlatformType for VOQ platform {codename}"
+        )
+    system_port_ranges = {
+        "systemPortRanges": [{"minimum": 0, "maximum": VOQ_SYSTEM_PORT_RANGE_MAX}]
+    }
+    inband_port_id = _inband_port_id(ppm_rows)
+    switch_id_to_switch_info.update(
+        {
+            "systemPortRanges": system_port_ranges,
+            "localSystemPortOffset": system_port_offset,
+            "globalSystemPortOffset": system_port_offset,
+            "inbandPortId": inband_port_id,
+        }
+    )
+    return {
+        "name": f"{codename}{VOQ_SWITCH_ID}",
+        "switchId": VOQ_SWITCH_ID,
+        "type": DSF_NODE_TYPE_INTERFACE_NODE,
+        "loopbackIps": [],
+        "asicType": switch_id_to_switch_info["asicType"],
+        "platformType": PLATFORM_TYPE[codename],
+        "localSystemPortOffset": system_port_offset,
+        "globalSystemPortOffset": system_port_offset,
+        "systemPortRanges": system_port_ranges,
+        "inbandPortId": inband_port_id,
+        "scheduling": DSF_NODE_SCHEDULING_DEFAULT,
+    }
+
+
 def _build_ports_vlans_interfaces(
-    selected_rows: list[dict[str, str]], is_npu: bool
+    selected_rows: list[dict[str, str]], is_npu: bool, system_port_offset: int = 0
 ) -> tuple[list[dict], list[dict], list[dict], list[dict]]:
     """Build the ports, per-port VLANs, vlanPorts and interfaces lists.
 
     NPU: one VLAN + SVI per port (vlanID == intfID), default VLAN 4094 left
-    to the CPU. VOQ: port-based L3 interfaces (type=3).
+    to the CPU. VOQ: one SYSTEM_PORT interface per port (interface id ==
+    system port id), no VLANs.
     """
     ports = []
     port_vlans = []
@@ -577,19 +763,7 @@ def _build_ports_vlans_interfaces(
                 }
             )
         else:
-            interfaces.append(
-                {
-                    "intfID": intf_id,
-                    "routerID": 0,
-                    "portID": global_port_id,
-                    "ipAddresses": [],
-                    "mtu": INTERFACE_MTU,
-                    "isVirtual": False,
-                    "isStateSyncDisabled": False,
-                    "type": 3,  # PORT
-                    "scope": 0,
-                }
-            )
+            interfaces.append(_system_port_interface(ports[-1], system_port_offset))
 
     return ports, port_vlans, vlan_ports, interfaces
 
@@ -601,8 +775,9 @@ def generate_config(
 ) -> dict:
     """Build and return the agent config dict.
 
-    NPU platforms get one VLAN + SVI per port (type=1); VOQ platforms keep
-    port-based L3 interfaces (type=3).
+    NPU platforms get one VLAN + SVI per port (type=1); VOQ platforms get
+    SYSTEM_PORT interfaces (type=2), their recycle/eventor ports and a
+    one-node DSF fabric (dsfNodes self entry, inbandPortId).
     ASIC config is loaded from hw_test_configs/ materialized JSON by default.
     """
     codename = _resolve_codename(platform, platforms_dir)
@@ -652,51 +827,70 @@ def generate_config(
         switch_id_to_switch_info["connectionHandle"] = connection_handle
     switch_id_to_switch_info["firmwareNameToFirmwareInfo"] = {}
 
+    system_port_offset = _system_port_offset(codename, switch_type)
     ports, port_vlans, vlan_ports, interfaces = _build_ports_vlans_interfaces(
-        selected_rows, is_npu=switch_type == SWITCH_TYPE_NPU
+        selected_rows,
+        is_npu=switch_type == SWITCH_TYPE_NPU,
+        system_port_offset=system_port_offset,
     )
     ports.extend(_build_management_ports(_select_management_ports(ppm_rows)))
 
-    # Loopback interface (VLAN-based, virtual, no physical port)
-    interfaces.insert(
-        0,
-        {
-            "intfID": 10,
-            "routerID": 0,
-            "vlanID": 10,
-            "ipAddresses": [],
-            "mtu": INTERFACE_MTU,
-            "isVirtual": True,
-            "isStateSyncDisabled": False,
-            "type": 1,  # VLAN
-            "scope": 0,
-        },
-    )
-
-    vlans = [
-        {
-            "name": "fbossLoopback0",
-            "id": 10,
-            "recordStats": True,
-            "routable": True,
-            "ipAddresses": [],
-        },
-        *port_vlans,
-        {
-            "name": "default",
-            "id": 4094,
-            "recordStats": True,
-            "routable": False,
-            "ipAddresses": [],
-        },
-    ]
+    dsf_nodes: dict = {}
+    if switch_type == SWITCH_TYPE_VOQ:
+        internal_ports = _build_internal_ports(ppm_rows)
+        ports.extend(internal_ports)
+        interfaces.extend(
+            _system_port_interface(port, system_port_offset)
+            for port in internal_ports
+            if port["portType"] == int(PORT_TYPE_RECYCLE)
+        )
+        dsf_nodes[str(VOQ_SWITCH_ID)] = _build_voq_switch_settings(
+            switch_id_to_switch_info, codename, ppm_rows, system_port_offset
+        )
+        # No VLANs on a VOQ switch: interfaces are system ports (nh5010f).
+        vlans: list[dict] = []
+        default_vlan = 0
+    else:
+        # Loopback interface (VLAN-based, virtual, no physical port)
+        interfaces.insert(
+            0,
+            {
+                "intfID": 10,
+                "routerID": 0,
+                "vlanID": 10,
+                "ipAddresses": [],
+                "mtu": INTERFACE_MTU,
+                "isVirtual": True,
+                "isStateSyncDisabled": False,
+                "type": INTERFACE_TYPE_VLAN,
+                "scope": 0,
+            },
+        )
+        vlans = [
+            {
+                "name": "fbossLoopback0",
+                "id": 10,
+                "recordStats": True,
+                "routable": True,
+                "ipAddresses": [],
+            },
+            *port_vlans,
+            {
+                "name": "default",
+                "id": 4094,
+                "recordStats": True,
+                "routable": False,
+                "ipAddresses": [],
+            },
+        ]
+        default_vlan = 4094
 
     sw = {
         "version": 0,
         "ports": ports,
         "vlans": vlans,
         "vlanPorts": vlan_ports,
-        "defaultVlan": 4094,
+        "defaultVlan": default_vlan,
         "interfaces": interfaces,
         "arpTimeoutSeconds": 60,
         "arpRefreshSeconds": 20,
@@ -756,7 +950,7 @@ def generate_config(
             "metaMacOuis": [],
             "needL2EntryForNeighbor": True,
         },
-        "dsfNodes": {},
+        "dsfNodes": dsf_nodes,
         "defaultVoqConfig": [],
         "mirrorOnDropReports": [],
     }
