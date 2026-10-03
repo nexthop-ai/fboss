@@ -421,6 +421,29 @@ class TestMediaGate:
             (_TCVR_L.format("CR8_800G"), "no optical/active transceivers cabled on this DUT")
         ]
 
+    _PRBS_VARIANT_REASON = "PRBS classes match full-speed media codes only; not run on breakout variants"
+
+    def _gate_direct(self, monkeypatch, variant, patterns):
+        monkeypatch.delenv("TEST_SNAKE_PAIRS", raising=False)
+        runner = LinkTestRunner()
+        runner.tc = {"model": "m4062nhp", "variant": variant}
+        media = {"eth1/25/1": "FR8_800G", "eth1/26/1": "FR8_800G"}
+        return runner._gate_filters(patterns, media, list(media))
+
+    def test_variant_run_skips_every_prbs_pattern(self, monkeypatch):
+        """At a breakout speed qsfp_service reports the running application's
+        media code, so the FR8_800G-templated classes find no port and abort."""
+        prbs = [_TCVR_L.format("FR8_800G"), _ASIC_TCVR_S.format("FR8_800G")]
+        kept, skipped = self._gate_direct(monkeypatch, "2x400G", [*prbs, "*LinkTest*trafficRxTx*"])
+        assert kept == ["*LinkTest*trafficRxTx*"]
+        assert skipped == [(p, self._PRBS_VARIANT_REASON) for p in prbs]
+
+    def test_max_run_keeps_cabled_prbs_pattern(self, monkeypatch):
+        pattern = _TCVR_L.format("FR8_800G")
+        kept, skipped = self._gate_direct(monkeypatch, "max", [pattern])
+        assert kept == [pattern]
+        assert skipped == []
+
 
 class TestGateFiltersDefault:
     def test_base_mixin_gate_is_noop(self):

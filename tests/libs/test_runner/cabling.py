@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 
 from tests.libs.test_runner.base import normalize_model
-from tests.libs.test_runner.platform_configs import LINK_QSFP_TEST_CONFIG_NAME
+from tests.libs.test_runner.platform_configs import LINK_QSFP_TEST_CONFIG_NAME, VARIANT_DENYLIST
 from tests.libs.test_runner.platform_mapping import load_platform_mapping, repo_dir
 from tests.libs.test_runner.variants import (
     cage_of,
@@ -159,11 +159,15 @@ class CablingAwareRunnerMixin:
         if not cages:
             raise RuntimeError(f"platform mapping for {config_name} yielded no cages")
         try:
-            return parse_variant(value, derive_variant_chain(cages))
+            variant = parse_variant(value, derive_variant_chain(cages))
         except VariantError as e:
             if is_well_formed(value):
                 raise VariantNotApplicable(f"variant {value} is not supported on this platform: {e}") from e
             raise
+        denied = VARIANT_DENYLIST.get(config_name, {}).get(variant.name)
+        if denied:
+            raise VariantNotApplicable(f"variant {variant.name} is disabled on {config_name}: {denied}")
+        return variant
 
     def _full_platform_mapping(self, config_name: str) -> dict[str, CageInfo]:
         if self._cached_full_mapping is None:

@@ -33,6 +33,17 @@ LINK_QSFP_TEST_CONFIG_NAME: dict[str, str] = {
     "nhcw800f": "wedge800cact",
 }
 
+# Variants a platform config must not run; the wrapper skips with the reason.
+# TODO NOS-18241: 8x100G on TH5 overflows the per-pipe logical-port budget because the
+# generated config keeps a filler port per uncabled cage. Cap breakout cages
+# per pipe (or drop fillers in a broken-out pipe) and remove this entry.
+VARIANT_DENYLIST: dict[str, dict[str, str]] = {
+    "wedge800bact": {
+        "8x100G": "fboss_hw_agent aborts in SAI create_port (INSUFFICIENT RESOURCES) "
+        "while creating the 8x100G ports",
+    },
+}
+
 # Default CREDO_SDK_VERSION in fboss/lib/phy/CredoSdkVersion.h. qsfp_bench keys
 # unsupported_tests on <platform>/<phy_sdk> and matches it exactly.
 QSFP_BENCH_PHY_SDK = "credo-0.7.2"

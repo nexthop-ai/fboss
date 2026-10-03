@@ -214,6 +214,47 @@ class TestOverlayCabling:
         _assert_consistent(out1)
         enabled = [p for p in out1["sw"]["ports"] if p["portType"] == 0 and p["state"] == 2]
         assert len(enabled) == 1024
+        assert out1["sw"]["switchSettings"]["ecmpWidth"] == 1024
+        assert out1["defaultCommandLineArgs"]["ecmp_width"] == "1024"
+
+    @staticmethod
+    def _wide_pairs(cages):
+        port_map, pairs = {}, {}
+        for cage in range(1, cages + 1):
+            port_map[f"eth1/{cage}/1"] = PortInfo(
+                logical_id=cage, profile_id=39, speed=800000, profiles={39: 800000}
+            )
+        for a in range(1, cages, 2):
+            pa, pz = f"eth1/{a}/1", f"eth1/{a + 1}/1"
+            pairs[pa], pairs[pz] = pz, pa
+        return port_map, pairs
+
+    def test_ecmp_width_untouched_at_default_or_below(self):
+        out = LinkTestRunner._overlay_cabling(_base_config(["eth1/9/1"]), PAIRS, PORT_MAP)
+        assert "switchSettings" not in out["sw"]
+        assert "defaultCommandLineArgs" not in out
+        port_map, pairs = self._wide_pairs(64)
+        out = LinkTestRunner._overlay_cabling(_base_config(["eth1/9/1"], mgmt=False), pairs, port_map)
+        assert "switchSettings" not in out["sw"]
+
+    def test_ecmp_width_follows_cabled_ports_in_flag_and_config(self):
+        port_map, pairs = self._wide_pairs(66)
+        base = _base_config(["eth1/9/1"], mgmt=False)
+        base["defaultCommandLineArgs"] = {"ecmp_width": "64", "other": "x"}
+        out = LinkTestRunner._overlay_cabling(base, pairs, port_map)
+        assert out["sw"]["switchSettings"]["ecmpWidth"] == 66
+        assert out["defaultCommandLineArgs"] == {"ecmp_width": "66", "other": "x"}
+
+    def test_ecmp_width_is_never_lowered(self):
+        port_map, pairs = self._wide_pairs(66)
+        base = _base_config(["eth1/9/1"], mgmt=False)
+        base["defaultCommandLineArgs"] = {"ecmp_width": "320"}
+        out = LinkTestRunner._overlay_cabling(copy.deepcopy(base), pairs, port_map)
+        assert "switchSettings" not in out["sw"]
+        assert out["defaultCommandLineArgs"] == {"ecmp_width": "320"}
+        base["sw"]["switchSettings"] = {"ecmpWidth": 512, "l2LearningMode": 0}
+        out = LinkTestRunner._overlay_cabling(base, pairs, port_map)
+        assert out["sw"]["switchSettings"] == {"ecmpWidth": 512, "l2LearningMode": 0}
 
     def test_profile_overrides_set_speed_and_profile(self):
         port_map = dict(PORT_MAP)

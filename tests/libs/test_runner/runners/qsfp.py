@@ -11,7 +11,13 @@ from tests.libs.test_runner.cabling import CablingAwareRunnerMixin, neighbor_pai
 from tests.libs.test_runner.deploy import STACK_FORWARDING, STACK_SHARE
 from tests.libs.test_runner.platform_configs import LINK_QSFP_TEST_CONFIG_NAME
 from tests.libs.test_runner.platform_mapping import media_speed_mbps, PortInfo
-from tests.libs.test_runner.variants import cage_of, CageResolution, resolve_cage
+from tests.libs.test_runner.variants import (
+    cage_of,
+    CageResolution,
+    resolve_cage,
+    resolve_pairs,
+    Variant,
+)
 
 logger = logging.getLogger("test_runner")
 
@@ -50,6 +56,11 @@ class QsfpTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
 
     # Passive DACs do not support 200G serdes, so limit them to 100G lane speeds.
     _PASSIVE_CU_MAX_LANE_SPEED_MBPS = 106_250
+
+    # Copper profiles HwTransceiverUtils::verifyPortNameToLaneMap handles on a
+    # CR8_800G module; others throw "Unhandled profile" (other media never do).
+    _LANE_MAP_GATED_MEDIA = "CR8_800G"
+    _VERIFIABLE_COPPER_LANE_MAP_PROFILES = frozenset({45, 50, 60})
 
     def _medium_profile(self, port: str, info: PortInfo) -> int | None:
         max_lane_speed = (
@@ -94,12 +105,65 @@ class QsfpTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
             return "copper profile selected but module reports UNKNOWN transmitter technology"
         return None
 
+    def _resolve_cages(
+        self, config_name: str, variant: Variant, ports: list[str]
+    ) -> dict[str, CageResolution]:
+        cages = self._full_platform_mapping(config_name)
+        return {
+            cage_of(p): resolve_cage(
+                p,
+                variant,
+                cages,
+                self._host_speeds_by_port,
+                self._is_copper_by_port,
+                self._host_apps_by_port,
+            )
+            for p in ports
+        }
+
+    def _variant_lane_map_gap(self, config_name: str, ports: list[str]) -> dict[str, int]:
+        """{port: variant profile} the hw test cannot lane-map; empty at max."""
+        if not self._is_variant_run():
+            return {}
+        gated = [
+            p
+            for p in ports
+            if self._media_tech_by_port.get(p) == "PASSIVE_CU"
+            and self._media_by_port.get(p) == self._LANE_MAP_GATED_MEDIA
+        ]
+        if not gated:
+            return {}
+        variant = self._requested_variant(config_name)
+        # Cages of an excluded pair stay at max in _build_cabled_config.
+        excluded = resolve_pairs(
+            self._pass_pairs(ports),
+            variant,
+            self._full_platform_mapping(config_name),
+            self._host_speeds_by_port,
+            self._is_copper_by_port,
+            self._host_apps_by_port,
+        ).excluded_pairs
+        excluded_cages = {cage_of(p) for p in excluded}
+        gated = [p for p in gated if cage_of(p) not in excluded_cages]
+        if not gated:
+            return {}
+        cages = self._resolve_cages(config_name, variant, gated)
+        return {
+            p: cage.profile_id
+            for p in gated
+            if (cage := cages[cage_of(p)]).ok
+            and cage.profile_id not in self._VERIFIABLE_COPPER_LANE_MAP_PROFILES
+        }
+
     def _strict_eligible_ports(self, model: str, ports: list[str]) -> list[str]:
         config_name = LINK_QSFP_TEST_CONFIG_NAME.get(model, model)
         _, port_map = self._load_base_config_and_port_map(self._BASE_CONFIG_DIR, config_name)
+        lane_map_gap = self._variant_lane_map_gap(config_name, ports)
         eligible = []
         for port in ports:
             reason = self._strict_unverifiable_reason(port, port_map)
+            if reason is None and port in lane_map_gap:
+                reason = f"qsfp hw test has no lane-map rule for copper profile {lane_map_gap[port]}"
             if reason is None:
                 eligible.append(port)
             else:
@@ -126,10 +190,15 @@ class QsfpTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
         config = copy.deepcopy(base_config)
         cabled = []
         # Self-pairs carry the variant per cage, not per cable: the qsfp tests are
-        # per transceiver and HwPortUtils builds its cabled set per PortID.
+        # per transceiver and HwPortUtils builds its cabled set per PortID. Cages
+        # of an excluded pair stay at max to agree with their neighbor entry.
+        excluded_cages = (
+            {cage_of(p) for p in resolution.excluded_pairs} if resolution is not None else set()
+        )
         emitted = set()
         for port in ports:
-            for name, profile_id in self._self_pair_ports(port, port_map, variant_cages):
+            cages = {} if cage_of(port) in excluded_cages else variant_cages
+            for name, profile_id in self._self_pair_ports(port, port_map, cages):
                 if name in emitted:
                     continue
                 emitted.add(name)
@@ -142,11 +211,10 @@ class QsfpTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
             for a, z in neighbors:
                 cabled.append({"aPortName": a, "zPortName": z, "profileID": self._pair_profile_id(a, z, port_map)})
         else:
-            # One entry per active subport with the variant profile; excluded
-            # pairs keep no neighbor entry. getCabledPortsAndProfiles honors
-            # these per PortID (HwPortUtils.cpp); only the transceiver-keyed
-            # neighbor map collapses them, harmless since a cage's subports
-            # share one peer transceiver.
+            # One entry per active subport with the variant profile.
+            # getCabledPortsAndProfiles honors these per PortID (HwPortUtils.cpp);
+            # only the transceiver-keyed neighbor map collapses them, harmless
+            # since a cage's subports share one peer transceiver.
             cages_in_pass = {cage_of(p) for p in ports}
             neighbors = []
             for a in sorted(resolution.expanded_pairs):
@@ -158,6 +226,18 @@ class QsfpTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
                 neighbors.append((a, z))
                 cabled.append(
                     {"aPortName": a, "zPortName": z, "profileID": resolution.profile_overrides[a]}
+                )
+            # Excluded pairs are still cabled: HwI2cSelectTest's duplicate-serial
+            # check needs both DAC ends to name each other.
+            for a in sorted(resolution.excluded_pairs):
+                z = resolution.excluded_pairs[a]
+                if a > z:
+                    continue
+                if cage_of(a) not in cages_in_pass or cage_of(z) not in cages_in_pass:
+                    continue
+                neighbors.append((a, z))
+                cabled.append(
+                    {"aPortName": a, "zPortName": z, "profileID": self._pair_profile_id(a, z, port_map)}
                 )
         config["qsfpTestConfig"]["cabledPortPairs"] = cabled
         logger.info("qsfp cabled pairs: %d neighbor pairs added for %d ports", len(neighbors), len(ports))
@@ -183,18 +263,7 @@ class QsfpTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
         resolution = self._pass_variant_resolution
         variant_cages = {}
         if resolution is not None:
-            cages = self._full_platform_mapping(config_name)
-            variant_cages = {
-                cage_of(p): resolve_cage(
-                    p,
-                    resolution.variant,
-                    cages,
-                    self._host_speeds_by_port,
-                    self._is_copper_by_port,
-                    self._host_apps_by_port,
-                )
-                for p in ports
-            }
+            variant_cages = self._resolve_cages(config_name, resolution.variant, ports)
         config = self._build_cabled_config(
             base_config, ports, port_map, self._load_snake_pairs(), resolution, variant_cages
         )

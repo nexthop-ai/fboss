@@ -345,6 +345,8 @@ class VariantResolution:
     variant: Variant
     # Expanded symmetric {subport: peer_subport} map for supported pairs.
     expanded_pairs: dict[str, str] = field(default_factory=dict)
+    # Symmetric {port: peer} map of the pairs the variant excluded; still cabled.
+    excluded_pairs: dict[str, str] = field(default_factory=dict)
     profile_overrides: dict[str, int] = field(default_factory=dict)
     supported: int = 0
     total: int = 0
@@ -400,6 +402,8 @@ def resolve_pairs(
         if not pr.ok:
             reason = pr.reason or "platform"
             res.excluded_by_reason[reason] = res.excluded_by_reason.get(reason, 0) + 1
+            res.excluded_pairs[port] = peer
+            res.excluded_pairs[peer] = port
             logger.info(
                 "variant=%s pair=%s<->%s excluded reason=%s: %s",
                 variant.name, port, peer, pr.reason, pr.detail,

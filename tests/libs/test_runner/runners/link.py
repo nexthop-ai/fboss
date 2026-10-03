@@ -73,6 +73,7 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
     _REMOTE_QSFP_CONFIG_PATH = "/home/netops/link_test_qsfp.conf"
     # JSON map key for LLDPTag.PORT: see fboss/agent/switch_config.thrift.
     _LLDP_PORT_TAG = "2"
+    _DEFAULT_ECMP_WIDTH = 64
 
     STACK = STACK_FORWARDING
     # Both binaries ship: --agent-run-mode picks mono vs multi at run time.
@@ -154,8 +155,16 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
         optical = set(optics_ports)
         eligible = {p: m for p, m in media_by_port.items() if p in optical}
         pairs = {p: peer for p, peer in self._load_snake_pairs().items() if p in eligible and peer in eligible}
+        # qsfp_service reports the media code of the application a module runs,
+        # so at a breakout speed no port matches the full-speed media classes.
+        is_variant = self._is_variant_run()
         kept, skipped = [], []
         for pattern in patterns:
+            if is_variant and "Prbs" in pattern:
+                skipped.append(
+                    (pattern, "PRBS classes match full-speed media codes only; not run on breakout variants")
+                )
+                continue
             if any(s in pattern for s in self._PTP_FLAP_TEST_SUBSTRINGS):
                 if ptp_flap_ok:
                     kept.append(pattern)
@@ -300,6 +309,17 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
             raise ValueError(
                 "ran out of vlans in the 2000-4093 band while synthesizing ports"
             ) from None
+        # One ECMP group must span every cabled port; SAI sizes it from the
+        # ecmp_width flag, the applied config from switchSettings.ecmpWidth.
+        args = base_json.get("defaultCommandLineArgs", {})
+        width = max(
+            int(args.get("ecmp_width", cls._DEFAULT_ECMP_WIDTH)),
+            sw.get("switchSettings", {}).get("ecmpWidth", 0),
+        )
+        if len(pairs) > width:
+            width = len(pairs)
+            base_json.setdefault("defaultCommandLineArgs", {})["ecmp_width"] = str(width)
+            sw.setdefault("switchSettings", {})["ecmpWidth"] = width
         return base_json
 
     def _stage_qsfp_config(self):
