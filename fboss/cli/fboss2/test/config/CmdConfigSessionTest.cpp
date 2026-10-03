@@ -1039,55 +1039,6 @@ TEST_F(ConfigSessionTestFixture, commandTrackingBasic) {
       json["commands"][0].asString());
 }
 
-TEST_F(ConfigSessionTestFixture, defaultConstructorWithEnvOverride) {
-  // Test that the default constructor works with FBOSS_CONFIG_BASE_DIR
-  // environment variable override
-  fs::path sessionDir = getTestHomeDir() / ".fboss2";
-  fs::path sessionConfig = sessionDir / "agent.conf";
-  fs::path cliConfigPath = getTestEtcDir() / "coop" / "cli" / "agent.conf";
-
-  // Set environment variable to redirect config base directory
-  // NOLINTNEXTLINE(concurrency-mt-unsafe): Test code, single-threaded
-  setenv("FBOSS_CONFIG_BASE_DIR", (getTestEtcDir() / "coop").c_str(), 1);
-
-  // Reset singleton to force re-initialization
-  TestableConfigSession::setInstance(nullptr);
-
-  // Now getInstance() will use the default constructor with test paths!
-  auto& session = ConfigSession::getInstance();
-
-  // Construction only creates the session directory; the agent session is
-  // materialized on first access.
-  EXPECT_TRUE(fs::exists(sessionDir));
-  EXPECT_FALSE(session.sessionExists());
-
-  // Verify the system config path uses the overridden base directory
-  EXPECT_EQ(
-      session.getSystemConfigPath(),
-      (getTestEtcDir() / "coop" / "agent.conf").string());
-
-  // The default constructor discovers the agent's config path by asking the
-  // agent for its "config" option.
-  EXPECT_CALL(getMockAgent(), getOption(::testing::_, ::testing::_))
-      .WillOnce([&](std::string& path, std::unique_ptr<std::string> key) {
-        EXPECT_EQ(*key, "config");
-        path = session.getSystemConfigPath();
-      });
-  session.getAgentConfig();
-  EXPECT_TRUE(session.sessionExists());
-  EXPECT_TRUE(fs::exists(sessionConfig));
-
-  // Verify content was copied correctly
-  std::string systemContent = readFile(cliConfigPath);
-  std::string sessionContent = readFile(sessionConfig);
-  EXPECT_EQ(systemContent, sessionContent);
-
-  // Cleanup
-  // NOLINTNEXTLINE(concurrency-mt-unsafe): Test code, single-threaded
-  unsetenv("FBOSS_CONFIG_BASE_DIR");
-  TestableConfigSession::setInstance(nullptr);
-}
-
 TEST_F(ConfigSessionTestFixture, commandTrackingMultipleCommands) {
   fs::path sessionDir = getTestHomeDir() / ".fboss2";
 

@@ -77,10 +77,9 @@ std::string formatRestartedServices(
 // load_agent_config into fboss2-config-lib. This also keeps the command free of
 // session side effects.
 std::string performLocalRestart(cli::ConfigActionLevel level) {
-  // Derive /etc/coop/agent.conf via AgentDirectoryUtil so the
-  // FBOSS_CONFIG_BASE_DIR test override works. getConfigDirectory() returns
-  // <base>/agent; the agent reads its config from <base>/agent.conf (one level
-  // up).
+  // Derive /etc/coop/agent.conf via AgentDirectoryUtil rather than
+  // hard-coding it: getConfigDirectory() returns <coop>/agent and the agent
+  // reads its config from <coop>/agent.conf (one level up).
   AgentDirectoryUtil dirUtil;
   std::string configPath = std::filesystem::path(dirUtil.getConfigDirectory())
                                .parent_path()
