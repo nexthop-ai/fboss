@@ -19,6 +19,7 @@
     <custom-branch-name>
     ```
   - [ ] Cherry-pick now (runs immediately; later changes must be manual)
+  - [ ] Upstream later (requirement is tracked; no cherry-pick on merge)
 
 - [ ] No
 
