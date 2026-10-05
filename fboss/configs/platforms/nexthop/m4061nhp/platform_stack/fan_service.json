@@ -25,7 +25,9 @@
         "fan_3_inner",
         "fan_3_outer",
         "fan_4_inner",
-        "fan_4_outer"
+        "fan_4_outer",
+        "fan_5_inner",
+        "fan_5_outer"
       ],
       "slope": 2
     }
@@ -129,6 +131,32 @@
       "presenceSysfsPath": "/run/devmap/sensors/FAN_CTRL/fan4_present",
       "goodLedSysfsPath": "/sys/class/leds/fan4_led:blue:status",
       "failLedSysfsPath": "/sys/class/leds/fan4_led:amber:status",
+      "pwmMin": 1,
+      "pwmMax": 255,
+      "fanPresentVal": 1,
+      "fanMissingVal": 0,
+      "rpmMin": 6000
+    },
+    {
+      "fanName": "fan_5_inner",
+      "rpmSysfsPath": "/run/devmap/sensors/FAN_CTRL/fan9_input",
+      "pwmSysfsPath": "/run/devmap/sensors/FAN_CTRL/pwm5",
+      "presenceSysfsPath": "/run/devmap/sensors/FAN_CTRL/fan5_present",
+      "goodLedSysfsPath": "/sys/class/leds/fan5_led:blue:status",
+      "failLedSysfsPath": "/sys/class/leds/fan5_led:amber:status",
+      "pwmMin": 1,
+      "pwmMax": 255,
+      "fanPresentVal": 1,
+      "fanMissingVal": 0,
+      "rpmMin": 6000
+    },
+    {
+      "fanName": "fan_5_outer",
+      "rpmSysfsPath": "/run/devmap/sensors/FAN_CTRL/fan10_input",
+      "pwmSysfsPath": "/run/devmap/sensors/FAN_CTRL/pwm5",
+      "presenceSysfsPath": "/run/devmap/sensors/FAN_CTRL/fan5_present",
+      "goodLedSysfsPath": "/sys/class/leds/fan5_led:blue:status",
+      "failLedSysfsPath": "/sys/class/leds/fan5_led:amber:status",
       "pwmMin": 1,
       "pwmMax": 255,
       "fanPresentVal": 1,

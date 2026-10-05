@@ -55,6 +55,16 @@
       }
     },
     {
+      "fruName": "FAN5",
+      "fruType": "FAN",
+      "presenceDetection": {
+        "sysfsFileHandle": {
+          "presenceFilePath": "/run/devmap/sensors/FAN_CTRL/fan5_present",
+          "desiredValue": 1
+        }
+      }
+    },
+    {
       "fruName": "PSU1",
       "fruType": "PSU",
       "presenceDetection": {

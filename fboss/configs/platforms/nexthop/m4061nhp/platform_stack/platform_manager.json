@@ -1,5 +1,4 @@
 {
-  "___COMMENT___": "Platform Manager Configuration for M4061NHP (Blue Kite): Black Turtle CPU card, Blue Kite switch card (TH6-C, 64x OSFP + 1x QSFP28 mgmt), Sunbird fan/PDC/LED cards. SMB register map per Blue Kite FPGA spec rev 0xe812_0401 (Black Kite layout + PDC status); the SCM IDPROM bus is named by adapter string like m4062nhp so both Black Turtle CPU card revisions resolve.",
   "platformName": "M4061NHP",
   "rootPmUnitName": "SCM",
   "rootSlotType": "SCM_SLOT",
@@ -102,7 +101,7 @@
                 "deviceName": "fan_ctrl",
                 "csrOffset": "0x00a0"
               },
-              "numFans": 4
+              "numFans": 5
             }
           ],
           "miscCtrlConfigs": [
@@ -137,14 +136,14 @@
             {
               "pmUnitScopedNamePrefix": "OSFP",
               "deviceName": "nh_xcvr_ctrl",
-              "csrOffsetCalc": "0x0034",
+              "csrOffsetCalc": "0x0030",
               "startPort": 1,
               "numPorts": 32
             },
             {
               "pmUnitScopedNamePrefix": "OSFP",
               "deviceName": "nh_xcvr_ctrl",
-              "csrOffsetCalc": "0x0048",
+              "csrOffsetCalc": "0x0040",
               "startPort": 33,
               "numPorts": 32
             },
