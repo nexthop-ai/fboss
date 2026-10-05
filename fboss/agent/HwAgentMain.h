@@ -8,7 +8,6 @@
  *
  */
 #pragma once
-#include <atomic>
 #include <memory>
 #include <string>
 
@@ -33,14 +32,9 @@ class SplitHwAgentSignalHandler : public SignalHandler {
 
   void signalReceived(int /*signum*/) noexcept override;
 
-  bool exitSignalReceived() const {
-    return exitSignalReceived_.load();
-  }
-
  private:
   std::unique_ptr<HwAgent> hwAgent_;
   SplitAgentThriftSyncer* syncer_;
-  std::atomic<bool> exitSignalReceived_{false};
 };
 
 void setSDKVersionInfo();

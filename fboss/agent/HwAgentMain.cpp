@@ -11,7 +11,6 @@
 #include <fb303/FollyLoggingHandler.h>
 #include <fb303/ServiceData.h>
 #include <folly/logging/Init.h>
-#include <folly/logging/LoggerDB.h>
 #include <folly/logging/xlog.h>
 #include <gflags/gflags.h>
 #include "fboss/agent/AgentConfig.h"
@@ -82,11 +81,6 @@ void updateStats(
 namespace facebook::fboss {
 
 void SplitHwAgentSignalHandler::signalReceived(int /*signum*/) noexcept {
-  if (exitSignalReceived_.exchange(true)) {
-    XLOG(WARNING)
-        << "[Exit] Exit signal received while shutdown is already in progress, ignoring";
-    return;
-  }
   restart_time::mark(RestartEvent::SIGNAL_RECEIVED);
   XLOG(DBG2) << "[Exit] Signal received ";
   if (!hwAgent_->isInitialized()) {
@@ -164,6 +158,8 @@ void SplitHwAgentSignalHandler::signalReceived(int /*signum*/) noexcept {
     std::this_thread::sleep_for(std::chrono::seconds(FLAGS_agent_exit_delay_s));
     XLOG(INFO) << "[Exit] Delay complete, exiting now";
   }
+
+  exit(0);
 }
 
 int hwAgentMain(
@@ -327,10 +323,7 @@ int hwAgentMain(
   // @lint-ignore CLANGTIDY
   server->serve();
   server.reset();
-  thriftSyncer.reset();
-  folly::LoggerDB::get().flushAllHandlers();
-  // NOLINTNEXTLINE(concurrency-mt-unsafe)
-  exit(signalHandler.exitSignalReceived() ? 0 : 1);
+  return 0;
 }
 
 } // namespace facebook::fboss

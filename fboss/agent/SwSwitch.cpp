@@ -229,8 +229,6 @@ facebook::fboss::PortStatus fillInPortStatus(
 }
 
 auto constexpr kHwUpdateFailures = "hw_update_failures";
-auto constexpr kHwUpdateDroppedNoConnection =
-    "hwswitch_disconnected_update_drop";
 
 std::string getDrainStateChangedStr(
     const std::shared_ptr<facebook::fboss::SwitchState>& oldState,
@@ -921,12 +919,10 @@ state::WarmbootState SwSwitch::gracefulExitState() const {
   return thriftSwitchState;
 }
 
-void SwSwitch::gracefulExit(bool skipWarmBootStateSave) {
+void SwSwitch::gracefulExit() {
   if (isFullyInitialized()) {
     steady_clock::time_point begin = steady_clock::now();
-    XLOG(DBG2) << "[Exit] Starting SwSwitch graceful exit"
-               << (skipWarmBootStateSave ? " (skipping warm boot state save)"
-                                         : "");
+    XLOG(DBG2) << "[Exit] Starting SwSwitch graceful exit";
     ipv6_->floodNeighborAdvertisements();
     arp_->floodGratuituousArp();
     steady_clock::time_point neighborFloodDone = steady_clock::now();
@@ -942,27 +938,22 @@ void SwSwitch::gracefulExit(bool skipWarmBootStateSave) {
                       stopThreadsAndHandlersDone - neighborFloodDone)
                       .count();
 
-    if (!skipWarmBootStateSave) {
-      state::WarmbootState thriftSwitchState;
-      std::thread swWarmbootStateThread([this,
-                                         &thriftSwitchState,
-                                         stopThreadsAndHandlersDone]() {
-        thriftSwitchState = gracefulExitState();
-        steady_clock::time_point switchStateToThriftDone = steady_clock::now();
-        XLOG(DBG2) << "[Exit] Switch state to thrift "
-                   << duration_cast<duration<float>>(
-                          switchStateToThriftDone - stopThreadsAndHandlersDone)
-                          .count();
-      });
-      // Cleanup if we ever initialized
-      stopHwSwitchHandler();
+    state::WarmbootState thriftSwitchState;
+    std::thread swWarmbootStateThread([this,
+                                       &thriftSwitchState,
+                                       stopThreadsAndHandlersDone]() {
+      thriftSwitchState = gracefulExitState();
+      steady_clock::time_point switchStateToThriftDone = steady_clock::now();
+      XLOG(DBG2) << "[Exit] Switch state to thrift "
+                 << duration_cast<duration<float>>(
+                        switchStateToThriftDone - stopThreadsAndHandlersDone)
+                        .count();
+    });
+    // Cleanup if we ever initialized
+    stopHwSwitchHandler();
 
-      swWarmbootStateThread.join();
-      storeWarmBootState(thriftSwitchState);
-    } else {
-      // Cleanup if we ever initialized
-      stopHwSwitchHandler();
-    }
+    swWarmbootStateThread.join();
+    storeWarmBootState(thriftSwitchState);
     XLOG(DBG2)
         << "[Exit] SwSwitch Graceful Exit time "
         << duration_cast<duration<float>>(steady_clock::now() - begin).count();
@@ -1451,27 +1442,6 @@ void SwSwitch::invokeNeighborListener(
   if (neighborListener_ && !isExiting()) {
     neighborListener_(added, removed);
   }
-}
-
-void SwSwitch::registerGracefulShutdownHandler(
-    FbossEventBase* evb,
-    std::function<void()> handler) {
-  gracefulShutdownEvb_ = evb;
-  gracefulShutdownHandler_ = std::move(handler);
-}
-
-void SwSwitch::requestGracefulShutdown() {
-  if (!gracefulShutdownHandler_ || !gracefulShutdownEvb_) {
-    XLOG(ERR)
-        << "requestGracefulShutdown called but no graceful shutdown handler registered";
-    return;
-  }
-  // Run teardown on the registered event base, not the caller's thread;
-  // once_flag collapses concurrent requests into a single shutdown.
-  std::call_once(gracefulShutdownOnceFlag_, [this]() {
-    gracefulShutdownEvb_->runInEventBaseThread(
-        [handler = gracefulShutdownHandler_]() { handler(); });
-  });
 }
 
 void SwSwitch::exitFatal() const noexcept {
@@ -2118,36 +2088,6 @@ void SwSwitch::handlePendingUpdates() {
           update->onError(ex);
         }
         return;
-      } else if (!multiHwSwitchHandler_->hasActiveHwSwitchConnections()) {
-        /*
-         * All HwSwitch connections are gone (e.g. hw_agent restarted right
-         * after sw_agent came up and the oper delta ack timed out or the
-         * stream disconnected). HwSwitchConnectionStatusTable::disconnected()
-         * has already created cold boot markers and scheduled a graceful
-         * shutdown, but the EXITING run state may not be set yet on this
-         * thread, so isExiting() can still be false here. Treat this like
-         * the exiting case instead of crashing: state will be resynced via
-         * the cold boot on restart.
-         *
-         * TODO: this connection-table check is a proxy for the
-         * HWSWITCH_STATE_UPDATE_CANCELLED status that
-         * MultiHwSwitchHandler::stateChanged computes per switch and then
-         * drops. It is correct only because both cancellation paths erase
-         * the connection-table entry before stateChanged returns to this
-         * thread. Propagating the aggregate update status out of
-         * MultiHwSwitchHandler::stateChanged would be exact, and would also
-         * let us handle partial cancellation (one of several HwSwitches
-         * cancelled) which today either still FATALs here or silently leaves
-         * the cancelled switch out of sync.
-         */
-        fb303::fbData->incrementCounter(kHwUpdateDroppedNoConnection);
-        XLOG(ERR) << "Failed to apply update to HW since all HwSwitch "
-                     "connections are lost; shutdown is in progress";
-        // Belt and braces: every path that empties the connection table
-        // already requests this (and call_once collapses the requests), but
-        // do not rely on that here - dropping updates without a pending
-        // teardown would leave a zombie agent acking updates forever.
-        requestGracefulShutdown();
       } else {
         XLOG(FATAL)
             << " Failed to apply update to HW and the update is not marked for "

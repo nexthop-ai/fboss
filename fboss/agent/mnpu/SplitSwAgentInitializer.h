@@ -5,9 +5,6 @@
 #include "fboss/agent/AgentDirectoryUtil.h"
 #include "fboss/agent/SwAgentInitializer.h"
 
-#include <atomic>
-#include <vector>
-
 namespace facebook::fboss {
 
 class SwitchState;
@@ -31,7 +28,7 @@ class SplitSwAgentInitializer : public SwAgentInitializer {
   std::vector<std::shared_ptr<apache::thrift::AsyncProcessorFactory>>
   getThrifthandlers() override;
 
-  void handleExitSignal(bool gracefulExit, bool skipWarmBootStateSave) override;
+  void handleExitSignal(bool gracefulExit) override;
 
   void stopAgent(bool setupWarmboot, bool gracefulExit) override;
 
@@ -40,7 +37,6 @@ class SplitSwAgentInitializer : public SwAgentInitializer {
   void exitForWarmBoot(bool gracefulExit);
   AgentDirectoryUtil agentDirectoryUtil_;
   MultiSwitchThriftHandler* multiSwitchThriftHandler_{nullptr};
-  std::atomic<bool> exitSignalReceived_{false};
 };
 
 } // namespace facebook::fboss

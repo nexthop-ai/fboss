@@ -66,11 +66,7 @@ bool HwSwitchConnectionStatusTable::disconnected(SwitchID switchId) {
                  << ": " << dirUtil->getHwColdBootOnceFile(switchIndex);
     }
 
-    // Schedule graceful teardown on the server's event base instead of exiting
-    // inline on this thrift stream cleanup thread.
-    lk.unlock();
-    sw_->requestGracefulShutdown();
-    return true;
+    std::exit(EXIT_SUCCESS);
   }
   if (FLAGS_exit_for_any_hw_disconnect) {
     XLOG(FATAL)
@@ -119,11 +115,6 @@ void HwSwitchConnectionStatusTable::cancelWait() {
 int HwSwitchConnectionStatusTable::getConnectionStatus(SwitchID switchId) {
   std::unique_lock<std::mutex> lk(hwSwitchConnectedMutex_);
   return connectedSwitches_.find(switchId) != connectedSwitches_.end() ? 1 : 0;
-}
-
-bool HwSwitchConnectionStatusTable::hasActiveConnections() {
-  std::lock_guard<std::mutex> lk(hwSwitchConnectedMutex_);
-  return !connectedSwitches_.empty();
 }
 
 } // namespace facebook::fboss

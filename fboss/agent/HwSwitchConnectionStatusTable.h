@@ -30,7 +30,6 @@ class HwSwitchConnectionStatusTable {
   bool waitUntilHwSwitchConnected(size_t numSwitches = 1);
   void cancelWait();
   int getConnectionStatus(SwitchID switchId);
-  bool hasActiveConnections();
 
  private:
   std::set<SwitchID> connectedSwitches_;
