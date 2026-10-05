@@ -88,7 +88,6 @@
 #include "fboss/cli/fboss2/commands/delete/acl/CmdDeleteAcl.h"
 #include "fboss/cli/fboss2/commands/delete/acl/rule/CmdDeleteAclRule.h"
 #include "fboss/cli/fboss2/commands/delete/acl/table/CmdDeleteAclTable.h"
-#include "fboss/cli/fboss2/commands/delete/acl/table_group/CmdDeleteAclTableGroup.h"
 #include "fboss/cli/fboss2/commands/delete/arp/CmdDeleteArp.h"
 #include "fboss/cli/fboss2/commands/delete/config/CmdDeleteConfig.h"
 #include "fboss/cli/fboss2/commands/delete/copp/CmdDeleteCopp.h"
@@ -926,12 +925,6 @@ const CommandTree& kConfigCommandTree() {
                "Delete an ACL table, its rules, and their traffic-policy actions",
                commandHandler<CmdDeleteAclTable>,
                argRegistrar<CmdDeleteAclTableTraits>,
-           },
-           {
-               "table-group",
-               "Delete an ACL table-group and every table it holds",
-               commandHandler<CmdDeleteAclTableGroup>,
-               argRegistrar<CmdDeleteAclTableGroupTraits>,
            }},
       },
 

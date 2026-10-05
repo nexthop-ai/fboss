@@ -1085,8 +1085,6 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/delete/acl/rule/CmdDeleteAclRule.h
   fboss/cli/fboss2/commands/delete/acl/table/CmdDeleteAclTable.cpp
   fboss/cli/fboss2/commands/delete/acl/table/CmdDeleteAclTable.h
-  fboss/cli/fboss2/commands/delete/acl/table_group/CmdDeleteAclTableGroup.cpp
-  fboss/cli/fboss2/commands/delete/acl/table_group/CmdDeleteAclTableGroup.h
   fboss/cli/fboss2/commands/delete/arp/CmdDeleteArp.cpp
   fboss/cli/fboss2/commands/delete/arp/CmdDeleteArp.h
   fboss/cli/fboss2/commands/delete/copp/CmdDeleteCopp.cpp

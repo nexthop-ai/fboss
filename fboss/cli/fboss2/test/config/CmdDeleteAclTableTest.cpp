@@ -176,7 +176,7 @@ TEST_F(CmdDeleteAclTableTestFixture, deleteTableInASecondGroup) {
   cmd.queryClient(host, AclTableDeleteArgs({"AclTable3"}));
 
   EXPECT_FALSE(hasTable("AclTable3"));
-  // The now-empty group survives; only `delete acl table-group` removes it.
+  // The now-empty group survives; deleting a table never removes its group.
   EXPECT_TRUE(hasGroup("egress-ACL-Table-Group"));
 }
 
@@ -188,13 +188,9 @@ TEST_F(CmdDeleteAclTableTestFixture, deleteMissingTableThrows) {
       cmd.queryClient(host, AclTableDeleteArgs({"nope"})), std::runtime_error);
 }
 
-// =============================================================
-// delete acl table-group
-// =============================================================
-
-// A config with no aclTableGroups at all: both delete commands must throw
-// (there is nothing to delete, and dereferencing the unset field would
-// otherwise crash) and must not invent the field as a side effect.
+// A config with no aclTableGroups at all: delete must throw (there is nothing
+// to delete, and dereferencing the unset field would otherwise crash) and must
+// not invent the field as a side effect.
 static constexpr auto kSeedConfigEmpty = R"({
   "defaultCommandLineArgs": {"enable_acl_table_group": "true"},
   "sw": {}
