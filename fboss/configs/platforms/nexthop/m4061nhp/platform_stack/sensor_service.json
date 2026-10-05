@@ -698,20 +698,24 @@
           "compute": "@/1000.0"
         },
         {
-          "name": "ASIC_TEMP_MAX_RAW",
+          "name": "ASIC_TEMP_MAX_C",
           "sysfsPath": "/run/devmap/sensors/ASIC_TEMP/asic_temp_max_raw",
           "type": 3,
           "thresholds": {
-            "upperCriticalVal": 8191
-          }
+            "maxAlarmVal": 105,
+            "upperCriticalVal": 112
+          },
+          "compute": "379.10968 - 0.12984*@"
         },
         {
-          "name": "ASIC_TEMP_MIN_RAW",
+          "name": "ASIC_TEMP_MIN_C",
           "sysfsPath": "/run/devmap/sensors/ASIC_TEMP/asic_temp_min_raw",
           "type": 3,
           "thresholds": {
-            "upperCriticalVal": 8191
-          }
+            "maxAlarmVal": 105,
+            "upperCriticalVal": 112
+          },
+          "compute": "379.10968 - 0.12984*@"
         },
         {
           "name": "MGMT_TEMP_SENSOR",
@@ -1281,7 +1285,7 @@
     {
       "name": "ASIC",
       "temperatureSensorNames": [
-        "ASIC_TEMP_MAX_RAW"
+        "ASIC_TEMP_MAX_C"
       ]
     }
   ],
