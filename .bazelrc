@@ -95,7 +95,6 @@ build --dynamic_mode=off
 build --linkopt=-fuse-ld=mold
 build --host_linkopt=-fuse-ld=mold
 build --linkopt=-Wl,-rpath,/usr/local/llvm/lib/x86_64-unknown-linux-gnu
-build --linkopt=-Wl,--allow-shlib-undefined
 # Note: third-party archives (folly, fbthrift, etc.) contain ~230MB of debug
 # sections because folly's cmake unconditionally adds -g via
 # apply_folly_compile_options_to_target. This is the same for both cmake and

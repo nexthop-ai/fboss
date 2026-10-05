@@ -39,6 +39,7 @@ _BRCM_SRCS = _COMMON_SRCS + [
     "bcm/AclApi.cpp",
     "bcm/ArsApi.cpp",
     "bcm/ArsProfileApi.cpp",
+    "bcm/CounterApi.cpp",
     "bcm/DebugCounterApi.cpp",
     "bcm/NextHopGroupApi.cpp",
     "bcm/PortApi.cpp",

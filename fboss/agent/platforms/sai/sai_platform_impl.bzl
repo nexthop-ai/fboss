@@ -91,7 +91,6 @@ def sai_platform_impl():
         copts = _SAI_COPTS,
         linkopts = [
             "-Wl,--export-dynamic",
-            "-Wl,--unresolved-symbols=ignore-all",
             "-Wl,-wrap,sai_api_query",
             "-Wl,-wrap,sai_api_initialize",
             "-Wl,-wrap,sai_api_uninitialize",
@@ -124,7 +123,6 @@ def sai_platform_impl():
         copts = _SAI_COPTS,
         linkopts = [
             "-Wl,--export-dynamic",
-            "-Wl,--unresolved-symbols=ignore-all",
             "-Wl,-wrap,sai_api_query",
             "-Wl,-wrap,sai_api_initialize",
             "-Wl,-wrap,sai_api_uninitialize",
