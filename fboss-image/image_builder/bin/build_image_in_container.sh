@@ -87,12 +87,6 @@ update_docker() {
   # The python3-kiwi RPM installs for the system Python 3.9, but python3 may
   # resolve to a newer version (e.g. 3.12) via update-alternatives. The
   # kiwi-ng-3 shebang uses "python3 -s" which excludes /usr/local/lib paths.
-<<<<<<< HEAD
-  # Install kiwi to the system site-packages visible under -s. The version
-  # constraint is per OS release, so it lives with the template.
-||||||| c159a235eb
-  # Install kiwi to the system site-packages visible under -s.
-=======
   # Install kiwi to the system site-packages visible under -s.
   #
   # Pinned: this install shadows the RPM above, so it is the kiwi that actually
@@ -102,11 +96,8 @@ update_docker() {
   # "sgdisk: Could not change partition 1's type code to EF02!". Bump
   # deliberately, after a green build, rather than by drift.
   KIWI_VERSION=11.0.1
->>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
   KIWI_SITE_PKG=$(python3 -s -c "import site; print(site.getsitepackages()[0])")
-<<<<<<< HEAD
-  python3 -m pip install -r "${DESCRIPTION_DIR}/kiwi-requirements.txt" \
-    --target "${KIWI_SITE_PKG}"
+  python3 -m pip install "kiwi==${KIWI_VERSION}" --target "${KIWI_SITE_PKG}"
 
   # Cap mksquashfs's cache to 4G from 25% of physical RAM to support
   # concurrent image compositions. Keep in sync with //bazel_lib:fboss_image
@@ -183,11 +174,6 @@ strip_shim_fallback_from_iso() {
       break
     fi
   done
-||||||| c159a235eb
-  python3 -m pip install kiwi --target "${KIWI_SITE_PKG}"
-=======
-  python3 -m pip install "kiwi==${KIWI_VERSION}" --target "${KIWI_SITE_PKG}"
->>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 }
 
 build_zstd() {
