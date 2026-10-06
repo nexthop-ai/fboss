@@ -234,10 +234,6 @@ class BroadcomXgsGenerator(BaseAsicConfigGenerator):
           * ``lp_offset_simple``: when true, compute the per-port logical-port
             offset as ``i * lanes_per_port`` on all cores rather than using
             the default even / odd conditional.
-          * ``special_core_offset_apply_all``: special-case compat flag. When
-            true, apply the +1 core offset to every core rather than only
-            cores 0 and 1, to reproduce a platform's pre-existing linear-stride
-            mapping. The offset is only physically meaningful on cores 0/1.
           * ``exclude_logical_ports``: logical port IDs omitted from the
             mapping, and therefore from PC_PORT_PHYS_MAP, PC_PORT and PORT.
             Used for front-panel ports that are not populated on a platform.
@@ -257,9 +253,6 @@ class BroadcomXgsGenerator(BaseAsicConfigGenerator):
         lanes_per_core = port_arch.get("num_lanes_per_core", 8)
         lp_start_step_offset = port_mapping_overrides.get("lp_start_step_offset", 1)
         lp_offset_simple = port_mapping_overrides.get("lp_offset_simple", False)
-        special_core_offset_apply_all = port_mapping_overrides.get(
-            "special_core_offset_apply_all", False
-        )
         exclude_logical_ports = set(
             port_mapping_overrides.get("exclude_logical_ports", [])
         )
@@ -268,7 +261,7 @@ class BroadcomXgsGenerator(BaseAsicConfigGenerator):
         cores = self._get_core_range()
 
         for core_num in cores:
-            core_offset = 1 if (special_core_offset_apply_all or core_num <= 1) else 0
+            core_offset = 1 if core_num <= 1 else 0
             lp_start_offset = 0 if core_num % 2 == 0 else lp_on_even_core
             lp_start = (
                 (core_num // 2) * (lp_per_dp + lp_start_step_offset)
