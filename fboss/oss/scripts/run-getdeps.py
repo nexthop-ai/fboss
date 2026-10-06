@@ -69,55 +69,8 @@ ARG_CHECK_COMPILE_MEM = "--check-compile-mem"
 ARG_COMPILE_MEM_PEAKS_DIR = "--compile-mem-peaks-dir"
 ARG_COMPILE_MEM_BUDGETS = "--compile-mem-budgets"
 
-<<<<<<< HEAD
 SUPPORTED_SAI_IMPLS = {"SAI_BRCM_IMPL", "CHENAB_SAI_SDK", "SAI_TAJO_IMPL"}
 SUPPORTED_PHY_IMPLS = {"SAI_BRCM_PAI_IMPL"}
-SAI_VERSION_SHAS = {
-    "1.13.2": "d60935ba1e5cc7e4ebf2ae7d04f9e937d445e3f875822e27a359c775cb203bae",
-    "1.14.0": "4e3a1d010bda0c589db46e077725a2cd9624a5cc255c89d1caa79deb408d1fa7",
-    "1.15.0": "94b7a7dd9dbcc46bf14ba9f12b8597e9e9c2069fcb8e383a61cdf6ca172f3511",
-    "1.15.3": "fd390d86e7abb419023decf1ec254054450a35d9147b0ad6499e6d12aa860812",
-    "1.16.0": "c7d9e85646b28a4d788448db28da649da37cd3ec7955fbeb8d7d80f76ef1796f",
-    "1.16.1": "cf65142d1a1286b5faa24c9ae61b3f955f04724d0bf5ef6e5679298353aa0871",
-    "1.16.3": "5c89cdb6b2e4f1b42ced6b78d43d06d22434ddbf423cdc551f7c2001f12e63d9",
-    "1.17.1": "05411b13b32abcc50f2f2b78e491e503b2b05e5a1503699abd4cc1b81f90d1ae",
-    "1.17.4": "362640d5398c53e7257daf67ff7044591937a8443bf037748527bb2cd185f660",
-    "1.18.0": "606e35da083056e60e818964bcc0737f229a78f1a150e8aa398bc76b3a360509",
-    "1.18.1": "84f2fbd6bf672abaefddfd78a28fec794e37477bf9702fbb56d7bd53ff930ba3",
-    "1.19.0": "199d2cd32408b6470ce0c43beee660cc468e29e72921f1e93e64d4a8eb80246a",
-||||||| c159a235eb
-SUPPORTED_SAI_IMPLS = {
-    "SAI_BRCM_IMPL",
-    "CHENAB_SAI_SDK",
-    "SAI_TAJO_IMPL",
-}
-SUPPORTED_PHY_IMPLS = {
-    "SAI_BRCM_PAI_IMPL",
-}
-SAI_VERSION_SHAS = {
-    "1.13.2": "d60935ba1e5cc7e4ebf2ae7d04f9e937d445e3f875822e27a359c775cb203bae",
-    "1.14.0": "4e3a1d010bda0c589db46e077725a2cd9624a5cc255c89d1caa79deb408d1fa7",
-    "1.15.0": "94b7a7dd9dbcc46bf14ba9f12b8597e9e9c2069fcb8e383a61cdf6ca172f3511",
-    "1.15.3": "fd390d86e7abb419023decf1ec254054450a35d9147b0ad6499e6d12aa860812",
-    "1.16.0": "c7d9e85646b28a4d788448db28da649da37cd3ec7955fbeb8d7d80f76ef1796f",
-    "1.16.1": "cf65142d1a1286b5faa24c9ae61b3f955f04724d0bf5ef6e5679298353aa0871",
-    "1.16.3": "5c89cdb6b2e4f1b42ced6b78d43d06d22434ddbf423cdc551f7c2001f12e63d9",
-    "1.17.1": "05411b13b32abcc50f2f2b78e491e503b2b05e5a1503699abd4cc1b81f90d1ae",
-    "1.17.4": "362640d5398c53e7257daf67ff7044591937a8443bf037748527bb2cd185f660",
-    "1.18.0": "606e35da083056e60e818964bcc0737f229a78f1a150e8aa398bc76b3a360509",
-    "1.18.1": "84f2fbd6bf672abaefddfd78a28fec794e37477bf9702fbb56d7bd53ff930ba3",
-    "1.19.0": "199d2cd32408b6470ce0c43beee660cc468e29e72921f1e93e64d4a8eb80246a",
-}
-=======
-SUPPORTED_SAI_IMPLS = {
-    "SAI_BRCM_IMPL",
-    "CHENAB_SAI_SDK",
-    "SAI_TAJO_IMPL",
-}
-SUPPORTED_PHY_IMPLS = {
-    "SAI_BRCM_PAI_IMPL",
->>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
-}
 SUPPORTED_SAI_SDK_VERSIONS = frozenset(SDK_VERSIONS)
 
 # Per-pass SAI implementation selectors.
@@ -306,7 +259,7 @@ def path_to(*args):
     return os.path.join(root, *args)
 
 
-def detect_toolchain():  # noqa: C901
+def detect_toolchain():
     """
     Detect which toolchain is currently active and extract relevant information.
     Returns a dict with:
@@ -1162,11 +1115,10 @@ def _prepare_pass(
             _edit_libsai_manifest(
                 args.npu_sai_version, _get_scratch_path(args.getdeps_args)
             )
-    elif impl == PASS_IMPL_PHY:
-        if args.phy_sai_version is not None:
-            _edit_libsai_manifest(
-                args.phy_sai_version, _get_scratch_path(args.getdeps_args)
-            )
+    elif impl == PASS_IMPL_PHY and args.phy_sai_version is not None:
+        _edit_libsai_manifest(
+            args.phy_sai_version, _get_scratch_path(args.getdeps_args)
+        )
 
 
 def _setup_toolchain(args):
@@ -1224,7 +1176,7 @@ def _in_fbsource_checkout():
         path = parent
 
     try:
-        with open(os.path.join(path, ".projectid"), "r") as f:
+        with open(os.path.join(path, ".projectid")) as f:
             return f.read().strip() == "fbsource"
     except (OSError, UnicodeDecodeError):
         return False
@@ -1269,8 +1221,7 @@ def _prefetch_gnu_mirrors(args, getdeps_path):
     print_info("Prefetching GNU-hosted dependencies via fallback mirrors")
     try:
         getdeps_fallback_mirror.prefetch(
-            manifests_dir=manifests_dir,
-            download_dir=download_dir,
+            manifests_dir=manifests_dir, download_dir=download_dir
         )
     except Exception as ex:
         # Seeding is purely an optimization over what getdeps does anyway, so
