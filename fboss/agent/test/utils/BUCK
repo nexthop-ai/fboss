@@ -62,8 +62,36 @@ cpp_library(
         "//fboss/agent:switch_config-cpp2-types",
         "//fboss/agent/hw/switch_asics:switch_asics",
         "//fboss/agent/state:state",
+<<<<<<< HEAD
         "//fboss/lib:common_utils",
         "//fboss/lib/config:acl_config_utils",
+||||||| c159a235eb
+        "//fboss/lib/config:acl_config_utils",
+=======
+        "//fboss/lib/config:fboss_agent_config_utils",
+    ],
+)
+
+cpp_library(
+    name = "access_policy_acl_test_utils",
+    srcs = ["AccessPolicyAclTestUtils.cpp"],
+    headers = ["AccessPolicyAclTestUtils.h"],
+    deps = [
+        "fbsource//third-party/fmt:fmt",
+        ":acl_test_utils",
+        ":config_utils",
+        "//fboss/agent:asic_utils",
+        "//fboss/agent:fboss-error",
+        "//fboss/agent/packet:ipproto",
+        "//folly:network_address",
+        "//folly/logging:logging",
+        "//thrift/lib/cpp/util:enum_utils",
+    ],
+    exported_deps = [
+        "//fboss/agent:fboss-types",
+        "//fboss/agent:switch_config-cpp2-types",
+        "//fboss/agent/hw/switch_asics:switch_asics",
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
     ],
 )
 
@@ -94,6 +122,7 @@ cpp_library(
         "//fboss/agent/hw:hardware_stats-cpp2-types",
         "//fboss/agent/hw/switch_asics:switch_asics",
         "//fboss/agent/state:state",
+        "//fboss/lib/config:fboss_agent_config_utils",
         "//folly:network_address",
         "//folly/logging:logging",
     ],
@@ -302,9 +331,7 @@ cpp_library(
         "//fboss/agent/test:test_ensemble_if",
         "//fboss/agent/test:trunk_utils",
         "//fboss/agent/test:utils",
-        "//fboss/lib/config:acl_config_utils",
         "//fboss/lib/config:fboss_config_utils",
-        "//folly:format",
         "//folly/testing:test_util",
     ],
     exported_deps = [
@@ -315,7 +342,7 @@ cpp_library(
         "//fboss/agent/hw/switch_asics:switch_asics",
         "//fboss/agent/platforms/common:platform_mapping",
         "//fboss/agent/state:state",
-        "//fboss/lib/config:port_config_utils",
+        "//fboss/lib/config:fboss_agent_config_utils",
         "//folly:network_address",
     ],
 )

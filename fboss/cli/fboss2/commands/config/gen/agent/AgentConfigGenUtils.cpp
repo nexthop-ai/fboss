@@ -19,6 +19,7 @@
 
 #include <folly/FileUtil.h>
 #include <folly/json/json.h>
+#include <folly/logging/xlog.h>
 #include <thrift/lib/cpp/util/EnumUtils.h>
 
 #include "fboss/agent/FbossError.h"
@@ -26,7 +27,12 @@
 #include "fboss/cli/fboss2/commands/config/gen/FeatureDefaultCommandArgs.h"
 #include "fboss/cli/fboss2/commands/config/gen/PlatformConfigPathUtils.h"
 #include "fboss/cli/fboss2/utils/ConfigFileUtils.h"
+#include "fboss/lib/config/PlatformConfigUtils.h"
 #include "fboss/lib/config/agent/AclConfigUtils.h"
+#include "fboss/lib/config/agent/CoppConfigUtils.h"
+#include "fboss/lib/config/agent/InterfaceConfigUtils.h"
+#include "fboss/lib/config/agent/PortConfigUtils.h"
+#include "fboss/lib/config/agent/VlanConfigUtils.h"
 #include "fboss/lib/platforms/PlatformDescriptor.h"
 #include "fboss/lib/platforms/PlatformMappingUtils.h"
 
@@ -40,6 +46,8 @@ constexpr std::string_view kPortAssignmentFileName =
     "port_id_to_port_assignment.json";
 constexpr std::string_view kPlatformDescriptorFileName =
     "platform_descriptor.json";
+constexpr std::string_view kRawPlatformMappingFileName =
+    "raw_platform_mapping.json";
 
 struct GeneratedAsicConfigFile {
   fs::path path;
@@ -50,6 +58,11 @@ struct GeneratedPlatformMappingArtifactPaths {
   fs::path colocated;
   fs::path legacy;
 };
+
+std::string normalizeProfile(std::string_view profile) {
+  return profile.empty() ? std::string(kDefaultProfileName)
+                         : std::string(profile);
+}
 
 std::string readFile(const fs::path& path) {
   std::string contents;
@@ -99,7 +112,7 @@ std::string_view getGeneratedFileExtension(cfg::AsicConfigType configType) {
 }
 
 GeneratedAsicConfigFile resolveGeneratedAsicConfig(
-    const fs::path& fbossRoot,
+    const PlatformConfigDirectory& platformDirectory,
     std::string_view platform,
     std::string_view profile,
     const std::optional<fs::path>& asicConfigFile = std::nullopt,
@@ -115,8 +128,6 @@ GeneratedAsicConfigFile resolveGeneratedAsicConfig(
     return {.path = *asicConfigFile, .configType = *asicConfigType};
   }
 
-  const auto platformDirectory =
-      findPlatformConfigDirectory(fbossRoot, platform);
   const auto asicConfigDirectory =
       findPlatformConfigComponentDirectory(platformDirectory, "asic_config");
   const auto metadataPath = asicConfigDirectory / "asic_config.json";
@@ -243,10 +254,9 @@ cfg::ChipConfig loadAsicConfig(const GeneratedAsicConfigFile& generatedFile) {
 
 GeneratedPlatformMappingArtifactPaths getGeneratedPlatformMappingArtifactPaths(
     const fs::path& fbossRoot,
+    const PlatformConfigDirectory& platformDirectory,
     std::string_view platform,
     std::string_view fileName) {
-  const auto platformDirectory =
-      findPlatformConfigDirectory(fbossRoot, platform);
   return {
       .colocated =
           platformDirectory.path / "platform_mapping" / "generated" / fileName,
@@ -265,27 +275,6 @@ std::optional<fs::path> findExistingGeneratedPlatformMappingArtifact(
     return paths.legacy;
   }
   return std::nullopt;
-}
-
-fs::path findGeneratedPlatformMappingArtifact(
-    const fs::path& fbossRoot,
-    std::string_view platform,
-    std::string_view fileName) {
-  const auto paths =
-      getGeneratedPlatformMappingArtifactPaths(fbossRoot, platform, fileName);
-  if (auto path = findExistingGeneratedPlatformMappingArtifact(paths)) {
-    return *path;
-  }
-
-  throw FbossError(
-      "Generated ",
-      fileName,
-      " does not exist for platform '",
-      platform,
-      "'; checked ",
-      paths.colocated.string(),
-      " and ",
-      paths.legacy.string());
 }
 
 void addMatchingPlatformDescriptors(
@@ -355,6 +344,21 @@ std::pair<fs::path, PlatformDescriptor> findPlatformDescriptorByVariantScan(
   return std::move(matches.front());
 }
 
+std::pair<fs::path, PlatformDescriptor> resolvePlatformDescriptor(
+    const fs::path& fbossRoot,
+    const PlatformConfigDirectory& platformDirectory,
+    std::string_view platform) {
+  const auto paths = getGeneratedPlatformMappingArtifactPaths(
+      fbossRoot, platformDirectory, platform, kPlatformDescriptorFileName);
+  if (auto path = findExistingGeneratedPlatformMappingArtifact(paths)) {
+    auto descriptor =
+        PlatformDescriptorRegistry::loadPlatformDescriptorFromFile(
+            path->string());
+    return {*path, std::move(descriptor)};
+  }
+  return findPlatformDescriptorByVariantScan(paths, platform);
+}
+
 std::unique_ptr<HwAsic> generateHwAsic(
     const cfg::SwitchSettings& switchSettings) {
   if (switchSettings.switchIdToSwitchInfo()->empty()) {
@@ -381,6 +385,76 @@ cfg::AsicType getAsicType(const cfg::SwitchConfig& switchConfig) {
               ->switchIdToSwitchInfo()
               ->begin()
               ->second.asicType();
+}
+
+void addDefaultProfilePortGraph(
+    cfg::SwitchConfig& switchConfig,
+    const PlatformMapping& platformMapping,
+    const HwAsic& asic) {
+  const auto& platformPorts = platformMapping.getPlatformPorts();
+
+  const auto portGroups = utility::getSubsidiaryPortIDs(platformPorts);
+  std::map<PortID, std::vector<PortID>> supportedPortGroups;
+  std::set<PortID> controllingPorts;
+  for (const auto& group : portGroups) {
+    const auto& portEntryMapping =
+        platformMapping.getPlatformPort(group.first).mapping();
+    const auto portType = *portEntryMapping->portType();
+    if (portType != cfg::PortType::INTERFACE_PORT &&
+        portType != cfg::PortType::MANAGEMENT_PORT) {
+      XLOG(WARN) << "Skipping unsupported port " << group.first << " ('"
+                 << *portEntryMapping->name() << "') with type "
+                 << apache::thrift::util::enumNameSafe(portType)
+                 << " during default profile config generation";
+      continue;
+    }
+    supportedPortGroups.emplace(group.first, group.second);
+    controllingPorts.insert(group.first);
+  }
+  // A standalone default config intentionally programs only controlling
+  // ports, so safe profiles may subsume unrequired subsidiary ports.
+  const utility::SafeProfileSelectionOptions options{
+      .asicType = asic.getAsicType(),
+      .supportsAddRemovePort = true,
+      .preferOpticalProfiles = true,
+      .requiredPorts = std::move(controllingPorts),
+  };
+  const auto portProfiles =
+      utility::getSafeProfileIDs(platformMapping, supportedPortGroups, options);
+
+  auto interfaceVlanID = utility::kInterfaceVlanIdMin;
+  auto managementVlanID = utility::kInterfaceVlanIdMax;
+  for (const auto& [portID, profileID] : portProfiles) {
+    if (interfaceVlanID > managementVlanID) {
+      throw FbossError("No free VLAN ID available for default port config");
+    }
+    const auto portType =
+        *platformMapping.getPlatformPort(portID).mapping()->portType();
+    int32_t vlanID;
+    if (portType == cfg::PortType::MANAGEMENT_PORT) {
+      // Allocate management VLANs downward from the high end so they stay
+      // separate from interface VLANs and later low-to-high port additions.
+      vlanID = managementVlanID--;
+    } else {
+      // Allocate interface VLANs upward from the low end, preserving room for
+      // tools such as link_test to add more interface ports afterward.
+      vlanID = interfaceVlanID++;
+    }
+    utility::addRoutedPortToConfig(
+        switchConfig, &platformMapping, portID, profileID, VlanID(vlanID));
+    if (portType == cfg::PortType::MANAGEMENT_PORT) {
+      // Keep the management L3 interface logically up independently of the
+      // physical port state, matching the established COOP configuration.
+      auto& managementInterface = switchConfig.interfaces()->back();
+      managementInterface.isVirtual() = true;
+      managementInterface.isStateSyncDisabled() = true;
+    }
+    auto& port = switchConfig.ports()->back();
+    port.state() = cfg::PortState::ENABLED;
+  }
+
+  utility::addDefaultVlan(switchConfig, asic);
+  utility::addDefaultLoopbackInterface(switchConfig, asic);
 }
 
 } // namespace
@@ -425,29 +499,70 @@ fs::path findGeneratedAsicConfig(
     const fs::path& fbossRoot,
     std::string_view platform,
     std::string_view profile) {
-  return resolveGeneratedAsicConfig(fbossRoot, platform, profile).path;
+  const auto platformDirectory =
+      findPlatformConfigDirectory(fbossRoot, platform);
+  return resolveGeneratedAsicConfig(
+             platformDirectory, platform, normalizeProfile(profile))
+      .path;
 }
 
 fs::path findPortIdToPortAssignmentConfig(
     const fs::path& fbossRoot,
     std::string_view platform) {
-  return findGeneratedPlatformMappingArtifact(
-      fbossRoot, platform, kPortAssignmentFileName);
+  const auto descriptorPath =
+      findPlatformDescriptorConfigWithDescriptor(fbossRoot, platform).first;
+  const auto assignmentPath =
+      descriptorPath.parent_path() / kPortAssignmentFileName;
+  if (!fs::is_regular_file(assignmentPath)) {
+    throw FbossError(
+        "Generated ",
+        kPortAssignmentFileName,
+        " does not exist next to selected platform descriptor ",
+        descriptorPath.string());
+  }
+  return assignmentPath;
 }
 
 std::pair<fs::path, PlatformDescriptor>
 findPlatformDescriptorConfigWithDescriptor(
     const fs::path& fbossRoot,
     std::string_view platform) {
-  const auto paths = getGeneratedPlatformMappingArtifactPaths(
-      fbossRoot, platform, kPlatformDescriptorFileName);
-  if (auto path = findExistingGeneratedPlatformMappingArtifact(paths)) {
-    auto descriptor =
-        PlatformDescriptorRegistry::loadPlatformDescriptorFromFile(
-            path->string());
-    return {*path, std::move(descriptor)};
-  }
-  return findPlatformDescriptorByVariantScan(paths, platform);
+  const auto platformDirectory =
+      findPlatformConfigDirectory(fbossRoot, platform);
+  return resolvePlatformDescriptor(fbossRoot, platformDirectory, platform);
+}
+
+ResolvedAgentConfigInputs resolveAgentConfigInputs(
+    const fs::path& fbossRoot,
+    std::string_view platform,
+    std::string_view profile,
+    const std::optional<fs::path>& asicConfigFile,
+    const std::optional<cfg::AsicConfigType>& asicConfigType) {
+  const auto normalizedProfile = normalizeProfile(profile);
+  const auto platformDirectory =
+      findPlatformConfigDirectory(fbossRoot, platform);
+  auto [descriptorPath, descriptor] =
+      resolvePlatformDescriptor(fbossRoot, platformDirectory, platform);
+  const auto mappingDirectory = descriptorPath.parent_path();
+  const auto rawMappingPath = mappingDirectory / kRawPlatformMappingFileName;
+  const auto assignmentPath = mappingDirectory / kPortAssignmentFileName;
+  auto portAssignments = readPortIdToPortAssignment(assignmentPath.string());
+  auto platformMapping =
+      std::make_unique<PlatformMapping>(reconstructPlatformMapping(
+          readRawPlatformMapping(rawMappingPath.string()), portAssignments));
+
+  return {
+      .profile = normalizedProfile,
+      .platformDescriptor = std::move(descriptor),
+      .portAssignments = std::move(portAssignments),
+      .platformMapping = std::move(platformMapping),
+      .chipConfig = loadAsicConfig(resolveGeneratedAsicConfig(
+          platformDirectory,
+          platform,
+          normalizedProfile,
+          asicConfigFile,
+          asicConfigType)),
+  };
 }
 
 cfg::SwitchSettings generateSwitchSettings(
@@ -489,11 +604,8 @@ cfg::SwitchSettings generateSwitchSettings(
 }
 
 cfg::SwitchConfig generateSwitchConfig(
-    const fs::path& fbossRoot,
-    std::string_view platform) {
-  auto pathAndDescriptor =
-      findPlatformDescriptorConfigWithDescriptor(fbossRoot, platform);
-  auto switchSettings = generateSwitchSettings(pathAndDescriptor.second);
+    const ResolvedAgentConfigInputs& inputs) {
+  auto switchSettings = generateSwitchSettings(inputs.platformDescriptor);
   auto asic = generateHwAsic(switchSettings);
   if (!asic) {
     throw FbossError("Unable to construct HwAsic from switch settings");
@@ -501,20 +613,17 @@ cfg::SwitchConfig generateSwitchConfig(
   cfg::SwitchConfig switchConfig;
   switchConfig.switchSettings() = std::move(switchSettings);
   utility::setupDefaultAclTableGroups(switchConfig, *asic);
+  if (inputs.profile == kDefaultProfileName) {
+    utility::addDefaultCpuQueueConfig(switchConfig, *asic);
+    utility::addDefaultCpuTrafficPolicyConfig(switchConfig, *asic);
+    addDefaultProfilePortGraph(switchConfig, *inputs.platformMapping, *asic);
+  }
   return switchConfig;
 }
 
 cfg::PlatformConfig generatePlatformConfig(
-    const fs::path& fbossRoot,
-    std::string_view platform,
-    std::string_view profile,
-    const std::optional<fs::path>& asicConfigFile,
-    const std::optional<cfg::AsicConfigType>& asicConfigType) {
-  return assemblePlatformConfig(
-      loadAsicConfig(resolveGeneratedAsicConfig(
-          fbossRoot, platform, profile, asicConfigFile, asicConfigType)),
-      readPortIdToPortAssignment(
-          findPortIdToPortAssignmentConfig(fbossRoot, platform).string()));
+    const ResolvedAgentConfigInputs& inputs) {
+  return assemblePlatformConfig(inputs.chipConfig, inputs.portAssignments);
 }
 
 fs::path generateAgentConfig(
@@ -524,18 +633,19 @@ fs::path generateAgentConfig(
     const std::optional<fs::path>& outputDirectory,
     const std::optional<fs::path>& asicConfigFile,
     const std::optional<cfg::AsicConfigType>& asicConfigType) {
-  auto switchConfig = generateSwitchConfig(fbossRoot, platform);
+  auto inputs = resolveAgentConfigInputs(
+      fbossRoot, platform, profile, asicConfigFile, asicConfigType);
+  auto switchConfig = generateSwitchConfig(inputs);
   auto defaultCommandLineArgs = generateFeatureDefaultCommandArgs(
       fbossRoot,
       ServiceType::AGENT,
-      profile,
+      inputs.profile,
       getAsicType(switchConfig),
       platform);
   auto config = assembleAgentConfig(
       std::move(defaultCommandLineArgs),
       std::move(switchConfig),
-      generatePlatformConfig(
-          fbossRoot, platform, profile, asicConfigFile, asicConfigType));
+      generatePlatformConfig(inputs));
   auto directory = utils::prepareOutputDirectory(outputDirectory);
   auto outputPath = directory / kAgentConfigFileName;
   utils::writeFileWithoutOverwrite(

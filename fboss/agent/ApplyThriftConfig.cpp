@@ -3113,13 +3113,43 @@ shared_ptr<Port> ThriftConfigApplier::updatePort(
           " exist but not the portPgConfig map");
     }
   }
-  // CBFC virtual channels. Independent of PFC: a port may run both, so this
-  // is resolved from Port.cbfcConfigName rather than from PortPfc.
-  std::vector<state::PortVcFields> virtualChannels;
+  // CBFC virtual channels, resolved from Port.cbfcConfigName rather than from
+  // PortPfc. PortPfc may still be present to carry the PG config, but with PFC
+  // disabled.
+  std::optional<std::vector<state::PortVcFields>> virtualChannels;
   std::optional<int64_t> cbfcSenderCreditLimit;
   std::optional<std::string> newCbfcConfigName;
   if (auto cbfcConfigName = portConf->cbfcConfigName()) {
     newCbfcConfigName = *cbfcConfigName;
+    // The SDK rejects CBFC attributes on non-interface ports (e.g. TU1's
+    // management port), and a failed attribute write during port programming
+    // terminates the HW agent.
+    if (*portConf->portType() != cfg::PortType::INTERFACE_PORT) {
+      throw FbossError(
+          "Port ",
+          orig->getID(),
+          " of type ",
+          apache::thrift::util::enumNameSafe(*portConf->portType()),
+          " has cbfc config name ",
+          *cbfcConfigName,
+          "; CBFC is supported on only interface ports");
+    }
+    // TU1 cannot receive PFC and CBFC on the same port (78920-PG102 15.2.5).
+    // Keeping pfc with tx and rx off is allowed: it is how the port keeps its
+    // PG config.
+    if (newPfc && (*newPfc->tx() || *newPfc->rx())) {
+      throw FbossError(
+          "Port ",
+          orig->getID(),
+          " has cbfc config name ",
+          *cbfcConfigName,
+          " and PFC enabled (tx=",
+          *newPfc->tx(),
+          ", rx=",
+          *newPfc->rx(),
+          "); PFC and CBFC cannot both be enabled on a port. Set pfc tx and rx"
+          " to false; portPgConfigName may stay.");
+    }
     auto cbfcConfigs = cfg_->cbfcConfigs();
     if (!cbfcConfigs) {
       throw FbossError(
@@ -3138,7 +3168,17 @@ shared_ptr<Port> ThriftConfigApplier::updatePort(
           *cbfcConfigName,
           " does not exist in cbfcConfigs map");
     }
+    if (it->second.virtualChannels()->empty()) {
+      throw FbossError(
+          "Port ",
+          orig->getID(),
+          " cbfc config name ",
+          *cbfcConfigName,
+          " has no virtual channels; there is nothing to credit. Leave"
+          " cbfcConfigName unset on a port that does not run CBFC.");
+    }
     std::set<int16_t> seenVcIds;
+    std::vector<state::PortVcFields> configuredVcs;
     for (const auto& vc : *it->second.virtualChannels()) {
       auto vcId = *vc.id();
       if (vcId < 0 ||
@@ -3167,7 +3207,7 @@ shared_ptr<Port> ThriftConfigApplier::updatePort(
       if (auto reserved = vc.reservedCreditSize()) {
         vcFields.reservedCreditSize() = *reserved;
       }
-      virtualChannels.push_back(std::move(vcFields));
+      configuredVcs.push_back(std::move(vcFields));
     }
     if (auto limit = it->second.senderCreditLimit()) {
       if (*limit < 0 ||
@@ -3181,14 +3221,16 @@ shared_ptr<Port> ThriftConfigApplier::updatePort(
       }
       cbfcSenderCreditLimit = *limit;
     }
+    virtualChannels = std::move(configuredVcs);
   }
 
   bool virtualChannelsUnchanged = [&]() {
     auto origVcs = orig->getVirtualChannels();
     if (!origVcs) {
-      return virtualChannels.empty();
+      return !virtualChannels.has_value();
     }
-    return origVcs->toThrift() == virtualChannels;
+    return virtualChannels.has_value() &&
+        origVcs->toThrift() == *virtualChannels;
   }();
 
   portPgConfigUnchanged = isPgConfigUnchanged(portPgCfgs, orig);
@@ -4188,6 +4230,21 @@ shared_ptr<QosPolicy> ThriftConfigApplier::createQosPolicy(
       qosPolicyNew->setTrafficClassToVcIdMap(*tc2VcIdMap);
     }
 
+    if (const auto& queue2VcIdMap = qosMap->queueToVcId()) {
+      for (const auto& queue2VcIdEntry : *queue2VcIdMap) {
+        // queueToVcId is map<i16, i16>, so a negative vc id is representable
+        // and would otherwise reach the SAI layer.
+        if (queue2VcIdEntry.second < 0 ||
+            queue2VcIdEntry.second >
+                cfg::switch_config_constants::PORT_VC_VALUE_MAX()) {
+          throw FbossError(
+              "Invalid vc id. Valid range is 0 to: ",
+              cfg::switch_config_constants::PORT_VC_VALUE_MAX());
+        }
+      }
+      qosPolicyNew->setQueueToVcIdMap(*queue2VcIdMap);
+    }
+
     if (const auto& pfcPriority2PgIdMap = qosMap->pfcPriorityToPgId()) {
       for (const auto& entry : *pfcPriority2PgIdMap) {
         if (entry.first >
@@ -4596,10 +4653,6 @@ std::shared_ptr<AclMap> ThriftConfigApplier::updateAclsImpl(
         }
         if (auto ecmpHashAction = mta.action()->ecmpHashAction()) {
           matchAction.setEcmpHashAction(*ecmpHashAction);
-        }
-        if (auto enableAlternateArsMembers =
-                mta.action()->enableAlternateArsMembers()) {
-          matchAction.setEnableAlternateArsMembers(*enableAlternateArsMembers);
         }
         if (auto redirectToNextHop = mta.action()->redirectToNextHop()) {
           matchAction.setRedirectToNextHop(
@@ -5531,6 +5584,9 @@ ThriftConfigApplier::createFlowletSwitchingConfig(
     }
     newFlowletSwitchingConfig->setArsVirtualGroupCommonMembersThreshold(
         *config.arsVirtualGroupCommonMembersThreshold());
+  }
+  if (config.arsGroupWidth()) {
+    newFlowletSwitchingConfig->setArsGroupWidth(*config.arsGroupWidth());
   }
   if (config.standbySwitchingMode()) {
     // Distinct switching modes keep the standby and primary ARS objects from

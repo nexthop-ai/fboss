@@ -9,6 +9,7 @@ mkdir -p "$LOCAL_RPM_REPO_DIR"
 sed -i 's/^PRETTY_NAME=.*/PRETTY_NAME="FBOSS Distro Image"/' /usr/lib/os-release
 sed -i 's/^NAME=.*/NAME="FBOSS Distro Image"/' /usr/lib/os-release
 
+<<<<<<< HEAD
 # kiwi's oem-dump blocksize check reads the target's PHYSICAL block size, but
 # kiwi's own docs (elements.rst, target_blocksize) define it as the LOGICAL
 # size. Our NVMe is 512e (512 logical / 4096 physical), so the stock check
@@ -24,6 +25,9 @@ else
   echo "kiwi oem-dump blocksize check not in expected form; leaving upstream behaviour"
 fi
 
+||||||| c159a235eb
+=======
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 # kiwi's first-boot filesystem resize sorts on the lsblk column "START", which
 # doesn't exist with CentOS 9 Stream's util-linux 2.37.4. Sorting silently
 # no-ops and falls back to kernel, which does not order consistently. Sometimes
@@ -156,6 +160,7 @@ done
 # metadata for the local_rpm_repo now to prevent that.
 createrepo /usr/local/share/local_rpm_repo
 
+<<<<<<< HEAD
 # Build-target detection. The image build orchestrator writes /repos/build_target
 # with the literal string "cfboss" for cFBOSS builds; physical-distro builds omit
 # the file and BUILD_TARGET defaults to "physical". config.sh branches on
@@ -165,6 +170,11 @@ BUILD_TARGET=$(cat /repos/build_target 2>/dev/null || echo physical)
 echo "BUILD_TARGET=$BUILD_TARGET"
 
 # 1. Process component artifacts and install RPMs
+||||||| c159a235eb
+# 1. Process component artifacts and install RPMs
+=======
+# Process component artifacts and install RPMs
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 #
 # Component artifacts are copied to /repos/<component_name>/
 # Each component is processed in isolation to avoid conflicts
@@ -389,6 +399,7 @@ for component_dir in /repos/*; do
 done
 shopt -u nullglob
 
+<<<<<<< HEAD
 config_boot() {
   # 2. Define paths
   # Detect the installed kernel version from the boot directory
@@ -398,6 +409,26 @@ config_boot() {
     echo "Error: No vmlinuz found in /boot"
     exit 1
   fi
+||||||| c159a235eb
+# 2. Define paths
+# Detect the installed kernel version from the boot directory
+# shellcheck disable=SC2012
+VMLINUZ_PATH=$(ls /boot/vmlinuz-* 2>/dev/null | head -n 1)
+if [ -z "$VMLINUZ_PATH" ]; then
+  echo "Error: No vmlinuz found in /boot"
+  exit 1
+fi
+=======
+# Define paths
+#
+# Detect the installed kernel version from the boot directory
+# shellcheck disable=SC2012
+VMLINUZ_PATH=$(ls /boot/vmlinuz-* 2>/dev/null | head -n 1)
+if [ -z "$VMLINUZ_PATH" ]; then
+  echo "Error: No vmlinuz found in /boot"
+  exit 1
+fi
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 
   KERNEL_VERSION=$(basename "$VMLINUZ_PATH" | sed 's/^vmlinuz-//')
   # Detect the initrd path from the boot directory
@@ -412,12 +443,27 @@ config_boot() {
   echo "Vmlinuz path: ${VMLINUZ_PATH}"
   echo "Initrd path: ${INITRD_PATH}"
 
+<<<<<<< HEAD
   # 3. Manually run dracut to create the initrd
   #    --force is needed to overwrite any existing file
   #    --kver specifies the kernel version to build for
   echo "Running dracut manually..."
   dracut --force --kver "${KERNEL_VERSION}" "${INITRD_PATH}"
+||||||| c159a235eb
+# 3. Manually run dracut to create the initrd
+#    --force is needed to overwrite any existing file
+#    --kver specifies the kernel version to build for
+echo "Running dracut manually..."
+dracut --force --kver "${KERNEL_VERSION}" "${INITRD_PATH}"
+=======
+# Manually run dracut to create the initrd
+#    --force is needed to overwrite any existing file
+#    --kver specifies the kernel version to build for
+echo "Running dracut manually..."
+dracut --force --kver "${KERNEL_VERSION}" "${INITRD_PATH}"
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 
+<<<<<<< HEAD
   # 4. Run kernel-install for grub config
   # This wipes ALL interfering variables set by kiwi-ng
   # and runs kernel-install in a "sterile" environment.
@@ -425,15 +471,51 @@ config_boot() {
     PATH="/usr/bin:/usr/sbin:/bin:/sbin" \
     kernel-install add "${KERNEL_VERSION}" "${VMLINUZ_PATH}" --initrd-file "${INITRD_PATH}"
   echo "Custom kernel ${KERNEL_VERSION} install complete."
+||||||| c159a235eb
+# 4. Run kernel-install for grub config
+# This wipes ALL interfering variables set by kiwi-ng
+# and runs kernel-install in a "sterile" environment.
+env -i \
+  PATH="/usr/bin:/usr/sbin:/bin:/sbin" \
+  kernel-install add "${KERNEL_VERSION}" "${VMLINUZ_PATH}" --initrd-file "${INITRD_PATH}"
+echo "Custom kernel ${KERNEL_VERSION} install complete."
+=======
+# Run kernel-install for grub config
+#
+# This wipes ALL interfering variables set by kiwi-ng
+# and runs kernel-install in a "sterile" environment.
+env -i \
+  PATH="/usr/bin:/usr/sbin:/bin:/sbin" \
+  kernel-install add "${KERNEL_VERSION}" "${VMLINUZ_PATH}" --initrd-file "${INITRD_PATH}"
+echo "Custom kernel ${KERNEL_VERSION} install complete."
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 
+<<<<<<< HEAD
   # 5. Generate a fix-nvme script that "may" need to be run
   # --- Install Custom NVMe Fix Module (Inline Method) ---
+||||||| c159a235eb
+# 5. Generate a fix-nvme script that "may" need to be run
+MODULE_DIR="/usr/lib/dracut/modules.d/99nvme-fix"
+mkdir -p "$MODULE_DIR"
+=======
+# Generate a fix-nvme script that "may" need to be run
+MODULE_DIR="/usr/lib/dracut/modules.d/99nvme-fix"
+mkdir -p "$MODULE_DIR"
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 
+<<<<<<< HEAD
   MODULE_DIR="/usr/lib/dracut/modules.d/99nvme-fix"
   mkdir -p "$MODULE_DIR"
 
   # 5a. Generate the script directly in the target directory
   cat >"$MODULE_DIR/fix-nvme.sh" <<'EOF'
+||||||| c159a235eb
+# 5a. Generate the script directly in the target directory
+cat >"$MODULE_DIR/fix-nvme.sh" <<'EOF'
+=======
+# a. Generate the script directly in the target directory
+cat >"$MODULE_DIR/fix-nvme.sh" <<'EOF'
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 #!/bin/bash
 # Force all NVMe drives to 512e mode for KIWI compatibility if they are
 # not already in that size
@@ -478,11 +560,27 @@ if [ -b "$DEV" ]; then
 fi
 EOF
 
+<<<<<<< HEAD
   # 5b. Make the hook executable
   chmod +x "$MODULE_DIR/fix-nvme.sh"
+||||||| c159a235eb
+# 5b. Make the hook executable
+chmod +x "$MODULE_DIR/fix-nvme.sh"
+=======
+# b. Make the hook executable
+chmod +x "$MODULE_DIR/fix-nvme.sh"
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 
+<<<<<<< HEAD
   # 5c. Generate the module-setup.sh
   cat >"$MODULE_DIR/module-setup.sh" <<'EOF'
+||||||| c159a235eb
+# 5c. Generate the module-setup.sh
+cat >"$MODULE_DIR/module-setup.sh" <<'EOF'
+=======
+# c. Generate the module-setup.sh
+cat >"$MODULE_DIR/module-setup.sh" <<'EOF'
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 #!/bin/bash
 
 check() {
@@ -505,14 +603,35 @@ install() {
 }
 EOF
 
+<<<<<<< HEAD
   # 5d. Make the setup script executable
   chmod +x "$MODULE_DIR/module-setup.sh"
+||||||| c159a235eb
+# 5d. Make the setup script executable
+chmod +x "$MODULE_DIR/module-setup.sh"
+=======
+# d. Make the setup script executable
+chmod +x "$MODULE_DIR/module-setup.sh"
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 
+<<<<<<< HEAD
   #-------------------------------------------------------
   # 6. Use system GRUB 2.06 from packages
   # The grub2-efi-x64 package already provides grubx64.efi with all necessary modules
   # We just need to make sure the btrfs module is accessible on the EFI partition
   echo "Using system GRUB 2.06 from grub2-efi-x64 package..."
+||||||| c159a235eb
+# 6. Use system GRUB 2.06 from packages
+# The grub2-efi-x64 package already provides grubx64.efi with all necessary modules
+# We just need to make sure the btrfs module is accessible on the EFI partition
+echo "Using system GRUB 2.06 from grub2-efi-x64 package..."
+=======
+# Use system GRUB 2.06 from packages
+#
+# The grub2-efi-x64 package already provides grubx64.efi with all necessary modules
+# We just need to make sure the btrfs module is accessible on the EFI partition
+echo "Using system GRUB 2.06 from grub2-efi-x64 package..."
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 
   # Clean up any old GRUB module directories from any previous builds
   # (The grub2-efi-x64 package creates /boot/grub2/ and /boot/efi/EFI/ but not the module directories)
@@ -552,7 +671,7 @@ if [ "$BUILD_TARGET" != "cfboss" ]; then
   config_boot
 fi
 
-# 7. Enable systemd services
+# Enable systemd services
 echo "Enabling FBOSS systemd services..."
 # Ships in sai-runtime.rpm (npu_sai component). The vendor spec is meant to
 # enable it from %post, but not every SDK drop does -- 14.2.0 carries no
@@ -578,6 +697,7 @@ systemctl enable fboss_hw_agents.target
 # does not depend on preset behaviour in the image build.
 systemctl enable logrotate.timer
 
+<<<<<<< HEAD
 # 7b. firewalld's default public zone allows only ssh/dhcpv6-client/cockpit
 # and rejects everything else. Enable the "fboss" service (thrift ports) and
 # the fboss-forward policy (transit) for the default zone here so the ports are
@@ -587,7 +707,27 @@ if ! firewall-offline-cmd --zone=public --add-service=fboss; then
   echo "config.sh: FATAL: could not add the fboss service to the public firewalldzone" >&2
   exit 1
 fi
+||||||| c159a235eb
+# 8. Fix NetworkManager connection profile permissions
+# NM ignores profiles that are world-readable
+chmod 600 /etc/NetworkManager/system-connections/eth0.nmconnection
+=======
+# firewalld's default public zone allows only ssh/dhcpv6-client/cockpit
+# and rejects everything else. Enable the "fboss" service (thrift ports) and
+# the fboss-forward policy (transit) for the default zone here so the ports are
+# reachable off-box and transit traffic is not rejected.
+echo "Configuring firewalld for FBOSS..."
+if ! firewall-offline-cmd --zone=public --add-service=fboss; then
+  echo "config.sh: FATAL: could not add the fboss service to the public firewalldzone" >&2
+  exit 1
+fi
 
+# Fix NetworkManager connection profile permissions
+# NM ignores profiles that are world-readable
+chmod 600 /etc/NetworkManager/system-connections/eth0.nmconnection
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
+
+<<<<<<< HEAD
 # 8. NetworkManager: distro fixes profile permissions; cFBOSS disables the service.
 # cFBOSS also writes the /etc/fboss/platform marker so fboss_init.sh picks
 # PLATFORM_FAKE_SAI without consulting dmidecode.
@@ -616,6 +756,11 @@ if [ "$BUILD_TARGET" = "cfboss" ]; then
 fi
 
 # 10. Done! Cleanup and install additional packages
+||||||| c159a235eb
+# 9. Done! Cleanup and install additional packages
+=======
+# Done! Cleanup and install additional packages
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 echo "Cleaning up /repos directory..."
 rm -rf /repos
 
@@ -626,7 +771,7 @@ if ! rpm -q jq >/dev/null 2>&1; then
   JQ_INSTALLED=true
 fi
 
-#8. Install additional packages from after_pkgs input file user "may" have passed in
+# Install additional packages from after_pkgs input file user "may" have passed in
 if [ -f /var/tmp/after_pkgs_install_file.json ]; then
 
   echo "Processing after_pkgs_install JSON file..."
@@ -646,7 +791,7 @@ else
   echo "No after_pkgs_install JSON file"
 fi
 
-#9. Excute additional commands from after_pkgs_execute_file.json user "may" have passed in
+# Execute additional commands from after_pkgs_execute_file.json user "may" have passed in
 if [ -f /var/tmp/after_pkgs_execute_file.json ]; then
 
   echo "Processing after_pkgs_execute JSON file..."

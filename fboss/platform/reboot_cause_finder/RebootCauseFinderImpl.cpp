@@ -2,6 +2,8 @@
 
 #include "fboss/platform/reboot_cause_finder/RebootCauseFinderImpl.h"
 
+#include "fboss/lib/RestClient.h"
+
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -19,6 +21,7 @@
 #include <folly/json.h>
 #include <folly/logging/xlog.h>
 #include <gflags/gflags.h>
+#include <re2/re2.h>
 #include <thrift/lib/cpp/util/EnumUtils.h>
 #include <thrift/lib/cpp2/protocol/Serializer.h>
 
@@ -27,16 +30,17 @@ DEFINE_bool(
     false,
     "Clear reboot causes from all providers after reading");
 
-// Measured on minipack3n fboss332669634.ash7: a BMC power cycle at 19:51:57
-// reached btime at 20:17:51, a gap of 1554s, nearly all of it POST plus a PXE
-// attempt timing out before falling back to local disk. 1800 would have left
-// four minutes of margin. Too large only risks admitting an older event, which
-// nearest-to-btime selection already handles; too small silently misses the
-// cause.
+// Must span shutdown, POST and the bootloader. On a switch whose firmware
+// attempts a network boot before falling back to local disk, the gap between
+// a power cycle and btime has been observed above 25 minutes, so the default
+// is deliberately generous. Erring large only risks admitting an older event,
+// which nearest-to-btime selection already handles; erring small silently
+// misses the cause.
 DEFINE_int32(
     max_downtime_sec,
     3600,
-    "How far before boot start to look for a kernel panic or a manual reboot. "
+    "How far before boot start to look for a kernel panic or an x86 reboot "
+    "command. "
     "Must cover shutdown, POST and bootloader, not the power-off duration: a "
     "long outage leaves no log line at all and is reported by the hardware "
     "providers instead.");
@@ -48,7 +52,8 @@ namespace {
 constexpr auto kHistoryDir = "/var/facebook/fboss/reboot_history";
 constexpr auto kProcBootIdPath = "/proc/sys/kernel/random/boot_id";
 
-// These three are properties of the kernel, systemd and kdump, identical on
+// These three come from the kernel, systemd and the crash dump tooling,
+// and are the same on
 // every platform, so they are constants rather than per-platform config.
 constexpr auto kProcStatPath = "/proc/stat";
 // Scanning /var/crash turns up the processed subdir itself. It is scanned in
@@ -56,20 +61,76 @@ constexpr auto kProcStatPath = "/proc/stat";
 constexpr auto kProcessedDirName = "processed";
 
 constexpr auto kKernelPanicProvider = "KernelPanic";
-constexpr auto kManualRebootProvider = "ManualReboot";
+constexpr auto kX86RebootCommandProvider = "X86RebootCommand";
 
 // systemd-logind writes this on the normal shutdown path.
-constexpr auto kManualRebootPattern = "System is rebooting";
+constexpr auto kX86RebootCommandPattern = "System is rebooting";
 
 // Programs which perform reboot.
-constexpr std::array<folly::StringPiece, 2> kManualRebootPrograms{
+constexpr std::array<folly::StringPiece, 2> kX86RebootCommandPrograms{
     "systemd-logind",
     "systemd"};
+
+constexpr auto kBmcWedgePowerProvider = "BMCWedgePower";
+
+// The BMC's persistent critical log, read in band over the sideband VLAN that
+// systemd-networkd configures on every fboss-lite switch. The endpoint is
+// POST and its ACL admits MANAGED_HOST_ANY, which the BMC grants to a peer at
+// fe80::2. Its other grant path is a matching client certificate, which this
+// plaintext request does not present, so the source address is the whole
+// credential.
+//
+// The source has to be pinned: eth0.4088 carries more than one link-local,
+// so the kernel's pick is arbitrary and flips on link flap.
+constexpr auto kBmcAddress = "fe80::1";
+constexpr auto kHostSourceAddress = "fe80::2%eth0.4088";
+constexpr int kBmcPort = 8080;
+constexpr auto kBmcLogfilePath = "/api/sys/logfile";
+// Arguments go in the body. RestClient issues a POST, and sets
+// Content-Type: application/json, only when postData is non-empty.
+constexpr auto kBmcLogfileBody = R"({"lines": 200, "include_rotated": true})";
+constexpr std::chrono::milliseconds kBmcTimeout{2000};
+
+constexpr auto kSuddenPowerLossProvider = "SuddenPowerLoss";
+// The BMC reports its own uptime here, both as the `uptime` command's output
+// and, under the lowercase key, as seconds.
+constexpr auto kBmcInfoPath = "/api/sys/bmc";
+
+// The BMC shares the chassis power rail, so losing power restarts both it
+// and the x86. The BMC finishes first, typically by two to three minutes on
+// the platforms this runs on, so allow well beyond that. A BMC that has been up
+// materially longer stayed up while only the x86 restarted, which is some other
+// cause and is what every other provider is for.
+constexpr int64_t kMaxBmcToX86BootSkewSec = 600;
+// The BMC clock is not involved here, both figures are uptimes, so the only
+// negative skew is measurement noise between the two reads.
+constexpr int64_t kMinBmcToX86BootSkewSec = -60;
+
+// wedge_power.sh emits these immediately before it acts, so they are written
+// while the BMC clock is still NTP correct. `reset -s` cycles the whole
+// chassis and takes the BMC down with it; a plain `reset` drops only the x86
+// and the BMC stays up.
+// wedge_power.sh announces an action it is about to take and ends the line
+// with "...". Matching the leading text alone also matches three lines that
+// are not a reset: the failure "Power reset the whole system failed", the
+// script's own usage text "reset: Power reset x86 (userver) ungracefully",
+// and a line truncated by log rotation mid-write. Requiring the ellipsis
+// admits the longer success form, which inserts a configured start-up delay
+// before it, while rejecting all three.
+//
+// Matching prose is fragile either way: these strings are a script's output,
+// not an interface, and can change without notice. A structured source, for
+// instance a BMC endpoint that reports the last reset and its cause, would
+// remove the guesswork and is worth exploring instead of parsing logs.
+constexpr auto kChassisResetPattern =
+    R"(Power reset the whole system .*\.\.\.)";
+constexpr auto kX86ResetPattern = R"(Power reset x86 \(userver\) .*\.\.\.)";
 
 // The kernel regenerates this UUID on every boot, including kexec. It is not
 // virtualized per namespace, and fboss platform services run as RootDirectory
 // sandboxes rather than nspawn containers, so the value read here is the
-// host's on both classic and NetOS Native.
+// host's. A service inside a full container namespace would not see it,
+// which is why this is read from /proc rather than cached.
 // Empty when unreadable. The guard cannot be established without it, so the
 // caller does nothing rather than risk a destructive clear.
 std::string readBootId(const std::string& bootIdPath) {
@@ -176,7 +237,7 @@ int64_t toEpochMs(std::time_t t) {
   return static_cast<int64_t>(t) * 1000;
 }
 
-// Render an instant in the host's local (Pacific, fleet-wide) time with the
+// Render an instant in the host's local time with the
 // zone abbreviation, e.g. "2026-07-02 23:16:55 PDT".
 std::string pacificString(std::time_t t) {
   std::tm tm{};
@@ -211,7 +272,7 @@ std::optional<std::time_t> parseProviderDate(const std::string& s) {
 // Exposed for unit tests; see tests/RebootCauseFinderImplTest.cpp.
 namespace detail {
 
-const std::vector<std::string>& manualRebootLogPaths() {
+const std::vector<std::string>& x86RebootCommandLogPaths() {
   static const std::vector<std::string> kPaths = {
       "/var/log/messages",
       "/var/log/secure",
@@ -291,10 +352,12 @@ std::optional<std::time_t> parseCrashDirName(const std::string& name) {
     }
   }
 
-  // The producer wrote this name with localtime() on this host, so mktime()
-  // on the same host is the exact inverse -- the zone text carries no
-  // information mktime does not already have. tm{} zero-inits tm_isdst to 0,
-  // which would assert "not daylight", so it must be set to -1 explicitly.
+  // The zone suffix is discarded and the time is resolved in this host's
+  // zone. That is exact only while the producer's zone and the host's agree,
+  // which is an assumption, not a guarantee: a producer that pins a zone
+  // would misdate the dump by the offset on a host set to another one.
+  // tm{} zero-inits tm_isdst to 0, which would assert "not daylight", so it
+  // must be set to -1 explicitly.
   //
   // The one case this cannot resolve is the hour repeated at the DST
   // fall-back, where mktime picks one of the two candidates.
@@ -467,7 +530,7 @@ std::optional<reboot_cause_config::DeterminedCause> selectNearestToBoot(
 // indistinguishable from the announcement unless the program field is
 // checked. Grepping for the phrase is exactly what an operator investigating
 // a reboot does, and that grep lands in the window it would then poison.
-bool isManualRebootLine(folly::StringPiece line) {
+bool isX86RebootCommandLine(folly::StringPiece line) {
   size_t i = 0;
   const auto skipSpaces = [&] {
     while (i < line.size() && line[i] == ' ') {
@@ -502,23 +565,24 @@ bool isManualRebootLine(folly::StringPiece line) {
     program = program.subpiece(0, bracket);
   }
   if (std::find(
-          kManualRebootPrograms.begin(),
-          kManualRebootPrograms.end(),
-          program) == kManualRebootPrograms.end()) {
+          kX86RebootCommandPrograms.begin(),
+          kX86RebootCommandPrograms.end(),
+          program) == kX86RebootCommandPrograms.end()) {
     return false;
   }
 
   skipSpaces();
-  return line.subpiece(i).startsWith(kManualRebootPattern);
+  return line.subpiece(i).startsWith(kX86RebootCommandPattern);
 }
 
-reboot_cause_config::RebootCauseProviderAttempt readManualReboot(
+reboot_cause_config::RebootCauseProviderAttempt readX86RebootCommand(
     const std::vector<std::string>& logPaths,
     int64_t btimeSec,
     int64_t windowSec) {
   auto status = reboot_cause_config::RebootCauseProviderStatus::OK;
   std::vector<reboot_cause_config::RebootCause> causes;
   std::optional<std::time_t> best;
+  std::string bestLine;
 
   for (const auto& logPath : logPaths) {
     // An absent path is normal: which file systemd-logind lands in depends on
@@ -548,25 +612,215 @@ reboot_cause_config::RebootCauseProviderAttempt readManualReboot(
     folly::split('\n', contents, lines);
 
     for (const auto& line : lines) {
-      if (!isManualRebootLine(line)) {
+      if (!isX86RebootCommandLine(line)) {
         continue;
       }
       const auto when = parseSyslogTimestamp(line.str(), btimeSec);
       if (when && inBootWindow(*when, btimeSec, windowSec) &&
           (!best || *when > *best)) {
         best = when;
+        bestLine = line.str();
       }
     }
   }
 
   if (best) {
-    causes.push_back(makeCause("Manual x86 Reboot", *best));
+    auto cause = makeCause("X86 Reboot Command", *best);
+    // The matched line. Its program field is what separates a real
+    // announcement from an operator's grep echoed back by sshd, so keeping it
+    // lets a reader audit that call instead of trusting it. It also carries
+    // the second to look at in /var/log/secure to find out who asked.
+    cause.rawValue() = bestLine;
+    causes.push_back(std::move(cause));
   }
   return makeAttempt(
-      kManualRebootProvider,
+      kX86RebootCommandProvider,
       status,
       folly::join(", ", logPaths),
       std::move(causes));
+}
+
+// Timestamps in the BMC log carry a year, unlike syslog on the x86, so no
+// year has to be inferred. mktime interprets them in this host's zone; the
+// BMC and the x86 it sits in are assumed to be set to the same one. A
+// mismatch shifts every event by the offset and out of the boot window.
+//
+// Lines written before the BMC finishes NTP sync carry the image's
+// build-default date instead of the real time, which is why the log is not
+// monotonic. Those dates are months away from any boot window, so the window
+// check below discards them without needing to recognise them.
+std::optional<std::time_t> parseBmcLogTimestamp(const std::string& line) {
+  std::tm tm{};
+  if (strptime(line.c_str(), " %Y %b %d %H:%M:%S", &tm) == nullptr) {
+    return std::nullopt;
+  }
+  tm.tm_isdst = -1;
+  const auto when = std::mktime(&tm);
+  if (when == -1) {
+    return std::nullopt;
+  }
+  return when;
+}
+
+reboot_cause_config::RebootCauseProviderAttempt parseBmcWedgePower(
+    const std::string& body,
+    int64_t btimeSec,
+    int64_t windowSec) {
+  auto status = reboot_cause_config::RebootCauseProviderStatus::OK;
+  std::vector<reboot_cause_config::RebootCause> causes;
+
+  std::optional<std::time_t> best;
+  std::string bestDescription;
+  std::string bestLine;
+  try {
+    const auto json = folly::parseJson(body);
+    for (const auto& entry : json["Information"]["entries"]) {
+      const auto line = entry.asString();
+      static const RE2 chassisReset(kChassisResetPattern);
+      static const RE2 x86Reset(kX86ResetPattern);
+      const char* description = nullptr;
+      if (RE2::PartialMatch(line, chassisReset)) {
+        description = "ChassisResetFromBmc";
+      } else if (RE2::PartialMatch(line, x86Reset)) {
+        description = "X86ResetFromBmc";
+      } else {
+        continue;
+      }
+      const auto when = parseBmcLogTimestamp(line);
+      if (when && inBootWindow(*when, btimeSec, windowSec) &&
+          (!best || *when > *best)) {
+        best = when;
+        bestDescription = description;
+        bestLine = line;
+      }
+    }
+  } catch (const std::exception& ex) {
+    XLOG(ERR) << fmt::format(
+        "Failed to parse BMC logfile response: {}", ex.what());
+    return makeAttempt(
+        kBmcWedgePowerProvider,
+        reboot_cause_config::RebootCauseProviderStatus::PARSE_FAILED,
+        kBmcLogfilePath,
+        {});
+  }
+
+  if (best) {
+    auto cause = makeCause(bestDescription, *best);
+    // The line the timestamp was derived from. The BMC log is not ordered by
+    // time, so keeping the source lets a reader audit the parse rather than
+    // trust it.
+    cause.rawValue() = bestLine;
+    causes.push_back(std::move(cause));
+  }
+  return makeAttempt(
+      kBmcWedgePowerProvider, status, kBmcLogfilePath, std::move(causes));
+}
+
+folly::StringPiece bmcHostSourceAddress() {
+  return kHostSourceAddress;
+}
+
+reboot_cause_config::RebootCauseProviderAttempt readBmcWedgePower(
+    int64_t btimeSec,
+    int64_t windowSec) {
+  std::string body;
+  try {
+    RestClient client(folly::IPAddress(kBmcAddress), kBmcPort);
+    client.setSourceAddress(folly::IPAddressV6(kHostSourceAddress));
+    client.setTimeout(kBmcTimeout);
+    body = client.requestWithOutput(kBmcLogfilePath, kBmcLogfileBody);
+  } catch (const std::exception& ex) {
+    XLOG(ERR) << fmt::format(
+        "Failed to reach the BMC logfile API: {}", ex.what());
+    body.clear();
+  }
+  if (body.empty()) {
+    // The BMC is unreachable, the source address could not be bound, the
+    // image has no logfile endpoint, or its ACL does not admit us.
+    // All are a failed read, not an absence of causes.
+    return makeAttempt(
+        kBmcWedgePowerProvider,
+        reboot_cause_config::RebootCauseProviderStatus::READ_FAILED,
+        kBmcLogfilePath,
+        {});
+  }
+  return parseBmcWedgePower(body, btimeSec, windowSec);
+}
+
+// Sudden power loss leaves no log line anywhere by definition: nothing had a
+// chance to write one. It is inferred instead from the BMC and the x86 having
+// started together. Deliberately not windowed against btime: the event this
+// describes IS this boot, not something that happened before it.
+reboot_cause_config::RebootCauseProviderAttempt parseSuddenPowerLoss(
+    const std::string& body,
+    int64_t btimeSec,
+    int64_t nowSec) {
+  double bmcUptimeSec = 0;
+  std::string resetReason;
+  try {
+    const auto json = folly::parseJson(body);
+    const auto& info = json["Information"];
+    // The lowercase key is seconds; "Uptime" is the uptime(1) output.
+    bmcUptimeSec = folly::to<double>(info["uptime"].asString());
+    if (const auto* reason = info.get_ptr("Reset Reason")) {
+      resetReason = reason->asString();
+    }
+  } catch (const std::exception& ex) {
+    XLOG(ERR) << fmt::format(
+        "Failed to parse BMC info response: {}", ex.what());
+    return makeAttempt(
+        kSuddenPowerLossProvider,
+        reboot_cause_config::RebootCauseProviderStatus::PARSE_FAILED,
+        kBmcInfoPath,
+        {});
+  }
+
+  const int64_t bmcUptime = static_cast<int64_t>(bmcUptimeSec);
+  const int64_t x86Uptime = nowSec - btimeSec;
+  const int64_t skew = bmcUptime - x86Uptime;
+
+  std::vector<reboot_cause_config::RebootCause> causes;
+  if (skew >= kMinBmcToX86BootSkewSec && skew <= kMaxBmcToX86BootSkewSec) {
+    // The BMC started first, so its start is the closest estimate of when
+    // power was lost.
+    auto cause = makeCause(
+        "SuddenPowerLoss", static_cast<std::time_t>(nowSec - bmcUptime));
+    cause.rawValue() = fmt::format(
+        "BMC uptime {}s, x86 uptime {}s, skew {}s, BMC reset reason '{}'",
+        bmcUptime,
+        x86Uptime,
+        skew,
+        resetReason);
+    causes.push_back(std::move(cause));
+  }
+  return makeAttempt(
+      kSuddenPowerLossProvider,
+      reboot_cause_config::RebootCauseProviderStatus::OK,
+      kBmcInfoPath,
+      std::move(causes));
+}
+
+reboot_cause_config::RebootCauseProviderAttempt readSuddenPowerLoss(
+    int64_t btimeSec,
+    int64_t nowSec) {
+  std::string body;
+  try {
+    RestClient client(folly::IPAddress(kBmcAddress), kBmcPort);
+    client.setSourceAddress(folly::IPAddressV6(kHostSourceAddress));
+    client.setTimeout(kBmcTimeout);
+    body = client.requestWithOutput(kBmcInfoPath);
+  } catch (const std::exception& ex) {
+    XLOG(ERR) << fmt::format("Failed to reach the BMC info API: {}", ex.what());
+    body.clear();
+  }
+  if (body.empty()) {
+    return makeAttempt(
+        kSuddenPowerLossProvider,
+        reboot_cause_config::RebootCauseProviderStatus::READ_FAILED,
+        kBmcInfoPath,
+        {});
+  }
+  return parseSuddenPowerLoss(body, btimeSec, nowSec);
 }
 
 reboot_cause_config::RebootCauseProviderAttempt readProvider(
@@ -595,16 +849,26 @@ reboot_cause_config::RebootCauseProviderAttempt readProvider(
       cause.description() = causeJson["description"].asString();
 
       auto dateStr = causeJson["date"].asString();
+      bool dateParsed = false;
       if (auto t = parseProviderDate(dateStr)) {
         cause.occurredAtMs() = toEpochMs(*t);
         cause.occurredAtPacific() = pacificString(*t);
+        dateParsed = true;
       } else {
+        // Leave the rendered field unset rather than filling it with text
+        // that is not a timestamp.
         cause.occurredAtMs() = 0;
-        cause.occurredAtPacific() = dateStr;
+        XLOG(ERR) << fmt::format(
+            "Provider '{}' wrote an unparsable date '{}'",
+            *providerConfig.name(),
+            dateStr);
       }
 
       if (causeJson.count("rawValue")) {
         cause.rawValue() = causeJson["rawValue"].asString();
+      } else if (!dateParsed) {
+        // Nothing better to show, so keep what the provider actually wrote.
+        cause.rawValue() = dateStr;
       }
       causes.push_back(std::move(cause));
     }
@@ -635,7 +899,7 @@ RebootCauseFinderImpl::Paths RebootCauseFinderImpl::defaultPaths() {
       kProcStatPath,
       kProcBootIdPath,
       detail::kernelPanicCrashDirs(),
-      detail::manualRebootLogPaths()};
+      detail::x86RebootCommandLogPaths()};
 }
 
 RebootCauseFinderImpl::RebootCauseFinderImpl(
@@ -655,7 +919,7 @@ void RebootCauseFinderImpl::clearProvider(
 
 void RebootCauseFinderImpl::determineRebootCause() {
   // Anything that re-runs this binary within a boot (a manual invocation, a
-  // platform_stack push, a restart of whatever unit owns it) would otherwise
+  // package upgrade, a restart of whatever unit owns it) would otherwise
   // record a reboot that never happened and, worse, clear the providers that
   // still hold the real boot's causes. Only the first run of a boot is
   // meaningful.
@@ -694,7 +958,8 @@ void RebootCauseFinderImpl::determineRebootCause() {
         return *a.priority() < *b.priority();
       });
 
-  // A panic names the failure and a manual reboot names the actor; the CPLD
+  // A panic names the failure and an x86 reboot command names the actor; the
+  // CPLD
   // reports only the mechanism (some generic warm-reset bit) for both. So
   // these outrank every hardware provider and are collected first. They are
   // not config providers: their paths and patterns come from systemd and
@@ -712,7 +977,8 @@ void RebootCauseFinderImpl::determineRebootCause() {
     software.push_back(
         detail::readKernelPanic(paths_.crashDirs, *btime, window));
     software.push_back(
-        detail::readManualReboot(paths_.logPaths, *btime, window));
+        detail::readX86RebootCommand(paths_.logPaths, *btime, window));
+    software.push_back(detail::readBmcWedgePower(*btime, window));
 
     // Nearest to boot start wins, not whichever reader ran first. A panic and
     // a later operator reboot can both fall inside one window; the reboot is
@@ -723,7 +989,10 @@ void RebootCauseFinderImpl::determineRebootCause() {
     // Without boot start there is no window, so neither implicit provider can
     // be evaluated. Say so rather than letting their absence read as "looked
     // and found nothing".
-    for (const auto* name : {kKernelPanicProvider, kManualRebootProvider}) {
+    for (const auto* name :
+         {kKernelPanicProvider,
+          kX86RebootCommandProvider,
+          kBmcWedgePowerProvider}) {
       attempts.push_back(makeAttempt(
           name,
           reboot_cause_config::RebootCauseProviderStatus::SKIPPED,
@@ -746,8 +1015,48 @@ void RebootCauseFinderImpl::determineRebootCause() {
     attempts.push_back(std::move(attempt));
   }
 
+  const auto now = std::chrono::system_clock::now();
+
+  // Last resort. Every provider above reports a positive signal; this one
+  // infers a cause from there being none, so it runs only once they have all
+  // come up empty. It also has to stay out of selectNearestToBoot, which
+  // breaks ties by picking the cause closest to boot: this one dates its
+  // cause to when the BMC started, which is always shortly before boot, so
+  // it would win that tie-break against a genuine cause by
+  // arithmetic rather than evidence.
+  //
+  // It is meaningful only if the BMC log was actually read. Uptime
+  // correlation shows the chassis restarted, not why: `wedge_power.sh reset
+  // -s` power-cycles the BMC too, so a chassis reset and a power loss look
+  // identical here. What separates them is the wedge_power marker, so if
+  // BMCWedgePower could not read the log we cannot tell "no operator reset"
+  // from "could not look", and must not guess.
+  const bool bmcLogWasRead =
+      std::any_of(attempts.begin(), attempts.end(), [](const auto& attempt) {
+        return *attempt.name() == kBmcWedgePowerProvider &&
+            *attempt.status() ==
+            reboot_cause_config::RebootCauseProviderStatus::OK;
+      });
+  if (btime && bmcLogWasRead) {
+    auto attempt = detail::readSuddenPowerLoss(
+        *btime,
+        static_cast<int64_t>(std::chrono::system_clock::to_time_t(now)));
+    if (!determined.has_value() && !attempt.causes()->empty()) {
+      reboot_cause_config::DeterminedCause d;
+      d.providerName() = kSuddenPowerLossProvider;
+      d.cause() = attempt.causes()->front();
+      determined = d;
+    }
+    attempts.push_back(std::move(attempt));
+  } else {
+    attempts.push_back(makeAttempt(
+        kSuddenPowerLossProvider,
+        reboot_cause_config::RebootCauseProviderStatus::SKIPPED,
+        btime ? "BMC log unread, cannot rule out an operator reset"
+              : "boot time unavailable"));
+  }
+
   reboot_cause_config::RebootCauseRecord record;
-  auto now = std::chrono::system_clock::now();
   record.detectedAtMs() = std::chrono::duration_cast<std::chrono::milliseconds>(
                               now.time_since_epoch())
                               .count();

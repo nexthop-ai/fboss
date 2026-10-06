@@ -50,7 +50,9 @@
         38,
         39,
         40,
-        79
+        79,
+        9,
+        14
     ],
     "chenab2": [
         2,
@@ -102,7 +104,9 @@
         38,
         39,
         40,
-        79
+        79,
+        9,
+        14
     ],
     "ebro": [
         2,
@@ -395,7 +399,8 @@
         67,
         69,
         72,
-        86
+        86,
+        4
     ],
     "tomahawk3": [
         2,
@@ -677,7 +682,8 @@
         117,
         123,
         49,
-        111
+        111,
+        131
     ],
     "tomahawkultra1": [
         2,
@@ -844,7 +850,9 @@
         "HGRID_DU_ROUTE_SCALE",
         "HGRID_UU_ROUTE_SCALE",
         "HUNDRED_THOUSAND_ROUTE_SCALE",
-        "PTP_TC_PROVISIONING_TIME_HW_VALIDATION"
+        "PTP_TC_PROVISIONING_TIME_HW_VALIDATION",
+        "LAG",
+        "LAG_LOAD_BALANCER"
     ],
     "chenab2": [
         "CPU_RX_TX",
@@ -896,7 +904,9 @@
         "HGRID_DU_ROUTE_SCALE",
         "HGRID_UU_ROUTE_SCALE",
         "HUNDRED_THOUSAND_ROUTE_SCALE",
-        "PTP_TC_PROVISIONING_TIME_HW_VALIDATION"
+        "PTP_TC_PROVISIONING_TIME_HW_VALIDATION",
+        "LAG",
+        "LAG_LOAD_BALANCER"
     ],
     "ebro": [
         "CPU_RX_TX",
@@ -1189,7 +1199,8 @@
         "UNTRUNCATED_SFLOW",
         "PTP_TC",
         "MODIFY_ACL_QUALIFIERS",
-        "CLASS_ID_FOR_NEIGHBOR"
+        "CLASS_ID_FOR_NEIGHBOR",
+        "ACL_PORT_IN_DISCARDS_COUNTER"
     ],
     "tomahawk3": [
         "CPU_RX_TX",
@@ -1471,7 +1482,8 @@
         "CABLE_LENGTH_MEASUREMENT",
         "DROP_REASON_LIST_SUPPORT",
         "MIRROR_ON_DROP",
-        "MIRROR_ON_DROP_STATELESS"
+        "MIRROR_ON_DROP_STATELESS",
+        "MPLS_TTL_ACL"
     ],
     "tomahawkultra1": [
         "CPU_RX_TX",
@@ -2025,6 +2037,19 @@
           "sdk": 1,
           "minSdkVersion": "13.3.0.0_odp",
           "note": "SPLIT_HORIZON_ENABLE is an ext attribute from 13.3 onward"
+        }
+      ]
+    },
+    {
+      "feature": 131,
+      "supportedFrom": [
+        {
+          "asics": [
+            "tomahawk6"
+          ],
+          "sdk": 1,
+          "minSdkVersion": "16.0",
+          "note": "MPLS label0 TTL ACL qualifier is supported from the BRCM-SAI 16.0 early access drop onward; 15.4 is GA and is not patched for it"
         }
       ]
     }

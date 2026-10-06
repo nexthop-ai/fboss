@@ -43,6 +43,7 @@ class MockFbossServiceUtil : public FbossServiceUtil {
       waitForAgentReady,
       (int maxWaitSeconds, int pollIntervalMs),
       (override));
+  MOCK_METHOD(bool, isAgentConfigured, (const HostInfo& hostInfo), (override));
   MOCK_METHOD(
       std::vector<std::string>,
       reloadConfig,

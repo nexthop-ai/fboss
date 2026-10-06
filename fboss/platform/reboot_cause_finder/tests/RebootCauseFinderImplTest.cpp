@@ -11,6 +11,7 @@
 
 #include <fmt/format.h>
 #include <folly/FileUtil.h>
+#include <folly/IPAddressV6.h>
 #include <folly/json.h>
 #include <gtest/gtest.h>
 #include <thrift/lib/cpp2/protocol/Serializer.h>
@@ -239,9 +240,260 @@ TEST_F(RebootCauseFinderImplTest, UnparseableCrashDirEntryIsSkipped) {
   EXPECT_TRUE(detail::readKernelPanic({dir}, btime, kWindow).causes()->empty());
 }
 
-// ------------------------------------------------------------ manual reboot
+// --------------------------------------------------------- BMC wedge power
 
-TEST_F(RebootCauseFinderImplTest, ManualRebootInsideWindowIsReported) {
+namespace {
+// One entry of the BMC's persistent log, in the format rsyslog writes with
+// the LogUtilFileFormat template: leading space, then a four-digit year.
+std::string bmcLine(std::time_t when, const std::string& message) {
+  std::tm tm{};
+  localtime_r(&when, &tm);
+  char stamp[32];
+  strftime(stamp, sizeof(stamp), "%Y %b %e %H:%M:%S", &tm);
+  return fmt::format(" {} bmc user.crit bmc-image: root: {}", stamp, message);
+}
+
+std::string bmcBody(const std::vector<std::string>& lines) {
+  folly::dynamic entries = folly::dynamic::array;
+  for (const auto& l : lines) {
+    entries.push_back(l);
+  }
+  folly::dynamic info = folly::dynamic::object("entries", entries);
+  return folly::toJson(folly::dynamic::object("Information", info));
+}
+} // namespace
+
+TEST_F(RebootCauseFinderImplTest, BmcChassisResetInsideWindowIsReported) {
+  const auto btime = nowSec();
+  const auto body =
+      bmcBody({bmcLine(btime - 160, "Power reset the whole system ...")});
+
+  const auto attempt = detail::parseBmcWedgePower(body, btime, kWindow);
+  EXPECT_EQ(*attempt.status(), rcc::RebootCauseProviderStatus::OK);
+  ASSERT_EQ(attempt.causes()->size(), 1);
+  EXPECT_EQ(*(*attempt.causes())[0].description(), "ChassisResetFromBmc");
+}
+
+TEST_F(RebootCauseFinderImplTest, BmcX86ResetIsDistinguishedFromChassisReset) {
+  const auto btime = nowSec();
+  const auto body =
+      bmcBody({bmcLine(btime - 160, "Power reset x86 (userver) ...")});
+
+  const auto causes =
+      *detail::parseBmcWedgePower(body, btime, kWindow).causes();
+  ASSERT_EQ(causes.size(), 1);
+  EXPECT_EQ(*causes[0].description(), "X86ResetFromBmc");
+}
+
+// The BMC's ACL grants MANAGED_HOST_ANY to this address and no other, and
+// RestClient::setSourceAddress throws unless it is a zoned link-local. On a
+// switch either failure is recorded as READ_FAILED, which is
+// indistinguishable from the BMC being unreachable.
+//
+// Checked textually rather than by parsing the whole string: folly resolves
+// the zone through getaddrinfo, so IPAddressV6("fe80::2%eth0.4088") throws
+// anywhere that interface is absent, this test host included.
+namespace {
+// Shape of the real /api/sys/bmc response, trimmed to the fields read.
+std::string bmcInfoBody(
+    const std::string& uptimeSec,
+    const std::string& reason) {
+  return fmt::format(
+      R"({{"Information": {{"Description": "BMC",
+          "Reset Reason": "{}", "uptime": "{}"}},
+          "Actions": [], "Resources": []}})",
+      reason,
+      uptimeSec);
+}
+constexpr int64_t kNow = 1790723381;
+} // namespace
+
+// The BMC shares the chassis power rail, so losing power brings both up
+// together, the BMC first.
+TEST_F(RebootCauseFinderImplTest, PowerLossWhenBmcAndX86StartedTogether) {
+  const int64_t btime = kNow - 400; // x86 up 400s
+  auto attempt = detail::parseSuddenPowerLoss(
+      bmcInfoBody("550.25", "Power ON Reset"), btime, kNow);
+  EXPECT_EQ(*attempt.status(), rcc::RebootCauseProviderStatus::OK);
+  ASSERT_EQ(attempt.causes()->size(), 1);
+  EXPECT_EQ(*attempt.causes()->front().description(), "SuddenPowerLoss");
+  // The BMC started first, so its start estimates when power was lost.
+  EXPECT_EQ(*attempt.causes()->front().occurredAtMs(), (kNow - 550) * 1000);
+  const auto& raw = *attempt.causes()->front().rawValue();
+  EXPECT_NE(raw.find("skew 150s"), std::string::npos) << raw;
+  EXPECT_NE(raw.find("Power ON Reset"), std::string::npos) << raw;
+}
+
+// A BMC that stayed up while only the x86 restarted is not a power loss.
+TEST_F(RebootCauseFinderImplTest, NoPowerLossWhenBmcStayedUp) {
+  const int64_t btime = kNow - 400;
+  auto attempt = detail::parseSuddenPowerLoss(
+      bmcInfoBody("86400.0", "Power ON Reset"), btime, kNow);
+  EXPECT_EQ(*attempt.status(), rcc::RebootCauseProviderStatus::OK);
+  EXPECT_TRUE(attempt.causes()->empty());
+}
+
+// The x86 trails the BMC. A BMC younger than the x86 by more than read noise
+// means the BMC restarted on its own, which is a different event.
+TEST_F(RebootCauseFinderImplTest, NoPowerLossWhenBmcIsYoungerThanX86) {
+  const int64_t btime = kNow - 4000;
+  auto attempt = detail::parseSuddenPowerLoss(
+      bmcInfoBody("120.0", "Power ON Reset"), btime, kNow);
+  EXPECT_TRUE(attempt.causes()->empty());
+}
+
+// The observed skew band is roughly 130-185s, so it has to be admitted.
+TEST_F(RebootCauseFinderImplTest, PowerLossAcceptsTheMeasuredBootSkewBand) {
+  for (const int64_t skew : {133, 183}) {
+    const int64_t btime = kNow - 300;
+    auto attempt = detail::parseSuddenPowerLoss(
+        bmcInfoBody(folly::to<std::string>(300 + skew, ".0"), "Power ON Reset"),
+        btime,
+        kNow);
+    EXPECT_EQ(attempt.causes()->size(), 1) << "skew " << skew;
+  }
+}
+
+TEST_F(RebootCauseFinderImplTest, PowerLossReportsParseFailedOnGarbage) {
+  auto attempt = detail::parseSuddenPowerLoss("not json", kNow - 100, kNow);
+  EXPECT_EQ(*attempt.status(), rcc::RebootCauseProviderStatus::PARSE_FAILED);
+  EXPECT_TRUE(attempt.causes()->empty());
+}
+
+TEST_F(
+    RebootCauseFinderImplTest,
+    PowerLossReportsParseFailedWhenUptimeMissing) {
+  auto attempt = detail::parseSuddenPowerLoss(
+      R"({"Information": {"Reset Reason": "Power ON Reset"}})",
+      kNow - 100,
+      kNow);
+  EXPECT_EQ(*attempt.status(), rcc::RebootCauseProviderStatus::PARSE_FAILED);
+}
+
+// Every other provider keeps the source its answer came from. This one is
+// where a reader goes next to find out who asked for the reboot, so the line
+// and its timestamp have to survive.
+TEST_F(RebootCauseFinderImplTest, X86RebootCommandKeepsTheSourceLine) {
+  const auto btime = 1790572718;
+  const auto line = fmt::format(
+      "{} sw systemd-logind[1]: System is rebooting.", syslogStamp(btime - 30));
+  const auto path = writeSecureLog(line + "\n");
+  auto attempt = detail::readX86RebootCommand({path}, btime, 3600);
+  ASSERT_EQ(attempt.causes()->size(), 1);
+  ASSERT_TRUE(attempt.causes()->front().rawValue().has_value());
+  EXPECT_EQ(*attempt.causes()->front().rawValue(), line);
+}
+
+// wedge_power.sh ends an action announcement with "...". Three lines carry
+// the leading text without being a reset: the failure the celestica
+// powercycle patch logs, the script's own usage text, and a line truncated
+// by log rotation. All three were reported as successful resets.
+TEST_F(RebootCauseFinderImplTest, BmcNonResetLinesAreNotCauses) {
+  const auto btime = nowSec();
+  for (const auto* message :
+       {"Power reset the whole system failed",
+        "  reset: Power reset x86 (userver) ungracefully",
+        "Power reset the whole system"}) {
+    const auto body = bmcBody({bmcLine(btime - 160, message)});
+    const auto attempt = detail::parseBmcWedgePower(body, btime, kWindow);
+    EXPECT_EQ(*attempt.status(), rcc::RebootCauseProviderStatus::OK);
+    EXPECT_TRUE(attempt.causes()->empty()) << message;
+  }
+}
+
+// The success line takes a longer form when a start-up delay is configured,
+// so the ellipsis cannot be matched as a fixed suffix.
+TEST_F(RebootCauseFinderImplTest, BmcChassisResetWithStartupDelayIsReported) {
+  const auto btime = nowSec();
+  const auto body = bmcBody({bmcLine(
+      btime - 160,
+      "Power reset the whole system with start-up time delay 30 seconds ...")});
+  const auto attempt = detail::parseBmcWedgePower(body, btime, kWindow);
+  ASSERT_EQ(attempt.causes()->size(), 1);
+  EXPECT_EQ(*(*attempt.causes())[0].description(), "ChassisResetFromBmc");
+}
+
+TEST_F(RebootCauseFinderImplTest, BmcSourceAddressIsZonedLinkLocal) {
+  auto source = detail::bmcHostSourceAddress();
+  auto zone = source.find('%');
+  ASSERT_NE(zone, std::string::npos) << "source must carry its zone";
+  EXPECT_TRUE(folly::IPAddressV6(source.subpiece(0, zone).str()).isLinkLocal());
+  EXPECT_FALSE(source.subpiece(zone + 1).empty());
+}
+
+TEST_F(RebootCauseFinderImplTest, BmcRawValueKeepsTheSourceLine) {
+  const auto btime = nowSec();
+  const auto line = bmcLine(btime - 160, "Power reset the whole system ...");
+  const auto causes =
+      *detail::parseBmcWedgePower(bmcBody({line}), btime, kWindow).causes();
+  ASSERT_EQ(causes.size(), 1);
+  // The parse is auditable only if the line it came from survives.
+  EXPECT_EQ(*causes[0].rawValue(), line);
+}
+
+TEST_F(RebootCauseFinderImplTest, BmcNearestToBootStartWins) {
+  const auto btime = nowSec();
+  const auto body = bmcBody(
+      {bmcLine(btime - 900, "Power reset x86 (userver) ..."),
+       bmcLine(btime - 160, "Power reset the whole system ...")});
+
+  const auto causes =
+      *detail::parseBmcWedgePower(body, btime, kWindow).causes();
+  ASSERT_EQ(causes.size(), 1);
+  EXPECT_EQ(*causes[0].description(), "ChassisResetFromBmc");
+}
+
+TEST_F(RebootCauseFinderImplTest, BmcEventOlderThanWindowIsIgnored) {
+  const auto btime = nowSec();
+  const auto body = bmcBody(
+      {bmcLine(btime - kWindow - 60, "Power reset the whole system ...")});
+
+  EXPECT_TRUE(
+      detail::parseBmcWedgePower(body, btime, kWindow).causes()->empty());
+}
+
+TEST_F(RebootCauseFinderImplTest, BmcEventAfterBootStartIsIgnored) {
+  const auto btime = nowSec();
+  const auto body =
+      bmcBody({bmcLine(btime + 60, "Power reset the whole system ...")});
+
+  EXPECT_TRUE(
+      detail::parseBmcWedgePower(body, btime, kWindow).causes()->empty());
+}
+
+TEST_F(RebootCauseFinderImplTest, BmcPreNtpDefaultDateIsIgnored) {
+  const auto btime = nowSec();
+  // A line written before the BMC syncs NTP carries the image build-default
+  // date. It is months from any real boot, so the window rejects it.
+  const auto body =
+      bmcBody({" 2026 Mar 13 08:35:46 bmc user.crit bmc-image: root: "
+               "Power reset the whole system ..."});
+
+  EXPECT_TRUE(
+      detail::parseBmcWedgePower(body, btime, kWindow).causes()->empty());
+}
+
+TEST_F(RebootCauseFinderImplTest, BmcUnrelatedLinesAreNotCauses) {
+  const auto btime = nowSec();
+  const auto body = bmcBody(
+      {bmcLine(btime - 160, "Power on uServer (from power-on.sh).."),
+       bmcLine(btime - 150, "Successfully power off micro-server")});
+
+  const auto attempt = detail::parseBmcWedgePower(body, btime, kWindow);
+  EXPECT_EQ(*attempt.status(), rcc::RebootCauseProviderStatus::OK);
+  EXPECT_TRUE(attempt.causes()->empty());
+}
+
+TEST_F(RebootCauseFinderImplTest, BmcMalformedResponseIsParseFailed) {
+  const auto btime = nowSec();
+  const auto attempt = detail::parseBmcWedgePower("not json", btime, kWindow);
+  EXPECT_EQ(*attempt.status(), rcc::RebootCauseProviderStatus::PARSE_FAILED);
+  EXPECT_TRUE(attempt.causes()->empty());
+}
+
+// ------------------------------------------------------ x86 reboot command
+
+TEST_F(RebootCauseFinderImplTest, X86RebootCommandInsideWindowIsReported) {
   const auto btime = nowSec();
   const auto path = writeSecureLog(
       fmt::format(
@@ -249,44 +501,44 @@ TEST_F(RebootCauseFinderImplTest, ManualRebootInsideWindowIsReported) {
           syslogStamp(btime - 60)));
 
   const auto causes =
-      *detail::readManualReboot({path}, btime, kWindow).causes();
+      *detail::readX86RebootCommand({path}, btime, kWindow).causes();
   ASSERT_EQ(causes.size(), 1);
-  EXPECT_EQ(*causes[0].description(), "Manual x86 Reboot");
+  EXPECT_EQ(*causes[0].description(), "X86 Reboot Command");
 }
 
-TEST_F(RebootCauseFinderImplTest, ManualRebootOlderThanWindowIsIgnored) {
+TEST_F(RebootCauseFinderImplTest, X86RebootCommandOlderThanWindowIsIgnored) {
   const auto btime = nowSec();
   const auto path = writeSecureLog(
       fmt::format(
           "{} sw systemd-logind[1]: System is rebooting.\n",
           syslogStamp(btime - kWindow - 60)));
   EXPECT_TRUE(
-      detail::readManualReboot({path}, btime, kWindow).causes()->empty());
+      detail::readX86RebootCommand({path}, btime, kWindow).causes()->empty());
 }
 
 // The line is written before the machine goes down, so a line at or after
 // btime is a reboot being requested now -- the cause of the *next* boot.
-TEST_F(RebootCauseFinderImplTest, ManualRebootAfterBootStartIsIgnored) {
+TEST_F(RebootCauseFinderImplTest, X86RebootCommandAfterBootStartIsIgnored) {
   const auto btime = nowSec() - 300;
   const auto path = writeSecureLog(
       fmt::format(
           "{} sw systemd-logind[1]: System is rebooting.\n",
           syslogStamp(btime + 60)));
   EXPECT_TRUE(
-      detail::readManualReboot({path}, btime, kWindow).causes()->empty());
+      detail::readX86RebootCommand({path}, btime, kWindow).causes()->empty());
 }
 
-TEST_F(RebootCauseFinderImplTest, ManualRebootExactlyAtBootStartIsIgnored) {
+TEST_F(RebootCauseFinderImplTest, X86RebootCommandExactlyAtBootStartIsIgnored) {
   const auto btime = nowSec() - 300;
   const auto path = writeSecureLog(
       fmt::format(
           "{} sw systemd-logind[1]: System is rebooting.\n",
           syslogStamp(btime)));
   EXPECT_TRUE(
-      detail::readManualReboot({path}, btime, kWindow).causes()->empty());
+      detail::readX86RebootCommand({path}, btime, kWindow).causes()->empty());
 }
 
-TEST_F(RebootCauseFinderImplTest, ManualRebootNearestBootStartWins) {
+TEST_F(RebootCauseFinderImplTest, X86RebootCommandNearestBootStartWins) {
   const auto btime = nowSec();
   const auto near = btime - 30;
   const auto path = writeSecureLog(
@@ -297,7 +549,7 @@ TEST_F(RebootCauseFinderImplTest, ManualRebootNearestBootStartWins) {
           syslogStamp(near)));
 
   const auto causes =
-      *detail::readManualReboot({path}, btime, kWindow).causes();
+      *detail::readX86RebootCommand({path}, btime, kWindow).causes();
   ASSERT_EQ(causes.size(), 1);
   EXPECT_EQ(*causes[0].occurredAtMs(), static_cast<int64_t>(near) * 1000);
 }
@@ -306,17 +558,17 @@ TEST_F(RebootCauseFinderImplTest, NonMatchingLinesAreIgnored) {
   const auto btime = nowSec();
   const auto path = writeSecureLog(
       fmt::format(
-          "{} sw sshd: Accepted publickey for netops\n"
-          "{} sw sudo: netops : TTY=pts/0 ; COMMAND=/bin/ls\n",
+          "{} sw sshd: Accepted publickey for admin\n"
+          "{} sw sudo: admin : TTY=pts/0 ; COMMAND=/bin/ls\n",
           syslogStamp(btime - 60),
           syslogStamp(btime - 50)));
   EXPECT_TRUE(
-      detail::readManualReboot({path}, btime, kWindow).causes()->empty());
+      detail::readX86RebootCommand({path}, btime, kWindow).causes()->empty());
 }
 
 TEST_F(RebootCauseFinderImplTest, MissingSecureLogIsNotAnError) {
   EXPECT_TRUE(
-      detail::readManualReboot(
+      detail::readX86RebootCommand(
           {(tmpDir_ / "no_such_file").string()}, nowSec(), kWindow)
           .causes()
           ->empty());
@@ -342,7 +594,7 @@ TEST_F(
       "Dec 31 23:55:00 sw systemd-logind[1]: System is rebooting.\n");
 
   const auto causes =
-      *detail::readManualReboot({path}, btime, kWindow).causes();
+      *detail::readX86RebootCommand({path}, btime, kWindow).causes();
   ASSERT_EQ(causes.size(), 1);
   // Must land 15 minutes before boot, not ~a year after it.
   EXPECT_EQ(*causes[0].occurredAtMs(), (btime - 900) * 1000);
@@ -351,12 +603,13 @@ TEST_F(
 // --------------------------------------------- golden inputs from the real
 // producers. These are literal strings, not round-tripped through the same
 // strftime the implementation parses with, so a shared wrong assumption about
-// the format cannot cancel out. TZ is pinned by the BUCK target.
+// the format cannot cancel out. Tests that assert an absolute epoch set the
+// zone themselves with ScopedTz, since the zone is part of the assertion.
 
 TEST_F(RebootCauseFinderImplTest, GoldenCrashDirNameWithDaylightZone) {
-  // 2026-09-11 16:46:31 PDT == 1789170391 (cross-checked against the record
-  // written on fboss332654848.ash7 in P2500823427). The epoch is absolute,
-  // so the zone is part of the assertion.
+  // 2026-09-11 16:46:31 PDT == 1789170391, cross-checked against a record
+  // written by a real dump. The epoch is absolute, so the zone is part of
+  // the assertion.
   const ScopedTz tz("America/Los_Angeles");
   const auto when = detail::parseCrashDirName("2026-09-11T16:46:31PDT");
   ASSERT_TRUE(when.has_value());
@@ -441,7 +694,9 @@ TEST_F(RebootCauseFinderImplTest, CrashDirNameGarbageRejected) {
 }
 
 // The %Z text is accepted and ignored, in every form a producer emits. The
-// remainder is deliberately not validated -- see the diff summary -- so this
+// remainder is deliberately not validated, because producers emit zone
+// abbreviations of two to five characters as well as numeric offsets and
+// rejecting an unfamiliar one would lose a real dump, so this
 // pins what parses, not what is rejected.
 TEST_F(RebootCauseFinderImplTest, CrashDirNameZoneSuffixesAccepted) {
   for (const auto* name : {
@@ -478,14 +733,15 @@ TEST_F(RebootCauseFinderImplTest, GoldenSyslogLineSpacePaddedDay) {
       "Sep  3 01:02:13 sw systemd-logind[1234]: System is rebooting.\n");
 
   const auto causes =
-      *detail::readManualReboot({path}, btime, kWindow).causes();
+      *detail::readX86RebootCommand({path}, btime, kWindow).causes();
   ASSERT_EQ(causes.size(), 1);
   EXPECT_EQ(*causes[0].occurredAtMs(), static_cast<int64_t>(eventT) * 1000);
 }
 
-// On NetOS the line lands in /var/log/messages, not /var/log/secure. Reading
-// only secure was a real false negative on minipack3n.
-TEST_F(RebootCauseFinderImplTest, ManualRebootFoundInSecondLogPath) {
+// Which file systemd-logind's line lands in depends on the image's syslog
+// routing. Searching only one path is a false negative on images that route
+// it to the other.
+TEST_F(RebootCauseFinderImplTest, X86RebootCommandFoundInSecondLogPath) {
   const auto btime = nowSec();
   const auto messages = (tmpDir_ / "messages").string();
   ASSERT_TRUE(
@@ -497,7 +753,8 @@ TEST_F(RebootCauseFinderImplTest, ManualRebootFoundInSecondLogPath) {
   const auto secure = writeSecureLog("Sep  3 01:02:03 sw sudo: nothing here\n");
 
   const auto causes =
-      *detail::readManualReboot({secure, messages}, btime, kWindow).causes();
+      *detail::readX86RebootCommand({secure, messages}, btime, kWindow)
+           .causes();
   ASSERT_EQ(causes.size(), 1);
 }
 
@@ -519,7 +776,7 @@ TEST_F(RebootCauseFinderImplTest, PostBootLineDoesNotResolveToPriorYear) {
   const auto path = writeSecureLog(
       "Jun 15 13:00:00 sw systemd-logind[1]: System is rebooting.\n");
   EXPECT_TRUE(
-      detail::readManualReboot({path}, btime, kWindow).causes()->empty());
+      detail::readX86RebootCommand({path}, btime, kWindow).causes()->empty());
 }
 
 // ------------------------------------------- absent source vs unreadable one
@@ -534,10 +791,10 @@ TEST_F(RebootCauseFinderImplTest, AbsentSourcesAreNotAReadFailure) {
   EXPECT_TRUE(panic.causes()->empty());
   EXPECT_EQ(*panic.status(), rcc::RebootCauseProviderStatus::OK);
 
-  const auto manual = detail::readManualReboot(
+  const auto attempt = detail::readX86RebootCommand(
       {(tmpDir_ / "nope").string()}, nowSec(), kWindow);
-  EXPECT_TRUE(manual.causes()->empty());
-  EXPECT_EQ(*manual.status(), rcc::RebootCauseProviderStatus::OK);
+  EXPECT_TRUE(attempt.causes()->empty());
+  EXPECT_EQ(*attempt.status(), rcc::RebootCauseProviderStatus::OK);
 }
 
 // A crash "dir" that is really a regular file exists but cannot be iterated.
@@ -557,7 +814,8 @@ TEST_F(RebootCauseFinderImplTest, UnreadableLogPathIsReadFailure) {
   const auto notAFile = (tmpDir_ / "secure_is_a_dir").string();
   std::filesystem::create_directories(notAFile);
 
-  const auto attempt = detail::readManualReboot({notAFile}, nowSec(), kWindow);
+  const auto attempt =
+      detail::readX86RebootCommand({notAFile}, nowSec(), kWindow);
   EXPECT_TRUE(attempt.causes()->empty());
   EXPECT_EQ(*attempt.status(), rcc::RebootCauseProviderStatus::READ_FAILED);
 }
@@ -575,7 +833,7 @@ TEST_F(RebootCauseFinderImplTest, UnstatableLogPathIsReadFailure) {
   ASSERT_FALSE(ec);
 
   const auto attempt =
-      detail::readManualReboot({a.string()}, nowSec(), kWindow);
+      detail::readX86RebootCommand({a.string()}, nowSec(), kWindow);
   EXPECT_TRUE(attempt.causes()->empty());
   EXPECT_EQ(*attempt.status(), rcc::RebootCauseProviderStatus::READ_FAILED);
 }
@@ -670,25 +928,23 @@ TEST_F(RebootCauseFinderImplTest, CrashDirsCoverBothLocations) {
 
 // sshd records every remote command verbatim into the same files this reader
 // searches, so anyone grepping for the phrase plants a line containing it.
-// Both fixtures below are real lines captured from /var/log/secure on
-// fboss329039409.snc1 after a probe ran `grep -c "System is rebooting"` over
-// ssh. They sit inside the window, so only the program check rejects them.
+// This is not hypothetical: a bulk sweep counting reboot lines put the
+// phrase into /var/log/secure on every host it ran against. Both fixtures sit
+// inside the window, so only the program check rejects them.
 TEST_F(RebootCauseFinderImplTest, SshdEchoOfThePhraseIsNotAReboot) {
   const auto btime = nowSec();
   const auto stamp = syslogStamp(btime - 60);
   const auto path = writeSecureLog(
       fmt::format(
-          "{} sw sshd[1627813]: Exec Request for user root with command "
-          "BT=$(awk \"/^btime/{{print \\$2}}\" /proc/stat); "
-          "echo \"RB=$(grep -c \"System is rebooting\" /var/log/messages)\"\n"
-          "{} sw sshd[1627813]: sshd_auth_msg: {{\"user\": \"root\", "
-          "\"command\": \"grep -c \\\"System is rebooting\\\" "
-          "/var/log/messages\"}}\n",
+          "{} sw sshd[99]: Exec Request for user admin with command "
+          "grep -c \"System is rebooting\" /var/log/messages\n"
+          "{} sw sshd[99]: command: grep -c \"System is rebooting\" "
+          "/var/log/messages\n",
           stamp,
           stamp));
 
   EXPECT_TRUE(
-      detail::readManualReboot({path}, btime, kWindow).causes()->empty());
+      detail::readX86RebootCommand({path}, btime, kWindow).causes()->empty());
 }
 
 // The same file can hold both. The announcement must still be found.
@@ -703,33 +959,33 @@ TEST_F(RebootCauseFinderImplTest, AnnouncementFoundAlongsideSshdEcho) {
           syslogStamp(btime - 60)));
 
   const auto causes =
-      *detail::readManualReboot({path}, btime, kWindow).causes();
+      *detail::readX86RebootCommand({path}, btime, kWindow).causes();
   ASSERT_EQ(causes.size(), 1);
   EXPECT_EQ(*causes[0].occurredAtMs(), (btime - 60) * 1000);
 }
 
-TEST_F(RebootCauseFinderImplTest, ManualRebootLineAcceptsTrustedEmitters) {
+TEST_F(RebootCauseFinderImplTest, X86RebootCommandLineAcceptsTrustedEmitters) {
   EXPECT_TRUE(
-      detail::isManualRebootLine(
+      detail::isX86RebootCommandLine(
           "Sep  3 01:02:13 sw systemd-logind[1234]: System is rebooting."));
   EXPECT_TRUE(
-      detail::isManualRebootLine(
+      detail::isX86RebootCommandLine(
           "Sep  3 01:02:13 sw systemd-logind: System is rebooting."));
   EXPECT_TRUE(
-      detail::isManualRebootLine(
+      detail::isX86RebootCommandLine(
           "Sep 13 01:02:13 sw systemd[1]: System is rebooting."));
 }
 
-TEST_F(RebootCauseFinderImplTest, ManualRebootLineRejectsOtherEmitters) {
+TEST_F(RebootCauseFinderImplTest, X86RebootCommandLineRejectsOtherEmitters) {
   EXPECT_FALSE(
-      detail::isManualRebootLine(
+      detail::isX86RebootCommandLine(
           "Sep  3 01:02:13 sw sshd[99]: System is rebooting."));
   EXPECT_FALSE(
-      detail::isManualRebootLine(
+      detail::isX86RebootCommandLine(
           "Sep  3 01:02:13 sw sudo[99]: System is rebooting."));
   // A program whose name merely ends in the trusted one.
   EXPECT_FALSE(
-      detail::isManualRebootLine(
+      detail::isX86RebootCommandLine(
           "Sep  3 01:02:13 sw not-systemd[1]: System is rebooting."));
 }
 
@@ -737,16 +993,16 @@ TEST_F(RebootCauseFinderImplTest, ManualRebootLineRejectsOtherEmitters) {
 // under a trusted program name still does not count.
 TEST_F(
     RebootCauseFinderImplTest,
-    ManualRebootLineRequiresPhraseAtMessageStart) {
+    X86RebootCommandLineRequiresPhraseAtMessageStart) {
   EXPECT_FALSE(
-      detail::isManualRebootLine(
+      detail::isX86RebootCommandLine(
           "Sep  3 01:02:13 sw systemd[1]: checking whether System is rebooting."));
 }
 
-TEST_F(RebootCauseFinderImplTest, ManualRebootLineRejectsMalformedLines) {
-  EXPECT_FALSE(detail::isManualRebootLine(""));
-  EXPECT_FALSE(detail::isManualRebootLine("System is rebooting."));
-  EXPECT_FALSE(detail::isManualRebootLine("Sep  3 01:02:13 sw systemd[1]"));
+TEST_F(RebootCauseFinderImplTest, X86RebootCommandLineRejectsMalformedLines) {
+  EXPECT_FALSE(detail::isX86RebootCommandLine(""));
+  EXPECT_FALSE(detail::isX86RebootCommandLine("System is rebooting."));
+  EXPECT_FALSE(detail::isX86RebootCommandLine("Sep  3 01:02:13 sw systemd[1]"));
 }
 
 // ----------------------------------------------------------- exact boundaries
@@ -814,25 +1070,26 @@ attemptWith(
 TEST_F(RebootCauseFinderImplTest, NearestToBootWinsRegardlessOfListOrder) {
   const int64_t btime = 1789170391;
   const auto panic = causeAt("Kernel Panic", btime - 900);
-  const auto manual = causeAt("Manual x86 Reboot", btime - 30);
+  const auto rebootCmd = causeAt("X86 Reboot Command", btime - 30);
 
   auto panicFirst = detail::selectNearestToBoot(
       {attemptWith("KernelPanic", {panic}),
-       attemptWith("ManualReboot", {manual})});
+       attemptWith("X86RebootCommand", {rebootCmd})});
   ASSERT_TRUE(panicFirst.has_value());
-  EXPECT_EQ(*panicFirst->providerName(), "ManualReboot");
+  EXPECT_EQ(*panicFirst->providerName(), "X86RebootCommand");
 
-  auto manualFirst = detail::selectNearestToBoot(
-      {attemptWith("ManualReboot", {manual}),
+  auto rebootCmdFirst = detail::selectNearestToBoot(
+      {attemptWith("X86RebootCommand", {rebootCmd}),
        attemptWith("KernelPanic", {panic})});
-  ASSERT_TRUE(manualFirst.has_value());
-  EXPECT_EQ(*manualFirst->providerName(), "ManualReboot");
+  ASSERT_TRUE(rebootCmdFirst.has_value());
+  EXPECT_EQ(*rebootCmdFirst->providerName(), "X86RebootCommand");
 }
 
 TEST_F(RebootCauseFinderImplTest, NearestToBootPicksPanicWhenItIsNearer) {
   const int64_t btime = 1789170391;
   auto best = detail::selectNearestToBoot(
-      {attemptWith("ManualReboot", {causeAt("Manual x86 Reboot", btime - 900)}),
+      {attemptWith(
+           "X86RebootCommand", {causeAt("X86 Reboot Command", btime - 900)}),
        attemptWith("KernelPanic", {causeAt("Kernel Panic", btime - 30)})});
   ASSERT_TRUE(best.has_value());
   EXPECT_EQ(*best->providerName(), "KernelPanic");
@@ -840,8 +1097,8 @@ TEST_F(RebootCauseFinderImplTest, NearestToBootPicksPanicWhenItIsNearer) {
 
 // Reading only /var/log/secure missed a real graceful reboot on minipack3n,
 // where systemd-logind logs to /var/log/messages. Lock both paths in.
-TEST_F(RebootCauseFinderImplTest, ManualRebootSearchesMessagesAndSecure) {
-  const auto& paths = detail::manualRebootLogPaths();
+TEST_F(RebootCauseFinderImplTest, X86RebootCommandSearchesMessagesAndSecure) {
+  const auto& paths = detail::x86RebootCommandLogPaths();
   EXPECT_NE(
       std::find(paths.begin(), paths.end(), "/var/log/messages"), paths.end());
   EXPECT_NE(
@@ -892,6 +1149,21 @@ TEST_F(RebootCauseFinderImplTest, SyslogDecemberLineReadInJanuaryResolves) {
 // persisted record rather than on hand-built thrift structs means these fail
 // if the arbitration changes, not only if the serializer does.
 class DetermineRebootCauseTest : public RebootCauseFinderImplTest {
+ public:
+  // By name, not position: the implicit providers are prepended, so any new
+  // one would silently shift a positional index onto the wrong attempt.
+  static folly::dynamic attemptNamed(
+      const folly::dynamic& rec,
+      const std::string& name) {
+    for (const auto& a : rec["providersAttempted"]) {
+      if (a["name"].asString() == name) {
+        return a;
+      }
+    }
+    ADD_FAILURE() << "no attempt named " << name;
+    return folly::dynamic::object();
+  }
+
  protected:
   void SetUp() override {
     RebootCauseFinderImplTest::SetUp();
@@ -951,11 +1223,14 @@ TEST_F(DetermineRebootCauseTest, NoProviderReportsAnythingSoNoCauseIsClaimed) {
   const auto rec = readRecord();
   EXPECT_EQ(rec.count("determinedCause"), 0);
   EXPECT_EQ(rec["bootTimeMs"].asInt(), btime_ * 1000);
-  ASSERT_EQ(rec["providersAttempted"].size(), 2);
+  // KernelPanic and X86RebootCommand read absent sources cleanly.
+  // BMCWedgePower cannot reach a BMC from a test host, so it reports
+  // READ_FAILED rather than a false "nothing found".
   for (const auto& a : rec["providersAttempted"]) {
-    EXPECT_EQ(a["status"].asInt(), 0) << "absent source is OK, not a failure";
     EXPECT_EQ(a["causes"].size(), 0);
   }
+  EXPECT_EQ(attemptNamed(rec, "KernelPanic")["status"].asInt(), 0);
+  EXPECT_EQ(attemptNamed(rec, "X86RebootCommand")["status"].asInt(), 0);
 }
 
 TEST_F(DetermineRebootCauseTest, PanicInWindowBecomesTheDeterminedCause) {
@@ -982,9 +1257,7 @@ TEST_F(DetermineRebootCauseTest, UnreadableProviderIsRecordedNotClaimed) {
 
   const auto rec = readRecord();
   EXPECT_EQ(rec.count("determinedCause"), 0);
-  ASSERT_EQ(rec["providersAttempted"].size(), 3);
-  const auto& hw = rec["providersAttempted"][2];
-  EXPECT_EQ(hw["name"].asString(), "TEST_CPLD");
+  const auto hw = attemptNamed(rec, "TEST_CPLD");
   EXPECT_EQ(hw["status"].asInt(), 1);
 }
 
@@ -1003,7 +1276,7 @@ TEST_F(DetermineRebootCauseTest, PartiallyParsedProviderKeepsWholeCauses) {
       .determineRebootCause();
 
   const auto rec = readRecord();
-  const auto& hw = rec["providersAttempted"][2];
+  const auto hw = attemptNamed(rec, "TEST_CPLD");
   EXPECT_EQ(hw["status"].asInt(), 2) << "PARSE_FAILED";
   ASSERT_EQ(hw["causes"].size(), 1) << "the whole cause must be kept";
   EXPECT_EQ(hw["causes"][0]["description"].asString(), "Power loss");
@@ -1108,7 +1381,11 @@ TEST_F(RebootCauseFinderImplTest, ProviderUnparseableDateKeepsTheCause) {
   EXPECT_EQ(*attempt.status(), rcc::RebootCauseProviderStatus::OK);
   ASSERT_EQ(causes.size(), 1);
   EXPECT_EQ(*causes[0].occurredAtMs(), 0);
-  EXPECT_EQ(*causes[0].occurredAtPacific(), "soon");
+  // The unparsed text is not a timestamp, so the rendered field is left
+  // empty and the text is kept verbatim where unparsed source belongs.
+  EXPECT_TRUE(causes[0].occurredAtPacific()->empty());
+  ASSERT_TRUE(causes[0].rawValue().has_value());
+  EXPECT_EQ(*causes[0].rawValue(), "soon");
 }
 
 } // namespace

@@ -23,6 +23,16 @@
 
 namespace facebook::fboss {
 
+// Real service orchestration against a mock systemd; there is no agent to
+// poll, so it always reports configured.
+class NoAgentServiceUtil : public FbossServiceUtil {
+ public:
+  using FbossServiceUtil::FbossServiceUtil;
+  bool isAgentConfigured(const HostInfo& /*hostInfo*/) override {
+    return true;
+  }
+};
+
 // Test-only derived class that exposes the protected constructor and methods
 // This allows tests to inject custom paths and control the singleton instance
 class TestableConfigSession : public ConfigSession {
@@ -81,10 +91,16 @@ class TestableConfigSession : public ConfigSession {
       bool /*needsAgentState*/) override {
     if (!fbossServiceUtil_) {
       if (mockSystemdFactory_) {
+<<<<<<< HEAD
         auto probe = agentReadyProbe_
             ? agentReadyProbe_
             : FbossServiceUtil::AgentReadyProbe([] { return true; });
         fbossServiceUtil_ = std::make_unique<FbossServiceUtil>(
+||||||| c159a235eb
+        fbossServiceUtil_ = std::make_unique<FbossServiceUtil>(
+=======
+        fbossServiceUtil_ = std::make_unique<NoAgentServiceUtil>(
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
             switchIndexesOverride_,
             multiSwitchOverride_,
             mockSystemdFactory_(),

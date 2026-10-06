@@ -65,15 +65,37 @@ void BspTestEnvironment::SetUp() {
     RuntimeConfigBuilder configBuilder;
     runtimeConfig_ = configBuilder.buildRuntimeConfig(
         *testConfig_, *platformManagerConfig_, kmods_, platform_);
+    // The default config is enough to reach every IDPROM: no
+    // versionedPmUnitConfigs entry moves the muxes, FPGA adapters or slot buses
+    // leading to one.
+    if (pmUnitVersionDetector_) {
+      runtimeConfig_ = configBuilder.buildRuntimeConfig(
+          *testConfig_,
+          *platformManagerConfig_,
+          kmods_,
+          platform_,
+          pmUnitVersionDetector_(*platformManagerConfig_, *runtimeConfig_));
+    }
   }
 }
 
+<<<<<<< HEAD
 void BspTestEnvironment::TearDown() {
   // Must run here, not in main() after RUN_ALL_TESTS(): gtest owns and deletes
   // this global environment during RUN_ALL_TESTS(), so reading recordedErrors_
   // afterwards via the singleton is a use-after-free.
   printAllRecordedErrors();
 }
+||||||| c159a235eb
+void BspTestEnvironment::TearDown() {}
+=======
+void BspTestEnvironment::setPmUnitVersionDetector(
+    PmUnitVersionDetector detector) {
+  pmUnitVersionDetector_ = std::move(detector);
+}
+
+void BspTestEnvironment::TearDown() {}
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 
 const platform_manager::PlatformConfig&
 BspTestEnvironment::getPlatformManagerConfig() const {

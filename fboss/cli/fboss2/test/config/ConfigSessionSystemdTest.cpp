@@ -353,6 +353,7 @@ TEST(FbossServiceUtilTest, RestartService_ServiceFailsToStart) {
 }
 
 // ============================================================
+<<<<<<< HEAD
 // Test: restartService() waits for the agent to report itself configured, not
 // just for systemd to report the unit active. The units are Type=simple, so
 // systemd reports active as soon as the binary is exec'd.
@@ -419,6 +420,36 @@ TEST(FbossServiceUtilTest, WaitForAgentReady_ThrowsOnTimeout) {
 
   EXPECT_THROW(
       util.waitForAgentReady(/*maxWaitSeconds=*/1, /*pollIntervalMs=*/10),
+||||||| c159a235eb
+=======
+// Test: waitForAgentConfigured() polls the given host until the agent is
+// configured.
+TEST(FbossServiceUtilTest, WaitForAgentConfigured_PollsUntilConfigured) {
+  MockFbossServiceUtil util;
+  HostInfo hostInfo("dut1", "dut1-oob", folly::IPAddress("10.0.0.1"));
+
+  EXPECT_CALL(
+      util, isAgentConfigured(::testing::Property(&HostInfo::getName, "dut1")))
+      .WillOnce(Return(false))
+      .WillOnce(Return(false))
+      .WillOnce(Return(true));
+
+  util.waitForAgentConfigured(
+      hostInfo, /*maxWaitSeconds=*/5, /*pollIntervalMs=*/10);
+}
+
+// Test: waitForAgentConfigured() throws if the agent never becomes configured.
+TEST(FbossServiceUtilTest, WaitForAgentConfigured_ThrowsOnTimeout) {
+  MockFbossServiceUtil util;
+  HostInfo hostInfo(
+      "localhost", "localhost-oob", folly::IPAddress("127.0.0.1"));
+
+  EXPECT_CALL(util, isAgentConfigured(_)).WillRepeatedly(Return(false));
+
+  EXPECT_THROW(
+      util.waitForAgentConfigured(
+          hostInfo, /*maxWaitSeconds=*/1, /*pollIntervalMs=*/10),
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
       std::runtime_error);
 }
 
@@ -445,6 +476,7 @@ TEST(
           cli::ConfigActionLevel::SERVICE_RESTART,
           ::testing::_))
       .WillOnce(::testing::Return(std::vector<std::string>{"wedge_agent"}));
+  EXPECT_CALL(*mockPtr, isAgentConfigured(_)).WillOnce(Return(true));
 
   TestableConfigSession session(
       "/tmp/test_session", "/tmp/test_system", std::move(mock));
@@ -477,6 +509,7 @@ TEST(
       .WillOnce(
           ::testing::Return(
               std::vector<std::string>{"fboss_hw_agent@0", "fboss_sw_agent"}));
+  EXPECT_CALL(*mockPtr, isAgentConfigured(_)).WillOnce(Return(true));
 
   TestableConfigSession session(
       "/tmp/test_session", "/tmp/test_system", std::move(mock));
@@ -504,6 +537,7 @@ TEST(
 
   EXPECT_CALL(*mockPtr, reloadConfig(cli::ServiceType::AGENT, ::testing::_))
       .WillOnce(::testing::Return(std::vector<std::string>{"wedge_agent"}));
+  EXPECT_CALL(*mockPtr, isAgentConfigured(_)).Times(0);
 
   TestableConfigSession session(
       "/tmp/test_session", "/tmp/test_system", std::move(mock));

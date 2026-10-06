@@ -13,4 +13,13 @@ image_builder/templates/centos-09.0/root
 *.tar
 *.tar.*
 image_builder/output/
+<<<<<<< HEAD
 *.generated.json
+||||||| c159a235eb
+=======
+
+# Written by the CLI before each build and handed to the container, which
+# copies them into the image. Generated, so never checked in.
+image_builder/build-provenance
+image_builder/fboss-distro-version.json
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29

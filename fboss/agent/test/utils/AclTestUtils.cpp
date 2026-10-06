@@ -482,10 +482,42 @@ std::vector<cfg::CounterType> getAclCounterTypes(
   }
 }
 
+<<<<<<< HEAD
 std::optional<uint64_t> getAclInOutPacketsIf(
+||||||| c159a235eb
+uint64_t getAclInOutPackets(
+=======
+std::map<std::string, uint64_t> getAclInOutPacketsMap(
+    const SwSwitch* sw,
+    const std::vector<std::string>& statNames,
+    bool bytes) {
+  // getHwSwitchStatsExpensive() copies every switch's stats, so a caller
+  // reading many counters must fetch once rather than once per counter.
+  auto hwSwitchStatsMap = sw->getHwSwitchStatsExpensive();
+  std::map<std::string, uint64_t> statValues;
+  for (const auto& statName : statNames) {
+    statValues.emplace(statName, 0);
+  }
+  const std::string suffix = bytes ? ".bytes" : ".packets";
+  for (const auto& [switchIndex, hwswitchStats] : hwSwitchStatsMap) {
+    const auto& nameToCounter =
+        *hwswitchStats.aclStats()->statNameToCounterMap();
+    for (auto& [statName, statValue] : statValues) {
+      auto entry = nameToCounter.find(statName + suffix);
+      if (entry != nameToCounter.end()) {
+        statValue += entry->second;
+      }
+    }
+  }
+  return statValues;
+}
+
+uint64_t getAclInOutPackets(
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
     const SwSwitch* sw,
     const std::string& statName,
     bool bytes) {
+<<<<<<< HEAD
   auto statStr = bytes ? statName + ".bytes" : statName + ".packets";
   auto hwSwitchStatsMap = sw->getHwSwitchStatsExpensive();
   std::optional<uint64_t> statValue;
@@ -497,6 +529,21 @@ std::optional<uint64_t> getAclInOutPacketsIf(
     }
   }
   return statValue;
+||||||| c159a235eb
+  auto statStr = bytes ? statName + ".bytes" : statName + ".packets";
+  auto hwSwitchStatsMap = sw->getHwSwitchStatsExpensive();
+  int64_t statValue = 0;
+  for (const auto& [switchIndex, hwswitchStats] : hwSwitchStatsMap) {
+    auto aclStats = hwswitchStats.aclStats();
+    auto entry = aclStats->statNameToCounterMap()->find(statStr);
+    if (entry != aclStats->statNameToCounterMap()->end()) {
+      statValue += entry->second;
+    }
+  }
+  return statValue;
+=======
+  return getAclInOutPacketsMap(sw, {statName}, bytes).at(statName);
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 }
 
 uint64_t getAclInOutPackets(

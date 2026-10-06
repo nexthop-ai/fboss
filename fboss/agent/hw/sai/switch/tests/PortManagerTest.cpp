@@ -159,6 +159,10 @@ class PortManagerTest : public ManagerTestBase {
         std::nullopt, // TC to Priority Group map
         std::nullopt, // PFC Priority to Queue map
         std::nullopt, // PFC Priority to Priority Group map
+#if defined(SAI_CBFC_SUPPORTED)
+        std::nullopt, // TC to VC map
+        std::nullopt, // Queue to VC map
+#endif
 #if SAI_API_VERSION >= SAI_VERSION(1, 9, 0)
         std::nullopt, // Inter Frame Gap
 #endif
@@ -391,6 +395,38 @@ TEST_F(PortManagerTest, unbindIngressAclAfterChangePort) {
       saiApiTable->portApi().getAttribute(
           handle->port->adapterKey(), SaiPortTraits::Attributes::IngressAcl{}),
       SAI_NULL_OBJECT_ID);
+}
+
+TEST_F(PortManagerTest, resetIngressAcl) {
+  const std::string ingressAclTableName{"PortIngressAclTable"};
+  auto aclTableGroup = std::make_shared<AclTableGroup>(cfg::AclStage::INGRESS);
+  aclTableGroup->setName("PortIngressAclGroup");
+  aclTableGroup->setBindPoint(cfg::AclTableGroupBindPoint::PORT);
+  saiManagerTable->aclTableGroupManager().addAclTableGroup(aclTableGroup);
+  saiManagerTable->aclTableManager().addAclTable(
+      std::make_shared<AclTable>(0, ingressAclTableName),
+      cfg::AclStage::INGRESS,
+      nullptr /*state*/,
+      cfg::AclTableGroupBindPoint::PORT);
+
+  auto boundPort = makePort(p0);
+  boundPort->setIngressAclTableName(ingressAclTableName);
+  saiManagerTable->portManager().addPort(boundPort);
+  saiManagerTable->portManager().setIngressAcl(boundPort);
+  auto unboundPort = makePort(p1);
+  saiManagerTable->portManager().addPort(unboundPort);
+
+  saiManagerTable->portManager().resetIngressAcl();
+
+  for (const auto& portId : {boundPort->getID(), unboundPort->getID()}) {
+    auto* handle = saiManagerTable->portManager().getPortHandle(portId);
+    ASSERT_NE(handle, nullptr);
+    EXPECT_EQ(
+        saiApiTable->portApi().getAttribute(
+            handle->port->adapterKey(),
+            SaiPortTraits::Attributes::IngressAcl{}),
+        SAI_NULL_OBJECT_ID);
+  }
 }
 
 TEST_F(PortManagerTest, addTwoPorts) {
@@ -1439,14 +1475,14 @@ TEST_F(PortManagerTest, programPrecodingWhenEnabledAfterPortCreation) {
   saiManagerTable->portManager().addPort(swPort);
 
   auto* handle = saiManagerTable->portManager().getPortHandle(swPort->getID());
-  const auto& initialFakeSerdes = FakeSai::getInstance()->portSerdesManager.get(
-      handle->serdes->adapterKey());
+  const auto serdesId = handle->serdes->adapterKey();
+  const auto& initialFakeSerdes =
+      FakeSai::getInstance()->portSerdesManager.get(serdesId);
   EXPECT_TRUE(initialFakeSerdes.txPrecoding.empty());
   EXPECT_TRUE(initialFakeSerdes.rxPrecoding.empty());
 #if defined(BRCM_SAI_SDK_GTE_13_0)
   EXPECT_TRUE(initialFakeSerdes.rxReach.empty());
 #endif
-
   auto newPort = swPort->clone();
   newPort->setTxPrecoding(true);
   newPort->setRxPrecoding(true);
@@ -1460,6 +1496,62 @@ TEST_F(PortManagerTest, programPrecodingWhenEnabledAfterPortCreation) {
 #if defined(BRCM_SAI_SDK_GTE_13_0)
   EXPECT_EQ(
       fakeSerdes.rxReach, std::vector<int32_t>{SAI_PORT_SERDES_REACH_MODE_ER});
+#endif
+}
+
+TEST_F(PortManagerTest, ignoresUnsetAuxiliarySerdesAttributesOnWarmBoot) {
+  gflags::FlagSaver flagSaver;
+  FLAGS_montblanc_precoding = false;
+
+  auto swPort = makePort(p0);
+  auto pinConfigs = swPort->getPinConfigs();
+  for (auto& pinConfig : pinConfigs) {
+    pinConfig.rx()->precoding() = 2;
+    pinConfig.tx()->precoding() = 1;
+#if defined(BRCM_SAI_SDK_GTE_13_0)
+    pinConfig.rx()->rxReach() = phy::RxReach::RX_EXTENDED_REACH;
+#endif
+  }
+  swPort->resetPinConfigs(pinConfigs);
+  saiManagerTable->portManager().addPort(swPort);
+
+  auto* handle = saiManagerTable->portManager().getPortHandle(swPort->getID());
+  ASSERT_NE(handle, nullptr);
+  auto fakeSai = FakeSai::getInstance();
+  auto serdesAttributes = handle->serdes->attributes();
+  const auto txPrecoding =
+      SaiPortSerdesTraits::Attributes::TxPrecodingAttr{std::vector<int32_t>{0}};
+  const auto rxPrecoding =
+      SaiPortSerdesTraits::Attributes::RxPrecodingAttr{std::vector<int32_t>{0}};
+  SaiPortSerdesTraits::AdapterHostKey serdesKey{handle->port->adapterKey()};
+  std::get<std::optional<SaiPortSerdesTraits::Attributes::TxPrecodingAttr>>(
+      serdesAttributes) = txPrecoding;
+  std::get<std::optional<SaiPortSerdesTraits::Attributes::RxPrecodingAttr>>(
+      serdesAttributes) = rxPrecoding;
+#if defined(BRCM_SAI_SDK_GTE_13_0)
+  const auto rxReach = SaiPortSerdesTraits::Attributes::RxReach{
+      std::vector<int32_t>{SAI_PORT_SERDES_REACH_MODE_ER}};
+  std::get<std::optional<SaiPortSerdesTraits::Attributes::RxReach>>(
+      serdesAttributes) = rxReach;
+#endif
+  handle->serdes = saiStore->get<SaiPortSerdesTraits>().setObject(
+      serdesKey, serdesAttributes);
+
+  auto newPort = swPort->clone();
+  newPort->setTxPrecoding(false);
+  newPort->setRxPrecoding(false);
+  saiManagerTable->portManager().changePort(swPort, newPort);
+
+  handle = saiManagerTable->portManager().getPortHandle(newPort->getID());
+  ASSERT_NE(handle, nullptr);
+  const auto& fakeSerdesAfterWarmBoot =
+      fakeSai->portSerdesManager.get(handle->serdes->adapterKey());
+  EXPECT_EQ(fakeSerdesAfterWarmBoot.txPrecoding, std::vector<int32_t>{0});
+  EXPECT_EQ(fakeSerdesAfterWarmBoot.rxPrecoding, std::vector<int32_t>{0});
+#if defined(BRCM_SAI_SDK_GTE_13_0)
+  EXPECT_EQ(
+      fakeSerdesAfterWarmBoot.rxReach,
+      std::vector<int32_t>{SAI_PORT_SERDES_REACH_MODE_ER});
 #endif
 }
 #endif

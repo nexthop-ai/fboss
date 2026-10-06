@@ -227,8 +227,17 @@ class AgentAclTableGroupTrafficTest : public AgentHwTest {
 
     auto ttlCounterName = utility::getQueuePerHostTtlCounterName();
 
+<<<<<<< HEAD
     auto statBefore =
         utility::waitForAndGetAclInOutPackets(getSw(), ttlCounterName);
+||||||| c159a235eb
+    auto statBefore = utility::getAclInOutPackets(getSw(), ttlCounterName);
+=======
+    if (frontPanel) {
+      learnSrcMacOnEcmpTxPortIfPending(kEcmpWidth);
+    }
+    auto statBefore = utility::getAclInOutPackets(getSw(), ttlCounterName);
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 
     const auto beforePortStats =
         this->getLatestPortStats(this->masterLogicalPortIds()[0]);
@@ -360,7 +369,16 @@ class AgentAclTableGroupTrafficTest : public AgentHwTest {
     auto [testType, dstIP] = testTypeAndIpHelper<AddrT>();
     XLOG(DBG2) << "TestType: " << testType;
 
+<<<<<<< HEAD
     auto beforeAclPkts = pktCounterHelper(/*waitForStats=*/true);
+||||||| c159a235eb
+    auto beforeAclPkts = pktCounterHelper();
+=======
+    if (frontPanel) {
+      learnSrcMacOnEcmpTxPortIfPending(kEcmpWidth);
+    }
+    auto beforeAclPkts = pktCounterHelper();
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
     sendAllPacketshelper<AddrT>(dstIP, frontPanel, 0);
 
     WITH_RETRIES({

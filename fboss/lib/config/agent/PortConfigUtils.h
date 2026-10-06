@@ -9,7 +9,10 @@
  */
 #pragma once
 
+#include <map>
+#include <optional>
 #include <set>
+#include <vector>
 
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
 #include "fboss/agent/types.h"
@@ -33,20 +36,39 @@ namespace utility {
  * confusion for our tests.
  */
 auto constexpr kBaseVlanId = 2000;
-/*
- * Default VLAN
- */
-auto constexpr kDefaultVlanId4094 = 4094;
-auto constexpr kDefaultVlanId1 = 1;
 auto constexpr kDownlinkBaseVlanId = 2000;
 auto constexpr kUplinkBaseVlanId = 4000;
 
-// Per-port interface-vlan allocation band for incrementally-created
-// INTERFACE_PORTs. Starts just above the shared downlink base (kBaseVlanId) and
-// stops before the sidelink band (3000), so allocated ids avoid every reserved
-// range (loopback 10/11, sidelink 3000-3024, uplink 3100/4001+, default 4094).
+// Per-port interface-vlan allocation band. INTERFACE_PORTs allocate from the
+// low end while MANAGEMENT_PORTs allocate from the high end. The band starts
+// just above the shared downlink base (kBaseVlanId) and stops before the
+// sidelink band (3000), so allocated ids avoid every reserved range (loopback
+// 10/11, sidelink 3000-3024, uplink 3100/4001+, default 4094).
 auto constexpr kInterfaceVlanIdMin = kBaseVlanId + 1;
 auto constexpr kInterfaceVlanIdMax = 2999;
+
+struct SafeProfileSelectionOptions {
+  cfg::AsicType asicType{cfg::AsicType::ASIC_TYPE_FAKE};
+  // When true, ports outside requiredPorts may be omitted or subsumed.
+  bool supportsAddRemovePort{false};
+  bool dualStageRdsw3q2q{false};
+  bool preferOpticalProfiles{false};
+  // Ports which must coexist in the resulting configuration. When unset,
+  // every port in each supplied group is required.
+  std::optional<std::set<PortID>> requiredPorts;
+};
+
+using PortProfileMap = std::map<PortID, cfg::PortProfileID>;
+
+// Selects one compatible profile per controlling-port group and returns that
+// profile for every port which must be present in the resulting config. The
+// fastest safe profile wins; when requested, equal-speed interface and
+// management profiles prefer optical when available.
+PortProfileMap getSafeProfileIDs(
+    const PlatformMapping& platformMapping,
+    const std::map<PortID, std::vector<PortID>>&
+        controllingPortToSubsidiaryPorts,
+    const SafeProfileSelectionOptions& options);
 
 // Bare port body. Speed derived from PlatformMapping (nullopt ->
 // cfg::PortSpeed::DEFAULT). Sets name/portType/scope (from
@@ -58,6 +80,23 @@ cfg::Port createDefaultPortConfig(
     cfg::PortProfileID profileID,
     int32_t ingressVlan);
 
+// Basic building blocks for a routed NPU interface or management port. Callers
+// may adjust policy-specific fields before inserting the returned objects into
+// a config.
+cfg::Port createRoutedPortConfig(
+    const PlatformMapping& platformMapping,
+    PortID id,
+    cfg::PortProfileID profileID,
+    VlanID ingressVlan);
+
+// As above, but restricted to INTERFACE_PORT.
+cfg::Port createInterfacePortConfig(
+    const PlatformMapping& platformMapping,
+    PortID id,
+    cfg::PortProfileID profileID,
+    VlanID ingressVlan);
+cfg::VlanPort createVlanPortConfig(PortID portID, VlanID vlanID);
+
 // Lowest-free vlan id in [minId, maxId] not used by any vlan id or any
 // interface intfID in config. Throws FbossError if none free.
 int32_t allocateFreeVlanId(
@@ -65,10 +104,25 @@ int32_t allocateFreeVlanId(
     int32_t minId = kInterfaceVlanIdMin,
     int32_t maxId = kInterfaceVlanIdMax);
 
-// Append a VLAN-style interface port into an EXISTING config: allocates N via
-// allocateFreeVlanId, then appends Port(routable=true, ingressVlan=N,
-// state=DISABLED) + Vlan(N) + VlanPort(N->id) + Interface(intfID=N, vlanID=N,
-// type=VLAN). Returns N.
+// Append a routed VLAN-style interface or management port into an existing
+// config, using vlanID for both the VLAN and interface ID.
+void addRoutedPortToConfig(
+    cfg::SwitchConfig& config,
+    const PlatformMapping* platformMapping,
+    PortID id,
+    cfg::PortProfileID profileID,
+    VlanID vlanID);
+
+// Append a VLAN-style interface port into an existing config, using vlanID for
+// both the VLAN and interface ID.
+void addInterfacePortToConfig(
+    cfg::SwitchConfig& config,
+    const PlatformMapping* platformMapping,
+    PortID id,
+    cfg::PortProfileID profileID,
+    VlanID vlanID);
+
+// As above, but allocate the lowest free VLAN/interface ID and return it.
 int32_t addInterfacePortToConfig(
     cfg::SwitchConfig& config,
     const PlatformMapping* platformMapping,

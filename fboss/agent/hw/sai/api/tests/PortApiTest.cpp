@@ -16,6 +16,7 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <vector>
 
 using namespace facebook::fboss;
@@ -64,6 +65,10 @@ class PortApiTest : public ::testing::Test {
         std::nullopt, // TC to Priority Group map
         std::nullopt, // PFC Priority to Queue map
         std::nullopt, // PFC Priority to Priority Group map
+#if defined(SAI_CBFC_SUPPORTED)
+        std::nullopt, // TC to VC map
+        std::nullopt, // Queue to VC map
+#endif
 #if SAI_API_VERSION >= SAI_VERSION(1, 9, 0)
         std::nullopt, // Inter frame gap
 #endif
@@ -234,6 +239,29 @@ TEST_F(PortApiTest, onePort) {
   EXPECT_EQ(lanes.size(), 1);
   EXPECT_EQ(lanes[0], 42);
 }
+
+#if defined(SAI_CBFC_SUPPORTED)
+TEST_F(PortApiTest, readNativeCbfcReceiverAttributes) {
+  auto id = createPort(100000, {42}, true);
+
+  // READ_ONLY, derived by hardware from the MMU carving. Fake cans them, so
+  // this asserts the types and union members round-trip, not the values.
+  EXPECT_EQ(
+      portApi->getAttribute(
+          id, SaiPortTraits::Attributes::CbfcReceiverNativeCreditSize{}),
+      256);
+  EXPECT_EQ(
+      portApi->getAttribute(
+          id, SaiPortTraits::Attributes::CbfcReceiverNativeTotalCredits{}),
+      1000);
+  // Signed on purpose: the spec range is -16..127, and modelling this as
+  // unsigned would read back 65520 rather than -16.
+  EXPECT_EQ(
+      portApi->getAttribute(
+          id, SaiPortTraits::Attributes::CbfcReceiverNativePacketOverhead{}),
+      -16);
+}
+#endif
 
 TEST_F(PortApiTest, fourPorts) {
   auto portIds = createFivePorts();
@@ -527,6 +555,29 @@ TEST_F(PortApiTest, getSome) {
       SAI_STATS_MODE_READ);
   EXPECT_EQ(stats.size(), 2);
 }
+
+#if defined(SAI_CBFC_SUPPORTED)
+// Three of the six SAI_PORT_STAT_CBFC_* counters have no BCM counter behind
+// them on Tomahawk Ultra 1 (SENDER_CREDITS_USED is B0-stepping only). Because
+// get_port_stats is all-or-nothing, one of them in the list would fail every
+// CBFC stat read, so guard against them creeping back in.
+TEST_F(PortApiTest, cbfcStatsOmitsUnbackedCounters) {
+  const auto& ids = SaiPortTraits::cbfcStats();
+  for (auto unbacked :
+       {SAI_PORT_STAT_CBFC_SENDER_CREDITS_USED,
+        SAI_PORT_STAT_CBFC_SENDER_CREDITS_USED_WATERMARK,
+        SAI_PORT_STAT_CBFC_NUM_CC_UPDATE_MESSAGES_RX}) {
+    EXPECT_EQ(std::find(ids.begin(), ids.end(), unbacked), ids.end());
+  }
+}
+
+TEST_F(PortApiTest, getCbfcStats) {
+  auto id = createPort(100000, {42}, true);
+  auto stats = portApi->getStats<SaiPortTraits>(
+      id, SaiPortTraits::cbfcStats(), SAI_STATS_MODE_READ);
+  EXPECT_EQ(stats.size(), SaiPortTraits::cbfcStats().size());
+}
+#endif
 
 TEST_F(PortApiTest, serdesApi) {
   auto id = createPort(100000, {42}, true);

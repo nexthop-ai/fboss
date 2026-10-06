@@ -105,6 +105,7 @@ class ConfigVlanCreateTest : public Fboss2IntegrationTest {
   // VLAN ID used to exercise auto-create, chosen from the running config by
   // SetUpTestSuite. 0 when the platform has none free.
   static int newVlanId_;
+<<<<<<< HEAD
 
   // Create `vlanId` in the running config (idempotent) so a fresh session sees
   // it as already existing. Creating a barebone VLAN + its cfg::Interface is
@@ -149,6 +150,10 @@ class ConfigVlanCreateTest : public Fboss2IntegrationTest {
     // Start the test proper from a clean session built on the committed config.
     discardSession();
   }
+||||||| c159a235eb
+  static int s_newVlanId_;
+=======
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 
   void
   addStaticMac(int vlanId, const std::string& mac, const std::string& port) {
@@ -366,11 +371,19 @@ TEST_F(ConfigVlanCreateTest, CreateVlanCommand) {
   XLOG(INFO) << "  TEST PASSED (VLAN " << newVlanId_ << " removed by TearDown)";
 }
 
+<<<<<<< HEAD
 TEST_F(ConfigVlanCreateTest, CreateVlanAlreadyExists) {
+||||||| c159a235eb
+TEST_F(ConfigVlanCreateTest, SwitchportAccessVlanAutoCreates) {
+  if (s_newVlanId_ == 0) {
+=======
+TEST_F(ConfigVlanCreateTest, SwitchportAccessVlanAutoCreates) {
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
   if (newVlanId_ == 0) {
     GTEST_SKIP() << "No VLAN ID free in [" << kTestVlanMin << ", "
                  << kTestVlanMax << "] on this switch";
   }
+<<<<<<< HEAD
   // Provision a VLAN in the running config, then verify 'config vlan' reports
   // it as already existing.
   ensureCommittedVlan(newVlanId_);
@@ -395,6 +408,10 @@ TEST_F(ConfigVlanCreateTest, SwitchportAccessVlanAutoCreates) {
     GTEST_SKIP() << "No VLAN ID free in [" << kTestVlanMin << ", "
                  << kTestVlanMax << "] on this switch";
   }
+||||||| c159a235eb
+  XLOG(INFO) << "[Step 1] Using port=" << s_testInterfaceName_;
+=======
+>>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
   XLOG(INFO) << "[Step 1] Using port=" << testInterfaceName_;
 
   // Step 0: Start from a clean session so the VLAN isn't left over from a
