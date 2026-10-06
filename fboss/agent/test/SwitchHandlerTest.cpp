@@ -9,7 +9,6 @@
  */
 
 #include <folly/ScopeGuard.h>
-#include <gflags/gflags.h>
 #include <gtest/gtest.h>
 
 #include "fboss/agent/AgentFeatures.h"
@@ -22,17 +21,11 @@
 #include "fboss/agent/test/TestUtils.h"
 #include "fboss/lib/CommonUtils.h"
 
-<<<<<<< HEAD
-#include <atomic>
-||||||| c159a235eb
-#include <algorithm>
-=======
 #include <gflags/gflags.h>
 
 #include <algorithm>
 #include <atomic>
 #include <chrono>
->>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 
 using facebook::fboss::HwSwitchMatcher;
 using facebook::fboss::SwitchID;

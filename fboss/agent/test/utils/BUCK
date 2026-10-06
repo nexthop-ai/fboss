@@ -62,12 +62,7 @@ cpp_library(
         "//fboss/agent:switch_config-cpp2-types",
         "//fboss/agent/hw/switch_asics:switch_asics",
         "//fboss/agent/state:state",
-<<<<<<< HEAD
         "//fboss/lib:common_utils",
-        "//fboss/lib/config:acl_config_utils",
-||||||| c159a235eb
-        "//fboss/lib/config:acl_config_utils",
-=======
         "//fboss/lib/config:fboss_agent_config_utils",
     ],
 )
@@ -91,7 +86,6 @@ cpp_library(
         "//fboss/agent:fboss-types",
         "//fboss/agent:switch_config-cpp2-types",
         "//fboss/agent/hw/switch_asics:switch_asics",
->>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
     ],
 )
 

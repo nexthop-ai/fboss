@@ -79,23 +79,17 @@ void BspTestEnvironment::SetUp() {
   }
 }
 
-<<<<<<< HEAD
+void BspTestEnvironment::setPmUnitVersionDetector(
+    PmUnitVersionDetector detector) {
+  pmUnitVersionDetector_ = std::move(detector);
+}
+
 void BspTestEnvironment::TearDown() {
   // Must run here, not in main() after RUN_ALL_TESTS(): gtest owns and deletes
   // this global environment during RUN_ALL_TESTS(), so reading recordedErrors_
   // afterwards via the singleton is a use-after-free.
   printAllRecordedErrors();
 }
-||||||| c159a235eb
-void BspTestEnvironment::TearDown() {}
-=======
-void BspTestEnvironment::setPmUnitVersionDetector(
-    PmUnitVersionDetector detector) {
-  pmUnitVersionDetector_ = std::move(detector);
-}
-
-void BspTestEnvironment::TearDown() {}
->>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 
 const platform_manager::PlatformConfig&
 BspTestEnvironment::getPlatformManagerConfig() const {
