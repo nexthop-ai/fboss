@@ -424,7 +424,7 @@
           "pmUnitScopedName": "MGMT_EEPROM"
         },
         {
-          "busName": "SMB_MUX_2@1",
+          "busName": "SMB_MUX_2@0",
           "address": "0x4c",
           "kernelDeviceName": "lm90",
           "pmUnitScopedName": "MGMT_TEMP_SENSOR"
@@ -650,7 +650,7 @@
     "/run/devmap/xcvrs/xcvr_ctrl_63": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_63]",
     "/run/devmap/xcvrs/xcvr_io_64": "/SMB_SLOT@0/[SMB_OSFP_I2C_64]",
     "/run/devmap/xcvrs/xcvr_ctrl_64": "/SMB_SLOT@0/[OSFP_XCVR_CTRL_PORT_64]",
-    "/run/devmap/xcvrs/xcvr_io_65": "/SMB_SLOT@0/[SMB_MUX_2@2]",
+    "/run/devmap/xcvrs/xcvr_io_65": "/SMB_SLOT@0/[SMB_MUX_2@1]",
     "/run/devmap/xcvrs/xcvr_ctrl_65": "/SMB_SLOT@0/[QSFP_XCVR_CTRL_PORT_65]"
   },
   "chassisEepromDevicePath": "/SMB_SLOT@0/[CHASSIS_EEPROM]",
