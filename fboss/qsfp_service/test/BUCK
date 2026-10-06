@@ -111,6 +111,7 @@ cpp_unittest(
         "//fboss/lib/bsp/minipack3n:minipack3n_bsp",
         "//fboss/lib/bsp/montblanc:montblanc_bsp",
         "//fboss/lib/bsp/morgan800cc:morgan800cc_bsp",
+        "//fboss/lib/bsp/nh4010f:nh4010f_bsp",
         "//fboss/lib/bsp/nh4220f:nh4220f_bsp",
         "//fboss/lib/bsp/tahan800bc:tahan800bc_bsp",
         "//fboss/lib/bsp/tahansb800bc:tahansb800bc_bsp",

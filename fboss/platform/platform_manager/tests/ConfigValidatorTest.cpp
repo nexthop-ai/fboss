@@ -153,7 +153,7 @@ TEST(ConfigValidatorTest, RealConfigsValid) {
   // Regression coverage: committed platform_manager.json configs must pass
   // full validation. Loads each baked config via ConfigLib so a malformed
   // committed config is caught in CI.
-  for (const auto& platform : {"m4062nhp", "m4340nhp", "m4061nhp"}) {
+  for (const auto& platform : {"m4062nhp", "m4340nhp", "m4061nhp", "nh4010f"}) {
     XLOG(INFO) << "Validating platform_manager config for " << platform;
     PlatformConfig config;
     SimpleJSONSerializer::deserialize<PlatformConfig>(

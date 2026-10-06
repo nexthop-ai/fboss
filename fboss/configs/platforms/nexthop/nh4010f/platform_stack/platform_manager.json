@@ -136,18 +136,66 @@
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
               "deviceName": "nh_port_led",
-              "csrOffsetCalc": "0x60 + (2 - {ledNum})*0x8",
-              "numPorts": 32,
-              "ledPerPort": 2,
+              "csrOffsetCalc": "0x60",
+              "numPorts": 8,
+              "ledPerPort": 1,
               "startPort": 1
             },
             {
               "pmUnitScopedNamePrefix": "SMB_PORT_LED",
               "deviceName": "nh_port_led",
-              "csrOffsetCalc": "0x64 + (2 - {ledNum})*0x8",
-              "numPorts": 32,
-              "ledPerPort": 2,
+              "csrOffsetCalc": "0x64",
+              "numPorts": 8,
+              "ledPerPort": 1,
+              "startPort": 9
+            },
+            {
+              "pmUnitScopedNamePrefix": "SMB_PORT_LED",
+              "deviceName": "nh_port_led",
+              "csrOffsetCalc": "0x68",
+              "numPorts": 8,
+              "ledPerPort": 1,
+              "startPort": 17
+            },
+            {
+              "pmUnitScopedNamePrefix": "SMB_PORT_LED",
+              "deviceName": "nh_port_led",
+              "csrOffsetCalc": "0x6c",
+              "numPorts": 8,
+              "ledPerPort": 1,
+              "startPort": 25
+            },
+            {
+              "pmUnitScopedNamePrefix": "SMB_PORT_LED",
+              "deviceName": "nh_port_led",
+              "csrOffsetCalc": "0x70",
+              "numPorts": 8,
+              "ledPerPort": 1,
               "startPort": 33
+            },
+            {
+              "pmUnitScopedNamePrefix": "SMB_PORT_LED",
+              "deviceName": "nh_port_led",
+              "csrOffsetCalc": "0x74",
+              "numPorts": 8,
+              "ledPerPort": 1,
+              "startPort": 41
+            },
+            {
+              "pmUnitScopedNamePrefix": "SMB_PORT_LED",
+              "deviceName": "nh_port_led",
+              "csrOffsetCalc": "0x78",
+              "numPorts": 8,
+              "ledPerPort": 1,
+              "startPort": 49
+            },
+            {
+              "pmUnitScopedNamePrefix": "SMB_PORT_LED",
+              "deviceName": "nh_port_led",
+              "csrOffsetCalc": "0x7c",
+              "numPorts": 8,
+              "ledPerPort": 1,
+              "startPort": 57
             }
           ]
         }

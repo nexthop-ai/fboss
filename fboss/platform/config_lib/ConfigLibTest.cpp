@@ -20,6 +20,7 @@ const std::string kBlackwolf800banw = "blackwolf800banw";
 const std::string kIcecube = "icecube";
 const std::string kM4062nhp = "m4062nhp";
 const std::string kM4340nhp = "m4340nhp";
+const std::string kNh4010f = "nh4010f";
 const std::string kNh4220f = "nh4220f";
 const std::string kM4061nhp = "m4061nhp";
 const std::string kSample = "sample";
@@ -63,6 +64,7 @@ TEST(ConfigLibTest, Basic) {
   EXPECT_NO_THROW(ConfigLib().getPlatformManagerConfig(kMeru800bfa));
   EXPECT_NO_THROW(ConfigLib().getPlatformManagerConfig(kMontblanc));
   EXPECT_NO_THROW(ConfigLib().getPlatformManagerConfig(kM4062nhp));
+  EXPECT_NO_THROW(ConfigLib().getPlatformManagerConfig(kNh4010f));
   EXPECT_NO_THROW(ConfigLib().getPlatformManagerConfig(kNh4220f));
   EXPECT_NO_THROW(ConfigLib().getPlatformManagerConfig(kM4061nhp));
   EXPECT_NO_THROW(ConfigLib().getPlatformManagerConfig(kMorgan800cc));

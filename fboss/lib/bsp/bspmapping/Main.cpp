@@ -18,7 +18,6 @@
 namespace facebook::fboss {
 const std::map<std::string, folly::StringPiece> kPlatformNameToCsv = {
     {"ladakh800bcls", kPortMappingLadakh800bclsCsv},
-    {"nh4010f", kPortMappingNh4010fCsv},
     {"leh800bcls", kPortMappingLeh800bclsCsv},
 };
 

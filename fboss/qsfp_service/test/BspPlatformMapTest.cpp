@@ -15,6 +15,7 @@
 #include "fboss/lib/bsp/minipack3n/Minipack3NBspPlatformMapping.h"
 #include "fboss/lib/bsp/montblanc/MontblancBspPlatformMapping.h"
 #include "fboss/lib/bsp/morgan800cc/Morgan800ccBspPlatformMapping.h"
+#include "fboss/lib/bsp/nh4010f/Nh4010fBspPlatformMapping.h"
 #include "fboss/lib/bsp/nh4220f/Nh4220fBspPlatformMapping.h"
 #include "fboss/lib/bsp/tahan800bc/Tahan800bcBspPlatformMapping.h"
 #include "fboss/lib/bsp/tahansb800bc/Tahansb800bcBspPlatformMapping.h"
@@ -88,6 +89,23 @@ TEST_F(BspPlatformMapTest, checkNumPimTransceivers) {
   auto m4062nhpBspPlatformMap = M4062nhpBspPlatformMapping();
   EXPECT_EQ(m4062nhpBspPlatformMap.numPims(), 1);
   EXPECT_EQ(m4062nhpBspPlatformMap.numTransceivers(), 129);
+  // Check Nh4010f
+  auto nh4010fBspPlatformMap = Nh4010fBspPlatformMapping();
+  EXPECT_EQ(nh4010fBspPlatformMap.numPims(), 1);
+  EXPECT_EQ(nh4010fBspPlatformMap.numTransceivers(), 64);
+  EXPECT_EQ(nh4010fBspPlatformMap.getLedId(64, 8), 64);
+  EXPECT_EQ(
+      *nh4010fBspPlatformMap.getLedMapping(1, 64).yellowPath(),
+      "/sys/class/leds/port64_led1:amber:status");
+  // fboss_bsp_kmods exposes xcvr_reset active high (1 = held in reset).
+  for (int tcvrId = 1; tcvrId <= 64; ++tcvrId) {
+    EXPECT_EQ(
+        *nh4010fBspPlatformMap.getTcvrMapping(tcvrId)
+             .accessControl()
+             ->reset()
+             ->resetHoldHi(),
+        1);
+  }
   // Check Nh4220f
   auto nh4220fBspPlatformMap = Nh4220fBspPlatformMapping();
   EXPECT_EQ(nh4220fBspPlatformMap.numPims(), 1);
