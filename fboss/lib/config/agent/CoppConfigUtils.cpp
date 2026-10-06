@@ -159,6 +159,7 @@ cfg::PortQueueRate getPortQueueRate(const HwAsic* hwAsic, uint16_t queueId) {
   uint32_t kbps;
   if (hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO3 ||
       hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO4 ||
+      hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN3D ||
       hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D) {
     kbps = kDnxLowPriorityKbitsPerSecond;
   } else if (
@@ -194,6 +195,7 @@ cfg::ToCpuAction getCpuActionType(const HwAsic* hwAsic) {
     case cfg::AsicType::ASIC_TYPE_JERICHO2:
     case cfg::AsicType::ASIC_TYPE_JERICHO3:
     case cfg::AsicType::ASIC_TYPE_JERICHO4:
+    case cfg::AsicType::ASIC_TYPE_QUMRAN3D:
     case cfg::AsicType::ASIC_TYPE_QUMRAN4D:
     case cfg::AsicType::ASIC_TYPE_CHENAB:
     case cfg::AsicType::ASIC_TYPE_CHENAB2:
