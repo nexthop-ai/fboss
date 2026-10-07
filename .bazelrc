@@ -23,6 +23,17 @@ build --cxxopt=-DSAI_VER_MAJOR=1
 build --cxxopt=-DSAI_VER_MINOR=16
 build --cxxopt=-DSAI_VER_RELEASE=1
 
+# Fake SAI builds against libsai 1.19.0 headers (see ensure-sai.sh), matching
+# cmake.  bazel.sh adds --config=sai_fake for --sai fake.  Options from a
+# --config are appended after the defaults above, so -U drops the bcm values
+# before the fake ones are defined.
+build:sai_fake --cxxopt=-USAI_VER_MAJOR
+build:sai_fake --cxxopt=-USAI_VER_MINOR
+build:sai_fake --cxxopt=-USAI_VER_RELEASE
+build:sai_fake --cxxopt=-DSAI_VER_MAJOR=1
+build:sai_fake --cxxopt=-DSAI_VER_MINOR=19
+build:sai_fake --cxxopt=-DSAI_VER_RELEASE=0
+
 # Warning flags matching cmake's clang build
 build --cxxopt=-Wall
 build --cxxopt=-Wno-sign-compare

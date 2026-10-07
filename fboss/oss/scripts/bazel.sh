@@ -69,13 +69,6 @@ while IFS= read -r oss_build; do
   fi
 done < <(find "$REPO_ROOT/configerator" "$REPO_ROOT/neteng" -name 'BUILD.bazel.oss')
 
-# Source site-specific configuration if present.
-ENV_FILE="$SCRIPT_DIR/fboss-build.env"
-if [ -f "$ENV_FILE" ]; then
-  # shellcheck source=/dev/null
-  source "$ENV_FILE"
-fi
-
 # Extract the wrapper-level --sai flag.  It is not a bazel option: strip it
 # from argv and translate it into --//fboss/agent/hw/sai:sai_impl=<impl>
 # placed right after the bazel command.  The explicit flag form is also
@@ -112,10 +105,27 @@ bcm | fake) ;;
   exit 1
   ;;
 esac
-if [ "$SAI_IMPL" != "bcm" ] && [ "$_sai_flag_explicit" -eq 0 ] && [ "${#ARGS[@]}" -gt 0 ]; then
-  set -- "${ARGS[0]}" "--//fboss/agent/hw/sai:sai_impl=$SAI_IMPL" "${ARGS[@]:1}"
+if [ "$SAI_IMPL" != "bcm" ] && [ "${#ARGS[@]}" -gt 0 ]; then
+  # --config=sai_<impl> (see .bazelrc) overrides the SAI_VER_* defines to match
+  # the libsai headers ensure-sai.sh pins for that flavor.
+  if [ "$_sai_flag_explicit" -eq 0 ]; then
+    set -- "${ARGS[0]}" "--//fboss/agent/hw/sai:sai_impl=$SAI_IMPL" "--config=sai_$SAI_IMPL" "${ARGS[@]:1}"
+  else
+    set -- "${ARGS[0]}" "--config=sai_$SAI_IMPL" "${ARGS[@]:1}"
+  fi
 else
   set -- "${ARGS[@]}"
+fi
+
+# Source site-specific configuration if present.  This runs after the --sai
+# parsing above and with SAI_IMPL exported because fboss-build.env calls
+# ensure-sai.sh, which pins the libsai headers per flavor (bcm: 1.16.3, which
+# the Broadcom SAI requires; fake: 1.19.0) and skips the vendor tarball for fake.
+export SAI_IMPL
+ENV_FILE="$SCRIPT_DIR/fboss-build.env"
+if [ -f "$ENV_FILE" ]; then
+  # shellcheck source=/dev/null
+  source "$ENV_FILE"
 fi
 
 # Check that the SAI implementation dependency is configured.  The Bazel build

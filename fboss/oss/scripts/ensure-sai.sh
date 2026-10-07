@@ -13,14 +13,22 @@
 # Set LIBSAI_VERSION to override the OCP SAI headers version the build is
 # pinned to (defaults to 1.16.3, the newest spec compatible with the
 # Broadcom SAI implementation above).
+# Set SAI_IMPL=fake (bazel.sh does this for --sai fake) to build against fake
+# SAI: no vendor tarball is fetched, and LIBSAI_VERSION defaults to 1.19.0,
+# the headers the fake SAI sources are written against.
 # To force a re-download without waiting for an S3 ETag change, delete the
 # ".etag" file in the same folder as the SAI tarball, e.g.
 #   rm /var/extras/sai/1.16.1/.etag
 
 set -euo pipefail
 
+sai_impl="${SAI_IMPL:-bcm}"
 sai_version="${SAI_VERSION:-1.16.1}"
-libsai_version="${LIBSAI_VERSION:-1.16.3}"
+if [ "$sai_impl" = "fake" ]; then
+  libsai_version="${LIBSAI_VERSION:-1.19.0}"
+else
+  libsai_version="${LIBSAI_VERSION:-1.16.3}"
+fi
 s3_url="http://bucket.internal.nexthop.ai:7480/vol-shared/fboss/sai/libsai_impl-${sai_version}-fboss.tar.gz"
 cache_dir="/var/extras/sai/${sai_version}"
 tarball="${cache_dir}/libsai_impl.tar.gz"
@@ -42,13 +50,14 @@ declare -A libsai_sha256=(
   ["1.16.1"]="cf65142d1a1286b5faa24c9ae61b3f955f04724d0bf5ef6e5679298353aa0871"
   ["1.16.3"]="5c89cdb6b2e4f1b42ced6b78d43d06d22434ddbf423cdc551f7c2001f12e63d9"
   ["1.18.1"]="84f2fbd6bf672abaefddfd78a28fec794e37477bf9702fbb56d7bd53ff930ba3"
+  ["1.19.0"]="199d2cd32408b6470ce0c43beee660cc468e29e72921f1e93e64d4a8eb80246a"
 )
 if [ -z "${libsai_sha256[$libsai_version]:-}" ]; then
   echo "ERROR: no sha256 known for LIBSAI_VERSION=${libsai_version}" >&2
   exit 1
 fi
 if ! grep -q "^subdir = SAI-${libsai_version}$" "$libsai_manifest" 2>/dev/null; then
-  echo "Pinning libsai manifest to SAI ${libsai_version} for the Broadcom SAI build..." >&2
+  echo "Pinning libsai manifest to SAI ${libsai_version} for the ${sai_impl} SAI build..." >&2
   cat >"$libsai_manifest" <<EOF
 [manifest]
 name = libsai
@@ -65,6 +74,11 @@ subdir = SAI-${libsai_version}
 inc = include
 experimental = experimental
 EOF
+fi
+
+# Fake SAI needs no vendor tarball or sai_impl manifest.
+if [ "$sai_impl" = "fake" ]; then
+  exit 0
 fi
 
 # Quick HEAD request to detect upstream tarball updates (5 s timeout;
