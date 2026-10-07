@@ -231,7 +231,7 @@ cpp_unittest(
         "CmdShowTransceiverEepromTest.cpp",
         "CmdShowTransceiverLoopbackTest.cpp",
         "CmdShowTransceiverTest.cpp",  # bazelify: exclude
-        "CmdShowVersionAgentTest.cpp",
+        "CmdShowVersionAgentTest.cpp",  # bazelify: exclude
         "CmdStartPcapTest.cpp",
         "CmdStartPortCableLengthMeasurementTest.cpp",
         "CmdStopPcapTest.cpp",
