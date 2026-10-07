@@ -16,7 +16,6 @@
 #include <utility>
 #include <vector>
 
-#include "fboss/agent/AgentDirectoryUtil.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/session/FbossServiceUtil.h"
 #include "fboss/cli/fboss2/session/SystemdInterface.h"
@@ -76,12 +75,6 @@ class TestableConfigSession : public ConfigSession {
     mockSystemdFactory_ = std::move(factory);
   }
 
-  // Stubs the agent readiness probe restartService() waits on, so tests with a
-  // mock systemd do not poll a real agent over thrift. Defaults to "ready".
-  void setAgentReadyProbe(FbossServiceUtil::AgentReadyProbe probe) {
-    agentReadyProbe_ = std::move(probe);
-  }
-
   void setConfigPathResolver(ConfigPathResolver resolver) {
     configPathResolver_ = std::move(resolver);
   }
@@ -91,21 +84,10 @@ class TestableConfigSession : public ConfigSession {
       bool /*needsAgentState*/) override {
     if (!fbossServiceUtil_) {
       if (mockSystemdFactory_) {
-<<<<<<< HEAD
-        auto probe = agentReadyProbe_
-            ? agentReadyProbe_
-            : FbossServiceUtil::AgentReadyProbe([] { return true; });
-        fbossServiceUtil_ = std::make_unique<FbossServiceUtil>(
-||||||| c159a235eb
-        fbossServiceUtil_ = std::make_unique<FbossServiceUtil>(
-=======
         fbossServiceUtil_ = std::make_unique<NoAgentServiceUtil>(
->>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
             switchIndexesOverride_,
             multiSwitchOverride_,
-            mockSystemdFactory_(),
-            AgentDirectoryUtil(),
-            std::move(probe));
+            mockSystemdFactory_());
       } else {
         fbossServiceUtil_ = std::make_unique<FbossServiceUtil>(
             switchIndexesOverride_, multiSwitchOverride_);
@@ -145,7 +127,6 @@ class TestableConfigSession : public ConfigSession {
   bool multiSwitchOverride_{false};
   std::vector<int> switchIndexesOverride_{0};
   std::function<std::unique_ptr<SystemdInterface>()> mockSystemdFactory_;
-  FbossServiceUtil::AgentReadyProbe agentReadyProbe_;
 };
 
 } // namespace facebook::fboss

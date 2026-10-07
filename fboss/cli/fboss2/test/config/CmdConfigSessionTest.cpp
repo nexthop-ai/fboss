@@ -2011,9 +2011,7 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
     EXPECT_CALL(
         *mock,
         restartService(
-            cli::ServiceType::AGENT,
-            cli::ConfigActionLevel::SERVICE_RESTART,
-            ::testing::_))
+            cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
         .Times(1);
     EXPECT_CALL(*mock, isAgentConfigured(::testing::_))
         .WillOnce(::testing::Return(true));
@@ -2035,9 +2033,7 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
     EXPECT_CALL(
         *mock,
         restartService(
-            cli::ServiceType::AGENT,
-            cli::ConfigActionLevel::SERVICE_RESTART,
-            ::testing::_))
+            cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
         .Times(1);
     EXPECT_CALL(*mock, isAgentConfigured(::testing::_))
         .WillOnce(::testing::Return(true));
@@ -2057,9 +2053,7 @@ TEST_F(ConfigSessionTestFixture, rollbackUsesRecordedActionLevel) {
     EXPECT_CALL(
         *mock,
         restartService(
-            cli::ServiceType::AGENT,
-            cli::ConfigActionLevel::SERVICE_RESTART,
-            ::testing::_))
+            cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
         .Times(1);
     EXPECT_CALL(*mock, isAgentConfigured(::testing::_))
         .WillOnce(::testing::Return(true));
