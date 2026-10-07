@@ -174,6 +174,10 @@ configurations.
   and the synced references under
   `fboss/lib/asic_config_v2/synced_asic_configs/` semantically.
 
+Missing synced references fail unless the exact platform and variant are listed
+in `VARIANTS_WITHOUT_SYNCED_REFERENCE`. Missing materialized `HW_TEST` references
+always fail.
+
 ## Configuration details
 
 ### Pass-through settings (XGS)
@@ -649,7 +653,7 @@ The following steps complete the platform.
 4. Validate, generate, and compare the output against the platform's
    reference in `fboss/lib/asic_config_v2/synced_asic_configs/`. The output
    appears beside the input as `generated/<name>_<variant>.json` and must
-   match the reference byte for byte.
+   match the reference as a parsed document, ignoring object key order.
 
 ## Example: adding a new ASIC family
 
