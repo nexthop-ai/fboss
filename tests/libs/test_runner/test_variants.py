@@ -346,6 +346,12 @@ class TestResolvePair:
         res = resolve_pair("eth1/1/1", "eth1/2/1", V4X200, CAGES, NO_CONSTRAINTS, is_copper)
         assert not res.ok and res.reason == "platform"
 
+    def test_optical_cannot_use_copper_profile(self, monkeypatch):
+        monkeypatch.setattr(variants, "_profile_medium_by_id", lambda: {25: "copper"})
+        is_copper = {"eth1/1/1": False, "eth1/2/1": False}
+        res = resolve_pair("eth1/1/1", "eth1/2/1", V4X200, CAGES, NO_CONSTRAINTS, is_copper)
+        assert not res.ok and res.reason == "platform"
+
     def test_optical_can_use_unclassified_profile(self, monkeypatch):
         monkeypatch.setattr(variants, "_profile_medium_by_id", lambda: {})
         is_copper = {"eth1/1/1": False, "eth1/2/1": False}

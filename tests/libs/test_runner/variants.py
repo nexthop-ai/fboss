@@ -215,9 +215,11 @@ def _cage_profile(
         ]
         if want is not None:
             matching = [pid for pid in candidates if medium.get(pid) == want]
-            # A cabled optical module can still use a medium-unclassified
-            # profile; copper cannot fall back to an optical one.
-            candidates = matching if matching or want == "copper" else candidates
+            if not matching and want == "optical":
+                # A cabled optical module can still use a medium-unclassified
+                # profile, but never a copper one.
+                matching = [pid for pid in candidates if pid not in medium]
+            candidates = matching
         if not candidates:
             return None, [], (
                 f"{cage_name}/{sub} has no {want or 'any'}-medium profile at "
