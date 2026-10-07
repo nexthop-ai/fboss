@@ -6,7 +6,7 @@ load("//fboss:bootstrap_agent_configs.bzl", "register_bootstrap_agent_config_tes
 load("//fboss:descriptor_asic_configs.bzl", "register_descriptor_asic_config_tests")
 load("//fboss:fboss_build_types.bzl", "FREE_UP_DISK", "LOAD_FBOSS_BUILDER_CMD", "SELECT_REGION_CMD", "distro_build", "fboss_unit_test")
 load("//bazel_lib:heavy_genrule.bzl", "heavy_genrule")
-load("//bazel_lib:upload_artifact.bzl", "upload_build_artifact")
+load("//bazel_lib:upload_artifact.bzl", "upload_build_artifact", "upload_build_artifact_set")
 
 exports_files(
     ["fboss/oss/stable_commits/latest_stable_hashes.tar.gz"],
@@ -723,18 +723,30 @@ sh_test(
 )
 
 upload_build_artifact("nh-fboss-broadcom-xgs.iso", extra_tags = ["only-for-nightly"])
-upload_build_artifact("nh-fboss-broadcom-xgs.bin")
-upload_build_artifact("nh-fboss-broadcom-xgs.tar")
-upload_build_artifact("fboss_forwarding_stack_tests_broadcom_xgs.tar.zst")
+upload_build_artifact_set([
+    "nh-fboss-broadcom-xgs.bin",
+    "nh-fboss-broadcom-xgs.tar",
+    "fboss_forwarding_stack_tests_broadcom_xgs.tar.zst",
+])
+
 upload_build_artifact("nh-fboss-broadcom-th6.iso", extra_tags = ["only-for-nightly"])
-upload_build_artifact("nh-fboss-broadcom-th6.bin")
-upload_build_artifact("nh-fboss-broadcom-th6.tar")
-upload_build_artifact("fboss_forwarding_stack_tests_broadcom_th6.tar.zst")
+upload_build_artifact_set([
+    "nh-fboss-broadcom-th6.bin",
+    "nh-fboss-broadcom-th6.tar",
+    "fboss_forwarding_stack_tests_broadcom_th6.tar.zst",
+])
+
 upload_build_artifact("nh-fboss-broadcom-dnx.iso", extra_tags = ["only-for-nightly"])
-upload_build_artifact("nh-fboss-broadcom-dnx.tar")
-upload_build_artifact("fboss_forwarding_stack_tests_broadcom_dnx.tar.zst")
+upload_build_artifact_set([
+    "nh-fboss-broadcom-dnx.tar",
+    "fboss_forwarding_stack_tests_broadcom_dnx.tar.zst",
+])
+
 upload_build_artifact("nh-fboss-cisco-s1.iso", extra_tags = ["only-for-nightly"])
-upload_build_artifact("nh-fboss-cisco-s1.tar")
-upload_build_artifact("fboss_forwarding_stack_tests_cisco_s1.tar.zst")
+upload_build_artifact_set([
+    "nh-fboss-cisco-s1.tar",
+    "fboss_forwarding_stack_tests_cisco_s1.tar.zst",
+])
+
 upload_build_artifact("fboss_platform_stack_tests.tar.zst")
 upload_build_artifact("nh-fboss-cfboss.tar.xz")
