@@ -482,11 +482,6 @@ std::vector<cfg::CounterType> getAclCounterTypes(
   }
 }
 
-<<<<<<< HEAD
-std::optional<uint64_t> getAclInOutPacketsIf(
-||||||| c159a235eb
-uint64_t getAclInOutPackets(
-=======
 std::map<std::string, uint64_t> getAclInOutPacketsMap(
     const SwSwitch* sw,
     const std::vector<std::string>& statNames,
@@ -512,12 +507,10 @@ std::map<std::string, uint64_t> getAclInOutPacketsMap(
   return statValues;
 }
 
-uint64_t getAclInOutPackets(
->>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
+std::optional<uint64_t> getAclInOutPacketsIf(
     const SwSwitch* sw,
     const std::string& statName,
     bool bytes) {
-<<<<<<< HEAD
   auto statStr = bytes ? statName + ".bytes" : statName + ".packets";
   auto hwSwitchStatsMap = sw->getHwSwitchStatsExpensive();
   std::optional<uint64_t> statValue;
@@ -529,21 +522,6 @@ uint64_t getAclInOutPackets(
     }
   }
   return statValue;
-||||||| c159a235eb
-  auto statStr = bytes ? statName + ".bytes" : statName + ".packets";
-  auto hwSwitchStatsMap = sw->getHwSwitchStatsExpensive();
-  int64_t statValue = 0;
-  for (const auto& [switchIndex, hwswitchStats] : hwSwitchStatsMap) {
-    auto aclStats = hwswitchStats.aclStats();
-    auto entry = aclStats->statNameToCounterMap()->find(statStr);
-    if (entry != aclStats->statNameToCounterMap()->end()) {
-      statValue += entry->second;
-    }
-  }
-  return statValue;
-=======
-  return getAclInOutPacketsMap(sw, {statName}, bytes).at(statName);
->>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 }
 
 uint64_t getAclInOutPackets(

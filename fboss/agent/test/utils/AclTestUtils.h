@@ -187,7 +187,6 @@ uint64_t getAclInOutPackets(
     const std::string& statName,
     bool bytes = false);
 
-<<<<<<< HEAD
 // nullopt if no HwSwitch has reported this counter yet, as opposed to a
 // reported value of 0.
 std::optional<uint64_t> getAclInOutPacketsIf(
@@ -206,13 +205,11 @@ uint64_t waitForAndGetAclInOutPackets(
     bool bytes = false,
     int numRetries = 120,
     std::chrono::milliseconds retryInterval = std::chrono::milliseconds(1000));
-||||||| c159a235eb
-=======
+
 std::map<std::string, uint64_t> getAclInOutPacketsMap(
     const SwSwitch* sw,
     const std::vector<std::string>& statNames,
     bool bytes = false);
->>>>>>> 86b0b0b0d48114c223a4f7a57962d2ff5bad1f29
 
 uint64_t getAclInOutPackets(
     const HwSwitch* hw,
