@@ -471,6 +471,7 @@ The converter supports special comments in BUCK files to control generation.
 # bazelify: exclude              -- Skip this target
 # bazelify: extra_dep = X       -- Add an extra dependency
 # bazelify: add_src = oss/Foo.cpp -- Add an OSS source file to the target
+# bazelify: manual               -- Tag the cc_library "manual": skipped by //fboss/..., still built as a dep
 ```
 
 **Inline** (placed at the end of a source file line inside a target):

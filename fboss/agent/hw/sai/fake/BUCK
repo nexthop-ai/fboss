@@ -3,6 +3,10 @@ load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")
 
 oncall("fboss_agent_push")
 
+# fake_sai is only used by the --sai fake Bazel flavor (see is_fake in
+# sai_switch_impl.bzl and sai_platform_impl.bzl). Keep it out of //fboss/...
+# so the default bcm flavor, which pins older SAI headers, does not build it.
+# bazelify: manual
 cpp_library(
     # @autodeps-skip autodeps2 resolves the SAI api includes to the config-pinned
     # sai_api-brcm-10.2.0.0_odp, which compiles the fake against the brcm SDK and
