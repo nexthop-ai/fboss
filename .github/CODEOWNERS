@@ -27,6 +27,9 @@
 # Path: fboss/agent/
 # ──────────────────────────────────────────────────────────────────────
 /fboss/agent/                           @facebook/fboss-agent
+# Code owners at Nexthop
+/fboss/agent/hw/                        @vvasavada-nexthop @daria-nexthop
+/fboss/agent/test/agent_hw_tests/       @vvasavada-nexthop @daria-nexthop
 
 # ──────────────────────────────────────────────────────────────────────
 # QSFP Service — manages QSFP/OSFP optical transceiver modules.
