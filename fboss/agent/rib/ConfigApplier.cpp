@@ -274,7 +274,9 @@ void ConfigApplier::applyStaticMySids() {
     auto newEntry = buildAndAllocateEntry(entry.mySid, entry.nextHopSet);
     const bool preserveFrrProtection =
         it->second->getType() == MySidType::ADJACENCY_MICRO_SID &&
-        newEntry->getType() == MySidType::ADJACENCY_MICRO_SID;
+        newEntry->getType() == MySidType::ADJACENCY_MICRO_SID &&
+        it->second->getAdjacencyInterfaceId() ==
+            newEntry->getAdjacencyInterfaceId();
     if (preserveFrrProtection) {
       newEntry->setBackupUnresolveNextHopsId(
           it->second->getBackupUnresolveNextHopsId());
