@@ -184,6 +184,10 @@ PLATFORM_CODENAME: dict[str, str] = {
     "sunbird": "m4340nhp",
 }
 
+# The agent programs the platform mapping's TX/RX precoding and RX reach only
+# on ports whose config sets txPrecoding/rxPrecoding.
+CODENAMES_WITH_SERDES_PRECODING = {"nh4220f"}
+
 CODENAMES_REQUIRING_PLATFORM_DESCRIPTOR = {
     "m4061nhp",
     "m4062nhp",
@@ -678,7 +682,10 @@ def _build_voq_switch_settings(
 
 
 def _build_ports_vlans_interfaces(
-    selected_rows: list[dict[str, str]], is_npu: bool, system_port_offset: int = 0
+    selected_rows: list[dict[str, str]],
+    is_npu: bool,
+    system_port_offset: int = 0,
+    serdes_precoding: bool = False,
 ) -> tuple[list[dict], list[dict], list[dict], list[dict]]:
     """Build the ports, per-port VLANs, vlanPorts and interfaces lists.
 
@@ -727,6 +734,9 @@ def _build_ports_vlans_interfaces(
                 "conditionalEntropyRehash": False,
             }
         )
+        if serdes_precoding:
+            ports[-1]["txPrecoding"] = True
+            ports[-1]["rxPrecoding"] = True
 
         if is_npu:
             # Names follow the CLI's VlanManager conventions ("Vlan<id>" /
@@ -832,6 +842,7 @@ def generate_config(
         selected_rows,
         is_npu=switch_type == SWITCH_TYPE_NPU,
         system_port_offset=system_port_offset,
+        serdes_precoding=codename in CODENAMES_WITH_SERDES_PRECODING,
     )
     ports.extend(_build_management_ports(_select_management_ports(ppm_rows)))
 
