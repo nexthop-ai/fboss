@@ -226,6 +226,7 @@ cpp_library(
         "facebook/AgentEnsembleMacsecSessionTests.cpp",
         "facebook/AgentEnsembleMacsecStatTests.cpp",
         "facebook/AgentEnsembleMacsecTest.cpp",
+        "nexthop_AgentEnsembleJumboFrameCounterTests.cpp",
     ],
     link_whole = True,
     undefined_symbols = True,
