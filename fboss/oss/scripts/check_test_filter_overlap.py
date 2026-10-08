@@ -59,6 +59,9 @@ TYPES_ALIAS_RE = re.compile(
     r"\busing\s+([A-Za-z_]\w*)\s*=\s*(?:::)?testing::\s*Types\s*<"
 )
 VALUES_RE = re.compile(r"(?:::)?testing::\s*Values\s*\(")
+# ValuesIn(<container>) values are built at runtime, so names can't be scraped.
+VALUES_IN_RE = re.compile(r"(?:::)?testing::\s*ValuesIn\s*\(")
+DYNAMIC_PARAM_SUFFIX = "<runtime-value>"
 # Only name generator shape we can evaluate statically: the enum-name idiom.
 ENUM_NAME_GEN_RE = re.compile(r"enumNameSafe\s*\(\s*\w+\s*\.\s*param\s*\)")
 QUALIFIED_ENUM_RE = re.compile(r"^[\w:]*::([A-Za-z_]\w*)$")
@@ -342,6 +345,9 @@ def param_values(args: list[str]) -> tuple[list[str], str]:
 
 def param_suffixes(args: list[str]) -> tuple[tuple[str, ...] | None, str]:
     """Suffixes gtest appends per value of an INSTANTIATE_*_P, or (None, why)."""
+    if len(args) >= 3 and VALUES_IN_RE.match(args[2]):
+        # Runtime values: model as one placeholder instance per test.
+        return (DYNAMIC_PARAM_SUFFIX,), ""
     values, reason = param_values(args)
     if not values:
         return None, reason
