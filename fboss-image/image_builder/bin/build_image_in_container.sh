@@ -87,11 +87,17 @@ update_docker() {
   # The python3-kiwi RPM installs for the system Python 3.9, but python3 may
   # resolve to a newer version (e.g. 3.12) via update-alternatives. The
   # kiwi-ng-3 shebang uses "python3 -s" which excludes /usr/local/lib paths.
-  # Install kiwi to the system site-packages visible under -s. The version
-  # constraint is per OS release, so it lives with the template.
+  # Install kiwi to the system site-packages visible under -s.
+  #
+  # Pinned: this install shadows the RPM above, so it is the kiwi that actually
+  # runs, and the container is rebuilt from scratch on every build -- unpinned,
+  # each run silently picks up whatever PyPI serves that day. 11.0.1 is the last
+  # version known to produce an image; a later one fails partitioning with
+  # "sgdisk: Could not change partition 1's type code to EF02!". Bump
+  # deliberately, after a green build, rather than by drift.
+  KIWI_VERSION=11.0.1
   KIWI_SITE_PKG=$(python3 -s -c "import site; print(site.getsitepackages()[0])")
-  python3 -m pip install -r "${DESCRIPTION_DIR}/kiwi-requirements.txt" \
-    --target "${KIWI_SITE_PKG}"
+  python3 -m pip install "kiwi==${KIWI_VERSION}" --target "${KIWI_SITE_PKG}"
 
   # Cap mksquashfs's cache to 4G from 25% of physical RAM to support
   # concurrent image compositions. Keep in sync with //bazel_lib:fboss_image
@@ -420,6 +426,19 @@ write_build_info() {
 dprint "Recording image provenance in /etc/build-info..."
 write_build_info >"${DESCRIPTION_DIR}/root/etc/build-info"
 tee -a "${LOG_FILE}" <"${DESCRIPTION_DIR}/root/etc/build-info"
+
+# The version file the CLI wrote before starting this build. Installed after the
+# root_files copy for the same reason build-info is: an overlay file must not be
+# able to shadow the record of what this image is. Copied rather than generated
+# here because only the CLI can read the manifest and the staged artifacts.
+if [ -f "${WSROOT}/fboss-distro-version.json" ]; then
+  dprint "Installing /etc/fboss-distro-version.json..."
+  cp "${WSROOT}/fboss-distro-version.json" \
+    "${DESCRIPTION_DIR}/root/etc/fboss-distro-version.json"
+else
+  # Not fatal: an image without it still boots, and the build log says why.
+  dprint "WARNING: no version file from the CLI; image will not carry one"
+fi
 
 # Remove any existing after_pkgs files from previous runs
 rm -f ${DESCRIPTION_DIR}/root/var/tmp/after_pkgs_install_file.json

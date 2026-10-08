@@ -482,6 +482,31 @@ std::vector<cfg::CounterType> getAclCounterTypes(
   }
 }
 
+std::map<std::string, uint64_t> getAclInOutPacketsMap(
+    const SwSwitch* sw,
+    const std::vector<std::string>& statNames,
+    bool bytes) {
+  // getHwSwitchStatsExpensive() copies every switch's stats, so a caller
+  // reading many counters must fetch once rather than once per counter.
+  auto hwSwitchStatsMap = sw->getHwSwitchStatsExpensive();
+  std::map<std::string, uint64_t> statValues;
+  for (const auto& statName : statNames) {
+    statValues.emplace(statName, 0);
+  }
+  const std::string suffix = bytes ? ".bytes" : ".packets";
+  for (const auto& [switchIndex, hwswitchStats] : hwSwitchStatsMap) {
+    const auto& nameToCounter =
+        *hwswitchStats.aclStats()->statNameToCounterMap();
+    for (auto& [statName, statValue] : statValues) {
+      auto entry = nameToCounter.find(statName + suffix);
+      if (entry != nameToCounter.end()) {
+        statValue += entry->second;
+      }
+    }
+  }
+  return statValues;
+}
+
 std::optional<uint64_t> getAclInOutPacketsIf(
     const SwSwitch* sw,
     const std::string& statName,

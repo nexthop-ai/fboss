@@ -148,6 +148,7 @@ cpp_unittest(
         "CmdShowArpTest.cpp",
         "CmdShowBgpChangelistTest.cpp",
         "CmdShowBgpConfigTest.cpp",
+        "CmdShowBgpFibNexthopsTest.cpp",
         "CmdShowBgpHealthTest.cpp",
         "CmdShowBgpHoldTimersWikiDocsTest.cpp",
         "CmdShowBgpInitializationEventsTest.cpp",
@@ -230,6 +231,7 @@ cpp_unittest(
         "CmdShowTransceiverEepromTest.cpp",
         "CmdShowTransceiverLoopbackTest.cpp",
         "CmdShowTransceiverTest.cpp",  # bazelify: exclude
+        "CmdShowVersionAgentTest.cpp",  # bazelify: exclude
         "CmdStartPcapTest.cpp",
         "CmdStartPortCableLengthMeasurementTest.cpp",
         "CmdStopPcapTest.cpp",
@@ -252,10 +254,14 @@ cpp_unittest(
         ":bgp_test_utils",
         ":cmd_test_utils",
         "//common/network/if:if-cpp2-types",
+        "//configerator/distribution/api:scoped-configerator-fake",
         "//configerator/structs/neteng/bgp_policy/thrift:bgp_policy-cpp2-types",
         "//configerator/structs/neteng/fboss/bgp:bgp_config-cpp2-types",
         "//configerator/structs/neteng/fboss/bgp/if:bgp_attr-cpp2-types",
+        "//configerator/structs/neteng/fboss/push/forwarding_stack:fbpkg_map-cpp2-types",
+        "//configerator/structs/neteng/netwhoami:netwhoami-cpp2-types",
         "//fboss/agent:address_utils",
+        "//fboss/agent:fboss-error",
         "//fboss/agent/if:common-cpp2-types",
         "//fboss/agent/if:ctrl-cpp2-types",
         "//fboss/cli/fboss2:cli-parser-utils",
@@ -307,6 +313,8 @@ cpp_unittest(
         "//folly:scope_guard",
         "//folly:string",
         "//folly/json:dynamic",
+        "//folly/synchronization:baton",
+        "//folly/testing:test_util",
         "//neteng/fboss/bgp/if:bgp_route_types-cpp2-types",
         "//neteng/fboss/bgp/if:bgp_thrift-cpp2-services",
         "//neteng/fboss/bgp/if:bgp_thrift-cpp2-types",
@@ -319,6 +327,7 @@ cpp_unittest(
     external_deps = [
         ("boost", None, "boost_algorithm"),
         ("boost", None, "boost_filesystem"),
+        "gflags",
     ],
 )
 

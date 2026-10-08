@@ -206,6 +206,11 @@ uint64_t waitForAndGetAclInOutPackets(
     int numRetries = 120,
     std::chrono::milliseconds retryInterval = std::chrono::milliseconds(1000));
 
+std::map<std::string, uint64_t> getAclInOutPacketsMap(
+    const SwSwitch* sw,
+    const std::vector<std::string>& statNames,
+    bool bytes = false);
+
 uint64_t getAclInOutPackets(
     const HwSwitch* hw,
     const std::string& statName,

@@ -40,10 +40,41 @@ reboot_cause_config::RebootCauseProviderAttempt readKernelPanic(
 // Directories searched for a crash dump; a dump can be in either.
 const std::vector<std::string>& kernelPanicCrashDirs();
 
-reboot_cause_config::RebootCauseProviderAttempt readManualReboot(
+reboot_cause_config::RebootCauseProviderAttempt readX86RebootCommand(
     const std::vector<std::string>& logPaths,
     int64_t btimeSec,
     int64_t windowSec);
+
+// Reads the BMC's persistent critical log over the in-band sideband VLAN.
+reboot_cause_config::RebootCauseProviderAttempt readBmcWedgePower(
+    int64_t btimeSec,
+    int64_t windowSec);
+
+// The source address the BMC's ACL grants. Exposed so a test can assert it
+// still parses and is a zoned link-local; RestClient::setSourceAddress throws
+// otherwise, and on a switch that throw is indistinguishable from an outage.
+folly::StringPiece bmcHostSourceAddress();
+
+// Exposed separately from readBmcWedgePower so the parsing can be tested
+// without an HTTP server.
+reboot_cause_config::RebootCauseProviderAttempt parseBmcWedgePower(
+    const std::string& body,
+    int64_t btimeSec,
+    int64_t windowSec);
+
+// Infers a loss of chassis power from the BMC and the x86 having started
+// together. Says nothing about where the loss came from: an upstream feed,
+// a PSU, or a rail all look the same from here.
+// Last resort only: it asserts a cause from the absence of evidence, so it
+// must not outrank a provider that found a positive signal.
+reboot_cause_config::RebootCauseProviderAttempt readSuddenPowerLoss(
+    int64_t btimeSec,
+    int64_t nowSec);
+
+// Exposed separately from readSuddenPowerLoss so the inference can be tested
+// without an HTTP server.
+reboot_cause_config::RebootCauseProviderAttempt
+parseSuddenPowerLoss(const std::string& body, int64_t btimeSec, int64_t nowSec);
 
 // std::nullopt when the name is not a timestamp this code understands.
 std::optional<std::time_t> parseCrashDirName(const std::string& name);
@@ -56,12 +87,12 @@ std::optional<std::time_t> parseSyslogTimestamp(
 
 // Log files searched for the systemd-logind reboot line, in no
 // particular order.
-const std::vector<std::string>& manualRebootLogPaths();
+const std::vector<std::string>& x86RebootCommandLogPaths();
 
 // Whether a syslog line is systemd-logind announcing a reboot. False for a
 // line that merely contains the phrase, such as sshd's verbatim record of a
 // remote command that grepped for it.
-bool isManualRebootLine(folly::StringPiece line);
+bool isX86RebootCommandLine(folly::StringPiece line);
 
 // The cause nearest to boot start across every attempt, paired with the
 // provider that reported it. std::nullopt when no attempt reported anything.

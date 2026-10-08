@@ -206,7 +206,8 @@ The Bazel build is a work in progress. Known limitations:
   with a real SAI implementation (e.g., Broadcom SAI). Fake SAI builds and other
   build flavors are not yet supported. The SAI version and related defines
   (e.g., `SAI_VER_MAJOR`, `SAI_VER_MINOR`) are hardcoded in `.bazelrc` rather
-  than being parameterized. `bazel.sh` checks for this and fails early with
+  than being parameterized; `--sai fake` overrides them (1.19.0) through
+  `--config=sai_fake`, which `bazel.sh` adds automatically. `bazel.sh` checks for this and fails early with
   a helpful error if `sai_impl` is not configured.
 
 ---
@@ -471,6 +472,7 @@ The converter supports special comments in BUCK files to control generation.
 # bazelify: exclude              -- Skip this target
 # bazelify: extra_dep = X       -- Add an extra dependency
 # bazelify: add_src = oss/Foo.cpp -- Add an OSS source file to the target
+# bazelify: manual               -- Tag the cc_library "manual": skipped by //fboss/..., still built as a dep
 ```
 
 **Inline** (placed at the end of a source file line inside a target):

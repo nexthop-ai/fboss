@@ -22,5 +22,5 @@ Nexthop-only entries:
 - `22` (`DR4_800G`): keyed on the first application advertised by the
   Nexthop P-800-2-4xDR 800G optic (8x100G-DR1, host code 0x4B).
 
-`38` (`DR8_1600G`, the Nexthop P-1T6-2-4xDR 1.6T optic) is also carried here
+`39` (`DR8_1600G`, the Nexthop P-1T6-2-4xDR 1.6T optic) is also carried here
 but already lives in the compiled-in default table, so it is not Nexthop-only.

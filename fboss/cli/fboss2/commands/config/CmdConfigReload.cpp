@@ -76,7 +76,9 @@ std::string formatRestartedServices(
 // than going through the AgentConfig wrapper, to avoid pulling
 // load_agent_config into fboss2-config-lib. This also keeps the command free of
 // session side effects.
-std::string performLocalRestart(cli::ConfigActionLevel level) {
+std::string performLocalRestart(
+    cli::ConfigActionLevel level,
+    const HostInfo& hostInfo) {
   // Derive /etc/coop/agent.conf via AgentDirectoryUtil rather than
   // hard-coding it: getConfigDirectory() returns <coop>/agent and the agent
   // reads its config from <coop>/agent.conf (one level up).
@@ -96,12 +98,12 @@ std::string performLocalRestart(cli::ConfigActionLevel level) {
       configJson, agentConfig);
 
   // FbossServiceUtil infers multi_switch mode and switch indices from the
-  // config; restartService() waits for each service to become active, then for
-  // the agent to report itself configured, and throws std::runtime_error on
-  // timeout.
+  // config; restartService() waits for each service to become active, then
+  // waitForAgentConfigured() waits for the agent to report itself configured.
+  // Both throw std::runtime_error on timeout.
   FbossServiceUtil serviceUtil(agentConfig);
-  auto restarted = serviceUtil.restartService(
-      cli::ServiceType::AGENT, level, /*waitForReady=*/true);
+  auto restarted = serviceUtil.restartService(cli::ServiceType::AGENT, level);
+  serviceUtil.waitForAgentConfigured(hostInfo);
 
   folly::StringPiece bootType =
       (level == cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART)
@@ -147,7 +149,7 @@ CmdConfigReloadTraits::RetType CmdConfigReload::queryClient(
               << "apply session changes." << std::endl;
   }
 
-  return performLocalRestart(bootType.level());
+  return performLocalRestart(bootType.level(), hostInfo);
 }
 
 void CmdConfigReload::printOutput(const RetType& logMsg) {

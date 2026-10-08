@@ -16,12 +16,21 @@
 #include <utility>
 #include <vector>
 
-#include "fboss/agent/AgentDirectoryUtil.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/session/FbossServiceUtil.h"
 #include "fboss/cli/fboss2/session/SystemdInterface.h"
 
 namespace facebook::fboss {
+
+// Real service orchestration against a mock systemd; there is no agent to
+// poll, so it always reports configured.
+class NoAgentServiceUtil : public FbossServiceUtil {
+ public:
+  using FbossServiceUtil::FbossServiceUtil;
+  bool isAgentConfigured(const HostInfo& /*hostInfo*/) override {
+    return true;
+  }
+};
 
 // Test-only derived class that exposes the protected constructor and methods
 // This allows tests to inject custom paths and control the singleton instance
@@ -66,12 +75,6 @@ class TestableConfigSession : public ConfigSession {
     mockSystemdFactory_ = std::move(factory);
   }
 
-  // Stubs the agent readiness probe restartService() waits on, so tests with a
-  // mock systemd do not poll a real agent over thrift. Defaults to "ready".
-  void setAgentReadyProbe(FbossServiceUtil::AgentReadyProbe probe) {
-    agentReadyProbe_ = std::move(probe);
-  }
-
   void setConfigPathResolver(ConfigPathResolver resolver) {
     configPathResolver_ = std::move(resolver);
   }
@@ -81,15 +84,10 @@ class TestableConfigSession : public ConfigSession {
       bool /*needsAgentState*/) override {
     if (!fbossServiceUtil_) {
       if (mockSystemdFactory_) {
-        auto probe = agentReadyProbe_
-            ? agentReadyProbe_
-            : FbossServiceUtil::AgentReadyProbe([] { return true; });
-        fbossServiceUtil_ = std::make_unique<FbossServiceUtil>(
+        fbossServiceUtil_ = std::make_unique<NoAgentServiceUtil>(
             switchIndexesOverride_,
             multiSwitchOverride_,
-            mockSystemdFactory_(),
-            AgentDirectoryUtil(),
-            std::move(probe));
+            mockSystemdFactory_());
       } else {
         fbossServiceUtil_ = std::make_unique<FbossServiceUtil>(
             switchIndexesOverride_, multiSwitchOverride_);
@@ -129,7 +127,6 @@ class TestableConfigSession : public ConfigSession {
   bool multiSwitchOverride_{false};
   std::vector<int> switchIndexesOverride_{0};
   std::function<std::unique_ptr<SystemdInterface>()> mockSystemdFactory_;
-  FbossServiceUtil::AgentReadyProbe agentReadyProbe_;
 };
 
 } // namespace facebook::fboss

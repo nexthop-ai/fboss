@@ -2454,6 +2454,10 @@ class BuildFileGenerator:
             lines.append(f"    defines = {self._format_string_list(defines)},")
         if target.link_whole:
             lines.append("    alwayslink = True,")
+        # "# bazelify: manual" keeps the target out of wildcard patterns such
+        # as //fboss/...; it is still built when another target depends on it.
+        if target.annotations.get("manual"):
+            lines.append('    tags = ["manual"],')
 
         lines.append('    visibility = ["//visibility:public"],')
         lines.append(")")

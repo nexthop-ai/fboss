@@ -318,7 +318,7 @@ class SaiTracer {
   sai_vendor_switch_api_t* vendorSwitchApi_;
   sai_switch_pipeline_api_t* switchPipelineApi_;
 #endif
-#if defined(BRCM_SAI_SDK_XGS_GTE_16_0)
+#if defined(SAI_CBFC_SUPPORTED)
   sai_virtual_channel_api_t* virtualChannelApi_;
 #endif
   sai_virtual_router_api_t* virtualRouterApi_;
@@ -333,6 +333,7 @@ class SaiTracer {
       {TYPE_INDEX(bool), &boolAttr},
       {TYPE_INDEX(sai_uint8_t), &u8Attr},
       {TYPE_INDEX(sai_int8_t), &s8Attr},
+      {TYPE_INDEX(sai_int16_t), &s16Attr},
       {TYPE_INDEX(sai_uint16_t), &u16Attr},
       {TYPE_INDEX(sai_uint32_t), &u32Attr},
       {TYPE_INDEX(sai_int32_t), &s32Attr},
@@ -543,7 +544,7 @@ class SaiTracer {
       {static_cast<sai_object_type_t>(SAI_OBJECT_TYPE_VENDOR_SWITCH), "vendorSwitch_"},
       {static_cast<sai_object_type_t>(SAI_OBJECT_TYPE_SWITCH_PIPELINE), "switchPipeline_"},
 #endif
-#if defined(BRCM_SAI_SDK_XGS_GTE_16_0)
+#if defined(SAI_CBFC_SUPPORTED)
       {SAI_OBJECT_TYPE_VIRTUAL_CHANNEL, "virtualChannel_"},
       {SAI_OBJECT_TYPE_CBFC_CREDIT_PROFILE, "cbfcCreditProfile_"},
 #endif
@@ -636,7 +637,7 @@ class SaiTracer {
       {static_cast<sai_object_type_t>(SAI_OBJECT_TYPE_SWITCH_PIPELINE),
           "switch_pipeline_api->"},
 #endif
-#if defined(BRCM_SAI_SDK_XGS_GTE_16_0)
+#if defined(SAI_CBFC_SUPPORTED)
       {SAI_OBJECT_TYPE_VIRTUAL_CHANNEL, "virtual_channel_api->"},
       {SAI_OBJECT_TYPE_CBFC_CREDIT_PROFILE, "virtual_channel_api->"},
 #endif

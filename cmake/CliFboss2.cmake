@@ -434,13 +434,15 @@ add_library(fboss2_config_gen_lib
 )
 
 target_link_libraries(fboss2_config_gen_lib
-  acl_config_utils
   agent_config_cpp2
   feature_default_command_args_cpp2
+  fboss_config_utils
   fboss_error
+  fboss_agent_config_utils
   fboss2_config_file_utils
   Folly::folly
   platform_descriptor
+  platform_mapping
   ${YAML-CPP}
   ${YAML}
   split_platform_mapping_utils
@@ -676,6 +678,8 @@ add_library(fboss2_lib
   fboss/cli/fboss2/commands/show/bgp/CmdShowBgpOriginatedRoutes.cpp
   fboss/cli/fboss2/commands/show/bgp/CmdShowBgpInitializationEvents.h
   fboss/cli/fboss2/commands/show/bgp/CmdShowBgpInitializationEvents.cpp
+  fboss/cli/fboss2/commands/show/bgp/fibnexthops/CmdShowBgpFibNexthops.h
+  fboss/cli/fboss2/commands/show/bgp/fibnexthops/CmdShowBgpFibNexthops.cpp
   fboss/cli/fboss2/commands/show/bgp/health/CmdShowBgpHealth.h
   fboss/cli/fboss2/commands/show/bgp/health/CmdShowBgpHealth.cpp
   fboss/cli/fboss2/commands/show/bgp/holdtimers/CmdShowBgpHoldTimers.h
@@ -796,6 +800,7 @@ target_link_libraries(fboss2_lib
   fsdb_path_converter
   thrift_visitors
   Folly::folly
+  FBThrift::thriftcpp2
   input_balance_util
   cli_model
   bgp_thrift_cpp2
@@ -1194,7 +1199,7 @@ target_link_libraries(fboss2_config_lib
   cli_metadata
   fboss2_lib
   fboss2_config_file_utils
-  port_config_utils
+  fboss_agent_config_utils
   agent_dir_util
   common_file_utils
   switch_config_cpp2

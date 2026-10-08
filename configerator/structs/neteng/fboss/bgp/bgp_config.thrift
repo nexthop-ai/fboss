@@ -699,6 +699,17 @@ struct BgpSettingConfig {
    * also present in `features`.
    */
   22: optional i32 stream_subscriber_limit;
+
+  /**
+   * Globally enable RFC 2918 Route Refresh capability advertisement. When
+   * enabled, peers inherit an enabled default unless a peer or peer-group
+   * explicitly disables route_refresh. Default (unset or false): Route
+   * Refresh is disabled for every peer.
+   */
+  23: optional bool enable_route_refresh;
+
+  /** Record the latest platform-normalized FIB request for each RIB entry. */
+  24: optional bool enable_fib_out_tracking;
 }
 
 /**
@@ -920,4 +931,13 @@ struct BgpConfig {
    * NetServiceFramework configuration for EBB deployments
    */
   38: optional BgpNetServiceThriftConfig net_service_config;
+
+  /**
+   * Route-reflector CLUSTER_ID (RFC 4456), as a dotted quad. It is an opaque
+   * 4-octet identifier, so it need not be routable or match any configured
+   * interface. Redundant reflectors serving one cluster must share this value
+   * while keeping distinct router_ids, which is why it cannot be derived from
+   * router_id. When unset the router_id is used, per RFC 4456 section 1.1.
+   */
+  39: optional string cluster_id;
 }

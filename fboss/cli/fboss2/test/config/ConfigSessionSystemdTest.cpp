@@ -353,72 +353,33 @@ TEST(FbossServiceUtilTest, RestartService_ServiceFailsToStart) {
 }
 
 // ============================================================
-// Test: restartService() waits for the agent to report itself configured, not
-// just for systemd to report the unit active. The units are Type=simple, so
-// systemd reports active as soon as the binary is exec'd.
-TEST(FbossServiceUtilTest, RestartService_WaitsForAgentReady) {
-  auto mockSystemd = std::make_unique<NiceMock<MockSystemdInterface>>();
+// Test: waitForAgentConfigured() polls the given host until the agent is
+// configured.
+TEST(FbossServiceUtilTest, WaitForAgentConfigured_PollsUntilConfigured) {
+  MockFbossServiceUtil util;
+  HostInfo hostInfo("dut1", "dut1-oob", folly::IPAddress("10.0.0.1"));
 
-  // Not ready for the first two polls, ready on the third.
-  int probeCalls = 0;
-  auto probe = [&probeCalls] { return ++probeCalls >= 3; };
+  EXPECT_CALL(
+      util, isAgentConfigured(::testing::Property(&HostInfo::getName, "dut1")))
+      .WillOnce(Return(false))
+      .WillOnce(Return(false))
+      .WillOnce(Return(true));
 
-  FbossServiceUtil util(
-      std::vector<int>{0},
-      /*multiSwitch=*/true,
-      std::move(mockSystemd),
-      scratchDirUtil(makeScratchStateDir("wait_ready")),
-      probe);
-
-  auto services = util.restartService(
-      cli::ServiceType::AGENT,
-      cli::ConfigActionLevel::SERVICE_RESTART,
-      /*waitForReady=*/true);
-
-  EXPECT_EQ(probeCalls, 3);
-  EXPECT_EQ(services.size(), 2);
+  util.waitForAgentConfigured(
+      hostInfo, /*maxWaitSeconds=*/5, /*pollIntervalMs=*/10);
 }
 
-// Test: without the waitForReady flag the readiness wait is skipped entirely,
-// so callers that have no agent to poll keep the old systemd-only behaviour.
-TEST(FbossServiceUtilTest, RestartService_NoWaitFlag_SkipsAgentReadyWait) {
-  auto mockSystemd = std::make_unique<NiceMock<MockSystemdInterface>>();
+// Test: waitForAgentConfigured() throws if the agent never becomes configured.
+TEST(FbossServiceUtilTest, WaitForAgentConfigured_ThrowsOnTimeout) {
+  MockFbossServiceUtil util;
+  HostInfo hostInfo(
+      "localhost", "localhost-oob", folly::IPAddress("127.0.0.1"));
 
-  int probeCalls = 0;
-  auto probe = [&probeCalls] {
-    ++probeCalls;
-    return true;
-  };
-
-  FbossServiceUtil util(
-      std::vector<int>{0},
-      /*multiSwitch=*/true,
-      std::move(mockSystemd),
-      scratchDirUtil(makeScratchStateDir("no_host_info")),
-      probe);
-
-  util.restartService(
-      cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART);
-
-  EXPECT_EQ(probeCalls, 0);
-}
-
-// Test: an agent that never reports itself configured fails the wait rather
-// than reporting success.
-TEST(FbossServiceUtilTest, WaitForAgentReady_ThrowsOnTimeout) {
-  auto mockSystemd = std::make_unique<NiceMock<MockSystemdInterface>>();
-
-  auto probe = [] { return false; };
-
-  FbossServiceUtil util(
-      std::vector<int>{0},
-      /*multiSwitch=*/true,
-      std::move(mockSystemd),
-      scratchDirUtil(makeScratchStateDir("ready_timeout")),
-      probe);
+  EXPECT_CALL(util, isAgentConfigured(_)).WillRepeatedly(Return(false));
 
   EXPECT_THROW(
-      util.waitForAgentReady(/*maxWaitSeconds=*/1, /*pollIntervalMs=*/10),
+      util.waitForAgentConfigured(
+          hostInfo, /*maxWaitSeconds=*/1, /*pollIntervalMs=*/10),
       std::runtime_error);
 }
 
@@ -441,10 +402,9 @@ TEST(
   EXPECT_CALL(
       *mockPtr,
       restartService(
-          cli::ServiceType::AGENT,
-          cli::ConfigActionLevel::SERVICE_RESTART,
-          ::testing::_))
+          cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART))
       .WillOnce(::testing::Return(std::vector<std::string>{"wedge_agent"}));
+  EXPECT_CALL(*mockPtr, isAgentConfigured(_)).WillOnce(Return(true));
 
   TestableConfigSession session(
       "/tmp/test_session", "/tmp/test_system", std::move(mock));
@@ -472,11 +432,11 @@ TEST(
       *mockPtr,
       restartService(
           cli::ServiceType::AGENT,
-          cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART,
-          ::testing::_))
+          cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART))
       .WillOnce(
           ::testing::Return(
               std::vector<std::string>{"fboss_hw_agent@0", "fboss_sw_agent"}));
+  EXPECT_CALL(*mockPtr, isAgentConfigured(_)).WillOnce(Return(true));
 
   TestableConfigSession session(
       "/tmp/test_session", "/tmp/test_system", std::move(mock));
@@ -504,6 +464,7 @@ TEST(
 
   EXPECT_CALL(*mockPtr, reloadConfig(cli::ServiceType::AGENT, ::testing::_))
       .WillOnce(::testing::Return(std::vector<std::string>{"wedge_agent"}));
+  EXPECT_CALL(*mockPtr, isAgentConfigured(_)).Times(0);
 
   TestableConfigSession session(
       "/tmp/test_session", "/tmp/test_system", std::move(mock));
