@@ -156,6 +156,127 @@ MANAGEMENT_PORT_DESCRIPTION = "Management port (front-panel)"
 HIGH_PRIO_CPU_QUEUE_BY_ASIC: dict[int, int] = {20: 7}
 DEFAULT_HIGH_PRIO_CPU_QUEUE = 9
 
+# switch_config.thrift PacketRxReason values used by the ACL-based policy.
+RX_REASON_TTL_1 = 6
+RX_REASON_PORT_MTU_ERROR = 21
+
+# Qumran4D reports NO_RX_REASON_TRAP and runs the SAI with
+# sai_custom_init_profile=1, which refuses host-interface traps for protocol
+# rx reasons ("Trap id 0x2009 Not allowed to be created via HostIf trap" for
+# NDP). FBOSS punts that traffic with CPU ACLs instead, in an L2/IPv4 table and
+# a separate IPv6 table, and keeps only TTL_1 and PORT_MTU_ERROR as rx reasons.
+# Qumran4D gets the config FBOSS's test utilities build for it:
+# getCoppRxReasonToQueuesForSai, defaultIngressCpuAclsForSai,
+# setDefaultCpuTrafficPolicyConfig and AclConfigUtils addDefaultAclTable.
+# Other ASIC types keep the generic policy.
+ACL_COPP_ASIC_TYPES = {23}
+
+# Qumran4D CPU queues (Jericho3Asic ids): high 7, mid 3, low 0, with the queue
+# and VOQ limits Meta's Jericho3 configs use.
+Q4D_HIGH_PRIO_CPU_QUEUE = 7
+Q4D_MID_PRIO_CPU_QUEUE = 3
+Q4D_LOW_PRIO_CPU_QUEUE = 0
+Q4D_CPU_QUEUE_MAX_DYNAMIC_SHARED_BYTES = 20 * 1024 * 1024
+Q4D_LOW_PRIO_CPU_QUEUE_KBITS = 100 * 1024
+
+# switch_config.thrift enum values used in the Qumran4D CPU ACLs and queues.
+STREAM_TYPE_UNICAST = 0
+QUEUE_SCHEDULING_INTERNAL = 1000
+ACL_ACTION_PERMIT = 1
+TO_CPU_ACTION_TRAP = 1
+ETHER_TYPE_IPV4 = 0x0800
+ETHER_TYPE_IPV6 = 0x86DD
+ETHER_TYPE_ARP = 0x0806
+ETHER_TYPE_LACP = 0x8809
+ETHER_TYPE_LLDP = 0x88CC
+IP_TYPE_ARP_REQUEST = 4
+IP_TYPE_ARP_REPLY = 5
+LOOKUP_CLASS_DST_L3_LOCAL_1 = 1  # route to a local (my) IP
+LOOKUP_CLASS_DST_L3_LOCAL_2 = 2  # unresolved or connected route
+IP_PROTO_TCP = 6
+IP_PROTO_UDP = 17
+IP_PROTO_ICMPV6 = 58
+BGP_PORT = 179
+DSCP_NETWORK_CONTROL = 48
+CPU_PORT_ID = 0
+LINK_LOCAL_UCAST_NETWORK = "fe80::/10"
+LINK_LOCAL_MCAST_NETWORK = "ff02::/16"
+LACP_DST_MAC = "01:80:c2:00:00:02"
+LLDP_DST_MAC = "01:80:c2:00:00:0e"
+LLDP_CUSTOMER_BRIDGE_MAC = "01:80:c2:00:00:00"
+NDP_ICMPV6_TYPES = (
+    ("router-solicit", 133),
+    ("router-advertisement", 134),
+    ("neighbor-solicit", 135),
+    ("neighbor-advertisement", 136),
+    ("redirect", 137),
+)
+DHCP_CPU_ACLS = (
+    ("dhcp-to-server", ETHER_TYPE_IPV4, 67),
+    ("dhcp-to-client", ETHER_TYPE_IPV4, 68),
+    ("dhcpv6-to-server", ETHER_TYPE_IPV6, 547),
+    ("dhcpv6-to-client", ETHER_TYPE_IPV6, 546),
+)
+
+# AclConfigUtils addDefaultAclTable for Qumran4D (ACL_METADATA_QUALIFER),
+# as switch_config.thrift AclTableQualifier values.
+Q4D_IPV4_ACL_TABLE_QUALIFIERS = [
+    16,  # DST_MAC
+    22,  # ETHER_TYPE
+    17,  # IP_TYPE
+    2,  # SRC_IPV4
+    3,  # DST_IPV4
+    8,  # SRC_PORT
+    6,  # IP_PROTOCOL_NUMBER
+    15,  # DSCP
+    18,  # TTL
+    4,  # L4_SRC_PORT
+    5,  # L4_DST_PORT
+    7,  # TCP_FLAGS
+    11,  # ICMPV4_TYPE
+    12,  # ICMPV4_CODE
+    20,  # LOOKUP_CLASS_NEIGHBOR
+    21,  # LOOKUP_CLASS_ROUTE
+]
+Q4D_IPV6_ACL_TABLE_QUALIFIERS = [
+    0,  # SRC_IPV6
+    1,  # DST_IPV6
+    17,  # IP_TYPE
+    8,  # SRC_PORT
+    26,  # IPV6_NEXT_HEADER
+    22,  # ETHER_TYPE
+    15,  # DSCP
+    18,  # TTL
+    4,  # L4_SRC_PORT
+    5,  # L4_DST_PORT
+    7,  # TCP_FLAGS
+    13,  # ICMPV6_TYPE
+    14,  # ICMPV6_CODE
+    20,  # LOOKUP_CLASS_NEIGHBOR
+    21,  # LOOKUP_CLASS_ROUTE
+]
+
+# Qumran4D has no HASH_FIELDS_CUSTOMIZATION: SaiHashManager throws "hash field
+# customization is unsupported" for any load balancer with field selection,
+# and FBOSS's addLoadBalancerToConfig adds none, so it gets none.
+NO_HASH_FIELDS_CUSTOMIZATION_ASIC_TYPES = {23}
+
+# TunManager::getInterfaceStatus only derives a status for VLAN and PORT
+# interfaces, so a SYSTEM_PORT interface's kernel tap (fboss<intfID>) stays
+# admin down and the host cannot send ARP/NDP or any control-plane packet
+# through it unless the interface is virtual or isStateSyncDisabled. Meta's
+# VOQ configs set isStateSyncDisabled on every system-port interface; the tap
+# then stays up while its port is down (no auto-state).
+STATE_SYNC_DISABLED_SYSTEM_PORT_INTF_ASIC_TYPES = {23}
+
+# VOQ ports carry no VLAN: FBOSS's createDefaultPortConfig gives them
+# ingressVlan 0 and Meta's VOQ configs do the same. With the bootstrap's 4094
+# the port VLAN id is set before the router interfaces exist on a cold boot,
+# but a warm boot re-applies it to ports that already have one and the SAI
+# refuses ("Failed to set attribute PortSaiId(...) to PortVlanId: 4094: NOT
+# EXECUTED"), which aborts the HW agent.
+NO_INGRESS_VLAN_ASIC_TYPES = {23}
+
 # intfIDs start at INTF_ID_OFFSET + 1. TunManager uses the intfID as the
 # kernel routing table ID (enable_1to1_intf_route_table_mapping), which must
 # avoid the kernel-reserved tables 0/253/254/255.
@@ -358,7 +479,9 @@ def _is_primary_port(port_name: str) -> bool:
     return len(parts) == 2 and parts[1] == "1"
 
 
-def _build_cpu_queues() -> list[dict]:
+def _build_cpu_queues(asic_type: int) -> list[dict]:
+    if asic_type in ACL_COPP_ASIC_TYPES:
+        return _build_q4d_cpu_queues(scheduling=1)
     return [
         {"id": 9, "streamType": 1, "scheduling": 1, "name": "cpuQueue-high"},
         {"id": 2, "streamType": 1, "scheduling": 1, "name": "cpuQueue-mid"},
@@ -379,7 +502,234 @@ def _build_cpu_queues() -> list[dict]:
     ]
 
 
-def _build_cpu_traffic_policy(high_prio_queue_id: int = 9) -> dict:
+def _build_q4d_cpu_queues(scheduling: int) -> list[dict]:
+    """Qumran4D CPU queues (scheduling STRICT_PRIORITY) or CPU VOQs (INTERNAL)."""
+    prefix = "cpuVoq" if scheduling == QUEUE_SCHEDULING_INTERNAL else "cpuQueue"
+    high = {
+        "id": Q4D_HIGH_PRIO_CPU_QUEUE,
+        "streamType": STREAM_TYPE_UNICAST,
+        "scheduling": scheduling,
+        "name": f"{prefix}-high",
+    }
+    mid = {
+        "id": Q4D_MID_PRIO_CPU_QUEUE,
+        "streamType": STREAM_TYPE_UNICAST,
+        "scheduling": scheduling,
+        "name": f"{prefix}-mid",
+        "maxDynamicSharedBytes": Q4D_CPU_QUEUE_MAX_DYNAMIC_SHARED_BYTES,
+    }
+    low = {
+        "id": Q4D_LOW_PRIO_CPU_QUEUE,
+        "streamType": STREAM_TYPE_UNICAST,
+        "scheduling": scheduling,
+        "name": f"{prefix}-low",
+        "maxDynamicSharedBytes": Q4D_CPU_QUEUE_MAX_DYNAMIC_SHARED_BYTES,
+    }
+    if scheduling != QUEUE_SCHEDULING_INTERNAL:
+        low["portQueueRate"] = {
+            "kbitsPerSec": {"minimum": 0, "maximum": Q4D_LOW_PRIO_CPU_QUEUE_KBITS}
+        }
+    return [high, mid, low]
+
+
+def _build_cpu_voqs(asic_type: int) -> list[dict]:
+    if asic_type in ACL_COPP_ASIC_TYPES:
+        return _build_q4d_cpu_queues(scheduling=QUEUE_SCHEDULING_INTERNAL)
+    return []
+
+
+def _cpu_acl_action(queue_id: int) -> dict:
+    """getToQueueActionForSai with sai_user_defined_trap off and a TRAP action."""
+    return {"sendToQueue": {"queueId": queue_id}, "toCpuAction": TO_CPU_ACTION_TRAP}
+
+
+def _build_cpu_acls() -> list[tuple[dict, dict]]:
+    """(AclEntry, MatchAction) pairs in defaultIngressCpuAclsForSai order for a
+    NO_RX_REASON_TRAP ASIC with ACL_METADATA_QUALIFER and ACL_ENTRY_ETHER_TYPE."""
+    high = _cpu_acl_action(Q4D_HIGH_PRIO_CPU_QUEUE)
+    mid = _cpu_acl_action(Q4D_MID_PRIO_CPU_QUEUE)
+    low = _cpu_acl_action(Q4D_LOW_PRIO_CPU_QUEUE)
+    acls: list[tuple[dict, dict]] = []
+
+    def add(entry: dict, action: dict, ether_types: tuple[int, ...] = ()) -> None:
+        if not ether_types:
+            acls.append((entry, action))
+        for ether_type in ether_types:
+            suffix = "-v4" if ether_type == ETHER_TYPE_IPV4 else "-v6"
+            acls.append(
+                (
+                    {**entry, "name": entry["name"] + suffix, "etherType": ether_type},
+                    action,
+                )
+            )
+
+    ip_both = (ETHER_TYPE_IPV4, ETHER_TYPE_IPV6)
+    ip6 = (ETHER_TYPE_IPV6,)
+    # Link-local traffic the CPU itself sends: no action.
+    add(
+        {
+            "name": f"cpuPolicing-CPU-Port-linkLocal-v6-{LINK_LOCAL_UCAST_NETWORK}",
+            "dstIp": LINK_LOCAL_UCAST_NETWORK,
+            "srcPort": CPU_PORT_ID,
+        },
+        {},
+        ip6,
+    )
+    add(
+        {
+            "name": f"cpuPolicing-CPU-Port-Mcast-v6-{LINK_LOCAL_MCAST_NETWORK}",
+            "dstIp": LINK_LOCAL_MCAST_NETWORK,
+            "srcPort": CPU_PORT_ID,
+        },
+        {},
+        ip6,
+    )
+    for network in (LINK_LOCAL_MCAST_NETWORK, LINK_LOCAL_UCAST_NETWORK):
+        add(
+            {
+                "name": f"cpuPolicing-high-{network}-network-control",
+                "dstIp": network,
+                "dscp": DSCP_NETWORK_CONTROL,
+            },
+            high,
+            ip6,
+        )
+    for network in (LINK_LOCAL_MCAST_NETWORK, LINK_LOCAL_UCAST_NETWORK):
+        add({"name": f"cpuPolicing-mid-{network}", "dstIp": network}, mid, ip6)
+    add(
+        {
+            "name": "cpuPolicing-high-myip-network-control-acl",
+            "lookupClassRoute": LOOKUP_CLASS_DST_L3_LOCAL_1,
+            "dscp": DSCP_NETWORK_CONTROL,
+        },
+        high,
+        ip_both,
+    )
+    add(
+        {
+            "name": "cpu-unresolved-route-acl",
+            "lookupClassRoute": LOOKUP_CLASS_DST_L3_LOCAL_2,
+        },
+        low,
+        ip_both,
+    )
+    add(
+        {
+            "name": "cpuPolicing-high-arp-request-acl",
+            "etherType": ETHER_TYPE_ARP,
+            "ipType": IP_TYPE_ARP_REQUEST,
+        },
+        high,
+    )
+    add(
+        {
+            "name": "cpuPolicing-high-arp-reply-acl",
+            "etherType": ETHER_TYPE_ARP,
+            "ipType": IP_TYPE_ARP_REPLY,
+        },
+        high,
+    )
+    for name, icmp_type in NDP_ICMPV6_TYPES:
+        add(
+            {
+                "name": f"cpuPolicing-high-ndp-{name}-acl",
+                "etherType": ETHER_TYPE_IPV6,
+                "proto": IP_PROTO_ICMPV6,
+                "ttl": {"value": 255, "mask": 255},
+                "icmpType": icmp_type,
+            },
+            high,
+        )
+    for direction, field in (("dst", "l4DstPort"), ("src", "l4SrcPort")):
+        add(
+            {
+                "name": f"cpuPolicing-high-{direction}-port-bgp-acl",
+                field: BGP_PORT,
+                "lookupClassRoute": LOOKUP_CLASS_DST_L3_LOCAL_1,
+                "proto": IP_PROTO_TCP,
+            },
+            high,
+            ip_both,
+        )
+    add(
+        {
+            "name": "cpuPolicing-mid-ip2me-acl",
+            "lookupClassRoute": LOOKUP_CLASS_DST_L3_LOCAL_1,
+        },
+        mid,
+        ip_both,
+    )
+    add(
+        {
+            "name": "cpuPolicing-high-lacp-acl",
+            "etherType": ETHER_TYPE_LACP,
+            "dstMac": LACP_DST_MAC,
+        },
+        high,
+    )
+    for name, dst_mac in (
+        ("cpuPolicing-mid-lldp-acl", LLDP_DST_MAC),
+        ("cpuPolicing-mid-lldp-dstMac00", LLDP_CUSTOMER_BRIDGE_MAC),
+    ):
+        add({"name": name, "etherType": ETHER_TYPE_LLDP, "dstMac": dst_mac}, mid)
+    for name, ether_type, port in DHCP_CPU_ACLS:
+        add(
+            {
+                "name": f"cpuPolicing-mid-{name}",
+                "proto": IP_PROTO_UDP,
+                "l4DstPort": port,
+                "etherType": ether_type,
+            },
+            mid,
+        )
+    for entry, _ in acls:
+        entry.setdefault("actionType", ACL_ACTION_PERMIT)
+    return acls
+
+
+def _acl_table(
+    name: str, priority: int, qualifiers: list[int], entries: list[dict]
+) -> dict:
+    return {
+        "name": name,
+        "priority": priority,
+        "aclEntries": entries,
+        "actionTypes": [],
+        "qualifiers": qualifiers,
+        "udfGroups": [],
+    }
+
+
+def _build_acl_table_groups(asic_type: int) -> list[dict]:
+    if asic_type not in ACL_COPP_ASIC_TYPES:
+        tables = [_acl_table("AclTable1", 0, [], [])]
+    else:
+        # IPv6 entries go to the IPv6 table: the L2/IPv4 table has no IPv6
+        # qualifiers, so they would never match there.
+        entries = [entry for entry, _ in _build_cpu_acls()]
+        tables = [
+            _acl_table(
+                "AclTable1",
+                0,
+                Q4D_IPV4_ACL_TABLE_QUALIFIERS,
+                [e for e in entries if e.get("etherType") != ETHER_TYPE_IPV6],
+            ),
+            _acl_table(
+                "ipv6-acl-table",
+                1,
+                Q4D_IPV6_ACL_TABLE_QUALIFIERS,
+                [e for e in entries if e.get("etherType") == ETHER_TYPE_IPV6],
+            ),
+        ]
+    return [{"name": "acl-table-group-ingress", "aclTables": tables, "stage": 0}]
+
+
+def _build_cpu_traffic_policy(asic_type: int) -> dict:
+    if asic_type in ACL_COPP_ASIC_TYPES:
+        return _build_acl_cpu_traffic_policy()
+    high_prio_queue_id = HIGH_PRIO_CPU_QUEUE_BY_ASIC.get(
+        asic_type, DEFAULT_HIGH_PRIO_CPU_QUEUE
+    )
     return {
         "rxReasonToQueueOrderedList": [
             {"rxReason": 8, "queueId": high_prio_queue_id},
@@ -399,8 +749,26 @@ def _build_cpu_traffic_policy(high_prio_queue_id: int = 9) -> dict:
     }
 
 
-def _build_load_balancers() -> list[dict]:
+def _build_acl_cpu_traffic_policy() -> dict:
+    """CPU ACL matchers plus the rx reasons left on an ACL_COPP_ASIC_TYPES ASIC."""
+    return {
+        "trafficPolicy": {
+            "matchToAction": [
+                {"matcher": entry["name"], "action": action}
+                for entry, action in _build_cpu_acls()
+            ]
+        },
+        "rxReasonToQueueOrderedList": [
+            {"rxReason": RX_REASON_TTL_1, "queueId": Q4D_LOW_PRIO_CPU_QUEUE},
+            {"rxReason": RX_REASON_PORT_MTU_ERROR, "queueId": Q4D_LOW_PRIO_CPU_QUEUE},
+        ],
+    }
+
+
+def _build_load_balancers(asic_type: int) -> list[dict]:
     """ECMP (L3+L4 hash) + AGGREGATE_PORT (L3-only hash), both CRC16."""
+    if asic_type in NO_HASH_FIELDS_CUSTOMIZATION_ASIC_TYPES:
+        return []
     return [
         {
             "id": 1,
@@ -627,6 +995,26 @@ def _system_port_interface(port: dict, system_port_offset: int) -> dict:
         "type": INTERFACE_TYPE_SYSTEM_PORT,
         "scope": port["scope"],
     }
+
+
+def _with_q4d_port_ingress_vlan(ports: list[dict], asic_type: int) -> list[dict]:
+    """Clear the ingress VLAN of every port on NO_INGRESS_VLAN_ASIC_TYPES."""
+    if asic_type in NO_INGRESS_VLAN_ASIC_TYPES:
+        for port in ports:
+            port["ingressVlan"] = 0
+    return ports
+
+
+def _with_system_port_intf_state_sync(
+    interfaces: list[dict], asic_type: int
+) -> list[dict]:
+    """Keep SYSTEM_PORT interfaces' kernel taps up on the ASICs in
+    STATE_SYNC_DISABLED_SYSTEM_PORT_INTF_ASIC_TYPES."""
+    if asic_type in STATE_SYNC_DISABLED_SYSTEM_PORT_INTF_ASIC_TYPES:
+        for interface in interfaces:
+            if interface["type"] == INTERFACE_TYPE_SYSTEM_PORT:
+                interface["isStateSyncDisabled"] = True
+    return interfaces
 
 
 def _build_voq_switch_settings(
@@ -898,11 +1286,11 @@ def generate_config(
 
     sw = {
         "version": 0,
-        "ports": ports,
+        "ports": _with_q4d_port_ingress_vlan(ports, asic_type),
         "vlans": vlans,
         "vlanPorts": vlan_ports,
         "defaultVlan": default_vlan,
-        "interfaces": interfaces,
+        "interfaces": _with_system_port_intf_state_sync(interfaces, asic_type),
         "arpTimeoutSeconds": 60,
         "arpRefreshSeconds": 20,
         "arpAgerInterval": 5,
@@ -913,29 +1301,13 @@ def generate_config(
         "staticRoutesToNull": [],
         "staticRoutesToCPU": [],
         "acls": [],
-        "aclTableGroups": [
-            {
-                "name": "acl-table-group-ingress",
-                "aclTables": [
-                    {
-                        "name": "AclTable1",
-                        "priority": 0,
-                        "aclEntries": [],
-                        "actionTypes": [],
-                        "qualifiers": [],
-                        "udfGroups": [],
-                    }
-                ],
-                "stage": 0,
-            }
-        ],
+        "aclTableGroups": _build_acl_table_groups(asic_type),
         "aggregatePorts": [],
         "sFlowCollectors": [],
-        "cpuQueues": _build_cpu_queues(),
-        "cpuTrafficPolicy": _build_cpu_traffic_policy(
-            HIGH_PRIO_CPU_QUEUE_BY_ASIC.get(asic_type, DEFAULT_HIGH_PRIO_CPU_QUEUE)
-        ),
-        "loadBalancers": _build_load_balancers(),
+        "cpuQueues": _build_cpu_queues(asic_type),
+        **({"cpuVoqs": cpu_voqs} if (cpu_voqs := _build_cpu_voqs(asic_type)) else {}),
+        "cpuTrafficPolicy": _build_cpu_traffic_policy(asic_type),
+        "loadBalancers": _build_load_balancers(asic_type),
         "mirrors": [],
         "trafficCounters": [],
         "qosPolicies": _build_qos_policies(),

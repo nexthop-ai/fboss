@@ -14,6 +14,7 @@
         },
         "platform_sdk_overrides": {
             "appl_param_rcy_mirror_ports_range.BCM9943X": "585-650",
+            "appl_param_vlan_domain_appl_ref_per_core_init.BCM9943X": "1",
             "rcy_mirror_to_forward_port_map_585.BCM9943X": "1",
             "rcy_mirror_to_forward_port_map_586.BCM9943X": "9",
             "rcy_mirror_to_forward_port_map_587.BCM9943X": "17",

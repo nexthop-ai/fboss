@@ -5,6 +5,7 @@
       "appl_param_multi_cpu_agents": "0",
       "appl_param_oam_enable.BCM9943X": "0",
       "appl_param_rcy_mirror_ports_range.BCM9943X": "585-650",
+      "appl_param_vlan_domain_appl_ref_per_core_init.BCM9943X": "1",
       "bcm_stat_interval": "1000000",
       "custom_feature_adapter_do_collect_enable.BCM9943X_ADAPTER": "1",
       "custom_feature_cmicx_gen2_pdma_interface_optimization": "1",
