@@ -738,6 +738,7 @@ upload_build_artifact_set([
 
 upload_build_artifact("nh-fboss-broadcom-dnx.iso", extra_tags = ["only-for-nightly"])
 upload_build_artifact_set([
+    "nh-fboss-broadcom-dnx.bin",
     "nh-fboss-broadcom-dnx.tar",
     "fboss_forwarding_stack_tests_broadcom_dnx.tar.zst",
 ])
