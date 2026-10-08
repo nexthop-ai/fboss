@@ -85,51 +85,21 @@ bool FbossServiceUtil::isSplitMode() const {
 }
 
 std::string FbossServiceUtil::getColdbootFileForService(
-<<<<<<< HEAD
     const std::string& service) const {
-  if (service == kSwAgent) {
-    return dirUtil_.getSwColdBootOnceFile();
-||||||| 86b0b0b0d4
-    const std::string& service) {
-  AgentDirectoryUtil dirUtil;
-
-  if (service == kSwAgent) {
-    return dirUtil.getSwColdBootOnceFile();
-=======
-    const std::string& service) {
-  AgentDirectoryUtil dirUtil;
-
   if (service == kSwAgent || service == kNetosSwAgent) {
-    return dirUtil.getSwColdBootOnceFile();
->>>>>>> c31f2b21c7ef8b15893a435f2cd6d93b033c2131
+    return dirUtil_.getSwColdBootOnceFile();
   } else if (service.find(kHwAgentPrefix) == 0) {
     std::string indexStr = service.substr(kHwAgentPrefix.size());
     int switchIndex = folly::to<int>(indexStr);
-<<<<<<< HEAD
     return dirUtil_.getHwColdBootOnceFile(switchIndex);
-  } else if (service == kWedgeAgent) {
-    return dirUtil_.getColdBootOnceFile();
-  } else {
-    throw std::runtime_error(
-        fmt::format("Unknown service type for coldboot: {}", service));
-||||||| 86b0b0b0d4
-    return dirUtil.getHwColdBootOnceFile(switchIndex);
-  } else if (service == kWedgeAgent) {
-    return dirUtil.getColdBootOnceFile();
-  } else {
-    throw std::runtime_error(
-        fmt::format("Unknown service type for coldboot: {}", service));
-=======
-    return dirUtil.getHwColdBootOnceFile(switchIndex);
->>>>>>> c31f2b21c7ef8b15893a435f2cd6d93b033c2131
   }
   if (service.find(kNetosHwAgentPrefix) == 0) {
     const auto switchIndex =
         folly::to<int>(service.substr(service.rfind('_') + 1));
-    return dirUtil.getHwColdBootOnceFile(switchIndex);
+    return dirUtil_.getHwColdBootOnceFile(switchIndex);
   }
   if (service == kWedgeAgent) {
-    return dirUtil.getColdBootOnceFile();
+    return dirUtil_.getColdBootOnceFile();
   }
   throw std::runtime_error(
       fmt::format("Unknown service type for coldboot: {}", service));
@@ -137,11 +107,17 @@ std::string FbossServiceUtil::getColdbootFileForService(
 
 std::optional<std::string> FbossServiceUtil::getCanWarmBootFileForService(
     const std::string& service) const {
-  if (service == kSwAgent || service == kWedgeAgent) {
+  if (service == kSwAgent || service == kNetosSwAgent ||
+      service == kWedgeAgent) {
     return dirUtil_.getSwSwitchCanWarmBootFile();
   } else if (service.find(kHwAgentPrefix) == 0) {
     std::string indexStr = service.substr(kHwAgentPrefix.size());
     return dirUtil_.getHwSwitchCanWarmBootFile(folly::to<int>(indexStr));
+  }
+  if (service.find(kNetosHwAgentPrefix) == 0) {
+    const auto switchIndex =
+        folly::to<int>(service.substr(service.rfind('_') + 1));
+    return dirUtil_.getHwSwitchCanWarmBootFile(switchIndex);
   }
   // bgpd and anything else outside the agent do not warm boot.
   return std::nullopt;
@@ -332,16 +308,8 @@ std::vector<std::string> FbossServiceUtil::getServicesToRestart(
         }
         LOG(INFO) << "Found " << services.size() << " hw_agent instances";
 
-<<<<<<< HEAD
         // Add sw_agent last: it is started last, and stopped first.
-        services.emplace_back(kSwAgent);
-||||||| 86b0b0b0d4
-        // Add sw_agent last so hw_agent restarts first
-        services.emplace_back(kSwAgent);
-=======
-        // Add sw_agent last so hw_agent restarts first
         services.emplace_back(resolveSystemdServiceName(std::string(kSwAgent)));
->>>>>>> c31f2b21c7ef8b15893a435f2cd6d93b033c2131
       } else {
         LOG(INFO)
             << "Detected monolithic mode (multi-switch not enabled on running agent)";
@@ -444,8 +412,8 @@ std::vector<std::string> FbossServiceUtil::restartService(
   LOG(INFO) << "Restarting " << getServiceName(service) << " (" << restartType
             << ")...";
 
-  // Only an agent coldboot needs the coldboot marker files; every other
-  // (service, level) pair is the same plain restart-and-wait sequence.
+  // Only an agent coldboot needs the coldboot marker files; both paths
+  // otherwise share the same stop-all-then-start-all sequence.
   if (service == cli::ServiceType::AGENT &&
       level == cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART) {
     performColdboot(services);
