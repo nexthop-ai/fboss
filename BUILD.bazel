@@ -13,6 +13,14 @@ exports_files(
     visibility = ["//BGP:__pkg__"],
 )
 
+# distro_cli bind-mounts the scripts into the fboss builder container
+# (component.py) and requires the Dockerfile before using the builder image (image.py).
+filegroup(
+    name = "distro_cli_oss_files",
+    srcs = glob(["fboss/oss/scripts/**"]) + ["fboss/oss/docker/Dockerfile"],
+    visibility = ["//fboss/fboss-image/distro_cli:__pkg__"],
+)
+
 filegroup(
     name = "nh-fboss-manifests",
     srcs = [
@@ -90,6 +98,23 @@ filegroup(
         "fboss-image/image_builder/templates/centos-09.0/root_files/usr/local/bin/fboss_init.sh",
         "fboss/configs/platforms/**/platform_mapping/generated/platform_descriptor.json",
     ]),
+)
+
+# The test runner's platform_mapping helpers read port maps and the switch config
+# schema from these trees; tests that load a mapping need them in runfiles.
+filegroup(
+    name = "platform_mapping_inputs",
+    visibility = ["//fboss/tests:__pkg__"],
+    srcs = glob([
+        "fboss/agent/switch_config.thrift",
+        "fboss/configs/platforms/**/platform_mapping/generated/platform_mapping.json",
+    ]),
+)
+
+filegroup(
+    name = "qsfp_test_configs",
+    visibility = ["//fboss/tests:__pkg__"],
+    srcs = glob(["fboss/oss/qsfp_test_configs/*"]),
 )
 
 filegroup(

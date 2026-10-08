@@ -59,7 +59,12 @@ run_all_pytests(
         "test_variants": glob([
             "link/*.py",
             "qsfp/*.py",
-        ]),
+        ]) + ["//fboss:platform_mapping_inputs"],
+        # Builds a cabling plan from a qsfp base config and its platform mapping.
+        "test_filter_override": [
+            "//fboss:platform_mapping_inputs",
+            "//fboss:qsfp_test_configs",
+        ],
     },
     deps = [
         ":test_runner",

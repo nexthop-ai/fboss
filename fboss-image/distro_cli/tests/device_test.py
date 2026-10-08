@@ -63,9 +63,10 @@ class TestDeviceCommands(unittest.TestCase):
         except (subprocess.CalledProcessError, FileNotFoundError):
             raise unittest.SkipTest("Docker not available or image not built")
 
-        cwd = Path.cwd()
+        # Bind-mounted into a container, so the host Docker daemon must see the
+        # same path; /var/tmp is shared with sandboxed actions for this.
         cls.container_temp_dir = Path(
-            tempfile.mkdtemp(prefix="distro_infra_test_", dir=cwd)
+            tempfile.mkdtemp(prefix="distro_infra_test_", dir="/var/tmp")
         )
         cls.container_persistent_dir = cls.container_temp_dir / "persistent"
         cls.container_persistent_dir.mkdir(parents=True, exist_ok=True)

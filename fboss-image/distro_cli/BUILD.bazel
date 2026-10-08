@@ -121,6 +121,8 @@ sh_test(
         "tests/device_integration_test.py",
         "//fboss/fboss-image/distro_cli/tests/proxy_device:proxy_device_files",
         "//fboss:fboss_builder_docker",
+        "//fboss:distro_cli_oss_files",
+        "//fboss:region_config",
         "//fboss/fboss-image/distro_cli/tests/proxy_device:proxy_device_docker_image",
         ":distro_cli_lib",
         ":test_helpers",

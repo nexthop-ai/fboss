@@ -194,18 +194,27 @@ def distro_build(
     is_image_composition = component == None
 
     # A composition runs sandboxed so it can run concurrently. FBOSS_ROOT stops
-    # the CLI resolving __file__ back to the real checkout, escaping the sandbox.
-    # tar makes the sandbox files real instead of symlinks, which docker can't
-    # use. The region links are build state, not inputs, so the sandbox starts
-    # without them: recreate them here from NH_CLOUD_PROVIDER (//fboss:region_config
-    # provides the regions/ files, and the links too when one was selected).
+    # the CLI resolving __file__ back to the real checkout, escaping the
+    # sandbox. The sandbox paths under FBOSS_ROOT are bind-mounted into Docker
+    # and the hermetic sandbox's execroot does not exist on the host, so we must
+    # copy the sandbox's fboss/ to /var/tmp (the same path inside the sandbox
+    # and on the host). The copied files must be made concrete for Docker.
     prepare = ""
     if is_image_composition:
         prepare = """
-        export FBOSS_ROOT="${{PWD}}/fboss"
-        tar -chf "{tarball}" -C {src} .
-        tar -xf "{tarball}" -C {src}
-        rm -f "{tarball}"
+        host_root="$(mktemp -d /var/tmp/distro_build.XXXXXX)"
+        cleanup_host_root() {{
+            rm -f fboss && mv fboss.sandbox fboss
+            rm -rf "$host_root" 2>/dev/null && return
+            # The build containers run as root and leave root-owned files behind.
+            docker run --rm -v "$host_root:/w" --entrypoint /bin/rm fboss_builder:latest -rf /w/fboss
+            rm -rf "$host_root"
+        }}
+        trap cleanup_host_root EXIT
+        tar -chf - fboss | tar -xf - -C "$host_root"
+        mv fboss fboss.sandbox
+        ln -s "$host_root/fboss" fboss
+        export FBOSS_ROOT="$host_root/fboss"
         mkdir -p {scratch}
 
         if [ -n "${{NH_CLOUD_PROVIDER:-}}" ]; then
@@ -220,8 +229,6 @@ def distro_build(
             exit 1
         fi
         """.format(
-            src = _IMAGE_BUILDER,
-            tarball = "%s/image_builder.tar" % stage_dir,
             scratch = " ".join(['"%s/%s"' % (_IMAGE_BUILDER, name) for name in _IMAGE_BUILDER_SCRATCH]),
         )
     patched = "%s.%s.generated.json" % (native.package_name().replace("/", "_"), name)
@@ -247,7 +254,7 @@ def distro_build(
         filters.append(_COMPONENT_FILTER)
 
     staging = "\n        ".join([
-        'ln -f $(location %s) "%s/%s"' % (dep, stage_dir, _basename(dep))
+        '$(execpath //bazel_lib:ln_or_cp) $(location %s) "%s/%s"' % (dep, stage_dir, _basename(dep))
         for dep in deps
     ])
 
