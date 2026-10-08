@@ -19,9 +19,10 @@
 #   /tmp/fboss2_itest.pid  - the wrapper pid, so we can tell if it died early
 # The rc file is the completion signal polled below.
 #
-# NOTE: run_test.py always exits 0 for gtest suites (pass/fail lives in the
-# result files, matching Meta's netcastle flow), so a zero rc only means the
-# runner completed. Pass/fail is decided from the summary counts in the log.
+# NOTE: run_test.py exits 1 whenever any test FAILED or timed out, so a
+# non-zero rc alone cannot distinguish failing tests from a runner crash.
+# Pass/fail is decided from the summary counts in the log; the rc only matters
+# when the summary is missing or clean.
 #
 # Exits non-zero only if a test actually FAILED / timed out, the runner
 # crashed, or the run never completed.
@@ -77,13 +78,16 @@ nh dvc ssh "$DUT" -c '
   #
   # Note: this whole block is a single-quoted argument to ssh, so no
   # apostrophes.
+  # The subshell inherits set -e, so the rc must be captured with || rather
+  # than read from $? afterwards, or a failing run exits before writing it.
   (
+    rc=0
     sudo stdbuf -oL -eL env LD_LIBRARY_PATH="/opt/fboss/pr_lib:${LD_LIBRARY_PATH:-}" \
       python3 /opt/fboss/bin/run_test.py fboss2_integration \
       --log-bundle \
       --config '"$CONFIG"' \
-      > /tmp/fboss2_itest.log 2>&1
-    echo $? > /tmp/fboss2_itest.rc
+      > /tmp/fboss2_itest.log 2>&1 || rc=$?
+    echo "$rc" > /tmp/fboss2_itest.rc
   ) </dev/null >/dev/null 2>&1 &
 
   echo $! > /tmp/fboss2_itest.pid
@@ -166,12 +170,7 @@ if [[ -z ${TEST_RC} ]]; then
   fail
 fi
 
-if [[ ${TEST_RC} -ne 0 ]]; then
-  echo "::error::run_test.py exited rc=${TEST_RC} (runner crash — it exits 0 even when tests fail)"
-  fail
-fi
-
-# The runner completed; pass/fail comes from its final summary block:
+# The runner exited; pass/fail comes from its final summary block:
 #   Summary:
 #      PASSED : 90
 #      FAILED : 0
@@ -184,12 +183,17 @@ SUMMARY="$(nh dvc ssh "$DUT" -c '
 ' 2>/dev/null || echo "")"
 
 if [[ -z ${SUMMARY} ]]; then
-  echo "::error::Runner exited rc=0 but no result summary found in log — treating as failure"
+  echo "::error::Runner exited rc=${TEST_RC} but no result summary found in log — treating as failure"
   fail
 fi
 
 if [[ ${SUMMARY} -ne 0 ]]; then
   echo "::error::Integration tests failed on DUT ${DUT} (${SUMMARY} test(s) FAILED or timed out)"
+  fail
+fi
+
+if [[ ${TEST_RC} -ne 0 ]]; then
+  echo "::error::run_test.py exited rc=${TEST_RC} with a clean summary (runner error after reporting)"
   fail
 fi
 
