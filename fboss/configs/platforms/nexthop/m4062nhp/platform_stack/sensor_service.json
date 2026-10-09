@@ -552,7 +552,13 @@
             "upperCriticalVal": 25000,
             "lowerCriticalVal": 5000
           }
-        },
+        }
+      ]
+    },
+    {
+      "slotPath": "/SMB_SLOT@0/PSU_SLOT@0",
+      "pmUnitName": "PSU",
+      "sensors": [
         {
           "name": "PSU1_PIN",
           "sysfsPath": "/run/devmap/sensors/PSU1/power1_input",
@@ -647,7 +653,13 @@
           "thresholds": {
             "lowerCriticalVal": 1000
           }
-        },
+        }
+      ]
+    },
+    {
+      "slotPath": "/SMB_SLOT@0/PSU_SLOT@1",
+      "pmUnitName": "PSU",
+      "sensors": [
         {
           "name": "PSU2_PIN",
           "sysfsPath": "/run/devmap/sensors/PSU2/power1_input",
@@ -740,7 +752,13 @@
           "thresholds": {
             "lowerCriticalVal": 1000
           }
-        },
+        }
+      ]
+    },
+    {
+      "slotPath": "/SMB_SLOT@0/PSU_SLOT@2",
+      "pmUnitName": "PSU",
+      "sensors": [
         {
           "name": "PSU3_PIN",
           "sysfsPath": "/run/devmap/sensors/PSU3/power1_input",
@@ -833,7 +851,13 @@
           "thresholds": {
             "lowerCriticalVal": 1000
           }
-        },
+        }
+      ]
+    },
+    {
+      "slotPath": "/SMB_SLOT@0/PSU_SLOT@3",
+      "pmUnitName": "PSU",
+      "sensors": [
         {
           "name": "PSU4_PIN",
           "sysfsPath": "/run/devmap/sensors/PSU4/power1_input",
@@ -943,22 +967,22 @@
       {
         "name": "PSU1",
         "powerSensorName": "PSU1_PIN",
-        "slotPath": "/SMB_SLOT@0"
+        "slotPath": "/SMB_SLOT@0/PSU_SLOT@0"
       },
       {
         "name": "PSU2",
         "powerSensorName": "PSU2_PIN",
-        "slotPath": "/SMB_SLOT@0"
+        "slotPath": "/SMB_SLOT@0/PSU_SLOT@1"
       },
       {
         "name": "PSU3",
         "powerSensorName": "PSU3_PIN",
-        "slotPath": "/SMB_SLOT@0"
+        "slotPath": "/SMB_SLOT@0/PSU_SLOT@2"
       },
       {
         "name": "PSU4",
         "powerSensorName": "PSU4_PIN",
-        "slotPath": "/SMB_SLOT@0"
+        "slotPath": "/SMB_SLOT@0/PSU_SLOT@3"
       }
     ],
     "inputVoltageSensors": [
