@@ -307,7 +307,7 @@ PLATFORM_CODENAME: dict[str, str] = {
 
 # The agent programs the platform mapping's TX/RX precoding and RX reach only
 # on ports whose config sets txPrecoding/rxPrecoding.
-CODENAMES_WITH_SERDES_PRECODING = {"nh4220f"}
+CODENAMES_WITH_SERDES_PRECODING = {"m4061nhp", "nh4220f"}
 
 CODENAMES_REQUIRING_PLATFORM_DESCRIPTOR = {
     "m4061nhp",
