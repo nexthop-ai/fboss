@@ -16,9 +16,10 @@ Both print a per-variant comparison table and a summary counting BYTE_MATCH,
 SEMANTIC_MATCH, CONTENT_MISMATCH and REFERENCE_MISSING variants. Missing references
 fail the run unless the exact platform/variant is listed in
 ``VARIANTS_WITHOUT_SYNCED_REFERENCE`` below. Those exceptions produce warnings
-instead. Missing materialized HW_TEST references always fail. Note that a bare
-``python3 -m ...`` invocation does not work: the generators import thrift-python
-modules that only exist once buck or cmake has run codegen.
+instead. Missing materialized HW_TEST, BENCHMARK and LINK_TEST references
+always fail. Note that a bare ``python3 -m ...`` invocation does not work: the
+generators import thrift-python modules that only exist once buck or cmake has
+run codegen.
 """
 
 import argparse
@@ -41,7 +42,7 @@ from fboss.lib.asic_config_v3.gen import get_generator
 from fboss.lib.asic_config_v3.paths import AsicConfigPaths, discover_platforms
 
 # This list contains platform variants that have no synced ASIC config under
-# lib/asic_config_v2/synced_asic_configs. HW_TEST references are always required.
+# lib/asic_config_v2/synced_asic_configs. Materialized references are always required.
 VARIANTS_WITHOUT_SYNCED_REFERENCE: frozenset[tuple[str, str]] = frozenset(
     {
         ("m4061nhp", "default"),
@@ -109,9 +110,12 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
     # by the variant's effective ``config_gen_type`` so that any platform
     # declaring one of these gen types is picked up without editing this table.
     _MATERIALIZED_REFERENCE_DIRS: ClassVar[dict[str, str]] = {
-        "HW_TEST": os.path.join("oss", "hw_test_configs")
+        "HW_TEST": os.path.join("oss", "hw_test_configs"),
+        "BENCHMARK": os.path.join("oss", "hw_bench_configs"),
+        "LINK_TEST": os.path.join("oss", "link_test_configs"),
     }
     _MATERIALIZED_REFERENCE_SUFFIX = ".agent.materialized_JSON"
+    _MATERIALIZED_REFERENCE_LINK_TEST_SUFFIX = ".materialized_JSON"
     # The ASIC config entry inside a materialized agent config. XGS stores its
     # YAML as the ``yamlConfig`` string of that entry; DNX stores its key-value
     # map as the ``config`` mapping of that entry.
@@ -179,9 +183,12 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
         reference_dir = self._MATERIALIZED_REFERENCE_DIRS.get(config_gen_type)
         if reference_dir is None:
             return None
-        return os.path.join(
-            reference_dir, f"{platform}{self._MATERIALIZED_REFERENCE_SUFFIX}"
+        suffix = (
+            self._MATERIALIZED_REFERENCE_LINK_TEST_SUFFIX
+            if config_gen_type == "LINK_TEST"
+            else self._MATERIALIZED_REFERENCE_SUFFIX
         )
+        return os.path.join(reference_dir, f"{platform}{suffix}")
 
     def _read_reference(
         self,
@@ -641,7 +648,15 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
             ("other_platform", "typo", "DEFAULT", False),
             ("test_platform", "default", "HW_TEST", False),
             ("other_platform", "default", "HW_TEST", False),
+            ("test_platform", "default", "BENCHMARK", False),
+            ("test_platform", "default", "LINK_TEST", False),
         )
+        # Spelled out so the expected paths do not depend on the lookup under test.
+        materialized_references = {
+            "HW_TEST": ("hw_test_configs", ".agent.materialized_JSON"),
+            "BENCHMARK": ("hw_bench_configs", ".agent.materialized_JSON"),
+            "LINK_TEST": ("link_test_configs", ".materialized_JSON"),
+        }
         for extension in (".yml", ".json"):
             for platform, variant, gen_type, allowed in cases:
                 with (
@@ -661,15 +676,13 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
                         GeneratedOutput(filename, "{}"),
                         gen_type,
                     )
-                    reference = (
-                        os.path.join(
-                            "oss",
-                            "hw_test_configs",
-                            f"{platform}.agent.materialized_JSON",
+                    if gen_type in materialized_references:
+                        reference_dir, suffix = materialized_references[gen_type]
+                        reference = os.path.join(
+                            "oss", reference_dir, f"{platform}{suffix}"
                         )
-                        if gen_type == "HW_TEST"
-                        else os.path.join(self._SYNCED_ASIC_CONFIG_DIR, filename)
-                    )
+                    else:
+                        reference = os.path.join(self._SYNCED_ASIC_CONFIG_DIR, filename)
                     reference_path = os.path.join(directory, reference)
                     message = f"{platform}/{variant}: reference file missing: {reference_path}"
                     self.assertEqual(
