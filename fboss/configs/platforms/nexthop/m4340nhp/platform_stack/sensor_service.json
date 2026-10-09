@@ -878,7 +878,7 @@
           "compute": "@/1000.0"
         },
         {
-          "name": "SWITCH_CARD_INTAKE",
+          "name": "SWITCH_CARD_REAR",
           "sysfsPath": "/run/devmap/sensors/SWITCH_CARD_TEMP_SENSOR/temp4_input",
           "type": 3,
           "thresholds": {
@@ -888,7 +888,7 @@
           "compute": "@/1000.0"
         },
         {
-          "name": "SWITCH_CARD_REAR",
+          "name": "SWITCH_CARD_INTAKE",
           "sysfsPath": "/run/devmap/sensors/SWITCH_CARD_TEMP_SENSOR/temp5_input",
           "type": 3,
           "thresholds": {
