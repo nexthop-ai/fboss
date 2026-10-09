@@ -13,6 +13,7 @@
 
 #include <folly/FileUtil.h>
 #include <thrift/lib/cpp2/protocol/Serializer.h>
+#include <unistd.h>
 #include <filesystem>
 #include "fboss/agent/AgentDirectoryUtil.h"
 #include "fboss/agent/gen-cpp2/agent_config_types.h"
@@ -26,6 +27,7 @@ using ::testing::_; // NOLINT(bugprone-reserved-identifier)
 using ::testing::InSequence;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::StrictMock;
 using ::testing::Throw;
 
 namespace facebook::fboss {
@@ -34,9 +36,11 @@ namespace {
 // An AgentDirectoryUtil rooted under a unique scratch directory, so tests
 // never read or write the real /dev/shm coldboot markers and warm boot flags.
 // Callers keep the returned path if they need to seed files under it.
+// The pid keeps concurrent runs of this binary (CI shards, a shared build
+// host) from wiping each other's seeded flag files mid-test.
 std::string makeScratchStateDir(const std::string& name) {
-  auto dir =
-      std::filesystem::temp_directory_path() / ("fboss_service_util_" + name);
+  auto dir = std::filesystem::temp_directory_path() /
+      ("fboss_service_util_" + name + "_" + std::to_string(::getpid()));
   std::filesystem::remove_all(dir);
   std::filesystem::create_directories(dir / "warm_boot");
   return dir.string();
@@ -105,10 +109,14 @@ TEST(FbossServiceUtilTest, RestartService_MonolithicMode_Coldboot) {
 // Test: Split mode warmboot restart (single hw_agent)
 // Everything stops (sw_agent first) before anything starts (hw_agent first).
 TEST(FbossServiceUtilTest, RestartService_SplitMode_Warmboot_SingleHwAgent) {
-  auto mockSystemd = std::make_unique<MockSystemdInterface>();
+  auto mockSystemd = std::make_unique<StrictMock<MockSystemdInterface>>();
 
   // Stop phase in reverse order, then start phase in forward order
   InSequence seq;
+  EXPECT_CALL(*mockSystemd, getMatchingServices("fboss_hw_agent@0.service"))
+      .WillOnce(Return(std::vector<std::string>{"fboss_hw_agent@0.service"}));
+  EXPECT_CALL(*mockSystemd, getMatchingServices("fboss_sw_agent.service"))
+      .WillOnce(Return(std::vector<std::string>{"fboss_sw_agent.service"}));
   EXPECT_CALL(*mockSystemd, stopService("fboss_sw_agent")).Times(1);
   EXPECT_CALL(*mockSystemd, waitForServiceInactive("fboss_sw_agent", _, _))
       .Times(1);
@@ -141,6 +149,11 @@ TEST(FbossServiceUtilTest, RestartService_SplitMode_Warmboot_SingleHwAgent) {
 // marker files are written in between.
 TEST(FbossServiceUtilTest, RestartService_SplitMode_Coldboot_SingleHwAgent) {
   auto mockSystemd = std::make_unique<MockSystemdInterface>();
+
+  EXPECT_CALL(*mockSystemd, getMatchingServices("fboss_hw_agent@0.service"))
+      .WillOnce(Return(std::vector<std::string>{"fboss_hw_agent@0.service"}));
+  EXPECT_CALL(*mockSystemd, getMatchingServices("fboss_sw_agent.service"))
+      .WillOnce(Return(std::vector<std::string>{"fboss_sw_agent.service"}));
 
   InSequence seq;
   EXPECT_CALL(*mockSystemd, stopService("fboss_sw_agent")).Times(1);
@@ -175,6 +188,13 @@ TEST(FbossServiceUtilTest, RestartService_SplitMode_Coldboot_SingleHwAgent) {
 // All hw_agents stop after the sw_agent, and all start before it.
 TEST(FbossServiceUtilTest, RestartService_SplitMode_Warmboot_MultipleHwAgents) {
   auto mockSystemd = std::make_unique<MockSystemdInterface>();
+
+  EXPECT_CALL(*mockSystemd, getMatchingServices("fboss_hw_agent@0.service"))
+      .WillOnce(Return(std::vector<std::string>{"fboss_hw_agent@0.service"}));
+  EXPECT_CALL(*mockSystemd, getMatchingServices("fboss_hw_agent@1.service"))
+      .WillOnce(Return(std::vector<std::string>{"fboss_hw_agent@1.service"}));
+  EXPECT_CALL(*mockSystemd, getMatchingServices("fboss_sw_agent.service"))
+      .WillOnce(Return(std::vector<std::string>{"fboss_sw_agent.service"}));
 
   InSequence seq;
   EXPECT_CALL(*mockSystemd, stopService("fboss_sw_agent")).Times(1);
@@ -211,6 +231,102 @@ TEST(FbossServiceUtilTest, RestartService_SplitMode_Warmboot_MultipleHwAgents) {
   EXPECT_EQ(services[2], "fboss_sw_agent");
 }
 
+TEST(FbossServiceUtilTest, RestartService_SplitMode_UsesNetosServices) {
+  auto mockSystemd = std::make_unique<MockSystemdInterface>();
+
+  EXPECT_CALL(*mockSystemd, getMatchingServices(_))
+      .WillRepeatedly(Return(std::vector<std::string>{}));
+  EXPECT_CALL(
+      *mockSystemd,
+      getMatchingServices("netos.service.fboss_wedge_agent_*_0.service"))
+      .WillOnce(Return(
+          std::vector<std::string>{
+              "netos.service.fboss_wedge_agent_brcm_0.service"}));
+  EXPECT_CALL(
+      *mockSystemd, getMatchingServices("netos.service.fboss_sw_agent.service"))
+      .WillOnce(Return(
+          std::vector<std::string>{"netos.service.fboss_sw_agent.service"}));
+
+  InSequence seq;
+  EXPECT_CALL(*mockSystemd, stopService("netos.service.fboss_sw_agent"));
+  EXPECT_CALL(
+      *mockSystemd,
+      waitForServiceInactive("netos.service.fboss_sw_agent", _, _));
+  EXPECT_CALL(
+      *mockSystemd, stopService("netos.service.fboss_wedge_agent_brcm_0"));
+  EXPECT_CALL(
+      *mockSystemd,
+      waitForServiceInactive("netos.service.fboss_wedge_agent_brcm_0", _, _));
+  EXPECT_CALL(
+      *mockSystemd, startService("netos.service.fboss_wedge_agent_brcm_0"));
+  EXPECT_CALL(
+      *mockSystemd,
+      waitForServiceActive("netos.service.fboss_wedge_agent_brcm_0", _, _));
+  EXPECT_CALL(*mockSystemd, startService("netos.service.fboss_sw_agent"));
+  EXPECT_CALL(
+      *mockSystemd, waitForServiceActive("netos.service.fboss_sw_agent", _, _));
+
+  FbossServiceUtil util(
+      std::vector<int>{0},
+      /*multiSwitch=*/true,
+      std::move(mockSystemd),
+      scratchDirUtil(makeScratchStateDir("netos")));
+
+  const std::vector<std::string> expectedServices = {
+      "netos.service.fboss_wedge_agent_brcm_0", "netos.service.fboss_sw_agent"};
+  EXPECT_EQ(
+      util.restartService(
+          cli::ServiceType::AGENT,
+          cli::ConfigActionLevel::DISRUPTIVE_SERVICE_RESTART),
+      expectedServices);
+}
+
+TEST(FbossServiceUtilTest, RestartService_BgpUsesNetosService) {
+  auto mockSystemd = std::make_unique<MockSystemdInterface>();
+
+  EXPECT_CALL(*mockSystemd, getMatchingServices("bgpd.service"))
+      .WillOnce(Return(std::vector<std::string>{}));
+  EXPECT_CALL(
+      *mockSystemd, getMatchingServices("netos.service.fboss_bgp.service"))
+      .WillOnce(
+          Return(std::vector<std::string>{"netos.service.fboss_bgp.service"}));
+  EXPECT_CALL(*mockSystemd, restartService("netos.service.fboss_bgp"));
+  EXPECT_CALL(
+      *mockSystemd, waitForServiceActive("netos.service.fboss_bgp", _, _));
+
+  FbossServiceUtil util(
+      std::vector<int>{}, /*multiSwitch=*/false, std::move(mockSystemd));
+
+  EXPECT_EQ(
+      util.restartService(
+          cli::ServiceType::BGP, cli::ConfigActionLevel::SERVICE_RESTART),
+      std::vector<std::string>{"netos.service.fboss_bgp"});
+}
+
+TEST(FbossServiceUtilTest, RestartService_ThrowsWhenServiceIsMissing) {
+  auto mockSystemd = std::make_unique<StrictMock<MockSystemdInterface>>();
+
+  InSequence seq;
+  EXPECT_CALL(*mockSystemd, getMatchingServices("bgpd.service"))
+      .WillOnce(Return(std::vector<std::string>{}));
+  EXPECT_CALL(
+      *mockSystemd, getMatchingServices("netos.service.fboss_bgp.service"))
+      .WillOnce(Return(std::vector<std::string>{}));
+
+  FbossServiceUtil util(
+      std::vector<int>{}, /*multiSwitch=*/false, std::move(mockSystemd));
+
+  try {
+    util.restartService(
+        cli::ServiceType::BGP, cli::ConfigActionLevel::SERVICE_RESTART);
+    FAIL() << "Expected restartService() to reject missing systemd services";
+  } catch (const std::runtime_error& ex) {
+    EXPECT_EQ(
+        std::string(ex.what()),
+        "No systemd service found for bgpd and netos.service.fboss_bgp");
+  }
+}
+
 // Test: the sw_agent is stopped before any hw_agent.
 // This single ordering constraint is the whole bug: taking a hw_agent down
 // while the sw_agent is still up makes HwSwitchConnectionStatusTable treat it
@@ -221,6 +337,10 @@ TEST(
   // NiceMock: this test asserts one invariant, so the start calls it does not
   // name are expected to go unmatched rather than warned about.
   auto mockSystemd = std::make_unique<NiceMock<MockSystemdInterface>>();
+  ON_CALL(*mockSystemd, getMatchingServices(_))
+      .WillByDefault([](const std::string& pattern) {
+        return std::vector<std::string>{pattern};
+      });
 
   InSequence seq;
   EXPECT_CALL(*mockSystemd, stopService("fboss_sw_agent")).Times(1);
@@ -243,6 +363,10 @@ TEST(
 TEST(FbossServiceUtilTest, RestartService_SplitMode_FailureStartsServicesBack) {
   auto mockSystemd = std::make_unique<MockSystemdInterface>();
 
+  EXPECT_CALL(*mockSystemd, getMatchingServices(_))
+      .WillRepeatedly([](const std::string& pattern) {
+        return std::vector<std::string>{pattern};
+      });
   EXPECT_CALL(*mockSystemd, stopService(_)).Times(2);
   EXPECT_CALL(*mockSystemd, waitForServiceInactive(_, _, _)).Times(2);
   // The hw_agent start fails; recovery then retries every service.
@@ -315,6 +439,29 @@ TEST(FbossServiceUtilTest, FindServicesMissingWarmBootState_AllPresent) {
   EXPECT_TRUE(util.findServicesMissingWarmBootState(
                       {"fboss_hw_agent@0", "fboss_sw_agent"})
                   .empty());
+}
+
+// Test: NetOS unit names map onto the same warm boot flag files.
+TEST(FbossServiceUtilTest, FindServicesMissingWarmBootState_NetosServices) {
+  auto stateDir = makeScratchStateDir("netos_flags");
+  auto dirUtil = scratchDirUtil(stateDir);
+
+  folly::writeFile(
+      std::string("1"), dirUtil.getSwSwitchCanWarmBootFile().c_str());
+
+  FbossServiceUtil util(
+      std::vector<int>{0},
+      /*multiSwitch=*/true,
+      std::make_unique<NiceMock<MockSystemdInterface>>(),
+      dirUtil);
+
+  auto missing = util.findServicesMissingWarmBootState(
+      {"netos.service.fboss_wedge_agent_brcm_0",
+       "netos.service.fboss_sw_agent",
+       "netos.service.fboss_bgp"});
+
+  ASSERT_EQ(missing.size(), 1);
+  EXPECT_EQ(missing[0], "netos.service.fboss_wedge_agent_brcm_0");
 }
 
 // Test: Service restart failure is propagated
@@ -534,8 +681,14 @@ TEST(
 
   // Simulate Thrift RPC reporting multi-switch with 1 hw_agent at index 0
   session.setMultiSwitchOverride(true, {0});
-  session.setMockSystemdFactory(
-      [] { return std::make_unique<MockSystemdInterface>(); });
+  session.setMockSystemdFactory([] {
+    auto mock = std::make_unique<NiceMock<MockSystemdInterface>>();
+    ON_CALL(*mock, getMatchingServices(_))
+        .WillByDefault([](const std::string& pattern) {
+          return std::vector<std::string>{pattern};
+        });
+    return mock;
+  });
 
   HostInfo hostInfo(
       "localhost", "localhost-oob", folly::IPAddress("127.0.0.1"));

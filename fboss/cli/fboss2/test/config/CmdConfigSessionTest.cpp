@@ -63,6 +63,17 @@ class ConfigSessionTestFixture : public CmdConfigTestBase {
         std::make_unique<::testing::StrictMock<MockFbossServiceUtil>>());
   }
 
+  void useClassicBgpSystemd(TestableConfigSession& session) {
+    session.setMockSystemdFactory([] {
+      auto systemd =
+          std::make_unique<::testing::NiceMock<MockSystemdInterface>>();
+      ON_CALL(*systemd, getMatchingServices("bgpd.service"))
+          .WillByDefault(
+              ::testing::Return(std::vector<std::string>{"bgpd.service"}));
+      return systemd;
+    });
+  }
+
   std::string commitDescription(const std::string& description) {
     auto mock = std::make_unique<::testing::StrictMock<MockFbossServiceUtil>>();
     auto* mockPtr = mock.get();
@@ -367,9 +378,7 @@ TEST_F(ConfigSessionTestFixture, bgpOnlyCommitDoesNotResolveAgent) {
   createTestConfig(bgpCurrent, R"({"router_id":"1.1.1.1"})");
 
   TestableConfigSession session(sessionDir.string(), coopDir.string());
-  session.setMockSystemdFactory([] {
-    return std::make_unique<::testing::NiceMock<MockSystemdInterface>>();
-  });
+  useClassicBgpSystemd(session);
   int agentQueries = 0;
   int bgpQueries = 0;
   session.setConfigPathResolver([&](cli::ServiceType service) {
@@ -1234,9 +1243,7 @@ TEST_F(ConfigSessionTestFixture, concurrentBgpSessionConflict) {
         dir.string(), (getTestEtcDir() / "coop").string());
     // BGP commits restart bgpd via systemd; mock it out. Only user1 commits, so
     // no agent reload is triggered (no mocked agent server needed).
-    s->setMockSystemdFactory([] {
-      return std::make_unique<::testing::NiceMock<MockSystemdInterface>>();
-    });
+    useClassicBgpSystemd(*s);
     return s;
   };
 
@@ -1739,9 +1746,7 @@ TEST_F(ConfigSessionTestFixture, lazyBgpSessionStartsFromCurrentHead) {
       sessionDir1.string(), (getTestEtcDir() / "coop").string());
   TestableConfigSession session2(
       sessionDir2.string(), (getTestEtcDir() / "coop").string());
-  session2.setMockSystemdFactory([] {
-    return std::make_unique<::testing::NiceMock<MockSystemdInterface>>();
-  });
+  useClassicBgpSystemd(session2);
 
   // user1 commits an agent change -> HEAD advances, session2's base goes stale.
   (*session1.getAgentConfig().sw()->ports())[0].description() = "User1 change";
@@ -1776,9 +1781,7 @@ TEST_F(ConfigSessionTestFixture, rollbackBgpConfig) {
     auto s = std::make_unique<TestableConfigSession>(
         sessionDir.string(), (getTestEtcDir() / "coop").string());
     // BGP commits/rollback restart bgpd via systemd; mock it out.
-    s->setMockSystemdFactory([] {
-      return std::make_unique<::testing::NiceMock<MockSystemdInterface>>();
-    });
+    useClassicBgpSystemd(*s);
     return s;
   };
 
@@ -1824,9 +1827,7 @@ TEST_F(ConfigSessionTestFixture, commitUnchangedBgpConfigIsNoOp) {
   auto makeSession = [&]() {
     auto s = std::make_unique<TestableConfigSession>(
         sessionDir.string(), (getTestEtcDir() / "coop").string());
-    s->setMockSystemdFactory([] {
-      return std::make_unique<::testing::NiceMock<MockSystemdInterface>>();
-    });
+    useClassicBgpSystemd(*s);
     return s;
   };
 
@@ -1862,9 +1863,7 @@ TEST_F(ConfigSessionTestFixture, commitThrowsWhenRunningBgpConfigUnreadable) {
   auto makeSession = [&]() {
     auto s = std::make_unique<TestableConfigSession>(
         sessionDir.string(), (getTestEtcDir() / "coop").string());
-    s->setMockSystemdFactory([] {
-      return std::make_unique<::testing::NiceMock<MockSystemdInterface>>();
-    });
+    useClassicBgpSystemd(*s);
     return s;
   };
 
@@ -1903,9 +1902,7 @@ TEST_F(ConfigSessionTestFixture, bgpOnlySessionResumesAcrossInvocations) {
   auto makeSession = [&]() {
     auto s = std::make_unique<TestableConfigSession>(
         sessionDir.string(), (getTestEtcDir() / "coop").string());
-    s->setMockSystemdFactory([] {
-      return std::make_unique<::testing::NiceMock<MockSystemdInterface>>();
-    });
+    useClassicBgpSystemd(*s);
     return s;
   };
 
@@ -1941,9 +1938,7 @@ TEST_F(ConfigSessionTestFixture, noArgRollbackReachesBaseline) {
   auto makeSession = [&]() {
     auto s = std::make_unique<TestableConfigSession>(
         sessionDir.string(), coopDir.string());
-    s->setMockSystemdFactory([] {
-      return std::make_unique<::testing::NiceMock<MockSystemdInterface>>();
-    });
+    useClassicBgpSystemd(*s);
     return s;
   };
 

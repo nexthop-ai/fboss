@@ -108,6 +108,9 @@ class FbossServiceUtil {
   // phase walks this list backwards.
   std::vector<std::string> getServicesToRestart(cli::ServiceType service) const;
 
+  // Prefers classic unit names and falls back to the installed NetOS unit.
+  std::string resolveSystemdServiceName(const std::string& service) const;
+
   // Shared per-service helper: restart and wait for active.
   void performRestartAndWait(const std::string& service);
 

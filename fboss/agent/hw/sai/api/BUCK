@@ -10,6 +10,9 @@ cpp_library(
     srcs = [
         "AddressUtil.cpp",
     ],
+    headers = [
+        "AddressUtil.h",
+    ],
     exported_deps = [
         "//folly:network_address",
         "//folly:string",
@@ -42,6 +45,9 @@ cpp_library(
     name = "sai_types",
     srcs = [
         "Types.cpp",
+    ],
+    headers = [
+        "Types.h",
     ],
     exported_deps = [
         "//fboss/agent:fboss-types",
