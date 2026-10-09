@@ -5,6 +5,7 @@
 
 #include <fb303/ServiceData.h>
 #include <folly/FileUtil.h>
+#include <folly/String.h>
 #include <folly/logging/LoggerDB.h>
 #include <folly/testing/TestUtil.h>
 #include <gtest/gtest.h>
@@ -330,6 +331,84 @@ TEST_F(SensorServiceImplTest, publishAggStats) {
   EXPECT_EQ(
       fb303::fbData->getCounter(SensorServiceImpl::kHasAlarmThresholdViolation),
       1);
+}
+
+TEST_F(SensorServiceImplTest, thresholdTransitionLogsOnEdgesOnly) {
+  // A threshold alert fires once on the clear->violating edge and a cleared
+  // event once on the way back, per level, never on every poll cycle while a
+  // violation persists — and a failed read is not a clear. MOCK_FRU_SENSOR1
+  // (compute @/1000) has critical [-40, 100] and alarm [-20, 85]: raw 25 is
+  // in range, 90000 trips alarm only, 150000 trips both.
+  const auto path = sensorPath("MOCK_FRU_SENSOR1");
+  ASSERT_FALSE(path.empty());
+  auto cycle = [&](const std::string& raw) {
+    if (raw.empty()) {
+      EXPECT_TRUE(std::filesystem::remove(path));
+    } else {
+      EXPECT_TRUE(folly::writeFile(raw, path.c_str()));
+    }
+    folly::test::CaptureFD stderrCapture(STDERR_FILENO);
+    impl_->fetchSensorData();
+    folly::LoggerDB::get().flushAllHandlers();
+    return stderrCapture.readIncremental();
+  };
+  // The other mock sensors sit outside their thresholds from the first poll,
+  // so count only lines tagged with this sensor.
+  auto count = [](const std::string& log, folly::StringPiece needle) {
+    size_t n = 0;
+    std::vector<folly::StringPiece> lines;
+    folly::split('\n', log, lines);
+    for (const auto& line : lines) {
+      if (line.contains(needle) &&
+          line.contains("<sensor_name:MOCK_FRU_SENSOR1>")) {
+        ++n;
+      }
+    }
+    return n;
+  };
+  const folly::StringPiece violation =
+      "<event:sensor_threshold_violation> <service:sensor_service>";
+  const folly::StringPiece cleared =
+      "<event:sensor_threshold_cleared> <service:sensor_service>";
+
+  // In range: nothing to say.
+  auto log = cycle("25");
+  EXPECT_EQ(count(log, violation), 0);
+  EXPECT_EQ(count(log, cleared), 0);
+
+  // Alarm-only crossing: exactly one alert, tagged alarm, critical silent.
+  log = cycle("90000");
+  EXPECT_EQ(count(log, violation), 1);
+  EXPECT_NE(log.find("<severity:alarm>"), std::string::npos);
+  EXPECT_EQ(log.find("<severity:critical>"), std::string::npos);
+  EXPECT_NE(
+      log.find("MOCK_FRU_SENSOR1 value 90 is outside its alarm range"),
+      std::string::npos);
+
+  // Still violating: no repeat.
+  log = cycle("90000");
+  EXPECT_EQ(count(log, violation), 0);
+  EXPECT_EQ(count(log, cleared), 0);
+
+  // Critical crossing while alarm persists: only the critical edge fires.
+  log = cycle("150000");
+  EXPECT_EQ(count(log, violation), 1);
+  EXPECT_NE(log.find("<severity:critical>"), std::string::npos);
+  EXPECT_NE(log.find("[-40, 100]"), std::string::npos);
+
+  // Read failure: unknown is not a clear and must not re-arm either level.
+  log = cycle("");
+  EXPECT_EQ(count(log, violation), 0);
+  EXPECT_EQ(count(log, cleared), 0);
+  log = cycle("150000");
+  EXPECT_EQ(count(log, violation), 0);
+
+  // Back in range: one cleared event per level that was violating.
+  log = cycle("25");
+  EXPECT_EQ(count(log, violation), 0);
+  EXPECT_EQ(count(log, cleared), 2);
+  EXPECT_NE(log.find("<severity:critical>"), std::string::npos);
+  EXPECT_NE(log.find("<severity:alarm>"), std::string::npos);
 }
 
 } // namespace facebook::fboss

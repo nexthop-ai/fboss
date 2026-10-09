@@ -59,6 +59,24 @@ std::optional<float> parseSensorValue(const std::string& raw) {
   return std::nullopt;
 }
 
+// Bound/value fields on SensorData/Thresholds are thrift optional field_refs
+// (bool-testable, dereferenceable) -- format one as its value, or "" if
+// unset, matching SensorServicePlainTextClient.cpp's formatValue().
+template <typename T>
+std::string formatOptionalValue(const T& field) {
+  return field ? fmt::format("{}", *field) : "";
+}
+
+// An unset bound is unbounded on that side; print it as such rather than
+// leaving a hole in "[, 21.85]".
+template <typename T>
+std::string formatBound(const T& field, const char* unbounded) {
+  return field ? fmt::format("{}", *field) : unbounded;
+}
+
+constexpr const char* kCriticalLevel = "critical";
+constexpr const char* kAlarmLevel = "alarm";
+
 struct SensorStatsResult {
   int readFailure{0};
   int criticalViolation{0};
@@ -401,11 +419,20 @@ void SensorServiceImpl::publishPerSensorStats(const SensorData& sensorData) {
   fb303::fbData->setCounter(
       fmt::format(kReadFailure, sensorName), stats.readFailure);
 
+  // A failed read says nothing about the threshold state, so it must not be
+  // reported as a clear (or re-arm the next alert); the read failure already
+  // raises its own alert. Keep the last-known edge state until a value is back.
+  const bool haveValue = !stats.readFailure;
+
   if (sensorData.thresholds()->upperCriticalVal() ||
       sensorData.thresholds()->lowerCriticalVal()) {
     fb303::fbData->setCounter(
         fmt::format(kCriticalThresholdViolation, sensorName),
         stats.criticalViolation);
+    if (haveValue) {
+      logThresholdTransition(
+          sensorData, kCriticalLevel, stats.criticalViolation);
+    }
   }
 
   if (sensorData.thresholds()->maxAlarmVal() ||
@@ -413,6 +440,58 @@ void SensorServiceImpl::publishPerSensorStats(const SensorData& sensorData) {
     fb303::fbData->setCounter(
         fmt::format(kAlarmThresholdViolation, sensorName),
         stats.alarmViolation);
+    if (haveValue) {
+      logThresholdTransition(sensorData, kAlarmLevel, stats.alarmViolation);
+    }
+  }
+}
+
+void SensorServiceImpl::logThresholdTransition(
+    const SensorData& sensorData,
+    const std::string& level,
+    bool isViolating) {
+  const auto& sensorName = *sensorData.name();
+  {
+    auto state = thresholdViolationState_.wlock();
+    auto& [wasCritical, wasAlarm] = (*state)[sensorName];
+    bool& wasViolating = (level == kCriticalLevel) ? wasCritical : wasAlarm;
+    if (isViolating == wasViolating) {
+      return;
+    }
+    wasViolating = isViolating;
+  }
+
+  const auto& thresholds = *sensorData.thresholds();
+  auto range = (level == kCriticalLevel)
+      ? fmt::format(
+            "[{}, {}]",
+            formatBound(thresholds.lowerCriticalVal(), "-inf"),
+            formatBound(thresholds.upperCriticalVal(), "inf"))
+      : fmt::format(
+            "[{}, {}]",
+            formatBound(thresholds.minAlarmVal(), "-inf"),
+            formatBound(thresholds.maxAlarmVal(), "inf"));
+  auto valueStr = formatOptionalValue(sensorData.value());
+
+  std::unordered_map<std::string, std::string> tags{
+      {"sensor_name", sensorName},
+      {"severity", level},
+      {"value", valueStr},
+      {"range", range},
+  };
+
+  if (isViolating) {
+    structuredLogger_.logAlert(
+        "sensor_threshold_violation",
+        fmt::format(
+            "{} value {} is outside its {} range {}",
+            sensorName,
+            valueStr,
+            level,
+            range),
+        tags);
+  } else {
+    structuredLogger_.logEvent("sensor_threshold_cleared", tags);
   }
 }
 

@@ -133,6 +133,16 @@ class SensorServiceImpl {
 
   void publishPerSensorStats(const SensorData& sensorData);
 
+  // Logs a structured alert on a critical/alarm threshold-violation
+  // transition (clear->violating or violating->clear) for one sensor, using
+  // thresholdViolationState_ to detect the edge. A no-op when `isViolating`
+  // matches the last-seen state for `level` -- avoids re-logging every poll
+  // cycle while a violation persists.
+  void logThresholdTransition(
+      const SensorData& sensorData,
+      const std::string& level,
+      bool isViolating);
+
   // Writes the polled value of every sensor named in
   // sensorConfig_.loggedSensorNames() to the service log file. A no-op when
   // the list is empty. Read failures and sensors absent from this cycle (e.g.
@@ -160,6 +170,11 @@ class SensorServiceImpl {
   prefetchPmUnitInfos();
 
   folly::Synchronized<std::map<std::string, SensorData>> polledData_{};
+  // Per-sensor (criticalViolation, alarmViolation) as of the last successful
+  // read. Synchronized because fetchSensorData() runs on both the startup
+  // warm-up call and the scheduler thread, which can overlap.
+  folly::Synchronized<std::map<std::string, std::pair<bool, bool>>>
+      thresholdViolationState_{};
   std::unique_ptr<FsdbSyncer> fsdbSyncer_;
   std::optional<std::chrono::time_point<std::chrono::steady_clock>>
       publishedStatsToFsdbAt_;
