@@ -20,7 +20,6 @@ import json
 import os
 import pathlib
 import stat
-import sys
 import tempfile
 from collections.abc import Mapping, Sequence
 from datetime import datetime, timezone
@@ -28,10 +27,6 @@ from datetime import datetime, timezone
 READ_ONLY_MODE = stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH
 NPU_HW_AGENT_BINARY = "fboss_hw_agent-sai_impl"
 NPU_SDK_METADATA_FILENAME = "npu_sdk_metadata.json"
-
-
-class MissingBinaryMetadataError(ValueError):
-    pass
 
 
 def _load_json_object(path: pathlib.Path, description: str) -> dict[str, object]:
@@ -126,7 +121,7 @@ def load_binary_sdk_version(
     metadata = _load_json_object(metadata_path, "NPU SDK metadata")
     entry = metadata.get(binary_name)
     if not isinstance(entry, dict):
-        raise MissingBinaryMetadataError(
+        raise ValueError(
             f"NPU SDK metadata has no entry for binary '{binary_name}': {metadata_path}"
         )
 
@@ -159,12 +154,7 @@ def materialize_agent_config(
     if not isinstance(sw_config, dict):
         raise ValueError(f"Agent config has no sw object: {config_path}")
 
-    try:
-        sw_config["sdkVersion"] = load_binary_sdk_version(metadata_path, binary_name)
-    except MissingBinaryMetadataError as error:
-        # Shared build scratches can ship metadata recorded only for other
-        # binaries; keep the configured SDK version instead of failing.
-        print(f"WARNING: {error}; keeping the configured SDK version", file=sys.stderr)
+    sw_config["sdkVersion"] = load_binary_sdk_version(metadata_path, binary_name)
     output_path = output_directory / config_path.name
     with output_path.open("w") as output:
         json.dump(config, output, indent=2)

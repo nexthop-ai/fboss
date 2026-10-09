@@ -87,20 +87,3 @@ class NpuSdkMetadataTest(unittest.TestCase):
 
             npu_sdk_utils.remove_binary_metadata(path, "sai_test-sai_impl")
             self.assertFalse(path.exists())
-
-    def test_materialize_missing_binary_entry(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            directory = pathlib.Path(temp_dir)
-            metadata_path = directory / "npu_sdk_metadata.json"
-            metadata_path.write_text(json.dumps({"sai_test-sai_impl": {}}))
-            config = {"sw": {"sdkVersion": {"asicSdk": "configured"}}}
-            config_path = directory / "agent.conf"
-            config_path.write_text(json.dumps(config))
-            output_directory = directory / "out"
-            output_directory.mkdir()
-
-            npu_sdk_utils.materialize_agent_config(
-                config_path, metadata_path, "fboss_hw_agent-sai_impl", output_directory
-            )
-            output_path = output_directory / config_path.name
-            self.assertEqual(config, json.loads(output_path.read_text()))

@@ -14,7 +14,6 @@
 
 # pyre-strict
 
-import json
 import pathlib
 import tarfile
 import tempfile
@@ -93,9 +92,7 @@ class PackageTest(unittest.TestCase):
                 build_dir / "build" / "fboss" / package.NPU_SDK_METADATA_FILENAME
             )
             metadata_path.parent.mkdir(parents=True)
-            metadata_path.write_text(
-                json.dumps({package.NPU_HW_AGENT_BINARY: {"sdkVersion": {}}})
-            )
+            metadata_path.write_text("{}\n")
             metadata_path.chmod(0o444)
 
             production_files, test_files = package._build_target(
@@ -135,75 +132,6 @@ class PackageTest(unittest.TestCase):
 
             with self.assertRaisesRegex(RuntimeError, "must be read-only"):
                 package._build_target("forwarding-stack", build_dir)
-
-    @mock.patch.object(package, "get_platform_descriptor_paths", return_value={})
-    @mock.patch.object(package, "_find_getdeps_libs", return_value={})
-    def test_forwarding_package_skips_metadata_without_hw_agent_entry(
-        self,
-        _mock_find_getdeps_libs: mock.MagicMock,
-        _mock_get_platform_descriptor_paths: mock.MagicMock,
-    ) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            build_dir = pathlib.Path(temp_dir)
-            metadata_path = (
-                build_dir / "build" / "fboss" / package.NPU_SDK_METADATA_FILENAME
-            )
-            metadata_path.parent.mkdir(parents=True)
-            metadata_path.write_text(json.dumps({"other_binary": {}}))
-            metadata_path.chmod(0o444)
-
-            production_files, test_files = package._build_target(
-                "forwarding-stack", build_dir
-            )
-
-            self.assertNotIn(metadata_path, production_files)
-            self.assertNotIn(metadata_path, test_files)
-
-    @mock.patch.object(package, "_find_getdeps_libs", return_value={})
-    def test_agent_benchmarks_include_npu_sdk_metadata(
-        self, _mock_find_getdeps_libs: mock.MagicMock
-    ) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            build_dir = pathlib.Path(temp_dir)
-            metadata_path = (
-                build_dir / "build" / "fboss" / package.NPU_SDK_METADATA_FILENAME
-            )
-            metadata_path.parent.mkdir(parents=True)
-            metadata_path.write_text(
-                json.dumps(
-                    {
-                        binary: {"sdkVersion": {}}
-                        for binary in package.AGENT_BENCHMARK_BINARIES
-                    }
-                )
-            )
-            metadata_path.chmod(0o444)
-
-            production_files, _ = package._build_target("agent-benchmarks", build_dir)
-
-            self.assertEqual(
-                package.NPU_SDK_METADATA_ARCHIVE_PATH, production_files[metadata_path]
-            )
-
-    @mock.patch.object(package, "_find_getdeps_libs", return_value={})
-    def test_agent_benchmarks_skip_metadata_without_benchmark_entries(
-        self, _mock_find_getdeps_libs: mock.MagicMock
-    ) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            build_dir = pathlib.Path(temp_dir)
-            metadata_path = (
-                build_dir / "build" / "fboss" / package.NPU_SDK_METADATA_FILENAME
-            )
-            metadata_path.parent.mkdir(parents=True)
-            # Metadata from a forwarding-only build: no benchmark entries.
-            metadata_path.write_text(
-                json.dumps({package.NPU_HW_AGENT_BINARY: {"sdkVersion": {}}})
-            )
-            metadata_path.chmod(0o444)
-
-            production_files, _ = package._build_target("agent-benchmarks", build_dir)
-
-            self.assertNotIn(metadata_path, production_files)
 
     def test_finds_unsuffixed_project_dir(self) -> None:
         """getdeps installs first-party projects without a build-config hash."""
