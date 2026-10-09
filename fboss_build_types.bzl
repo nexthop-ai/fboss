@@ -86,7 +86,7 @@ def fboss_unit_test(name, tags=None):
             "//fboss:fboss_builder.tar",
             ":" + name,
         ],
-        tags = (tags or []) + ["resources:docker_test_clients:1"],
+        tags = (tags or []) + ["resources:docker_clients:1"],
     )
 
 # Marker in `execute` that becomes "--free-up-disk" on CI builds and disappears elsewhere.
@@ -306,6 +306,7 @@ def distro_build(
     )
     # Image compositions are sandboxed. Component builds are not for speed.
     action_tags = ["requires-network"] if is_image_composition else ["no-sandbox"]
+    action_tags += ["resources:docker_clients:1"]
 
     shared = [] if is_image_composition else (["fboss/fboss-image/distro_cli/.artifacts"] if needs in _SERIALIZED else [])
     cmd += delete_build_products_in_ci([stage_dir] + cleanup + shared)

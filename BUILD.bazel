@@ -742,7 +742,7 @@ sh_test(
     # (the unittest-* targets drive docker the same way).
     tags = [
         "exclusive",
-        "resources:docker_test_clients:1",
+        "resources:docker_clients:1",
         "requires-network",
     ],
 )
