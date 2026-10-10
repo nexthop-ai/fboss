@@ -11410,6 +11410,20 @@
           "reason": "XPHY tests not supported."
         }
     ],
+    "m4061nhp/credo-0.7.2": [
+        {
+          "test_name_regex": "PhyInitAllColdBoot",
+          "reason": "XPHY tests not supported."
+        },
+        {
+          "test_name_regex": "PhyInitAllWarmBoot",
+          "reason": "XPHY tests not supported."
+        },
+        {
+          "test_name_regex": "UpdateXphyStats",
+          "reason": "XPHY tests not supported."
+        }
+    ],
     "m4062nhp/credo-0.7.2": [
         {
           "test_name_regex": "PhyInitAllColdBoot",
