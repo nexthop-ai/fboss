@@ -87,6 +87,7 @@ from fboss_test_runner.runners.utils import (
     collect_rma_showtech,
     get_test_regexes_from_file,
     load_from_file,
+    RMA_SHOWTECH_SINCE_MARGIN_S,
     test_matches_any_regex,
 )
 from fboss_test_runner.services.fboss_agent_utils import FBOSS_AGENT_VOLATILE_STATE_DIR
@@ -355,7 +356,6 @@ class TestRunner(abc.ABC):
             inject_failure_into_xml(
                 self.TESTRESULT_CURRENT_RUN_FILE, message, failure_text
             )
-        self._collect_rma_showtech(test_to_run)
 
     def add_subcommand_arguments(self, sub_parser: ArgumentParser) -> None:
         sub_parser.add_argument(
@@ -773,9 +773,13 @@ class TestRunner(abc.ABC):
         sys.stderr.flush()
         return returncode, timed_out, stdout_tee.snapshot(), stderr_tee.snapshot()
 
-    def _collect_rma_showtech(self, test_to_run: str) -> None:
+    def _collect_rma_showtech(self, test_to_run: str, start_wall: float) -> None:
         """Stream rma-showtech output to the test log on test failure."""
-        collect_rma_showtech(test_to_run, self._capture_subprocess)
+        collect_rma_showtech(
+            test_to_run,
+            self._capture_subprocess,
+            since=start_wall - RMA_SHOWTECH_SINCE_MARGIN_S,
+        )
 
     @staticmethod
     def _port_in_use(port: int) -> bool:
@@ -917,7 +921,7 @@ class TestRunner(abc.ABC):
         # On any non-OK outcome, collect platform diagnostics from the DUT and
         # record them in the test log, inside this test's START/END boundary.
         if info["kind"] != "OK":
-            self._collect_rma_showtech(test_to_run)
+            self._collect_rma_showtech(test_to_run, wall_start)
 
         emit_test_boundary(
             kind="END",
@@ -1002,6 +1006,7 @@ class TestRunner(abc.ABC):
                 cores,
                 core_stacks,
             )
+            self._collect_rma_showtech(test_to_run, start_time)
         return run_outcome
 
     def _string_in_file(self, file_path: str, string: str) -> bool | None:

@@ -102,12 +102,15 @@ RMA_SHOWTECH_CMD = ["rma-showtech", "--details", "all"]
 RMA_SHOWTECH_TIMEOUT_S = 300
 RMA_SHOWTECH_BEGIN_MARKER = "########## BEGIN rma-showtech (test failed) ##########"
 RMA_SHOWTECH_END_MARKER = "########## END rma-showtech ##########"
+# History is collected from this long before the failing test started.
+RMA_SHOWTECH_SINCE_MARGIN_S = 60
 
 
 def collect_rma_showtech(
     label: str,
     capture: Callable[[list[str], int], tuple],
     timeout_s: int = RMA_SHOWTECH_TIMEOUT_S,
+    since: float | None = None,
 ) -> None:
     """Stream rma-showtech output to the run log on failure.
 
@@ -115,10 +118,16 @@ def collect_rma_showtech(
     whose first two elements are ``(returncode, timed_out)``; each caller passes
     its own so the diagnostics interleave with that runner's output. Never
     raises -- collecting diagnostics must not mask the underlying failure.
+
+    With ``since`` (Unix time), journals, core dumps and dmesg are limited to
+    entries from then on.
     """
     print(f"{RMA_SHOWTECH_BEGIN_MARKER} for {label}", flush=True)
     try:
-        returncode, timed_out = capture(list(RMA_SHOWTECH_CMD), timeout_s)[:2]
+        cmd = list(RMA_SHOWTECH_CMD)
+        if since is not None:
+            cmd += ["--since", str(int(since))]
+        returncode, timed_out = capture(cmd, timeout_s)[:2]
         if timed_out:
             print(f"rma-showtech timed out after {timeout_s}s", flush=True)
         elif returncode != 0:

@@ -9,7 +9,7 @@ by _get_tests_to_run via args.filter_file."""
 import os
 import tempfile
 import xml.etree.ElementTree as ET
-from unittest.mock import MagicMock, patch
+from unittest.mock import ANY, MagicMock, patch
 
 from fboss_test_runner.result_types import GtestResult, GtestStatus, RunOutcome
 from fboss_test_runner.runners.utils import load_from_file
@@ -727,18 +727,32 @@ class TestCollectRmaShowtechOnFail:
         with patch.object(
             runner, "_capture_subprocess", return_value=(0, False, b"", b"")
         ) as mock_capture:
-            runner._collect_rma_showtech("HwFooTest.Bar")
+            runner._collect_rma_showtech("HwFooTest.Bar", 1791348080.7)
         mock_capture.assert_called_once()
         cmd = mock_capture.call_args.args[0]
-        assert cmd == ["rma-showtech", "--details", "all"]
+        assert cmd == ["rma-showtech", "--details", "all", "--since", "1791348020"]
         assert "--disruptive" not in cmd
+
+    def test_windows_history_to_test_start_minus_margin(self, runner):
+        """A failure collects history only from shortly before its test began."""
+        with patch.object(
+            runner, "_capture_subprocess", return_value=(0, False, b"", b"")
+        ) as mock_capture:
+            runner._collect_rma_showtech("HwFooTest.Bar", 1791348080.7)
+        assert mock_capture.call_args.args[0] == [
+            "rma-showtech",
+            "--details",
+            "all",
+            "--since",
+            "1791348020",
+        ]
 
     def test_missing_binary_does_not_raise(self, runner):
         """A missing rma-showtech binary must not mask the underlying test
         failure."""
         with patch.object(runner, "_capture_subprocess", side_effect=FileNotFoundError):
             # Must not raise.
-            runner._collect_rma_showtech("HwFooTest.Bar")
+            runner._collect_rma_showtech("HwFooTest.Bar", 1791348080.7)
 
     def test_run_test_collects_on_failure(self, runner, mock_args, tmp_path):
         """_run_test triggers rma-showtech collection on a non-OK outcome."""
@@ -759,7 +773,7 @@ class TestCollectRmaShowtechOnFail:
                 test_to_run="HwFooTest.Bar",
                 setup_warmboot=False,
             )
-        mock_collect.assert_called_once_with("HwFooTest.Bar")
+        mock_collect.assert_called_once_with("HwFooTest.Bar", ANY)
 
     def test_run_test_no_collection_on_pass(self, runner, mock_args, tmp_path):
         """_run_test does not collect diagnostics when the test passes."""
@@ -929,7 +943,7 @@ class TestAgentCrashDowngrade:
         assert "fboss_hw_agent@0.service main process dumped core" in failure.get(
             "message"
         )
-        mock_showtech.assert_called_once_with("HwT.t")
+        mock_showtech.assert_called_once_with("HwT.t", ANY)
 
     def test_no_crash_leaves_result_untouched(self, runner, mock_args, tmp_path):
         all_results, test_results, mock_showtech = self._run(
@@ -1075,10 +1089,9 @@ class TestCrashDetection:
                 GtestResult("cold_boot.HwT.timeout", GtestStatus.TIMEOUT, 1),
             ],
         )
-        with patch.object(runner, "_collect_rma_showtech"):
-            runner._apply_agent_crash(
-                outcome, "cold_boot.", "HwT.*", "x.service dumped core"
-            )
+        runner._apply_agent_crash(
+            outcome, "cold_boot.", "HwT.*", "x.service dumped core"
+        )
         assert [r.status for r in outcome.results] == [
             GtestStatus.FAILED,
             GtestStatus.FAILED,
@@ -1115,15 +1128,14 @@ class TestCrashDetection:
             "  #0 0x123 abort (libc.so.6)\n"
             "  #1 0x456 facebook::fboss::SaiStore::check (fboss_hw_agent)\n"
         )
-        with patch.object(runner, "_collect_rma_showtech"):
-            runner._apply_agent_crash(
-                outcome,
-                "cold_boot.",
-                "HwT.t",
-                "fboss_hw_agent@0.service SIGABRT in SaiStore::check",
-                cores=["/var/core/core.1"],
-                core_stacks=[stack],
-            )
+        runner._apply_agent_crash(
+            outcome,
+            "cold_boot.",
+            "HwT.t",
+            "fboss_hw_agent@0.service SIGABRT in SaiStore::check",
+            cores=["/var/core/core.1"],
+            core_stacks=[stack],
+        )
         assert outcome.results[0].status == GtestStatus.FAILED
         assert stack in outcome.console_output
 

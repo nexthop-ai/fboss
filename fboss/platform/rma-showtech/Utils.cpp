@@ -4,6 +4,7 @@
 
 #include <gpiod.h>
 #include <chrono>
+#include <ctime>
 #include <filesystem>
 #include <iostream>
 #include <optional>
@@ -641,7 +642,8 @@ void Utils::printLogs() {
   }
 
   std::cout << "##### dmesg Log #####" << std::endl;
-  std::cout << execCommandWithLimit("dmesg").second << std::endl;
+  std::cout << execCommandWithLimit(fmt::format("dmesg{}", sinceArg())).second
+            << std::endl;
 
   std::cout << "##### Boot Console Log #####" << std::endl;
   std::cout << execCommandWithLimit("cat /var/log/boot.log").second
@@ -687,7 +689,9 @@ void Utils::printCrashDetails() {
 
   std::cout << "#### Core Dumps ####" << std::endl;
   auto coreList =
-      platformUtils_.execCommand("coredumpctl list --no-pager").second;
+      platformUtils_
+          .execCommand(fmt::format("coredumpctl list --no-pager{}", sinceArg()))
+          .second;
   std::cout << coreList << std::endl;
 
   for (const auto& pid : getCoredumpPids(coreList)) {
@@ -764,7 +768,7 @@ void Utils::printSystemdDetails() {
 
   for (const auto& unit : journalUnits) {
     std::cout << fmt::format("#### {} Journalctl ####", unit) << std::endl;
-    auto cmd = fmt::format("journalctl -u {}", unit);
+    auto cmd = fmt::format("journalctl -u {}{}", unit, sinceArg());
     std::cout << execCommandWithLimit(cmd).second << std::endl;
   }
 }
@@ -854,6 +858,20 @@ void Utils::runFbossCliCmd(const std::string& cmd) {
     std::cout << fmt::format("#### {} ####", fullCmd) << std::endl;
     std::cout << platformUtils_.execCommand(fullCmd).second << std::endl;
   }
+}
+
+void Utils::setSince(int64_t epochSeconds) {
+  std::time_t t = epochSeconds;
+  std::tm local{};
+  localtime_r(&t, &local);
+  char buf[32];
+  std::strftime(
+      buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", &local); // dmesg rejects @epoch
+  since_ = buf;
+}
+
+std::string Utils::sinceArg() const {
+  return since_ ? fmt::format(" --since '{}'", *since_) : "";
 }
 
 std::pair<int, std::string> Utils::execCommandWithLimit(

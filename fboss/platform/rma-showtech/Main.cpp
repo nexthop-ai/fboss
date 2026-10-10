@@ -1,6 +1,7 @@
 // Copyright (c) 2004-present, Meta Platforms, Inc. and affiliates.
 // All Rights Reserved.
 #include <algorithm>
+#include <cstdint>
 #include <ctime>
 #include <filesystem>
 #include <fstream>
@@ -267,6 +268,13 @@ int main(int argc, char** argv) {
   app.add_option(
       "--config_file", configFilePath, "Path to the showtech config file");
 
+  int64_t sinceEpoch = 0;
+  auto* sinceOpt = app.add_option(
+      "--since",
+      sinceEpoch,
+      "Limit journals, core dumps and dmesg to entries at or after this "
+      "Unix time (seconds); everything else is collected in full");
+
   try {
     app.parse(argc, argv);
   } catch (const CLI::ParseError& e) {
@@ -290,6 +298,9 @@ int main(int argc, char** argv) {
     }
 
     Utils showtechUtil(config);
+    if (sinceOpt->count() > 0) {
+      showtechUtil.setSince(sinceEpoch);
+    }
     executeRequestedDetails(
         showtechUtil, detailsArg, disruptiveMode, outputDir);
 

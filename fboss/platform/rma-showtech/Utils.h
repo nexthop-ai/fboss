@@ -2,6 +2,9 @@
 
 #pragma once
 #include <bitset>
+#include <cstdint>
+#include <optional>
+#include <string>
 
 #include "fboss/platform/helpers/PlatformUtils.h"
 #include "fboss/platform/rma-showtech/I2cHelper.h"
@@ -11,8 +14,12 @@ namespace facebook::fboss::platform {
 
 class Utils {
  public:
-  Utils(const showtech_config::ShowtechConfig& config) : config_(config) {};
+  explicit Utils(const showtech_config::ShowtechConfig& config)
+      : config_(config) {};
   ~Utils() = default;
+
+  // Limit journals, core dumps and dmesg to entries since this Unix time.
+  void setSince(int64_t epochSeconds);
 
   void printHostDetails();
   void printFbossDetails();
@@ -37,7 +44,10 @@ class Utils {
   void printDeviceRegistersDetails();
 
  private:
+  std::string sinceArg() const;
+
   const showtech_config::ShowtechConfig& config_;
+  std::optional<std::string> since_;
   PlatformUtils platformUtils_{};
   I2cHelper i2cHelper_{};
   void runFbossCliCmd(const std::string& cmd);
