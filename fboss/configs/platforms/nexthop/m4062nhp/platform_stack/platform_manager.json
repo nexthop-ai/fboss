@@ -77,6 +77,14 @@
       ],
       "embeddedSensorConfigs": [
         {
+          "pmUnitScopedName": "DIMM1_TEMP",
+          "sysfsPath": "/run/nexthop_bsp/sensors/DIMM1_TEMP"
+        },
+        {
+          "pmUnitScopedName": "DIMM2_TEMP",
+          "sysfsPath": "/run/nexthop_bsp/sensors/DIMM2_TEMP"
+        },
+        {
           "pmUnitScopedName": "CPU_TEMP",
           "sysfsPath": "/sys/bus/pci/drivers/k10temp/0000:00:18.3"
         },
@@ -87,14 +95,6 @@
         {
           "pmUnitScopedName": "NIC_TEMP",
           "sysfsPath": "/sys/bus/pci/devices/0000:02:00.0"
-        },
-        {
-          "pmUnitScopedName": "DIMM1_TEMP",
-          "sysfsPath": "/run/nexthop_bsp/sensors/DIMM1_TEMP"
-        },
-        {
-          "pmUnitScopedName": "DIMM2_TEMP",
-          "sysfsPath": "/run/nexthop_bsp/sensors/DIMM2_TEMP"
         }
       ],
       "outgoingSlotConfigs": {
