@@ -108,13 +108,9 @@ class TunManager : public StateObserver {
   virtual void probe();
 
   /*
-   * Perform initial cleanup of probed data if required. Caller must hold
-   * mutex_ (passed in as `lock`) since this function mutates probed state
-   * shared with sync()/probe().
+   * Perform initial cleanup of probed data if required
    */
-  void performInitialCleanup(
-      std::lock_guard<std::mutex>& lock,
-      std::shared_ptr<SwitchState> state);
+  void performInitialCleanup(std::shared_ptr<SwitchState> state);
 
   void stopProcessing();
 
@@ -430,13 +426,6 @@ class TunManager : public StateObserver {
    * tunnel interfaces.
    */
   void deleteAllProbedData();
-
-  /**
-   * Same as deleteAllProbedData() but the caller must already be holding
-   * mutex_. Used by callers that need to perform additional work under the
-   * same critical section (e.g. performInitialCleanup invoked from sync()).
-   */
-  void deleteAllProbedDataLocked(std::lock_guard<std::mutex>& lock);
 
   /**
    * Get MTU of switch interface
