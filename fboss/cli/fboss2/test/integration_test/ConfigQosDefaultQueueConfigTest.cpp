@@ -203,7 +203,9 @@ TEST_F(ConfigQosDefaultQueueConfigTest, AqmDetectionMinimumLength) {
   constexpr int kFirstMinLength = 20000;
   constexpr int kFinalMinLength = 35000;
   constexpr int kMaxLength = 60000;
-  constexpr int kProbability = 75;
+  // ASICs without ECN_PROBABILISTIC_MARKING reject any ECN probability other
+  // than 100, so use 100 to keep this test runnable on every platform.
+  constexpr int kProbability = kAqmProbability;
 
   int queueId = pickUnusedQueueId();
   const auto* q = configureAndCommit(
@@ -294,7 +296,9 @@ TEST_F(ConfigQosDefaultQueueConfigTest, AqmDetectionMaximumLength) {
   constexpr int kMinLength = 15000;
   constexpr int kFirstMaxLength = 50000;
   constexpr int kFinalMaxLength = 90000;
-  constexpr int kProbability = 60;
+  // ASICs without ECN_PROBABILISTIC_MARKING reject any ECN probability other
+  // than 100, so use 100 to keep this test runnable on every platform.
+  constexpr int kProbability = kAqmProbability;
 
   int queueId = pickUnusedQueueId();
   const auto* q = configureAndCommit(
