@@ -60,6 +60,8 @@ run_all_pytests(
             "link/*.py",
             "qsfp/*.py",
         ]) + ["//fboss:platform_mapping_inputs"],
+        # Profile picks read per-profile lane counts from switch_config.thrift.
+        "test_qsfp_config_gen": ["//fboss:platform_mapping_inputs"],
         # Builds a cabling plan from a qsfp base config and its platform mapping.
         "test_filter_override": [
             "//fboss:platform_mapping_inputs",

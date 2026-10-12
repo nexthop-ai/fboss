@@ -72,6 +72,7 @@ class QsfpTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
             self._is_copper_by_port.get(port),
             media_speed_mbps(self._media_by_port.get(port)),
             max_lane_speed,
+            self._host_apps_by_port.get(port),
         )
 
     def _port_profile_id(self, port: str, port_map: dict) -> int:

@@ -88,11 +88,13 @@ class PortInfo(NamedTuple):
         is_copper: bool | None,
         media_speed: int | None,
         max_lane_speed: int | None = None,
+        host_apps: list[tuple[int, int]] | None = None,
     ) -> ProfileId | None:
         """Best profile for the cabled medium: prefer the module's media speed,
         else max speed. None medium keeps the default pick; copper with no
         copper profile returns None. Excludes profiles with serdes rates greater than
-        max_lane_speed."""
+        max_lane_speed. Among media-speed matches, prefers one whose (speed, lanes)
+        the module advertises in host_apps."""
         if is_copper is None:
             return self.profile_id
         want = "copper" if is_copper else "optical"
@@ -107,6 +109,14 @@ class PortInfo(NamedTuple):
             ]
         if matching:
             speed_matching = [pid for pid in matching if self.profiles[pid] == media_speed]
+            if host_apps and speed_matching:
+                # A CMIS module reset into a sub-rate app (e.g. DR1_200G) matches
+                # several same-speed profiles; only the advertised lane count programs.
+                all_lanes = _profile_lanes_by_id()
+                advertised = set(host_apps)
+                speed_matching = [
+                    pid for pid in speed_matching if (self.profiles[pid], all_lanes.get(pid)) in advertised
+                ] or speed_matching
             return max(speed_matching or matching, key=lambda pid: self.profiles[pid])
         return None if is_copper else self.profile_id
 

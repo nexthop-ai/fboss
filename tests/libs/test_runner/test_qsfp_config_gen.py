@@ -269,3 +269,39 @@ class TestStrictEligibility:
     def test_max_run_keeps_copper(self, monkeypatch):
         runner = self._runner(monkeypatch, "max")
         assert runner._strict_eligible_ports("nhbw800f", self.PORTS) == self.PORTS
+
+
+class TestHostAppTieBreak:
+    """profile_for_medium() on a CMIS optic reset into DR1_200G: of the 200G
+    optical profiles, only the one at the advertised host lane count programs."""
+
+    INFO = PortInfo(logical_id=1, profile_id=63, speed=1600000, profiles={63: 1600000, 25: 200000, 53: 200000})
+    LANES = {63: 8, 25: 4, 53: 1}
+    MEDIUM = {63: "optical", 25: "optical", 53: "optical"}
+    DR8_APPS = [(200000, 1), (400000, 2), (800000, 4), (1600000, 8)]
+
+    def _patch(self, monkeypatch):
+        monkeypatch.setattr(platform_mapping, "_profile_medium_by_id", lambda: self.MEDIUM)
+        monkeypatch.setattr(platform_mapping, "_profile_lanes_by_id", lambda: self.LANES)
+
+    def test_picks_advertised_lane_count(self, monkeypatch):
+        self._patch(monkeypatch)
+        assert self.INFO.profile_for_medium(False, 200000, None, self.DR8_APPS) == 53
+
+    def test_without_host_apps_keeps_first_speed_match(self, monkeypatch):
+        self._patch(monkeypatch)
+        assert self.INFO.profile_for_medium(False, 200000) == 25
+        assert self.INFO.profile_for_medium(False, 200000, None, []) == 25
+
+    def test_no_advertised_match_keeps_speed_matches(self, monkeypatch):
+        self._patch(monkeypatch)
+        assert self.INFO.profile_for_medium(False, 200000, None, [(1600000, 8)]) == 25
+
+    def test_runner_passes_host_apps(self, monkeypatch):
+        self._patch(monkeypatch)
+        runner = QsfpTestRunner()
+        runner._media_tech_by_port = {"eth1/1/1": "OPTICAL_SMF"}
+        runner._media_by_port = {"eth1/1/1": "DR1_200G"}
+        runner._is_copper_by_port = {"eth1/1/1": False}
+        runner._host_apps_by_port = {"eth1/1/1": self.DR8_APPS}
+        assert runner._port_profile_id("eth1/1/1", {"eth1/1/1": self.INFO}) == 53
