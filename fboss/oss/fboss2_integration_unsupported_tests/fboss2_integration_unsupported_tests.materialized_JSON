@@ -40,6 +40,9 @@
         },
         {
           "test_name_regex": "ConfigLoadBalancingTest\\.EcmpHashAlgorithm$"
+        },
+        {
+          "test_name_regex": "TunnelIpInIpTest\\.EncapDscpMode$"
         }
     ],
     "wedge800cnhp/leaba-25.11.4210": [
@@ -48,6 +51,9 @@
         },
         {
           "test_name_regex": "ConfigLoadBalancingTest\\.EcmpHashAlgorithm$"
+        },
+        {
+          "test_name_regex": "TunnelIpInIpTest\\.EncapDscpMode$"
         }
     ]
   }
