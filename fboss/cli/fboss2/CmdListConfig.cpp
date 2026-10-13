@@ -25,8 +25,6 @@
 #include "fboss/cli/fboss2/commands/config/dhcp/reply_source_override/CmdConfigDhcpReplySourceOverride.h"
 #include "fboss/cli/fboss2/commands/config/history/CmdConfigHistory.h"
 #include "fboss/cli/fboss2/commands/config/interface/CmdConfigInterface.h"
-#include "fboss/cli/fboss2/commands/config/interface/dhcp/CmdConfigInterfaceDhcp.h"
-#include "fboss/cli/fboss2/commands/config/interface/dhcp/relay/CmdConfigInterfaceDhcpRelay.h"
 #include "fboss/cli/fboss2/commands/config/interface/ipv6/CmdConfigInterfaceIpv6.h"
 #include "fboss/cli/fboss2/commands/config/interface/ipv6/ndp/CmdConfigInterfaceIpv6Ndp.h"
 #include "fboss/cli/fboss2/commands/config/interface/pfc_config/CmdConfigInterfacePfcConfig.h"
@@ -48,10 +46,15 @@
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/policy/as-path-list/CmdConfigProtocolBgpPolicyAsPathList.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/policy/community-list/CmdConfigProtocolBgpPolicyCommunityList.h"
 <<<<<<< HEAD
+<<<<<<< HEAD
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/policy/community-list/community/CmdConfigProtocolBgpPolicyCommunityListCommunity.h"
 ||||||| c31f2b21c7
 =======
 >>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
+||||||| parent of a80f74d62d (Resolve fboss2 community-list conflicts from the upstream sync)
+#include "fboss/cli/fboss2/commands/config/protocol/bgp/policy/community-list/community/CmdConfigProtocolBgpPolicyCommunityListCommunity.h"
+=======
+>>>>>>> a80f74d62d (Resolve fboss2 community-list conflicts from the upstream sync)
 #include "fboss/cli/fboss2/commands/config/protocol/static/CmdConfigProtocolStatic.h"
 #include "fboss/cli/fboss2/commands/config/protocol/static/route/add/CmdConfigProtocolStaticRouteAdd.h"
 #include "fboss/cli/fboss2/commands/config/ptp/CmdConfigPtp.h"
@@ -108,12 +111,8 @@
 #include "fboss/cli/fboss2/commands/delete/dhcp/relay_source_override/CmdDeleteDhcpRelaySourceOverride.h"
 #include "fboss/cli/fboss2/commands/delete/dhcp/reply_source_override/CmdDeleteDhcpReplySourceOverride.h"
 #include "fboss/cli/fboss2/commands/delete/interface/CmdDeleteInterface.h"
-#include "fboss/cli/fboss2/commands/delete/interface/dhcp/CmdDeleteInterfaceDhcp.h"
-#include "fboss/cli/fboss2/commands/delete/interface/dhcp/relay/CmdDeleteInterfaceDhcpRelay.h"
 #include "fboss/cli/fboss2/commands/delete/interface/ipv6/CmdDeleteInterfaceIpv6.h"
 #include "fboss/cli/fboss2/commands/delete/interface/ipv6/ndp/CmdDeleteInterfaceIpv6Ndp.h"
-#include "fboss/cli/fboss2/commands/delete/interface/pfc_config/CmdDeleteInterfacePfcConfig.h"
-#include "fboss/cli/fboss2/commands/delete/interface/queuing_policy/CmdDeleteInterfaceQueuingPolicy.h"
 #include "fboss/cli/fboss2/commands/delete/interface/sflow/CmdDeleteInterfaceSflow.h"
 #include "fboss/cli/fboss2/commands/delete/load_balancing/CmdDeleteLoadBalancing.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/CmdDeleteProtocol.h"
@@ -126,11 +125,9 @@
 #include "fboss/cli/fboss2/commands/delete/protocol/static/CmdDeleteProtocolStatic.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/static/route/CmdDeleteProtocolStaticRoute.h"
 #include "fboss/cli/fboss2/commands/delete/qos/CmdDeleteQos.h"
-#include "fboss/cli/fboss2/commands/delete/qos/buffer_pool/CmdDeleteQosBufferPool.h"
 #include "fboss/cli/fboss2/commands/delete/qos/default_policy/CmdDeleteQosDefaultPolicy.h"
 #include "fboss/cli/fboss2/commands/delete/qos/policy/CmdDeleteQosPolicy.h"
 #include "fboss/cli/fboss2/commands/delete/qos/policy/CmdDeleteQosPolicyMap.h"
-#include "fboss/cli/fboss2/commands/delete/qos/priority_group_policy/CmdDeleteQosPriorityGroupPolicy.h"
 #include "fboss/cli/fboss2/commands/delete/qos/queue_config/CmdDeleteQosQueueConfig.h"
 #include "fboss/cli/fboss2/commands/delete/qos/queue_config/CmdDeleteQosQueueConfigQueueId.h"
 #include "fboss/cli/fboss2/commands/delete/srv6/CmdDeleteSrv6.h"
@@ -293,19 +290,6 @@ const CommandTree& kConfigCommandTree() {
                argRegistrar<CmdConfigInterfacePfcConfigTraits>,
            },
            {
-               "dhcp",
-               "Configure DHCP settings for interface",
-               commandHandler<CmdConfigInterfaceDhcp>,
-               argTypeHandler<CmdConfigInterfaceDhcpTraits>,
-               {{
-                   "relay",
-                   "Set the DHCP relay (helper) destination: "
-                   "<ip-address|ipv6-address> <address>",
-                   commandHandler<CmdConfigInterfaceDhcpRelay>,
-                   argRegistrar<CmdConfigInterfaceDhcpRelayTraits>,
-               }},
-           },
-           {
                "ipv6",
                "Configure IPv6 settings for interface",
                commandHandler<CmdConfigInterfaceIpv6>,
@@ -464,40 +448,12 @@ const CommandTree& kConfigCommandTree() {
                                "community-list",
                                "Configure BGP community-list: <name> "
                                "[<attribute> <value> ...] "
-<<<<<<< HEAD
-                               "(boolean-operator, description, exact-match)",
-                               commandHandler<
-                                   CmdConfigProtocolBgpPolicyCommunityList>,
-                               argRegistrar<
-                                   CmdConfigProtocolBgpPolicyCommunityListTraits>,
-                               {{
-                                   "community",
-                                   "Configure a community-list community: "
-                                   "<name> [<attribute> <value> ...] "
-                                   "(description, type, value)",
-                                   commandHandler<
-                                       CmdConfigProtocolBgpPolicyCommunityListCommunity>,
-                                   argRegistrar<
-                                       CmdConfigProtocolBgpPolicyCommunityListCommunityTraits>,
-                               }},
-||||||| c31f2b21c7
-                              "as-path-list",
-                              "Configure BGP AS-path list: <name> "
-                              "[<attribute> <value> ...] (description, "
-                              "regex, boolean-operator)",
-                              commandHandler<
-                                  CmdConfigProtocolBgpPolicyAsPathList>,
-                              argRegistrar<
-                                  CmdConfigProtocolBgpPolicyAsPathListTraits>,
-                          }},
-=======
                                "(boolean-operator, community, description, "
                                "exact-match)",
                                commandHandler<
                                    CmdConfigProtocolBgpPolicyCommunityList>,
                                argRegistrar<
                                    CmdConfigProtocolBgpPolicyCommunityListTraits>,
->>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
                            }},
                       },
                   },
@@ -633,7 +589,7 @@ const CommandTree& kConfigCommandTree() {
 
       {"config",
        "reload",
-       "Reload agent config (hitless | warmboot | coldboot)",
+       "Reload agent configuration",
        commandHandler<CmdConfigReload>,
        argRegistrar<CmdConfigReloadTraits>},
 
@@ -761,19 +717,6 @@ const CommandTree& kConfigCommandTree() {
           commandHandler<CmdDeleteInterface>,
           argRegistrar<CmdDeleteInterfaceTraits>,
           {{
-               "dhcp",
-               "Delete (reset to default) DHCP settings for interface",
-               commandHandler<CmdDeleteInterfaceDhcp>,
-               argTypeHandler<CmdDeleteInterfaceDhcpTraits>,
-               {{
-                   "relay",
-                   "Clear the DHCP relay (helper) destination: "
-                   "<ip-address|ipv6-address> [<address>]",
-                   commandHandler<CmdDeleteInterfaceDhcpRelay>,
-                   argRegistrar<CmdDeleteInterfaceDhcpRelayTraits>,
-               }},
-           },
-           {
                "ipv6",
                "Delete (reset to default) IPv6 settings for interface",
                commandHandler<CmdDeleteInterfaceIpv6>,
@@ -784,19 +727,6 @@ const CommandTree& kConfigCommandTree() {
                    commandHandler<CmdDeleteInterfaceIpv6Ndp>,
                    argRegistrar<CmdDeleteInterfaceIpv6NdpTraits>,
                }},
-           },
-           {
-               "pfc-config",
-               "Remove the interface's PFC config, or reset one of its "
-               "optional fields: watchdog, rx-duration, tx-duration",
-               commandHandler<CmdDeleteInterfacePfcConfig>,
-               argRegistrar<CmdDeleteInterfacePfcConfigTraits>,
-           },
-           {
-               "queuing-policy",
-               "Clear the interface's queuing policy (falls back to the default port queue config)",
-               commandHandler<CmdDeleteInterfaceQueuingPolicy>,
-               argTypeHandler<CmdDeleteInterfaceQueuingPolicyTraits>,
            },
            {
                "sflow",
@@ -814,12 +744,6 @@ const CommandTree& kConfigCommandTree() {
           commandHandler<CmdDeleteQos>,
           argRegistrar<CmdDeleteQosTraits>,
           {{
-               "buffer-pool",
-               "Remove a buffer pool (refused while a queue or priority group still names it)",
-               commandHandler<CmdDeleteQosBufferPool>,
-               argRegistrar<CmdDeleteQosBufferPoolTraits>,
-           },
-           {
                "default-policy",
                "Clear the default data-plane QoS policy",
                commandHandler<CmdDeleteQosDefaultPolicy>,
@@ -848,12 +772,6 @@ const CommandTree& kConfigCommandTree() {
                    commandHandler<CmdDeleteQosPolicyMap>,
                    argRegistrar<CmdDeleteQosPolicyMapTraits>,
                }},
-           },
-           {
-               "priority-group-policy",
-               "Remove a priority group policy (refused while an interface's pfc-config still binds it)",
-               commandHandler<CmdDeleteQosPriorityGroupPolicy>,
-               argRegistrar<CmdDeleteQosPriorityGroupPolicyTraits>,
            }},
       },
 
@@ -1136,7 +1054,7 @@ const CommandTree& kConfigCommandTree() {
          commandHandler<CmdDeleteIcmpV4UnavailableSrcAddr>,
          argRegistrar<CmdDeleteIcmpV4UnavailableSrcAddrTraits>}}},
   };
-  std::stable_sort(root.begin(), root.end());
+  stable_sort(root.begin(), root.end());
   return root;
 }
 
