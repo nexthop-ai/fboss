@@ -3,10 +3,18 @@ load("//bazel_lib:heavy_genrule.bzl", "heavy_genrule")
 
 # Shell snippet that selects the build region when the CI passes one with
 # --action_env=NH_CLOUD_PROVIDER=<region>. Without it the links written by an
-# earlier selection stay in place; there is no default. No `$` here, so it
-# works in genrule and heavy_genrule alike.
+# earlier selection stay in place; there is no default. The region's proxy is
+# then exported for the host side of the command. No `$` here, so it works in
+# genrule and heavy_genrule alike.
 SELECT_REGION_CMD = """
         fboss/fboss/oss/scripts/set-region.sh --from-env
+        if ! test -f fboss/fboss/oss/scripts/region.proxy.env; then
+            echo "no build region selected: bazel run //fboss:set_region -- <region>" >&2
+            exit 1
+        fi
+        set -a
+        . fboss/fboss/oss/scripts/region.proxy.env
+        set +a
 """
 
 # Shell snippet that loads the fboss_builder docker image if it is not

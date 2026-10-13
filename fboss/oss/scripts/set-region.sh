@@ -1,17 +1,26 @@
 #!/bin/bash
-# Select the build region: point region.env and region.repo at that region's
-# files under regions/. The launchers load those two paths; there is no default.
+# Select the build region: point region.env, region.repo and region.proxy.env
+# at that region's files under regions/. The launchers load the first two and
+# the genrules export the third on the host; there is no default. The proxy
+# file is <region>.proxy, not .env, so the region list below stays honest.
 # By hand: bazel run //fboss:set_region -- <region>
 # From the fboss genrules: set-region.sh --from-env, which selects the region
-# in NH_CLOUD_PROVIDER (passed with --action_env) and is a no-op without it.
+# in NH_CLOUD_PROVIDER (passed with --action_env), else the one selected
+# earlier, and is a no-op with neither.
 set -euo pipefail
 cd "$(dirname "$(readlink -f "$0")")"
 region=${1:-}
 if [[ $region == --from-env ]]; then
-  [[ -n ${NH_CLOUD_PROVIDER:-} ]] || exit 0
-  region=$NH_CLOUD_PROVIDER
+  region=${NH_CLOUD_PROVIDER:-}
+  if [[ -z $region ]]; then
+    # No provider from CI: keep the region selected earlier, re-linking any
+    # file that selection predates.
+    target=$(readlink region.env 2>/dev/null) || exit 0
+    region=${target#regions/}
+    region=${region%.env}
+  fi
 fi
-if [[ ! -f regions/$region.env ]]; then
+if [[ ! -f regions/$region.env || ! -f regions/$region.proxy ]]; then
   regions=(regions/*.env)
   regions=("${regions[@]##*/}")
   echo "usage: bazel run //fboss:set_region -- <region>, one of: ${regions[*]%.env}" >&2
@@ -25,4 +34,5 @@ link() {
 }
 link "regions/$region.env" region.env
 link "regions/local_mirror.$region.repo" region.repo
+link "regions/$region.proxy" region.proxy.env
 echo "build region set to $region"

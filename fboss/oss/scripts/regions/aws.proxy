@@ -1,0 +1,6 @@
+http_proxy=http://cacheproxy.us-east-2.nexthop.ai:8080
+https_proxy=http://cacheproxy.us-east-2.nexthop.ai:8080
+no_proxy=.internal.nexthop.ai,.us-west-1.nexthop.ai,.us-east-2.nexthop.ai,.ecr.us-east-2.amazonaws.com,s3.us-east-2.amazonaws.com,.s3.us-east-2.amazonaws.com,ssm.us-east-2.amazonaws.com,ssmmessages.us-east-2.amazonaws.com,ec2messages.us-east-2.amazonaws.com,logs.us-east-2.amazonaws.com,secretsmanager.us-east-2.amazonaws.com,169.254.169.254,10.0.0.0/8,localhost,127.0.0.1,0.0.0.0,169.254.0.0/16,172.16.0.0/12,::1
+HTTP_PROXY=http://cacheproxy.us-east-2.nexthop.ai:8080
+HTTPS_PROXY=http://cacheproxy.us-east-2.nexthop.ai:8080
+NO_PROXY=.internal.nexthop.ai,.us-west-1.nexthop.ai,.us-east-2.nexthop.ai,.ecr.us-east-2.amazonaws.com,s3.us-east-2.amazonaws.com,.s3.us-east-2.amazonaws.com,ssm.us-east-2.amazonaws.com,ssmmessages.us-east-2.amazonaws.com,ec2messages.us-east-2.amazonaws.com,logs.us-east-2.amazonaws.com,secretsmanager.us-east-2.amazonaws.com,169.254.169.254,10.0.0.0/8,localhost,127.0.0.1,0.0.0.0,169.254.0.0/16,172.16.0.0/12,::1
