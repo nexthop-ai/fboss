@@ -179,7 +179,7 @@ std::optional<VersionedPmSensor> Utils::resolveVersionedSensors(
 
 SensorConfig Utils::getConfig() {
   auto platformName = helpers::PlatformNameLib().getPlatformName();
-  auto sensorConfig =
+  SensorConfig sensorConfig =
       apache::thrift::SimpleJSONSerializer::deserialize<SensorConfig>(
           ConfigLib().getSensorServiceConfig(platformName));
   ConfigLib::verifyPlatformNameMatches(

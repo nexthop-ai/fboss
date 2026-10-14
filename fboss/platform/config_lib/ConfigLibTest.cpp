@@ -24,8 +24,6 @@ const std::string kNh4010f = "nh4010f";
 const std::string kNh4220f = "nh4220f";
 const std::string kM4061nhp = "m4061nhp";
 const std::string kSample = "sample";
-const std::string kWedge800bact = "wedge800bact";
-const std::string kWedge800bnhp = "wedge800bnhp";
 const std::string kWedge800cact = "wedge800cact";
 const std::string kWedge800cnhp = "wedge800cnhp";
 const std::string kNonExistentPlatform = "nonExistentPlatform";
@@ -120,6 +118,37 @@ TEST(ConfigLibTest, Basic) {
       std::runtime_error);
 }
 
+TEST(ConfigLibTest, Wedge800cnhpReusesWedge800cactConfig) {
+  // WEDGE800CNHP is distinct hardware that reuses WEDGE800CACT's config.
+  EXPECT_EQ(
+      ConfigLib().getPlatformManagerConfig(kWedge800cnhp),
+      ConfigLib().getPlatformManagerConfig(kWedge800cact));
+  EXPECT_EQ(
+      ConfigLib().getSensorServiceConfig(kWedge800cnhp),
+      ConfigLib().getSensorServiceConfig(kWedge800cact));
+}
+
+TEST(ConfigLibTest, Wedge800bnhpReusesWedge800bactConfig) {
+  EXPECT_EQ(
+      ConfigLib().getPlatformManagerConfig("wedge800bnhp"),
+      ConfigLib().getPlatformManagerConfig("wedge800bact"));
+  EXPECT_EQ(
+      ConfigLib().getSensorServiceConfig("wedge800bnhp"),
+      ConfigLib().getSensorServiceConfig("wedge800bact"));
+}
+
+TEST(ConfigLibTest, CanonicalConfigPlatformNameResolvesAlias) {
+  // An aliased platform resolves to the platform whose config it reuses.
+  EXPECT_EQ(
+      ConfigLib::canonicalConfigPlatformName("WEDGE800CNHP"), "WEDGE800CACT");
+  EXPECT_EQ(
+      ConfigLib::canonicalConfigPlatformName("wedge800cnhp"), "WEDGE800CACT");
+  // A non-aliased platform is returned unchanged, normalized to uppercase.
+  EXPECT_EQ(
+      ConfigLib::canonicalConfigPlatformName("WEDGE800CACT"), "WEDGE800CACT");
+  EXPECT_EQ(ConfigLib::canonicalConfigPlatformName("montblanc"), "MONTBLANC");
+}
+
 TEST(ConfigLibTest, VerifyPlatformNameMatches) {
   // Exact match passes.
   EXPECT_NO_THROW(
@@ -134,38 +163,4 @@ TEST(ConfigLibTest, VerifyPlatformNameMatches) {
   EXPECT_THROW(
       ConfigLib::verifyPlatformNameMatches("MONTBLANC", "DARWIN"),
       std::runtime_error);
-}
-
-TEST(ConfigLibTest, Wedge800bnhpReusesWedge800bactConfig) {
-  // WEDGE800BNHP is distinct hardware that reuses WEDGE800BACT's config.
-  EXPECT_EQ(
-      ConfigLib().getPlatformManagerConfig(kWedge800bnhp),
-      ConfigLib().getPlatformManagerConfig(kWedge800bact));
-  EXPECT_EQ(
-      ConfigLib().getSensorServiceConfig(kWedge800bnhp),
-      ConfigLib().getSensorServiceConfig(kWedge800bact));
-}
-
-TEST(ConfigLibTest, Wedge800cnhpReusesWedge800cactConfig) {
-  // WEDGE800CNHP is distinct hardware that reuses WEDGE800CACT's config.
-  EXPECT_EQ(
-      ConfigLib().getPlatformManagerConfig(kWedge800cnhp),
-      ConfigLib().getPlatformManagerConfig(kWedge800cact));
-  EXPECT_EQ(
-      ConfigLib().getSensorServiceConfig(kWedge800cnhp),
-      ConfigLib().getSensorServiceConfig(kWedge800cact));
-}
-
-TEST(ConfigLibTest, CanonicalConfigPlatformNameResolvesAlias) {
-  // An aliased platform resolves to the platform whose config it reuses.
-  EXPECT_EQ(
-      ConfigLib::canonicalConfigPlatformName("WEDGE800BNHP"), "WEDGE800BACT");
-  EXPECT_EQ(
-      ConfigLib::canonicalConfigPlatformName("WEDGE800CNHP"), "WEDGE800CACT");
-  EXPECT_EQ(
-      ConfigLib::canonicalConfigPlatformName("wedge800cnhp"), "WEDGE800CACT");
-  // A non-aliased platform is returned unchanged, normalized to uppercase.
-  EXPECT_EQ(
-      ConfigLib::canonicalConfigPlatformName("WEDGE800CACT"), "WEDGE800CACT");
-  EXPECT_EQ(ConfigLib::canonicalConfigPlatformName("montblanc"), "MONTBLANC");
 }

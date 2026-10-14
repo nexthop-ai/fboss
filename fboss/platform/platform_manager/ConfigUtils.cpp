@@ -8,7 +8,6 @@
 #include <folly/logging/xlog.h>
 #include <thrift/lib/cpp2/protocol/Serializer.h>
 
-#include "fboss/platform/config_lib/ConfigLib.h"
 #include "fboss/platform/helpers/Init.h"
 #include "fboss/platform/platform_manager/ConfigValidator.h"
 
