@@ -669,7 +669,6 @@ void CredoMacsecUtil::getSdkState(QsfpServiceAsyncClient* fbMacsecHandler) {
     return;
   }
 
-<<<<<<< HEAD
   // qsfp_service confines the SDK dump to a service-owned directory and uses
   // only the basename of the request, rejecting absolute/traversing paths.
   auto slashPos = FLAGS_filename.find_last_of('/');
@@ -680,13 +679,6 @@ void CredoMacsecUtil::getSdkState(QsfpServiceAsyncClient* fbMacsecHandler) {
   bool rc = false;
   try {
     rc = fbMacsecHandler->sync_getSdkState(basename);
-||||||| c31f2b21c7
-  bool rc = fbMacsecHandler->sync_getSdkState(FLAGS_filename);
-=======
-  bool rc = false;
-  try {
-    rc = fbMacsecHandler->sync_getSdkState(FLAGS_filename);
->>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
   } catch (const std::exception& ex) {
     printf("getSdkState failed: %s\n", ex.what());
     return;
