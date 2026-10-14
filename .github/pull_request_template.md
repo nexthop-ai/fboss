@@ -8,7 +8,7 @@
 
 # Upstream required
 
-- [ ] Yes — ensure PR title has no sensitive info; it's used as the upstream branch + commit message unless overridden below. Jira IDs in title are ignored.
+- [ ] Yes — ensure PR title has no sensitive info; it's used as the upstream branch + commit message unless overridden below. Jira IDs in title are ignored. A PR is not opened upstream.
 
   - [ ] Custom commit message
     ```text
@@ -19,7 +19,7 @@
     <custom-branch-name>
     ```
   - [ ] Cherry-pick now (runs immediately; later changes must be manual)
-  - [ ] Upstream later (requirement is tracked; no cherry-pick on merge)
+  - [ ] Upstream later (requirement is tracked; no cherry-pick on merge, typically for code we don't want publicly visible at the moment)
 
 - [ ] No
 
