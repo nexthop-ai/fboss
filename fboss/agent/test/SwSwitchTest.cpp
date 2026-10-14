@@ -40,16 +40,10 @@
 #include <folly/portability/GFlags.h>
 #include <folly/synchronization/Baton.h>
 
-<<<<<<< HEAD
+#include <algorithm>
 #include <atomic>
 #include <thread>
 #include <vector>
-||||||| c31f2b21c7
-#include <algorithm>
-=======
-#include <algorithm>
-#include <thread>
->>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
 
 using namespace facebook::fboss;
 using folly::IPAddressV4;
