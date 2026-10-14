@@ -8,6 +8,8 @@
 #include <filesystem>
 #include <iostream>
 #include <optional>
+#include <set>
+#include <string>
 #include <thread>
 #include <tuple>
 #include <vector>
@@ -571,8 +573,14 @@ void Utils::printDeviceRegistersDetails() {
 }
 
 void Utils::printServiceLogs(const std::string& service) const {
+  printServiceLogs(
+      service, fmt::format("/var/facebook/logs/fboss/{}.log", service));
+}
+
+void Utils::printServiceLogs(
+    const std::string& service,
+    const std::string& logFile) const {
   std::string cmd;
-  auto logFile = fmt::format("/var/facebook/logs/fboss/{}.log", service);
   if (std::filesystem::exists(logFile)) {
     cmd = fmt::format("cat {}", logFile);
   } else {
@@ -580,6 +588,37 @@ void Utils::printServiceLogs(const std::string& service) const {
   }
   std::cout << execCommandWithLimit(cmd).second << std::endl;
   printErrorLogExcerpt(cmd);
+}
+
+// Hw agent instances: every fboss_hw_agent<N>.log on disk plus every loaded
+// fboss_hw_agent@N unit. The log path mirrors fboss_hw_agent@.service
+// (StandardOutput=append:.../fboss_hw_agent%i.log).
+std::vector<int> Utils::hwAgentIndices() const {
+  std::set<int> indices;
+  static const re2::RE2 kLogRe(R"(fboss_hw_agent(\d+)\.log)");
+  std::error_code ec;
+  for (const auto& entry :
+       std::filesystem::directory_iterator("/var/facebook/logs/fboss", ec)) {
+    int n = 0;
+    if (RE2::FullMatch(entry.path().filename().string(), kLogRe, &n)) {
+      indices.insert(n);
+    }
+  }
+  auto listUnits = platformUtils_
+                       .execCommand(
+                           "systemctl list-units --all --plain --no-legend "
+                           "'fboss_hw_agent@*.service'")
+                       .second;
+  static const re2::RE2 kUnitRe(R"(fboss_hw_agent@(\d+)\.service.*)");
+  std::vector<folly::StringPiece> lines;
+  folly::split('\n', listUnits, lines);
+  for (auto line : lines) {
+    int n = 0;
+    if (RE2::FullMatch(folly::trimWhitespace(line).str(), kUnitRe, &n)) {
+      indices.insert(n);
+    }
+  }
+  return {indices.begin(), indices.end()};
 }
 
 // Truncating a long log keeps only its head and tail, which is precisely where
@@ -627,8 +666,18 @@ void Utils::printLogs() {
   std::cout << "##### fboss_sw_agent Log #####" << std::endl;
   printServiceLogs("fboss_sw_agent");
 
-  std::cout << "##### fboss_hw_agent@0 Log #####" << std::endl;
-  printServiceLogs("fboss_hw_agent@0");
+  auto hwAgents = hwAgentIndices();
+  if (hwAgents.empty()) {
+    std::cout << "##### fboss_hw_agent Log #####" << std::endl;
+    std::cout << "No fboss_hw_agent instances found" << std::endl;
+  }
+  for (int n : hwAgents) {
+    std::cout << fmt::format("##### fboss_hw_agent@{} Log #####", n)
+              << std::endl;
+    printServiceLogs(
+        fmt::format("fboss_hw_agent@{}", n),
+        fmt::format("/var/facebook/logs/fboss/fboss_hw_agent{}.log", n));
+  }
 
   std::cout << "##### Wedge Agent Log #####" << std::endl;
   printServiceLogs("wedge_agent");

@@ -54,6 +54,9 @@ class Utils {
   void printSysfsAttribute(const std::string& label, const std::string& path);
   void printGpio(const showtech_config::Gpio& gpio);
   void printServiceLogs(const std::string& service) const;
+  void printServiceLogs(const std::string& service, const std::string& logFile)
+      const;
+  std::vector<int> hwAgentIndices() const;
   void printErrorLogExcerpt(const std::string& cmd) const;
   void printFileIfPresent(const std::string& path) const;
   void printFile(const std::string& path) const;
