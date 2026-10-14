@@ -551,9 +551,6 @@ class BenchmarkFramework:
             return
 
         if not selection.benchmark_names:
-            # Report a skipped run, not nothing: callers key "did this produce
-            # results?" off the CSV, so returning without one reads as an infra
-            # failure rather than a platform gap.
             print("No benchmarks to run after filtering known bad/unsupported")
             self._write_results_and_summary([], selection.skipped_count)
             return

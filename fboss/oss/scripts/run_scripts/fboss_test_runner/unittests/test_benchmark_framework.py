@@ -131,15 +131,11 @@ def _filter_file(tmp_path, *lines):
     ("filter_string", "expected"),
     [
         ("*Route*", ["HwFswScaleRouteAddBenchmark", "HwVoqScaleRouteAddBenchmark"]),
-        # multiple includes OR together
         ("*Fsw*:*Ecmp*", ["HwFswScaleRouteAddBenchmark", "HwEcmpGroupShrink"]),
-        # empty include side means everything
         ("-*Voq*", ["HwFswScaleRouteAddBenchmark", "HwEcmpGroupShrink"]),
         ("*Route*:-*Voq*", ["HwFswScaleRouteAddBenchmark"]),
-        # everything after the first '-' excludes
         ("*:-*Voq*:*Ecmp*", ["HwFswScaleRouteAddBenchmark"]),
         ("*Ecmp?roupShrink", ["HwEcmpGroupShrink"]),
-        # plain regex back-compat
         (".*Route.*", ["HwFswScaleRouteAddBenchmark", "HwVoqScaleRouteAddBenchmark"]),
     ],
 )
@@ -152,7 +148,6 @@ def test_get_benchmarks_to_run_grammar(framework, bench_args, filter_string, exp
     ("pattern", "expected"),
     [
         ("*Route*", ".*Route.*"),
-        # already-regex constructs survive untouched
         (".*Route.*", ".*Route.*"),
         (r"Hw\*Literal", r"Hw\*Literal"),
         ("Ecmp?Group", "Ecmp.Group"),
@@ -164,7 +159,6 @@ def test_wildcards_to_regex(framework, pattern, expected):
 
 
 def test_plain_regex_matches_name_at_position_zero(framework, bench_args):
-    # Guards the ".*" -> "..*" bug.
     bench_args.filter = ".*Route.*"
     assert framework._get_benchmarks_to_run(["RouteAdd", "EcmpShrink"], bench_args) == [
         "RouteAdd"
@@ -194,7 +188,6 @@ def test_get_benchmarks_to_run_invalid_exclude_pattern(framework, bench_args, ca
 
 
 def test_filter_file_lines_are_patterns(framework, bench_args, tmp_path):
-    # Lines join with ':' as gtest grammar, not exact benchmark names.
     bench_args.filter_file = _filter_file(tmp_path, "*Route*", "-*Voq*")
     assert framework._get_benchmarks_to_run(_ALL, bench_args) == [
         "HwFswScaleRouteAddBenchmark"
@@ -409,8 +402,6 @@ def test_run_with_filter_file(
 def test_run_all_selected_unsupported_reports_skips(
     mock_list, mock_run, suite, bench_args, tmp_path, capsys
 ):
-    # An all-unsupported bucket must still write results; a missing CSV reads as
-    # an infra failure.
     cfg = tmp_path / "bench.json"
     cfg.write_text(
         json.dumps({"unsupported_tests": {"plat": [{"test_name_regex": ".*Voq.*"}]}})
