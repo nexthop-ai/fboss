@@ -282,10 +282,10 @@ register_descriptor_asic_config_tests()
 distro_build(
     name = "distro_kernel_6.11",
     component = "kernel",
-    execute = ["kernel/scripts/build_kernel.sh", "6.11.1", "/output"],
+    execute = ["kernel/scripts/build_kernel.sh", "6.11.11", "/output"],
     manifest = "nh-fboss-broadcom-xgs.json",
     needs = "all_cpus",
-    outs_map = {"distro_kernel_6.11.tar": "fboss/fboss-image/kernel/dist/kernel-6.11.1.rpms.tar"},
+    outs_map = {"distro_kernel_6.11.tar": "fboss/fboss-image/kernel/dist/kernel-6.11.11.rpms.tar"},
     srcs = glob([
         "fboss-image/kernel/configs/**",
         "fboss-image/kernel/env/**",
