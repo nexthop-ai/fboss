@@ -11483,7 +11483,6 @@
           "test_name_regex": "warm_boot.AgentEcmpTrunkTest.TrunkL2ResolveNhopThenLinkAndLACPDownThenUpBeforeReinit$"
         },
         {
-<<<<<<< HEAD
           "test_name_regex": "AgentOlympicQosSchedulerTest.VerifyWRRForOlympicToOlympicV2$"
         },
         {
@@ -11508,27 +11507,6 @@
           "test_name_regex": "AgentMacLearningStaticEntriesTest.VerifyStaticMacEntryAdd$"
         },
         {
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyDefaultSwAgingForPort$"
-        },
-        {
-          "test_name_regex": "AgentCoppTest/[01].Ipv6LinkLocalUcastIpNetworkControlDscpToHighPriQ$"
-        },
-        {
-          "test_name_regex": "AgentCoppTest/[01].DhcpPacketToMidPriQ$"
-        },
-        {
-||||||| c31f2b21c7
-          "test_name_regex": "AgentMacSwLearningModeTest.VerifyDefaultSwAgingForPort$"
-        },
-        {
-          "test_name_regex": "AgentCoppTest/[01].Ipv6LinkLocalUcastIpNetworkControlDscpToHighPriQ$"
-        },
-        {
-          "test_name_regex": "AgentCoppTest/[01].DhcpPacketToMidPriQ$"
-        },
-        {
-=======
->>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
           "test_name_regex": "AgentQueuePerHostTest.VerifyHostToQueueMappingClassIDsAfterResolve$"
         },
         {
