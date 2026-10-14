@@ -457,7 +457,8 @@
           "busName": "SMB_MUX_0@0",
           "address": "0x52",
           "kernelDeviceName": "24c02",
-          "pmUnitScopedName": "PSU1_EEPROM"
+          "pmUnitScopedName": "PSU1_EEPROM",
+          "isEeprom": true
         },
         {
           "busName": "SMB_MUX_0@1",
@@ -469,7 +470,8 @@
           "busName": "SMB_MUX_0@1",
           "address": "0x52",
           "kernelDeviceName": "24c02",
-          "pmUnitScopedName": "PSU2_EEPROM"
+          "pmUnitScopedName": "PSU2_EEPROM",
+          "isEeprom": true
         },
         {
           "busName": "SMB_MUX_0@2",
@@ -481,7 +483,8 @@
           "busName": "SMB_MUX_0@2",
           "address": "0x52",
           "kernelDeviceName": "24c02",
-          "pmUnitScopedName": "PSU3_EEPROM"
+          "pmUnitScopedName": "PSU3_EEPROM",
+          "isEeprom": true
         },
         {
           "busName": "SMB_MUX_0@3",
@@ -493,7 +496,8 @@
           "busName": "SMB_MUX_0@3",
           "address": "0x52",
           "kernelDeviceName": "24c02",
-          "pmUnitScopedName": "PSU4_EEPROM"
+          "pmUnitScopedName": "PSU4_EEPROM",
+          "isEeprom": true
         },
         {
           "busName": "SMB_MUX_2@0",
