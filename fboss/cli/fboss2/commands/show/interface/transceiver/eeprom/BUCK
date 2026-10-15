@@ -2,6 +2,8 @@ load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")
 
 oncall("fboss_optics_phy")
 
+# bazelify: exclude
+# fboss2-lib compiles this .cpp itself; a translated target here would strip it.
 cpp_library(
     name = "CmdShowInterfaceTransceiverEeprom",
     srcs = ["CmdShowInterfaceTransceiverEeprom.cpp"],
@@ -23,6 +25,8 @@ cpp_library(
     ],
 )
 
+# bazelify: exclude
+# fboss2-lib compiles this .cpp itself; a translated target here would strip it.
 cpp_library(
     name = "CmdShowInterfaceTransceiverEepromDump",
     srcs = ["CmdShowInterfaceTransceiverEepromDump.cpp"],
