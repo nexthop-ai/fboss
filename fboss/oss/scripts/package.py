@@ -87,6 +87,8 @@ FORWARDING_EXTRA = {
     RUN_SCRIPTS_DIR / "topology.cdf": "bin/topology.cdf",
     RUN_CONFIGS_DIR / "default_configs": "share/default_configs",
     RUN_CONFIGS_DIR / "transceiver_properties": "share/transceiver_properties",
+    RUN_CONFIGS_DIR
+    / "transceiver_vendor_overrides": "share/transceiver_vendor_overrides",
     RUN_CONFIGS_DIR / "j3b": "share/j3b",
     RUN_CONFIGS_DIR / "janga800bic": "share/janga800bic",
     RUN_CONFIGS_DIR / "r3": "share/r3",

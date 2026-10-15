@@ -10,6 +10,7 @@
     "enable_replayer": "true",
     "log_variable_name": "true",
     "platform_descriptor_config_path": "/tmp/platform_descriptors/",
+    "transceiver_vendor_override_map_path": "/opt/fboss/share/transceiver_vendor_overrides/nexthop.json",
     "sai_configure_six_tap": "true"
   },
   "sw": {

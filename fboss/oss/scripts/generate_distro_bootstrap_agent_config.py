@@ -309,6 +309,12 @@ PLATFORM_CODENAME: dict[str, str] = {
 # on ports whose config sets txPrecoding/rxPrecoding.
 CODENAMES_WITH_SERDES_PRECODING = {"m4061nhp", "nh4220f"}
 
+# Platforms whose platform mapping carries vendor-keyed port config overrides.
+CODENAMES_WITH_TRANSCEIVER_VENDOR_OVERRIDES = {"m4062nhp"}
+TRANSCEIVER_VENDOR_OVERRIDE_MAP_PATH = (
+    "/opt/fboss/share/transceiver_vendor_overrides/nexthop.json"
+)
+
 CODENAMES_REQUIRING_PLATFORM_DESCRIPTOR = {
     "m4061nhp",
     "m4062nhp",
@@ -1166,6 +1172,32 @@ def _build_ports_vlans_interfaces(
     return ports, port_vlans, vlan_ports, interfaces
 
 
+def _build_default_command_line_args(codename: str) -> dict[str, str]:
+    args = {
+        "check_wb_handles": "false",
+        "cleanup_probed_kernel_data": "true",
+        "counter_refresh_interval": "0",
+        "disable_neighbor_updates": "false",
+        "ecmp_width": "320",
+        "enable_1to1_intf_route_table_mapping": "true",
+        "enable_acl_table_group": "true",
+        "enable_replayer": "true",
+        "log_variable_name": "true",
+        "multi_switch": "true",
+        "publish_state_to_fsdb": "true",
+        "publish_stats_to_fsdb": "true",
+        "sai_configure_six_tap": "true",
+        "use_full_dlb_scale": "true",
+    }
+    if codename in CODENAMES_REQUIRING_PLATFORM_DESCRIPTOR:
+        args["platform_descriptor_config_path"] = "/tmp/platform_descriptors/"
+    if codename in CODENAMES_WITH_TRANSCEIVER_VENDOR_OVERRIDES:
+        args["transceiver_vendor_override_map_path"] = (
+            TRANSCEIVER_VENDOR_OVERRIDE_MAP_PATH
+        )
+    return dict(sorted(args.items()))
+
+
 def generate_config(
     platform: str,
     platforms_dir: pathlib.Path,
@@ -1341,29 +1373,8 @@ def generate_config(
     # Platform section — ASIC config from materialized HW test config
     asic_common = _load_asic_config(asic_config_source, codename, script_path)
 
-    default_command_line_args = {
-        "check_wb_handles": "false",
-        "cleanup_probed_kernel_data": "true",
-        "counter_refresh_interval": "0",
-        "disable_neighbor_updates": "false",
-        "ecmp_width": "320",
-        "enable_1to1_intf_route_table_mapping": "true",
-        "enable_acl_table_group": "true",
-        "enable_replayer": "true",
-        "log_variable_name": "true",
-        "multi_switch": "true",
-        "publish_state_to_fsdb": "true",
-        "publish_stats_to_fsdb": "true",
-        "sai_configure_six_tap": "true",
-        "use_full_dlb_scale": "true",
-    }
-    if codename in CODENAMES_REQUIRING_PLATFORM_DESCRIPTOR:
-        default_command_line_args["platform_descriptor_config_path"] = (
-            "/tmp/platform_descriptors/"
-        )
-
     return {
-        "defaultCommandLineArgs": dict(sorted(default_command_line_args.items())),
+        "defaultCommandLineArgs": _build_default_command_line_args(codename),
         "sw": sw,
         "platform": {"chip": {"asicConfig": {"common": asic_common}}},
     }

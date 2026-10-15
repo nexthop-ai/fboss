@@ -1,0 +1,20 @@
+{
+  "entries": [
+    {
+      "placeholder": {
+        "name": "Vendor_1",
+        "partNumber": "PartNum_1"
+      },
+      "patterns": [
+        {
+          "vendorName": "(?i)EOPTOLINK",
+          "partNumber": "(?i)EOLO-168HG-5H-S?LB\\d*"
+        },
+        {
+          "vendorName": "(?i)INNOLIGHT|TERAHOP",
+          "partNumber": "(?i)L-OL8CN[HT]-N(FM|00)"
+        }
+      ]
+    }
+  ]
+}

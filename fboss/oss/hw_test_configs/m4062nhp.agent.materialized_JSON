@@ -11,6 +11,7 @@
     "log_variable_name": "true",
     "multi_switch": "true",
     "platform_descriptor_config_path": "/tmp/platform_descriptors/",
+    "transceiver_vendor_override_map_path": "/opt/fboss/share/transceiver_vendor_overrides/nexthop.json",
     "publish_state_to_fsdb": "true",
     "publish_stats_to_fsdb": "true",
     "sai_configure_six_tap": "true",
