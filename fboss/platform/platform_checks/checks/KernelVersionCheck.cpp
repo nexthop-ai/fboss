@@ -58,9 +58,10 @@ KernelVersionCheck::getSupportedKernelVersions() {
   }
   return *cfgPtr->kernel_versions();
 #else
-  // Distro supports 6.4.3 and 6.11.1
   return std::optional<std::vector<std::string>>(
-      {"6.4.3-1.fboss.el9.x86_64", "6.11.1-1.fboss.el9.x86_64"});
+      {"6.4.3-1.fboss.el9.x86_64",
+       "6.11.1-1.fboss.el9.x86_64",
+       "6.11.11-1.fboss.el9.x86_64"});
 #endif
 }
 

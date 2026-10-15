@@ -82,6 +82,20 @@ py_test(
     main = "fboss/oss/scripts/check_cisco_asic_config.py",
 )
 
+py_test(
+    name = "supported_kernel_version_test",
+    srcs = ["fboss/oss/scripts/check_supported_kernel_version.py"],
+    args = [
+        "$(location BUILD.bazel)",
+        "$(location fboss/platform/platform_checks/checks/KernelVersionCheck.cpp)",
+    ],
+    data = [
+        "BUILD.bazel",
+        "fboss/platform/platform_checks/checks/KernelVersionCheck.cpp",
+    ],
+    main = "fboss/oss/scripts/check_supported_kernel_version.py",
+)
+
 filegroup(
     name = "run_scripts_py",
     visibility = ["//fboss/tests:__subpackages__"],
