@@ -448,25 +448,39 @@ void HwTransceiverUtils::verifyMediaInterfaceCompliance(
       verifyCopper800gProfile(tcvrState, mediaInterfaces);
       break;
     case cfg::PortProfileID::PROFILE_800G_4_PAM4_RS544X2N_COPPER:
-      verifyCopper200gPerLaneProfile(
+      verifyCopperBreakoutProfile(
           tcvrState,
           mediaInterfaces,
           MediaInterfaceCode::CR4_800G,
           ActiveCuHostInterfaceCode::AUI_PAM4_4_800G);
       break;
     case cfg::PortProfileID::PROFILE_400G_2_PAM4_RS544X2N_COPPER:
-      verifyCopper200gPerLaneProfile(
+      verifyCopperBreakoutProfile(
           tcvrState,
           mediaInterfaces,
           MediaInterfaceCode::CR2_400G,
           ActiveCuHostInterfaceCode::AUI_PAM4_2_400G);
       break;
     case cfg::PortProfileID::PROFILE_200G_1_PAM4_RS544X2N_COPPER:
-      verifyCopper200gPerLaneProfile(
+      verifyCopperBreakoutProfile(
           tcvrState,
           mediaInterfaces,
           MediaInterfaceCode::CR1_200G,
           ActiveCuHostInterfaceCode::AUI_PAM4_1_200G);
+      break;
+    case cfg::PortProfileID::PROFILE_200G_2_PAM4_RS544_COPPER:
+      verifyCopperBreakoutProfile(
+          tcvrState,
+          mediaInterfaces,
+          MediaInterfaceCode::CR4_200G,
+          ActiveCuHostInterfaceCode::AUI_PAM4_2S_200G);
+      break;
+    case cfg::PortProfileID::PROFILE_100G_1_PAM4_RS544_COPPER:
+      verifyCopperBreakoutProfile(
+          tcvrState,
+          mediaInterfaces,
+          MediaInterfaceCode::CR1_100G,
+          ActiveCuHostInterfaceCode::AUI_PAM4_1S_100G);
       break;
     case cfg::PortProfileID::PROFILE_1600G_8_PAM4_RS544X2N_COPPER:
       verifyCopper1600gProfile(tcvrState, mediaInterfaces);
@@ -706,7 +720,7 @@ void HwTransceiverUtils::verifyCopper800gProfile(
   }
 }
 
-void HwTransceiverUtils::verifyCopper200gPerLaneProfile(
+void HwTransceiverUtils::verifyCopperBreakoutProfile(
     const TcvrState& tcvrState,
     const std::vector<MediaInterfaceId>& mediaInterfaces,
     MediaInterfaceCode expectedActiveCode,
