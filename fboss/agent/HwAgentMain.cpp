@@ -12,7 +12,6 @@
 #include <fb303/ServiceData.h>
 #include <folly/logging/Init.h>
 #include <folly/logging/xlog.h>
-#include <gflags/gflags.h>
 #include "fboss/agent/AgentConfig.h"
 #include "fboss/agent/InitHookRegistry.h"
 #ifndef IS_OSS
