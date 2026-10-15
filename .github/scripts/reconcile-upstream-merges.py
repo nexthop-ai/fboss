@@ -429,7 +429,6 @@ def create_reconcile_pr(pr: dict, base: str, head: str, landed: str,
             "```",
             "</details>",
             "",
-            "NHCI: clang-tidy=warn-only",
         ]
         body = "\n".join(body_lines)
 

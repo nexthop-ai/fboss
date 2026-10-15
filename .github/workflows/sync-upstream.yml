@@ -218,9 +218,7 @@ jobs:
           The following files have conflicts that need to be resolved:
           $conflict_list
 
-          Please resolve these conflicts and merge when ready.
-
-          NHCI: clang-tidy=warn-only"
+          Please resolve these conflicts and merge when ready."
 
           PR_URL=$(gh pr create \
             --title "[sync] Sync with upstream stable commit" \
@@ -343,9 +341,7 @@ jobs:
 
           ${FAILURE_DETAILS}
 
-          See the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for full logs.
-
-          NHCI: clang-tidy=warn-only"
+          See the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for full logs."
 
           PR_URL=$(gh pr create \
             --title "[sync] Sync with upstream stable commit" \

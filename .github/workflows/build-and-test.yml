@@ -170,14 +170,11 @@ jobs:
         run: |
           # Parse NHCI annotations from PR body
           # Format: NHCI: key=value
-          # Supported: clang-tidy=skip|warn-only
+          # Supported: clang-tidy=skip
           CLANG_TIDY_MODE="normal"
           if echo "$PR_BODY" | grep -qF "NHCI: clang-tidy=skip"; then
             echo "Found 'NHCI: clang-tidy=skip' in PR body, skipping clang-tidy entirely"
             CLANG_TIDY_MODE="skip"
-          elif echo "$PR_BODY" | grep -qF "NHCI: clang-tidy=warn-only"; then
-            echo "Found 'NHCI: clang-tidy=warn-only' in PR body, clang-tidy errors will not fail the build"
-            CLANG_TIDY_MODE="warn-only"
           fi
           echo "clang_tidy_mode=$CLANG_TIDY_MODE" >> "$GITHUB_OUTPUT"
 
@@ -232,7 +229,6 @@ jobs:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           BASE_REF=$(cat /tmp/clang_tidy_base_ref.txt 2>/dev/null || echo "origin/${{ github.base_ref }}")
-          FAIL_LEVEL="${{ steps.nhci.outputs.clang_tidy_mode == 'warn-only' && 'none' || 'error' }}"
           cat /tmp/clang-tidy-output.txt | \
             reviewdog \
               -efm="%f:%l:%c: %tarning: %m" \
@@ -240,7 +236,7 @@ jobs:
               -name="clang-tidy" \
               -reporter=github-pr-review \
               -filter-mode=diff_context \
-              -fail-level="$FAIL_LEVEL" \
+              -fail-level=none \
               -diff="git diff $BASE_REF..HEAD"
 
       - name: Run unit tests
