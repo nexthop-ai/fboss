@@ -344,19 +344,19 @@ include_directories(${SAI_INCLUDE_DIR})
 message(STATUS "Found SAI Include dir: ${SAI_INCLUDE_DIR}")
 
 if (SAI_BRCM_IMPL)
-  find_path(SAI_IMPL_DIR NAMES lib/libsai_impl.a)
+  find_path(SAI_IMPL_DIR NAMES lib/libsai_impl.a lib/libsai_impl.so)
   find_path(SAI_EXPERIMENTAL_INCLUDE_DIR NAMES brcm_sai_extensions.h)
   include_directories(${SAI_EXPERIMENTAL_INCLUDE_DIR})
   include_directories(${SAI_EXPERIMENTAL_INCLUDE_DIR}/experimental)
   message(STATUS "Found SAI Experimental dir: ${SAI_EXPERIMENTAL_INCLUDE_DIR}/experimental")
 elseif(SAI_TAJO_IMPL)
-  find_path(SAI_IMPL_DIR NAMES lib/libsai_impl.a)
+  find_path(SAI_IMPL_DIR NAMES lib/libsai_impl.a lib/libsai_impl.so)
   find_path(SAI_EXPERIMENTAL_INCLUDE_DIR NAMES experimental/sai_attr_ext.h)
   include_directories(${SAI_EXPERIMENTAL_INCLUDE_DIR})
   include_directories(${SAI_EXPERIMENTAL_INCLUDE_DIR}/experimental)
   message(STATUS "Found SAI Experimental dir: ${SAI_EXPERIMENTAL_INCLUDE_DIR}/experimental")
 elseif(CHENAB_SAI_SDK)
-  find_path(SAI_IMPL_DIR NAMES lib/libsai_impl.a)
+  find_path(SAI_IMPL_DIR NAMES lib/libsai_impl.a lib/libsai_impl.so)
   # Chenab-TODO: set experimental directories appropriately
   set(SAI_EXPERIMENTAL_INCLUDE_DIR "/var/FBOSS/sai_impl_output/include")
   include_directories(${SAI_EXPERIMENTAL_INCLUDE_DIR})
@@ -1638,14 +1638,10 @@ add_dependencies(fboss_platform_services
   platform_manager_hw_test
   cross_config_validator_test
   fw_util_hw_test
-<<<<<<< HEAD
   bsp_tests
-||||||| c31f2b21c7
-=======
   fixmyfboss_result_printer_test
   fixmyfboss_check_runner_test
   fixmyfboss_check_environment_test
->>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
 )
 
 add_custom_target(qsfp_targets)
