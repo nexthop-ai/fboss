@@ -84,7 +84,7 @@ py_test(
 
 filegroup(
     name = "run_scripts_py",
-    visibility = ["//fboss/tests:__pkg__"],
+    visibility = ["//fboss/tests:__subpackages__"],
     srcs = glob(["fboss/oss/scripts/run_scripts/**/*.py"]),
 )
 
@@ -93,7 +93,7 @@ filegroup(
 # both trees in runfiles.
 filegroup(
     name = "variant_flag_inputs",
-    visibility = ["//fboss/tests:__pkg__"],
+    visibility = ["//fboss/tests:__subpackages__"],
     srcs = glob([
         "fboss-image/image_builder/templates/centos-09.0/root_files/usr/local/bin/fboss_init.sh",
         "fboss/configs/platforms/**/platform_mapping/generated/platform_descriptor.json",
@@ -104,7 +104,7 @@ filegroup(
 # schema from these trees; tests that load a mapping need them in runfiles.
 filegroup(
     name = "platform_mapping_inputs",
-    visibility = ["//fboss/tests:__pkg__"],
+    visibility = ["//fboss/tests:__subpackages__"],
     srcs = glob([
         "fboss/agent/switch_config.thrift",
         "fboss/configs/platforms/**/platform_mapping/generated/platform_mapping.json",
@@ -113,13 +113,13 @@ filegroup(
 
 filegroup(
     name = "qsfp_test_configs",
-    visibility = ["//fboss/tests:__pkg__"],
+    visibility = ["//fboss/tests:__subpackages__"],
     srcs = glob(["fboss/oss/qsfp_test_configs/*"]),
 )
 
 filegroup(
     name = "hw_bench_configs",
-    visibility = ["//fboss/tests:__pkg__"],
+    visibility = ["//fboss/tests:__subpackages__"],
     srcs = glob(["fboss/oss/hw_bench_configs/*"]),
 )
 

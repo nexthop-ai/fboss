@@ -18,14 +18,49 @@ don't have to reverse-engineer them from the code.
 | `cabling.py` | `CablingAwareRunnerMixin`: ports-info/snake-pairs parsing, gtest filter splitting, multi-pass execution |
 | `platform_configs.py` | model → config codename / known-bad-key / production-features maps |
 | `platform_mapping.py` | platform_mapping.json loading and port-profile/medium selection |
+| `variants.py` | speed/breakout variant vocabulary, full platform-mapping loader, per-pair and per-cage resolution |
 | `junit.py` | JUnit merge/normalize and benchmark CSV → tr.xml conversion |
 | `runners/` | one module per runner family: `sai`, `qsfp`, `link`, `platform`, `smoke`, `fboss2`, `benchmark` |
 | `filter_utils.py` | catch-all filter derivation for test modules |
+| `unittests/` | the unit tests, one module per library module (see [Tests](#tests)) |
 
 Runners grow in their own `runners/<name>.py`; adding a runner means a new
 file there, an export line in `__init__.py`, and a fixture in conftest.
 Dependency direction is one-way: `runners/*` import the shared modules, and
 `deploy.py`/`junit.py` import nothing from the rest of the package.
+
+## Tests
+
+Unit tests live in `unittests/`, a Bazel package of their own
+(`//fboss/tests/libs/test_runner/unittests:test_<name>`, one target per file,
+declared by `run_all_pytests`). Dropping a new `test_*.py` in the directory is
+enough for CI to pick it up; `*_test.py` is not collected.
+
+Files mirror the library: `test_<module>.py` for a shared module
+(`test_cabling.py`, `test_junit.py`), `test_runner_<family>.py` for
+`runners/<family>.py`. Keep a test with the module whose behaviour it asserts,
+not with the change that introduced it. Shared builders (`make_runner`,
+`make_cage`, the profile tables) are in `helpers.py`; fixtures in `conftest.py`.
+
+`test_manifest_consistency.py` is the one grouping by kind rather than module:
+every check that reads the repo (the upstream `fboss_test_runner` package,
+`hw_bench_configs`, the platform mappings, `fboss_init.sh`, the benchmark
+bucket and variant wrapper modules). Those trees reach the test through
+`per_test_data` in `unittests/BUILD.bazel`. One other target needs repo data:
+`test_cabling` (the real m4062nhp mapping behind `_requested_variant`). The
+profile tables are stubbed everywhere else. A test that reads a file its target does not carry fails in CI with
+`FileNotFoundError` from `platform_mapping.repo_dir`.
+
+To run outside Bazel, from the `fboss/` checkout with the nhtools venv:
+
+```bash
+python3 -m pytest tests/libs/test_runner/unittests -q
+```
+
+`tests/libs/device/` is a Dec-2025 copy of the nh device SSH stack
+(`nhtools/connectlib/connectlib/device_ssh_helper.py`), which has moved on
+since and carries its own test suite. It is not tested here; consolidating the
+two is tracked separately.
 
 ## MINT / reuse
 
@@ -78,7 +113,7 @@ Each runner declares two things:
 - **`BINARIES`** — the test binary(ies) this runner runs. This is the only
   per-runner knob, and it mirrors the upstream on-DUT test runner
   (`fboss/oss/scripts/run_scripts/fboss_test_runner/runners/*.py`), the source of
-  truth for binary names. `test_runner_deploy.py` cross-checks every `BINARIES`
+  truth for binary names. `unittests/test_manifest_consistency.py` cross-checks every `BINARIES`
   entry against that package and fails loudly on drift.
 
 `REQUIRED_PATHS` — the full set deployed to the DUT — is composed as
@@ -106,8 +141,11 @@ the production image already on the DUT (`/opt/fboss/bin/`).
 | `LinkTestRunner` | forwarding | `bin/sai_mono_link_test-sai_impl`, `bin/sai_multi_link_test-sai_impl` | — |
 | `PlatformTestRunner` | platform | the 7 platform `*_hw_test` binaries | no `share/`; `run_test.py` from image |
 | `BspTestRunner` | platform | `bin/bsp_tests` | — |
+| `LedTestRunner` | forwarding | `bin/led_service_hw_test` | no `share/`; reads `/etc/coop/led.conf` on the DUT |
+| `Fboss2IntegrationTestRunner` | forwarding | `bin/fboss2_integration_test` | no `--config`; `run_test.py` defaults to `/etc/coop/agent.conf` |
 | `SmokeTestRunner` | forwarding | `bin/python_tests/agent_smoke.py`, `bin/python_tests/junit.py` | runs the script directly — no `run_test.py`, no `share/` |
 | `BenchmarkTestRunner` | forwarding | `bin/sai_all_benchmarks-sai_impl`, `bin/sai_multi_switch_all_benchmarks-sai_impl` | `share/hw_bench_configs/`; always invokes SAI benchmarks in multi_switch mode |
+| `QsfpBenchmarkTestRunner` | forwarding | `bin/qsfp_hw_test_benchmark` | reads `share/qsfp_test_configs/`, not `hw_bench_configs` |
 
 All forwarding runners get the full forwarding `share/` tree from `STACK_SHARE`
 (so `hw_benchmark_tests/sai_bench.materialized_JSON` is always present — the
@@ -243,7 +281,7 @@ publishes a partial `extracted/`), not for racing processes.
 
 Two guards catch drift from the upstream FBOSS test infra:
 
-- **Binary names** — `test_runner_deploy.py` cross-checks every runner's
+- **Binary names**: `unittests/test_manifest_consistency.py` cross-checks every runner's
   `BINARIES` against the upstream `fboss_test_runner` package (`runners/*.py`).
   If upstream renames/removes a binary, or a `BINARIES` entry is mistyped, the
   test fails with a pointer to reconcile. Fix by editing the runner's `BINARIES`.

@@ -1,0 +1,41 @@
+load("//bazel_lib:pytest.bzl", "run_all_pytests")
+
+# Test runner runs within the nhtests-run environment, use the same python libs
+_PIP = "@nhtools_itests_pip//"
+
+# Unit tests for the tests.libs.test_runner package. Their own package so that
+# //fboss/tests's globs stop crossing them (Bazel globs do not descend into a
+# subpackage) and so the macro stops dragging tests/conftest.py, the hardware
+# fixture module that constructs every runner, into their runfiles.
+#
+# imports is package-relative: four levels up from
+# fboss/tests/libs/test_runner/unittests lands on fboss/, which is what makes
+# `from tests.libs.test_runner import ...` resolve. //fboss/tests:test_runner
+# exports the same path transitively; this keeps it explicit.
+run_all_pytests(
+    imports = ["../../../.."],
+    srcs = ["helpers.py"],
+    per_test_data = {
+        # _run_cabling_aware resolves the requested variant against the real
+        # m4062nhp mapping and its qsfp base config.
+        "test_cabling": [
+            "//fboss:platform_mapping_inputs",
+            "//fboss:qsfp_test_configs",
+        ],
+        # Every check that reads the repo rather than the library: the upstream
+        # on-DUT runner package, hw_bench_configs, the platform mappings,
+        # fboss_init.sh with the descriptors, and the benchmark bucket and
+        # link/qsfp variant wrapper modules (exec'd via load_test_context).
+        "test_manifest_consistency": [
+            "//fboss:hw_bench_configs",
+            "//fboss:platform_mapping_inputs",
+            "//fboss:run_scripts_py",
+            "//fboss:variant_flag_inputs",
+            "//fboss/tests:hw_test_modules",
+        ],
+    },
+    deps = [
+        "//fboss/tests:test_runner",
+        _PIP + "pytest",
+    ],
+)

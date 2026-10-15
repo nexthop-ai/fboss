@@ -1,55 +1,25 @@
-"""Unit tests for speed/breakout variant parsing and per-pair resolution."""
+"""variants.py: speed/breakout variant vocabulary, the full platform-mapping
+loader, and per-pair / per-cage resolution."""
 
 import json
-from pathlib import Path
 
 import pytest
 
-from tests.libs.test_runner import QsfpTestRunner, variants
-from tests.libs.test_runner.base import BaseHwTestRunner
-from tests.libs.test_runner.filter_utils import load_test_context
-from tests.libs.test_runner.platform_configs import LINK_QSFP_TEST_CONFIG_NAME
-from tests.libs.test_runner.platform_mapping import repo_dir
+from tests.libs.test_runner import variants
 from tests.libs.test_runner.variants import (
+    MAX_VARIANT,
+    VariantError,
     derive_variant_chain,
     is_well_formed,
     load_full_platform_mapping,
-    MAX_VARIANT,
     parse_variant,
     resolve_cage,
     resolve_pair,
     resolve_pairs,
-    VariantError,
 )
 
-# Profile table shared by the fixtures: pid -> (speed, iphy lanes).
-_PROFILES = {
-    91: (3200000, 8),
-    90: (1600000, 8),
-    39: (800000, 8),
-    38: (400000, 4),
-    25: (200000, 2),
-    24: (200000, 4),
-    23: (100000, 1),
-    22: (100000, 4),
-}
+from .helpers import FULL, PIPE_LIMITED, PROFILES, make_cage
 
-
-def _cage(subports, lanes=8, base_id=100):
-    return variants.CageInfo(
-        controlling="unused/1",
-        lanes=lanes,
-        subports={
-            sub: variants.SubportInfo(base_id + sub, {pid: _PROFILES[pid] for pid in pids})
-            for sub, pids in subports.items()
-        },
-    )
-
-
-# Full-breakout cage: every subport, profiles matching lane arithmetic.
-FULL = {1: [39, 38, 25, 23], 2: [23], 3: [25, 23], 4: [23], 5: [38, 25, 23], 6: [23], 7: [25, 23], 8: [23]}
-# Pipe-limited cage: only /1 and /5 rows exist.
-PIPE_LIMITED = {1: [39, 38], 5: [38]}
 # m4062nhp shape: 4-way rows only, and no single-lane profile, so no 8x.
 STELLER_LIKE = {1: [39, 38, 25, 24, 22], 3: [25], 5: [38, 25, 24, 22], 7: [25]}
 # nh4220f shape: 1.6T at full width, breakout profiles only at 4 and 1 lanes.
@@ -58,7 +28,7 @@ BLACKKITE_LIKE = {
     5: [38, 24, 22, 23], 6: [23], 7: [23], 8: [23],
 }
 
-CAGES = {"eth1/1": _cage(FULL, base_id=100), "eth1/2": _cage(FULL, base_id=200)}
+CAGES = {"eth1/1": make_cage(FULL, base_id=100), "eth1/2": make_cage(FULL, base_id=200)}
 NO_CONSTRAINTS: dict = {}
 
 CHAIN = derive_variant_chain(CAGES)
@@ -67,16 +37,8 @@ V4X200 = parse_variant("4x200G", CHAIN)
 V8X100 = parse_variant("8x100G", CHAIN)
 
 
-# Config names the fleet runs: the explicit overrides plus the models that fall
-# through _config_name's identity path.
-_FLEET_CONFIG_NAMES = sorted(
-    set(LINK_QSFP_TEST_CONFIG_NAME.values())
-    | {"nh4220f", "nh4010f", "wedge800bnhp", "wedge800cnhp"}
-)
-
-
 def _chain_names(subports):
-    return [v.name for v in derive_variant_chain({"eth1/1": _cage(subports)})]
+    return [v.name for v in derive_variant_chain({"eth1/1": make_cage(subports)})]
 
 
 class TestVocabulary:
@@ -96,7 +58,7 @@ class TestVocabulary:
         # Each cage contributes a variant the other cannot do: only the
         # Steller-shaped cage offers 4x200G, only the Black-Kite-shaped one
         # offers 8x100G.
-        steller, blackkite = _cage(STELLER_LIKE), _cage(BLACKKITE_LIKE, base_id=200)
+        steller, blackkite = make_cage(STELLER_LIKE), make_cage(BLACKKITE_LIKE, base_id=200)
         assert "8x100G" not in _chain_names(STELLER_LIKE)
         assert "4x200G" not in _chain_names(BLACKKITE_LIKE)
         both = [v.name for v in derive_variant_chain({"eth1/1": steller, "eth1/2": blackkite})]
@@ -115,7 +77,7 @@ class TestVocabulary:
 
     def test_off_chain_variant_is_still_well_formed(self):
         # Callers use this split to SKIP an unsupported variant but fail a typo.
-        bk = derive_variant_chain({"eth1/1": _cage(BLACKKITE_LIKE)})
+        bk = derive_variant_chain({"eth1/1": make_cage(BLACKKITE_LIKE)})
         with pytest.raises(VariantError):
             parse_variant("4x200G", bk)
         assert is_well_formed("4x200G")
@@ -133,7 +95,7 @@ class TestFullMappingLoader:
         mapping = {
             "platformSupportedProfiles": [
                 {"factor": {"profileID": pid}, "profile": {"speed": speed, "iphy": {"numLanes": lanes}}}
-                for pid, (speed, lanes) in _PROFILES.items()
+                for pid, (speed, lanes) in PROFILES.items()
             ],
             "ports": {},
         }
@@ -183,35 +145,6 @@ class TestFullMappingLoader:
         assert four.supported == 0 and four.excluded_by_reason == {"platform": 1}
 
 
-class TestShippedWrappers:
-    """Every variant wrapper file must name a variant a real platform can run.
-
-    Checked against the shipped mappings, not fixtures: the failure this guards
-    against is chain derivation drifting away from what platforms actually
-    offer, which turns every wrapper into a silent SKIP.
-    """
-
-    @staticmethod
-    def _wrapper_variants():
-        return {
-            path.name: load_test_context(str(path)).get("variant")
-            for directory in ("tests/link", "tests/qsfp")
-            for path in sorted(repo_dir(Path(directory)).glob("*_hw_tests_*.py"))
-        }
-
-    def test_every_wrapper_variant_is_offered_by_a_shipped_platform(self):
-        offered = set()
-        for config_name in _FLEET_CONFIG_NAMES:
-            offered.update(
-                v.name for v in derive_variant_chain(load_full_platform_mapping(config_name))
-            )
-        assert offered, "no platform mappings readable; check the test's runfiles"
-        wrappers = {n: v for n, v in self._wrapper_variants().items() if v}
-        assert wrappers, "no variant wrapper files found"
-        unrunnable = {name: v for name, v in wrappers.items() if v not in offered}
-        assert not unrunnable, f"wrappers no shipped platform can run: {unrunnable}"
-
-
 class TestResolvePair:
     def test_happy_path_4x_slots(self):
         res = resolve_pair("eth1/1/1", "eth1/2/1", V4X200, CAGES, NO_CONSTRAINTS, {})
@@ -229,7 +162,7 @@ class TestResolvePair:
         assert res.ok and len(res.subport_pairs) == 8
 
     def test_platform_missing_subport(self):
-        cages = {"eth1/1": _cage(FULL), "eth1/2": _cage(PIPE_LIMITED)}
+        cages = {"eth1/1": make_cage(FULL), "eth1/2": make_cage(PIPE_LIMITED)}
         res = resolve_pair("eth1/1/1", "eth1/2/1", V4X200, cages, NO_CONSTRAINTS, {})
         assert not res.ok and res.reason == "platform"
 
@@ -242,12 +175,12 @@ class TestResolvePair:
         res = resolve_pair("eth1/1/1", "eth1/2/1", V4X200, CAGES, host_speeds, {})
         assert not res.ok and res.reason == "module"
 
-    def test_module_none_or_empty_unconstrained(self):
-        for value in (None, []):
-            res = resolve_pair(
-                "eth1/1/1", "eth1/2/1", V4X200, CAGES, {"eth1/1/1": value, "eth1/2/1": value}, {}
-            )
-            assert res.ok
+    @pytest.mark.parametrize("value", [None, []])
+    def test_module_none_or_empty_unconstrained(self, value):
+        res = resolve_pair(
+            "eth1/1/1", "eth1/2/1", V4X200, CAGES, {"eth1/1/1": value, "eth1/2/1": value}, {}
+        )
+        assert res.ok
 
     def test_module_both_peers_checked_independently(self):
         host_speeds = {"eth1/1/1": [200000], "eth1/2/1": [100000]}
@@ -282,13 +215,11 @@ class TestResolvePair:
         )
         assert res.ok
 
-    def test_module_falls_back_to_host_speeds_without_host_apps(self):
+    @pytest.mark.parametrize("host_apps", [None, {}, {"eth1/2/1": None}, {"eth1/2/1": []}])
+    def test_module_falls_back_to_host_speeds_without_host_apps(self, host_apps):
         speeds = {"eth1/2/1": [100000, 800000]}
-        for host_apps in (None, {}, {"eth1/2/1": None}, {"eth1/2/1": []}):
-            res = resolve_pair(
-                "eth1/1/1", "eth1/2/1", V4X200, CAGES, speeds, {}, host_apps=host_apps
-            )
-            assert not res.ok and res.reason == "module", host_apps
+        res = resolve_pair("eth1/1/1", "eth1/2/1", V4X200, CAGES, speeds, {}, host_apps=host_apps)
+        assert not res.ok and res.reason == "module"
 
     def test_module_host_apps_both_peers_checked_independently(self):
         host_apps = {"eth1/1/1": [(100000, 1)], "eth1/2/1": [(200000, 1)]}
@@ -322,21 +253,10 @@ class TestResolvePair:
 
     def test_peer_profile_mismatch(self, monkeypatch):
         # Give the peer cage a second 200G/2-lane profile so its pick differs.
-        alt = dict(_PROFILES)
-        alt[26] = (200000, 2)
         monkeypatch.setattr(variants, "_profile_medium_by_id", lambda: {})
-        peer_subports = {sub: list(pids) for sub, pids in FULL.items()}
-        for sub in (1, 3, 5, 7):
-            peer_subports[sub] = peer_subports[sub] + [26]
-        peer = variants.CageInfo(
-            controlling="eth1/2/1",
-            lanes=8,
-            subports={
-                sub: variants.SubportInfo(200 + sub, {pid: alt[pid] for pid in pids})
-                for sub, pids in peer_subports.items()
-            },
-        )
-        cages = {"eth1/1": _cage(FULL), "eth1/2": peer}
+        peer_subports = {sub: pids + [26] if sub in (1, 3, 5, 7) else pids for sub, pids in FULL.items()}
+        peer = make_cage(peer_subports, base_id=200, profiles={**PROFILES, 26: (200000, 2)})
+        cages = {"eth1/1": make_cage(FULL), "eth1/2": peer}
         res = resolve_pair("eth1/1/1", "eth1/2/1", V4X200, cages, NO_CONSTRAINTS, {})
         assert not res.ok and res.reason == "peer"
 
@@ -371,7 +291,7 @@ class TestResolveCage:
     def test_ok_while_its_peer_is_not(self):
         # The case the qsfp self-pairs rely on: one end resolves alone even
         # though the pair does not.
-        cages = {"eth1/1": _cage(FULL), "eth1/2": _cage(PIPE_LIMITED)}
+        cages = {"eth1/1": make_cage(FULL), "eth1/2": make_cage(PIPE_LIMITED)}
         assert resolve_cage("eth1/1/1", V4X200, cages, NO_CONSTRAINTS, {}).ok
         assert not resolve_pair("eth1/1/1", "eth1/2/1", V4X200, cages, NO_CONSTRAINTS, {}).ok
 
@@ -384,10 +304,10 @@ class TestResolvePairs:
         "eth1/4/1": "eth1/3/1",
     }
     CAGES4 = {
-        "eth1/1": _cage(FULL, base_id=100),
-        "eth1/2": _cage(FULL, base_id=200),
-        "eth1/3": _cage(PIPE_LIMITED, base_id=300),
-        "eth1/4": _cage(FULL, base_id=400),
+        "eth1/1": make_cage(FULL, base_id=100),
+        "eth1/2": make_cage(FULL, base_id=200),
+        "eth1/3": make_cage(PIPE_LIMITED, base_id=300),
+        "eth1/4": make_cage(FULL, base_id=400),
     }
 
     def test_mixed_support_counts_and_expansion(self):
@@ -413,132 +333,3 @@ class TestResolvePairs:
         b = resolve_pairs(dict(reversed(list(self.PAIRS.items()))), V4X200, self.CAGES4, NO_CONSTRAINTS, {})
         assert a.expanded_pairs == b.expanded_pairs
         assert a.profile_overrides == b.profile_overrides
-
-
-class TestVariantSkipReporting:
-    """A variant this DUT cannot run reports as skipped, not as an infra error.
-
-    A bare pytest skip leaves no tr.xml and the executor turns that into
-    FILE_ERR, which would brand every platform that lacks a variant as broken.
-    """
-
-    def _runner(self, monkeypatch, variant):
-        runner = QsfpTestRunner()
-        runner.tc = {"variant": variant, "model": "unused"}
-        recorded = {}
-        monkeypatch.setattr(
-            runner,
-            "_merge_junit_results",
-            lambda passes, skipped=(): recorded.update(passes=list(passes), skipped=list(skipped)),
-        )
-        monkeypatch.setattr(
-            runner, "normalize_test_results_file", lambda: recorded.update(normalized=True)
-        )
-        monkeypatch.delenv("TEST_PORTS_INFO", raising=False)
-        return runner, recorded
-
-    def test_unsupported_variant_writes_skipped_junit(self, monkeypatch):
-        runner, recorded = self._runner(monkeypatch, "2x400G")
-        assert runner._run_test_impl({}, skip_tr_xml=False) is True
-        assert recorded["passes"] == []
-        assert recorded["skipped"] == [
-            ("2x400G", "variant runs require TEST_PORTS_INFO cabling data")
-        ]
-        assert recorded["normalized"]
-
-    def test_skip_writes_no_junit_when_caller_owns_the_xml(self, monkeypatch):
-        runner, recorded = self._runner(monkeypatch, "2x400G")
-        assert runner._run_test_impl({}, skip_tr_xml=True) is True
-        assert not recorded
-
-    def test_malformed_variant_is_a_hard_error(self, monkeypatch):
-        # A typo must not masquerade as missing coverage, so it has to escape
-        # the skip path even though an unsupported-but-valid name does not.
-        runner, _ = self._runner(monkeypatch, "fast")
-        monkeypatch.setenv("TEST_PORTS_INFO", "ports.json")
-        monkeypatch.setattr(runner, "_load_cabling", lambda path: ([], [], {}))
-        monkeypatch.setattr(
-            runner, "_full_platform_mapping", lambda config_name: {"eth1/1": _cage(FULL)}
-        )
-        runner.tc["model"] = "NH-BW800-F"
-        with pytest.raises(VariantError):
-            runner._run_test_impl({}, skip_tr_xml=False)
-
-    def _runner_with_mapping(self, monkeypatch, variant):
-        runner, recorded = self._runner(monkeypatch, variant)
-        monkeypatch.setenv("TEST_PORTS_INFO", "ports.json")
-        monkeypatch.delenv("TEST_SNAKE_PAIRS", raising=False)
-        monkeypatch.setattr(runner, "_load_cabling", lambda path: ([], [], {}))
-        monkeypatch.setattr(
-            runner, "_full_platform_mapping", lambda config_name: {"eth1/1": _cage(FULL)}
-        )
-        runner.tc["model"] = "NH-BW800-F"
-        return runner, recorded
-
-    def test_denylisted_variant_writes_skipped_junit(self, monkeypatch):
-        runner, recorded = self._runner_with_mapping(monkeypatch, "8x100G")
-        assert runner._run_test_impl({}, skip_tr_xml=False) is True
-        assert recorded["passes"] == []
-        [(name, reason)] = recorded["skipped"]
-        assert name == "8x100G"
-        assert reason.startswith("variant 8x100G is disabled on wedge800bact: ")
-        assert "SAI create_port" in reason
-
-    def test_denylist_leaves_other_variants_alone(self, monkeypatch):
-        runner, recorded = self._runner_with_mapping(monkeypatch, "2x400G")
-        assert runner._run_test_impl({}, skip_tr_xml=False) is True
-        # Past the denylist gate, stopped only by the missing cabling data.
-        assert recorded["skipped"] == [
-            ("2x400G", "variant runs require TEST_SNAKE_PAIRS cabling data")
-        ]
-
-    def test_explicit_max_matches_an_absent_key(self, monkeypatch):
-        explicit, _ = self._runner(monkeypatch, "max")
-        absent, _ = self._runner(monkeypatch, None)
-        assert explicit._is_variant_run() is absent._is_variant_run() is False
-
-    def test_max_run_never_loads_the_platform_mapping(self, monkeypatch):
-        # A model whose mapping is missing still has to run at max.
-        runner, _ = self._runner(monkeypatch, None)
-        monkeypatch.setenv("TEST_PORTS_INFO", "ports.json")
-        monkeypatch.setattr(runner, "_load_cabling", lambda path: ([], [], {}))
-        def _boom(config_name):
-            raise AssertionError("max path must not load the platform mapping")
-        monkeypatch.setattr(runner, "_full_platform_mapping", _boom)
-        runner.tc["model"] = "NH-BW800-F"
-        assert runner._requested_variant("wedge800bact").is_max
-
-    def test_unusable_mapping_is_an_error_not_a_skip(self, monkeypatch):
-        # A mapping that parses to nothing means schema drift, which must not
-        # look like "this platform does not offer the variant".
-        runner, _ = self._runner(monkeypatch, "2x400G")
-        monkeypatch.setattr(runner, "_full_platform_mapping", lambda config_name: {})
-        with pytest.raises(RuntimeError, match="yielded no cages"):
-            runner._requested_variant("wedge800bact")
-
-    def test_max_run_is_untouched(self, monkeypatch):
-        runner, recorded = self._runner(monkeypatch, None)
-        monkeypatch.setattr(
-            BaseHwTestRunner, "_run_test_impl", lambda self, tc, skip_tr_xml=False: "ran"
-        )
-        assert runner._run_test_impl({}, skip_tr_xml=False) == "ran"
-        assert not recorded
-
-
-class TestLoadCablingHostApps:
-    def test_host_apps_load_as_tuples_and_missing_is_unknown(self, tmp_path):
-        ports_info = tmp_path / "ports_info.json"
-        ports_info.write_text(json.dumps({
-            "eth1/1/1": {"media_technology": "PASSIVE_CU", "host_apps": [[400000, 2], [800000, 4]]},
-            "eth1/2/1": {"media_technology": "PASSIVE_CU", "host_apps": None},
-            "eth1/3/1": {"media_technology": "PASSIVE_CU", "host_apps": []},
-            "eth1/4/1": {"media_technology": "PASSIVE_CU"},
-        }))
-        runner = QsfpTestRunner()
-        runner._load_cabling(str(ports_info))
-        assert runner._host_apps_by_port == {
-            "eth1/1/1": [(400000, 2), (800000, 4)],
-            "eth1/2/1": None,
-            "eth1/3/1": None,
-            "eth1/4/1": None,
-        }

@@ -1,11 +1,12 @@
 load("@rules_python//python:defs.bzl", "py_library")
-load("//bazel_lib:pytest.bzl", "run_all_pytests")
 
 # Test runner runs within the nhtests-run environment, use the same python libs
 _PIP = "@nhtools_itests_pip//"
 
 # Runner files whose test_context["filters"] are checked by
-# //fboss:filter_overlap_test.
+# //fboss:filter_overlap_test. The unit tests under
+# libs/test_runner/unittests/ are their own package, so this glob does not
+# reach them.
 filegroup(
     name = "runner_py_srcs",
     srcs = glob(["**/*.py"]),
@@ -14,16 +15,18 @@ filegroup(
 
 # The runner package under test, plus the tests.libs.device SSH/SCP helpers it
 # imports and the __init__ files that make `tests.libs.*` importable at all.
+# libs/test_runner/unittests is its own package, so the glob stops short of it.
 py_library(
     name = "test_runner",
     srcs = [
         "__init__.py",
         "libs/__init__.py",
-    ] + glob(
-        ["libs/test_runner/**/*.py"],
-        exclude = ["libs/test_runner/**/test_*.py"],
-    ) + glob(["libs/device/*.py"]),
+    ] + glob([
+        "libs/test_runner/**/*.py",
+        "libs/device/*.py",
+    ]),
     imports = [".."],
+    visibility = ["//fboss/tests:__subpackages__"],
     deps = [
         _PIP + "paramiko",
         _PIP + "pexpect",
@@ -32,44 +35,15 @@ py_library(
     ],
 )
 
-run_all_pytests(
-    path = "libs/test_runner",
-    imports = [".."],
-    per_test_data = {
-        # Scrapes the upstream on-DUT runner package's runners/*.py for the
-        # binary names each runner's BINARIES mirrors.
-        "test_runner_deploy": ["//fboss:run_scripts_py"],
-        # Reads fboss_init.sh's flag composition and the descriptors' declared
-        # variantAttributes to check they agree.
-        "test_variant_flags": ["//fboss:variant_flag_inputs"],
-        # The bucket modules are exec'd (not imported) to read their
-        # test_context, the hw_bench_configs check stats every benchmarked
-        # platform's config, and BenchmarkFramework is imported from the
-        # upstream on-DUT runner package -- so all three trees have to be in
-        # runfiles rather than just on the path.
-        "test_benchmark_buckets": [
-            "//fboss:hw_bench_configs",
-            "//fboss:run_scripts_py",
-        ] + glob([
-            "agent_hw/benchmarks/*.py",
-            "qsfp/*.py",
-        ]),
-        # Imports the variant wrapper files (via load_test_context) to check
-        # each one names a variant some shipped platform can actually run.
-        "test_variants": glob([
-            "link/*.py",
-            "qsfp/*.py",
-        ]) + ["//fboss:platform_mapping_inputs"],
-        # Profile picks read per-profile lane counts from switch_config.thrift.
-        "test_qsfp_config_gen": ["//fboss:platform_mapping_inputs"],
-        # Builds a cabling plan from a qsfp base config and its platform mapping.
-        "test_filter_override": [
-            "//fboss:platform_mapping_inputs",
-            "//fboss:qsfp_test_configs",
-        ],
-    },
-    deps = [
-        ":test_runner",
-        _PIP + "pytest",
-    ],
+# Hardware test modules the manifest-consistency guards exec by path: the
+# benchmark buckets and the link/qsfp variant wrappers. They live in this
+# package, so the unit-test package below cannot glob them itself.
+filegroup(
+    name = "hw_test_modules",
+    srcs = glob([
+        "agent_hw/benchmarks/*.py",
+        "link/*.py",
+        "qsfp/*.py",
+    ]),
+    visibility = ["//fboss/tests:__subpackages__"],
 )
