@@ -51,6 +51,18 @@
     },
     "conditional_settings": [
       {
+        "name": "uncached_port_stats_for_tests",
+        "description": "Enables uncached port statistics for the hardware test and link test profiles.",
+        "condition": {
+          "source": "asic_config_params",
+          "param": "config_gen_type",
+          "in": ["HW_TEST", "LINK_TEST"]
+        },
+        "apply": {
+          "global": {"sai_uncached_port_stats": "0x1"}
+        }
+      },
+      {
         "name": "large_ecmp_member_capacity",
         "description": "Expands the secondary ECMP member table for workloads requiring additional ECMP member capacity.",
         "condition": {

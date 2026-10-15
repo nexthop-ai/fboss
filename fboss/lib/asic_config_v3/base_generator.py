@@ -66,27 +66,6 @@ def resolve_variant_config(
     )
 
 
-# Sections of a variant config from which a condition may read its parameter.
-_CONDITION_SOURCES: tuple[str, ...] = ("asic_config_params", "features")
-
-# Condition operators, each mapped to its test of (parameter value, operand).
-# Each negative operator is the strict complement of its positive counterpart.
-_CONDITION_OPERATORS: dict[str, Callable[[Any, Any], bool]] = {
-    "equals": lambda value, operand: value == operand,
-    "not_equals": lambda value, operand: value != operand,
-    "in": lambda value, operand: value in operand,
-    "not_in": lambda value, operand: value not in operand,
-    "starts_with": lambda value, operand: isinstance(value, str)
-    and value.startswith(operand),
-    "not_starts_with": lambda value, operand: not (
-        isinstance(value, str) and value.startswith(operand)
-    ),
-}
-
-# Keys of a conditional-setting entry that do not name an effect.
-_ENTRY_KEYS: frozenset[str] = frozenset({"name", "description", "condition"})
-
-
 class BaseAsicConfigGenerator(ABC):
     """Abstract base class for ASIC config generators.
 

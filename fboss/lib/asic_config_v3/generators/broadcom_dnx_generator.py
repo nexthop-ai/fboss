@@ -35,75 +35,6 @@ class BroadcomDnxGenerator(BaseAsicConfigGenerator):
         # settings may target. Single-NPU platforms have only the common section.
         self.sections: dict[str, dict[str, str]] = {"common": self.common}
 
-<<<<<<< HEAD
-        self._load_vendor_configs()
-        self._validate_conditional_settings()
-
-        output_structure = self.platform_config.get("output_structure", {})
-        self.output_mode: str = output_structure.get("mode", "common_only")
-        if self.output_mode != "common_only":
-            raise NotImplementedError(
-                f"output_structure.mode '{self.output_mode}' is not supported; "
-                "only single-NPU (common_only) platforms are implemented"
-            )
-
-        # A variant may target a sibling platform_mapping_v2 directory rather
-        # than the platform's own when several variants share an asic_config
-        # but consume different lane / polarity data.
-        mapping_name = self.variant_config.get(
-            "platform_mapping_name", self.platform_name
-        )
-        self.parser = PlatformMappingParser(
-            discover_platform_mapping_inputs(self.paths.platforms_dir), mapping_name
-        )
-
-    @property
-    def output_extension(self) -> str:
-        return ".json"
-
-    def _load_vendor_configs(self) -> None:
-        """Load the per-ASIC config JSON."""
-        asic_config_path = os.path.join(
-            self.paths.asic_vendors_dir,
-            self.asic_vendor,
-            self.ASIC_FAMILY,
-            "asics",
-            f"{self.asic_name}.json",
-        )
-        with open(asic_config_path) as f:
-            self.asic_config = json.load(f)
-
-    def _apply_base_sdk_settings(self) -> None:
-        """Apply the ASIC-wide SDK settings emitted for every variant."""
-        self.common.update(self.asic_config.get("base_sdk_settings", {}))
-
-    def _apply_declarative_tables(self) -> None:
-        """Emit the declarative ASIC tables.
-
-        The tables cover port speeds, TM port headers, DTM flow regions, and
-        flow remote cores.
-        """
-        tables = self.asic_config.get("declarative_tables", {})
-
-        self.common.update(tables.get("port_speed_map", {}))
-
-        # Dual-stage port configs select the dual-stage TM port header variant.
-        tm_port_header_map = tables.get("tm_port_header_map", {})
-        if tm_port_header_map:
-            port_config = self.asic_config_params.get("port_config", "default")
-            tm_variant = (
-                "dual_stage_3q_2q"
-                if port_config.startswith("dual_stage")
-                else "default"
-            )
-            if tm_variant not in tm_port_header_map:
-                raise ValueError(
-                    f"tm_port_header_map has no '{tm_variant}' variant, "
-                    f"required by port_config '{port_config}'"
-                )
-            self.common.update(tm_port_header_map[tm_variant])
-||||||| c31f2b21c7
-=======
         self._load_asic_vendor_input_configs()
         self._validate_conditional_settings()
 
@@ -156,7 +87,6 @@ class BroadcomDnxGenerator(BaseAsicConfigGenerator):
         self.common.update(tables.get("port_speed_map", {}))
 
         self.common.update(tables.get("tm_port_headers", {}))
->>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
 
         region_map = tables.get("dtm_flow_region_map")
         if region_map:

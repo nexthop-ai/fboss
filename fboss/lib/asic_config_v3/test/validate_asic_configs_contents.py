@@ -426,17 +426,12 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
         )
         try:
             reference_path, reference = self._read_reference(
-<<<<<<< HEAD
-                paths, materialized_relative_path, output_filename, extension
-||||||| c31f2b21c7
-                paths, materialized_relative_path, output_filename
-=======
                 paths,
                 materialized_relative_path,
                 platform,
                 variant,
                 output_filename,
->>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
+                extension,
             )
         except FileNotFoundError as error:
             allow_missing = (
@@ -856,15 +851,7 @@ def main() -> None:
         action="store_true",
         help=(
             "Compare the checked-in generated files against their references "
-<<<<<<< HEAD
-            "instead of regenerating them. Does not run the generators, so it "
-            "does not catch generator regressions."
-||||||| c31f2b21c7
-            "instead of regenerating them. Skips the generators entirely, so "
-            "it does not catch generator regressions."
-=======
             "instead of regenerating them. Does not catch generator regressions."
->>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
         ),
     )
     args = parser.parse_args()

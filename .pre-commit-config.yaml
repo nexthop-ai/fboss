@@ -27,12 +27,7 @@ repos:
         exclude: (\.patch|\.materialized_JSON)$
       - id: end-of-file-fixer
         # asic_config generated outputs carry no trailing newline by design.
-<<<<<<< HEAD
         exclude: (\.patch|\.materialized_JSON)$|^fboss/configs/platforms/[^/]+/[^/]+/asic_config/generated/
-||||||| c31f2b21c7
-=======
-        exclude: ^fboss/configs/platforms/[^/]+/[^/]+/asic_config/generated/
->>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
       - id: check-yaml
         # asic_config generated outputs are multi-document YAML with complex
         # mapping keys that PyYAML cannot load; they are generated artifacts.
