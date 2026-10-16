@@ -21,6 +21,7 @@
 namespace facebook::fboss {
 
 // Parsed `community-list <name> [<attribute> <value> ...]`, validated at
+<<<<<<< HEAD
 // construction. A CommunityList is keyed by <name>. Its inline Community
 // members are their own subcommand
 // (CmdConfigProtocolBgpPolicyCommunityListCommunity), not attributes.
@@ -63,6 +64,53 @@ struct CmdConfigProtocolBgpPolicyCommunityListTraits
     // No positionals_at_end() here: CLI11 must stay free to classify the
     // `community` token as this command's subcommand rather than swallowing it
     // into args. See CmdConfigProtocolBgpPolicyAsPathListTraits.
+||||||| c31f2b21c7
+=======
+// construction. A CommunityList is keyed by <name>. Its values are a flat
+// string list in the daemon, so they are flat `community` attributes here
+// (one per invocation), not nested entries. Mirrors BgpAsPathListConfig.
+//
+// Grammar (from the FBOSS proposed syntax):
+//   community-list <name>                            (create/select list)
+//   community-list <name> boolean-operator <AND|OR>  (list attribute)
+//   community-list <name> community <community>      (append to communities,
+//                                                     the field bgpd matches
+//                                                     on)
+//   community-list <name> description <string>       (list attribute)
+//   community-list <name> exact-match <true|false>   (list attribute)
+class BgpCommunityListConfig : public utils::BaseObjectArgType<std::string> {
+ public:
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  /* implicit */ BgpCommunityListConfig(std::vector<std::string> v);
+  const std::string& listName() const {
+    return listName_;
+  }
+  const std::string& attr() const {
+    return attr_;
+  }
+  const std::vector<std::string>& values() const {
+    return values_;
+  }
+  const static utils::ObjectArgTypeId id =
+      utils::ObjectArgTypeId::OBJECT_ARG_TYPE_ID_MESSAGE;
+
+ private:
+  std::string listName_;
+  std::string attr_; // matched dispatch key ("" = bare create)
+  std::vector<std::string> values_;
+};
+
+// Single handler for the whole `config protocol bgp policy community-list`
+// family; dispatch and per-attribute parsing live in the .cpp so a new tunable
+// is a one-entry change. Mirrors CmdConfigProtocolBgpPolicyAsPathList.
+struct CmdConfigProtocolBgpPolicyCommunityListTraits
+    : public WriteCommandTraits {
+  using ParentCmd = CmdConfigProtocolBgpPolicy;
+  static void addCliArg(CLI::App& cmd, std::vector<std::string>& args) {
+    // Stops CLI11 from classifying attribute tokens as subcommands once the
+    // list name is consumed. See CmdConfigProtocolBgpNeighborTraits.
+    cmd.positionals_at_end();
+>>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
     cmd.add_option("args", args, "<name> [<attribute> <value> ...]");
   }
   using ObjectArgType = BgpCommunityListConfig;

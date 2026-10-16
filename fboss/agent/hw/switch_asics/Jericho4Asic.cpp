@@ -297,10 +297,16 @@ bool Jericho4Asic::isSupported(Feature feature) const {
     case HwAsic::Feature::ACL_DST_IPV6_WORD_QUALIFIERS:
     case HwAsic::Feature::SLL_HLL_DISCARD_COUNTERS:
     case HwAsic::Feature::NEXT_HOP_GROUP_MEMBER_MONITORED_OBJECT:
+    case HwAsic::Feature::MY_MAC:
     case HwAsic::Feature::ISOLATION_GROUP:
+<<<<<<< HEAD
     case HwAsic::Feature::PORT_SERDES_CREATED_WITH_PORT:
     case HwAsic::Feature::SYSTEM_PORT_CORE_INDEX_FROM_PORT:
     case HwAsic::Feature::TAJO_RX_SERDES_PARAMETERS:
+||||||| c31f2b21c7
+=======
+    case HwAsic::Feature::ACL_ENTRY_OUT_PORT_QUALIFIER:
+>>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
       return false;
   }
   return false;

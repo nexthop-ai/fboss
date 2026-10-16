@@ -9,9 +9,11 @@
  */
 
 #include "fboss/agent/test/utils/ConfigUtils.h"
+#include <algorithm>
+#include <array>
+#include <filesystem>
 #include <memory>
 
-#include "fboss/agent/AgentConfig.h"
 #include "fboss/agent/AgentFeatures.h"
 #include "fboss/agent/FbossError.h"
 #include "fboss/agent/SwSwitch.h"
@@ -25,6 +27,8 @@
 #include "fboss/lib/config/agent/AclConfigUtils.h"
 
 #include <fmt/format.h>
+#include <folly/FileUtil.h>
+#include <folly/String.h>
 #include "folly/testing/TestUtil.h"
 
 DEFINE_bool(nodeZ, false, "Setup test config as node Z");
@@ -33,6 +37,36 @@ DECLARE_string(mode);
 namespace facebook::fboss::utility {
 
 namespace {
+// Tomahawk6 ASICs have no fixed PCI address. A NetLake 1.0 (Intel) COM-E
+// splits PCIe across several host bridges and puts both ASICs behind the one
+// based at bus 0x14, so they land at 0x15/0x18. NetLake 2.0 (AMD) has a single
+// root complex numbering from bus 1, so the same ASICs land at 0x03/0x04.
+// Discover them by vendor/device ID rather than assuming either layout.
+std::vector<std::string> discoverTomahawk6PciAddrs() {
+  constexpr folly::StringPiece kBroadcomVendorId{"0x14e4"};
+  constexpr folly::StringPiece kTomahawk6DeviceId{"0xf914"};
+
+  std::vector<std::string> pciAddrs;
+  std::error_code ec;
+  for (const auto& entry :
+       std::filesystem::directory_iterator("/sys/bus/pci/devices", ec)) {
+    std::string vendor, device;
+    if (!folly::readFile((entry.path() / "vendor").c_str(), vendor) ||
+        !folly::readFile((entry.path() / "device").c_str(), device)) {
+      continue;
+    }
+    if (folly::trimWhitespace(vendor) != kBroadcomVendorId ||
+        folly::trimWhitespace(device) != kTomahawk6DeviceId) {
+      continue;
+    }
+    // Drop the function suffix: 0000:03:00.0 -> 0000:03:00
+    auto bdf = entry.path().filename().string();
+    pciAddrs.push_back(bdf.substr(0, bdf.find_last_of('.')));
+  }
+  std::sort(pciAddrs.begin(), pciAddrs.end());
+  return pciAddrs;
+}
+
 int getRdswSysPortBlockSize(
     std::optional<PlatformType> platformType = std::nullopt) {
   // For dual stage 3/2q mode, sys ports are allocated in 2 blocks of 28 while
@@ -742,14 +776,6 @@ std::string getConnectionHandle(int64_t switchId, cfg::AsicType asicType) {
   }
 }
 
-bool deployedConfigIsSai() {
-  try {
-    return isSaiConfig(*AgentConfig::fromDefaultFile()->thrift.sw());
-  } catch (const FbossError&) {
-    return false;
-  }
-}
-
 cfg::SwitchConfig genPortVlanCfg(
     const PlatformMapping* platformMapping,
     const HwAsic* asic,
@@ -791,9 +817,22 @@ cfg::SwitchConfig genPortVlanCfg(
          platformType.value() == PlatformType::PLATFORM_LEH800BCLS)) {
       portIdRange.maximum() =
           cfg::switch_config_constants::DEFAULT_PORT_ID_RANGE_MAX();
+      std::array<std::string, 2> pciAddrs{"0000:15:00", "0000:18:00"};
+      auto discoveredPciAddrs = discoverTomahawk6PciAddrs();
+      if (discoveredPciAddrs.size() == pciAddrs.size()) {
+        std::copy(
+            discoveredPciAddrs.begin(),
+            discoveredPciAddrs.end(),
+            pciAddrs.begin());
+      } else if (!discoveredPciAddrs.empty()) {
+        XLOG(WARN) << "Found " << discoveredPciAddrs.size()
+                   << " Tomahawk6 PCI devices, expected " << pciAddrs.size()
+                   << "; falling back to default connection handles";
+      }
       defaultSwitchIdToSwitchInfo.insert(
           {SwitchID(0),
-           generateSwitchInfo((SwitchID)0, portIdRange, "0000:15:00=0", asic)});
+           generateSwitchInfo(
+               (SwitchID)0, portIdRange, pciAddrs[0] + "=0", asic)});
       defaultHwAsicTable.insert({SwitchID(0), asic});
 
       // Add switch info for switch ID 1
@@ -808,7 +847,8 @@ cfg::SwitchConfig genPortVlanCfg(
 
       defaultSwitchIdToSwitchInfo.insert(
           {SwitchID(1),
-           generateSwitchInfo((SwitchID)1, portIdRange, "0000:18:00=0", asic)});
+           generateSwitchInfo(
+               (SwitchID)1, portIdRange, pciAddrs[1] + "=0", asic)});
       defaultHwAsicTable.insert({SwitchID(1), asic});
     } else {
       cfg::SwitchInfo switchInfo = generateSwitchInfo(
@@ -968,11 +1008,6 @@ cfg::SwitchConfig genPortVlanCfg(
       config.interfaces()->push_back(intf1);
     }
   }
-
-  if (deployedConfigIsSai()) {
-    config.switchSettings()->l2LearningMode() = cfg::L2LearningMode::SOFTWARE;
-  }
-
   return config;
 }
 

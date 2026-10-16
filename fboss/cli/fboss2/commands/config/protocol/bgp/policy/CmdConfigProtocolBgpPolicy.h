@@ -19,9 +19,9 @@
 namespace facebook::fboss {
 
 // Grouping node for `config protocol bgp policy <object-type> ...`. Holds no
-// state of its own; the per-object-type dispatchers (as-path-list, and later
-// community-list/prefix-list/routing-policy) are its subcommands. Mirrors
-// CmdConfigProtocolBgp.
+// state of its own; the per-object-type dispatchers (as-path-list,
+// community-list, and later prefix-list/routing-policy) are its subcommands.
+// Mirrors CmdConfigProtocolBgp.
 struct CmdConfigProtocolBgpPolicyTraits : public WriteCommandTraits {
   using ParentCmd = CmdConfigProtocolBgp;
   using ObjectArgType = std::monostate;

@@ -124,6 +124,22 @@ constexpr auto kHyperPortSpeed = cfg::PortSpeed::THREEPOINTTWOT;
 // and validate during a config change.
 std::optional<std::string> sharedBufferPoolName;
 
+// ECMP resource manager re-modes existing backup group routes' overrides
+// whenever the backup switching mode changes.
+bool ecmpOverrideModeChanged(
+    const SwitchState& orig,
+    const cfg::SwitchConfig& cfg) {
+  std::optional<cfg::SwitchingMode> oldMode;
+  if (auto flowletCfg = orig.getFlowletSwitchingConfig()) {
+    oldMode = flowletCfg->getBackupSwitchingMode();
+  }
+  std::optional<cfg::SwitchingMode> newMode;
+  if (auto flowletCfg = cfg.flowletSwitchingConfig()) {
+    newMode = *flowletCfg->backupSwitchingMode();
+  }
+  return oldMode != newMode;
+}
+
 StateDelta updateFibFromConfig(
     const facebook::fboss::SwitchIdScopeResolver* resolver,
     facebook::fboss::RouterID vrf,
@@ -1013,7 +1029,8 @@ shared_ptr<SwitchState> ThriftConfigApplier::run() {
         *cfg_->staticMplsRoutesWithNhops(),
         *cfg_->staticMplsRoutesToNull(),
         *cfg_->staticMplsRoutesToCPU(),
-        std::move(staticMySids));
+        std::move(staticMySids),
+        ecmpOverrideModeChanged(*orig_, *cfg_));
   } else if (rib_) {
     auto newFibInfo = updateForwardingInformationBaseInfo();
     if (newFibInfo) {
@@ -1039,7 +1056,8 @@ shared_ptr<SwitchState> ThriftConfigApplier::run() {
         *cfg_->staticMplsRoutesToCPU(),
         staticMySids,
         &updateFibFromConfig,
-        static_cast<void*>(&new_));
+        static_cast<void*>(&new_),
+        ecmpOverrideModeChanged(*orig_, *cfg_));
   } else {
     // switch state UTs don't necessary care about RIB updates
     XLOG(WARNING)
@@ -4879,6 +4897,33 @@ void ThriftConfigApplier::checkAcl(const cfg::AclEntry* config) const {
           std::to_string(AclEntry::kMaxIcmpCode));
     }
   }
+  if (auto tcpFlagsBitMap = config->tcpFlagsBitMap()) {
+    if (*tcpFlagsBitMap < 0 || *tcpFlagsBitMap > AclEntry::kMaxTcpFlags) {
+      throw FbossError(
+          "tcp flags bitmap must be between 0 and ",
+          std::to_string(AclEntry::kMaxTcpFlags));
+    }
+  }
+  if (auto tcpFlagsMask = config->tcpFlagsMask()) {
+    if (!config->tcpFlagsBitMap()) {
+      throw FbossError(
+          "tcp flags bitmap must be set when tcp flags mask is set");
+    }
+    if (*tcpFlagsMask < 1 || *tcpFlagsMask > AclEntry::kMaxTcpFlagsMask) {
+      throw FbossError(
+          "tcp flags mask must be between 1 and ",
+          std::to_string(AclEntry::kMaxTcpFlagsMask));
+    }
+    // Bits outside the mask are never compared, so a rule that sets them does
+    // not match what it appears to.
+    if (*config->tcpFlagsBitMap() & ~*tcpFlagsMask) {
+      throw FbossError(
+          "tcp flags bitmap ",
+          *config->tcpFlagsBitMap(),
+          " sets bits outside tcp flags mask ",
+          *tcpFlagsMask);
+    }
+  }
   // TODO(daiweix): check proto should be 58 if icmp type/code is specified
   // after CS00012373216 is resolved.
   if (config->icmpType() && config->proto() &&
@@ -4939,6 +4984,9 @@ shared_ptr<AclEntry> ThriftConfigApplier::createAcl(
   }
   if (auto tcpFlagsBitMap = config->tcpFlagsBitMap()) {
     newAcl->setTcpFlagsBitMap(*tcpFlagsBitMap);
+  }
+  if (auto tcpFlagsMask = config->tcpFlagsMask()) {
+    newAcl->setTcpFlagsMask(*tcpFlagsMask);
   }
   if (auto srcPort = config->srcPort()) {
     newAcl->setSrcPort(*srcPort);
@@ -6552,6 +6600,24 @@ shared_ptr<SwitchSettings> ThriftConfigApplier::updateSwitchSettings(
       switchSettingsChange = true;
     }
   }
+  {
+    const auto& myMacs = *cfg_->switchSettings()->myMacs();
+    if (!myMacs.empty() &&
+        !hwAsicTable_->isFeatureSupportedOnAllAsic(HwAsic::Feature::MY_MAC)) {
+      throw FbossError(
+          "myMacs (MY_MAC) is not supported on ",
+          folly::join(" ", hwAsicTable_->asicNames()));
+    }
+    for (const auto& myMac : myMacs) {
+      if (!folly::MacAddress::tryFromString(*myMac.macAddress()).hasValue()) {
+        throw FbossError("Invalid myMacs MAC address: ", *myMac.macAddress());
+      }
+    }
+    if (myMacs != origSwitchSettings->getMyMacs()) {
+      newSwitchSettings->setMyMacs(myMacs);
+      switchSettingsChange = true;
+    }
+  }
 
   if (switchSettingsChange) {
     return newSwitchSettings;
@@ -7252,7 +7318,8 @@ ThriftConfigApplier::createMirrorOnDropReport(
       *config->modEventToConfigMap(),
       *config->agingGroupAgingIntervalUsecs(),
       config->samplingRate().to_optional(),
-      config->dropPacketRateThreshold().to_optional());
+      config->dropPacketRateThreshold().to_optional(),
+      config->aggregateDropPacketRateThreshold().to_optional());
 }
 
 std::shared_ptr<MirrorOnDropReport>

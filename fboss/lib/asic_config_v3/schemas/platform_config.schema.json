@@ -78,7 +78,14 @@
                         },
                         "config_gen_type": {
                             "type": "string",
+<<<<<<< HEAD
                             "enum": ["DEFAULT", "HW_TEST", "BENCHMARK", "LINK_TEST"],
+||||||| c31f2b21c7
+                            "enum": ["DEFAULT", "HW_TEST"],
+                            "description": "Configuration generation profile. Controls which vendor configuration profile is applied."
+=======
+                            "enum": ["DEFAULT", "HW_TEST"],
+>>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
                             "description": "Configuration generation profile. Controls which vendor configuration profile is applied. Values must match the AsicConfigGenType enum in fboss/agent/hw/config/asic_config_v2.thrift."
                         },
                         "port_config": {
@@ -257,6 +264,14 @@
                         "generate_phb_control": {
                             "type": "boolean",
                             "description": "When true, emits the PHB_CONTROL output table from the ASIC phb_control_defaults block."
+                        },
+                        "enable_sai_managed_udf_groups": {
+                            "type": "boolean",
+                            "description": "When true, disables Broadcom SDK internal UDF groups so FBOSS can manage UDF objects through SAI."
+                        },
+                        "enable_large_ecmp_member_capacity": {
+                            "type": "boolean",
+                            "description": "When true, enables a platform-defined conditional setting that increases ECMP member capacity."
                         }
                     }
                 },

@@ -446,8 +446,7 @@
         72,
         86,
         4,
-        127,
-        132
+        133
     ],
     "tomahawk3": [
         2,
@@ -513,7 +512,8 @@
         88,
         124,
         126,
-        127
+        127,
+        133
     ],
     "tomahawk4": [
         2,
@@ -578,7 +578,8 @@
         86,
         87,
         79,
-        109
+        109,
+        133
     ],
     "tomahawk5": [
         2,
@@ -657,7 +658,8 @@
         117,
         122,
         119,
-        123
+        123,
+        133
     ],
     "tomahawk6": [
         2,
@@ -730,7 +732,8 @@
         123,
         49,
         111,
-        131
+        131,
+        133
     ],
     "tomahawkultra1": [
         2,
@@ -843,7 +846,8 @@
         112,
         113,
         49,
-        111
+        111,
+        134
     ]
   },
   "asicToFeatureNames": {
@@ -1293,8 +1297,7 @@
         "MODIFY_ACL_QUALIFIERS",
         "CLASS_ID_FOR_NEIGHBOR",
         "ACL_PORT_IN_DISCARDS_COUNTER",
-        "PORT_USER_METADATA",
-        "ACCESS_POLICY_CLASS_ID_ACL"
+        "MY_MAC"
     ],
     "tomahawk3": [
         "CPU_RX_TX",
@@ -1360,7 +1363,8 @@
         "INTER_PACKET_GAP",
         "EMPTY_ACL_MATCHER",
         "ACL_DENY_DATA_AND_CONTROL_PLANE",
-        "PORT_USER_METADATA"
+        "PORT_USER_METADATA",
+        "MY_MAC"
     ],
     "tomahawk4": [
         "CPU_RX_TX",
@@ -1425,7 +1429,8 @@
         "CLASS_ID_FOR_NEIGHBOR",
         "UDF_HASH",
         "PTP_TC_PROVISIONING_TIME_HW_VALIDATION",
-        "SAVE_SDK_STATE"
+        "SAVE_SDK_STATE",
+        "MY_MAC"
     ],
     "tomahawk5": [
         "CPU_RX_TX",
@@ -1504,7 +1509,8 @@
         "CABLE_LENGTH_MEASUREMENT",
         "ARS_SOURCE_PORT_PRUNE",
         "ADJACENCY_FRR",
-        "DROP_REASON_LIST_SUPPORT"
+        "DROP_REASON_LIST_SUPPORT",
+        "MY_MAC"
     ],
     "tomahawk6": [
         "CPU_RX_TX",
@@ -1577,7 +1583,8 @@
         "DROP_REASON_LIST_SUPPORT",
         "MIRROR_ON_DROP",
         "MIRROR_ON_DROP_STATELESS",
-        "MPLS_TTL_ACL"
+        "MPLS_TTL_ACL",
+        "MY_MAC"
     ],
     "tomahawkultra1": [
         "CPU_RX_TX",
@@ -1690,10 +1697,49 @@
         "PORT_DEBOUNCE",
         "SRV6_BINDING_SID",
         "MIRROR_ON_DROP",
-        "MIRROR_ON_DROP_STATELESS"
+        "MIRROR_ON_DROP_STATELESS",
+        "MIRROR_ON_DROP_AGGREGATE_RATE_LIMIT"
     ]
   },
   "featureSupportSpecs": [
+    {
+      "feature": 133,
+      "supportedFrom": [
+        {
+          "asics": [
+            "tomahawk",
+            "tomahawk3"
+          ],
+          "sdk": 1,
+          "minSdkVersion": "10.2.0.0_odp",
+          "note": "MY_MAC verified by AgentMyMacTest"
+        },
+        {
+          "asics": [
+            "tomahawk5"
+          ],
+          "sdk": 1,
+          "minSdkVersion": "11.7.0.0_odp",
+          "note": "MY_MAC verified by AgentMyMacTest"
+        },
+        {
+          "asics": [
+            "tomahawk4"
+          ],
+          "sdk": 1,
+          "minSdkVersion": "15.4.0.0_odp",
+          "note": "MY_MAC verified by AgentMyMacTest"
+        },
+        {
+          "asics": [
+            "tomahawk6"
+          ],
+          "sdk": 1,
+          "minSdkVersion": "16.0_ea_odp",
+          "note": "MY_MAC verified by AgentMyMacTest"
+        }
+      ]
+    },
     {
       "feature": 100,
       "supportedFrom": [

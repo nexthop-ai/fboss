@@ -205,14 +205,17 @@ cpp_unittest(
         "CmdShowInterfaceErrorsTest.cpp",
         "CmdShowInterfaceFlapsTest.cpp",  # bazelify: exclude
         "CmdShowInterfacePhyTest.cpp",
+        "CmdShowInterfacePhymapTest.cpp",
         "CmdShowInterfacePrbsTest.cpp",
         "CmdShowInterfaceStatusTest.cpp",
         "CmdShowInterfaceTest.cpp",
         "CmdShowInterfaceTrafficTest.cpp",
+        "CmdShowInterfaceTransceiverEepromTest.cpp",
         "CmdShowL2Test.cpp",
         "CmdShowLldpTest.cpp",
         "CmdShowMacDetailsTest.cpp",
         "CmdShowMirrorTest.cpp",
+        "CmdShowMyMacTest.cpp",
         "CmdShowMySidTest.cpp",
         "CmdShowNamedNextHopGroupsTest.cpp",
         "CmdShowNdpTest.cpp",
@@ -229,7 +232,6 @@ cpp_unittest(
         "CmdShowSystemPortTest.cpp",
         "CmdShowTeFlowTest.cpp",
         "CmdShowTechSupportTest.cpp",  # bazelify: exclude
-        "CmdShowTransceiverEepromTest.cpp",
         "CmdShowTransceiverLoopbackTest.cpp",
         "CmdShowTransceiverTest.cpp",  # bazelify: exclude
         "CmdShowVersionAgentTest.cpp",  # bazelify: exclude

@@ -78,6 +78,7 @@
 #include <folly/io/IOBuf.h>
 #include <folly/logging/xlog.h>
 #include <thrift/lib/cpp/util/EnumUtils.h>
+#include <algorithm>
 #include <memory>
 #include <thread>
 
@@ -172,6 +173,34 @@ UnicastRoute toUnicastRoute(
     tempRoute.overrideNextHops() = std::move(*overrideNextHops);
   }
   return tempRoute;
+}
+
+template <typename RouteT>
+RouteDetails toRouteDetails(
+    const std::shared_ptr<SwitchState>& state,
+    const std::shared_ptr<RouteT>& route,
+    const ClientNextHopsResolver& resolveClient) {
+  auto details = route->toRouteDetails(
+      getNonOverrideNormalizedNextHops(state, route->getForwardInfo()),
+      getNormalizedNextHops(state, route->getForwardInfo()),
+      resolveClient);
+  details.resolvedNextHops() = std::vector<NextHopThrift>();
+  auto preNormalizationNextHops = getNextHops(state, route->getForwardInfo());
+  const auto& bestEntry = route->getBestEntry().second;
+  if (bestEntry) {
+    auto clientNextHops = getClientNextHops(state, *bestEntry);
+    if (!clientNextHops.empty() &&
+        std::all_of(
+            clientNextHops.begin(), clientNextHops.end(), [](const auto& nhop) {
+              return nhop.isResolved();
+            })) {
+      preNormalizationNextHops = std::move(clientNextHops);
+    }
+  }
+  for (const auto& nhop : preNormalizationNextHops) {
+    details.resolvedNextHops()->push_back(nhop.toThrift());
+  }
+  return details;
 }
 
 void fillPortStats(
@@ -2255,10 +2284,7 @@ void ThriftHandler::getRouteTableDetails(std::vector<RouteDetails>& routes) {
       state,
       [&routes, &state, &resolveClient](
           const RouterID& /*rid*/, const auto& route) {
-        routes.emplace_back(route->toRouteDetails(
-            getNonOverrideNormalizedNextHops(state, route->getForwardInfo()),
-            getNormalizedNextHops(state, route->getForwardInfo()),
-            resolveClient));
+        routes.emplace_back(toRouteDetails(state, route, resolveClient));
       });
 }
 
@@ -2327,18 +2353,12 @@ void ThriftHandler::getIpRouteDetails(
   if (ipAddr.isV4()) {
     auto match = sw_->longestMatch(state, ipAddr.asV4(), RouterID(vrfId));
     if (match && match->isResolved()) {
-      route = match->toRouteDetails(
-          getNonOverrideNormalizedNextHops(state, match->getForwardInfo()),
-          getNormalizedNextHops(state, match->getForwardInfo()),
-          resolveClient);
+      route = toRouteDetails(state, match, resolveClient);
     }
   } else {
     auto match = sw_->longestMatch(state, ipAddr.asV6(), RouterID(vrfId));
     if (match && match->isResolved()) {
-      route = match->toRouteDetails(
-          getNonOverrideNormalizedNextHops(state, match->getForwardInfo()),
-          getNormalizedNextHops(state, match->getForwardInfo()),
-          resolveClient);
+      route = toRouteDetails(state, match, resolveClient);
     }
   }
 }
@@ -3376,6 +3396,15 @@ void ThriftHandler::setMacAddrsToBlock(
       });
 }
 
+void ThriftHandler::getMyMacs(std::vector<cfg::MacAndVlan>& myMacs) {
+  auto log = LOG_THRIFT_CALL_WITH_STATS(DBG1, sw_->stats());
+  ensureConfigured(__func__);
+  if (auto switchSettings =
+          utility::getFirstNodeIf(sw_->getState()->getSwitchSettings())) {
+    myMacs = switchSettings->getMyMacs();
+  }
+}
+
 void ThriftHandler::publishLinkSnapshots(
     std::unique_ptr<std::vector<std::string>> portNames) {
   auto log = LOG_THRIFT_CALL_WITH_STATS(DBG1, sw_->stats(), portNames);
@@ -3584,6 +3613,7 @@ void ThriftHandler::getNextHopGroups(
     }
 
     NextHopGroup thriftGroup;
+    thriftGroup.id() = setId;
     if (isNamed) {
       thriftGroup.name() = nameIter->second;
       auto refCountIter = refCounts.find(NextHopSetID(setId));
@@ -3634,6 +3664,7 @@ void ThriftHandler::getNamedNextHopGroups(
     foundNames.insert(name);
     NextHopGroup thriftGroup;
     thriftGroup.name() = name;
+    thriftGroup.id() = nextHopSetId;
     thriftGroup.isProgrammed() =
         refCounts.count(NextHopSetID(nextHopSetId)) > 0;
     try {

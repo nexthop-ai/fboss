@@ -148,6 +148,8 @@ enum ProductionFeature {
   CREDIT_BASED_FLOW_CONTROL = 130,
   MPLS_TTL_ACL = 131,
   ACCESS_POLICY_CLASS_ID_ACL = 132,
+  MY_MAC = 133,
+  MIRROR_ON_DROP_AGGREGATE_RATE_LIMIT = 134,
   # production feature which is present on all platforms, keep it at the end
   HW_SWITCH = 65536,
 }

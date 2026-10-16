@@ -163,6 +163,8 @@ struct RouteDetails {
   12: optional list<common.NextHopThrift> overridenNextHops;
   13: optional i64 resolvedNextHopSetID;
   14: optional i64 normalizedResolvedNextHopSetID;
+  // Resolved next hops before hardware normalization.
+  15: optional list<common.NextHopThrift> resolvedNextHops;
 }
 
 struct MplsRouteDetails {
@@ -787,6 +789,7 @@ enum HwObjectType {
   SRV6 = 27,
   NEXT_HOP_GROUP_MEMBER = 28,
   SAMPLE_PACKET = 29,
+  MY_MAC = 30,
 }
 
 exception FbossFibUpdateError {
@@ -1623,6 +1626,15 @@ service FbossCtrl extends phy.FbossCommonPhyCtrl {
   void setMacAddrsToBlock(
     1: list<switch_config.MacAndVlan> macAddrsToblock,
   ) throws (1: fboss.FbossBaseError error);
+
+  /*
+   * Get the list of additional router MACs (MY_MAC). Packets to these MACs on
+   * the given VLAN are routed, in addition to packets to the interface MAC.
+   * Empty if none are configured.
+   */
+  list<switch_config.MacAndVlan> getMyMacs() throws (
+    1: fboss.FbossBaseError error,
+  );
 
   # Deprecated
   list<TeFlowDetails> getTeFlowTableDetails() throws (

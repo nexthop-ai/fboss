@@ -17,18 +17,22 @@ thrift_library(
 cpp_library(
     name = "platform_check",
     srcs = [
+        "CommandLog.cpp",
         "PlatformCheck.cpp",
     ],
     headers = [
+        "CommandLog.h",
         "PlatformCheck.h",
     ],
     deps = [
+        "fbsource//third-party/fmt:fmt",
         "//fboss/platform/config_lib:config_lib",
         "//folly/logging:logging",
         "//thrift/lib/cpp2/protocol:protocol",
     ],
     exported_deps = [
         ":check_types-cpp2-types",
+        ":host",
         "//fboss/platform/platform_manager:platform_manager_config-cpp2-types",
     ],
 )
@@ -59,6 +63,13 @@ cpp_library(
     ],
     headers = [
         "RemoteHost.h",
+    ],
+    deps = [
+        "fbsource//third-party/fmt:fmt",
+        "//fboss/platform/helpers:expect_session",
+        "//folly:string",
+        "//folly/logging:logging",
+        "//folly/system:shell",
     ],
     exported_deps = [
         ":host",
@@ -97,15 +108,24 @@ cpp_library(
 cpp_library(
     name = "platform_checks",
     srcs = [
+        "HostEeprom.cpp",
+        "checks/BmcChecks.cpp",
+        "checks/CommandCheck.cpp",
         "checks/KernelVersionCheck.cpp",
         "checks/MacAddressCheck.cpp",
+        "checks/ManagementPlaneChecks.cpp",
         "checks/PciDeviceCheck.cpp",
         "checks/PowerResetCheck.cpp",
         "checks/i801SmbusTimeoutCheck.cpp",
     ],
     headers = [
+        "HostEeprom.h",
+        "checks/BmcChecks.h",
+        "checks/BmcReachableCheck.h",
+        "checks/CommandCheck.h",
         "checks/KernelVersionCheck.h",
         "checks/MacAddressCheck.h",
+        "checks/ManagementPlaneChecks.h",
         "checks/PciDeviceCheck.h",
         "checks/PowerResetCheck.h",
         "checks/i801SmbusTimeoutCheck.h",
@@ -115,14 +135,15 @@ cpp_library(
         "//common/config:configerator",
         "//configerator/structs/fboss/fboss_platform:kernel_versions-cpp2-types",
         "//fboss/platform/weutil:config_utils_lib",
+        "//folly:string",
+        "//folly/json:dynamic",
         "//folly/logging:logging",
+        "//folly/system:shell",
     ],
     exported_deps = [
+        ":host",
         ":platform_check",
-        "//fboss/platform/helpers:platform_fs_utils",
-        "//fboss/platform/helpers:platform_utils",
         "//fboss/platform/platform_manager:platform_manager_config-cpp2-types",
-        "//fboss/platform/weutil:fboss_eeprom_lib",
         "//folly:network_address",
     ],
 )
@@ -135,6 +156,7 @@ cpp_unittest(
     network_access = network_access_utils.none(),
     deps = [
         "fbsource//third-party/googletest:gmock",
+        ":mock_host",
         ":platform_checks",
     ],
 )
@@ -147,8 +169,8 @@ cpp_unittest(
     network_access = network_access_utils.none(),
     deps = [
         "fbsource//third-party/googletest:gmock",
+        ":mock_host",
         ":platform_checks",
-        "//fboss/platform/helpers:mock_platform_fs_utils",
     ],
 )
 
@@ -161,9 +183,8 @@ cpp_unittest(
     network_access = network_access_utils.none(),
     deps = [
         "fbsource//third-party/googletest:gmock",
+        ":mock_host",
         ":platform_checks",
-        "//fboss/platform/helpers:platform_fs_utils",
-        "//fboss/platform/helpers:platform_utils",
     ],
 )
 
@@ -189,9 +210,8 @@ cpp_unittest(
     network_access = network_access_utils.none(),
     deps = [
         "fbsource//third-party/googletest:gmock",
+        ":mock_host",
         ":platform_checks",
-        "//fboss/platform/helpers:mock_platform_fs_utils",
-        "//fboss/platform/helpers:mock_platform_utils",
     ],
 )
 
@@ -217,6 +237,7 @@ cpp_unittest(
     deps = [
         "fbsource//third-party/googletest:gmock",
         ":remote_host",
+        "//folly/testing:test_util",
     ],
 )
 
@@ -229,5 +250,43 @@ cpp_unittest(
     deps = [
         ":mock_host",
         ":platform_name",
+    ],
+)
+
+cpp_unittest(
+    name = "bmc_reachable_check_test",
+    srcs = [
+        "tests/BmcReachableCheckTest.cpp",
+    ],
+    network_access = network_access_utils.none(),
+    deps = [
+        ":mock_host",
+        ":platform_checks",
+    ],
+)
+
+cpp_unittest(
+    name = "management_plane_checks_test",
+    srcs = [
+        "tests/ManagementPlaneChecksTest.cpp",
+    ],
+    network_access = network_access_utils.none(),
+    deps = [
+        "fbsource//third-party/googletest:gmock",
+        ":mock_host",
+        ":platform_checks",
+    ],
+)
+
+cpp_unittest(
+    name = "bmc_checks_test",
+    srcs = [
+        "tests/BmcChecksTest.cpp",
+    ],
+    network_access = network_access_utils.none(),
+    deps = [
+        "fbsource//third-party/googletest:gmock",
+        ":mock_host",
+        ":platform_checks",
     ],
 )

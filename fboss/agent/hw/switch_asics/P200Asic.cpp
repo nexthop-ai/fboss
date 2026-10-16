@@ -274,9 +274,15 @@ bool P200Asic::isSupportedNonFabric(Feature feature) const {
     case HwAsic::Feature::NEXT_HOP_GROUP_MEMBER_MONITORED_OBJECT:
     case HwAsic::Feature::TAJO_RX_SERDES_PARAMETERS:
     case HwAsic::Feature::RX_PACKET_TYPE:
+    case HwAsic::Feature::MY_MAC:
     case HwAsic::Feature::ISOLATION_GROUP:
+<<<<<<< HEAD
     case HwAsic::Feature::PORT_SERDES_CREATED_WITH_PORT:
     case HwAsic::Feature::SYSTEM_PORT_CORE_INDEX_FROM_PORT:
+||||||| c31f2b21c7
+=======
+    case HwAsic::Feature::ACL_ENTRY_OUT_PORT_QUALIFIER:
+>>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
       return false;
     case HwAsic::Feature::SAI_ACL_MPLS_LABEL0_TTL:
       // Leaba does not implement the MPLS label0 TTL ACL qualifier yet.

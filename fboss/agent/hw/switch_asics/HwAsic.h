@@ -163,6 +163,12 @@ class HwAsic {
     //  - Rename to carry ACL_ prefix.
     SAI_ACL_ENTRY_SRC_PORT_QUALIFIER,
 
+    // Set to true if the egress port (AclEntry.dstPort) can be used as an
+    // ingress ACL matcher. For SAI, this maps to whether
+    // SAI_ACL_TABLE_ATTR_FIELD_OUT_PORT is set during ingress ACL table
+    // creation.
+    ACL_ENTRY_OUT_PORT_QUALIFIER,
+
     // Set to true if the SAI implementation supports ACL action to set hash
     // algorithm. For SAI, this maps to whether
     // SAI_ACL_ACTION_TYPE_SET_ECMP_HASH_ALGORITHM
@@ -625,6 +631,7 @@ class HwAsic {
     // Port isolation groups: traffic ingressing a port is not forwarded to the
     // members of the isolation group bound to it
     ISOLATION_GROUP,
+<<<<<<< HEAD
     // The adapter attaches a default serdes object to every port it creates
     // and rejects a second create_port_serdes; the agent adopts that object
     PORT_SERDES_CREATED_WITH_PORT,
@@ -632,6 +639,12 @@ class HwAsic {
     // port names the core and core port index read back from the port, not
     // the platform mapping's prediction
     SYSTEM_PORT_CORE_INDEX_FROM_PORT,
+||||||| c31f2b21c7
+=======
+    // Extra router MACs via the SAI MY_MAC object: packets destined to a
+    // programmed MAC + VLAN are routed like packets to the switch's own MAC.
+    MY_MAC,
+>>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
   };
 
   enum class AsicMode {
@@ -1040,6 +1053,10 @@ class HwAsic {
   virtual uint64_t getCpuPortEgressPoolSize() const;
 
   virtual bool portMtuSupported(cfg::PortType portType) const;
+
+  virtual cfg::L2LearningMode getDefaultL2LearningMode() const {
+    return cfg::L2LearningMode::HARDWARE;
+  }
 
  protected:
   static cfg::Range64 makeRange(int64_t min, int64_t max);

@@ -308,6 +308,7 @@ struct AclEntryFields {
   37: optional i64 dstIpV6Word2;
   38: optional switch_config.AclLookupClassPort lookupClassPort;
   39: optional AclTtl mplsLabel0Ttl;
+  40: optional byte tcpFlagsMask;
 }
 
 struct NamedNextHopGroupAndID {
@@ -452,8 +453,10 @@ struct MirrorOnDropReportFields {
   18: optional switch_config.PortDescriptor resolvedEgressPort;
   // Optional sampling rate for MOD packets
   19: optional i32 samplingRate;
-  // Optional packets-per-second rate cap for drop report generation
+  // Optional packets-per-second rate cap for drop report generation per drop reason
   20: optional i32 dropPacketRateThreshold;
+  // Optional packets-per-second cap on combined MoD reports across drop reasons
+  21: optional i32 aggregateDropPacketRateThreshold;
 }
 
 struct ControlPlaneFields {
@@ -587,6 +590,7 @@ struct SwitchSettingsFields {
     switch_config.EcmpGroupType,
     switch_config.EcmpGroupSettings
   > ecmpGroupSettings;
+  64: list<switch_config.MacAndVlan> myMacs;
 }
 
 struct RoutePrefix {

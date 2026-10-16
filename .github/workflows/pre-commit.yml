@@ -49,8 +49,30 @@ jobs:
             echo "base_ref=HEAD^" >> $GITHUB_OUTPUT
           fi
       - name: Show changed files
+<<<<<<< HEAD
         run: git diff --name-only ${{ steps.base-ref.outputs.base_ref }}...HEAD
+||||||| c31f2b21c7
+        run: git diff --name-only HEAD^...
+=======
+        run: >-
+          git diff --name-only
+          ${{ github.event.pull_request.base.sha || github.event.before }}...${{ github.sha }}
+>>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
       - uses: pre-commit/action@v3.0.1
+        env:
+          PRE_COMMIT_FROM_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
+          PRE_COMMIT_TO_REF: ${{ github.sha }}
         with:
+<<<<<<< HEAD
           # replace the default extra_args = "--all-files" since we only care about the changed files for now
           extra_args: "--from-ref ${{ steps.base-ref.outputs.base_ref }} --to-ref HEAD"
+||||||| c31f2b21c7
+          # replace the default extra_args = "--all-files" since we only care about the changed files for now
+          extra_args: "--from-ref HEAD^ --to-ref HEAD"
+=======
+          # Replace the default extra_args = "--all-files" since we only care
+          # about the files changed by the pull request or push.
+          extra_args: >-
+            --from-ref ${{ github.event.pull_request.base.sha || github.event.before }}
+            --to-ref ${{ github.sha }}
+>>>>>>> 615d477c11c04240d3593f9420b509d3a4661970

@@ -47,7 +47,11 @@
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/policy/CmdConfigProtocolBgpPolicy.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/policy/as-path-list/CmdConfigProtocolBgpPolicyAsPathList.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/policy/community-list/CmdConfigProtocolBgpPolicyCommunityList.h"
+<<<<<<< HEAD
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/policy/community-list/community/CmdConfigProtocolBgpPolicyCommunityListCommunity.h"
+||||||| c31f2b21c7
+=======
+>>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
 #include "fboss/cli/fboss2/commands/config/protocol/static/CmdConfigProtocolStatic.h"
 #include "fboss/cli/fboss2/commands/config/protocol/static/route/add/CmdConfigProtocolStaticRouteAdd.h"
 #include "fboss/cli/fboss2/commands/config/ptp/CmdConfigPtp.h"
@@ -460,6 +464,7 @@ const CommandTree& kConfigCommandTree() {
                                "community-list",
                                "Configure BGP community-list: <name> "
                                "[<attribute> <value> ...] "
+<<<<<<< HEAD
                                "(boolean-operator, description, exact-match)",
                                commandHandler<
                                    CmdConfigProtocolBgpPolicyCommunityList>,
@@ -475,6 +480,24 @@ const CommandTree& kConfigCommandTree() {
                                    argRegistrar<
                                        CmdConfigProtocolBgpPolicyCommunityListCommunityTraits>,
                                }},
+||||||| c31f2b21c7
+                              "as-path-list",
+                              "Configure BGP AS-path list: <name> "
+                              "[<attribute> <value> ...] (description, "
+                              "regex, boolean-operator)",
+                              commandHandler<
+                                  CmdConfigProtocolBgpPolicyAsPathList>,
+                              argRegistrar<
+                                  CmdConfigProtocolBgpPolicyAsPathListTraits>,
+                          }},
+=======
+                               "(boolean-operator, community, description, "
+                               "exact-match)",
+                               commandHandler<
+                                   CmdConfigProtocolBgpPolicyCommunityList>,
+                               argRegistrar<
+                                   CmdConfigProtocolBgpPolicyCommunityListTraits>,
+>>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
                            }},
                       },
                   },

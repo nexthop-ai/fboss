@@ -307,6 +307,13 @@ struct TBgpSession {
    * through logs.
    */
   27: optional i64 prepolicy_rcvd_dropped_prefix_count;
+  /*
+   * Current session's End-of-RIB completion, not a startup timestamp.
+   * Present even when false so CLI clients can distinguish a pending EoR
+   * from an older bgpd that does not support these fields.
+   */
+  28: optional bool eor_received;
+  29: optional bool eor_sent;
 }
 
 struct TPeerEgressStats {
@@ -331,9 +338,9 @@ struct TPeerEgressStats {
    * without being advertised in AdjRibOut.
    */
   3: optional i64 transient_route_updates_suppressed;
-  /* Number of times adjRibOutQueue_ blocked on a push attempt. */
+  /* Number of times boundedAdjRibOutQueue_ blocked on a push attempt. */
   4: optional i64 adjribout_queue_blocks;
-  /* Total adjRibOutQueue_ block duration. */
+  /* Total boundedAdjRibOutQueue_ block duration. */
   5: optional i64 adjribout_queue_total_block_duration;
   /* Number of times sendQueue_ blocked on a push attempt. */
   6: optional i64 send_queue_blocks;
@@ -341,7 +348,7 @@ struct TPeerEgressStats {
   7: optional i64 send_queue_total_block_duration;
   /* Total writes buffered in AsyncSocket (i.e. socket backpressured). */
   8: optional i64 total_async_socket_buffered;
-  /* Last epoch time (ms) that adjRibOutQueue_ blocked. */
+  /* Last epoch time (ms) that boundedAdjRibOutQueue_ blocked. */
   9: optional i64 last_adjribout_queue_block_time;
   /* Last epoch time (ms) that sendQueue_ blocked. */
   10: optional i64 last_send_queue_block_time;
@@ -541,6 +548,19 @@ struct TUpdateGroupPeerInfo {
    * the peer has never left its initial state.
    */
   16: optional i64 last_modified_peer_update_state_time_ms;
+
+  /*
+   * Why the peer was most recently detached ("Blocking", "Policy",
+   * "RouteRefresh"); retained after the peer rejoins. Unset if the peer has
+   * never been detached.
+   */
+  17: optional string last_detach_reason;
+
+  /*
+   * Epoch time (ms) of the peer's most recent detachment; unset if the peer has
+   * never been detached.
+   */
+  18: optional i64 last_detach_time_ms;
 }
 
 /**

@@ -63,6 +63,7 @@ cpp_unittest(
         "CmdDeleteBgpNeighborTest.cpp",
         "CmdDeleteBgpPeerGroupTest.cpp",
         "CmdDeleteBgpPolicyAsPathListTest.cpp",
+        "CmdDeleteBgpPolicyCommunityListTest.cpp",
         "CmdDeleteConfigInterfaceTest.cpp",
         "CmdDeleteCoppQueueTest.cpp",
         "CmdDeleteCoppReasonTest.cpp",
@@ -85,7 +86,6 @@ cpp_unittest(
         "CmdDeleteVlanTest.cpp",
         "ConfigFileManagerTest.cpp",
         "ConfigSessionSystemdTest.cpp",
-        "CmdDeleteBgpPolicyCommunityListTest.cpp",
         "ProfileValidationTest.cpp",
     ],
     headers = [

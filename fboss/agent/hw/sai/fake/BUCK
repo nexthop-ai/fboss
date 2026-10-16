@@ -1,4 +1,3 @@
-load("@fbcode_macros//build_defs:auto_headers.bzl", "AutoHeaders")
 load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")
 
 oncall("fboss_agent_push")
@@ -31,6 +30,7 @@ cpp_library(
         "FakeSaiLag.cpp",
         "FakeSaiMacsec.cpp",
         "FakeSaiMirror.cpp",
+        "FakeSaiMyMac.cpp",
         "FakeSaiMySidEntry.cpp",
         "FakeSaiNeighbor.cpp",
         "FakeSaiNextHop.cpp",
@@ -55,7 +55,6 @@ cpp_library(
         "FakeSaiVlan.cpp",
         "FakeSaiWred.cpp",
     ],
-    auto_headers = AutoHeaders.SOURCES,
     headers = [
         "FakeManager.h",
         "FakeSai.h",
@@ -75,6 +74,7 @@ cpp_library(
         "FakeSaiLag.h",
         "FakeSaiMacsec.h",
         "FakeSaiMirror.h",
+        "FakeSaiMyMac.h",
         "FakeSaiMySidEntry.h",
         "FakeSaiNeighbor.h",
         "FakeSaiNextHop.h",

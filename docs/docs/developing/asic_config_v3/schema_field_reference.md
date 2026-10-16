@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 5
 ---
 
 # Schema Field Reference
@@ -54,8 +54,22 @@ following fields.
 | `port_config` | XGS. Front-panel port settings: `default_speed` (in Mbps), `speed_to_fec` (mapping from speed to FEC mode), `enable` (the value emitted for `PC_PORT.ENABLE`), and `pc_port_overrides` (extra `PC_PORT` key/value lines emitted verbatim, for example `LINK_TRAINING`). This object is distinct from the DNX `port_config` string inside `asic_config_params`. |
 | `cpu_port` | XGS. CPU port settings: `speed` (in Mbps) and `num_lanes`. |
 | `mgmt_port` | XGS. Management port settings: `enabled` (whether the port is emitted at all), `enable` (the `PC_PORT.ENABLE` value), `in_port_block` (include the port in the `PORT` MTU range), and `speed_variants` (per-speed settings keyed by speed). |
+<<<<<<< HEAD
 | `mgmt_port_overrides` | XGS. List of platform overrides of the ASIC-level management port defaults (`logical_id`, `physical_id`, `speed`, `num_lanes`, and `fec`), overriding the port at the same index. Entries beyond the defaults list declare additional ports and must be complete. Duplicate logical or physical port identifiers are rejected. |
 | `port_mapping_overrides` | XGS. Adjustments to the logical-to-physical port mapping formula: `core_range` (which cores participate, for example `"0-15,48-63"`), `num_lp_ports_on_even_core`, `num_logical_ports_per_datapath`, `lp_start_step_offset`, `lp_offset_simple`, and `exclude_logical_ports` (logical port IDs omitted from `PC_PORT_PHYS_MAP`, `PC_PORT`, and `PORT`, for front-panel ports that are not populated on the platform). |
+||||||| c31f2b21c7
+| `asic_config_params` | Parameters controlling generator behavior: `config_type` (output format), `config_gen_type` (generation profile, for example `DEFAULT`), `exact_match` (enables exact-match forwarding table entries), and `mmu_lossless` (enables MMU lossless mode for PFC and RDMA workloads). |
+| `port_config` | Front-panel port settings: `default_speed` (in Mbps), `speed_to_fec` (mapping from speed to FEC mode), `enable` (the value emitted for `PC_PORT.ENABLE`), and `pc_port_overrides` (extra `PC_PORT` key/value lines emitted verbatim, for example `LINK_TRAINING`). |
+| `cpu_port` | CPU port settings: `speed` (in Mbps) and `num_lanes`. |
+| `mgmt_port` | Management port settings: `enabled` (whether the port is emitted at all), `enable` (the `PC_PORT.ENABLE` value), `in_port_block` (include the port in the `PORT` MTU range), and `speed_variants` (per-speed settings keyed by speed). |
+| `mgmt_port_overrides` | Platform overrides of the ASIC-level management port defaults: `logical_id`, `physical_id`, `speed`, `num_lanes`, and `fec`. |
+| `port_mapping_overrides` | Adjustments to the logical-to-physical port mapping formula: `core_range` (which cores participate, for example `"0-15,48-63"`), `num_lp_ports_on_even_core`, `num_logical_ports_per_datapath`, `lp_start_step_offset`, `lp_offset_simple`, `special_core_offset_apply_all`, and `exclude_logical_ports` (logical port IDs omitted from `PC_PORT_PHYS_MAP`, `PC_PORT`, and `PORT`, for front-panel ports that are not populated on the platform). |
+| `platform_sai_overrides` | Platform-level SAI settings. These take precedence within the layered `global` sources and override the ASIC-level SAI overrides. |
+| `device_config_overrides` | Key/value pairs written to the `DEVICE_CONFIG` output table, for example clock frequencies. |
+=======
+| `mgmt_port_overrides` | XGS. Platform overrides of the ASIC-level management port defaults: `logical_id`, `physical_id`, `speed`, `num_lanes`, and `fec`. |
+| `port_mapping_overrides` | XGS. Adjustments to the logical-to-physical port mapping formula: `core_range` (which cores participate, for example `"0-15,48-63"`), `num_lp_ports_on_even_core`, `num_logical_ports_per_datapath`, `lp_start_step_offset`, `lp_offset_simple`, `special_core_offset_apply_all`, and `exclude_logical_ports` (logical port IDs omitted from `PC_PORT_PHYS_MAP`, `PC_PORT`, and `PORT`, for front-panel ports that are not populated on the platform). |
+>>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
 | `platform_sai_overrides` | XGS. Platform-level SAI settings. These take precedence within the layered `global` sources and override the ASIC-level SAI overrides. |
 | `platform_sdk_overrides` | DNX. Platform-level SOC properties applied on top of the ASIC `base_sdk_settings` and declarative tables. Keys carry their SOC suffix inline. |
 | `device_config_overrides` | XGS. Key/value pairs written to the `DEVICE_CONFIG` output table, for example clock frequencies. |
@@ -70,7 +84,18 @@ following fields.
 | Parameter | Description |
 |---|---|
 | `config_type` | Output configuration format: `YAML_CONFIG` (XGS), `KEY_VALUE_CONFIG` (DNX), or `JSON_CONFIG`. |
+<<<<<<< HEAD
 | `config_gen_type` | Generation profile, e.g. `DEFAULT` or `HW_TEST`, matching the `AsicConfigGenType` enum. Conditional settings in both ASIC families may select on it. |
+||||||| c31f2b21c7
+In addition to the fields above, the generator honors a variant-level override
+of any data block routed by the ASIC's `pass_through_settings`. Declaring
+`flex_counter_settings`, `port_config_defaults`, `fp_config_defaults`, or
+`tm_thd_config_defaults` in a variant replaces the corresponding ASIC-level
+block, in the same way as `ctr_eflex_config`. The schema currently declares
+only `ctr_eflex_config` among these.
+=======
+| `config_gen_type` | Generation profile, `DEFAULT` or `HW_TEST`. Conditional settings in both ASIC families may select on it. |
+>>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
 | `exact_match` | XGS. Enables exact-match forwarding table entries. |
 | `mmu_lossless` | XGS. Enables MMU lossless mode for PFC and RDMA workloads. |
 | `port_config` | DNX. Port-map profile name, for example `default` or `18*400G-4`. Conditional settings select the profile by exact name and the topology family by prefix, for example `dual_stage`. |
@@ -128,7 +153,17 @@ files under `fboss/configs/asic_vendors/broadcom/dnx/asics/`.
 | `key_formats` | yes | Format strings for the generated wiring keys: `lane_map`, `lane_map_value`, `polarity_rx`, and `polarity_tx`, with `{family}`, `{lane}`, `{suffix}`, `{rx}`, and `{tx}` placeholders. |
 | `default_polarity_settings` | no | Default polarity keys that carry no lane number, emitted verbatim, for example `phy_rx_polarity_flip.BCM8889X`. Jericho 3 declares them. An ASIC without such keys omits the field. |
 | `base_sdk_settings` | no | ASIC-wide SOC properties emitted for every platform and variant. |
+<<<<<<< HEAD
 | `declarative_tables` | no | Fixed ASIC tables: `port_speed_map`, `tm_port_header_map` (keyed by topology variant), `dtm_flow_region_map` (`key_format`, `start_region`, `count`, and `value`), and `flow_remote_cores`. |
+||||||| c31f2b21c7
+Each entry in a `conditional_settings` array supports the following fields.
+The entry structure is defined in the Broadcom XGS ASIC schema.
+Platform-level entries follow the same structure, but the platform schema does
+not currently validate their internal structure, so field names and the
+`condition` format in platform-level entries should be reviewed carefully.
+=======
+| `declarative_tables` | no | Fixed ASIC tables: `port_speed_map`, `tm_port_headers`, `dtm_flow_region_map` (`key_format`, `start_region`, `count`, and `value`), and `flow_remote_cores`. |
+>>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
 | `conditional_settings` | no | ASIC-level conditional settings, evaluated before platform-level ones. |
 
 ## Conditional Setting Entries
@@ -180,4 +215,4 @@ common files.
 
 | Field | Required | Description |
 |---|---|---|
-| `global` | yes | SDK or SAI settings copied into the `global` output table according to the layering order described in the [Overview](./overview.md). |
+| `global` | yes | SDK or SAI settings copied into the `global` output table according to the layering order described on the [Broadcom XGS](./broadcom_xgs.md) page. |

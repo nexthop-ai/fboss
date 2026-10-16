@@ -214,7 +214,6 @@ cpp_library(
     # :golden_dataAndroid, which is wrong for this non-Android host test. Keep :golden_data.
     name = "agent_hw_test_src",
     srcs = [
-        "AgentAccessPolicyAclTests.cpp",
         "AgentAclCounterTests.cpp",
         "AgentAclInDiscardCounterTests.cpp",
         "AgentAclPriorityTests.cpp",
@@ -283,6 +282,7 @@ cpp_library(
         "AgentMirrorOnDropXgsImpl.cpp",
         "AgentMirroringTests.cpp",
         "AgentMmuTuningTests.cpp",
+        "AgentMyMacTest.cpp",
         "AgentMySidAdjFrrRouteTests.cpp",
         "AgentNeighborTests.cpp",
         "AgentOverflowTestBase.cpp",
@@ -328,7 +328,6 @@ cpp_library(
         "nexthop_AgentPortPktCounterTests.cpp",
     ],
     headers = [
-        "AgentAccessPolicyAclTestBase.h",
         "AgentArsBase.h",
         "AgentConfigSetupTest.h",
         "AgentDropTestBase.h",
@@ -343,6 +342,7 @@ cpp_library(
         "AgentTestAddressConstants.h",
         "AgentTestEcmpConstants.h",
         "AgentVoqSwitchFabricLinkMonitoringTests.h",
+        "facebook/AgentAccessPolicyAclTestBase.h",
     ],
     link_whole = True,
     undefined_symbols = True,
@@ -487,7 +487,6 @@ cpp_library(
 cpp_library(
     name = "agent_scale_test_src",
     srcs = [
-        "AgentAccessPolicyAclStressTests.cpp",
         "AgentAclScaleTests.cpp",
         "AgentEcmpScaleTests.cpp",
         "AgentHwPortStressTests.cpp",
@@ -498,14 +497,13 @@ cpp_library(
         "AgentVoqSwitchScaleTests.cpp",  # bazelify: exclude
     ],
     headers = [
-        "AgentAccessPolicyAclTestBase.h",
         "AgentVoqSwitchFullScaleDsfTests.h",
         "AgentVoqSwitchTests.h",
+        "facebook/AgentAccessPolicyAclTestBase.h",
     ],
     link_whole = True,
     deps = [
         "//fboss/agent:ecmp_resource_manager",
-        "//fboss/agent:fboss-error",
         "//fboss/agent/hw:hardware_stats-cpp2-types",
         "//fboss/agent/test:production_features-cpp2-types",
         "//fboss/agent/test:route_scale_gen",
@@ -522,6 +520,7 @@ cpp_library(
         "//fboss/agent:asic_utils",
         "//fboss/agent:core",
         "//fboss/agent:fabric_connectivity_manager",
+        "//fboss/agent:fboss-error",
         "//fboss/agent:packet",
         "//fboss/agent:utils",
         "//fboss/agent/hw/test:config_factory",

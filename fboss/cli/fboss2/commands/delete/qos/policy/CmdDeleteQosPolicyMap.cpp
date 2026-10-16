@@ -116,18 +116,38 @@ bool eraseOptionalMapKey(OptionalMapRef field, int16_t key) {
   return true;
 }
 
+// Sets `changed` to false when the mapping was absent and nothing was erased.
 std::string deleteQosPolicyMapEntry(
     cfg::QosMap& qosMap,
     const std::string& policyName,
-    const DeleteQosMapEntry& entry) {
+    const DeleteQosMapEntry& entry,
+    bool& changed) {
+  changed = true;
   switch (entry.getMapType()) {
     case DeleteQosMapType::DSCP: {
+<<<<<<< HEAD
       if (!utils::eraseDscp(*qosMap.dscpMaps(), entry.getKey())) {
         throw std::runtime_error(
             fmt::format(
                 "QoS policy '{}' has no dscp mapping for value {}",
                 policyName,
                 entry.getKey()));
+||||||| c31f2b21c7
+      if (!eraseDscp(*qosMap.dscpMaps(), entry.getKey())) {
+        throw std::runtime_error(
+            fmt::format(
+                "QoS policy '{}' has no dscp mapping for value {}",
+                policyName,
+                entry.getKey()));
+=======
+      if (!eraseDscp(*qosMap.dscpMaps(), entry.getKey())) {
+        changed = false;
+        return fmt::format(
+            "Warning: QoS policy '{}' has no dscp mapping for value {}, "
+            "nothing to delete",
+            policyName,
+            entry.getKey());
+>>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
       }
       return fmt::format(
           "Successfully deleted QoS policy '{}' dscp mapping for value {}",
@@ -135,12 +155,29 @@ std::string deleteQosPolicyMapEntry(
           entry.getKey());
     }
     case DeleteQosMapType::MPLS_EXP: {
+<<<<<<< HEAD
       if (!utils::eraseExp(*qosMap.expMaps(), entry.getKey())) {
         throw std::runtime_error(
             fmt::format(
                 "QoS policy '{}' has no mpls-exp mapping for value {}",
                 policyName,
                 entry.getKey()));
+||||||| c31f2b21c7
+      if (!eraseExp(*qosMap.expMaps(), entry.getKey())) {
+        throw std::runtime_error(
+            fmt::format(
+                "QoS policy '{}' has no mpls-exp mapping for value {}",
+                policyName,
+                entry.getKey()));
+=======
+      if (!eraseExp(*qosMap.expMaps(), entry.getKey())) {
+        changed = false;
+        return fmt::format(
+            "Warning: QoS policy '{}' has no mpls-exp mapping for value {}, "
+            "nothing to delete",
+            policyName,
+            entry.getKey());
+>>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
       }
       return fmt::format(
           "Successfully deleted QoS policy '{}' mpls-exp mapping for value {}",
@@ -149,12 +186,29 @@ std::string deleteQosPolicyMapEntry(
     }
     case DeleteQosMapType::DOT1P: {
       auto pcpMaps = qosMap.pcpMaps();
+<<<<<<< HEAD
       if (!pcpMaps.has_value() || !utils::erasePcp(*pcpMaps, entry.getKey())) {
         throw std::runtime_error(
             fmt::format(
                 "QoS policy '{}' has no dot1p mapping for value {}",
                 policyName,
                 entry.getKey()));
+||||||| c31f2b21c7
+      if (!pcpMaps.has_value() || !erasePcp(*pcpMaps, entry.getKey())) {
+        throw std::runtime_error(
+            fmt::format(
+                "QoS policy '{}' has no dot1p mapping for value {}",
+                policyName,
+                entry.getKey()));
+=======
+      if (!pcpMaps.has_value() || !erasePcp(*pcpMaps, entry.getKey())) {
+        changed = false;
+        return fmt::format(
+            "Warning: QoS policy '{}' has no dot1p mapping for value {}, "
+            "nothing to delete",
+            policyName,
+            entry.getKey());
+>>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
       }
       if (pcpMaps->empty()) {
         pcpMaps.reset();
@@ -167,11 +221,12 @@ std::string deleteQosPolicyMapEntry(
     case DeleteQosMapType::TC_TO_QUEUE: {
       auto& tcToQueue = *qosMap.trafficClassToQueueId();
       if (tcToQueue.erase(entry.getKey()) == 0) {
-        throw std::runtime_error(
-            fmt::format(
-                "QoS policy '{}' has no tc-to-queue mapping for traffic class {}",
-                policyName,
-                entry.getKey()));
+        changed = false;
+        return fmt::format(
+            "Warning: QoS policy '{}' has no tc-to-queue mapping for traffic class {}, "
+            "nothing to delete",
+            policyName,
+            entry.getKey());
       }
       return fmt::format(
           "Successfully deleted QoS policy '{}' tc-to-queue mapping for traffic class {}",
@@ -180,11 +235,12 @@ std::string deleteQosPolicyMapEntry(
     }
     case DeleteQosMapType::PFC_PRI_TO_QUEUE: {
       if (!eraseOptionalMapKey(qosMap.pfcPriorityToQueueId(), entry.getKey())) {
-        throw std::runtime_error(
-            fmt::format(
-                "QoS policy '{}' has no pfc-pri-to-queue mapping for priority {}",
-                policyName,
-                entry.getKey()));
+        changed = false;
+        return fmt::format(
+            "Warning: QoS policy '{}' has no pfc-pri-to-queue mapping for priority {}, "
+            "nothing to delete",
+            policyName,
+            entry.getKey());
       }
       return fmt::format(
           "Successfully deleted QoS policy '{}' pfc-pri-to-queue mapping for priority {}",
@@ -193,11 +249,12 @@ std::string deleteQosPolicyMapEntry(
     }
     case DeleteQosMapType::TC_TO_PG: {
       if (!eraseOptionalMapKey(qosMap.trafficClassToPgId(), entry.getKey())) {
-        throw std::runtime_error(
-            fmt::format(
-                "QoS policy '{}' has no tc-to-pg mapping for traffic class {}",
-                policyName,
-                entry.getKey()));
+        changed = false;
+        return fmt::format(
+            "Warning: QoS policy '{}' has no tc-to-pg mapping for traffic class {}, "
+            "nothing to delete",
+            policyName,
+            entry.getKey());
       }
       return fmt::format(
           "Successfully deleted QoS policy '{}' tc-to-pg mapping for traffic class {}",
@@ -206,11 +263,12 @@ std::string deleteQosPolicyMapEntry(
     }
     case DeleteQosMapType::PFC_PRI_TO_PG: {
       if (!eraseOptionalMapKey(qosMap.pfcPriorityToPgId(), entry.getKey())) {
-        throw std::runtime_error(
-            fmt::format(
-                "QoS policy '{}' has no pfc-pri-to-pg mapping for priority {}",
-                policyName,
-                entry.getKey()));
+        changed = false;
+        return fmt::format(
+            "Warning: QoS policy '{}' has no pfc-pri-to-pg mapping for priority {}, "
+            "nothing to delete",
+            policyName,
+            entry.getKey());
       }
       return fmt::format(
           "Successfully deleted QoS policy '{}' pfc-pri-to-pg mapping for priority {}",
@@ -238,13 +296,18 @@ CmdDeleteQosPolicyMapTraits::RetType CmdDeleteQosPolicyMap::queryClient(
   auto policyIt = utils::findQosPolicyOrThrow(qosPolicies, name);
 
   if (!policyIt->qosMap().has_value()) {
-    throw std::runtime_error(
-        fmt::format("QoS policy '{}' has no qosMap configured", name));
+    return fmt::format(
+        "Warning: QoS policy '{}' has no qosMap configured, "
+        "nothing to delete",
+        name);
   }
   auto& qosMap = *policyIt->qosMap();
 
-  const auto logMsg = deleteQosPolicyMapEntry(qosMap, name, entry);
-  session.saveConfig();
+  bool changed = false;
+  const auto logMsg = deleteQosPolicyMapEntry(qosMap, name, entry, changed);
+  if (changed) {
+    session.saveConfig();
+  }
   return logMsg;
 }
 
