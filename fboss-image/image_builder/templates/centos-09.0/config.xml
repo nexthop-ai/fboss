@@ -32,6 +32,7 @@
             bootpartition="false"
             editbootinstall="editbootinstall.sh"
             efipartsize="64"
+            target_blocksize="4096"
             kernelcmdline="nomodeset console=ttyS0,57600n8 8250.nr_uarts=1 biosdevname=0 net.ifnames=0 quiet rootfstype=btrfs">
 
             <!-- serial_line becomes GRUB_SERIAL_COMMAND verbatim: a GRUB serial command, not kernel console= syntax -->
@@ -46,6 +47,12 @@
                 <oem-unattended>true</oem-unattended>
                 <oem-skip-verify>true</oem-skip-verify>
             </oemconfig>
+            <!-- rewrite_512b_partition_tables rewrites the 4K partition table in place on 512-byte disks -->
+            <installmedia>
+                <initrd action="add">
+                    <dracut module="rewrite_512b_partition_tables"/>
+                </initrd>
+            </installmedia>
         </type>
         <type image="tbz">
         </type>
