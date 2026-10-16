@@ -504,6 +504,33 @@
           "address": "0x4c",
           "kernelDeviceName": "lm90",
           "pmUnitScopedName": "MGMT_TEMP_SENSOR"
+        },
+        {
+          "busName": "SMB_IOB_I2C_0",
+          "address": "0x50",
+          "kernelDeviceName": "24c64",
+          "pmUnitScopedName": "PDC_EEPROM",
+          "isEeprom": true
+        },
+        {
+          "busName": "SMB_IOB_I2C_4",
+          "address": "0x50",
+          "kernelDeviceName": "24c64",
+          "pmUnitScopedName": "FAN_EEPROM",
+          "isEeprom": true
+        },
+        {
+          "busName": "SMB_IOB_I2C_4",
+          "address": "0x40",
+          "kernelDeviceName": "ina230",
+          "pmUnitScopedName": "FAN_POWER_MONITOR"
+        },
+        {
+          "busName": "SMB_MUX_2@0",
+          "address": "0x50",
+          "kernelDeviceName": "24c64",
+          "pmUnitScopedName": "MGMT_EEPROM",
+          "isEeprom": true
         }
       ]
     }
@@ -708,7 +735,11 @@
     "/run/devmap/xcvrs/xcvr_io_65": "/SMB_SLOT@0/[SMB_MUX_2@1]",
     "/run/devmap/xcvrs/xcvr_ctrl_65": "/SMB_SLOT@0/[QSFP_XCVR_CTRL_PORT_65]",
     "/run/devmap/xcvrs/xcvr_io_66": "/SMB_SLOT@0/[SMB_MUX_2@2]",
-    "/run/devmap/xcvrs/xcvr_ctrl_66": "/SMB_SLOT@0/[QSFP_XCVR_CTRL_PORT_66]"
+    "/run/devmap/xcvrs/xcvr_ctrl_66": "/SMB_SLOT@0/[QSFP_XCVR_CTRL_PORT_66]",
+    "/run/devmap/eeproms/PDC_EEPROM": "/SMB_SLOT@0/[PDC_EEPROM]",
+    "/run/devmap/eeproms/FAN_EEPROM": "/SMB_SLOT@0/[FAN_EEPROM]",
+    "/run/devmap/eeproms/MGMT_EEPROM": "/SMB_SLOT@0/[MGMT_EEPROM]",
+    "/run/devmap/sensors/FAN_POWER_MONITOR": "/SMB_SLOT@0/[FAN_POWER_MONITOR]"
   },
   "chassisEepromDevicePath": "/SMB_SLOT@0/[IDPROM]",
   "numXcvrs": 66,
