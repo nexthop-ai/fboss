@@ -1,0 +1,9 @@
+# Host end of the BMC's USB CDC-ECM gadget; the BMC sets its host_addr to
+# 02:00:00:00:00:02. usbnet names this link usb%d or eth%d depending on the
+# kernel version, and the usb0 NetworkManager profile and BMC tooling need usb0.
+[Match]
+Driver=cdc_ether
+MACAddress=02:00:00:00:00:02
+
+[Link]
+Name=usb0
