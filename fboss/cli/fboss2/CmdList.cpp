@@ -113,6 +113,7 @@
 #include "fboss/cli/fboss2/commands/show/transceiver/eeprom/CmdShowTransceiverEeprom.h"
 #include "fboss/cli/fboss2/commands/show/transceiver/eeprom/CmdShowTransceiverEepromDump.h"
 #include "fboss/cli/fboss2/commands/show/transceiver/loopback/CmdShowTransceiverLoopback.h"
+#include "fboss/cli/fboss2/commands/show/vlan/CmdShowVlan.h"
 #include "fboss/cli/fboss2/commands/start/pcap/CmdStartPcap.h"
 #include "fboss/cli/fboss2/commands/start/port/CmdStartPort.h"
 #include "fboss/cli/fboss2/commands/start/port/cable_length_measurement/CmdStartPortCableLengthMeasurement.h"
@@ -315,6 +316,12 @@ const CommandTree& kCommandTree() {
        commandHandler<CmdShowRif>,
        validFilterHandler<CmdShowRif>,
        argTypeHandler<CmdShowRifTraits>},
+      {"show",
+       "vlan",
+       "Show VLAN information",
+       commandHandler<CmdShowVlan>,
+       validFilterHandler<CmdShowVlan>,
+       argTypeHandler<CmdShowVlanTraits>},
 
       {"show",
        "interface",

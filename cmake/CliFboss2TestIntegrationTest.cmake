@@ -70,6 +70,7 @@ add_executable(fboss2_integration_test
   fboss/cli/fboss2/test/integration_test/ConfigIpRouteTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigCoppTrafficPolicyTest.cpp
   fboss/cli/fboss2/test/integration_test/ShowRouteFilterTest.cpp
+  fboss/cli/fboss2/test/integration_test/ShowVlanTest.cpp
 )
 
 target_link_libraries(fboss2_integration_test

@@ -63,6 +63,7 @@ cpp_binary(
         "ConfigSflowRateTest.cpp",
         "ConfigTrafficCounterTest.cpp",
         "ShowRouteFilterTest.cpp",
+        "ShowVlanTest.cpp",
         "ConfigVlanCreateTest.cpp",
         "ConfigVlanDefaultTest.cpp",
         "ConfigVlanPortTaggingModeTest.cpp",

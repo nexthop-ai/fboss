@@ -388,6 +388,13 @@ add_fbthrift_cpp_library(
 )
 
 add_fbthrift_cpp_library(
+  show_vlan
+  fboss/cli/fboss2/commands/show/vlan/model.thrift
+  OPTIONS
+    json
+)
+
+add_fbthrift_cpp_library(
   show_interface_counters_fec_uncorrectable
   fboss/cli/fboss2/commands/show/interface/counters/fec/uncorrectable/model.thrift
   OPTIONS
@@ -668,6 +675,8 @@ add_library(fboss2_lib
   fboss/cli/fboss2/commands/show/transceiver/eeprom/CmdShowTransceiverEepromDump.cpp
   fboss/cli/fboss2/commands/show/transceiver/loopback/CmdShowTransceiverLoopback.h
   fboss/cli/fboss2/commands/show/transceiver/loopback/CmdShowTransceiverLoopback.cpp
+  fboss/cli/fboss2/commands/show/vlan/CmdShowVlan.h
+  fboss/cli/fboss2/commands/show/vlan/CmdShowVlan.cpp
   fboss/cli/fboss2/commands/show/bgp/CmdShowUtils.h
   fboss/cli/fboss2/commands/show/bgp/CmdShowUtils.cpp
   fboss/cli/fboss2/commands/show/bgp/CanonicalRibResolver.h
@@ -857,6 +866,7 @@ target_link_libraries(fboss2_lib
   show_interface_counters_fec_tail
   show_fabric_topology_model
   show_rif
+  show_vlan
   show_interface_counters_fec_uncorrectable
   show_interface_transceiver_performancemonitoring
   thrift_service_client

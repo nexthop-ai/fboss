@@ -233,6 +233,7 @@ cpp_unittest(
         "CmdShowTransceiverLoopbackTest.cpp",
         "CmdShowTransceiverTest.cpp",  # bazelify: exclude
         "CmdShowVersionAgentTest.cpp",  # bazelify: exclude
+        "CmdShowVlanTest.cpp",
         "CmdStartPcapTest.cpp",
         "CmdStartPortCableLengthMeasurementTest.cpp",
         "CmdStopPcapTest.cpp",
@@ -305,6 +306,7 @@ cpp_unittest(
         "//fboss/cli/fboss2/commands/show/systemport:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/teflow:model-cpp2-types",
         "//fboss/cli/fboss2/commands/show/transceiver:model-cpp2-types",
+        "//fboss/cli/fboss2/commands/show/vlan:model-cpp2-types",
         "//fboss/lib/phy:phy-cpp2-types",
         "//fboss/platform/fan_service/if:fan_service-cpp2-types",
         "//folly:dynamic",
