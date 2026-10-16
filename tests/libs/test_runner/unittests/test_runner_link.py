@@ -7,6 +7,7 @@ import copy
 import pytest
 
 from tests.libs.test_runner import LinkTestRunner
+from tests.libs.test_runner.platform_mapping import PortInfo
 
 from .helpers import (
     VARIANT_FLAGFILE,
@@ -295,6 +296,87 @@ def _stage(system_config, flagfile=None):
     runner._stage_qsfp_config()
     assert runner.scp_client.get_file.call_args[0][0] == LinkTestRunner._SYSTEM_QSFP_CONFIG_PATH
     return uploaded[LinkTestRunner._REMOTE_QSFP_CONFIG_PATH]
+
+
+
+_VOQ_OFFSET = 17
+
+
+def _voq_base_config(port_names):
+    """VOQ switch: no vlans, one system-port interface per port at offset + logicalID."""
+    sw = {
+        "ports": [],
+        "vlans": [],
+        "vlanPorts": [],
+        "interfaces": [],
+        "switchSettings": {
+            "switchType": 2,
+            "switchIdToSwitchInfo": {
+                "0": {
+                    "portIdRange": {"minimum": 0, "maximum": 2047},
+                    "localSystemPortOffset": _VOQ_OFFSET,
+                }
+            },
+        },
+    }
+    ports = [(100 + i, name, 0) for i, name in enumerate(port_names)] + [(1181, "rcy1/1/1181", 3)]
+    for logical_id, name, port_type in ports:
+        sw["ports"].append(
+            {
+                "logicalID": logical_id,
+                "name": name,
+                "state": 2,
+                "speed": 800000,
+                "profileID": 39,
+                "ingressVlan": 0,
+                "portType": port_type,
+                "expectedLLDPValues": {},
+            }
+        )
+        sw["interfaces"].append(
+            {"intfID": _VOQ_OFFSET + logical_id, "vlanID": 0, "ipAddresses": [], "type": 2}
+        )
+    return {"sw": sw}
+
+
+class TestOverlayCablingVoq:
+    def test_ports_get_system_port_interfaces_and_no_vlans(self):
+        out = LinkTestRunner._overlay_cabling(_voq_base_config(["eth1/9/1"]), PAIRS, PORT_MAP)
+        sw = out["sw"]
+        assert sw["vlans"] == [] and sw["vlanPorts"] == []
+        intfs = {i["intfID"]: i for i in sw["interfaces"]}
+        assert len(intfs) == len(sw["interfaces"])
+        ports = {p["name"]: p for p in sw["ports"]}
+        assert set(ports) == {"eth1/1/1", "eth1/2/1", "eth1/3/1", "eth1/4/1", "rcy1/1/1181"}
+        for port in ports.values():
+            assert port["ingressVlan"] == 0
+            intf = intfs[_VOQ_OFFSET + port["logicalID"]]
+            assert intf["vlanID"] == 0 and intf["type"] == 2
+        assert set(intfs) == {_VOQ_OFFSET + p["logicalID"] for p in ports.values()}
+
+    def test_cabled_ports_get_ips_and_lldp(self):
+        out = LinkTestRunner._overlay_cabling(_voq_base_config(["eth1/9/1"]), PAIRS, PORT_MAP)
+        sw = out["sw"]
+        intfs = {i["intfID"]: i for i in sw["interfaces"]}
+        cabled = [p for p in sw["ports"] if p["name"] in PAIRS]
+        ips = [tuple(intfs[_VOQ_OFFSET + p["logicalID"]]["ipAddresses"]) for p in cabled]
+        assert all(ips) and len(set(ips)) == len(ips)
+        for port in cabled:
+            assert port["state"] == 2
+            assert port["expectedLLDPValues"] == {"2": PAIRS[port["name"]]}
+
+    def test_self_looped_ports(self):
+        pairs = {"eth1/1/1": "eth1/1/1", "eth1/2/1": "eth1/2/1"}
+        out = LinkTestRunner._overlay_cabling(_voq_base_config(["eth1/9/1"]), pairs, PORT_MAP)
+        ports = {p["name"]: p for p in out["sw"]["ports"]}
+        assert ports["eth1/1/1"]["expectedLLDPValues"] == {"2": "eth1/1/1"}
+        assert ports["eth1/3/1"]["state"] == 1
+
+    def test_port_outside_switch_range_raises(self):
+        pm = dict(PORT_MAP)
+        pm["eth1/1/1"] = PortInfo(logical_id=5000, profile_id=39, speed=400000, profiles={39: 400000})
+        with pytest.raises(ValueError, match="outside every switch"):
+            LinkTestRunner._overlay_cabling(_voq_base_config(["eth1/9/1"]), PAIRS, pm)
 
 
 class TestStageQsfpConfig:

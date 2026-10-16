@@ -203,6 +203,7 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
         vlan_id: int,
         template: _PortTemplate,
         profile_id: int | None = None,
+        voq_intf_id: int | None = None,
     ) -> dict:
         info = port_map.get(name)
         if info is None:
@@ -211,7 +212,8 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
             raise ValueError(f"port {name} does not support profile {profile_id}")
         sw = base_json["sw"]
         # The agent requires every port to own exactly one interface, so a synthesized
-        # port needs a matching vlan, vlanPort and interface too.
+        # port needs a matching vlan, vlanPort and interface too. On a VOQ switch the
+        # interface is the port's system-port RIF instead and vlan_id only indexes its IPs.
         port = copy.deepcopy(template.port)
         port.update(
             {
@@ -220,22 +222,18 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
                 "state": 2,
                 "speed": info.speed if profile_id is None else info.profiles[profile_id],
                 "profileID": info.profile_id if profile_id is None else profile_id,
-                "ingressVlan": vlan_id,
+                "ingressVlan": vlan_id if voq_intf_id is None else 0,
                 "portType": 0,
                 "expectedLLDPValues": {},
             }
         )
-        vlan = copy.deepcopy(template.vlan)
-        vlan.update({"id": vlan_id, "intfID": vlan_id, "name": f"vlan{vlan_id}"})
-        vlan_port = copy.deepcopy(template.vlan_port)
-        vlan_port.update({"vlanID": vlan_id, "logicalPort": info.logical_id})
         intf = copy.deepcopy(template.interface)
         # Synthesized, not inherited from the base config: the fboss ECMP helper
         # skips IP-less interfaces, silently dropping the port from L3 tests.
         intf.update(
             {
-                "intfID": vlan_id,
-                "vlanID": vlan_id,
+                "intfID": vlan_id if voq_intf_id is None else voq_intf_id,
+                "vlanID": vlan_id if voq_intf_id is None else 0,
                 "ipAddresses": [
                     f"2600:0:0:{vlan_id:x}::/64",
                     f"100.{64 + (vlan_id >> 8)}.{vlan_id & 0xFF}.0/24",
@@ -243,10 +241,38 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
             }
         )
         sw["ports"].append(port)
-        sw["vlans"].append(vlan)
-        sw["vlanPorts"].append(vlan_port)
+        if voq_intf_id is None:
+            vlan = copy.deepcopy(template.vlan)
+            vlan.update({"id": vlan_id, "intfID": vlan_id, "name": f"vlan{vlan_id}"})
+            vlan_port = copy.deepcopy(template.vlan_port)
+            vlan_port.update({"vlanID": vlan_id, "logicalPort": info.logical_id})
+            sw["vlans"].append(vlan)
+            sw["vlanPorts"].append(vlan_port)
         sw["interfaces"].append(intf)
         return port
+
+    @staticmethod
+    def _voq_intf_offsets(sw: dict) -> list[tuple[int, int, int]] | None:
+        """(min port id, max port id, system port offset) per switch, or None if not VOQ."""
+        settings = sw.get("switchSettings", {})
+        # cfg::SwitchType::VOQ
+        if settings.get("switchType") != 2:
+            return None
+        return [
+            (
+                info["portIdRange"]["minimum"],
+                info["portIdRange"]["maximum"],
+                info["localSystemPortOffset"],
+            )
+            for info in settings["switchIdToSwitchInfo"].values()
+        ]
+
+    @staticmethod
+    def _voq_intf_id(offsets: list[tuple[int, int, int]], logical_id: int) -> int:
+        for low, high, offset in offsets:
+            if low <= logical_id <= high:
+                return offset + logical_id
+        raise ValueError(f"port {logical_id} is outside every switch's port id range")
 
     @classmethod
     def _overlay_cabling(
@@ -259,6 +285,11 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
         if not pairs:
             raise ValueError("refusing to generate link test config: no cabling pairs")
         sw = base_json["sw"]
+        voq_offsets = cls._voq_intf_offsets(sw)
+        if voq_offsets is not None:
+            return cls._overlay_cabling_voq(
+                base_json, pairs, port_map, profile_overrides, voq_offsets
+            )
         template_vlan_id = sw["ports"][0]["ingressVlan"]
         template = _PortTemplate(
             port=sw["ports"][0],
@@ -282,11 +313,74 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
         # "Type-1" interface band; wider than the historical 2000-2251 so
         # full 8-way breakout fits, capped below 4094.
         free_vlans = (v for v in range(2000, 4094) if v not in used_vlans)
+        return cls._synthesize_cabled_ports(
+            base_json, pairs, port_map, profile_overrides, template, free_vlans
+        )
+
+    @classmethod
+    def _overlay_cabling_voq(
+        cls,
+        base_json: dict,
+        pairs: dict[str, str],
+        port_map: dict[str, PortInfo],
+        profile_overrides: dict[str, int] | None,
+        voq_offsets: list[tuple[int, int, int]],
+    ) -> dict:
+        sw = base_json["sw"]
+        template_port = next(p for p in sw["ports"] if p["portType"] == 0)
+        template_intf_id = cls._voq_intf_id(voq_offsets, template_port["logicalID"])
+        template = _PortTemplate(
+            port=template_port,
+            vlan={},
+            vlan_port={},
+            interface=next(i for i in sw["interfaces"] if i["intfID"] == template_intf_id),
+        )
+        # Front-panel ports and their system-port interfaces are re-synthesized as
+        # on NPU; recycle, CPU and mgmt ports keep theirs.
+        dropped = {
+            cls._voq_intf_id(voq_offsets, p["logicalID"])
+            for p in sw["ports"]
+            if p["portType"] == 0
+        }
+        sw["ports"] = [p for p in sw["ports"] if p["portType"] != 0]
+        sw["interfaces"] = [i for i in sw["interfaces"] if i["intfID"] not in dropped]
+        for port in sw["ports"]:
+            port["expectedLLDPValues"] = {}
+        # Only indexes the synthesized IPs; the same band as NPU keeps addresses alike.
+        free_ids = iter(range(2000, 4094))
+        return cls._synthesize_cabled_ports(
+            base_json, pairs, port_map, profile_overrides, template, free_ids, voq_offsets
+        )
+
+    @classmethod
+    def _synthesize_cabled_ports(
+        cls,
+        base_json: dict,
+        pairs: dict[str, str],
+        port_map: dict[str, PortInfo],
+        profile_overrides: dict[str, int] | None,
+        template: _PortTemplate,
+        free_vlans,
+        voq_offsets: list[tuple[int, int, int]] | None = None,
+    ) -> dict:
+        sw = base_json["sw"]
+
+        def intf_id(name):
+            if voq_offsets is None or name not in port_map:
+                return None
+            return cls._voq_intf_id(voq_offsets, port_map[name].logical_id)
+
         overrides = profile_overrides or {}
         try:
             for name, peer in pairs.items():
                 port = cls._synthesize_port(
-                    base_json, port_map, name, next(free_vlans), template, overrides.get(name)
+                    base_json,
+                    port_map,
+                    name,
+                    next(free_vlans),
+                    template,
+                    overrides.get(name),
+                    intf_id(name),
                 )
                 port["expectedLLDPValues"] = {cls._LLDP_PORT_TAG: peer}
             # The SDK exposes SAI port objects for every cage's default port
@@ -303,7 +397,9 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
                     or name in kept_names
                 ):
                     continue
-                port = cls._synthesize_port(base_json, port_map, name, next(free_vlans), template)
+                port = cls._synthesize_port(
+                    base_json, port_map, name, next(free_vlans), template, None, intf_id(name)
+                )
                 port["state"] = 1
         except StopIteration:
             raise ValueError(
