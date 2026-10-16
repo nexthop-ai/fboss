@@ -44,6 +44,7 @@ int getRdswSysPortBlockSize(
         return 22;
       case PlatformType::PLATFORM_BLACKWOLF800BANW:
       case PlatformType::PLATFORM_J4SIM:
+      case PlatformType::PLATFORM_M4340NHP:
       case PlatformType::PLATFORM_SAINTPAUL:
         return 1024;
       default:
@@ -1007,7 +1008,8 @@ void populateSwitchInfo(
       auto dsfNode = dsfNodeConfig(*firstHwAsic, switchId, platformType);
       dsfNode.name() = fmt::format("hwTestSwitch{}", deviceSwitchId);
       if ((platformType == PlatformType::PLATFORM_SAINTPAUL ||
-           platformType == PlatformType::PLATFORM_JANGA800BIC) &&
+           platformType == PlatformType::PLATFORM_JANGA800BIC ||
+           platformType == PlatformType::PLATFORM_M4340NHP) &&
           hwAsic->getSwitchType() == cfg::SwitchType::VOQ) {
         dsfNode.systemPortRanges() = *switchInfo.systemPortRanges();
         if (switchInfo.localSystemPortOffset().has_value()) {
