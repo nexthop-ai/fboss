@@ -3437,6 +3437,17 @@
           "test_name_regex": "AgentNeighborResolutionOverFlowTest.*$"
         }
     ],
+    "brcm/16.0_ea_dnx_odp/16.0_ea_dnx_odp/qumran4d/multi_switch": [
+        {
+          "test_name_regex": "AgentVoqSwitchWithMultipleDsfNodesTest\\..*"
+        },
+        {
+          "test_name_regex": "AgentCoppTest/[01]\\.L3MTUErrorToLowPriQ$"
+        },
+        {
+          "test_name_regex": "AgentCoppGlobalRateLimitTest\\..*"
+        }
+    ],
     "brcm/16.0_ea_odp/16.0_ea_odp/tomahawk6/multi_switch": [
         {
           "test_name_regex": "AgentAqmEcnOnlyTest.verifyPerQueueEcnMarkedStats$"
