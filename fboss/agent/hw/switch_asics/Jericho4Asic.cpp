@@ -299,6 +299,7 @@ bool Jericho4Asic::isSupported(Feature feature) const {
     case HwAsic::Feature::NEXT_HOP_GROUP_MEMBER_MONITORED_OBJECT:
     case HwAsic::Feature::ISOLATION_GROUP:
     case HwAsic::Feature::PORT_SERDES_CREATED_WITH_PORT:
+    case HwAsic::Feature::SYSTEM_PORT_CORE_INDEX_FROM_PORT:
     case HwAsic::Feature::TAJO_RX_SERDES_PARAMETERS:
       return false;
   }

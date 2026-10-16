@@ -280,6 +280,7 @@ bool EbroAsic::isSupportedNonFabric(Feature feature) const {
     case HwAsic::Feature::RX_PACKET_TYPE:
     case HwAsic::Feature::ISOLATION_GROUP:
     case HwAsic::Feature::PORT_SERDES_CREATED_WITH_PORT:
+    case HwAsic::Feature::SYSTEM_PORT_CORE_INDEX_FROM_PORT:
     case HwAsic::Feature::SAI_ACL_MPLS_LABEL0_TTL:
     case HwAsic::Feature::SAI_MPLS_NEXTHOP_OUTSEG_TYPE:
       return false;
