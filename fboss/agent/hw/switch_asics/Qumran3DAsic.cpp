@@ -307,6 +307,7 @@ bool Qumran3DAsic::isSupported(Feature feature) const {
     case HwAsic::Feature::NO_RX_REASON_TRAP:
     case HwAsic::Feature::TAJO_RX_SERDES_PARAMETERS:
     case HwAsic::Feature::ISOLATION_GROUP:
+    case HwAsic::Feature::PORT_SERDES_CREATED_WITH_PORT:
     case HwAsic::Feature::SAI_ACL_MPLS_LABEL0_TTL:
       return false;
   }

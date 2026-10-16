@@ -258,6 +258,7 @@ bool G202xAsic::isSupportedNonFabric(Feature feature) const {
     case HwAsic::Feature::NEXT_HOP_GROUP_MEMBER_MONITORED_OBJECT:
     case HwAsic::Feature::RX_PACKET_TYPE:
     case HwAsic::Feature::ISOLATION_GROUP:
+    case HwAsic::Feature::PORT_SERDES_CREATED_WITH_PORT:
     case HwAsic::Feature::SWITCH_WIDE_LINK_UP_DEBOUNCE:
       return false;
   }

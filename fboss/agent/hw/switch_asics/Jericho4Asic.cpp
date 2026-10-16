@@ -298,6 +298,7 @@ bool Jericho4Asic::isSupported(Feature feature) const {
     case HwAsic::Feature::SLL_HLL_DISCARD_COUNTERS:
     case HwAsic::Feature::NEXT_HOP_GROUP_MEMBER_MONITORED_OBJECT:
     case HwAsic::Feature::ISOLATION_GROUP:
+    case HwAsic::Feature::PORT_SERDES_CREATED_WITH_PORT:
     case HwAsic::Feature::TAJO_RX_SERDES_PARAMETERS:
       return false;
   }

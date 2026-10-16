@@ -625,6 +625,9 @@ class HwAsic {
     // Port isolation groups: traffic ingressing a port is not forwarded to the
     // members of the isolation group bound to it
     ISOLATION_GROUP,
+    // The adapter attaches a default serdes object to every port it creates
+    // and rejects a second create_port_serdes; the agent adopts that object
+    PORT_SERDES_CREATED_WITH_PORT,
   };
 
   enum class AsicMode {

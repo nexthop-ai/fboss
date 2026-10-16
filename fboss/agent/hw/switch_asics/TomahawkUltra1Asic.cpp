@@ -258,6 +258,7 @@ bool TomahawkUltra1Asic::isSupported(Feature feature) const {
     case HwAsic::Feature::TAJO_RX_SERDES_PARAMETERS:
     case HwAsic::Feature::RX_PACKET_TYPE:
     case HwAsic::Feature::ISOLATION_GROUP:
+    case HwAsic::Feature::PORT_SERDES_CREATED_WITH_PORT:
       return false;
   }
   return false;
