@@ -1,8 +1,9 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
+#include <thrift/lib/cpp2/server/ThriftServer.h>
+
 #include <folly/executors/FunctionScheduler.h>
 #include <folly/logging/Init.h>
-#include <thrift/lib/cpp2/server/ThriftServer.h> // NOLINT(misc-include-cleaner)
 
 #include "fboss/qsfp_service/PortManager.h"
 #include "fboss/qsfp_service/QsfpServer.h"
