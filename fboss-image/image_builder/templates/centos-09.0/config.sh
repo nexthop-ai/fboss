@@ -18,10 +18,38 @@ KIWI_DUMP=/usr/lib/dracut/modules.d/55kiwi-dump/kiwi-dump-image.sh
 KIWI_BS_OLD='target_blocksize="/sys/block/${target_node}/queue/physical_block_size"'
 KIWI_BS_NEW='target_blocksize="/sys/block/${target_node}/queue/logical_block_size"'
 if grep -qF "$KIWI_BS_OLD" "$KIWI_DUMP"; then
-  sed -i "s|$KIWI_BS_OLD|$KIWI_BS_NEW|" "$KIWI_DUMP"
+  if ! sed -i "s|$KIWI_BS_OLD|$KIWI_BS_NEW|" "$KIWI_DUMP"; then
+    echo "ERROR: cannot patch $KIWI_DUMP"
+    exit 1
+  fi
   echo "Patched kiwi oem-dump blocksize check: physical -> logical"
 else
-  echo "kiwi oem-dump blocksize check not in expected form; leaving upstream behaviour"
+  echo "ERROR: kiwi oem-dump blocksize check not in expected form; update this patch, or remove it if kiwi now reads the logical block size"
+  exit 1
+fi
+
+# The image is built for 4096-byte logical blocks. On a 512-byte disk the
+# rewrite_512b_partition_tables installer module converts it in place after
+# the dump, so let that one mismatch through; any other mismatch is still
+# refused.
+KIWI_BS_CMP_OLD='if [ ! "${target_blocksize}" = "${image_blocksize}" ];then'
+KIWI_BS_CMP_NEW='if [ ! "${target_blocksize}" = "${image_blocksize}" ] && [ ! "${image_blocksize}:${target_blocksize}" = "4096:512" ];then'
+if grep -qF "$KIWI_BS_CMP_OLD" "$KIWI_DUMP"; then
+  KIWI_DUMP_TMP=$(mktemp)
+  awk -v old="$KIWI_BS_CMP_OLD" -v new="$KIWI_BS_CMP_NEW" '
+    i = index($0, old) { $0 = substr($0, 1, i - 1) new substr($0, i + length(old)) }
+    { print }
+  ' "$KIWI_DUMP" >"$KIWI_DUMP_TMP"
+  if ! bash -n "$KIWI_DUMP_TMP"; then
+    echo "ERROR: patched $KIWI_DUMP does not parse"
+    exit 1
+  fi
+  cat "$KIWI_DUMP_TMP" >"$KIWI_DUMP"
+  rm -f "$KIWI_DUMP_TMP"
+  echo "Patched kiwi oem-dump blocksize check: allow 4096b image on 512b target"
+else
+  echo "ERROR: kiwi oem-dump blocksize comparison not in expected form; update this patch, or remove it if kiwi now allows a 4096b image on a 512b target"
+  exit 1
 fi
 
 # The image is built for 4096-byte logical blocks. On a 512-byte disk the
@@ -106,11 +134,12 @@ function get_partition_node_name {
 EOF
 
 if [ ! -f "$KIWI_PARTLIB" ]; then
-  echo "WARNING: $KIWI_PARTLIB not found; leaving upstream get_partition_node_name"
-elif grep -q 'BUGFIX: resolve by partition number' "$KIWI_PARTLIB"; then
-  echo "kiwi get_partition_node_name already patched"
-elif ! grep -q '^function get_partition_node_name {$' "$KIWI_PARTLIB"; then
-  echo "WARNING: get_partition_node_name not in expected form; leaving upstream behaviour"
+  echo "ERROR: $KIWI_PARTLIB not found; cannot patch get_partition_node_name"
+  exit 1
+elif grep -q 'BUGFIX: resolve by partition number' "$KIWI_PARTLIB" ||
+  ! grep -q '^function get_partition_node_name {$' "$KIWI_PARTLIB"; then
+  echo "ERROR: kiwi get_partition_node_name not in expected form; update this patch, or remove it if kiwi now resolves partitions by number"
+  exit 1
 else
   KIWI_PARTLIB_TMP=$(mktemp)
   awk -v newfn="$KIWI_GPNN_NEW" '
