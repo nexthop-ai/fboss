@@ -17,12 +17,6 @@ add_executable(fboss2_integration_test
   fboss/cli/fboss2/test/integration_test/ConfigBgpGlobalTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigBgpNeighborTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigBgpPeerGroupTest.cpp
-<<<<<<< HEAD
-||||||| c31f2b21c7
-  fboss/cli/fboss2/test/integration_test/ConfigBgpPolicyAsPathListTest.cpp
-=======
-  fboss/cli/fboss2/test/integration_test/ConfigBgpPolicyAsPathListTest.cpp
->>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
   fboss/cli/fboss2/test/integration_test/ConfigBgpPolicyCommunityListTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigBgpSessionTest.cpp
   fboss/cli/fboss2/test/integration_test/ConfigSflowRateTest.cpp

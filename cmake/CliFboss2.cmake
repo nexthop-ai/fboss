@@ -999,18 +999,6 @@ add_library(fboss2_config_lib
   fboss/cli/fboss2/commands/config/protocol/bgp/policy/community-list/BgpCommunityListCliUtils.h
   fboss/cli/fboss2/commands/config/protocol/bgp/policy/community-list/CmdConfigProtocolBgpPolicyCommunityList.cpp
   fboss/cli/fboss2/commands/config/protocol/bgp/policy/community-list/CmdConfigProtocolBgpPolicyCommunityList.h
-<<<<<<< HEAD
-<<<<<<< HEAD
-  fboss/cli/fboss2/commands/config/protocol/bgp/policy/community-list/community/CmdConfigProtocolBgpPolicyCommunityListCommunity.cpp
-  fboss/cli/fboss2/commands/config/protocol/bgp/policy/community-list/community/CmdConfigProtocolBgpPolicyCommunityListCommunity.h
-||||||| c31f2b21c7
-=======
->>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
-||||||| parent of a80f74d62d (Resolve fboss2 community-list conflicts from the upstream sync)
-  fboss/cli/fboss2/commands/config/protocol/bgp/policy/community-list/community/CmdConfigProtocolBgpPolicyCommunityListCommunity.cpp
-  fboss/cli/fboss2/commands/config/protocol/bgp/policy/community-list/community/CmdConfigProtocolBgpPolicyCommunityListCommunity.h
-=======
->>>>>>> a80f74d62d (Resolve fboss2 community-list conflicts from the upstream sync)
   fboss/cli/fboss2/commands/config/ptp/CmdConfigPtp.cpp
   fboss/cli/fboss2/commands/config/ptp/CmdConfigPtp.h
   fboss/cli/fboss2/commands/config/ptp/transparent_clock/CmdConfigPtpTransparentClock.cpp

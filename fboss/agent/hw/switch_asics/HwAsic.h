@@ -631,7 +631,9 @@ class HwAsic {
     // Port isolation groups: traffic ingressing a port is not forwarded to the
     // members of the isolation group bound to it
     ISOLATION_GROUP,
-<<<<<<< HEAD
+    // Extra router MACs via the SAI MY_MAC object: packets destined to a
+    // programmed MAC + VLAN are routed like packets to the switch's own MAC.
+    MY_MAC,
     // The adapter attaches a default serdes object to every port it creates
     // and rejects a second create_port_serdes; the agent adopts that object
     PORT_SERDES_CREATED_WITH_PORT,
@@ -639,12 +641,6 @@ class HwAsic {
     // port names the core and core port index read back from the port, not
     // the platform mapping's prediction
     SYSTEM_PORT_CORE_INDEX_FROM_PORT,
-||||||| c31f2b21c7
-=======
-    // Extra router MACs via the SAI MY_MAC object: packets destined to a
-    // programmed MAC + VLAN are routed like packets to the switch's own MAC.
-    MY_MAC,
->>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
   };
 
   enum class AsicMode {

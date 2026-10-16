@@ -298,14 +298,8 @@ bool Jericho3Asic::isSupported(Feature feature) const {
     case HwAsic::Feature::NEXT_HOP_GROUP_MEMBER_MONITORED_OBJECT:
     case HwAsic::Feature::MY_MAC:
     case HwAsic::Feature::ISOLATION_GROUP:
-<<<<<<< HEAD
-<<<<<<< HEAD
     case HwAsic::Feature::PORT_SERDES_CREATED_WITH_PORT:
     case HwAsic::Feature::SYSTEM_PORT_CORE_INDEX_FROM_PORT:
-||||||| parent of 4e6a1784e9 (fix Jericho3Asic.cpp)
-<<<<<<< HEAD
-=======
->>>>>>> 4e6a1784e9 (fix Jericho3Asic.cpp)
     case HwAsic::Feature::TAJO_RX_SERDES_PARAMETERS:
     case HwAsic::Feature::ACL_ENTRY_OUT_PORT_QUALIFIER:
       return false;

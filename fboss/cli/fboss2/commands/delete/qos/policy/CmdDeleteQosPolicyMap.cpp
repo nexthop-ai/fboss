@@ -125,29 +125,13 @@ std::string deleteQosPolicyMapEntry(
   changed = true;
   switch (entry.getMapType()) {
     case DeleteQosMapType::DSCP: {
-<<<<<<< HEAD
       if (!utils::eraseDscp(*qosMap.dscpMaps(), entry.getKey())) {
-        throw std::runtime_error(
-            fmt::format(
-                "QoS policy '{}' has no dscp mapping for value {}",
-                policyName,
-                entry.getKey()));
-||||||| c31f2b21c7
-      if (!eraseDscp(*qosMap.dscpMaps(), entry.getKey())) {
-        throw std::runtime_error(
-            fmt::format(
-                "QoS policy '{}' has no dscp mapping for value {}",
-                policyName,
-                entry.getKey()));
-=======
-      if (!eraseDscp(*qosMap.dscpMaps(), entry.getKey())) {
         changed = false;
         return fmt::format(
             "Warning: QoS policy '{}' has no dscp mapping for value {}, "
             "nothing to delete",
             policyName,
             entry.getKey());
->>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
       }
       return fmt::format(
           "Successfully deleted QoS policy '{}' dscp mapping for value {}",
@@ -155,29 +139,13 @@ std::string deleteQosPolicyMapEntry(
           entry.getKey());
     }
     case DeleteQosMapType::MPLS_EXP: {
-<<<<<<< HEAD
       if (!utils::eraseExp(*qosMap.expMaps(), entry.getKey())) {
-        throw std::runtime_error(
-            fmt::format(
-                "QoS policy '{}' has no mpls-exp mapping for value {}",
-                policyName,
-                entry.getKey()));
-||||||| c31f2b21c7
-      if (!eraseExp(*qosMap.expMaps(), entry.getKey())) {
-        throw std::runtime_error(
-            fmt::format(
-                "QoS policy '{}' has no mpls-exp mapping for value {}",
-                policyName,
-                entry.getKey()));
-=======
-      if (!eraseExp(*qosMap.expMaps(), entry.getKey())) {
         changed = false;
         return fmt::format(
             "Warning: QoS policy '{}' has no mpls-exp mapping for value {}, "
             "nothing to delete",
             policyName,
             entry.getKey());
->>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
       }
       return fmt::format(
           "Successfully deleted QoS policy '{}' mpls-exp mapping for value {}",
@@ -186,29 +154,13 @@ std::string deleteQosPolicyMapEntry(
     }
     case DeleteQosMapType::DOT1P: {
       auto pcpMaps = qosMap.pcpMaps();
-<<<<<<< HEAD
       if (!pcpMaps.has_value() || !utils::erasePcp(*pcpMaps, entry.getKey())) {
-        throw std::runtime_error(
-            fmt::format(
-                "QoS policy '{}' has no dot1p mapping for value {}",
-                policyName,
-                entry.getKey()));
-||||||| c31f2b21c7
-      if (!pcpMaps.has_value() || !erasePcp(*pcpMaps, entry.getKey())) {
-        throw std::runtime_error(
-            fmt::format(
-                "QoS policy '{}' has no dot1p mapping for value {}",
-                policyName,
-                entry.getKey()));
-=======
-      if (!pcpMaps.has_value() || !erasePcp(*pcpMaps, entry.getKey())) {
         changed = false;
         return fmt::format(
             "Warning: QoS policy '{}' has no dot1p mapping for value {}, "
             "nothing to delete",
             policyName,
             entry.getKey());
->>>>>>> 615d477c11c04240d3593f9420b509d3a4661970
       }
       if (pcpMaps->empty()) {
         pcpMaps.reset();
