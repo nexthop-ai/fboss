@@ -31,6 +31,7 @@ Source2: fboss-local-overrides.config
 
 # Kernel patches
 Patch1: 0001-hwmon-k10temp-add-ccd-support-for-family-1ah.patch
+Patch2: 0002-i2c-xiic-dont-fail-read-with-data-in-rx-fifo.patch
 
 # Default in-container scripts dir (override via --define container_scripts_dir if needed)
 %{!?container_scripts_dir:%global container_scripts_dir /src/fboss-image/kernel/scripts}
@@ -81,6 +82,7 @@ Requires: kernel-headers = %{epoch}:%{version}-%{release}
 %prep
 %setup -q -n linux-%{version}
 %patch1 -p1
+%patch2 -p1
 
 # Prepare kernel config (defconfig + FBOSS reference + local overrides)
 %{__chmod} +x %{container_scripts_dir}/prepare_config.sh

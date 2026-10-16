@@ -1,0 +1,94 @@
+From: Siddarth Chilukuri <siddarth@nexthop.ai>
+Date: Fri, 2 Oct 2026 19:29:49 +0000
+Subject: [PATCH] i2c: xiic: don't fail a read whose data is already in the RX
+ FIFO
+
+When the controller is the master receiver, TX_ERROR is set once the
+core has NACKed the last byte ("transmit complete" in PG090). We have
+seen xiic_process() run with TX_ERROR set but RX_FULL not yet set,
+while the RX FIFO already holds all of the remaining bytes of the
+message.
+
+xiic_process() treats TX_ERROR without RX_FULL as an error, so in this
+case it reinitializes the core, the data in the FIFO is lost, and the
+read returns -EIO even though it finished on the bus. The next read on
+the same adapter can also return stale data without reporting an error.
+
+Fix this by checking the RX FIFO in the error path. If the message is
+a read, there was no arbitration loss, and the FIFO has all of the
+remaining bytes, handle it the same way as RX_FULL and complete the
+message. Since IISR is toggle-on-write, only clear RX_FULL if it was
+actually set.
+
+We found this on a system with several AXI IIC controllers in one PCIe
+FPGA that share an interrupt. It only happens when at least two
+controllers are busy at the same time. With 12 QSFP-DD modules being
+read in parallel for 480 seconds, the failures went from 2083 -EIO and
+1158 reads with wrong data (out of 11.2M reads) to none.
+
+Fixes: e1d5b6598cdc ("i2c: Add support for Xilinx XPS IIC Bus Interface")
+Cc: stable@vger.kernel.org
+Signed-off-by: Siddarth Chilukuri <siddarth@nexthop.ai>
+Link: https://lore.kernel.org/linux-i2c/20261005-i2c-xiic-rx-fifo-v1-1-0177ac5f72d7@nexthop.ai/
+---
+ drivers/i2c/busses/i2c-xiic.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/drivers/i2c/busses/i2c-xiic.c b/drivers/i2c/busses/i2c-xiic.c
+index 1d68177..84b2657 100644
+--- a/drivers/i2c/busses/i2c-xiic.c
++++ b/drivers/i2c/busses/i2c-xiic.c
+@@ -673,6 +673,7 @@ static irqreturn_t xiic_process(int irq, void *dev_id)
+ 	int wakeup_req = 0;
+ 	enum xilinx_i2c_state wakeup_code = STATE_DONE;
+ 	int ret;
++	bool rx_done_no_rx_full = false;
+ 
+ 	/* Get the interrupt Status from the IPIF. There is no clearing of
+ 	 * interrupts in the IPIF. Interrupts must be cleared at the source.
+@@ -703,6 +704,27 @@ static irqreturn_t xiic_process(int irq, void *dev_id)
+ 		 * this is probably a TX error
+ 		 */
+ 
++		/*
++		 * For a master receiver TX_ERROR also means "transfer complete" and
++		 * can be seen before RX_FULL. If the FIFO already holds the rest of
++		 * the message, finish the read instead of resetting the core.
++		 */
++		if (i2c->rx_msg && !(pend & XIIC_INTR_ARB_LOST_MASK) &&
++		    !(xiic_getreg8(i2c, XIIC_SR_REG_OFFSET) &
++		      XIIC_SR_RX_FIFO_EMPTY_MASK)) {
++			unsigned int in_fifo =
++				xiic_getreg8(i2c, XIIC_RFO_REG_OFFSET) + 1;
++			unsigned int space = xiic_rx_space(i2c);
++
++			if (space && in_fifo >= space) {
++				rx_done_no_rx_full =
++					!(isr & XIIC_INTR_RX_FULL_MASK);
++				pend |= XIIC_INTR_RX_FULL_MASK;
++				clr |= XIIC_INTR_TX_ERROR_MASK;
++				goto rx_complete;
++			}
++		}
++
+ 		dev_dbg(i2c->adap.dev.parent, "%s error\n", __func__);
+ 
+ 		/* dynamic mode seem to suffer from problems if we just flushes
+@@ -724,6 +746,7 @@ static irqreturn_t xiic_process(int irq, void *dev_id)
+ 		/* don't try to handle other events */
+ 		goto out;
+ 	}
++rx_complete:
+ 	if (pend & XIIC_INTR_RX_FULL_MASK) {
+ 		/* Receive register/FIFO is full */
+ 
+@@ -824,6 +847,9 @@ static irqreturn_t xiic_process(int irq, void *dev_id)
+ out:
+ 	dev_dbg(i2c->adap.dev.parent, "%s clr: 0x%x\n", __func__, clr);
+ 
++	/* IISR is toggle-on-write: don't toggle an RX_FULL bit that wasn't set */
++	if (rx_done_no_rx_full)
++		clr &= ~XIIC_INTR_RX_FULL_MASK;
+ 	xiic_setreg32(i2c, XIIC_IISR_OFFSET, clr);
+ 	if (xfer_more)
+ 		__xiic_start_xfer(i2c);
