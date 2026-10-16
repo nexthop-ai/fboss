@@ -335,7 +335,8 @@ class QsfpModule : public Transceiver {
   void setTransceiverLoopback(
       const std::string& portName,
       phy::Side side,
-      bool setLoopback) override;
+      bool setLoopback,
+      phy::LoopbackMode mode) override;
 
   std::map<std::string, CdbDatapathSymErrHistogram> getSymbolErrorHistogram()
       override;
@@ -401,8 +402,12 @@ class QsfpModule : public Transceiver {
    * Used to track last time key actions were taken so we don't retry
    * too frequently. These MUST be accessed holding qsfpModuleMutex_.
    */
-  time_t lastRefreshTime_{0};
+  time_t lastQsfpDataUpdateTime_{0};
   time_t lastRemediateTime_{0};
+  // Gates the periodic refresh. Not lastQsfpDataUpdateTime_, since out-of-band
+  // updateQsfpData() calls (e.g. programTransceiver retries) bump that without
+  // regenerating the cached TransceiverInfo
+  time_t lastTcvrInfoUpdateTime_{0};
 
   // last time we know that no port was up on this transceiver.
   std::atomic<time_t> lastDownTime_{0};
@@ -647,7 +652,7 @@ class QsfpModule : public Transceiver {
   /*
    * Whether enough time has passed that we should refresh our data.
    * Cooldown parameter indicates how much time must have elapsed
-   * since last time we refreshed the DOM data.
+   * since last time we regenerated the cached TransceiverInfo.
    */
   bool shouldRefresh(time_t cooldown) const;
 
@@ -733,7 +738,8 @@ class QsfpModule : public Transceiver {
   virtual void setTransceiverLoopbackLocked(
       const std::string& /* portName */,
       phy::Side /* side */,
-      bool /* setLoopback */) {}
+      bool /* setLoopback */,
+      phy::LoopbackMode /* mode */) {}
 
   virtual std::optional<TunableLaserStatus> getTunableLaserStatus() {
     return std::nullopt;

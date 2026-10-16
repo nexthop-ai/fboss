@@ -14,7 +14,6 @@ add_executable(fboss2_cmd_config_test
   fboss/cli/fboss2/test/config/CmdConfigBgpNeighborTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigBgpPeerGroupTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigBgpPolicyAsPathListTest.cpp
-  fboss/cli/fboss2/test/config/CmdConfigBgpPolicyCommunityListCommunityTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigBgpPolicyCommunityListTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigCoppTest.cpp
   fboss/cli/fboss2/test/config/CmdConfigDataPlaneTrafficPolicyTest.cpp

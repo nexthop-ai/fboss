@@ -478,12 +478,21 @@ struct MirrorOnDropReport {
    */
   14: optional i32 samplingRate;
   /*
-   * Optional packets-per-second rate cap for drop report generation.
-   * When set, the SAI TAM event threshold object limits the rate at
-   * which MoD reports are sent; drops exceeding this rate are silently
-   * discarded. If not set, no rate limiting is applied.
+   * Optional packets-per-second cap on MoD report generation, applied
+   * separately to each drop reason. The total report rate grows with the
+   * number of drop reasons dropping at once: a threshold of X with 10 active
+   * drop reasons allows up to 10X reports/sec. Use
+   * aggregateDropPacketRateThreshold to cap the total. Drops above the cap
+   * produce no report.
    */
   15: optional i32 dropPacketRateThreshold;
+  /*
+   * Optional packets-per-second cap on the combined MoD report rate across
+   * all drop reasons, applied after the per-reason dropPacketRateThreshold.
+   * Maps to SAI_TAM_REPORT_ATTR_MAX_REPORT_RATE on the MoD report. If not
+   * set, no aggregate cap is applied.
+   */
+  16: optional i32 aggregateDropPacketRateThreshold;
 }
 
 /**
@@ -712,6 +721,13 @@ struct AclEntry {
    * MPLS traffic.
    */
   40: optional Ttl mplsLabel0Ttl;
+
+  /**
+   * Mask applied to tcpFlagsBitMap: a packet matches when
+   * (packet flags & tcpFlagsMask) == (tcpFlagsBitMap & tcpFlagsMask).
+   * Valid values [1-63], and valid only when tcpFlagsBitMap is set.
+   */
+  41: optional i16 tcpFlagsMask;
 }
 
 enum AclTableActionType {
@@ -2260,6 +2276,9 @@ struct SwitchSettings {
    * effect on existing groups.
    */
   38: map<EcmpGroupType, EcmpGroupSettings> ecmpGroupSettings;
+  // Additional router MACs. Packets to these MACs on the given VLAN are routed,
+  // in addition to packets to the interface MAC.
+  39: list<MacAndVlan> myMacs = [];
 }
 
 // Global buffer pool

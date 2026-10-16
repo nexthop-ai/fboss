@@ -10,17 +10,22 @@
 
 #pragma once
 
-#include <neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
 #include <algorithm>
 #include <string>
+
+#ifndef IS_OSS
 #include "configerator/structs/neteng/bgp_policy/thrift/gen-cpp2/bgp_policy_types.h"
+#include "configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h"
+#else
+#include <neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
+#endif
 
 /**
  * Lookup/create helpers for the community-list CLI family, shared between the
- * list-level dispatcher (CmdConfigProtocolBgpPolicyCommunityList), the
- * community subcommand (CmdConfigProtocolBgpPolicyCommunityListCommunity), and
- * the delete counterparts. A CommunityList is keyed by name; the inline
- * Community members it holds are keyed by their own name.
+ * list-level dispatcher (CmdConfigProtocolBgpPolicyCommunityList) and its
+ * delete counterpart. A CommunityList is keyed by name. Its values live in the
+ * flat `communities` string list, which is the field bgpd matches against; the
+ * structured members[] are never read by bgpd and have no CLI.
  */
 namespace facebook::fboss::bgpcli {
 
@@ -53,46 +58,6 @@ inline bgp::bgp_policy::CommunityList& findOrCreateCommunityList(
   auto& list = lists.back();
   list.name() = name;
   return list;
-}
-
-inline bool communityMemberExists(
-    const bgp::bgp_policy::CommunityList& list,
-    const std::string& name) {
-  if (!list.members().has_value()) {
-    return false;
-  }
-  const auto& members = *list.members();
-  return std::any_of(members.begin(), members.end(), [&](const auto& member) {
-    return member.community_ref().has_value() &&
-        *member.community_ref()->name() == name;
-  });
-}
-
-// Find the inline Community member keyed by name within a list, creating it
-// if absent. The CLI always defines members inline (the CommunityRefType
-// union's `community` arm); the member's name is its identity.
-//
-// A created member is seeded with type NORMAL. Community.type is an
-// unqualified field with no schema default, and CommunityType has no zero
-// enumerator (NORMAL = 1), so an unseeded member would serialize as `type: 0`
-// — a value no enumerator matches — and reach bgpd that way on commit.
-// NORMAL is the only safe seed: it mirrors CommunityList.boolean_operator's
-// own OR default, and `type <value>` overwrites it.
-inline bgp::bgp_policy::Community& findOrCreateCommunityMember(
-    bgp::bgp_policy::CommunityList& list,
-    const std::string& name) {
-  auto& members = list.members().ensure();
-  for (auto& member : members) {
-    if (member.community_ref().has_value() &&
-        *member.community_ref()->name() == name) {
-      return *member.community_ref();
-    }
-  }
-  members.emplace_back();
-  auto& community = members.back().set_community();
-  community.name() = name;
-  community.type() = bgp::bgp_policy::CommunityType::NORMAL;
-  return community;
 }
 
 } // namespace facebook::fboss::bgpcli

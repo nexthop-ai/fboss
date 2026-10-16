@@ -95,6 +95,10 @@ if ($ENV{SAI_TAJO_IMPL})
   set (SAI_TAJO_IMPL ON)
   add_definitions (-DTAJO_SDK)
 endif()
+if (SAI_TAJO_IMPL)
+  # Code checks TAJO_SDK directly; SAI_SDK_VERSION only defines the selector.
+  add_definitions(-DTAJO_SDK)
+endif()
 
 option(SAI_BRCM_IMPL "Build SAI api with BRCM-SAI extensions" OFF)
 if ($ENV{SAI_BRCM_IMPL})
@@ -327,25 +331,32 @@ include_directories(${Python3_INCLUDE_DIR})
 if (SAI_BRCM_PAI_IMPL)
   set(SAI_INCLUDE_DIR "${SAI_BRCM_PAI_IMPL_INC_DIR}/sai/inc")
 else()
-  find_path(SAI_INCLUDE_DIR NAMES sai.h)
+  # An NPU SDK may also ship the SAI headers it was built against, as sai/inc/
+  # beside its library, which run-getdeps.py stages as lib/. Prefer those.
+  find_path(SAI_SDK_HEADERS_DIR NAMES lib/sai/inc/sai.h)
+  if (SAI_SDK_HEADERS_DIR)
+    set(SAI_INCLUDE_DIR "${SAI_SDK_HEADERS_DIR}/lib/sai/inc")
+  else()
+    find_path(SAI_INCLUDE_DIR NAMES sai.h)
+  endif()
 endif()
 include_directories(${SAI_INCLUDE_DIR})
 message(STATUS "Found SAI Include dir: ${SAI_INCLUDE_DIR}")
 
 if (SAI_BRCM_IMPL)
-  find_path(SAI_IMPL_DIR NAMES lib/libsai_impl.a)
+  find_path(SAI_IMPL_DIR NAMES lib/libsai_impl.a lib/libsai_impl.so)
   find_path(SAI_EXPERIMENTAL_INCLUDE_DIR NAMES brcm_sai_extensions.h)
   include_directories(${SAI_EXPERIMENTAL_INCLUDE_DIR})
   include_directories(${SAI_EXPERIMENTAL_INCLUDE_DIR}/experimental)
   message(STATUS "Found SAI Experimental dir: ${SAI_EXPERIMENTAL_INCLUDE_DIR}/experimental")
 elseif(SAI_TAJO_IMPL)
-  find_path(SAI_IMPL_DIR NAMES lib/libsai_impl.a)
+  find_path(SAI_IMPL_DIR NAMES lib/libsai_impl.a lib/libsai_impl.so)
   find_path(SAI_EXPERIMENTAL_INCLUDE_DIR NAMES experimental/sai_attr_ext.h)
   include_directories(${SAI_EXPERIMENTAL_INCLUDE_DIR})
   include_directories(${SAI_EXPERIMENTAL_INCLUDE_DIR}/experimental)
   message(STATUS "Found SAI Experimental dir: ${SAI_EXPERIMENTAL_INCLUDE_DIR}/experimental")
 elseif(CHENAB_SAI_SDK)
-  find_path(SAI_IMPL_DIR NAMES lib/libsai_impl.a)
+  find_path(SAI_IMPL_DIR NAMES lib/libsai_impl.a lib/libsai_impl.so)
   # Chenab-TODO: set experimental directories appropriately
   set(SAI_EXPERIMENTAL_INCLUDE_DIR "/var/FBOSS/sai_impl_output/include")
   include_directories(${SAI_EXPERIMENTAL_INCLUDE_DIR})
@@ -1599,6 +1610,12 @@ add_dependencies(fboss_platform_services
   platform_helpers_platform_name_lib_test
   platform_helpers_platform_fs_utils_test
   platform_helpers_platform_utils_test
+  platform_checks_local_host_test
+  platform_checks_remote_host_test
+  platform_checks_platform_name_test
+  platform_helpers_expect_session_test
+  platform_checks_management_plane_checks_test
+  platform_checks_bmc_checks_test
   platform_manager_data_store_test
   platform_manager_config_validator_test
   platform_manager_presence_checker_test
@@ -1617,10 +1634,14 @@ add_dependencies(fboss_platform_services
   sensor_service_hw_test
   weutil_hw_test
   platform_hw_test
+  platform_checks_bmc_reachable_check_test
   platform_manager_hw_test
   cross_config_validator_test
   fw_util_hw_test
   bsp_tests
+  fixmyfboss_result_printer_test
+  fixmyfboss_check_runner_test
+  fixmyfboss_check_environment_test
 )
 
 add_custom_target(qsfp_targets)
@@ -1642,12 +1663,14 @@ add_dependencies(led_targets
 
 add_custom_target(fboss2_targets)
 add_dependencies(fboss2_targets
+  config_generation_manifest_utils_test
   fboss2
   fboss2_cmd_test
   fboss2_cmd_config_test
   fboss2_framework_test
   fboss2-dev
   fboss2_integration_test
+  feature_default_command_args_config_test
 )
 
 if (SAI_IMPL OR BUILD_SAI_FAKE)

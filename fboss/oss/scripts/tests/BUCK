@@ -6,6 +6,15 @@ oncall("fboss_distro")
 # bazelify: exclude-all
 
 python_unittest(
+    name = "test_check_copyright_headers",
+    srcs = ["test_check_copyright_headers.py"],
+    network_access = network_access_utils.none(),
+    deps = [
+        "//fboss/oss/scripts:check_copyright_headers_lib",
+    ],
+)
+
+python_unittest(
     name = "test_package",
     srcs = ["test_package.py"],
     network_access = network_access_utils.none(),

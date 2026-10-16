@@ -1393,6 +1393,35 @@ TYPED_TEST(ThriftTestAllSwitchTypes, getSwitchIndicesForInterfaces) {
   }
 }
 
+TEST_F(ThriftTest, getMyMacs) {
+  ThriftHandler handler(sw_);
+
+  std::vector<cfg::MacAndVlan> myMacs;
+  handler.getMyMacs(myMacs);
+  EXPECT_TRUE(myMacs.empty());
+
+  auto config = testConfigA();
+  std::vector<cfg::MacAndVlan> cfgMyMacs;
+  for (const auto& macAddress : {"02:00:00:00:00:01", "02:00:00:00:00:02"}) {
+    cfg::MacAndVlan myMac;
+    myMac.vlanID() = 1;
+    myMac.macAddress() = macAddress;
+    cfgMyMacs.push_back(myMac);
+  }
+  config.switchSettings()->myMacs() = cfgMyMacs;
+  sw_->applyConfig("add myMacs", config);
+
+  handler.getMyMacs(myMacs);
+  EXPECT_EQ(myMacs, cfgMyMacs);
+
+  config.switchSettings()->myMacs()->clear();
+  sw_->applyConfig("remove myMacs", config);
+
+  myMacs.clear();
+  handler.getMyMacs(myMacs);
+  EXPECT_TRUE(myMacs.empty());
+}
+
 TEST_F(ThriftTest, getAndSetMacAddrsToBlock) {
   ThriftHandler handler(sw_);
 
@@ -4195,6 +4224,14 @@ TEST_F(NamedNextHopGroupThriftTest, teAgentRouteOverridesOpenrWithWeights) {
       ClientID::TE_AGENT,
       AdminDistance::TE_AGENT);
 
+  std::vector<NextHopGroup> programmedGroups;
+  auto groupNames = std::make_unique<std::vector<std::string>>();
+  groupNames->push_back("te_agent_group");
+  handler.getNamedNextHopGroups(programmedGroups, std::move(groupNames));
+  ASSERT_EQ(programmedGroups.size(), 1);
+  ASSERT_TRUE(programmedGroups[0].isProgrammed().has_value());
+  EXPECT_TRUE(*programmedGroups[0].isProgrammed());
+
   auto [teAgentWeights, teAgentSids] = resolvedNextHops();
   const std::map<std::string, NextHopWeight> expectedTeAgentWeights{
       {"fe80:face:b00c::1", 2},
@@ -4207,6 +4244,92 @@ TEST_F(NamedNextHopGroupThriftTest, teAgentRouteOverridesOpenrWithWeights) {
       {"fe80:face:b00c::3", {"2001:db8::3"}}};
   EXPECT_EQ(teAgentWeights, expectedTeAgentWeights);
   EXPECT_EQ(teAgentSids, expectedTeAgentSids);
+}
+
+TEST_F(
+    NamedNextHopGroupThriftTest,
+    teAgentRouteOverridesOpenrWithNormalizedWeights) {
+  ThriftHandler handler(sw_);
+
+  constexpr auto kPrefix = "fdad:ffff::4/128";
+  constexpr auto kPrefixAddr = "fdad:ffff::4";
+
+  const auto openrNhop1 = makeLinkLocalNextHopThrift("fe80:face:b00c::1");
+  const auto openrNhop2 = makeLinkLocalNextHopThrift("fe80:face:b00c::2");
+  const auto nhop1 =
+      makeLinkLocalSrv6NextHopThrift("fe80:face:b00c::1", "2001:db8::1");
+  const auto nhop2 =
+      makeLinkLocalSrv6NextHopThrift("fe80:face:b00c::2", "2001:db8::2");
+
+  addUnicastRouteWithNextHopThrifts(
+      handler,
+      kPrefix,
+      {openrNhop1, openrNhop2},
+      ClientID::OPENR,
+      AdminDistance::OPENR);
+
+  NextHopGroup teAgentGroup;
+  teAgentGroup.name() = "te_agent_group";
+  teAgentGroup.nexthops() = {nhop1, nhop1, nhop2, nhop2};
+  auto teAgentGroups = std::make_unique<std::vector<NextHopGroup>>();
+  teAgentGroups->push_back(std::move(teAgentGroup));
+  handler.addOrUpdateNamedNextHopGroups(
+      std::move(teAgentGroups), /*combineDuplicatedNextHops=*/true);
+
+  addUnicastRouteWithNamedNextHopGroup(
+      handler,
+      kPrefix,
+      "te_agent_group",
+      ClientID::TE_AGENT,
+      AdminDistance::TE_AGENT);
+
+  std::vector<NextHopGroup> programmedGroups;
+  auto groupNames = std::make_unique<std::vector<std::string>>();
+  groupNames->push_back("te_agent_group");
+  handler.getNamedNextHopGroups(programmedGroups, std::move(groupNames));
+  ASSERT_EQ(programmedGroups.size(), 1);
+  ASSERT_TRUE(programmedGroups[0].isProgrammed().has_value());
+  EXPECT_TRUE(*programmedGroups[0].isProgrammed());
+
+  auto state = sw_->getState();
+  auto route = findRoute<folly::IPAddressV6>(
+      RouterID(0), {folly::IPAddress(kPrefixAddr), 128}, state);
+  ASSERT_NE(route, nullptr);
+  std::map<std::string, NextHopWeight> weights;
+  for (const auto& nhop : getNextHops(state, route->getForwardInfo())) {
+    weights[nhop.addr().str()] = nhop.weight();
+  }
+  const std::map<std::string, NextHopWeight> expectedWeights{
+      {"fe80:face:b00c::1", 1}, {"fe80:face:b00c::2", 1}};
+  EXPECT_EQ(weights, expectedWeights);
+
+  std::vector<RouteDetails> routeDetails;
+  handler.getRouteTableDetails(routeDetails);
+  const auto detail = std::find_if(
+      routeDetails.begin(), routeDetails.end(), [](const auto& routeDetail) {
+        return facebook::network::toIPAddress(*routeDetail.dest()->ip()) ==
+            folly::IPAddress("fdad:ffff::4");
+      });
+  ASSERT_NE(detail, routeDetails.end());
+  ASSERT_TRUE(detail->resolvedNextHops().has_value());
+
+  std::map<std::string, NextHopWeight> postNormalizationWeights;
+  for (const auto& nhop : *detail->nextHops()) {
+    postNormalizationWeights[facebook::network::toIPAddress(*nhop.address())
+                                 .str()] = *nhop.weight();
+  }
+  std::map<std::string, NextHopWeight> preNormalizationWeights;
+  for (const auto& nhop : *detail->resolvedNextHops()) {
+    preNormalizationWeights[facebook::network::toIPAddress(*nhop.address())
+                                .str()] = *nhop.weight();
+  }
+  const std::map<std::string, NextHopWeight> expectedPreNormalizationWeights{
+      {"fe80:face:b00c::1", 2}, {"fe80:face:b00c::2", 2}};
+  const std::map<std::string, NextHopWeight> expectedPostNormalizationWeights{
+      {"fe80:face:b00c::1", 1}, {"fe80:face:b00c::2", 1}};
+  EXPECT_EQ(preNormalizationWeights, expectedPreNormalizationWeights);
+  EXPECT_EQ(postNormalizationWeights, expectedPostNormalizationWeights);
+  EXPECT_NE(preNormalizationWeights, postNormalizationWeights);
 }
 
 TEST_F(NamedNextHopGroupThriftTest, bgpRouteRecursesOntoTeAgentWeights) {
@@ -4268,6 +4391,14 @@ TEST_F(NamedNextHopGroupThriftTest, bgpRouteRecursesOntoTeAgentWeights) {
       ClientID::TE_AGENT,
       AdminDistance::TE_AGENT);
 
+  std::vector<NextHopGroup> programmedGroups;
+  auto groupNames = std::make_unique<std::vector<std::string>>();
+  groupNames->push_back("te_agent_group");
+  handler.getNamedNextHopGroups(programmedGroups, std::move(groupNames));
+  ASSERT_EQ(programmedGroups.size(), 1);
+  ASSERT_TRUE(programmedGroups[0].isProgrammed().has_value());
+  EXPECT_TRUE(*programmedGroups[0].isProgrammed());
+
   const std::map<std::string, NextHopWeight> expectedWeights{
       {"fe80:face:b00c::1", 2},
       {"fe80:face:b00c::2", 1},
@@ -4281,6 +4412,140 @@ TEST_F(NamedNextHopGroupThriftTest, bgpRouteRecursesOntoTeAgentWeights) {
   addUnicastRouteWithNextHops(handler, kBgpPrefix, {kTePrefixAddr});
 
   EXPECT_EQ(resolvedWeights(kBgpPrefixAddr, 64), expectedWeights);
+
+  std::vector<RouteDetails> routeDetails;
+  handler.getRouteTableDetails(routeDetails);
+  const auto detail = std::find_if(
+      routeDetails.begin(), routeDetails.end(), [](const auto& routeDetail) {
+        return facebook::network::toIPAddress(*routeDetail.dest()->ip()) ==
+            folly::IPAddress("100::");
+      });
+  ASSERT_NE(detail, routeDetails.end());
+  ASSERT_TRUE(detail->resolvedNextHops().has_value());
+
+  std::map<std::string, NextHopWeight> preNormalizationWeights;
+  for (const auto& nhop : *detail->resolvedNextHops()) {
+    preNormalizationWeights[facebook::network::toIPAddress(*nhop.address())
+                                .str()] = *nhop.weight();
+  }
+  std::map<std::string, NextHopWeight> postNormalizationWeights;
+  for (const auto& nhop : *detail->nextHops()) {
+    postNormalizationWeights[facebook::network::toIPAddress(*nhop.address())
+                                 .str()] = *nhop.weight();
+  }
+  // The inherited weights have a GCD of 1, so normalization preserves them.
+  const std::map<std::string, NextHopWeight> expectedPreNormalizationWeights{
+      {"fe80:face:b00c::1", 2},
+      {"fe80:face:b00c::2", 1},
+      {"fe80:face:b00c::3", 1}};
+  const std::map<std::string, NextHopWeight> expectedPostNormalizationWeights{
+      {"fe80:face:b00c::1", 2},
+      {"fe80:face:b00c::2", 1},
+      {"fe80:face:b00c::3", 1}};
+  EXPECT_EQ(preNormalizationWeights, expectedPreNormalizationWeights);
+  EXPECT_EQ(postNormalizationWeights, expectedPostNormalizationWeights);
+}
+
+TEST_F(
+    NamedNextHopGroupThriftTest,
+    bgpRouteRecursesOntoTeAgentNormalizedWeights) {
+  ThriftHandler handler(sw_);
+
+  constexpr auto kTePrefix = "fdad:ffff::4/128";
+  constexpr auto kTePrefixAddr = "fdad:ffff::4";
+  constexpr auto kBgpPrefix = "100::/64";
+  constexpr auto kBgpPrefixAddr = "100::";
+
+  const auto openrNhop1 = makeLinkLocalNextHopThrift("fe80:face:b00c::1");
+  const auto openrNhop2 = makeLinkLocalNextHopThrift("fe80:face:b00c::2");
+  const auto nhop1 =
+      makeLinkLocalSrv6NextHopThrift("fe80:face:b00c::1", "2001:db8::1");
+  const auto nhop2 =
+      makeLinkLocalSrv6NextHopThrift("fe80:face:b00c::2", "2001:db8::2");
+
+  auto resolvedWeights = [this](const std::string& addr, uint8_t mask) {
+    auto state = sw_->getState();
+    auto route = findRoute<folly::IPAddressV6>(
+        RouterID(0), {folly::IPAddress(addr), mask}, state);
+    CHECK(route) << "route " << addr << "/" << static_cast<int>(mask)
+                 << " not in the FIB";
+    std::map<std::string, NextHopWeight> weights;
+    for (const auto& nhop : getNextHops(state, route->getForwardInfo())) {
+      weights[nhop.addr().str()] = nhop.weight();
+    }
+    return weights;
+  };
+
+  addUnicastRouteWithNextHopThrifts(
+      handler,
+      kTePrefix,
+      {openrNhop1, openrNhop2},
+      ClientID::OPENR,
+      AdminDistance::OPENR);
+
+  NextHopGroup teAgentGroup;
+  teAgentGroup.name() = "te_agent_group";
+  teAgentGroup.nexthops() = {nhop1, nhop1, nhop2, nhop2};
+  auto teAgentGroups = std::make_unique<std::vector<NextHopGroup>>();
+  teAgentGroups->push_back(std::move(teAgentGroup));
+  handler.addOrUpdateNamedNextHopGroups(
+      std::move(teAgentGroups), /*combineDuplicatedNextHops=*/true);
+
+  addUnicastRouteWithNamedNextHopGroup(
+      handler,
+      kTePrefix,
+      "te_agent_group",
+      ClientID::TE_AGENT,
+      AdminDistance::TE_AGENT);
+
+  const std::map<std::string, NextHopWeight> expectedTeWeights{
+      {"fe80:face:b00c::1", 1}, {"fe80:face:b00c::2", 1}};
+  EXPECT_EQ(resolvedWeights(kTePrefixAddr, 128), expectedTeWeights);
+
+  addUnicastRouteWithNextHops(handler, kBgpPrefix, {kTePrefixAddr});
+
+  const std::map<std::string, NextHopWeight> expectedBgpWeights{
+      {"fe80:face:b00c::1", ECMP_WEIGHT}, {"fe80:face:b00c::2", ECMP_WEIGHT}};
+  EXPECT_EQ(resolvedWeights(kBgpPrefixAddr, 64), expectedBgpWeights);
+
+  std::vector<NextHopGroup> programmedGroups;
+  auto groupNames = std::make_unique<std::vector<std::string>>();
+  groupNames->push_back("te_agent_group");
+  handler.getNamedNextHopGroups(programmedGroups, std::move(groupNames));
+  ASSERT_EQ(programmedGroups.size(), 1);
+  ASSERT_TRUE(programmedGroups[0].isProgrammed().has_value());
+  EXPECT_TRUE(*programmedGroups[0].isProgrammed());
+
+  std::vector<RouteDetails> routeDetails;
+  handler.getRouteTableDetails(routeDetails);
+  const auto detail = std::find_if(
+      routeDetails.begin(), routeDetails.end(), [](const auto& routeDetail) {
+        return facebook::network::toIPAddress(*routeDetail.dest()->ip()) ==
+            folly::IPAddress("100::");
+      });
+  ASSERT_NE(detail, routeDetails.end());
+  ASSERT_TRUE(detail->resolvedNextHops().has_value());
+
+  std::map<std::string, NextHopWeight> postNormalizationWeights;
+  for (const auto& nhop : *detail->nextHops()) {
+    postNormalizationWeights[facebook::network::toIPAddress(*nhop.address())
+                                 .str()] = *nhop.weight();
+  }
+  std::map<std::string, NextHopWeight> preNormalizationWeights;
+  for (const auto& nhop : *detail->resolvedNextHops()) {
+    preNormalizationWeights[facebook::network::toIPAddress(*nhop.address())
+                                .str()] = *nhop.weight();
+  }
+  // Recursing through equal TE weights produces unweighted ECMP next hops.
+  // Route details preserve ECMP_WEIGHT (0) before normalization and report
+  // explicit weights of 1 after normalization.
+  const std::map<std::string, NextHopWeight> expectedPreNormalizationWeights{
+      {"fe80:face:b00c::1", ECMP_WEIGHT}, {"fe80:face:b00c::2", ECMP_WEIGHT}};
+  const std::map<std::string, NextHopWeight> expectedPostNormalizationWeights{
+      {"fe80:face:b00c::1", 1}, {"fe80:face:b00c::2", 1}};
+  EXPECT_EQ(preNormalizationWeights, expectedPreNormalizationWeights);
+  EXPECT_EQ(postNormalizationWeights, expectedPostNormalizationWeights);
+  EXPECT_NE(preNormalizationWeights, postNormalizationWeights);
 }
 
 TEST_F(NamedNextHopGroupThriftTest, combinedGroupWeightsFollowGroupUpdates) {
@@ -4601,6 +4866,41 @@ TEST_F(
   ASSERT_TRUE(orphanGroup->isProgrammed().has_value());
   EXPECT_FALSE(*orphanGroup->isProgrammed());
   EXPECT_EQ(orphanGroup->nexthops()->size(), 1);
+}
+
+TEST_F(NamedNextHopGroupThriftTest, nextHopGroupsReportNextHopSetId) {
+  ThriftHandler handler(sw_);
+
+  auto groups = std::make_unique<std::vector<NextHopGroup>>();
+  groups->push_back(makeGroup("group1", {"2401:db00:2110:3001::2"}));
+  groups->push_back(makeGroup("group2", {"2401:db00:2110:3055::2"}));
+  handler.addOrUpdateNamedNextHopGroups(std::move(groups));
+
+  std::map<std::string, int64_t> expected;
+  auto fibInfo = sw_->getState()->getFibsInfoMap()->cbegin()->second;
+  for (const auto& [name, setId] : fibInfo->getNameToNextHopSetId()) {
+    expected[name] = setId;
+  }
+  ASSERT_EQ(expected.size(), 2);
+
+  auto toNameToId = [](const std::vector<NextHopGroup>& result) {
+    std::map<std::string, int64_t> nameToId;
+    for (const auto& group : result) {
+      if (group.name().has_value() && group.id().has_value()) {
+        nameToId[*group.name()] = *group.id();
+      }
+    }
+    return nameToId;
+  };
+
+  std::vector<NextHopGroup> namedGroups;
+  handler.getNamedNextHopGroups(
+      namedGroups, std::make_unique<std::vector<std::string>>());
+  EXPECT_EQ(toNameToId(namedGroups), expected);
+
+  std::vector<NextHopGroup> allGroups;
+  handler.getNextHopGroups(allGroups);
+  EXPECT_EQ(toNameToId(allGroups), expected);
 }
 
 TEST_F(NamedNextHopGroupThriftTest, getNextHopGroupsNamedIsProgrammed) {

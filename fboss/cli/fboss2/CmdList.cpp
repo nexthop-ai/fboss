@@ -84,6 +84,8 @@
 #include "fboss/cli/fboss2/commands/show/interface/status/CmdShowInterfaceStatus.h"
 #include "fboss/cli/fboss2/commands/show/interface/traffic/CmdShowInterfaceTraffic.h"
 #include "fboss/cli/fboss2/commands/show/interface/transceiver/CmdShowInterfaceTransceiver.h"
+#include "fboss/cli/fboss2/commands/show/interface/transceiver/eeprom/CmdShowInterfaceTransceiverEeprom.h"
+#include "fboss/cli/fboss2/commands/show/interface/transceiver/eeprom/CmdShowInterfaceTransceiverEepromDump.h"
 #include "fboss/cli/fboss2/commands/show/interface/transceiver/performancemonitoring/CmdShowInterfaceTransceiverPerformanceMonitoring.h"
 #include "fboss/cli/fboss2/commands/show/l2/CmdShowL2.h"
 #include "fboss/cli/fboss2/commands/show/lldp/CmdShowLldp.h"
@@ -91,6 +93,7 @@
 #include "fboss/cli/fboss2/commands/show/mac/CmdShowMacDetails.h"
 #include "fboss/cli/fboss2/commands/show/mirror/CmdShowMirror.h"
 #include "fboss/cli/fboss2/commands/show/mpls/CmdShowMplsRoute.h"
+#include "fboss/cli/fboss2/commands/show/mymac/CmdShowMyMac.h"
 #include "fboss/cli/fboss2/commands/show/mysid/CmdShowMySid.h"
 #include "fboss/cli/fboss2/commands/show/ndp/CmdShowNdp.h"
 #include "fboss/cli/fboss2/commands/show/nexthopgroups/CmdShowNextHopGroups.h"
@@ -110,8 +113,6 @@
 #include "fboss/cli/fboss2/commands/show/systemport/CmdShowSystemPort.h"
 #include "fboss/cli/fboss2/commands/show/teflow/CmdShowTeFlow.h"
 #include "fboss/cli/fboss2/commands/show/transceiver/CmdShowTransceiver.h"
-#include "fboss/cli/fboss2/commands/show/transceiver/eeprom/CmdShowTransceiverEeprom.h"
-#include "fboss/cli/fboss2/commands/show/transceiver/eeprom/CmdShowTransceiverEepromDump.h"
 #include "fboss/cli/fboss2/commands/show/transceiver/loopback/CmdShowTransceiverLoopback.h"
 #include "fboss/cli/fboss2/commands/show/vlan/CmdShowVlan.h"
 #include "fboss/cli/fboss2/commands/start/pcap/CmdStartPcap.h"
@@ -418,6 +419,17 @@ const CommandTree& kCommandTree() {
             commandHandler<CmdShowInterfaceTransceiver>,
             argTypeHandler<CmdShowInterfaceTransceiverTraits>,
             {
+                {"eeprom",
+                 "Read transceiver EEPROM registers",
+                 commandHandler<CmdShowInterfaceTransceiverEeprom>,
+                 argTypeHandler<CmdShowInterfaceTransceiverEepromTraits>,
+                 {
+                     {"dump",
+                      "Dump all diagnostic EEPROM pages",
+                      commandHandler<CmdShowInterfaceTransceiverEepromDump>,
+                      argTypeHandler<
+                          CmdShowInterfaceTransceiverEepromDumpTraits>},
+                 }},
                 {"performance-monitoring",
                  "Show transceiver VDM performance monitoring stats",
                  commandHandler<
@@ -431,15 +443,7 @@ const CommandTree& kCommandTree() {
        "Show Transceiver information",
        commandHandler<CmdShowTransceiver>,
        argTypeHandler<CmdShowTransceiverTraits>,
-       {{"eeprom",
-         "Read transceiver EEPROM registers",
-         commandHandler<CmdShowTransceiverEeprom>,
-         argTypeHandler<CmdShowTransceiverEepromTraits>,
-         {{"dump",
-           "Dump all EEPROM pages (3 iterations with 2s delay)",
-           commandHandler<CmdShowTransceiverEepromDump>,
-           argTypeHandler<CmdShowTransceiverEepromDumpTraits>}}},
-        {"loopback",
+       {{"loopback",
          "Show transceiver loopback capability and state",
          commandHandler<CmdShowTransceiverLoopback>,
          argTypeHandler<CmdShowTransceiverLoopbackTraits>}}},
@@ -480,6 +484,12 @@ const CommandTree& kCommandTree() {
        "Show mirror",
        commandHandler<CmdShowMirror>,
        argTypeHandler<CmdShowMirrorTraits>},
+
+      {"show",
+       "my-mac",
+       "Show MY_MAC entries",
+       commandHandler<CmdShowMyMac>,
+       argTypeHandler<CmdShowMyMacTraits>},
 
       {"show",
        "mysid",

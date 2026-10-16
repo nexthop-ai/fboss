@@ -103,15 +103,18 @@ inline std::optional<int64_t> parseAsn4Byte(const std::string& value) {
 // ObjectArgType, where throwing std::invalid_argument IS the framework's
 // error channel — the message is surfaced to the user as the parse error.
 
-// The `<list-name> [<keyword> <member-name>]` prefix, for the policy list
-// *delete* commands: the list name, the optional named member selected by
-// `keyword`, and where any remaining tokens begin.
+// The `<list-name> [<keyword> <member-name>]` prefix, for the *delete*
+// command of a policy list whose members are keyed objects (prefix-list
+// entries): the list name, the optional member selected by `keyword`, and
+// where any remaining tokens begin.
 //
 // Only delete parses this shape by hand. The config side reaches the same
 // grammar through CLI11 subcommand nesting instead — the member keyword is a
 // registered subcommand there, so each level gets its own already-split token
-// vector and never calls this helper. A new policy list type should follow
-// that split rather than routing its config dispatcher through here.
+// vector and never calls this helper. Lists whose members are a flat string
+// list in the daemon (as-path-list `regex`, community-list `community`) have
+// no member level at all: their optional `<keyword> <value>` selector is a
+// plain attribute-style pair, parsed inline by their own delete command.
 struct ListMemberSelector {
   std::string listName;
   std::optional<std::string> memberName;

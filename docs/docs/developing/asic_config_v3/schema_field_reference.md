@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 5
 ---
 
 # Schema Field Reference
@@ -128,7 +128,7 @@ files under `fboss/configs/asic_vendors/broadcom/dnx/asics/`.
 | `key_formats` | yes | Format strings for the generated wiring keys: `lane_map`, `lane_map_value`, `polarity_rx`, and `polarity_tx`, with `{family}`, `{lane}`, `{suffix}`, `{rx}`, and `{tx}` placeholders. |
 | `default_polarity_settings` | no | Default polarity keys that carry no lane number, emitted verbatim, for example `phy_rx_polarity_flip.BCM8889X`. Jericho 3 declares them. An ASIC without such keys omits the field. |
 | `base_sdk_settings` | no | ASIC-wide SOC properties emitted for every platform and variant. |
-| `declarative_tables` | no | Fixed ASIC tables: `port_speed_map`, `tm_port_header_map` (keyed by topology variant), `dtm_flow_region_map` (`key_format`, `start_region`, `count`, and `value`), and `flow_remote_cores`. |
+| `declarative_tables` | no | Fixed ASIC tables: `port_speed_map`, `tm_port_headers`, `dtm_flow_region_map` (`key_format`, `start_region`, `count`, and `value`), and `flow_remote_cores`. |
 | `conditional_settings` | no | ASIC-level conditional settings, evaluated before platform-level ones. |
 
 ## Conditional Setting Entries
@@ -180,4 +180,4 @@ common files.
 
 | Field | Required | Description |
 |---|---|---|
-| `global` | yes | SDK or SAI settings copied into the `global` output table according to the layering order described in the [Overview](./overview.md). |
+| `global` | yes | SDK or SAI settings copied into the `global` output table according to the layering order described on the [Broadcom XGS](./broadcom_xgs.md) page. |

@@ -194,6 +194,8 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
         self,
         paths: AsicConfigPaths,
         materialized_relative_path: Optional[str],
+        platform: str,
+        variant: str,
         output_filename: str,
         extension: str,
     ) -> tuple[str, str]:
@@ -205,8 +207,14 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
                 materialized_path, extension
             )
 
+        reference_filename = output_filename
+        if output_filename.endswith(".json"):
+            reference_variant = "" if variant == "default" else variant
+            reference_filename = self._output_filename(
+                platform, reference_variant, ".materialized_JSON"
+            )
         synced_relative_path = os.path.join(
-            self._SYNCED_ASIC_CONFIG_DIR, output_filename
+            self._SYNCED_ASIC_CONFIG_DIR, reference_filename
         )
         synced_path = os.path.join(paths.fboss_root, synced_relative_path)
         with open(synced_path, encoding="utf-8") as f:
@@ -418,7 +426,12 @@ class TestValidateAsicConfigV3Contents(unittest.TestCase):
         )
         try:
             reference_path, reference = self._read_reference(
-                paths, materialized_relative_path, output_filename, extension
+                paths,
+                materialized_relative_path,
+                platform,
+                variant,
+                output_filename,
+                extension,
             )
         except FileNotFoundError as error:
             allow_missing = (
@@ -838,8 +851,7 @@ def main() -> None:
         action="store_true",
         help=(
             "Compare the checked-in generated files against their references "
-            "instead of regenerating them. Does not run the generators, so it "
-            "does not catch generator regressions."
+            "instead of regenerating them. Does not catch generator regressions."
         ),
     )
     args = parser.parse_args()

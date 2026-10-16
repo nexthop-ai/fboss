@@ -345,6 +345,86 @@ std::shared_ptr<Route<AddressT>> remapRouteNextHopSetIds(
   return writable;
 }
 
+RouteNextHopSet resolveNhopFromRib(
+    const VrfRouteTables& routeTables,
+    const NextHopIDManager* manager,
+    const NextHop& nh,
+    uint32_t ecmpWidth) {
+  if (nh.intfID().has_value()) {
+    return {nh};
+  }
+
+  const auto& addr = nh.addr();
+  RouteNextHopSet resolved;
+
+  auto collectResolved = [&](auto* routeMap, const auto& nhAddr) {
+    if (!routeMap) {
+      return false;
+    }
+    auto it = routeMap->longestMatch(nhAddr, nhAddr.bitCount());
+    if (it == routeMap->end()) {
+      return false;
+    }
+    const auto& route = it->value();
+    if (!route || !route->isResolved()) {
+      return false;
+    }
+
+    const auto fwdNhops = getNormalizedNextHopsFromRib(
+        manager, route->getForwardInfo(), ecmpWidth);
+    if (fwdNhops.empty()) {
+      return false;
+    }
+    if (route->isConnected()) {
+      resolved.insert(ResolvedNextHop(
+          nh.addr(),
+          fwdNhops.begin()->intf(),
+          fwdNhops.begin()->weight(),
+          nh.labelForwardingAction(),
+          nh.disableTTLDecrement(),
+          nh.topologyInfo(),
+          nh.adjustedWeight(),
+          nh.srv6SegmentList(),
+          nh.tunnelType(),
+          nh.tunnelId(),
+          nh.cost(),
+          nh.role()));
+    } else {
+      std::vector<ResolvedNextHop> nhops;
+      nhops.reserve(fwdNhops.size());
+      for (const auto& fwdNh : fwdNhops) {
+        nhops.emplace_back(
+            fwdNh.addr(),
+            fwdNh.intf(),
+            fwdNh.weight(),
+            nh.labelForwardingAction(),
+            nh.disableTTLDecrement(),
+            nh.topologyInfo(),
+            nh.adjustedWeight(),
+            nh.srv6SegmentList(),
+            nh.tunnelType(),
+            nh.tunnelId(),
+            nh.cost(),
+            nh.role());
+      }
+      resolved.insert(nhops.begin(), nhops.end());
+    }
+    return true;
+  };
+
+  for (const auto& [v4Routes, v6Routes] : routeTables) {
+    bool found = false;
+    if (addr.isV4()) {
+      found = collectResolved(v4Routes, addr.asV4());
+    } else {
+      found = collectResolved(v6Routes, addr.asV6());
+    }
+    if (found) {
+      break;
+    }
+  }
+  return resolved;
+}
 } // namespace
 
 template <typename AddressT, typename FibType, typename IndexT>
@@ -457,7 +537,8 @@ void RibRouteTables::reconfigure(
     const std::vector<cfg::StaticMplsRouteNoNextHops>& staticMplsRoutesToCpu,
     const std::vector<MySidWithNextHops>& staticMySids,
     RibToSwitchStateFunction ribToSwitchStateFunc,
-    void* cookie) {
+    void* cookie,
+    bool ecmpModeChanged) {
   // Config application is accomplished in the following sequence of steps:
   // 1. Update the VRFs held in RoutingInformationBase's
   // SynchronizedRouteTables data-structure
@@ -526,7 +607,7 @@ void RibRouteTables::reconfigure(
               // Apply config
               configApplier.apply();
             });
-        updateFib(resolver, vrf, ribToSwitchStateFunc, cookie);
+        updateFib(resolver, vrf, ribToSwitchStateFunc, cookie, ecmpModeChanged);
       };
   // Because of this sequential loop over each VRF, config application scales
   // linearly with the number of VRFs. If FBOSS is run in a multi-VRF routing
@@ -752,7 +833,8 @@ void RibRouteTables::updateFib(
     const SwitchIdScopeResolver* resolver,
     RouterID vrf,
     const RibToSwitchStateFunction& ribToSwitchStateFunc,
-    void* cookie) {
+    void* cookie,
+    bool ecmpModeChanged) {
   std::optional<StateDelta> fibDelta;
   try {
     auto lockedRouteTables = synchronizedRouteTables_.rlock();
@@ -831,7 +913,14 @@ void RibRouteTables::updateFib(
     }
   }
   CHECK(fibDelta.has_value());
-  updateEcmpOverrides(vrf, *fibDelta);
+  if (ecmpModeChanged) {
+    // The config's own state update re-moded overrides before this fib update,
+    // so fibDelta does not carry that change. Sync from all routes instead.
+    updateEcmpOverrides(
+        vrf, StateDelta(std::make_shared<SwitchState>(), fibDelta->newState()));
+  } else {
+    updateEcmpOverrides(vrf, *fibDelta);
+  }
 }
 
 void RibRouteTables::updateFib(
@@ -943,12 +1032,6 @@ void RibRouteTables::updateEcmpOverrides(
   auto rnitr = rid2prefix2Nhops.find(vrf);
   if (rnitr != rid2prefix2Nhops.end()) {
     setOverrideEcmpNhops(vrf, rnitr->second);
-  }
-}
-
-void RibRouteTables::updateEcmpOverrides(const StateDelta& delta) {
-  for (auto vrf : getVrfList()) {
-    updateEcmpOverrides(vrf, delta);
   }
 }
 
@@ -1207,7 +1290,8 @@ void RoutingInformationBase::reconfigure(
     const std::vector<cfg::StaticMplsRouteNoNextHops>& staticMplsRoutesToCpu,
     const std::vector<MySidWithNextHops>& staticMySids,
     RibToSwitchStateFunction ribToSwitchStateFunc,
-    void* cookie) {
+    void* cookie,
+    bool ecmpModeChanged) {
   ensureRunning();
   auto updateFn = [&] {
     ribTables_.reconfigure(
@@ -1222,7 +1306,8 @@ void RoutingInformationBase::reconfigure(
         staticMplsRoutesToCpu,
         staticMySids,
         ribToSwitchStateFunc,
-        cookie);
+        cookie,
+        ecmpModeChanged);
   };
   ribUpdateEventBase_.runInFbossEventBaseThreadAndWait(updateFn);
 }
@@ -1324,14 +1409,6 @@ void RoutingInformationBase::setClassIDImpl(
   } else {
     ribUpdateEventBase_.runInFbossEventBaseThreadAndWait(updateFn);
   }
-}
-
-void RoutingInformationBase::updateEcmpOverrides(const StateDelta& delta) {
-  ensureRunning();
-  auto updateFn = [=, &delta, this]() {
-    ribTables_.updateEcmpOverrides(delta);
-  };
-  ribUpdateEventBase_.runInFbossEventBaseThreadAndWait(updateFn);
 }
 
 void RibRouteTables::backfillNextHopIds(
@@ -2282,10 +2359,8 @@ void RibRouteTables::deleteNamedNextHopGroups(
 }
 
 void RibRouteTables::addOrUpdatePolicies(
-    const SwitchIdScopeResolver* resolver,
     const std::vector<ClassBasedPolicy>& policies,
-    const RibToSwitchStateFunction& ribToSwitchStateFunc,
-    void* cookie) {
+    const std::function<void(const NextHopIDManager*)>& stateUpdateFn) {
   {
     auto lockedRouteTables = synchronizedRouteTables_.wlock();
     if (!lockedRouteTables->nextHopIDManager) {
@@ -2314,13 +2389,18 @@ void RibRouteTables::addOrUpdatePolicies(
       nhIdManager->addOrUpdatePolicy(policy);
     }
   }
+  updateFibNamedNextHopGroups(stateUpdateFn);
+}
 
-  auto lockedRouteTables = synchronizedRouteTables_.rlock();
-  if (!lockedRouteTables->routerIDToRouteTable.empty()) {
-    auto vrf = lockedRouteTables->routerIDToRouteTable.begin()->first;
-    lockedRouteTables.unlock();
-    updateFib(resolver, vrf, ribToSwitchStateFunc, cookie);
-  }
+void RibRouteTables::removePolicies(
+    const std::vector<std::string>& policyNames,
+    const std::function<void(const NextHopIDManager*)>& stateUpdateFn) {
+  updateRibNamedNextHopGroups([&](NextHopIDManager* nextHopIDManager) {
+    for (const auto& name : policyNames) {
+      nextHopIDManager->removePolicy(name);
+    }
+  });
+  updateFibNamedNextHopGroups(stateUpdateFn);
 }
 
 void RoutingInformationBase::addOrUpdateNamedNextHopGroups(
@@ -2374,10 +2454,8 @@ void RoutingInformationBase::deleteNamedNextHopGroups(
 }
 
 void RoutingInformationBase::addOrUpdatePolicies(
-    const SwitchIdScopeResolver* resolver,
     const std::vector<ClassBasedPolicy>& policies,
-    const RibToSwitchStateFunction& ribToSwitchStateFunc,
-    void* cookie) {
+    const std::function<void(const NextHopIDManager*)>& stateUpdateFn) {
   // Pre-validate before entering the RIB thread so no state is mutated on a bad
   // request.
   for (const auto& policy : policies) {
@@ -2400,10 +2478,25 @@ void RoutingInformationBase::addOrUpdatePolicies(
       }
     }
   }
-  updateStateInRibThread([&]() {
-    ribTables_.addOrUpdatePolicies(
-        resolver, policies, ribToSwitchStateFunc, cookie);
-  });
+  updateStateInRibThread(
+      [&]() { ribTables_.addOrUpdatePolicies(policies, stateUpdateFn); });
+}
+
+void RoutingInformationBase::removePolicies(
+    const std::vector<std::string>& policyNames,
+    const std::function<void(const NextHopIDManager*)>& stateUpdateFn) {
+  if (policyNames.empty()) {
+    return;
+  }
+  // Pre-validate before entering the RIB thread so no state is mutated on a bad
+  // request.
+  for (const auto& name : policyNames) {
+    if (name.empty()) {
+      throw FbossError("Class-based policy name cannot be empty");
+    }
+  }
+  updateStateInRibThread(
+      [&]() { ribTables_.removePolicies(policyNames, stateUpdateFn); });
 }
 
 std::map<int32_t, state::RouteTableFields> RibRouteTables::toThrift() const {
@@ -2696,6 +2789,19 @@ RouteNextHopSet getNormalizedNextHopsFromRib(
   }
   // No overrides, delegate to ID-aware non-override path.
   return getNonOverrideNormalizedNextHopsFromRib(manager, entry, ecmpWidth);
+}
+
+RouteNextHopSet resolveNextHopSetFromRib(
+    const VrfRouteTables& routeTables,
+    const NextHopIDManager* manager,
+    const RouteNextHopSet& nhops,
+    uint32_t ecmpWidth) {
+  RouteNextHopSet resolved;
+  for (const auto& nh : nhops) {
+    auto nhResolved = resolveNhopFromRib(routeTables, manager, nh, ecmpWidth);
+    resolved.insert(nhResolved.begin(), nhResolved.end());
+  }
+  return resolved;
 }
 
 } // namespace facebook::fboss

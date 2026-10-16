@@ -46,6 +46,7 @@
 #include "fboss/agent/hw/sai/switch/SaiLagManager.h"
 #include "fboss/agent/hw/sai/switch/SaiManagerTable.h"
 #include "fboss/agent/hw/sai/switch/SaiMirrorManager.h"
+#include "fboss/agent/hw/sai/switch/SaiMyMacManager.h"
 #include "fboss/agent/hw/sai/switch/SaiNeighborManager.h"
 #include "fboss/agent/hw/sai/switch/SaiNextHopGroupManager.h"
 #include "fboss/agent/hw/sai/switch/SaiPortManager.h"
@@ -2025,6 +2026,16 @@ void SaiSwitch::processSwitchSettingsChangeSansDrainedEntryLocked(
   }
 
   {
+    const auto oldVal = oldSwitchSettings->getMyMacs();
+    const auto newVal = newSwitchSettings->getMyMacs();
+    if (oldVal != newVal) {
+      XLOG(DBG2) << "Configuring myMacs, num entries old: " << oldVal.size()
+                 << " new: " << newVal.size();
+      managerTable_->myMacManager().programMyMacs(newVal);
+    }
+  }
+
+  {
     const auto oldVal = oldSwitchSettings->getEcmpGroupSettings();
     const auto newVal = newSwitchSettings->getEcmpGroupSettings();
     if (oldVal != newVal) {
@@ -3015,7 +3026,7 @@ void SaiSwitch::gracefulExitLocked(const std::lock_guard<std::mutex>& lock) {
   SaiApiTable::getInstance()->switchApi().setAttribute(
       saiSwitchId_, restartWarm);
 
-#if CREDO_SDK_VERSION < CREDO_SDK_VERSION_0_9_0
+#if CREDO_SDK_VERSION < CREDO_SDK_VERSION_0_9_0 && !defined(SAI_BRCM_PAI_IMPL)
   SaiSwitchTraits::Attributes::SwitchPreShutdown preShutdown{true};
   SaiApiTable::getInstance()->switchApi().setAttribute(
       saiSwitchId_, preShutdown);
@@ -5433,6 +5444,11 @@ std::string SaiSwitch::listObjects(
         break;
       case HwObjectType::SAMPLE_PACKET:
         objTypes.push_back(SAI_OBJECT_TYPE_SAMPLEPACKET);
+        break;
+      case HwObjectType::MY_MAC:
+#if SAI_API_VERSION >= SAI_VERSION(1, 10, 0)
+        objTypes.push_back(SAI_OBJECT_TYPE_MY_MAC);
+#endif
         break;
     }
   }

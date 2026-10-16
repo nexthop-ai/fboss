@@ -32,6 +32,7 @@ _COMMON_SRCS = [
     "SaiMacsecManager.cpp",
     "SaiManagerTable.cpp",
     "SaiMirrorManager.cpp",
+    "SaiMyMacManager.cpp",
     "SaiNeighborManager.cpp",
     "SaiNextHopManager.cpp",
     "SaiNextHopGroupManager.cpp",

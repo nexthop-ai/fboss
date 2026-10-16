@@ -15,7 +15,6 @@
 #include <set>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include <folly/FileUtil.h>
 #include <folly/json/json.h>
@@ -24,9 +23,9 @@
 
 #include "fboss/agent/FbossError.h"
 #include "fboss/agent/hw/switch_asics/HwAsic.h"
-#include "fboss/cli/fboss2/commands/config/gen/FeatureDefaultCommandArgs.h"
 #include "fboss/cli/fboss2/commands/config/gen/PlatformConfigPathUtils.h"
 #include "fboss/cli/fboss2/utils/ConfigFileUtils.h"
+#include "fboss/configs/platforms/generic/forwarding_stack/utils/FeatureDefaultCommandArgsUtils.h" // @manual=//fboss/configs/platforms/generic/forwarding_stack/utils:config_generation_utils
 #include "fboss/lib/config/PlatformConfigUtils.h"
 #include "fboss/lib/config/agent/AclConfigUtils.h"
 #include "fboss/lib/config/agent/CoppConfigUtils.h"
@@ -423,7 +422,7 @@ void addDefaultProfilePortGraph(
       utility::getSafeProfileIDs(platformMapping, supportedPortGroups, options);
 
   auto interfaceVlanID = utility::kInterfaceVlanIdMin;
-  auto managementVlanID = utility::kInterfaceVlanIdMax;
+  auto managementVlanID = utility::kManagementVlanIdMax;
   for (const auto& [portID, profileID] : portProfiles) {
     if (interfaceVlanID > managementVlanID) {
       throw FbossError("No free VLAN ID available for default port config");
@@ -432,12 +431,11 @@ void addDefaultProfilePortGraph(
         *platformMapping.getPlatformPort(portID).mapping()->portType();
     int32_t vlanID;
     if (portType == cfg::PortType::MANAGEMENT_PORT) {
-      // Allocate management VLANs downward from the high end so they stay
-      // separate from interface VLANs and later low-to-high port additions.
+      // Allocate management VLANs downward to keep them separate from regular
+      // interface VLANs and later low-to-high port additions.
       vlanID = managementVlanID--;
     } else {
-      // Allocate interface VLANs upward from the low end, preserving room for
-      // tools such as link_test to add more interface ports afterward.
+      // Allocate regular interface VLANs upward from the low end.
       vlanID = interfaceVlanID++;
     }
     utility::addRoutedPortToConfig(
@@ -610,6 +608,13 @@ cfg::SwitchConfig generateSwitchConfig(
   if (!asic) {
     throw FbossError("Unable to construct HwAsic from switch settings");
   }
+  // TODO(@joseph5wu) Only update the l2LearningMode for `default` profile. Once
+  // FBOSS Agent team finishes migrating test config to use Software mode for
+  // TH4/5/6, we can remove the profile limitation here
+  if (inputs.profile == kDefaultProfileName) {
+    switchSettings.l2LearningMode() = asic->getDefaultL2LearningMode();
+  }
+
   cfg::SwitchConfig switchConfig;
   switchConfig.switchSettings() = std::move(switchSettings);
   utility::setupDefaultAclTableGroups(switchConfig, *asic);
@@ -626,11 +631,12 @@ cfg::PlatformConfig generatePlatformConfig(
   return assemblePlatformConfig(inputs.chipConfig, inputs.portAssignments);
 }
 
-fs::path generateAgentConfig(
+namespace {
+
+std::string generateAgentConfigContents(
     std::string_view platform,
     std::string_view profile,
     const fs::path& fbossRoot,
-    const std::optional<fs::path>& outputDirectory,
     const std::optional<fs::path>& asicConfigFile,
     const std::optional<cfg::AsicConfigType>& asicConfigType) {
   auto inputs = resolveAgentConfigInputs(
@@ -641,16 +647,51 @@ fs::path generateAgentConfig(
       ServiceType::AGENT,
       inputs.profile,
       getAsicType(switchConfig),
-      platform);
+      *inputs.platformDescriptor.platformType());
   auto config = assembleAgentConfig(
       std::move(defaultCommandLineArgs),
       std::move(switchConfig),
       generatePlatformConfig(inputs));
+  return utils::serializeToPrettyJson(config) + "\n";
+}
+
+} // namespace
+
+fs::path generateAgentConfig(
+    std::string_view platform,
+    std::string_view profile,
+    const fs::path& fbossRoot,
+    const std::optional<fs::path>& outputDirectory,
+    const std::optional<fs::path>& asicConfigFile,
+    const std::optional<cfg::AsicConfigType>& asicConfigType) {
   auto directory = utils::prepareOutputDirectory(outputDirectory);
   auto outputPath = directory / kAgentConfigFileName;
   utils::writeFileWithoutOverwrite(
-      outputPath, utils::serializeToPrettyJson(config) + "\n");
+      outputPath,
+      generateAgentConfigContents(
+          platform, profile, fbossRoot, asicConfigFile, asicConfigType));
   return outputPath;
+}
+
+std::string generateAgentConfigForManifest(
+    const ConfigGenerationRequest& request) {
+  if (request.service != ServiceType::AGENT) {
+    throw FbossError("Agent config generator received a non-Agent request");
+  }
+  if (request.variant) {
+    throw FbossError(
+        "Agent config generation does not yet support variant '",
+        *request.variant,
+        "' for platform '",
+        request.platform,
+        "'");
+  }
+  return generateAgentConfigContents(
+      request.platform,
+      request.profile,
+      request.fbossRoot,
+      std::nullopt,
+      std::nullopt);
 }
 
 } // namespace facebook::fboss::configgen

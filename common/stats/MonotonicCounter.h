@@ -23,15 +23,13 @@ class MonotonicCounter {
  public:
   MonotonicCounter(
       folly::StringPiece name,
-      fb303::ExportType exportType1,
-      fb303::ExportType exportType2) {
+      fb303::ExportType type1,
+      fb303::ExportType type2) {
     auto statMap = facebook::fb303::fbData->getStatMap();
     stat_ = statMap->getLockableStatNoExport(name);
+    statMap->exportStat(stat_, name, type1);
+    statMap->exportStat(stat_, name, type2);
     name_ = name;
-    statMap->exportStat(name, exportType1);
-    if (exportType2 != exportType1) {
-      statMap->exportStat(name, exportType2);
-    }
   }
   void updateValue(std::chrono::seconds now, int64_t value) {
     auto guard = stat_.lock();

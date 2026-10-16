@@ -35,7 +35,7 @@ class BroadcomDnxGenerator(BaseAsicConfigGenerator):
         # settings may target. Single-NPU platforms have only the common section.
         self.sections: dict[str, dict[str, str]] = {"common": self.common}
 
-        self._load_vendor_configs()
+        self._load_asic_vendor_input_configs()
         self._validate_conditional_settings()
 
         output_structure = self.platform_config.get("output_structure", {})
@@ -60,8 +60,8 @@ class BroadcomDnxGenerator(BaseAsicConfigGenerator):
     def output_extension(self) -> str:
         return ".json"
 
-    def _load_vendor_configs(self) -> None:
-        """Load the per-ASIC config JSON."""
+    def _load_asic_vendor_input_configs(self) -> None:
+        """Load the input config files from the asic_vendors directory."""
         asic_config_path = os.path.join(
             self.paths.asic_vendors_dir,
             self.asic_vendor,
@@ -86,21 +86,7 @@ class BroadcomDnxGenerator(BaseAsicConfigGenerator):
 
         self.common.update(tables.get("port_speed_map", {}))
 
-        # Dual-stage port configs select the dual-stage TM port header variant.
-        tm_port_header_map = tables.get("tm_port_header_map", {})
-        if tm_port_header_map:
-            port_config = self.asic_config_params.get("port_config", "default")
-            tm_variant = (
-                "dual_stage_3q_2q"
-                if port_config.startswith("dual_stage")
-                else "default"
-            )
-            if tm_variant not in tm_port_header_map:
-                raise ValueError(
-                    f"tm_port_header_map has no '{tm_variant}' variant, "
-                    f"required by port_config '{port_config}'"
-                )
-            self.common.update(tm_port_header_map[tm_variant])
+        self.common.update(tables.get("tm_port_headers", {}))
 
         region_map = tables.get("dtm_flow_region_map")
         if region_map:

@@ -679,8 +679,13 @@ SaiAclTableManager::addAclCounter(
         statSuffix = "packets";
         break;
       case cfg::CounterType::BYTES:
-        enableByteCount =
-            SaiAclCounterTraits::Attributes::EnableByteCount{true};
+        // Gate on ASIC type rather than HwAsic::Feature::ACL_BYTE_COUNTER;
+        // gating with feature causes a failure with Cisco SDK.
+        if (platform_->getAsic()->getAsicType() !=
+            cfg::AsicType::ASIC_TYPE_TOMAHAWKULTRA1) {
+          enableByteCount =
+              SaiAclCounterTraits::Attributes::EnableByteCount{true};
+        }
         statSuffix = "bytes";
         break;
       default:
@@ -1131,7 +1136,8 @@ AclEntrySaiId SaiAclTableManager::addAclEntry(
     fieldTcpFlags =
         SaiAclEntryTraits::Attributes::FieldTcpFlags{AclEntryFieldU8(
             std::make_pair(
-                addedAclEntry->getTcpFlagsBitMap().value(), kTcpFlagsMask))};
+                addedAclEntry->getTcpFlagsBitMap().value(),
+                addedAclEntry->getTcpFlagsMask().value_or(kTcpFlagsMask)))};
   }
 
   std::optional<SaiAclEntryTraits::Attributes::FieldIpFrag> fieldIpFrag{

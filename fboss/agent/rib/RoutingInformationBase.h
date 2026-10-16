@@ -155,10 +155,12 @@ class RibRouteTables {
       const std::function<void(const NextHopIDManager*)>& stateUpdateFn);
 
   void addOrUpdatePolicies(
-      const SwitchIdScopeResolver* resolver,
       const std::vector<ClassBasedPolicy>& policies,
-      const RibToSwitchStateFunction& ribToSwitchStateFunc,
-      void* cookie);
+      const std::function<void(const NextHopIDManager*)>& stateUpdateFn);
+
+  void removePolicies(
+      const std::vector<std::string>& policyNames,
+      const std::function<void(const NextHopIDManager*)>& stateUpdateFn);
 
   template <typename RouteType, typename RouteIdType>
   void update(
@@ -241,7 +243,8 @@ class RibRouteTables {
       const std::vector<cfg::StaticMplsRouteNoNextHops>& staticMplsRoutesToCpu,
       const std::vector<MySidWithNextHops>& staticMySids,
       RibToSwitchStateFunction ribToSwitchStateFunc,
-      void* cookie);
+      void* cookie,
+      bool ecmpModeChanged = false);
 
   // ECMP width used to normalize nexthops in the RIB, sourced from
   // cfg.SwitchSettings.ecmpWidth; set at config apply.
@@ -307,8 +310,6 @@ class RibRouteTables {
       uint32_t ecmpWidth);
   std::map<int32_t, state::RouteTableFields> warmBootState() const;
 
-  void updateEcmpOverrides(const StateDelta& delta);
-
   std::string getPolicyDefaultNextHopGroup(const std::string& policyName) const;
 
  private:
@@ -316,7 +317,8 @@ class RibRouteTables {
       const SwitchIdScopeResolver* resolver,
       RouterID vrf,
       const RibToSwitchStateFunction& ribToSwitchStateFunc,
-      void* cookie);
+      void* cookie,
+      bool ecmpModeChanged = false);
   template <typename RibUpdateFn>
   void updateRib(RouterID vrf, const RibUpdateFn& updateRib);
   void updateEcmpOverrides(RouterID vrf, const StateDelta& delta);
@@ -550,7 +552,10 @@ class RoutingInformationBase {
       const std::vector<cfg::StaticMplsRouteNoNextHops>& staticMplsRoutesToCpu,
       const std::vector<MySidWithNextHops>& staticMySids,
       RibToSwitchStateFunction ribToSwitchStateFunc,
-      void* cookie);
+      void* cookie,
+      // Set when config changed the ECMP backup switching mode. Overrides then
+      // changed outside any fib update, so sync them for all routes.
+      bool ecmpModeChanged = false);
 
   void setEcmpWidth(uint32_t ecmpWidth);
   uint32_t getEcmpWidth() const;
@@ -587,7 +592,6 @@ class RoutingInformationBase {
     setClassIDImpl(
         resolver, rid, prefixes, ribToSwitchStateFunc, classId, cookie, true);
   }
-  void updateEcmpOverrides(const StateDelta& delta);
   void updateStateInRibThread(const std::function<void()>& fn);
 
   /*
@@ -688,10 +692,12 @@ class RoutingInformationBase {
       const std::function<void(const NextHopIDManager*)>& stateUpdateFn);
 
   void addOrUpdatePolicies(
-      const SwitchIdScopeResolver* resolver,
       const std::vector<ClassBasedPolicy>& policies,
-      const RibToSwitchStateFunction& ribToSwitchStateFunc,
-      void* cookie);
+      const std::function<void(const NextHopIDManager*)>& stateUpdateFn);
+
+  void removePolicies(
+      const std::vector<std::string>& policyNames,
+      const std::function<void(const NextHopIDManager*)>& stateUpdateFn);
 
  private:
   void ensureRunning() const;
@@ -782,6 +788,18 @@ RouteNextHopSet getNonOverrideNormalizedNextHopsFromRib(
 RouteNextHopSet getNormalizedNextHopsFromRib(
     const NextHopIDManager* manager,
     const RouteNextHopEntry& entry,
+    uint32_t ecmpWidth);
+
+// Resolve a next-hop set against the RIB the same way route resolution
+// resolves a route's next hops: each member is dereferenced to the
+// interface-scoped next hops of its longest-match route, trying each VRF in
+// order. A member with no resolving route is dropped, so the remaining
+// members still forward. Members that already carry an interface pass
+// through untouched. Route tables must already be resolved.
+RouteNextHopSet resolveNextHopSetFromRib(
+    const VrfRouteTables& routeTables,
+    const NextHopIDManager* manager,
+    const RouteNextHopSet& nhops,
     uint32_t ecmpWidth);
 
 } // namespace facebook::fboss

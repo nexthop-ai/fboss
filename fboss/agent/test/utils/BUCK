@@ -72,8 +72,8 @@ cpp_library(
 
 cpp_library(
     name = "access_policy_acl_test_utils",
-    srcs = ["AccessPolicyAclTestUtils.cpp"],
-    headers = ["AccessPolicyAclTestUtils.h"],
+    srcs = ["facebook/AccessPolicyAclTestUtils.cpp"],
+    headers = ["facebook/AccessPolicyAclTestUtils.h"],
     deps = [
         "fbsource//third-party/fmt:fmt",
         ":acl_test_utils",
@@ -324,12 +324,13 @@ cpp_library(
         ":port_test_utils",
         ":voq_test_utils",
         "//fboss/agent:core",
-        "//fboss/agent:load_agent_config",
         "//fboss/agent:switchinfo_utils",
         "//fboss/agent/test:test_ensemble_if",
         "//fboss/agent/test:trunk_utils",
         "//fboss/agent/test:utils",
         "//fboss/lib/config:fboss_config_utils",
+        "//folly:file_util",
+        "//folly:string",
         "//folly/testing:test_util",
     ],
     exported_deps = [
