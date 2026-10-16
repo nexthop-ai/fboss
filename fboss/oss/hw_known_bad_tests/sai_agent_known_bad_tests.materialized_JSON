@@ -25330,6 +25330,32 @@
           "test_name_regex": "AgentDropReasonTest.ingressSrcPortKnockoutDrop$"
         }
     ],
+    "brcm/16.0_ea_dnx_odp/16.0_ea_dnx_odp/qumran4d/multi_switch": [
+        {
+          "test_name_regex": "AgentHwAclQualifierTest.AclVlanIDQualifier$"
+        },
+        {
+          "test_name_regex": "AgentVoqSwitchInterruptTest.ireError$"
+        },
+        {
+          "test_name_regex": "AgentVoqSwitchInterruptTest.epniError$"
+        },
+        {
+          "test_name_regex": "AgentVoqSwitchInterruptTest.fqpError$"
+        },
+        {
+          "test_name_regex": "AgentVoqSwitchInterruptTest.validateInterruptMaskedEventCallback$"
+        },
+        {
+          "test_name_regex": "AgentVoqSwitchSdkDumpRateLimitTest.verifySdkDumpRateLimit$"
+        },
+        {
+          "test_name_regex": "AgentVoqSwitchVendorSwitchInterruptTest.blockLevelErrorInterruptsTest$"
+        },
+        {
+          "test_name_regex": "AgentVoqSwitchVendorSwitchInterruptTest.verifyhardResetCallback$"
+        }
+    ],
     "brcm/16.0_ea_odp/16.0_ea_odp/tomahawk6/multi_switch": [
         {
           "test_name_regex": "AgentCoppQosTest.HighVsLowerPriorityCpuQueueTrafficPrioritization$"
