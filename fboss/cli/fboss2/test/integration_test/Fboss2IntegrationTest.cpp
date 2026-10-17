@@ -54,6 +54,7 @@
 #include "fboss/cli/fboss2/utils/CmdInitUtils.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
 #include "fboss/lib/config/PlatformConfigUtils.h"
+#include "fboss/qsfp_service/if/gen-cpp2/QsfpService.h"
 
 namespace fs = std::filesystem;
 
@@ -626,13 +627,45 @@ Fboss2IntegrationTest::fetchPresentPorts() const {
   return present;
 }
 
+Fboss2IntegrationTest::OpticsProfiles
+Fboss2IntegrationTest::fetchOpticsProfiles() const {
+  OpticsProfiles optics;
+  try {
+    HostInfo hostInfo("localhost");
+    auto client =
+        utils::createClient<apache::thrift::Client<QsfpService>>(hostInfo);
+    client->sync_getAllPortSupportedProfiles(optics, /*checkOptics=*/true);
+  } catch (const std::exception& ex) {
+    XLOG(WARN) << "qsfp_service unavailable, candidates will not be filtered "
+                  "by optics: "
+               << ex.what();
+  }
+  return optics;
+}
+
+bool Fboss2IntegrationTest::opticsAllow(
+    const OpticsProfiles& optics,
+    const std::string& portName,
+    cfg::PortProfileID profile) {
+  auto it = optics.find(portName);
+  if (it == optics.end() || it->second.empty()) {
+    return true;
+  }
+  return std::find(it->second.begin(), it->second.end(), profile) !=
+      it->second.end();
+}
+
 std::set<std::string> Fboss2IntegrationTest::supportedProfileNames(
     const PlatformMapping& mapping,
+    const OpticsProfiles& optics,
     int32_t id) const {
   std::set<std::string> names;
   const auto& entry = mapping.getPlatformPort(id);
+  const auto& name = *entry.mapping()->name();
   for (const auto& [profileId, unused] : *entry.supportedProfiles()) {
-    names.insert(apache::thrift::util::enumNameSafe(profileId));
+    if (opticsAllow(optics, name, profileId)) {
+      names.insert(apache::thrift::util::enumNameSafe(profileId));
+    }
   }
   return names;
 }
@@ -641,9 +674,10 @@ std::optional<Fboss2IntegrationTest::CreatableCandidate>
 Fboss2IntegrationTest::findFreeableCandidate() const {
   auto mapping = fetchPlatformMapping();
   auto present = fetchPresentPorts();
+  auto optics = fetchOpticsProfiles();
   auto groups = utility::getSubsidiaryPortIDs(mapping.getPlatformPorts());
   for (const auto& [controlling, unused] : groups) {
-    int32_t cid = static_cast<int32_t>(controlling);
+    auto cid = static_cast<int32_t>(controlling);
     auto pit = present.find(cid);
     if (pit == present.end()) {
       continue;
@@ -663,15 +697,19 @@ Fboss2IntegrationTest::findFreeableCandidate() const {
       if (subMapping.mapping()->portType() != cfg::PortType::INTERFACE_PORT) {
         continue;
       }
-      auto subProfiles = supportedProfileNames(mapping, sid);
+      auto subProfiles = supportedProfileNames(mapping, optics, sid);
       if (subProfiles.empty()) {
         continue;
       }
-      // Find a profile C supports that no longer subsumes S and that S also
-      // supports -- so one command can narrow C and create S at that profile.
+      // Find a profile C supports (and its optics allow) that no longer
+      // subsumes S and that S also supports -- so one command can narrow C and
+      // create S at that profile.
       for (const auto& [narrowId, unused2] : *cEntry.supportedProfiles()) {
         auto narrowName = apache::thrift::util::enumNameSafe(narrowId);
         if (narrowName == pit->second.profileId) {
+          continue;
+        }
+        if (!opticsAllow(optics, pit->second.name, narrowId)) {
           continue;
         }
         if (subProfiles.find(narrowName) == subProfiles.end()) {
