@@ -109,6 +109,7 @@ cpp_binary(
         "//fboss/cli/fboss2:fboss2-config-lib",  # @manual
         "//fboss/cli/fboss2:fboss2-lib",  # @manual
         "//fboss/lib/config:fboss_config_utils",
+        "//fboss/qsfp_service/if:qsfp-cpp2-clients",
         "//folly:conv",
         "//folly:dynamic",
         "//folly:file_util",

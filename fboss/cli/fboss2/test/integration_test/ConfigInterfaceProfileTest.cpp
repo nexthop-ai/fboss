@@ -38,11 +38,9 @@
 #include <thrift/lib/cpp/util/EnumUtils.h>
 #include "fboss/agent/gen-cpp2/platform_config_types.h"
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
-#include "fboss/agent/if/gen-cpp2/FbossCtrl.h"
 #include "fboss/agent/platforms/common/PlatformMapping.h"
 #include "fboss/agent/types.h"
 #include "fboss/cli/fboss2/test/integration_test/Fboss2IntegrationTest.h"
-#include "fboss/cli/fboss2/utils/CmdClientUtilsCommon.h"
 #include "fboss/lib/config/PlatformConfigUtils.h"
 
 using namespace facebook::fboss;
@@ -64,9 +62,10 @@ class ConfigInterfaceProfileTest : public Fboss2IntegrationTest {
   std::optional<CreatableCandidate> findStillSubsumedCandidate() const {
     auto mapping = fetchPlatformMapping();
     auto present = fetchPresentPorts();
+    auto optics = fetchOpticsProfiles();
     auto groups = utility::getSubsidiaryPortIDs(mapping.getPlatformPorts());
     for (const auto& [controlling, unused] : groups) {
-      int32_t cid = static_cast<int32_t>(controlling);
+      auto cid = static_cast<int32_t>(controlling);
       auto pit = present.find(cid);
       if (pit == present.end()) {
         continue;
@@ -85,7 +84,7 @@ class ConfigInterfaceProfileTest : public Fboss2IntegrationTest {
         if (subMapping.mapping()->portType() != cfg::PortType::INTERFACE_PORT) {
           continue;
         }
-        auto subProfiles = supportedProfileNames(mapping, sid);
+        auto subProfiles = supportedProfileNames(mapping, optics, sid);
         if (subProfiles.empty()) {
           continue;
         }
@@ -156,14 +155,15 @@ class ConfigInterfaceProfileTest : public Fboss2IntegrationTest {
     return std::nullopt;
   }
 
-  // A present, self-controlling port + a supported profile (!= current)
-  // that subsumes nothing.
+  // A present, self-controlling port + a profile (!= current) it supports,
+  // its optics allow, and that subsumes nothing.
   std::optional<Candidate> findNonSubsumingCandidate() const {
     auto mapping = fetchPlatformMapping();
     auto present = fetchPresentPorts();
+    auto optics = fetchOpticsProfiles();
     auto groups = utility::getSubsidiaryPortIDs(mapping.getPlatformPorts());
     for (const auto& [controlling, unused] : groups) {
-      int32_t cid = static_cast<int32_t>(controlling);
+      auto cid = static_cast<int32_t>(controlling);
       auto pit = present.find(cid);
       if (pit == present.end()) {
         continue;
@@ -174,6 +174,9 @@ class ConfigInterfaceProfileTest : public Fboss2IntegrationTest {
         if (name == pit->second.profileId) {
           continue;
         }
+        if (!opticsAllow(optics, pit->second.name, profileId)) {
+          continue;
+        }
         if (mapping.getSubsumedPorts(controlling, profileId).empty()) {
           return Candidate{pit->second.name, pit->second.profileId, name, {}};
         }
@@ -182,14 +185,15 @@ class ConfigInterfaceProfileTest : public Fboss2IntegrationTest {
     return std::nullopt;
   }
 
-  // A present, self-controlling port + a supported profile (!= current)
-  // that subsumes at least one currently-present port.
+  // A present, self-controlling port + a profile (!= current) it supports,
+  // its optics allow, and that subsumes at least one currently-present port.
   std::optional<Candidate> findSubsumingCandidate() const {
     auto mapping = fetchPlatformMapping();
     auto present = fetchPresentPorts();
+    auto optics = fetchOpticsProfiles();
     auto groups = utility::getSubsidiaryPortIDs(mapping.getPlatformPorts());
     for (const auto& [controlling, unused] : groups) {
-      int32_t cid = static_cast<int32_t>(controlling);
+      auto cid = static_cast<int32_t>(controlling);
       auto pit = present.find(cid);
       if (pit == present.end()) {
         continue;
@@ -198,6 +202,9 @@ class ConfigInterfaceProfileTest : public Fboss2IntegrationTest {
       for (const auto& [profileId, unused2] : *entry.supportedProfiles()) {
         auto name = apache::thrift::util::enumNameSafe(profileId);
         if (name == pit->second.profileId) {
+          continue;
+        }
+        if (!opticsAllow(optics, pit->second.name, profileId)) {
           continue;
         }
         std::vector<std::string> subsumedPresent;
@@ -245,8 +252,8 @@ TEST_F(ConfigInterfaceProfileTest, ChangeToUnsupportedProfileRejected) {
 TEST_F(ConfigInterfaceProfileTest, ChangeProfileWithoutSubsumingSucceeds) {
   auto cand = findNonSubsumingCandidate();
   if (!cand) {
-    GTEST_SKIP()
-        << "No self-controlling port with a non-subsuming alternate profile";
+    GTEST_SKIP() << "No self-controlling port with a non-subsuming alternate "
+                    "profile the installed optics support";
   }
   XLOG(INFO) << "[Case 2] port=" << cand->portName << " "
              << cand->currentProfile << " -> " << cand->targetProfile;
@@ -272,8 +279,8 @@ TEST_F(ConfigInterfaceProfileTest, ChangeProfileWithoutSubsumingSucceeds) {
 TEST_F(ConfigInterfaceProfileTest, ChangeProfileSubsumesAndRemovesPorts) {
   auto cand = findSubsumingCandidate();
   if (!cand) {
-    GTEST_SKIP()
-        << "No self-controlling port with a subsuming profile over a present port";
+    GTEST_SKIP() << "No self-controlling port with an optics-supported profile "
+                    "that subsumes a present port";
   }
   XLOG(INFO) << "[Case 3] port=" << cand->portName << " "
              << cand->currentProfile << " -> " << cand->targetProfile
