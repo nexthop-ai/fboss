@@ -52,30 +52,6 @@ else
   exit 1
 fi
 
-# The image is built for 4096-byte logical blocks. On a 512-byte disk the
-# rewrite_512b_partition_tables installer module converts it in place after
-# the dump, so let that one mismatch through; any other mismatch is still
-# refused.
-KIWI_BS_CMP_OLD='if [ ! "${target_blocksize}" = "${image_blocksize}" ];then'
-KIWI_BS_CMP_NEW='if [ ! "${target_blocksize}" = "${image_blocksize}" ] && [ ! "${image_blocksize}:${target_blocksize}" = "4096:512" ];then'
-if grep -qF "$KIWI_BS_CMP_OLD" "$KIWI_DUMP"; then
-  KIWI_DUMP_TMP=$(mktemp)
-  awk -v old="$KIWI_BS_CMP_OLD" -v new="$KIWI_BS_CMP_NEW" '
-    i = index($0, old) { $0 = substr($0, 1, i - 1) new substr($0, i + length(old)) }
-    { print }
-  ' "$KIWI_DUMP" >"$KIWI_DUMP_TMP"
-  if ! bash -n "$KIWI_DUMP_TMP"; then
-    echo "ERROR: patched $KIWI_DUMP does not parse"
-    exit 1
-  fi
-  cat "$KIWI_DUMP_TMP" >"$KIWI_DUMP"
-  rm -f "$KIWI_DUMP_TMP"
-  echo "Patched kiwi oem-dump blocksize check: allow 4096b image on 512b target"
-else
-  echo "ERROR: kiwi oem-dump blocksize comparison not in expected form; 512b installs would be refused"
-  exit 1
-fi
-
 # kiwi's first-boot filesystem resize sorts on the lsblk column "START", which
 # doesn't exist with CentOS 9 Stream's util-linux 2.37.4. Sorting silently
 # no-ops and falls back to kernel, which does not order consistently. Sometimes
