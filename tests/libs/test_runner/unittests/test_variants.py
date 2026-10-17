@@ -18,7 +18,7 @@ from tests.libs.test_runner.variants import (
     resolve_pairs,
 )
 
-from .helpers import FULL, PIPE_LIMITED, PROFILES, make_cage
+from .helpers import FULL, PIPE_LIMITED, PROFILES, make_cage, symmetric_pairs
 
 # m4062nhp shape: 4-way rows only, and no single-lane profile, so no 8x.
 STELLER_LIKE = {1: [39, 38, 25, 24, 22], 3: [25], 5: [38, 25, 24, 22], 7: [25]}
@@ -103,12 +103,12 @@ class TestFullMappingLoader:
         for cage, subports in (("eth1/1", FULL), ("eth1/3", PIPE_LIMITED)):
             for sub, pids in subports.items():
                 name = f"{cage}/{sub}"
+                pins = [{"a": {"lane": i}} for i in range(8 if sub == 1 else 1)]
+                if cage == "eth1/1":
+                    for pin in pins:
+                        pin["a"]["chip"] = "NPU-TH5_NIF-slot1/chip1/core7"
                 mapping["ports"][str(next_id)] = {
-                    "mapping": {
-                        "id": next_id,
-                        "name": name,
-                        "pins": [{"a": {"lane": i}} for i in range(8 if sub == 1 else 1)],
-                    },
+                    "mapping": {"id": next_id, "name": name, "pins": pins},
                     "supportedProfiles": {str(pid): {} for pid in pids + ([90, 91] if sub == 1 else [])},
                 }
                 next_id += 1
@@ -134,6 +134,9 @@ class TestFullMappingLoader:
         assert 91 not in full.subports[1].profiles
         # Pipe-limited cage retains only its mapped rows.
         assert set(cages["eth1/3"].subports) == {1, 5}
+        # The core comes from the chip name; pins without one leave it unset.
+        assert full.core == 7
+        assert cages["eth1/3"].core is None
 
     def test_loader_rules_out_missing_subports(self, tmp_path, monkeypatch):
         self._write_mapping(tmp_path, monkeypatch)
@@ -333,3 +336,75 @@ class TestResolvePairs:
         b = resolve_pairs(dict(reversed(list(self.PAIRS.items()))), V4X200, self.CAGES4, NO_CONSTRAINTS, {})
         assert a.expanded_pairs == b.expanded_pairs
         assert a.profile_overrides == b.profile_overrides
+
+
+class TestDatapathBudget:
+    """Two cages share a SerDes datapath and the ASIC allocates it 10 logical
+    ports. Breaking both out 8 ways needs 16, so one pair has to stay at max."""
+
+    PAIRS = symmetric_pairs(("eth1/1/1", "eth1/3/1"), ("eth1/2/1", "eth1/4/1"))
+    # Cages 1 and 2 share datapath 0 (cores 0 and 1); 3 and 4 share datapath 1.
+    CAGES = {
+        "eth1/1": make_cage(FULL, base_id=100, core=0),
+        "eth1/2": make_cage(FULL, base_id=200, core=1),
+        "eth1/3": make_cage(FULL, base_id=300, core=2),
+        "eth1/4": make_cage(FULL, base_id=400, core=3),
+    }
+
+    def _resolve(self, variant, budget, cages=None, pairs=None):
+        return resolve_pairs(
+            pairs or self.PAIRS, variant, cages or self.CAGES, NO_CONSTRAINTS, {},
+            logical_ports_per_datapath=budget,
+        )
+
+    def test_overfull_datapath_drops_the_latest_cable(self):
+        res = self._resolve(V8X100, 10)
+        assert res.total == 2 and res.supported == 1
+        assert res.excluded_by_reason == {"datapath": 1}
+        assert res.excluded_pairs == symmetric_pairs(("eth1/2/1", "eth1/4/1"))
+        assert set(res.expanded_pairs) == {f"eth1/{c}/{s}" for c in (1, 3) for s in range(1, 9)}
+        assert set(res.profile_overrides) == set(res.expanded_pairs)
+        assert "datapath=1" in res.summary("LINK TEST")
+
+    def test_dropping_a_cable_frees_both_ends(self):
+        # Each pair sits inside one datapath, so dropping a cable frees both
+        # of its cages and nothing else has to go.
+        pairs = symmetric_pairs(("eth1/1/1", "eth1/2/1"), ("eth1/3/1", "eth1/4/1"))
+        res = self._resolve(V8X100, 10, pairs=pairs)
+        assert res.supported == 0
+        assert res.excluded_by_reason == {"datapath": 2}
+
+    def test_within_budget_keeps_every_pair(self):
+        assert self._resolve(V4X200, 10).excluded_by_reason == {}
+        assert self._resolve(V8X100, 16).excluded_by_reason == {}
+
+    def test_one_cage_per_datapath_fits_beside_a_filler(self):
+        cages = {
+            "eth1/1": make_cage(FULL, base_id=100, core=0),
+            "eth1/2": make_cage(PIPE_LIMITED, base_id=200, core=1),
+            "eth1/3": make_cage(FULL, base_id=300, core=2),
+            "eth1/4": make_cage(PIPE_LIMITED, base_id=400, core=3),
+        }
+        res = self._resolve(V8X100, 10, cages=cages)
+        assert res.supported == 1 and res.excluded_by_reason == {"platform": 1}
+
+    def test_excluded_pair_keeps_the_cabled_port_names(self):
+        pairs = symmetric_pairs(("eth1/1/5", "eth1/3/5"), ("eth1/2/5", "eth1/4/5"))
+        res = self._resolve(V8X100, 10, pairs=pairs)
+        assert res.excluded_pairs == symmetric_pairs(("eth1/2/5", "eth1/4/5"))
+
+    def test_fillers_alone_over_budget_is_an_error(self):
+        cages = {f"eth1/{i}": make_cage(FULL, base_id=100 * i, core=0) for i in range(1, 13)}
+        with pytest.raises(ValueError, match="no breakout left to drop"):
+            self._resolve(V8X100, 10, cages=cages, pairs=symmetric_pairs(("eth1/1/1", "eth1/2/1")))
+
+    def test_no_budget_or_no_core_leaves_resolution_alone(self):
+        assert self._resolve(V8X100, None).supported == 2
+        coreless = {name: make_cage(FULL, base_id=100 * i) for i, name in enumerate(self.CAGES, 1)}
+        assert self._resolve(V8X100, 10, cages=coreless).supported == 2
+
+    def test_deterministic(self):
+        a = self._resolve(V8X100, 10)
+        b = self._resolve(V8X100, 10, pairs=dict(reversed(list(self.PAIRS.items()))))
+        assert a.expanded_pairs == b.expanded_pairs
+        assert a.excluded_pairs == b.excluded_pairs

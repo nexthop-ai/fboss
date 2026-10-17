@@ -7,8 +7,10 @@ are electrical breakouts of the cage. The chain of valid variants is derived
 from the platform's own mapping rather than hardcoded. Resolution is
 per snake pair: a pair that cannot support the requested variant is excluded
 from the generated configuration (never reconfigured to max) with a reason of
-``platform``, ``module`` or ``peer``. ``module`` means the transceiver does not
-advertise a CMIS application at the subport speed over the subport's host lanes.
+``platform``, ``module``, ``cable``, ``peer`` or ``datapath``. ``module`` means the
+transceiver does not advertise a CMIS application at the subport speed over the
+subport's host lanes; ``datapath`` means the breakout would need more logical ports
+in one SerDes datapath than the ASIC can allocate.
 A cage also resolves on its own, for the qsfp tests, where ``peer`` does not apply.
 """
 
@@ -101,6 +103,16 @@ class CageInfo:
     controlling: str  # controlling port name, e.g. "eth1/2/1"
     lanes: int  # iphy lanes in the cage
     subports: dict[int, SubportInfo]  # subport index (1-based) -> info
+    core: int | None = None  # SerDes core of the cage's lanes, when the mapping names one
+
+
+_CORE_RE = re.compile(r"core(\d+)$")
+
+
+def _core_of(entry: dict) -> int | None:
+    pins = entry["mapping"].get("pins") or [{}]
+    match = _CORE_RE.search(pins[0].get("a", {}).get("chip", ""))
+    return int(match.group(1)) if match else None
 
 
 def load_full_platform_mapping(config_name: str) -> dict[str, CageInfo]:
@@ -118,6 +130,7 @@ def load_full_platform_mapping(config_name: str) -> dict[str, CageInfo]:
     }
     cages: dict[str, dict[int, SubportInfo]] = {}
     lanes: dict[str, int] = {}
+    cores: dict[str, int | None] = {}
     for entry in mapping["ports"].values():
         name = entry["mapping"]["name"]
         if not name.startswith("eth"):
@@ -132,8 +145,14 @@ def load_full_platform_mapping(config_name: str) -> dict[str, CageInfo]:
         cages.setdefault(cage, {})[sub] = SubportInfo(entry["mapping"]["id"], profiles)
         if sub == 1:
             lanes[cage] = len(entry["mapping"].get("pins", []))
+            cores[cage] = _core_of(entry)
     return {
-        cage: CageInfo(controlling=f"{cage}/1", lanes=lanes.get(cage, 0), subports=subports)
+        cage: CageInfo(
+            controlling=f"{cage}/1",
+            lanes=lanes.get(cage, 0),
+            subports=subports,
+            core=cores.get(cage),
+        )
         for cage, subports in cages.items()
         if 1 in subports and lanes.get(cage, 0) > 0
     }
@@ -142,7 +161,7 @@ def load_full_platform_mapping(config_name: str) -> dict[str, CageInfo]:
 @dataclass
 class PairResolution:
     ok: bool
-    reason: str | None = None  # "platform" | "module" | "cable" | "peer"
+    reason: str | None = None  # "platform" | "module" | "cable" | "peer" | "datapath"
     detail: str = ""
     # (subport on port's cage, subport at the same lane offset on peer's cage)
     subport_pairs: list[tuple[str, str]] = field(default_factory=list)
@@ -375,14 +394,19 @@ def resolve_pairs(
     host_apps: Mapping[str, list[HostApp] | None] | None = None,
     media_tech: Mapping[str, str | None] | None = None,
     max_passive_cu_lane_speed: int | None = None,
+    logical_ports_per_datapath: int | None = None,
 ) -> VariantResolution:
     """Resolve every snake pair for a non-max variant.
 
     ``pairs`` is the symmetric {port: peer} map from TEST_SNAKE_PAIRS; each
-    cable is resolved once, in sorted order for determinism.
+    cable is resolved once, in sorted order for determinism. With
+    ``logical_ports_per_datapath`` set, pairs whose breakout would overflow a
+    datapath are excluded afterwards, latest-sorted cable first.
     """
     res = VariantResolution(variant=variant)
     seen: set[str] = set()
+    # Supported cables by their cage pair, keeping the names TEST_SNAKE_PAIRS used.
+    cables: dict[tuple[str, str], tuple[str, str]] = {}
     for port in sorted(pairs):
         peer = pairs[port]
         if port in seen or peer in seen:
@@ -412,6 +436,7 @@ def resolve_pairs(
             )
             continue
         res.supported += 1
+        cables[tuple(sorted((cage_of(port), cage_of(peer))))] = (port, peer)
         for a, z in pr.subport_pairs:
             res.expanded_pairs[a] = z
             res.expanded_pairs[z] = a
@@ -420,4 +445,61 @@ def resolve_pairs(
             "variant=%s pair=%s<->%s resolved factor=%d profile=%d",
             variant.name, port, peer, variant.factor, next(iter(pr.profile_by_port.values())),
         )
+    if logical_ports_per_datapath is not None:
+        _apply_datapath_budget(res, cages, cables, logical_ports_per_datapath)
     return res
+
+
+def _datapath_of(cage: CageInfo) -> int | None:
+    return None if cage.core is None else cage.core // 2
+
+
+def _datapath_load(
+    factor: int, cages: Mapping[str, CageInfo], broken_out: set[str]
+) -> dict[int, int]:
+    """Logical ports per datapath: ``factor`` for a broken-out cage, one for
+    every other cage (the link config keeps one controlling port per cage)."""
+    load: dict[int, int] = {}
+    for name, cage in cages.items():
+        datapath = _datapath_of(cage)
+        if datapath is not None:
+            load[datapath] = load.get(datapath, 0) + (factor if name in broken_out else 1)
+    return load
+
+
+def _apply_datapath_budget(
+    res: VariantResolution,
+    cages: Mapping[str, CageInfo],
+    cables: dict[tuple[str, str], tuple[str, str]],
+    budget: int,
+) -> None:
+    """Exclude supported cables until no datapath holds more than ``budget``
+    logical ports, dropping the latest-sorted cable of an overfull datapath first."""
+    while True:
+        load = _datapath_load(res.variant.factor, cages, {c for ab in cables for c in ab})
+        overfull = sorted(dp for dp, ports in load.items() if ports > budget)
+        if not overfull:
+            return
+        datapath = overfull[0]
+        victim = next(
+            (ab for ab in sorted(cables, reverse=True) if any(_datapath_of(cages[c]) == datapath for c in ab)),
+            None,
+        )
+        if victim is None:
+            raise ValueError(
+                f"datapath {datapath} holds {load[datapath]} logical ports with no breakout "
+                f"left to drop; the ASIC fits {budget}"
+            )
+        port, peer = cables.pop(victim)
+        for name in [name for name in res.expanded_pairs if cage_of(name) in victim]:
+            del res.expanded_pairs[name]
+            res.profile_overrides.pop(name, None)
+        res.excluded_pairs[port] = peer
+        res.excluded_pairs[peer] = port
+        res.supported -= 1
+        res.excluded_by_reason["datapath"] = res.excluded_by_reason.get("datapath", 0) + 1
+        logger.info(
+            "variant=%s pair=%s<->%s excluded reason=datapath: datapath %d would hold "
+            "%d logical ports, the ASIC fits %d",
+            res.variant.name, port, peer, datapath, load[datapath], budget,
+        )

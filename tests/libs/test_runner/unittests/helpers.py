@@ -49,7 +49,7 @@ PIPE_LIMITED = {1: [39, 38], 5: [38]}
 COPPER = {1: [50, 45, 54], 3: [54], 5: [45, 54], 7: [54]}
 
 
-def make_cage(subports, lanes=8, base_id=100, profiles=PROFILES):
+def make_cage(subports, lanes=8, base_id=100, profiles=PROFILES, core=None):
     return CageInfo(
         controlling="unused/1",
         lanes=lanes,
@@ -57,6 +57,7 @@ def make_cage(subports, lanes=8, base_id=100, profiles=PROFILES):
             sub: SubportInfo(base_id + sub, {pid: profiles[pid] for pid in pids})
             for sub, pids in subports.items()
         },
+        core=core,
     )
 
 

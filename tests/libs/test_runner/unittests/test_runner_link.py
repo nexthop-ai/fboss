@@ -6,14 +6,24 @@ import copy
 
 import pytest
 
-from tests.libs.test_runner import LinkTestRunner
-from tests.libs.test_runner.platform_mapping import PortInfo
+from tests.libs.test_runner import LinkTestRunner, QsfpTestRunner
+from tests.libs.test_runner.platform_configs import LOGICAL_PORTS_PER_DATAPATH
+from tests.libs.test_runner.platform_mapping import PortInfo, load_platform_mapping
+from tests.libs.test_runner.variants import (
+    cage_of,
+    derive_variant_chain,
+    load_full_platform_mapping,
+    parse_variant,
+    resolve_pairs,
+)
 
 from .helpers import (
+    FULL,
     VARIANT_FLAGFILE,
     drive_cabling_aware,
     json_scp,
     make_cabling_runner,
+    make_cage,
     make_port,
     make_runner,
     symmetric_pairs,
@@ -287,6 +297,64 @@ class TestOverlayCabling:
         out_default = LinkTestRunner._overlay_cabling(copy.deepcopy(base), PAIRS, PORT_MAP)
         out_none = LinkTestRunner._overlay_cabling(base, PAIRS, PORT_MAP, profile_overrides=None)
         assert out_default == out_none
+
+
+class TestDatapathBudget:
+    """The shipped wedge800bact mapping puts two 8-subport cages in one TH5
+    datapath, which fits 10 logical ports. The generated 8x100G config must
+    never ask for more, fillers included."""
+
+    # Full cages snaked across datapaths, so dropping one cable frees two
+    # datapaths at once and the other cables keep their breakout.
+    CABLES = [(3, 7), (4, 8), (11, 15), (12, 16), (19, 23), (20, 24), (27, 31), (28, 32)]
+
+    def test_only_the_link_runner_applies_the_budget(self):
+        assert LinkTestRunner._VARIANT_LOGICAL_PORTS_PER_DATAPATH is LOGICAL_PORTS_PER_DATAPATH
+        assert QsfpTestRunner._VARIANT_LOGICAL_PORTS_PER_DATAPATH == {}
+
+    def test_resolve_variant_pairs_passes_the_configs_budget(self, monkeypatch):
+        seen = {}
+
+        def fake_resolve(pairs, variant, cages, *args, **kwargs):
+            seen.update(kwargs)
+            return resolve_pairs(pairs, variant, cages, *args, **kwargs)
+
+        monkeypatch.setattr("tests.libs.test_runner.cabling.resolve_pairs", fake_resolve)
+        for runner_cls, expected in ((LinkTestRunner, 10), (QsfpTestRunner, None)):
+            runner = make_runner(runner_cls)
+            runner._cached_full_mapping = {}
+            runner._host_speeds_by_port = {}
+            runner._is_copper_by_port = {}
+            runner._host_apps_by_port = {}
+            runner._media_tech_by_port = {}
+            variant = parse_variant("8x100G", derive_variant_chain({"eth1/1": make_cage(FULL)}))
+            runner._resolve_variant_pairs({}, variant, "wedge800bact")
+            assert seen["logical_ports_per_datapath"] == expected
+
+    def test_generated_config_fits_every_datapath(self):
+        budget = LOGICAL_PORTS_PER_DATAPATH["wedge800bact"]
+        cages = load_full_platform_mapping("wedge800bact")
+        port_map = load_platform_mapping("wedge800bact")
+        pairs = symmetric_pairs(*((f"eth1/{a}/1", f"eth1/{z}/1") for a, z in self.CABLES))
+        variant = parse_variant("8x100G", derive_variant_chain(cages))
+        assert resolve_pairs(pairs, variant, cages, {}, {}).supported == len(self.CABLES)
+        res = resolve_pairs(pairs, variant, cages, {}, {}, logical_ports_per_datapath=budget)
+        assert res.excluded_by_reason == {"datapath": 4}
+        assert res.supported == 4
+
+        out = LinkTestRunner._overlay_cabling(
+            _base_config(["eth1/9/1"]), res.expanded_pairs, port_map, res.profile_overrides
+        )
+        _assert_consistent(out)
+        front = [p for p in out["sw"]["ports"] if p["portType"] == 0]
+        load = {}
+        for port in front:
+            datapath = cages[cage_of(port["name"])].core // 2
+            load[datapath] = load.get(datapath, 0) + 1
+        assert max(load.values()) <= budget
+        # Every kept cable is broken out 8 ways on both ends, nothing else is up.
+        assert set(res.expanded_pairs) <= {p["name"] for p in front}
+        assert sum(1 for p in front if p["state"] == 2) == 4 * 2 * 8
 
 
 def _stage(system_config, flagfile=None):

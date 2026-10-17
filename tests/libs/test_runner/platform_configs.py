@@ -35,15 +35,12 @@ LINK_QSFP_TEST_CONFIG_NAME: dict[str, str] = {
     "nhcw800f": "wedge800cact",
 }
 
-# Variants a platform config must not run; the wrapper skips with the reason.
-# TODO NOS-18241: 8x100G on TH5 overflows the per-pipe logical-port budget because the
-# generated config keeps a filler port per uncabled cage. Cap breakout cages
-# per pipe (or drop fillers in a broken-out pipe) and remove this entry.
-VARIANT_DENYLIST: dict[str, dict[str, str]] = {
-    "wedge800bact": {
-        "8x100G": "fboss_hw_agent aborts in SAI create_port (INSUFFICIENT RESOURCES) "
-        "while creating the 8x100G ports",
-    },
+# Logical ports the SDK fits in one datapath (two SerDes cores, core // 2),
+# NUM_LOGICAL_PORTS_PER_DATAPATH in fboss/lib/asic_config_v2/<config>.py. The
+# platform mapping can offer more subport rows than this; the link runner
+# excludes breakout pairs that would overflow. Unlisted configs are uncapped.
+LOGICAL_PORTS_PER_DATAPATH: dict[str, int] = {
+    "wedge800bact": 10,
 }
 
 # Default CREDO_SDK_VERSION in fboss/lib/phy/CredoSdkVersion.h. qsfp_bench keys

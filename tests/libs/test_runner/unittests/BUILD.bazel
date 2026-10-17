@@ -26,6 +26,11 @@ run_all_pytests(
         # on-DUT runner package, hw_bench_configs, the platform mappings,
         # fboss_init.sh with the descriptors, and the benchmark bucket and
         # link/qsfp variant wrapper modules (exec'd via load_test_context).
+        # TestDatapathBudget generates the 8x100G link config from the real
+        # wedge800bact mapping.
+        "test_runner_link": [
+            "//fboss:platform_mapping_inputs",
+        ],
         "test_manifest_consistency": [
             "//fboss:hw_bench_configs",
             "//fboss:platform_mapping_inputs",

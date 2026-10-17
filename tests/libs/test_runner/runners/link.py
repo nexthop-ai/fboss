@@ -14,6 +14,7 @@ from typing import NamedTuple
 from tests.libs.test_runner.base import BaseHwTestRunner, normalize_model
 from tests.libs.test_runner.cabling import CablingAwareRunnerMixin
 from tests.libs.test_runner.deploy import STACK_FORWARDING, STACK_SHARE
+from tests.libs.test_runner.platform_configs import LOGICAL_PORTS_PER_DATAPATH
 from tests.libs.test_runner.platform_mapping import load_platform_mapping, PortInfo
 
 logger = logging.getLogger("test_runner")
@@ -32,6 +33,7 @@ class LinkTestRunner(CablingAwareRunnerMixin, BaseHwTestRunner):
     # A passive DAC cannot carry 200G/lane, so a breakout variant that asks for
     # it will never link. Exclude those cages rather than report a dead link.
     _VARIANT_PASSIVE_CU_MAX_LANE_SPEED_MBPS = 106_250
+    _VARIANT_LOGICAL_PORTS_PER_DATAPATH = LOGICAL_PORTS_PER_DATAPATH
 
     _VARIANT_SUMMARY_PREFIX = "LINK TEST"
 

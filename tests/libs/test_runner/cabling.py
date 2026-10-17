@@ -6,10 +6,11 @@ media-strict / optics-only passes, and run each pass against the right ports.
 import json
 import logging
 import os
+from collections.abc import Mapping
 from pathlib import Path
 
 from tests.libs.test_runner.base import normalize_model
-from tests.libs.test_runner.platform_configs import LINK_QSFP_TEST_CONFIG_NAME, VARIANT_DENYLIST
+from tests.libs.test_runner.platform_configs import LINK_QSFP_TEST_CONFIG_NAME
 from tests.libs.test_runner.platform_mapping import load_platform_mapping, repo_dir
 from tests.libs.test_runner.variants import (
     cage_of,
@@ -164,9 +165,6 @@ class CablingAwareRunnerMixin:
             if is_well_formed(value):
                 raise VariantNotApplicable(f"variant {value} is not supported on this platform: {e}") from e
             raise
-        denied = VARIANT_DENYLIST.get(config_name, {}).get(variant.name)
-        if denied:
-            raise VariantNotApplicable(f"variant {variant.name} is disabled on {config_name}: {denied}")
         return variant
 
     def _full_platform_mapping(self, config_name: str) -> dict[str, CageInfo]:
@@ -178,6 +176,10 @@ class CablingAwareRunnerMixin:
     # variant. None means unconstrained: the qsfp tests program the module and
     # do not need the link, so only the link runner sets this.
     _VARIANT_PASSIVE_CU_MAX_LANE_SPEED_MBPS: int | None = None
+
+    # Logical ports per datapath by config name. Only the link runner creates
+    # agent ports, so only it can overflow one; the others leave this empty.
+    _VARIANT_LOGICAL_PORTS_PER_DATAPATH: Mapping[str, int] = {}
 
     def _resolve_variant_pairs(
         self, pairs: dict[str, str], variant: Variant, config_name: str
@@ -193,6 +195,7 @@ class CablingAwareRunnerMixin:
             self._host_apps_by_port,
             media_tech=self._media_tech_by_port,
             max_passive_cu_lane_speed=self._VARIANT_PASSIVE_CU_MAX_LANE_SPEED_MBPS,
+            logical_ports_per_datapath=self._VARIANT_LOGICAL_PORTS_PER_DATAPATH.get(config_name),
         )
         logger.info(resolution.summary(self._VARIANT_SUMMARY_PREFIX))
         return resolution

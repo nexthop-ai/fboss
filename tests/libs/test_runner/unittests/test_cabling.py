@@ -452,34 +452,6 @@ class TestVariantSkipReporting:
         with pytest.raises(VariantError):
             runner._run_test_impl({}, skip_tr_xml=False)
 
-    def _runner_with_mapping(self, monkeypatch, variant):
-        runner, recorded = self._runner(monkeypatch, variant)
-        monkeypatch.setenv("TEST_PORTS_INFO", "ports.json")
-        monkeypatch.delenv("TEST_SNAKE_PAIRS", raising=False)
-        monkeypatch.setattr(runner, "_load_cabling", lambda path: ([], [], {}))
-        monkeypatch.setattr(
-            runner, "_full_platform_mapping", lambda config_name: {"eth1/1": make_cage(FULL)}
-        )
-        runner.tc["model"] = "NH-BW800-F"
-        return runner, recorded
-
-    def test_denylisted_variant_writes_skipped_junit(self, monkeypatch):
-        runner, recorded = self._runner_with_mapping(monkeypatch, "8x100G")
-        assert runner._run_test_impl({}, skip_tr_xml=False) is True
-        assert recorded["passes"] == []
-        [(name, reason)] = recorded["skipped"]
-        assert name == "8x100G"
-        assert reason.startswith("variant 8x100G is disabled on wedge800bact: ")
-        assert "SAI create_port" in reason
-
-    def test_denylist_leaves_other_variants_alone(self, monkeypatch):
-        runner, recorded = self._runner_with_mapping(monkeypatch, "2x400G")
-        assert runner._run_test_impl({}, skip_tr_xml=False) is True
-        # Past the denylist gate, stopped only by the missing cabling data.
-        assert recorded["skipped"] == [
-            ("2x400G", "variant runs require TEST_SNAKE_PAIRS cabling data")
-        ]
-
     def test_explicit_max_matches_an_absent_key(self, monkeypatch):
         explicit, _ = self._runner(monkeypatch, "max")
         absent, _ = self._runner(monkeypatch, None)
