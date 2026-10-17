@@ -405,14 +405,13 @@ class AgentHwAclQualifierTest : public AgentHwTest {
   }
 };
 
-// With ACL table groups, Q3D/Q4D/J4 split the default ACL into IPv4 and
+// With ACL table groups, Q4D/J4 split the default ACL into IPv4 and
 // IPv6 tables and ICMPv6 entries land in the IPv6 one; with a single table
 // every entry is in the default table.
 std::string icmpv6AclTable(const AgentEnsemble* ensemble) {
   auto asicType = ensemble->getL3Asics().front()->getAsicType();
   if (FLAGS_enable_acl_table_group &&
-      (asicType == cfg::AsicType::ASIC_TYPE_QUMRAN3D ||
-       asicType == cfg::AsicType::ASIC_TYPE_QUMRAN4D ||
+      (asicType == cfg::AsicType::ASIC_TYPE_QUMRAN4D ||
        asicType == cfg::AsicType::ASIC_TYPE_JERICHO4)) {
     return utility::kIpv6AclTable();
   }

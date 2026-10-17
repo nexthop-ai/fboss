@@ -221,8 +221,7 @@ void AgentVoqSwitchTest::addDscpAclWithCounter() {
   auto newCfg = initialConfig(*getAgentEnsemble());
   auto asic = checkSameAndGetAsicForTesting(getAgentEnsemble()->getL3Asics());
   std::optional<std::string> tableName;
-  if (asic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN3D ||
-      asic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D ||
+  if (asic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D ||
       asic->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO4) {
     tableName = utility::kIpv6AclTable();
   }

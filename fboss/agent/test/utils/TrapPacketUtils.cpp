@@ -9,8 +9,7 @@ namespace {
 // These DNX ASICs split the default ingress ACL into an IPv4 table and an IPv6
 // table, so IPv6 entries go in the IPv6 table.
 bool hasSeparateIpv6AclTable(const HwAsic* asic) {
-  return asic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN3D ||
-      asic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D ||
+  return asic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D ||
       asic->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO4;
 }
 } // namespace

@@ -231,7 +231,7 @@ overlay_nh_harness() {
   #   d09a2fbf: fake SAI initializes FakePort members; unfixed agents SEGV (#621)
   #   c7d40884: distro_cli docker test self-skips when docker is absent
   #   86941d3f: SAI_NEXT_HOP_GROUP_ATTR_SPLIT_HORIZON_ENABLE undeclared on our
-  #             sai_impl headers; Qumran3DAsic + CmdShowEnvironmentFan build fixes
+  #             sai_impl headers; CmdShowEnvironmentFan build fix
   #   553feace: kernel_download_test fixture carries fields upstream 289c3c97a4
   #             rejects (#2171)
   local fix

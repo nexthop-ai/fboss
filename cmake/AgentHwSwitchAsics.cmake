@@ -31,7 +31,6 @@ add_library(switch_asics
   fboss/agent/hw/switch_asics/BroadcomXgsAsic.cpp
   fboss/agent/hw/switch_asics/G202xAsic.cpp
   fboss/agent/hw/switch_asics/P200Asic.cpp
-  fboss/agent/hw/switch_asics/Qumran3DAsic.cpp
   fboss/agent/hw/switch_asics/Qumran4DAsic.cpp
 )
 

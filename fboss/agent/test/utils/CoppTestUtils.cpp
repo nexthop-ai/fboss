@@ -229,7 +229,6 @@ void setDefaultCpuTrafficPolicyConfig(
     }
   } else {
     const bool isQumran4dOrJericho4 =
-        hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN3D ||
         hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D ||
         hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO4;
     for (auto stage :
@@ -836,7 +835,6 @@ defaultIngressCpuAclsForSai(
       // getCoppRxReasonToQueuesForSai); trap DHCP/DHCPv6 to mid pri via ACLs
       // instead.
       if (hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_JERICHO4 ||
-          hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN3D ||
           hwAsic->getAsicType() == cfg::AsicType::ASIC_TYPE_QUMRAN4D) {
         addMidPriAclForDhcp(
             hwAsic,
@@ -1140,7 +1138,6 @@ std::vector<cfg::PacketRxReasonToQueue> getCoppRxReasonToQueuesForSai(
             cfg::PacketRxReason::TTL_1, kCoppLowPriQueueId),
     };
     if (hwAsic->getAsicType() != cfg::AsicType::ASIC_TYPE_JERICHO4 &&
-        hwAsic->getAsicType() != cfg::AsicType::ASIC_TYPE_QUMRAN3D &&
         hwAsic->getAsicType() != cfg::AsicType::ASIC_TYPE_QUMRAN4D) {
       rxReasonToQueues.push_back(
           ControlPlane::makeRxReasonToQueueEntry(

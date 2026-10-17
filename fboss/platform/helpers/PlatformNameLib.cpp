@@ -39,9 +39,6 @@ std::string PlatformNameLib::sanitizePlatformName(
   if (platformNameUpper == "NH-4220-F") {
     return "NH4220F";
   }
-  if (platformNameUpper == "NH-5010-F") {
-    return "NH5010F";
-  }
   if (platformNameUpper == "NOVA4000") {
     return "M4062NHP";
   }

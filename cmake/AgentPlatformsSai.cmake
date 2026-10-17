@@ -22,8 +22,6 @@ set(SAI_PLATFORM_BCM_SRC
   fboss/agent/platforms/sai/SaiBcmYampPlatform.cpp
   fboss/agent/platforms/sai/SaiBcmFujiPlatform.cpp
   fboss/agent/platforms/sai/SaiElbert8DDPhyPlatformPort.cpp
-  fboss/agent/platforms/sai/SaiNh5010fPlatform.cpp
-  fboss/agent/platforms/sai/SaiNh5010fPlatformPort.cpp
   fboss/agent/platforms/sai/SaiPlatformInitBcm.cpp
   fboss/agent/platforms/sai/oss/SaiBcmMinipackPlatform.cpp
   fboss/agent/platforms/sai/oss/SaiBcmPlatform.cpp
@@ -152,7 +150,6 @@ target_link_libraries(sai_platform
   leh800bcls_platform_mapping
   icecube800banw_platform_mapping
   icecube800bc_platform_mapping
-  nh5010f_platform_mapping
   icetea800bc_platform_mapping
   j4sim_platform_mapping
   saintpaul_platform_mapping

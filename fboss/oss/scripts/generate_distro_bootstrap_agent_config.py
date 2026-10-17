@@ -94,13 +94,12 @@ CORE_TYPE_TO_ASIC: dict[str, int] = {
 DEFAULT_ASIC_TYPE = 13
 
 # Platforms whose ASIC cannot be inferred: no materialized HW test config, and a
-# core type shared with a different ASIC (nh5010f and blackwolf800banw are both
-# Q4D_NIF, but are Qumran3D and Qumran4D respectively).
-PLATFORM_ASIC_TYPE: dict[str, int] = {"m4340nhp": 23, "nh5010f": 27}
+# core type (Q4D_NIF) absent from CORE_TYPE_TO_ASIC.
+PLATFORM_ASIC_TYPE: dict[str, int] = {"m4340nhp": 23}
 
 # Jericho2/3/4 and the Qumran parts derived from them accept only VOQ. Ramon is
 # DNX too but is FABRIC, so it is deliberately absent.
-VOQ_ASIC_TYPES = {11, 14, 23, 24, 27}
+VOQ_ASIC_TYPES = {11, 14, 23, 24}
 
 SWITCH_TYPE_NPU = 0
 SWITCH_TYPE_VOQ = 2
@@ -119,7 +118,7 @@ PORT_STATE_DISABLED = 1
 PORT_STATE_ENABLED = 2
 
 # fboss_common.thrift PlatformType, needed for the VOQ switch's own DSF node.
-PLATFORM_TYPE: dict[str, int] = {"m4340nhp": 59, "nh5010f": 995}
+PLATFORM_TYPE: dict[str, int] = {"m4340nhp": 59}
 
 # VOQ (DSF) settings for a standalone switch: one DSF node (itself, switchId 0).
 VOQ_SWITCH_ID = 0
@@ -1278,7 +1277,7 @@ def generate_config(
         dsf_nodes[str(VOQ_SWITCH_ID)] = _build_voq_switch_settings(
             switch_id_to_switch_info, codename, ppm_rows, system_port_offset
         )
-        # No VLANs on a VOQ switch: interfaces are system ports (nh5010f).
+        # No VLANs on a VOQ switch: interfaces are system ports.
         vlans: list[dict] = []
         default_vlan = 0
     else:

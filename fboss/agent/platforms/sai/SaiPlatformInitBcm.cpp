@@ -45,8 +45,6 @@
 #include "fboss/agent/platforms/sai/SaiBcmYampPlatform.h"
 #include "fboss/agent/platforms/sai/SaiBcmYampPlatformPort.h"
 #include "fboss/agent/platforms/sai/SaiElbert8DDPhyPlatformPort.h"
-#include "fboss/agent/platforms/sai/SaiNh5010fPlatform.h"
-#include "fboss/agent/platforms/sai/SaiNh5010fPlatformPort.h"
 #include "fboss/lib/platforms/PlatformDescriptor.h"
 
 #include "thrift/lib/cpp/util/EnumUtils.h"
@@ -65,7 +63,6 @@ bool useGenericSaiBcmPlatform(PlatformType type) {
     case PlatformType::PLATFORM_YAMP:
     case PlatformType::PLATFORM_FUJI:
     case PlatformType::PLATFORM_ELBERT:
-    case PlatformType::PLATFORM_NH5010F:
       return false;
     default:
       return true;
@@ -173,10 +170,6 @@ std::unique_ptr<SaiPlatform> chooseSaiPlatformImpl(
     return std::make_unique<SaiBcmElbertPlatform>(
         std::move(productInfo), localMac, platformMappingStr);
   }
-  if (type == PlatformType::PLATFORM_NH5010F) {
-    return std::make_unique<SaiNh5010fPlatform>(
-        std::move(productInfo), localMac, platformMappingStr);
-  }
   if (useGenericSaiBcmPlatform(type)) {
     return createGenericSaiBcmPlatform(
         std::move(productInfo), localMac, platformMappingStr);
@@ -220,9 +213,6 @@ std::unique_ptr<SaiPlatformPort> createSaiPlatformPort(
         cfg::AsicType::ASIC_TYPE_TOMAHAWK4) {
       return std::make_unique<SaiBcmElbertPlatformPort>(portId, platform);
     }
-  }
-  if (platformMode == PlatformType::PLATFORM_NH5010F) {
-    return std::make_unique<SaiNh5010fPlatformPort>(portId, platform);
   }
   return nullptr;
 }

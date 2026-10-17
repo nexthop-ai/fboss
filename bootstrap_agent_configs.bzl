@@ -43,7 +43,6 @@ _IDENTITY_PLATFORMS = [
 
 _EXCLUDED_PLATFORMS = [
     "cfboss",  # hand-authored fake-SAI config, no platform_mapping_v2 entry
-    "nh5010f",  # hand-authored while dataplane bring-up is in progress
 ]
 
 def _committed_conf(platform):

@@ -246,7 +246,6 @@ void addDefaultAclTable(
         std::move(qualifiers),
         udfGroups);
   } else if (
-      asicType == cfg::AsicType::ASIC_TYPE_QUMRAN3D ||
       asicType == cfg::AsicType::ASIC_TYPE_QUMRAN4D ||
       asicType == cfg::AsicType::ASIC_TYPE_JERICHO4) {
     std::vector<cfg::AclTableQualifier> ipv4Qualifiers = {
