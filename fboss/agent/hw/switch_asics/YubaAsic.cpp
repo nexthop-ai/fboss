@@ -261,12 +261,8 @@ bool YubaAsic::isSupportedNonFabric(Feature feature) const {
     case HwAsic::Feature::CBFC:
     case HwAsic::Feature::LINK_LAYER_RETRANSMISSION:
     case HwAsic::Feature::SLL_HLL_DISCARD_COUNTERS:
-<<<<<<< HEAD
-    case HwAsic::Feature::TAJO_RX_SERDES_PARAMETERS:
-||||||| 615d477c11
-=======
     case HwAsic::Feature::HW_PROTECTION_SWITCHOVER_COUNTERS:
->>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
+    case HwAsic::Feature::TAJO_RX_SERDES_PARAMETERS:
     case HwAsic::Feature::RX_PACKET_TYPE:
     case HwAsic::Feature::MY_MAC:
     case HwAsic::Feature::ISOLATION_GROUP:

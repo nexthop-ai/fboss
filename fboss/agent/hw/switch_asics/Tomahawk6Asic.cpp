@@ -265,13 +265,9 @@ bool Tomahawk6Asic::isSupported(Feature feature) const {
     case HwAsic::Feature::RX_PACKET_TYPE:
     case HwAsic::Feature::ISOLATION_GROUP:
     case HwAsic::Feature::ACL_ENTRY_OUT_PORT_QUALIFIER:
-<<<<<<< HEAD
+    case HwAsic::Feature::XPHY_SERDES_TX_FIR_POST3:
     case HwAsic::Feature::PORT_SERDES_CREATED_WITH_PORT:
     case HwAsic::Feature::SYSTEM_PORT_CORE_INDEX_FROM_PORT:
-||||||| 615d477c11
-=======
-    case HwAsic::Feature::XPHY_SERDES_TX_FIR_POST3:
->>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
       return false;
   }
   return false;
