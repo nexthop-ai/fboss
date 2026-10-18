@@ -6,10 +6,21 @@ description: Load when the user wants to scrub, triage, or rank the open FBOSS C
 
 # FBOSS CLI Bug Scrub
 
-Produces a ranked CSV (and optionally a Google Sheet) of open FBOSS CLI bugs
-from four Jira sources, for a shallow first pass the team then edits by hand.
+Produces a ranked CSV of open FBOSS CLI bugs from four Jira sources and writes it
+to the FBOSS CLI Jira triage Google Sheet (mandatory every run), for a shallow
+first pass the team then edits by hand.
 Goal: the top 10 are what to work on this week; the long tail is labeled so it
 can be closed WONTFIX if it stays quiet. Do not root-cause every ticket.
+
+## Configuration
+
+Fixed per-run inputs — no need to look them up again.
+
+| What | Value |
+|---|---|
+| Triage spreadsheet | `1H8FpXlmZm2ABpr2kKCg_0Ji4n6RiujrXg4ztrBGmLMc` ("FBOSS CLI Jira triage") |
+| Tab / sheetId | `triage` / `1684313274` |
+| Frozen snapshots | `sept7` `sept16` `sept23` — history, never write to them |
 
 ## Sources
 
@@ -30,6 +41,7 @@ OUT=$(mktemp -d)
 fboss/.claude/skills/fboss-bug-scrub/scripts/fetch.sh "$OUT"      # Jira via acli + QPN via curl
 # write $OUT/notes.json ({key: note}) and $OUT/order.json ([keys, best first]) — see Ranking
 python3 fboss/.claude/skills/fboss-bug-scrub/scripts/build_csv.py "$OUT"   # -> $OUT/fboss_cli_bug_scrub.csv
+# then, always: update the triage tab (see below) and report the watch list
 ```
 
 `fetch.sh` needs `acli` authenticated (`acli jira auth status`) and reachability
@@ -156,29 +168,64 @@ Notes column: 1–3 sentences, why it matters or doesn't. Long tail default is
 generated: "opened N weeks ago, H hits in 90d; candidate for WONTFIX if quiet."
 Only hand-write notes for roughly the top 60; `build_csv.py` fills the rest.
 
-## Upload to Google Sheets
+## Update the triage tab (every run)
 
-`gws` prints a keyring line before JSON — always `| tail -n +2`. Write the whole
-grid in one call; `USER_ENTERED` is required for the `HYPERLINK` Jira links:
+Mandatory every run — the sheet is the deliverable, the CSV is an
+intermediate. `gws` prints a keyring line before JSON — always `| tail -n +2`.
+
+**Read the tab first.** The expected pre-write state is exactly what the previous
+run wrote: the grid in A–R, the generated fingerprint column in S, and nothing in
+T or beyond. Overwriting A–S is the run, so that state is expected. Two things
+mean the team has touched the tab: anything in T or later, or a cell in S that
+is not one of last run's verdicts (each row's S cell is blank or a verdict naming
+that row's ticket). If you see either, stop and ask before overwriting. The
+`sept*` tabs are the frozen history: never write to them.
+
+```bash
+SHEET=1H8FpXlmZm2ABpr2kKCg_0Ji4n6RiujrXg4ztrBGmLMc
+gws sheets spreadsheets values get \
+    --params "{\"spreadsheetId\":\"$SHEET\",\"range\":\"triage!A1:Z\"}" 2>&1 | tail -n +2
+```
+
+Nothing downstream clears the tab for you: `values update` writes only the cells
+it is handed and leaves the rest untouched. The grid is a different height every
+run (237 rows last time), so without an explicit clear a shorter run leaves the
+previous run's tail rows in A–R *and* in S, where they still read as current and
+now sit outside the `A1:S<n>` filter. Once the read-check has passed, clear A–S
+from row 2 down before writing:
+
+```bash
+gws sheets spreadsheets values clear \
+  --params "{\"spreadsheetId\":\"$SHEET\",\"range\":\"triage!A2:S\"}" 2>&1 | tail -n +2
+```
+
+Write the whole grid in one call; `USER_ENTERED` is required for the `HYPERLINK`
+Jira links in column A:
 
 ```bash
 gws sheets spreadsheets values update \
   --params "{\"spreadsheetId\":\"$SHEET\",\"range\":\"triage!A1\",\"valueInputOption\":\"USER_ENTERED\"}" \
-  --json "$(cat $OUT/body.json)" 2>&1 | tail -n +2
+  --json "$(cat $OUT/body.json)" 2>&1 | tail -n +2     # -> triage!A1:R<n>
 ```
 
-`build_csv.py` also emits `body.json` (CSV as `{"values": [...]}` with the
-Jira ID turned into a `HYPERLINK` formula). Freeze/bold row 1, wrap the
-Title/Notes and Platforms columns, and add a basic filter with one `spreadsheets batchUpdate`
-(sheetId from `spreadsheets get`). Check the sheet is empty first with a
-`values get`; never overwrite a sheet the team has edited without asking.
+Then the fingerprint column. Build `$OUT/s_body.json` as
+`{"values": [["Triage / fingerprint notes"], [verdict], ...]}` aligned 1:1 with the
+CSV rows (header first, then one cell per row, blank where there is no verdict) and
+write `triage!S1`. Regenerate it every run — the previous column is not carried
+over, and the row order changes every run.
 
-`build_csv.py` writes the whole ranked grid (18 columns, A–R). The team's `triage` tab keeps a
-hand-maintained per-row column to the right; put fingerprint verdicts there
-(header "Triage / fingerprint notes") and re-apply wrap/width to that column.
-Read the tab's column A first to map key → row, then write the whole column in one
-`values update`; an off-by-one silently puts every note on the wrong row, so read
-it back and check each note against its ticket.
+```bash
+gws sheets spreadsheets values update \
+  --params "{\"spreadsheetId\":\"$SHEET\",\"range\":\"triage!S1\",\"valueInputOption\":\"USER_ENTERED\"}" \
+  --json "$(cat $OUT/s_body.json)" 2>&1 | tail -n +2
+```
+
+Then format, all in one `spreadsheets batchUpdate` on sheetId `1684313274`: freeze
+and bold row 1; wrap + top-align P–S; widths P 130 / Q 380 / R 520 / S 520; basic
+filter over `A1:S<n>`.
+
+Finally read `triage!A1:S<n>` back and assert every verdict sits on its own
+ticket's row — an off-by-one silently puts every note on the wrong row.
 
 ## Gotchas
 
