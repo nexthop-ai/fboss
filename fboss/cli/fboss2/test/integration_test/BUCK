@@ -28,6 +28,7 @@ cpp_binary(
         "ConfigBgpPeerGroupTest.cpp",
         "ConfigBgpPolicyAsPathListTest.cpp",
         "ConfigBgpPolicyCommunityListTest.cpp",
+        "ConfigBgpPolicyPrefixListEntryTest.cpp",
         "ConfigBgpPolicyPrefixListTest.cpp",
         "ConfigSflowSampleDestTest.cpp",
         "ConfigBgpSessionTest.cpp",
