@@ -18,6 +18,11 @@ name: Nightly Build Notify
 # notify-slack-on-failure job already covers those with richer per-job /
 # per-test detail, and excluding them here avoids duplicate alerts.
 #
+# `cancelled` is deliberately excluded as well: a cancelled run is torn down on
+# purpose by the account that did it, so it is never the silent pre-job failure
+# this safety net exists to catch — and alerting on it sent readers hunting for
+# a `startup_failure` that did not exist.
+#
 # NOTE: workflow_run triggers only fire for the copy of this file on the
 # repository's default branch, so this notifier takes effect once merged.
 
@@ -33,11 +38,13 @@ jobs:
   notify-startup-failure:
     runs-on: k8s-nano
     # Alert on any non-success conclusion EXCEPT `failure` (already handled by
-    # the Nightly Build's in-run notify-slack-on-failure job) — this catches
-    # startup_failure, timed_out, cancelled, etc.
+    # the Nightly Build's in-run notify-slack-on-failure job) and `cancelled`
+    # (a deliberate stop, not a silent failure) — this catches
+    # startup_failure, timed_out, etc.
     if: >-
       github.event.workflow_run.conclusion != 'success' &&
-      github.event.workflow_run.conclusion != 'failure'
+      github.event.workflow_run.conclusion != 'failure' &&
+      github.event.workflow_run.conclusion != 'cancelled'
     steps:
       - name: Send Slack notification
         uses: slackapi/slack-github-action@v3.0.3
