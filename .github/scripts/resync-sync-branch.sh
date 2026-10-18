@@ -50,11 +50,19 @@ die() {
 # ─── Conflict tracking ───────────────────────────────────────────────────────
 # Every path git reports as unmerged gets recorded here initially. Most merge
 # conflicts are resolved by replaying thee fix commits. The final list is
-# written to CONFLICT_LIST_FILE, one path per line.
+# written to CONFLICT_LIST_FILE, one path per line. It also carries the merge's
+# unmerged paths that git never wrote markers into (modify/delete, binary,
+# rename), which the marker re-check in step 3 cannot see.
+#
+# The file is only written once a merge has been replayed, empty or not: its
+# presence is what tells the caller this is the complete set of paths still
+# needing a decision. Left over from an earlier run it would claim that, so
+# clear it now.
 CONFLICT_LIST_FILE="${RESYNC_CONFLICT_LIST:-/tmp/resync-conflicted-files.txt}"
-: >"$CONFLICT_LIST_FILE"
+rm -f "$CONFLICT_LIST_FILE"
 
 conflicted_candidates=()
+merge_unmerged=()
 
 record_conflicts() {
   local path
@@ -209,6 +217,17 @@ if $has_merge_conflicts; then
   "$SCRIPT_DIR/nh-fix-merge-conflicts.py"
 
   still_conflicted=$(git diff --name-only --diff-filter=U 2>/dev/null || true)
+
+  # Keep the merge's own report: modify/delete, binary and rename conflicts are
+  # unmerged without ever being written with markers, so nothing else can tell.
+  while IFS= read -r path; do
+    # `if`, not `&&`: an empty $still_conflicted is one empty line, and a
+    # failing last command would abort the whole resync under `set -e`.
+    if [[ -n $path ]]; then
+      merge_unmerged+=("$path")
+    fi
+  done <<<"$still_conflicted"
+
   if [[ -n $still_conflicted ]]; then
     warn "Still-conflicted after auto-resolution (committing with markers):"
     echo "$still_conflicted"
@@ -229,7 +248,8 @@ git add build/deps/github_hashes/ 2>/dev/null || true
 git add -u
 git commit --no-verify -m "$merge_msg"
 
-info "New merge commit : $(git rev-parse HEAD)"
+new_merge_commit=$(git rev-parse HEAD)
+info "New merge commit : $new_merge_commit"
 
 # ─── Step 2: replay all fix commits ──────────────────────────────────────────
 for sha in "${fix_commits[@]}"; do
@@ -251,15 +271,45 @@ if [[ ${#conflicted_candidates[@]} -gt 0 ]]; then
   done < <(printf '%s\n' "${conflicted_candidates[@]}" | sort -u)
 fi
 
+# The merge's unmerged paths that carry no markers: `git add -u` committed our
+# side of them, but which side to keep is a human decision, so they stay on the
+# list unless a fix commit has touched the file (editing it *is* the decision).
+markerless_unresolved=()
+if [[ ${#merge_unmerged[@]} -gt 0 ]]; then
+  changed_by_fixes=$(git diff --name-only "$new_merge_commit"..HEAD)
+  while IFS= read -r path; do
+    [[ -e $path ]] || continue
+    if grep -qE '^<{7} ' "$path"; then
+      continue # already in remaining_conflicts
+    fi
+    if grep -qxF "$path" <<<"$changed_by_fixes"; then
+      continue
+    fi
+    markerless_unresolved+=("$path")
+  done < <(printf '%s\n' "${merge_unmerged[@]}" | sort -u)
+fi
+
+# Everything still needing a manual decision, markers or not: this is what the
+# PR description lists and what the comment reports.
+unresolved=()
 if [[ ${#remaining_conflicts[@]} -gt 0 ]]; then
-  printf '%s\n' "${remaining_conflicts[@]}" >"$CONFLICT_LIST_FILE"
+  unresolved+=("${remaining_conflicts[@]}")
+fi
+if [[ ${#markerless_unresolved[@]} -gt 0 ]]; then
+  unresolved+=("${markerless_unresolved[@]}")
+fi
+
+# Always written, even empty: see the note on CONFLICT_LIST_FILE.
+: >"$CONFLICT_LIST_FILE"
+if [[ ${#unresolved[@]} -gt 0 ]]; then
+  printf '%s\n' "${unresolved[@]}" | sort -u >"$CONFLICT_LIST_FILE"
 fi
 
 # ─── Step 4: force-push ───────────────────────────────────────────────────────
 info "Force-pushing $current_branch..."
 git push --force-with-lease origin "$current_branch"
 
-if [[ ${#remaining_conflicts[@]} -eq 0 ]]; then
+if [[ ${#unresolved[@]} -eq 0 ]]; then
   info "✅ Resync complete!"
   exit 0
 fi
@@ -270,5 +320,11 @@ warn "Files still containing conflict markers (${#remaining_conflicts[@]}):"
 for path in "${remaining_conflicts[@]}"; do
   warn "  $path"
 done
+if [[ ${#markerless_unresolved[@]} -gt 0 ]]; then
+  warn "Unmerged without markers (${#markerless_unresolved[@]}) - decide which side to keep:"
+  for path in "${markerless_unresolved[@]}"; do
+    warn "  $path"
+  done
+fi
 warn "⚠️ Resynced but manual conflict resolution needed in the files above."
 exit 2

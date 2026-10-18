@@ -103,6 +103,26 @@ jobs:
             exit $rc
           fi
 
+      - name: Refresh the conflict list in the PR description
+        id: refresh-body
+        # Both outcomes changed the branch head, so both can invalidate the
+        # list create-pr wrote: rc=0 resolved files, rc=2 rebased onto a main
+        # that moved under the branch.
+        if: success() && (steps.resync.outputs.rc == '0' || steps.resync.outputs.rc == '2')
+        env:
+          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
+          RESYNC_CONFLICT_LIST: /tmp/resync-conflicted-files.txt
+        run: |
+          # The resync's list adds the merge's unmerged paths that carry no
+          # markers (modify/delete, binary), which grepping the pushed tree
+          # cannot see. A stale description beats a failed resync, so never
+          # fail the job over it.
+          if ! .github/scripts/update-sync-pr-body.py \
+            --pr "${{ steps.pr-details.outputs.pr_number }}" \
+            --conflict-list "$RESYNC_CONFLICT_LIST"; then
+            echo "::warning::Could not refresh the conflict list in the PR description (see the log above)"
+          fi
+
       - name: Comment on PR (success)
         if: success() && steps.resync.outputs.rc == '0'
         env:
@@ -111,7 +131,12 @@ jobs:
           PR_NUMBER=${{ steps.pr-details.outputs.pr_number }}
           NEW_BASE=${{ steps.resync.outputs.new_base }}
 
-          gh pr comment ${PR_NUMBER} --body "✅ The sync PR was rebased on top of commit \`${NEW_BASE}\` (origin/main)."
+          BODY_NOTE=""
+          if [[ "${{ steps.refresh-body.outputs.body_updated }}" == "true" ]]; then
+            BODY_NOTE=$'\nThe conflict list in the description was refreshed to match this commit.'
+          fi
+
+          gh pr comment ${PR_NUMBER} --body "✅ The sync PR was rebased on top of commit \`${NEW_BASE}\` (origin/main).${BODY_NOTE}"
 
       - name: Comment on PR (rebased with conflicts)
         if: success() && steps.resync.outputs.rc == '2'
@@ -131,8 +156,13 @@ jobs:
             FILE_LIST="_No file list was produced — see the workflow run._"
           fi
 
-          gh pr comment ${PR_NUMBER} --body "⚠️ The sync PR was rebased on top of commit \`${NEW_BASE}\` (origin/main) and force-pushed, **but ${COUNT} file(s) still contain conflict markers** — manual resolution is needed:
+          BODY_NOTE=""
+          if [[ "${{ steps.refresh-body.outputs.body_updated }}" == "true" ]]; then
+            BODY_NOTE=$'\nThe conflict list in the description was refreshed to match this commit.\n'
+          fi
 
+          gh pr comment ${PR_NUMBER} --body "⚠️ The sync PR was rebased on top of commit \`${NEW_BASE}\` (origin/main) and force-pushed, **but ${COUNT} file(s) still need manual resolution** — the list is the one in the description:
+          ${BODY_NOTE}
           ${FILE_LIST}
 
           Resolve these on \`${{ steps.pr-details.outputs.head_ref }}\` and push. See [workflow run](${WORKFLOW_URL}) for the full log."

@@ -18,7 +18,6 @@ jobs:
       submodule_commit: ${{ steps.sync.outputs.submodule_commit }}
       push_direct: ${{ steps.sync.outputs.push_direct }}
       conflicting_files: ${{ steps.sync.outputs.conflicting_files }}
-      conflict_owners: ${{ steps.sync.outputs.conflict_owners }}
     steps:
       - name: Checkout repository
         uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
@@ -35,9 +34,6 @@ jobs:
 
       - name: Run sync script
         id: sync
-        env:
-          # Read access to nh for the shared conflict-owner detector.
-          GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
         run: |
           .github/scripts/sync_upstream.sh
 
@@ -168,6 +164,9 @@ jobs:
       - name: Checkout repository
         uses: nexthop-ai/nh/.github/actions/gitproxy-checkout@main
         with:
+          # Full history: blaming origin/main needs the commits behind it, not
+          # just its tip.
+          fetch-depth: 0
           ref: ${{ needs.sync-upstream.outputs.sync_branch }}
           token: ${{ secrets.RABBIT_NEXTHOP_PAT }}
 
@@ -200,23 +199,29 @@ jobs:
         if: steps.check-existing-pr.outputs.existing_pr == ''
         env:
           GH_TOKEN: ${{ secrets.RABBIT_NEXTHOP_PAT }}
-          CONFLICT_OWNERS: ${{ needs.sync-upstream.outputs.conflict_owners }}
         run: |
-          # Annotate each conflicted file with its guessed owner (may be empty).
-          conflict_list=$(echo "${{ needs.sync-upstream.outputs.conflicting_files }}" |
-            while read -r f; do
-              login=$(echo "${CONFLICT_OWNERS:-null}" | jq -r --arg f "$f" '.[$f].login // empty')
-              echo "- [ ] $f${login:+ — @$login}"
-            done)
+          # The owner detector blames our side of each conflict against
+          # origin/main, and the checkout above fetched only the sync branch --
+          # a refspec naming a ref does not create the remote-tracking one.
+          # Without the ref, every guess comes back empty, silently.
+          git fetch --no-tags origin main:refs/remotes/origin/main ||
+            echo "::warning::could not fetch origin/main; conflict owners will be empty"
+
+          # Rendered by the same script /resync uses to refresh it, so the two
+          # can't drift. It is told the unmerged paths because modify/delete and
+          # binary conflicts never get markers written into them.
+          printf '%s\n' "${{ needs.sync-upstream.outputs.conflicting_files }}" \
+            > /tmp/sync-unmerged-files.txt
+          conflict_section=$(.github/scripts/update-sync-pr-body.py \
+            --print-section \
+            --conflict-list /tmp/sync-unmerged-files.txt \
+            --owners-out /tmp/sync-conflict-owners.json)
 
           PR_BODY="This PR syncs private-fboss with upstream stable commit.
 
           **Stable Commit:** \`${{ needs.sync-upstream.outputs.stable_commit }}\`
 
-          ⚠️ **Manual conflict resolution required**
-
-          The following files have conflicts that need to be resolved:
-          $conflict_list
+          ${conflict_section}
 
           Please resolve these conflicts and merge when ready."
 
@@ -232,8 +237,8 @@ jobs:
 
           # Also assign the guessed owners; gh silently drops
           # non-collaborators, so a bad guess can't fail the job.
-          owners=$(echo "${CONFLICT_OWNERS:-null}" |
-            jq -r '[.[] | select(. != null) | .login] | unique | join(",")')
+          owners=$(jq -r '[.[] | select(. != null)] | unique | join(",")' \
+            /tmp/sync-conflict-owners.json)
           if [[ -n $owners ]]; then
             gh pr edit "$PR_URL" --add-assignee "$owners" || true
           fi

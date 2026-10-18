@@ -105,24 +105,6 @@ else
     has_conflicts=true
     echo_info "⚠️ Some conflicts remain unresolved:"
     echo "$remaining_conflicts"
-
-    # Guess an owner per conflicted file (last real Nexthop author on our
-    # side) so the PR can be annotated and assigned to the right people.
-    # The detector lives in nh and is shared with sync-upstream.reusable.yml;
-    # fetch it from nh main rather than keeping a copy here. Best-effort:
-    # any failure degrades to the bare file list.
-    conflict_owners='{}'
-    detector=$(mktemp)
-    if gh api repos/nexthop-ai/nh/contents/.github/scripts/detect_conflict_owners.py \
-      --jq .content | base64 -d >"$detector"; then
-      chmod +x "$detector"
-      conflict_owners=$(echo "$remaining_conflicts" | xargs "$detector") ||
-        conflict_owners='{}'
-    else
-      echo_info "Could not fetch detect_conflict_owners.py from nh; skipping owner detection"
-    fi
-    rm -f "$detector"
-    echo_info "Conflict owners: $conflict_owners"
   fi
 
   git add -A
@@ -147,12 +129,14 @@ if [[ $has_conflicts == "false" ]]; then
 else
   echo_info "📝 Conflicts present - will create PR for manual resolution"
   echo "push_direct=false" >>"$GITHUB_OUTPUT"
-  # Output conflicting files for PR body
+  # Unmerged paths, exactly as git reported them. Whoever renders the PR
+  # description lists these on top of the files that carry markers: modify/delete
+  # and binary conflicts are never written with markers, so the branch alone
+  # cannot show them. Owner detection lives there too
+  # (.github/scripts/update-sync-pr-body.py).
   echo "conflicting_files<<EOF" >>"$GITHUB_OUTPUT"
   echo "$remaining_conflicts" >>"$GITHUB_OUTPUT"
   echo "EOF" >>"$GITHUB_OUTPUT"
-  # Single-line JSON: {file: {email, name, login} | null}
-  echo "conflict_owners=$conflict_owners" >>"$GITHUB_OUTPUT"
 fi
 
 echo_info "✅ Sync script completed successfully"
