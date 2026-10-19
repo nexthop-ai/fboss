@@ -53,6 +53,8 @@ _spec.loader.exec_module(_run_getdeps_mod)
 detect_toolchain = _run_getdeps_mod.detect_toolchain
 setup_clang_environment = _run_getdeps_mod.setup_clang_environment
 
+_GETDEPS_FEATURE_ROOT = str(Path(__file__).resolve().parent / "getdeps-feature-root.py")
+
 # Default CMake defines used by the Bazel repo-rule path (no job pools, stable
 # keys for cross-machine caching).  The cmake path passes its own defines via
 # --extra-cmake-defines from nhfboss-common.sh.
@@ -92,6 +94,17 @@ def create_loader(
     ctx_gen = opts.get_context_generator()
     loader = ManifestLoader(opts, ctx_gen)
     return opts, loader
+
+
+def resolve_features_from(loader: ManifestLoader, root_project: str) -> None:
+    """Resolve manifest [features] for every project from root_project's graph.
+
+    getdeps otherwise resolves them from whichever project is hashed first, so
+    a dep hashed on its own drops features its consumers request (folly-python
+    asks for glog = shared_libs) and gets a different install dir from the one
+    root_project's graph expects.
+    """
+    loader.resolve_features([loader.load_manifest(root_project)])
 
 
 def _maybe_symlink(src_dir: str, dest: str | None) -> None:
@@ -208,8 +221,13 @@ def build_single_dep(
     extra_cmake_defines: str,
     build_type: str,
     num_jobs: int | None,
+    feature_root: str | None = None,
 ) -> str:
     """Build a single dependency using getdeps, assuming deps are already installed.
+
+    feature_root is the project whose graph `loader` resolved features from;
+    the getdeps subprocess must resolve from the same root to reach the same
+    install dir (see getdeps-feature-root.py).
 
     Returns the install directory path.
     """
@@ -228,9 +246,12 @@ def build_single_dep(
 
     # Use getdeps.py build --no-deps to build just this project.
     repo_root = str(Path(FBCODE_BUILDER_DIR).parent.parent)
+    if feature_root and feature_root != project_name:
+        getdeps = [sys.executable, _GETDEPS_FEATURE_ROOT, feature_root]
+    else:
+        getdeps = [sys.executable, os.path.join(FBCODE_BUILDER_DIR, "getdeps.py")]
     cmd = [
-        sys.executable,
-        os.path.join(FBCODE_BUILDER_DIR, "getdeps.py"),
+        *getdeps,
         "build",
         "--no-deps",
         "--no-tests",
@@ -439,7 +460,13 @@ def _run_recursive(opts, loader: ManifestLoader, args, extra_cmake_defines: str)
             continue
         print(f"[{dep_name}] Cache MISS — building...")
         result_dir = build_single_dep(
-            opts, loader, dep_name, extra_cmake_defines, args.build_type, args.num_jobs
+            opts,
+            loader,
+            dep_name,
+            extra_cmake_defines,
+            args.build_type,
+            args.num_jobs,
+            feature_root=args.project,
         )
         if args.upload and args.cache_url and os.path.isdir(result_dir):
             upload_to_cache(args.cache_url, key, result_dir)
@@ -511,7 +538,16 @@ def main() -> int:
     parser.add_argument(
         "--hash-only", action="store_true", help="Just print the project hash and exit"
     )
+    parser.add_argument(
+        "--feature-root",
+        help="Resolve manifest [features] from this project's dependency graph "
+        "instead of --project's, so the hash and install dir match what that "
+        "graph expects (the Bazel repo rule passes fboss). Not valid with "
+        "--recursive, which always resolves from --project.",
+    )
     args = parser.parse_args()
+    if args.recursive and args.feature_root:
+        parser.error("--feature-root cannot be combined with --recursive")
 
     # Use the caller-supplied defines verbatim, or fall back to Bazel defaults.
     extra_cmake_defines = args.extra_cmake_defines or _DEFAULT_CMAKE_DEFINES_JSON
@@ -528,6 +564,8 @@ def main() -> int:
         extra_cmake_defines,
         allow_system_packages=args.allow_system_packages,
     )
+    if args.feature_root:
+        resolve_features_from(loader, args.feature_root)
 
     if args.hash_only:
         manifest = loader.load_manifest(args.project)
@@ -559,7 +597,13 @@ def main() -> int:
     # Cache miss — build
     print("  Cache MISS — building...")
     result_dir = build_single_dep(
-        opts, loader, args.project, extra_cmake_defines, args.build_type, args.num_jobs
+        opts,
+        loader,
+        args.project,
+        extra_cmake_defines,
+        args.build_type,
+        args.num_jobs,
+        feature_root=args.feature_root,
     )
 
     # Upload to cache

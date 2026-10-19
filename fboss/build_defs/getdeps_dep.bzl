@@ -26,13 +26,20 @@ def _getdeps_repository_impl(ctx):
     scratch = ctx.attr.scratch_path
     name = ctx.attr.project_name
 
+    # Resolve manifest [features] from the root project's graph, not from this
+    # dep alone, so the hash, install dir and build match what the root's
+    # consumers request (e.g. folly-python asks for glog = shared_libs).
+    feature_root_args = []
+    if ctx.attr.feature_root:
+        feature_root_args = ["--feature-root", ctx.attr.feature_root]
+
     # Compute project hash to determine expected install dir.
     hash_result = ctx.execute([
         "python3", build_script,
         "--project", name,
         "--scratch-path", scratch,
         "--hash-only",
-    ], quiet = True)
+    ] + feature_root_args, quiet = True)
     project_hash = hash_result.stdout.strip()
 
     # Determine expected install directory.
@@ -54,7 +61,7 @@ def _getdeps_repository_impl(ctx):
             "python3", build_script,
             "--project", name,
             "--scratch-path", scratch,
-        ]
+        ] + feature_root_args
         if ctx.attr.cache_url:
             cmd += ["--cache-url", ctx.attr.cache_url]
             if ctx.attr.cache_upload:
@@ -99,6 +106,9 @@ getdeps_repository = repository_rule(
         # CI only: upload freshly built deps so later runs get a cache hit.
         "cache_upload": attr.bool(default = False),
         "scratch_path": attr.string(default = "/var/FBOSS/tmp_bld_dir"),
+        # Project whose dependency graph decides each dep's manifest features;
+        # bazelify.py discovers the graph from fboss.
+        "feature_root": attr.string(default = "fboss"),
     },
     local = True,
     environ = ["CC", "CXX", "CXXFLAGS", "CPPFLAGS", "LDFLAGS"],

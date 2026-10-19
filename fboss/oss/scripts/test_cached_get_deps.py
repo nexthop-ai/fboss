@@ -24,6 +24,8 @@ _spec = importlib.util.spec_from_file_location("cached_get_deps", _SCRIPT)
 cgd = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(cgd)
 
+# Importable once cached-get-deps.py has put build/fbcode_builder on sys.path.
+from getdeps.manifest import ManifestParser  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # _DEFAULT_CMAKE_DEFINES consistency
@@ -135,6 +137,44 @@ class TestDefaultCmakeDefines(unittest.TestCase):
         self.assertIn("--num-jobs", cmd)
         idx = cmd.index("--num-jobs")
         self.assertEqual(cmd[idx + 1], "8")
+
+    def _build_single_dep_cmd(self, project_name, feature_root):
+        mock_opts = MagicMock()
+        mock_opts.scratch_dir = "/tmp/scratch"
+        mock_loader = MagicMock()
+        mock_loader.get_project_install_dir.return_value = "/tmp/inst/" + project_name
+        mock_loader.get_project_hash.return_value = "abc123"
+
+        with (
+            patch.object(cgd.subprocess, "run") as mock_run,
+            patch.object(cgd.os.path, "exists", return_value=False),
+        ):
+            mock_run.return_value = MagicMock(returncode=0)
+            cgd.build_single_dep(
+                mock_opts,
+                mock_loader,
+                project_name,
+                cgd._DEFAULT_CMAKE_DEFINES_JSON,
+                "MinSizeRel",
+                None,
+                feature_root=feature_root,
+            )
+        return mock_run.call_args[0][0]
+
+    def test_build_single_dep_resolves_features_from_root(self):
+        """A dep built for a root project must go through the feature-root
+        shim, so e.g. glog keeps the shared_libs feature folly-python asks for
+        and lands in the install dir the root graph expects."""
+        cmd = self._build_single_dep_cmd("glog", "fboss")
+        self.assertEqual(cmd[1:3], [cgd._GETDEPS_FEATURE_ROOT, "fboss"])
+        self.assertEqual(cmd[3], "build")
+        self.assertEqual(cmd[-1], "glog")
+
+    def test_build_single_dep_without_feature_root_runs_getdeps(self):
+        for feature_root in (None, "gflags"):
+            cmd = self._build_single_dep_cmd("gflags", feature_root)
+            self.assertTrue(cmd[1].endswith("getdeps.py"), cmd)
+            self.assertEqual(cmd[2], "build")
 
     def test_create_loader_passes_defines_to_setup_build_options(self):
         """create_loader() must set extra_cmake_defines to the provided string
@@ -602,6 +642,129 @@ class TestDepNamesInOrder(unittest.TestCase):
         names = cgd._dep_names_in_order(mock_loader, "fboss")
 
         self.assertEqual(names, deps)
+
+
+# ---------------------------------------------------------------------------
+# --feature-root: resolve manifest features from the root project's graph
+# ---------------------------------------------------------------------------
+
+
+# root -> mid -> leaf, where mid asks for leaf = shared_libs, like folly-python
+# asks for glog = shared_libs in the fboss graph.
+_FEATURE_MANIFESTS = {
+    "leaf": "[features]\nshared_libs =\n",
+    "mid": "[dependencies]\nleaf = shared_libs\n",
+    "root": "[dependencies]\nmid\n",
+}
+
+
+class TestResolveFeaturesFrom(unittest.TestCase):
+    """Runs the real getdeps loader on _FEATURE_MANIFESTS."""
+
+    def _loader(self, scratch):
+        _, loader = cgd.create_loader(scratch, cgd._DEFAULT_CMAKE_DEFINES_JSON)
+        for name, body in _FEATURE_MANIFESTS.items():
+            loader.manifests_by_name[name] = ManifestParser(
+                name,
+                f"[manifest]\nname = {name}\n\n"
+                "[download]\nurl = https://example.com/x.tar.gz\nsha256 = 00\n\n"
+                f"[build]\nbuilder = nop\n\n{body}",
+            )
+        return loader
+
+    def _leaf_install_dir(self, loader):
+        return loader.get_project_install_dir(loader.load_manifest("leaf"))
+
+    def test_dep_matches_root_graph(self):
+        with tempfile.TemporaryDirectory() as scratch:
+            graph = self._loader(scratch)
+            graph.get_project_hash(graph.load_manifest("root"))
+
+            alone = self._loader(scratch)
+
+            rooted = self._loader(scratch)
+            cgd.resolve_features_from(rooted, "root")
+
+            self.assertEqual(
+                sorted(rooted.ctx_gen.get_context("leaf").features()), ["shared_libs"]
+            )
+            self.assertEqual(
+                self._leaf_install_dir(rooted), self._leaf_install_dir(graph)
+            )
+            # Without a feature root the dep loses the feature and lands in a
+            # different install dir, which is the bug --feature-root fixes.
+            self.assertNotEqual(
+                self._leaf_install_dir(alone), self._leaf_install_dir(graph)
+            )
+
+
+class TestMainFeatureRoot(unittest.TestCase):
+    """main() wiring of --feature-root in the single-project (Bazel) mode."""
+
+    def _run_main(self, argv, calls):
+        loader = MagicMock()
+        loader.get_project_hash.side_effect = lambda _m: calls.append("hash") or "h"
+        loader.get_project_install_dir.return_value = "/tmp/inst/glog"
+        with (
+            patch.object(cgd.sys, "argv", ["cached-get-deps.py", *argv]),
+            patch.object(cgd, "detect_toolchain", return_value=None),
+            patch.object(cgd, "create_loader", return_value=(MagicMock(), loader)),
+            patch.object(
+                cgd,
+                "resolve_features_from",
+                side_effect=lambda _, root: calls.append(f"resolve:{root}"),
+            ) as mock_resolve,
+            patch.object(
+                cgd, "build_single_dep", return_value="/tmp/inst/glog"
+            ) as mock_build,
+            patch("builtins.print"),
+        ):
+            rc = cgd.main()
+        return rc, mock_resolve, mock_build
+
+    def test_hash_only_resolves_from_feature_root_first(self):
+        calls = []
+        rc, _, _ = self._run_main(
+            ["--project", "glog", "--feature-root", "fboss", "--hash-only"], calls
+        )
+        self.assertEqual(rc, 0)
+        self.assertEqual(calls, ["resolve:fboss", "hash"])
+
+    def test_build_passes_feature_root(self):
+        calls = []
+        rc, _, mock_build = self._run_main(
+            ["--project", "glog", "--feature-root", "fboss"], calls
+        )
+        self.assertEqual(rc, 0)
+        self.assertEqual(calls[0], "resolve:fboss")
+        self.assertEqual(mock_build.call_args.kwargs["feature_root"], "fboss")
+
+    def test_without_feature_root_resolves_from_project(self):
+        calls = []
+        rc, mock_resolve, mock_build = self._run_main(["--project", "glog"], calls)
+        self.assertEqual(rc, 0)
+        mock_resolve.assert_not_called()
+        self.assertIsNone(mock_build.call_args.kwargs["feature_root"])
+
+    def test_rejected_with_recursive(self):
+        with (
+            patch.object(
+                cgd.sys,
+                "argv",
+                [
+                    "cached-get-deps.py",
+                    "--project",
+                    "fboss",
+                    "--recursive",
+                    "--feature-root",
+                    "fboss",
+                ],
+            ),
+            patch("sys.stderr", new_callable=io.StringIO),
+            self.assertRaises(SystemExit) as cm,
+        ):
+            cgd.main()
+        self.assertEqual(cm.exception.code, 2)
 
 
 # ---------------------------------------------------------------------------
