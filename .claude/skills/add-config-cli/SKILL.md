@@ -351,6 +351,30 @@ for the canonical pattern (e.g. `kWedgeAgent`, `kSwAgent`,
 the dispatch code compares against, and build `k<Area>ValidAttrs`
 from those constants rather than raw strings.
 
+### Coding standards
+
+Write the handler and tests to
+[fboss/skills/fboss-code-standards](../../../fboss/skills/fboss-code-standards/SKILL.md)
+(`references/general-patterns.md`, `references/testing-patterns.md`) and the
+[AGENTS.md coding rules](../../../AGENTS.md). The ones config-CLI code hits
+most:
+
+- `fmt::format` for every message; no string concatenation.
+- No magic numbers: name range limits `constexpr` next to the attribute
+  constants.
+- Strong typedefs from `fboss/agent/types.h` (`PortID`, `VlanID`,
+  `InterfaceID`, ...) for IDs, not raw ints.
+- `const` on locals that are not mutated; parenthesize compound
+  comparisons (`if ((v < kMin) || (v > kMax))`).
+- `emplace()` / `insert()` for map insertions, not `operator[]`.
+- No `.has_value()` on non-optional thrift fields. No `ensure()` on an
+  optional sub-struct followed by a single member write — it resets the
+  siblings to their defaults (fboss2-cli-review A4).
+- No `std::regex` (use RE2), no `assert()` (use `CHECK`).
+- Otherwise match the existing handlers in `commands/config/`
+  (`std::invalid_argument` from the args ctor, `std::cout` in
+  `printOutput()` for user-facing output).
+
 ### New files
 
 1. `fboss/cli/fboss2/commands/config/<area>/CmdConfig<Area>.h`
@@ -365,7 +389,12 @@ from those constants rather than raw strings.
    - `class <Area>ConfigArgs : public utils::BaseObjectArgType<std::string>`
      with a `std::vector<std::string>` ctor that validates exactly 2 args,
      first ∈ valid set, second parses to a non-negative `int32_t` via
-     `folly::to<int32_t>` (catch `folly::ConversionError`).
+     `folly::to<int32_t>` (catch `folly::ConversionError`). Also reject
+     values outside what the consumer accepts: find where the field is
+     programmed (SAI attribute width, agent-side clamp or check) and
+     enforce that range here, so a bad value never reaches the session
+     file (fboss2-cli-review A6; code-standards "Validate external config
+     limits").
    - `struct CmdConfig<Area>Traits : public WriteCommandTraits` with
      `ObjectArgType = <Area>ConfigArgs`, `RetType = std::string`, and a
      `static void addCliArg(CLI::App& cmd, std::vector<std::string>& args)`
@@ -403,6 +432,10 @@ from those constants rather than raw strings.
    (valid / bad arity / unknown attr / non-integer / negative) and `queryClient()`
    for each attr. See
    [CmdConfigArpTest.cpp](../../../fboss/cli/fboss2/test/config/CmdConfigArpTest.cpp).
+   - Every rejected input asserts the exception *and* that the config
+     is unchanged; every accepted input asserts the exact field value
+     written, not just "no throw" (testing-patterns #9, #10). Cover the
+     range boundaries from the args ctor (min, max, max+1).
    - **Shape the seed JSON after the production config** (grepped from
      the §0 sample in §1). Copy enough of the sub-tree that each attr's
      `queryClient()` has something realistic to mutate: present
@@ -622,9 +655,11 @@ When the integration tests reveal an agent bug, decide scope:
   had the pattern and there was even a `TODO(skhare)` flagging the gap.
   Ported in ~20 lines, tested on the same DUT.
 - **Larger or uncertain fix**: keep the CLI PR scoped, file a follow-up
-  NOS ticket, disable or `GTEST_SKIP` the integration tests that
-  reproduce the bug so CI doesn't core-dump the agent, and link the
-  ticket from the PR.
+  NOS ticket, disable the integration tests that reproduce the bug by
+  renaming them `DISABLED_<Name>` (as in `ConfigInterfaceLoopbackModeTest`)
+  so CI doesn't core-dump the agent, and link the ticket from the PR.
+  Don't use `GTEST_SKIP()` for this — code standards reject it, and it
+  hides a known failure inside a passing run.
 
 If you include an agent fix, rebuild and redeploy the hw_agent binary:
 
@@ -650,11 +685,18 @@ until ssh <dut> "/tmp/fboss2-dev-<suffix> show interface 2>/dev/null | grep -q '
 
 ## 7. Commit + PR
 
+Before committing, review the diff yourself against
+[fboss2-cli-review](../fboss2-cli-review/SKILL.md) checks A–E (the AI
+reviewer runs the same list on the PR) and the code-standards checklist
+in §4. Fix findings rather than explaining them in the PR body.
+
 Follow [.github/pull_request_template.md](../../../.github/pull_request_template.md).
 First line of commit message: `NOS-XXXX: <short summary>`. Model body on
 commit `bc4b447e2d33391bced568cb26b967a6692fc4b7`:
 
-- **Summary** — what the commands do, action level, deferred pieces
+- **Summary** — what the commands do, action level, deferred pieces, and
+  for each attribute the consumer trace: which service reads the field,
+  where, and how that was verified on the DUT (fboss2-cli-review E2)
 - **Test Plan** — paste unit test output, integration test output, sample
   CLI transcript
 - Check **Upstream required: Yes** and **PR title is free of sensitive
