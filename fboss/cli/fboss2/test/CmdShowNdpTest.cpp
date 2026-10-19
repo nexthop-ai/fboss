@@ -1,6 +1,5 @@
 // (c) Facebook, Inc. and its affiliates. Confidential and proprietary.
 
-#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <folly/IPAddressV4.h>
@@ -88,7 +87,7 @@ class CmdShowNdpTestFixture : public testing::Test {
 TEST_F(CmdShowNdpTestFixture, createModel) {
   auto cmd = CmdShowNdp();
   CmdShowNdpTraits::ObjectArgType queriedEntries;
-  auto model = cmd.createModel(ndpEntries, queriedEntries, portEntries, {});
+  auto model = cmd.createModel(ndpEntries, queriedEntries, portEntries, {}, {});
   auto entries = model.ndpEntries().value();
 
   EXPECT_EQ(entries.size(), 2);
@@ -117,7 +116,7 @@ TEST_F(CmdShowNdpTestFixture, createModel) {
 TEST_F(CmdShowNdpTestFixture, printOutput) {
   auto cmd = CmdShowNdp();
   CmdShowNdpTraits::ObjectArgType queriedEntries;
-  auto model = cmd.createModel(ndpEntries, queriedEntries, portEntries, {});
+  auto model = cmd.createModel(ndpEntries, queriedEntries, portEntries, {}, {});
 
   std::stringstream ss;
   cmd.printOutput(model, ss);
@@ -130,6 +129,32 @@ TEST_F(CmdShowNdpTestFixture, printOutput) {
       " fe80::464c:a8ff:fee4:1c3f  44:4c:a8:e4:1c:3f  eth2/1/1   uplink_1 (4001)   REACHABLE  21045  0        --          --                  \n\n";
 
   EXPECT_EQ(output, expectOutput);
+}
+
+TEST_F(CmdShowNdpTestFixture, createModelAggregatePort) {
+  // Neighbor learned behind a LAG: port carries the aggregate port ID, not a
+  // physical port ID, so the name must come from the aggregate port table.
+  fboss::NdpEntryThrift lagEntry;
+  lagEntry.ip() =
+      facebook::network::toBinaryAddress(folly::IPAddressV6("fd00:100::1"));
+  lagEntry.mac() = "ea:e4:9d:1a:bb:1c";
+  lagEntry.port() = 900;
+  lagEntry.portDescriptor()->portId() = 900;
+  lagEntry.portDescriptor()->portType() = cfg::PortDescriptorType::Aggregate;
+  lagEntry.state() = "REACHABLE";
+
+  AggregatePortThrift aggPort;
+  aggPort.key() = 900;
+  aggPort.name() = "PortChannel900";
+
+  auto cmd = CmdShowNdp();
+  CmdShowNdpTraits::ObjectArgType queriedEntries;
+  auto model =
+      cmd.createModel({lagEntry}, queriedEntries, portEntries, {aggPort}, {});
+  auto entries = model.ndpEntries().value();
+
+  ASSERT_EQ(entries.size(), 1);
+  EXPECT_EQ(entries[0].port().value(), "PortChannel900");
 }
 
 // CLI reference wiki hooks: a human description and a non-empty sample model.

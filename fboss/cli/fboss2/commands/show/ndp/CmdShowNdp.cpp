@@ -22,7 +22,8 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
-#include "fboss/cli/fboss2/utils/CmdClientUtils.h"
+#include "fboss/cli/fboss2/utils/CmdClientUtilsCommon.h"
+#include "fboss/cli/fboss2/utils/CmdUtils.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
 #include "fboss/cli/fboss2/utils/Table.h"
 
@@ -37,18 +38,21 @@ RetType CmdShowNdp::queryClient(
     const ObjectArgType& queriedNdpEntries) {
   std::vector<facebook::fboss::NdpEntryThrift> entries;
   std::map<int32_t, facebook::fboss::PortInfoThrift> portEntries;
+  std::vector<facebook::fboss::AggregatePortThrift> aggregatePorts;
   std::map<int64_t, cfg::DsfNode> dsfNodes;
   auto client =
       utils::createClient<apache::thrift::Client<FbossCtrl>>(hostInfo);
 
   client->sync_getNdpTable(entries);
   client->sync_getAllPortInfo(portEntries);
+  client->sync_getAggregatePortTable(aggregatePorts);
   try {
     client->sync_getDsfNodes(dsfNodes);
   } catch (const std::exception&) {
     // getDsfNodes is not supported on non-DSF switches (e.g. wedge400)
   }
-  return createModel(entries, queriedNdpEntries, portEntries, dsfNodes);
+  return createModel(
+      entries, queriedNdpEntries, portEntries, aggregatePorts, dsfNodes);
 }
 
 void CmdShowNdp::printOutput(const RetType& model, std::ostream& out) {
@@ -88,6 +92,7 @@ RetType CmdShowNdp::createModel(
     const std::vector<facebook::fboss::NdpEntryThrift>& ndpEntries,
     const ObjectArgType& queriedNdpEntries,
     std::map<int32_t, facebook::fboss::PortInfoThrift>& portEntries,
+    const std::vector<facebook::fboss::AggregatePortThrift>& aggregatePorts,
     const std::map<int64_t, cfg::DsfNode>& dsfNodes) {
   RetType model;
   std::unordered_set<std::string> queriedSet(
@@ -98,13 +103,16 @@ RetType CmdShowNdp::createModel(
         folly::ByteRange(
             folly::StringPiece(entry.ip().value().addr().value())));
 
-    if (queriedNdpEntries.size() == 0 || queriedSet.count(ip.str())) {
+    if (queriedNdpEntries.empty() || queriedSet.count(ip.str())) {
       cli::NdpEntry ndpDetails;
       ndpDetails.ip() = ip.str();
       ndpDetails.mac() = entry.mac().value();
       if (*entry.isLocal()) {
-        ndpDetails.port() =
-            portEntries[folly::copy(entry.port().value())].name().value();
+        ndpDetails.port() = utils::getNeighborPortName(
+            *entry.port(),
+            *entry.portDescriptor()->portType(),
+            portEntries,
+            aggregatePorts);
       } else {
         ndpDetails.port() =
             folly::to<std::string>(folly::copy(entry.port().value()));

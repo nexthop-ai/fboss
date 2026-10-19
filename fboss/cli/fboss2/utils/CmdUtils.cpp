@@ -63,6 +63,23 @@ std::vector<int32_t> getPortIDList(
   return portIDList;
 }
 
+std::string getNeighborPortName(
+    int32_t portId,
+    cfg::PortDescriptorType portType,
+    const std::map<int32_t, facebook::fboss::PortInfoThrift>& portEntries,
+    const std::vector<facebook::fboss::AggregatePortThrift>& aggregatePorts) {
+  if (portType == cfg::PortDescriptorType::Aggregate) {
+    for (const auto& aggPort : aggregatePorts) {
+      if (*aggPort.key() == portId) {
+        return aggPort.name().value();
+      }
+    }
+  } else if (auto it = portEntries.find(portId); it != portEntries.end()) {
+    return it->second.name().value();
+  }
+  return folly::to<std::string>(portId);
+}
+
 std::string getAddrStr(network::thrift::BinaryAddress addr) {
   auto ip = *addr.addr();
   char ipBuff[INET6_ADDRSTRLEN];

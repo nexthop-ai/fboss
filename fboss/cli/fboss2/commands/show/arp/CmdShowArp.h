@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <fboss/agent/if/gen-cpp2/ctrl_constants.h>
 #include <fboss/agent/if/gen-cpp2/ctrl_types.h>
 #include <string>
 #include <string_view>
@@ -48,6 +47,7 @@ class CmdShowArp : public CmdHandler<CmdShowArp, CmdShowArpTraits> {
   RetType createModel(
       std::vector<facebook::fboss::ArpEntryThrift>& arpEntries,
       std::map<int32_t, facebook::fboss::PortInfoThrift>& portEntries,
+      const std::vector<facebook::fboss::AggregatePortThrift>& aggregatePorts,
       const std::map<int64_t, cfg::DsfNode>& dsfNodes);
 
   // Canned, synthetic model (no real switch data) used to render a

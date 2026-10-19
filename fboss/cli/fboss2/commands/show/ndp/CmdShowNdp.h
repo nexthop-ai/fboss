@@ -11,7 +11,6 @@
 #pragma once
 
 #include <fboss/agent/if/gen-cpp2/ctrl_types.h>
-#include <fboss/agent/if/gen-cpp2/fboss_types.h>
 #include <string_view>
 #include "fboss/cli/fboss2/CmdHandler.h"
 #include "fboss/cli/fboss2/commands/show/ndp/gen-cpp2/model_types.h"
@@ -46,6 +45,7 @@ class CmdShowNdp : public CmdHandler<CmdShowNdp, CmdShowNdpTraits> {
       const std::vector<facebook::fboss::NdpEntryThrift>& ndpEntries,
       const ObjectArgType& queriedNdpEntries,
       std::map<int32_t, facebook::fboss::PortInfoThrift>& portEntries,
+      const std::vector<facebook::fboss::AggregatePortThrift>& aggregatePorts,
       const std::map<int64_t, cfg::DsfNode>& dsfNodes);
 
   // Canned, synthetic model (no real switch data) used to render a

@@ -471,6 +471,14 @@ class RevisionList : public BaseObjectArgType<std::string> {
 std::vector<int32_t> getPortIDList(
     const std::vector<std::string>& ifList,
     std::map<int32_t, facebook::fboss::PortInfoThrift>& portEntries);
+// Name of the local port an ARP/NDP entry was learned on: the physical port
+// name, or the aggregate port name (e.g. "PortChannel900") when the neighbor
+// is behind a LAG. Falls back to the numeric ID if the port is unknown.
+std::string getNeighborPortName(
+    int32_t portId,
+    cfg::PortDescriptorType portType,
+    const std::map<int32_t, facebook::fboss::PortInfoThrift>& portEntries,
+    const std::vector<facebook::fboss::AggregatePortThrift>& aggregatePorts);
 std::string getAddrStr(network::thrift::BinaryAddress addr);
 std::string getAdminDistanceStr(AdminDistance adminDistance);
 const std::string removeFbDomains(const std::string& host);

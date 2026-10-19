@@ -21,7 +21,8 @@
 #include <map>
 #include <string>
 #include <unordered_map>
-#include "fboss/cli/fboss2/utils/CmdClientUtils.h"
+#include "fboss/cli/fboss2/utils/CmdClientUtilsCommon.h"
+#include "fboss/cli/fboss2/utils/CmdUtils.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
 
 namespace facebook::fboss {
@@ -32,18 +33,20 @@ using RetType = CmdShowArpTraits::RetType;
 RetType CmdShowArp::queryClient(const HostInfo& hostInfo) {
   std::vector<facebook::fboss::ArpEntryThrift> entries;
   std::map<int32_t, facebook::fboss::PortInfoThrift> portEntries;
+  std::vector<facebook::fboss::AggregatePortThrift> aggregatePorts;
   std::map<int64_t, cfg::DsfNode> dsfNodes;
   auto client =
       utils::createClient<apache::thrift::Client<FbossCtrl>>(hostInfo);
 
   client->sync_getArpTable(entries);
   client->sync_getAllPortInfo(portEntries);
+  client->sync_getAggregatePortTable(aggregatePorts);
   try {
     client->sync_getDsfNodes(dsfNodes);
   } catch (const std::exception&) {
     // getDsfNodes is not supported on non-DSF switches (e.g. wedge400)
   }
-  return createModel(entries, portEntries, dsfNodes);
+  return createModel(entries, portEntries, aggregatePorts, dsfNodes);
 }
 
 std::unordered_map<std::string, std::vector<std::string>>
@@ -84,6 +87,7 @@ void CmdShowArp::printOutput(const RetType& model, std::ostream& out) {
 RetType CmdShowArp::createModel(
     std::vector<facebook::fboss::ArpEntryThrift>& arpEntries,
     std::map<int32_t, facebook::fboss::PortInfoThrift>& portEntries,
+    const std::vector<facebook::fboss::AggregatePortThrift>& aggregatePorts,
     const std::map<int64_t, cfg::DsfNode>& dsfNodes) {
   RetType model;
 
@@ -106,8 +110,11 @@ RetType CmdShowArp::createModel(
     arpDetails.ttl() = folly::copy(entry.ttl().value());
     arpDetails.classID() = folly::copy(entry.classID().value());
     if (*entry.isLocal()) {
-      arpDetails.ifName() =
-          portEntries[folly::copy(entry.port().value())].name().value();
+      arpDetails.ifName() = utils::getNeighborPortName(
+          *entry.port(),
+          *entry.portDescriptor()->portType(),
+          portEntries,
+          aggregatePorts);
     } else {
       arpDetails.ifName() =
           folly::to<std::string>(folly::copy(entry.port().value()));

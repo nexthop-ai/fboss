@@ -105,13 +105,40 @@ TEST_F(CmdShowArpTestFixture, queryClient) {
 
 TEST_F(CmdShowArpTestFixture, printOutput) {
   auto cmd = CmdShowArp();
-  auto model = cmd.createModel(arpEntries, portEntries, {});
+  auto model = cmd.createModel(arpEntries, portEntries, {}, {});
 
   std::stringstream ss;
   cmd.printOutput(model, ss);
 
   std::string output = ss.str();
   std::cout << output;
+}
+
+TEST_F(CmdShowArpTestFixture, createModelAggregatePort) {
+  // Neighbor learned behind a LAG: port carries the aggregate port ID, not a
+  // physical port ID, so the name must come from the aggregate port table.
+  fboss::ArpEntryThrift lagEntry;
+  lagEntry.ip() =
+      facebook::network::toBinaryAddress(folly::IPAddressV4("10.100.100.1"));
+  lagEntry.mac() = "ea:e4:9d:1a:bb:1c";
+  lagEntry.port() = 900;
+  lagEntry.portDescriptor()->portId() = 900;
+  lagEntry.portDescriptor()->portType() = cfg::PortDescriptorType::Aggregate;
+  lagEntry.state() = "REACHABLE";
+  arpEntries.push_back(lagEntry);
+
+  AggregatePortThrift aggPort;
+  aggPort.key() = 900;
+  aggPort.name() = "PortChannel900";
+
+  auto cmd = CmdShowArp();
+  auto model = cmd.createModel(arpEntries, portEntries, {aggPort}, {});
+  auto entries = model.arpEntries().value();
+
+  ASSERT_EQ(entries.size(), 3);
+  EXPECT_EQ(entries[0].ifName().value(), "eth1/1/1");
+  EXPECT_EQ(entries[1].ifName().value(), "eth2/1/1");
+  EXPECT_EQ(entries[2].ifName().value(), "PortChannel900");
 }
 
 // CLI reference wiki hooks: a human description and a non-empty sample model.
