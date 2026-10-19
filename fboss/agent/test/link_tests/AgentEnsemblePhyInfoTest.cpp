@@ -60,6 +60,10 @@ void validateInterfaceAndMedium(
                // appears to be used for 40G optical profiles in minipack
                // (minipack_16q.cinc)
                phy::InterfaceType::XLPPI,
+               // Some TH6 platforms use KR and KR2 for 1- and 2-lane optical
+               // profiles
+               phy::InterfaceType::KR,
+               phy::InterfaceType::KR2,
                // Wedge400C prefers KR4 and KR8 for >100G optical profiles
                // for some reason...
                phy::InterfaceType::KR4,
