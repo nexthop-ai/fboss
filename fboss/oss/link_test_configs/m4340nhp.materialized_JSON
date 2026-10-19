@@ -3646,6 +3646,7 @@
             "minimum": 0,
             "maximum": 2047
           },
+          "switchMac": "02:00:00:00:00:01",
           "connectionHandle": "07:00",
           "firmwareNameToFirmwareInfo": {},
           "systemPortRanges": {
@@ -3671,6 +3672,7 @@
         "switchId": 0,
         "type": 2,
         "loopbackIps": [],
+        "nodeMac": "02:00:00:00:0F:0B",
         "asicType": 23,
         "platformType": 59,
         "localSystemPortOffset": 17,
