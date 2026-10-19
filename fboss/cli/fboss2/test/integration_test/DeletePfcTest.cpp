@@ -1,4 +1,4 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+// Copyright (c) Meta Platforms, Inc. and affiliates.
 
 /**
  * End-to-end test for the PFC delete commands:
@@ -125,8 +125,8 @@ class DeletePfcTest : public Fboss2IntegrationTest {
                 staleQueueConfigs.end(),
                 p["portQueueConfigName"].asString()) !=
                 staleQueueConfigs.end()) {
-          XLOG(INFO) << "Unbinding stale queuing-policy on " << name;
-          runOk({"delete", "interface", name, "queuing-policy"});
+          XLOG(INFO) << "Unbinding stale queue-config on " << name;
+          runOk({"delete", "interface", name, "queue-config"});
           touched = true;
         }
       }

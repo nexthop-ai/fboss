@@ -1,12 +1,4 @@
-/*
- *  Copyright (c) 2004-present, Facebook, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
+// Copyright (c) Meta Platforms, Inc. and affiliates.
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -15,6 +7,7 @@
 #include <vector>
 
 #include "fboss/cli/fboss2/commands/delete/qos/buffer_pool/CmdDeleteQosBufferPool.h"
+#include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/test/config/CmdConfigTestBase.h"
 
@@ -22,8 +15,9 @@ using namespace ::testing;
 
 namespace facebook::fboss {
 
-// Four pools: one free, and one held by each kind of referrer a pool can have
-// (port queue config, default port queue, cpu queue, priority group).
+// One free pool, and one held by each kind of referrer a pool can have (port
+// queue config, default port queue, cpu queue, default VOQ, cpu VOQ, priority
+// group).
 class CmdDeleteQosBufferPoolTestFixture : public CmdConfigTestBase {
  public:
   CmdDeleteQosBufferPoolTestFixture()
@@ -37,6 +31,8 @@ class CmdDeleteQosBufferPoolTestFixture : public CmdConfigTestBase {
       "queue-held": {"sharedBytes": 1000},
       "default-held": {"sharedBytes": 1000},
       "cpu-held": {"sharedBytes": 1000},
+      "voq-held": {"sharedBytes": 1000},
+      "cpu-voq-held": {"sharedBytes": 1000},
       "pg-held": {"sharedBytes": 1000}
     },
     "portQueueConfigs": {
@@ -44,6 +40,8 @@ class CmdDeleteQosBufferPoolTestFixture : public CmdConfigTestBase {
     },
     "defaultPortQueues": [{"id": 0, "streamType": 0, "scheduling": 0, "bufferPoolName": "default-held"}],
     "cpuQueues": [{"id": 0, "streamType": 0, "scheduling": 0, "bufferPoolName": "cpu-held"}],
+    "defaultVoqConfig": [{"id": 1, "streamType": 0, "scheduling": 0, "bufferPoolName": "voq-held"}],
+    "cpuVoqs": [{"id": 2, "streamType": 0, "scheduling": 0, "bufferPoolName": "cpu-voq-held"}],
     "portPgConfigs": {
       "pg-a": [{"id": 0, "bufferPoolName": "pg-held"}]
     }
@@ -95,6 +93,10 @@ TEST_F(CmdDeleteQosBufferPoolTestFixture, deletesUnreferencedPool) {
   EXPECT_THAT(result, HasSubstr("deleted buffer pool 'free'"));
   EXPECT_FALSE(hasPool("free"));
   EXPECT_TRUE(hasPool("queue-held"));
+  // Same action level as `config qos buffer-pool`.
+  EXPECT_EQ(
+      ConfigSession::getInstance().getRequiredAction(cli::ServiceType::AGENT),
+      cli::ConfigActionLevel::SERVICE_RESTART);
 }
 
 TEST_F(CmdDeleteQosBufferPoolTestFixture, missingPoolFails) {
@@ -114,6 +116,14 @@ TEST_F(CmdDeleteQosBufferPoolTestFixture, refusedWhenDefaultQueueRefers) {
 
 TEST_F(CmdDeleteQosBufferPoolTestFixture, refusedWhenCpuQueueRefers) {
   expectRefused("cpu-held", "cpuQueues[queue 0]");
+}
+
+TEST_F(CmdDeleteQosBufferPoolTestFixture, refusedWhenDefaultVoqRefers) {
+  expectRefused("voq-held", "defaultVoqConfig[queue 1]");
+}
+
+TEST_F(CmdDeleteQosBufferPoolTestFixture, refusedWhenCpuVoqRefers) {
+  expectRefused("cpu-voq-held", "cpuVoqs[queue 2]");
 }
 
 TEST_F(CmdDeleteQosBufferPoolTestFixture, refusedWhenPriorityGroupRefers) {

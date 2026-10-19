@@ -1,12 +1,4 @@
-/*
- *  Copyright (c) 2004-present, Facebook, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
+// Copyright (c) Meta Platforms, Inc. and affiliates.
 
 #include "fboss/cli/fboss2/commands/delete/qos/buffer_pool/CmdDeleteQosBufferPool.h"
 
@@ -20,6 +12,7 @@
 #include <vector>
 
 #include "fboss/agent/gen-cpp2/switch_config_types.h"
+#include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
 
@@ -43,6 +36,10 @@ std::vector<std::string> findReferences(
   };
   scanQueues(*sw.cpuQueues(), "cpuQueues");
   scanQueues(*sw.defaultPortQueues(), "defaultPortQueues");
+  scanQueues(*sw.defaultVoqConfig(), "defaultVoqConfig");
+  if (sw.cpuVoqs().has_value()) {
+    scanQueues(*sw.cpuVoqs(), "cpuVoqs");
+  }
   for (const auto& [cfgName, queues] : *sw.portQueueConfigs()) {
     scanQueues(queues, fmt::format("portQueueConfigs[{}]", cfgName));
   }
@@ -88,7 +85,10 @@ CmdDeleteQosBufferPoolTraits::RetType CmdDeleteQosBufferPool::queryClient(
   if (sw.bufferPoolConfigs()->empty()) {
     sw.bufferPoolConfigs().reset();
   }
-  session.saveConfig();
+  // Same action level as `config qos buffer-pool`: buffer pool changes
+  // require an agent restart.
+  session.saveConfig(
+      cli::ServiceType::AGENT, cli::ConfigActionLevel::SERVICE_RESTART);
 
   return fmt::format("Successfully deleted buffer pool '{}'", name);
 }

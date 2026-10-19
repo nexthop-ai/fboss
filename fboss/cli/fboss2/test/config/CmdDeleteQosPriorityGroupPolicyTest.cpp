@@ -1,12 +1,4 @@
-/*
- *  Copyright (c) 2004-present, Facebook, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
+// Copyright (c) Meta Platforms, Inc. and affiliates.
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -15,6 +7,7 @@
 #include <vector>
 
 #include "fboss/cli/fboss2/commands/delete/qos/priority_group_policy/CmdDeleteQosPriorityGroupPolicy.h"
+#include "fboss/cli/fboss2/gen-cpp2/cli_metadata_types.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/test/config/CmdConfigTestBase.h"
 
@@ -68,6 +61,10 @@ TEST_F(CmdDeleteQosPriorityGroupPolicyTestFixture, deletesUnboundPolicy) {
   EXPECT_THAT(result, HasSubstr("deleted priority group policy 'free'"));
   EXPECT_FALSE(hasPolicy("free"));
   EXPECT_TRUE(hasPolicy("bound"));
+  // Same action level as `config qos priority-group-policy`.
+  EXPECT_EQ(
+      ConfigSession::getInstance().getRequiredAction(cli::ServiceType::AGENT),
+      cli::ConfigActionLevel::SERVICE_RESTART);
   // The pool the groups pointed at is not touched.
   EXPECT_TRUE(
       ConfigSession::getInstance()
