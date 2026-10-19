@@ -160,7 +160,8 @@ def sdk_excluded_feature_names(
     data: dict, asic: str, current_sdk_version: str
 ) -> set[str]:
     """Feature names in asicToFeatureNames[asic] whose featureSupportSpecs
-    minSdkVersion exceeds current_sdk_version.
+    minSdkVersion exceeds current_sdk_version, or that list
+    requiredTestConfigOptions.
     """
     id_to_name = dict(
         zip(
@@ -176,6 +177,11 @@ def sdk_excluded_feature_names(
             continue
         for support in spec.get("supportedFrom", []):
             if asic not in support.get("asics", []):
+                continue
+            # Options name upstream config variants, e.g. "rbb" for the
+            # <platform>_rbb config with SRv6 on. Models here run only the base config.
+            if support.get("requiredTestConfigOptions"):
+                excluded_names.add(name)
                 continue
             min_version = support.get("minSdkVersion")
             if min_version and not sdk_version_meets_minimum(

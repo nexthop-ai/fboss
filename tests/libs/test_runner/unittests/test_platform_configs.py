@@ -114,6 +114,15 @@ class TestSdkGating:
         data = production_features_fixture()
         assert sdk_excluded_feature_names(data, "tomahawk6", "15.4.0.0_odp") == set()
 
+    def test_excluded_names_required_test_config_options(self):
+        data = production_features_fixture()
+        data["featureSupportSpecs"][0]["supportedFrom"][0][
+            "requiredTestConfigOptions"
+        ] = ["rbb"]
+        assert sdk_excluded_feature_names(data, "tomahawk6", "15.4.0.0_odp") == {
+            "SRV6_ENCAP"
+        }
+
     def test_excluded_names_scoped_to_requested_asic(self):
         data = production_features_fixture()
         # tomahawk5 only carries SRV6_MIDPOINT (feature 104) -- SRV6_ENCAP (100)
