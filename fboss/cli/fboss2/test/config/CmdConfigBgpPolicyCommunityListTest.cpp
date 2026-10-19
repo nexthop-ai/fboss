@@ -333,11 +333,7 @@ TEST_F(
   EXPECT_FALSE(filterOf("RM100").exact_match().has_value());
 
   run({"CL100", "exact-match", "true"});
-<<<<<<< HEAD
-||||||| 615d477c11
-=======
   EXPECT_EQ(*filterOf("RM100").boolean_operator(), BooleanOperator::OR);
->>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
   ASSERT_TRUE(filterOf("RM100").exact_match().has_value());
   EXPECT_TRUE(*filterOf("RM100").exact_match());
 

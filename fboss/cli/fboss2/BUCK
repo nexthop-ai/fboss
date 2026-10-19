@@ -1056,13 +1056,7 @@ cpp_library(
         "//fboss/platform/fan_service/if:fan_service-cpp2-types",
         "//fboss/platform/rackmon/if:rackmonsvc-cpp2-services",
         "//fboss/platform/sensor_service/if:sensor_service-cpp2-services",
-<<<<<<< HEAD
         "//fboss/qsfp_service:sdk_dump_path",
-        "//fboss/qsfp_service:transceiver-delay-constants",
-||||||| 615d477c11
-        "//fboss/qsfp_service:transceiver-delay-constants",
-=======
->>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
         "//fboss/qsfp_service/if:qsfp-cpp2-services",
         "//fboss/qsfp_service/if:transceiver-cpp2-types",
         "//folly:conv",
@@ -1620,10 +1614,6 @@ cpp_binary(
     ],
 )
 
-<<<<<<< HEAD
-# bazelify: exclude
-||||||| 615d477c11
-=======
 # @ci-signal-ack
 ci_sandcastle(
     name = "verify_generated_agent_configs",
@@ -1664,7 +1654,7 @@ ci_sandcastle(
     ],
 )
 
->>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
+# bazelify: exclude
 cpp_binary(
     # @autodeps-skip: This routing binary intentionally compiles shared fboss2
     # sources directly; inferring their provider targets creates duplicate deps.

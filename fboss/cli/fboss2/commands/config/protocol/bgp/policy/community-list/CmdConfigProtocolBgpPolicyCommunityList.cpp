@@ -240,15 +240,9 @@ CmdConfigProtocolBgpPolicyCommunityList::queryClient(
     if (args.attr() == kBooleanOperator || args.attr() == kExactMatch) {
       // bgpd requires a term's inline copy of the list to carry the same
       // boolean_operator ("Conflicting boolean_operator from the reference")
-<<<<<<< HEAD
-      // and reads exact_match only from that copy, so keep every match
-      // reference in step with the named list.
-||||||| 615d477c11
-=======
       // and reads exact_match only from that copy. Keep both fields
       // synchronized on either update: besides applying the requested
       // attribute, this repairs a stale inline copy that bgpd would reject.
->>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
       for (auto& ref :
            bgpcli::findTermsReferencingCommunityList(cfg, args.listName())) {
         if (ref.filter == nullptr) {

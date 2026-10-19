@@ -108,12 +108,6 @@ class CmdDeleteBgpPolicyCommunityListTestFixture : public CmdConfigTestBase {
       it = std::prev(policies.end());
     }
     auto& terms = *it->policy_entries();
-<<<<<<< HEAD
-    terms.emplace_back();
-    terms.back().sequence_number() = seq;
-    return terms.back();
-||||||| 615d477c11
-=======
     auto term =
         std::find_if(terms.begin(), terms.end(), [&](const auto& entry) {
           return entry.sequence_number().has_value() &&
@@ -125,7 +119,6 @@ class CmdDeleteBgpPolicyCommunityListTestFixture : public CmdConfigTestBase {
       term = std::prev(terms.end());
     }
     return *term;
->>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
   }
 
   bool sessionFileExists() {
@@ -350,9 +343,6 @@ TEST_F(
 
 TEST_F(
     CmdDeleteBgpPolicyCommunityListTestFixture,
-<<<<<<< HEAD
-||||||| 615d477c11
-=======
     duplicateReferencesFromOneTermAreNamedOnce) {
   configure({"CL100", "community", "65000:100"});
   addPolicyTermMatching("RM100", 10, "CL100");
@@ -383,7 +373,6 @@ TEST_F(
 
 TEST_F(
     CmdDeleteBgpPolicyCommunityListTestFixture,
->>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
     deleteLastCommunityOnActionReferencedListRejected) {
   // bgpd: "Missing communities in CommunityList" for an action reference
   // to a valueless list.

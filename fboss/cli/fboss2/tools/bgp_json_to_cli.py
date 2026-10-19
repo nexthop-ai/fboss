@@ -632,8 +632,10 @@ def generate_prefix_list_commands(prefix_list: dict[str, Any]) -> list[str]:
             )
         )
     if "version" in prefix_list:
-<<<<<<< HEAD
-        keyword = _IP_VERSION_KEYWORDS.get(prefix_list["version"])
+        try:
+            keyword = _IP_VERSION_KEYWORDS.get(prefix_list["version"])
+        except TypeError:
+            keyword = None
         if keyword is None:
             commands.append(
                 _warning(
@@ -646,8 +648,8 @@ def generate_prefix_list_commands(prefix_list: dict[str, Any]) -> list[str]:
     commands.extend(_prefix_list_warnings(name, prefix_list))
     for entry in prefix_list.get("prefixes") or []:
         commands.extend(generate_prefix_list_entry_commands(name, entry))
-    if not commands:
-        # Nothing to set: still recreate the (empty) prefix-list by name.
+    if all(command.startswith("#") for command in commands):
+        # Warnings do not recreate the list; preserve it with a bare command.
         commands.append(prefix)
     return commands
 
@@ -823,32 +825,6 @@ def generate_routing_policy_commands(policy: dict[str, Any]) -> list[str]:
         )
     if not commands:
         # Nothing to set: still recreate the (empty) routing-policy by name.
-||||||| 615d477c11
-=======
-        try:
-            keyword = _IP_VERSION_KEYWORDS.get(prefix_list["version"])
-        except TypeError:
-            keyword = None
-        if keyword is None:
-            commands.append(
-                _warning(
-                    f"prefix-list {name}: version {prefix_list['version']} is "
-                    "neither 4 nor 6; not emitted"
-                )
-            )
-        else:
-            commands.append(f"{prefix} ip-version {keyword}")
-    if prefix_list.get("prefixes"):
-        commands.append(
-            _warning(
-                f"prefix-list {name}: {len(prefix_list['prefixes'])} prefixes "
-                "are not emitted until the entry subcommand lands"
-            )
-        )
-    commands.extend(_prefix_list_warnings(name, prefix_list))
-    if all(command.startswith("#") for command in commands):
-        # Warnings do not recreate the list; preserve it with a bare command.
->>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
         commands.append(prefix)
     return commands
 
@@ -868,13 +844,9 @@ def generate_policy_commands(config: dict[str, Any]) -> list[str]:
         commands.extend(generate_community_list_commands(community_list))
     for prefix_list in policies.get("prefix_lists", []):
         commands.extend(generate_prefix_list_commands(prefix_list))
-<<<<<<< HEAD
     # Routing-policies last: they reference the lists above by name.
     for policy in policies.get("bgp_policy_statements", []):
         commands.extend(generate_routing_policy_commands(policy))
-||||||| 615d477c11
-=======
->>>>>>> db68cb3d891c6a1a6089c74c8245f13e674c8cbb
     return commands
 
 
