@@ -52,7 +52,8 @@ QSFP_BENCH_PHY_SDK = "credo-0.7.2"
 # Without this, ~128 known-broken tests for tomahawk5 (and the unsupported list)
 # run and fail, gutting the pass rate. run_test.py auto-tries the /mono or
 # /multi_switch suffix for the sai_agent file, so the same 4-tuple covers both
-# SaiTestRunner and SaiAgentTestRunner.
+# SaiTestRunner and SaiAgentTestRunner. For Broadcom XGS GA SDKs this is the
+# fallback: sai_known_bad_key() swaps in the SDK the DUT has installed.
 SAI_KNOWN_BAD_KEY: dict[str, str] = {
     "minipack3": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
     "wedge800bact": "brcm/13.3.0.0_odp/13.3.0.0_odp/tomahawk5",
@@ -82,12 +83,43 @@ PROD_FEATURES_KEY: dict[str, str] = {
 }
 
 
-def sai_skip_known_bad(model: str) -> str:
+# sai-runtime RPM version as the BRCM SAI release, e.g. "15.4.0" for 15.4.0.0_odp.
+SAI_RUNTIME_VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
+# Static SDKs that follow the DUT: Broadcom XGS GA only (not EA, DNX or Leaba).
+_BRCM_XGS_GA_SDK_RE = re.compile(r"^\d+\.\d+\.\d+\.\d+_odp$")
+
+
+def sai_known_bad_key(model: str, sai_runtime_version: str | None = None) -> str | None:
+    """SAI_KNOWN_BAD_KEY[model] with its SDK replaced by the DUT's.
+
+    sai_runtime_version is the DUT's sai-runtime RPM version (see
+    BaseHwTestRunner._sai_runtime_version). Only Broadcom XGS GA keys
+    follow it; any other key, or a missing/unparseable version, returns the
+    static entry unchanged.
+    """
     key = SAI_KNOWN_BAD_KEY.get(model)
+    if not key or not sai_runtime_version:
+        return key
+    parts = key.split("/")
+    if (
+        len(parts) != 4
+        or parts[0] != "brcm"
+        or parts[1] != parts[2]
+        or not _BRCM_XGS_GA_SDK_RE.match(parts[1])
+    ):
+        return key
+    if not SAI_RUNTIME_VERSION_RE.match(sai_runtime_version):
+        return key
+    sdk = f"{sai_runtime_version}.0_odp"
+    return f"brcm/{sdk}/{sdk}/{parts[3]}"
+
+
+def sai_skip_known_bad(model: str, sai_runtime_version: str | None = None) -> str:
+    key = sai_known_bad_key(model, sai_runtime_version)
     return f" --skip-known-bad-tests {key}" if key else ""
 
 
-def benchmark_skip_known_bad(model: str) -> str:
+def benchmark_skip_known_bad(model: str, sai_runtime_version: str | None = None) -> str:
     # sai_bench.materialized_JSON keys on vendor/sdk/asic (3-part), unlike the SAI
     # known-bad files which use vendor/coldboot-sai/warmboot-sai/asic. Collapse the
     # duplicated SDK segment so the benchmark platform key matches the config;
@@ -95,7 +127,7 @@ def benchmark_skip_known_bad(model: str) -> str:
     # The agent config codename is appended so a platform can carry its own
     # skips; the runner walks the key back to vendor/sdk/asic, so a platform
     # without an entry of its own is a harmless miss and inherits the ASIC skips.
-    key = SAI_KNOWN_BAD_KEY.get(model)
+    key = sai_known_bad_key(model, sai_runtime_version)
     if not key:
         return ""
     parts = key.split("/")
@@ -105,8 +137,8 @@ def benchmark_skip_known_bad(model: str) -> str:
     return f" --skip-known-bad-tests {key}/{platform}"
 
 
-def fboss2_skip_known_bad(model: str) -> str:
-    sai_key = SAI_KNOWN_BAD_KEY.get(model)
+def fboss2_skip_known_bad(model: str, sai_runtime_version: str | None = None) -> str:
+    sai_key = sai_known_bad_key(model, sai_runtime_version)
     if not sai_key:
         return ""
     vendor, sdk = sai_key.split("/")[:2]
@@ -119,18 +151,20 @@ def fboss2_skip_known_bad(model: str) -> str:
 # _filter_tests only ever checks against that flat list.
 # featureSupportSpecs[].supportedFrom[].minSdkVersion is upstream metadata
 # that needs to be taken into account. The helpers below cross-reference the
-# two, using the SDK version each model is actually pinned to (the same one
-# SAI_KNOWN_BAD_KEY already declares), so SaiAgentTestRunner can upload a
-# filtered copy of the JSON before --enable-production-features runs.
+# two, using the SDK version the model's known-bad key names (see
+# sai_known_bad_key), so SaiAgentTestRunner can upload a filtered copy of the
+# JSON before --enable-production-features runs.
 
-def sdk_version_for_model(model: str) -> str | None:
-    """This model's pinned SDK version, e.g. "14.2.0.0_odp" or "25.11.4210".
+def sdk_version_for_model(
+    model: str, sai_runtime_version: str | None = None
+) -> str | None:
+    """The SDK version sai_known_bad_key names, e.g. "14.2.0.0_odp" or "25.11.4210".
 
-    None for models missing from that table. Compared on (major, minor)
+    None for models missing from SAI_KNOWN_BAD_KEY. Compared on (major, minor)
     only (see sdk_version_meets_minimum) -- verified to order correctly
     for both BRCM's "X.Y.0.0_odp" scheme and Leaba's "YY.M.build" scheme.
     """
-    key = SAI_KNOWN_BAD_KEY.get(model)
+    key = sai_known_bad_key(model, sai_runtime_version)
     if not key:
         return None
     parts = key.split("/")

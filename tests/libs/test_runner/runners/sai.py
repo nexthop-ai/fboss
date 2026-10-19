@@ -33,7 +33,8 @@ class SaiTestRunner(BaseHwTestRunner):
             f"./share/hw_test_configs/{config_name}.agent.materialized_JSON",
             "/home/netops/variant_sai_test.agent.materialized_JSON",
         )
-        return f"sai --config {config_arg}{sai_skip_known_bad(model)}"
+        known_bad = sai_skip_known_bad(model, self._sai_runtime_version())
+        return f"sai --config {config_arg}{known_bad}"
     STACK = STACK_FORWARDING
     BINARIES = ("bin/sai_test-sai_impl",)
     REQUIRED_PATHS = (*BINARIES, *STACK_SHARE[STACK])
@@ -133,7 +134,7 @@ class SaiAgentTestRunner(BaseHwTestRunner):
         key = PROD_FEATURES_KEY.get(model)
         if not key:
             return ""
-        sdk_version = sdk_version_for_model(model)
+        sdk_version = sdk_version_for_model(model, self._sai_runtime_version())
         features_path = None
         if sdk_version:
             cache_key = (key, sdk_version)
@@ -152,5 +153,6 @@ class SaiAgentTestRunner(BaseHwTestRunner):
             f"./share/hw_test_configs/{config_name}.agent.materialized_JSON",
             "/home/netops/variant_sai_agent_test.agent.materialized_JSON",
         )
+        known_bad = sai_skip_known_bad(model, self._sai_runtime_version())
         return f"sai_agent --config {config_arg} \
-            {sai_skip_known_bad(model)}{self._enable_production_features(model)}"
+            {known_bad}{self._enable_production_features(model)}"

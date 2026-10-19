@@ -27,7 +27,8 @@ class Fboss2IntegrationTestRunner(BaseHwTestRunner):
     REQUIRED_PATHS = (*BINARIES, *STACK_SHARE[STACK])
 
     def test_args(self, model: str) -> str:
-        return f"fboss2_integration{fboss2_skip_known_bad(model)}"
+        known_bad = fboss2_skip_known_bad(model, self._sai_runtime_version())
+        return f"fboss2_integration{known_bad}"
 
     def pre_test(self):
         """No-op: run_test.py fboss2_integration owns the agent lifecycle.

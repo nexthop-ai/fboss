@@ -8,9 +8,10 @@ from tests.libs.test_runner import SaiAgentTestRunner, SaiTestRunner
 from .helpers import json_scp, make_runner, production_features_fixture
 
 
-def _runner_with_mocked_scp(dut_json):
-    """Returns (runner, uploads): uploads fills in as put_file is called."""
-    runner = make_runner(SaiAgentTestRunner)
+def _runner_with_mocked_scp(dut_json, sai_runtime=None):
+    """Returns (runner, uploads): uploads fills in as put_file is called.
+    sai_runtime is the DUT's sai-runtime RPM version (see make_runner)."""
+    runner = make_runner(SaiAgentTestRunner, sai_runtime=sai_runtime)
     return runner, json_scp(runner, dut_json)
 
 
@@ -37,6 +38,19 @@ def test_enable_production_features_uploads_filtered_file_when_gating_applies():
         "L3_FORWARDING",
         "SRV6_MIDPOINT",
     ]
+
+
+def test_enable_production_features_gates_on_the_dut_sdk_not_the_static_one():
+    # Given nh4215f, pinned at 14.2 in the table, on a DUT reporting 15.4.0
+    runner, _ = _runner_with_mocked_scp(production_features_fixture(), "15.4.0")
+    # When production features are enabled
+    result = runner._enable_production_features("nh4215f")
+    # Then both 15.4-gated SRv6 features stay and no filtered copy is uploaded
+    # (no --production-features path in the args)
+    assert result == " --enable-production-features tomahawk6"
+    # The DUT's features file was read and checked, not skipped
+    runner.scp_client.get_file.assert_called_once()
+    runner.scp_client.put_file.assert_not_called()
 
 
 def test_upload_sdk_gated_production_features_skips_upload_when_nothing_excluded():

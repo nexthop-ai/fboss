@@ -45,9 +45,10 @@ class BenchmarkTestRunner(BaseHwTestRunner):
             f"./share/hw_bench_configs/{config_name}.agent.materialized_JSON",
             "/home/netops/variant_hw_bench.agent.materialized_JSON",
         )
+        known_bad = benchmark_skip_known_bad(model, self._sai_runtime_version())
         return (
             "benchmark --agent-run-mode multi_switch"
-            f" --config {config_arg}{benchmark_skip_known_bad(model)}"
+            f" --config {config_arg}{known_bad}"
         )
 
     # Benchmark binaries spin up their own agent (binds thrift port 5909, owns

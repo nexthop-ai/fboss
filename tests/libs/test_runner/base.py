@@ -20,6 +20,7 @@ from tests.libs.test_runner.deploy import (
     ENV_DEPLOY_ONLY_ON,
     ArtifactDeployer,
 )
+from tests.libs.test_runner.platform_configs import SAI_RUNTIME_VERSION_RE
 
 logger = logging.getLogger("test_runner")
 
@@ -108,6 +109,10 @@ _VARIANT_FLAGFILE = "/run/fboss/variant_flags"
 _WARM_BOOT_DIR = "/dev/shm/fboss/warm_boot"
 _AGENT_ENSEMBLE_DIR = "/var/facebook/fboss/agent_ensemble"
 
+# The image installs the SAI SDK's kernel modules from this RPM, versioned with
+# the SAI release (e.g. sai-runtime-15.4.0-1), so it names the SDK on the DUT.
+_SAI_RUNTIME_VERSION_CMD = "rpm -q --queryformat '%{VERSION}\\n' sai-runtime 2>/dev/null"
+
 
 class BaseHwTestRunner(ABC):
     """Base class for hardware test runners."""
@@ -136,6 +141,8 @@ class BaseHwTestRunner(ABC):
         self.tc = None
         self._use_generated_config = False
         self._variant_flags_cache: dict[str, str] | None = None
+        self._sai_runtime_version_fetched = False
+        self._sai_runtime_version_cache: str | None = None
         self._variantized_config_cache: dict[str, str] = {}
         self._fboss_logging = None
         self._test_run_timeout_secs: int | None = None
@@ -174,6 +181,47 @@ class BaseHwTestRunner(ABC):
                 logger.info("DUT variant flags: %s", flags)
             self._variant_flags_cache = flags
         return self._variant_flags_cache
+
+    def _sai_runtime_version(self) -> str | None:
+        """The DUT's sai-runtime RPM version, e.g. "15.4.0", read once per runner.
+
+        None when not connected, the version can't be read, or it isn't X.Y.Z;
+        callers then fall back to their static SDK tables.
+        """
+        if self.ssh_client is None:
+            return None
+        if not self._sai_runtime_version_fetched:
+            self._sai_runtime_version_fetched = True
+            self._sai_runtime_version_cache = self._read_sai_runtime_version()
+        return self._sai_runtime_version_cache
+
+    def _read_sai_runtime_version(self) -> str | None:
+        try:
+            exit_status, output = self.ssh_client.run_cmd(_SAI_RUNTIME_VERSION_CMD)
+        except Exception as ex:  # a failed read must not fail the run
+            logger.warning("Could not read the DUT's sai-runtime version: %s", ex)
+            return None
+        versions = {
+            line.strip()
+            for line in (output or "").splitlines()
+            if line.strip() and not line.startswith("stderr:")
+        }
+        if exit_status != 0 or len(versions) != 1:
+            logger.warning(
+                "Could not read the DUT's sai-runtime version (rc=%s): %s; "
+                "using static SDK keys",
+                exit_status,
+                (output or "").strip(),
+            )
+            return None
+        version = versions.pop()
+        logger.info("DUT sai-runtime version: %s", version)
+        if not SAI_RUNTIME_VERSION_RE.match(version):
+            # Expected on Cisco DUTs (e.g. 25.11.4210.7), whose keys never follow
+            # the DUT, so this is not a warning.
+            logger.info("sai-runtime version is not X.Y.Z; using static SDK keys")
+            return None
+        return version
 
     def _inject_variant_flags(self, config: dict) -> None:
         flags = self._variant_flags()

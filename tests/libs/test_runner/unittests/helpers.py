@@ -80,13 +80,27 @@ def symmetric_pairs(*pairs):
     return out
 
 
-def fake_ssh_handler(deployed_sha=None, flagfile=None):
-    """Answer the probes the runner lifecycle issues: the DUT slice marker
-    (``deployed_sha``, None meaning no marker), the variant flagfile
-    (``flagfile``, None meaning none on the DUT), and ``systemctl is-active``
-    as a stopped agent so _wait_for_agent_settled returns at once."""
+def fake_ssh_handler(deployed_sha=None, flagfile=None, sai_runtime=None):
+    """Build a run_cmd side effect that answers the runner lifecycle probes.
+
+    ``systemctl is-active`` always reports a stopped agent, so
+    _wait_for_agent_settled returns at once. Any other command succeeds
+    with "ok".
+
+    Args:
+        deployed_sha: Contents of the DUT slice marker. None means no marker.
+        flagfile: Contents of the variant flagfile. None means none on the DUT.
+        sai_runtime: The sai-runtime RPM version. None means not installed.
+
+    Returns:
+        A function to assign to ``ssh_client.run_cmd.side_effect``.
+    """
 
     def handler(cmd, *args, **kwargs):
+        if "sai-runtime" in cmd:
+            if sai_runtime is None:
+                return (1, "package sai-runtime is not installed\n")
+            return (0, sai_runtime + "\n")
         if cmd.startswith("cat ") and ".sha" in cmd:
             return (0, deployed_sha + "\n") if deployed_sha is not None else (1, "")
         if cmd.startswith("cat ") and "variant_flags" in cmd:
@@ -98,7 +112,9 @@ def fake_ssh_handler(deployed_sha=None, flagfile=None):
     return handler
 
 
-def make_runner(runner_cls, tc=None, env=None, deployed_sha=None, flagfile=None):
+def make_runner(
+    runner_cls, tc=None, env=None, deployed_sha=None, flagfile=None, sai_runtime=None
+):
     """A runner with SSH/SCP mocked, optionally with tc populated the way
     setup() does (``tc`` plus ``env`` applied through getenvvars())."""
     runner = runner_cls()
@@ -110,7 +126,9 @@ def make_runner(runner_cls, tc=None, env=None, deployed_sha=None, flagfile=None)
     runner.scp_client = MagicMock()
     runner.scp_client.put_file.return_value = (0, "ok")
     runner.scp_client.get_file.return_value = (1, "")
-    runner.ssh_client.run_cmd.side_effect = fake_ssh_handler(deployed_sha, flagfile)
+    runner.ssh_client.run_cmd.side_effect = fake_ssh_handler(
+        deployed_sha, flagfile, sai_runtime
+    )
     return runner
 
 
