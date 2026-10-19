@@ -856,7 +856,7 @@ class ChildThriftPath<::facebook::fboss::cfg::QsfpServiceConfig, ::facebook::fbo
     STRUCT_CHILD_GETTERS(tunableOpticsConfig, 8);
     STRUCT_CHILD_GETTERS(phyConfig, 9);
     STRUCT_CHILD_GETTERS(thriftApiToRateLimitInQps, 10);
-    STRUCT_CHILD_GETTERS(transceiverProperties, 11);
+    STRUCT_CHILD_GETTERS(transceiverProperties_DEPRECATED, 11);
 };
 
 
@@ -957,6 +957,7 @@ class ChildThriftPath<::facebook::fboss::cfg::QsfpTestConfig, ::facebook::fboss:
   
     STRUCT_CHILD_GETTERS(cabledPortPairs, 1);
     STRUCT_CHILD_GETTERS(firmwareForUpgradeTest, 2);
+    STRUCT_CHILD_GETTERS(qsfpServiceMemLimitBytes, 3);
 };
 
 
@@ -3279,6 +3280,7 @@ class ChildThriftPath<::facebook::fboss::state::RouteNextHopEntry, ::facebook::f
     STRUCT_CHILD_GETTERS(resolvedNextHopSetID, 9);
     STRUCT_CHILD_GETTERS(namedNextHopGroup, 10);
     STRUCT_CHILD_GETTERS(clientNextHopSetID, 11);
+    STRUCT_CHILD_GETTERS(overrideNextHopSetID, 12);
 };
 
 
@@ -5580,6 +5582,8 @@ class ChildThriftPath<::facebook::fboss::cfg::CbfcConfig, ::facebook::fboss::fsd
   
     STRUCT_CHILD_GETTERS(virtualChannels, 1);
     STRUCT_CHILD_GETTERS(senderCreditLimit, 2);
+    STRUCT_CHILD_GETTERS(senderCreditSize, 3);
+    STRUCT_CHILD_GETTERS(senderPacketOverhead, 4);
 };
 
 
@@ -6537,6 +6541,7 @@ class ChildThriftPath<::facebook::fboss::state::FibInfoFields, ::facebook::fboss
     STRUCT_CHILD_GETTERS(idToNextHop, 2);
     STRUCT_CHILD_GETTERS(idToNextHopIdSet, 3);
     STRUCT_CHILD_GETTERS(nameToNextHopSetId, 4);
+    STRUCT_CHILD_GETTERS(overrideIdToNextHopIdSet, 5);
 };
 
 
@@ -12201,6 +12206,8 @@ class ChildThriftPath<::facebook::fboss::HwPortStats, ::facebook::fboss::fsdb::F
     STRUCT_CHILD_GETTERS(cbfcVcSenderCreditsFreed_, 116);
     STRUCT_CHILD_GETTERS(cbfcVcReceiverCreditsConsumed_, 117);
     STRUCT_CHILD_GETTERS(cbfcVcReceiverCreditsFreed_, 118);
+    STRUCT_CHILD_GETTERS(hwProtectionSwitchoverEvents_, 119);
+    STRUCT_CHILD_GETTERS(hwProtectionSwitchoverDropPkts_, 120);
 };
 
 

@@ -196,8 +196,10 @@ class AgentHwAclQualifierTest : public AgentHwTest {
       const std::optional<SwitchID>& switchIDOpt = std::nullopt) {
     SwitchID switchID = resolveSwitchId(switchIDOpt);
     auto asic = hwAsicForSwitch(switchID);
+    // P200 drops DA from the ACL key profile
     bool dstMacEnabled =
-        (asic->getAsicVendor() != HwAsic::AsicVendor::ASIC_VENDOR_CHENAB);
+        (asic->getAsicVendor() != HwAsic::AsicVendor::ASIC_VENDOR_CHENAB) &&
+        (asic->getAsicType() != cfg::AsicType::ASIC_TYPE_P200);
     configureQualifier(acl->dstMac(), dstMacEnabled, "00:11:22:33:44:55");
     auto switchType = getAgentEnsemble()
                           ->getSw()
@@ -403,6 +405,15 @@ class AgentHwAclQualifierTest : public AgentHwTest {
     SwitchID switchID = resolveSwitchId(switchIDOpt);
     return hwAsicForSwitch(switchID)->getAsicVendor();
   }
+
+  // Leaba maps FDB/ROUTE/NEIGHBOR_DST_USER_META onto a single CLASS_ID key
+  // field, so an ACL entry can carry only one lookup class.
+  void resetLookupClassL2IfExclusive(cfg::AclEntry* acl) {
+    if (getAsicVendor() == HwAsic::AsicVendor::ASIC_VENDOR_TAJO &&
+        acl->lookupClassRoute().has_value()) {
+      acl->lookupClassL2().reset();
+    }
+  }
 };
 
 // With ACL table groups, Q4D/J4 split the default ACL into IPv4 and
@@ -431,6 +442,7 @@ TEST_F(AgentHwAclQualifierTest, AclIp4TcpQualifiers) {
     configureAllHwQualifiers(&acl1, true);
     configureAllL2QualifiersHelper(&acl1);
     configureAllIpQualifiers(&acl1, true, cfg::IpType::IP4, getAsicType());
+    resetLookupClassL2IfExclusive(&acl1);
     configureAllTcpQualifiers(&acl1, true, getAsicType());
     utility::addAcl(&newCfg, acl1, cfg::AclStage::INGRESS);
     applyNewConfig(newCfg);
@@ -464,6 +476,7 @@ TEST_F(AgentHwAclQualifierTest, AclIp6TcpQualifiers) {
     configureAllL2QualifiersHelper(&acl1);
     configureAllIpQualifiers(
         &acl1, true, cfg::IpType::IP6, this->getAsicType());
+    resetLookupClassL2IfExclusive(&acl1);
     configureAllTcpQualifiers(&acl1, true, getAsicType());
     utility::addAcl(&newCfg, acl1, cfg::AclStage::INGRESS);
 
@@ -629,6 +642,7 @@ TEST_F(AgentHwAclQualifierTest, AclModifyQualifier) {
     configureAllIcmpQualifiers(
         &acl, false, cfg::IpType::IP6, this->getAsicType());
     configureAllIpQualifiers(&acl, true, cfg::IpType::IP6, this->getAsicType());
+    resetLookupClassL2IfExclusive(&acl);
     newCfg = initialConfig(ensemble);
     utility::addAcl(&newCfg, acl, cfg::AclStage::INGRESS);
     applyNewConfig(newCfg);

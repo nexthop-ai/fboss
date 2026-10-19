@@ -90,7 +90,7 @@ class PlatformServicesTestRunner(TestRunner):
                 with suppress(FileNotFoundError):
                     os.unlink(self.TESTRESULT_CURRENT_RUN_FILE)
                 print("########## Running test: " + test_to_run, flush=True)
-                run_outcome = self._run_test(
+                run_outcome = self._run_test_guarded(
                     conf_file,
                     test_prefix,
                     test_to_run,

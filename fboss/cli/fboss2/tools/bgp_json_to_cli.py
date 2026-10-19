@@ -632,7 +632,10 @@ def generate_prefix_list_commands(prefix_list: dict[str, Any]) -> list[str]:
             )
         )
     if "version" in prefix_list:
-        keyword = _IP_VERSION_KEYWORDS.get(prefix_list["version"])
+        try:
+            keyword = _IP_VERSION_KEYWORDS.get(prefix_list["version"])
+        except TypeError:
+            keyword = None
         if keyword is None:
             commands.append(
                 _warning(
@@ -645,8 +648,8 @@ def generate_prefix_list_commands(prefix_list: dict[str, Any]) -> list[str]:
     commands.extend(_prefix_list_warnings(name, prefix_list))
     for entry in prefix_list.get("prefixes") or []:
         commands.extend(generate_prefix_list_entry_commands(name, entry))
-    if not commands:
-        # Nothing to set: still recreate the (empty) prefix-list by name.
+    if all(command.startswith("#") for command in commands):
+        # Warnings do not recreate the list; preserve it with a bare command.
         commands.append(prefix)
     return commands
 

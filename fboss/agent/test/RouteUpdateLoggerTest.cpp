@@ -497,4 +497,18 @@ TEST_F(RouteUpdateLoggerTest, TrackAllLabelsManySubscribers) {
   EXPECT_EQ(1, mockMplsRouteLogger->changed.size());
   EXPECT_EQ(1, mockMplsRouteLogger->changedFor.size());
 }
+
+TEST(RouteUpdateLoggerStopTest, LoggingCallsAfterStopAreNoops) {
+  auto handle = createTestHandle(nullptr);
+  auto* sw = handle->getSw();
+  sw->logRouteUpdates("::", 0, "fboss-agent-warmboot-BGPD");
+
+  sw->stop();
+
+  bool loggerAlive = false;
+  sw->withRouteUpdateLogger([&](auto& /* logger */) { loggerAlive = true; });
+  EXPECT_FALSE(loggerAlive);
+  sw->stopLoggingRouteUpdates("fboss-agent-warmboot-BGPD");
+  sw->logRouteUpdates("0.0.0.0", 0, "fboss-agent-warmboot-BGPD");
+}
 } // namespace

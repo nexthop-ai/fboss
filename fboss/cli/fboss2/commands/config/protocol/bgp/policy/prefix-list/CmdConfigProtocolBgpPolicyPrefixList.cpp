@@ -13,6 +13,7 @@
 #include "fboss/cli/fboss2/CmdHandler.cpp"
 
 #include <fmt/core.h>
+#include <algorithm>
 #include <cstdint>
 #include <functional>
 #include <iostream>
@@ -197,7 +198,7 @@ CmdConfigProtocolBgpPolicyPrefixList::queryClient(
                      "BGP prefix-list {} already exists", args.listName()))
       // The attribute is guaranteed valid: BgpPrefixListConfig's constructor
       // rejects an unknown attribute before we get here.
-      : listAttrHandlers().find(args.attr())->second(list, args.values());
+      : listAttrHandlers().at(args.attr())(list, args.values());
 
   if (result.ok) {
     if (!args.attr().empty()) {
@@ -206,10 +207,16 @@ CmdConfigProtocolBgpPolicyPrefixList::queryClient(
     session.saveBgpConfig();
     result.message +=
         fmt::format("\nConfig saved to: {}", session.getBgpSessionConfigPath());
-  } else if (listCreated && !lists.empty()) {
+  } else if (listCreated) {
     // Drop the phantom list so a rejected value is not visible to later
     // lookups in the same process.
-    lists.pop_back();
+    const auto created =
+        std::find_if(lists.begin(), lists.end(), [&](const auto& candidate) {
+          return *candidate.name() == args.listName();
+        });
+    if (created != lists.end()) {
+      lists.erase(created);
+    }
   }
   return result.message;
 }

@@ -333,6 +333,7 @@ TEST_F(
   EXPECT_FALSE(filterOf("RM100").exact_match().has_value());
 
   run({"CL100", "exact-match", "true"});
+  EXPECT_EQ(*filterOf("RM100").boolean_operator(), BooleanOperator::OR);
   ASSERT_TRUE(filterOf("RM100").exact_match().has_value());
   EXPECT_TRUE(*filterOf("RM100").exact_match());
 

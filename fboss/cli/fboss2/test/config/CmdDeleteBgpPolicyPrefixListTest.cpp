@@ -1,6 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
 
-#include <configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -12,13 +11,19 @@
 #include <string>
 #include <vector>
 
-#include "configerator/structs/neteng/bgp_policy/thrift/gen-cpp2/routing_policy_types.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/policy/prefix-list/BgpPrefixListCliUtils.h"
 #include "fboss/cli/fboss2/commands/config/protocol/bgp/policy/prefix-list/CmdConfigProtocolBgpPolicyPrefixList.h"
 #include "fboss/cli/fboss2/commands/delete/protocol/bgp/policy/prefix-list/CmdDeleteProtocolBgpPolicyPrefixList.h"
 #include "fboss/cli/fboss2/session/ConfigSession.h"
 #include "fboss/cli/fboss2/test/config/CmdConfigTestBase.h"
 #include "fboss/cli/fboss2/utils/HostInfo.h"
+
+#ifndef IS_OSS
+#include <configerator/structs/neteng/bgp_policy/thrift/gen-cpp2/routing_policy_types.h>
+#include <configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
+#else
+#include <neteng/fboss/bgp/public_tld/configerator/structs/neteng/fboss/bgp/gen-cpp2/bgp_config_types.h>
+#endif
 
 using namespace ::testing;
 
@@ -90,10 +95,17 @@ class CmdDeleteBgpPolicyPrefixListTestFixture : public CmdConfigTestBase {
       it = std::prev(policies.end());
     }
     auto& terms = *it->policy_entries();
-    terms.emplace_back();
-    terms.back().sequence_number() = seq;
-    auto& matches =
-        *terms.back().policy_match_entries().ensure().match_entries();
+    auto term =
+        std::find_if(terms.begin(), terms.end(), [&](const auto& entry) {
+          return entry.sequence_number().has_value() &&
+              *entry.sequence_number() == seq;
+        });
+    if (term == terms.end()) {
+      terms.emplace_back();
+      terms.back().sequence_number() = seq;
+      term = std::prev(terms.end());
+    }
+    auto& matches = *term->policy_match_entries().ensure().match_entries();
     matches.emplace_back();
     matches.back().type() =
         bgp::bgp_policy::BgpPolicyAtomicMatchType::PREFIX_LIST;
@@ -296,6 +308,20 @@ TEST_F(CmdDeleteBgpPolicyPrefixListTestFixture, deleteReferencedListRejected) {
   ASSERT_EQ(lists().size(), 1);
   EXPECT_EQ(*lists()[0].name(), "PL100");
   EXPECT_EQ(*lists()[0].description(), "in-use");
+}
+
+TEST_F(
+    CmdDeleteBgpPolicyPrefixListTestFixture,
+    duplicateReferencesFromOneTermAreNamedOnce) {
+  configure({"PL100"});
+  addPolicyTermMatching("RM100", 10, "PL100");
+  addPolicyTermMatching("RM100", 10, "PL100");
+
+  const auto result = del({"PL100"});
+  const std::string label = "policy RM100 term 10";
+  const auto first = result.find(label);
+  ASSERT_NE(first, std::string::npos);
+  EXPECT_EQ(result.find(label, first + label.size()), std::string::npos);
 }
 
 TEST_F(

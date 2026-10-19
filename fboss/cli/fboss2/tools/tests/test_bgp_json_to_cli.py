@@ -1241,7 +1241,8 @@ class GeneratePrefixListCommandsTest(unittest.TestCase):
                 commands,
                 [
                     f"# WARNING: prefix-list PL: boolean_operator {rendered} is "
-                    "not accepted by bgpd (only OR); not emitted"
+                    "not accepted by bgpd (only OR); not emitted",
+                    self.PREFIX,
                 ],
                 raw,
             )
@@ -1250,6 +1251,17 @@ class GeneratePrefixListCommandsTest(unittest.TestCase):
         self.assertEqual(
             generate_prefix_list_commands({"name": "PL", "boolean_operator": 2}),
             [self.PREFIX],
+        )
+
+    def test_unhashable_version_warns_and_recreates_list(self) -> None:
+        commands = generate_prefix_list_commands({"name": "PL", "version": [4]})
+        self.assertEqual(
+            commands,
+            [
+                "# WARNING: prefix-list PL: version [4] is neither 4 nor 6; "
+                "not emitted",
+                self.PREFIX,
+            ],
         )
 
     def test_unexpressible_values_warn(self) -> None:
@@ -1262,9 +1274,9 @@ class GeneratePrefixListCommandsTest(unittest.TestCase):
                 "ip_version": 1,
             }
         )
-        self.assertEqual(len(commands), 4)
-        for c in commands:
-            self.assertTrue(c.startswith("# WARNING:"), c)
+        warnings = [command for command in commands if command.startswith("# WARNING:")]
+        self.assertEqual(len(warnings), 4)
+        self.assertEqual(commands[-1], self.PREFIX)
 
     def test_any_compare_operator_warns(self) -> None:
         """bgpd rejects a list-level compare_operator whatever its value."""
@@ -1276,20 +1288,27 @@ class GeneratePrefixListCommandsTest(unittest.TestCase):
                 commands,
                 [
                     f"# WARNING: prefix-list PL: list-level compare_operator "
-                    f"{rendered} is not accepted by bgpd; not emitted"
+                    f"{rendered} is not accepted by bgpd; not emitted",
+                    self.PREFIX,
                 ],
                 raw,
             )
 
     def test_warning_text_is_single_comment_line(self) -> None:
         """A control character in a JSON name must not end the # comment."""
+        name = "PL\nrm -rf /"
         commands = generate_prefix_list_commands(
-            {"name": "PL\nrm -rf /", "prefix_list_names": ["X"]}
+            {"name": name, "prefix_list_names": ["X"]}
         )
-        self.assertEqual(len(commands), 1)
-        self.assertTrue(commands[0].startswith("# WARNING:"), commands[0])
-        self.assertNotIn("\n", commands[0])
-        self.assertIn("PL?rm -rf /", commands[0])
+        self.assertEqual(len(commands), 2)
+        warning = commands[0]
+        self.assertTrue(warning.startswith("# WARNING:"), warning)
+        self.assertNotIn("\n", warning)
+        self.assertIn("PL?rm -rf /", warning)
+        self.assertEqual(
+            commands[1],
+            f"config protocol bgp policy prefix-list {escape_shell_arg(name)}",
+        )
 
     def test_policy_block_order(self) -> None:
         config = {

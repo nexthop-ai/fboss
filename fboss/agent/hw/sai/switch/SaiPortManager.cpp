@@ -699,6 +699,15 @@ void fillHwPortStats(
         hwPortStats.fabricControlTxPackets_() = value;
         break;
 #endif
+// 13.3+: see collection site for why GTE_13_0 is the operative gate.
+#if defined(BRCM_SAI_SDK_XGS_GTE_13_0)
+      case SAI_PORT_STAT_IF_IN_HW_PROTECTION_SWITCHOVER_EVENTS:
+        hwPortStats.hwProtectionSwitchoverEvents_() = value;
+        break;
+      case SAI_PORT_STAT_IF_IN_HW_PROTECTION_SWITCHOVER_DROP_PKTS:
+        hwPortStats.hwProtectionSwitchoverDropPkts_() = value;
+        break;
+#endif
 #if defined(BRCM_SAI_SDK_GTE_13_0) && defined(BRCM_SAI_SDK_XGS)
       case SAI_PORT_STAT_PFC_0_XOFF_TOTAL_DURATION:
       case SAI_PORT_STAT_PFC_1_XOFF_TOTAL_DURATION:
@@ -1483,6 +1492,21 @@ void SaiPortManager::setClm(PortID portId, bool clmEnabled) {
              << " CLM set to : " << (clmEnabled ? "enabled" : "disabled");
 }
 
+void SaiPortManager::programSwitchWideLinkUpDebounceTimeout(
+    const std::shared_ptr<Port>& swPort) {
+  const uint32_t holdoffTimeMs = swPort->getPortUpHoldoffTimeMs().value_or(0);
+  constexpr uint32_t kLinkUpDebounceUsPerMs = 1000;
+  const uint32_t wantedTimeoutUs = holdoffTimeMs * kLinkUpDebounceUsPerMs;
+  auto& switchManager = managerTable_->switchManager();
+  if (switchManager.getLinkUpDebounceTimeout() == wantedTimeoutUs) {
+    return;
+  }
+  XLOG(DBG2) << "Port " << swPort->getID()
+             << " moves the switch wide link up debounce timeout to "
+             << wantedTimeoutUs << "us";
+  switchManager.setLinkUpDebounceTimeout(wantedTimeoutUs);
+}
+
 bool SaiPortManager::isClmEnabled(PortID portId) const {
   auto pitr = port2ClmEnabled_.find(portId);
   if (pitr != port2ClmEnabled_.end()) {
@@ -1713,6 +1737,10 @@ void SaiPortManager::initAsicPrbsStats(const std::shared_ptr<Port>& swPort) {
 PortSaiId SaiPortManager::addPort(const std::shared_ptr<Port>& swPort) {
   setPortType(swPort->getID(), swPort->getPortType());
   setClm(swPort->getID(), swPort->getClmEnable().value_or(false));
+  if (platform_->getAsic()->isSupported(
+          HwAsic::Feature::SWITCH_WIDE_LINK_UP_DEBOUNCE)) {
+    programSwitchWideLinkUpDebounceTimeout(swPort);
+  }
   auto portSaiId = addPortImpl(swPort);
   concurrentIndices_->portSaiId2PortInfo.emplace(
       portSaiId,
@@ -1753,6 +1781,11 @@ void SaiPortManager::changePort(
   }
   if (oldPort->getClmEnable() != newPort->getClmEnable()) {
     setClm(newPort->getID(), newPort->getClmEnable().value_or(false));
+  }
+  if (platform_->getAsic()->isSupported(
+          HwAsic::Feature::SWITCH_WIDE_LINK_UP_DEBOUNCE) &&
+      oldPort->getPortUpHoldoffTimeMs() != newPort->getPortUpHoldoffTimeMs()) {
+    programSwitchWideLinkUpDebounceTimeout(newPort);
   }
   changePortImpl(oldPort, newPort);
 }

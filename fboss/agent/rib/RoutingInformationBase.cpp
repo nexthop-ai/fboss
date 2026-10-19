@@ -47,6 +47,16 @@ namespace facebook::fboss {
 
 namespace {
 
+template <typename RouterIDToRouteTableT>
+RibMySidUpdater::VrfRouteTables makeVrfRouteTables(
+    RouterIDToRouteTableT& routerIDToRouteTable) {
+  RibMySidUpdater::VrfRouteTables routeTables;
+  for (auto& [_rid, rt] : routerIDToRouteTable) {
+    routeTables.emplace_back(&rt.v4NetworkToRoute, &rt.v6NetworkToRoute);
+  }
+  return routeTables;
+}
+
 class RibIpRouteUpdate {
  public:
   using ThriftRoute = UnicastRoute;
@@ -494,29 +504,34 @@ void RibRouteTables::updateRib(RouterID vrf, const RibUpdateFn& updateRibFn) {
       &lockedRouteTables->mySidTable,
       lockedRouteTables->nextHopIDManager.get(),
       lockedRouteTables->ecmpWidth);
-  if (lockedRouteTables->nextHopIDManager &&
-      !lockedRouteTables->mySidTable.empty()) {
-    RibMySidUpdater::VrfRouteTables routeTables;
-    for (auto& [rid, rt] : lockedRouteTables->routerIDToRouteTable) {
-      routeTables.emplace_back(&rt.v4NetworkToRoute, &rt.v6NetworkToRoute);
+  if (lockedRouteTables->nextHopIDManager) {
+    auto* nhIdManager = lockedRouteTables->nextHopIDManager.get();
+    const bool hasMySids = !lockedRouteTables->mySidTable.empty();
+    const bool hasPolicies = !nhIdManager->getPbrPolicyToNamedNhg().empty();
+    if (hasMySids || hasPolicies) {
+      auto routeTables =
+          makeVrfRouteTables(lockedRouteTables->routerIDToRouteTable);
+      if (hasMySids) {
+        RibMySidUpdater mySidUpdater(
+            routeTables,
+            nhIdManager,
+            &lockedRouteTables->mySidTable,
+            lockedRouteTables->ecmpWidth);
+        mySidUpdater.resolve();
+      }
+      if (hasPolicies) {
+        resolveNamedNhgs(
+            routeTables, nhIdManager, lockedRouteTables->ecmpWidth);
+      }
     }
-    RibMySidUpdater mySidUpdater(
-        routeTables,
-        lockedRouteTables->nextHopIDManager.get(),
-        &lockedRouteTables->mySidTable,
-        lockedRouteTables->ecmpWidth);
-    mySidUpdater.resolve();
   }
 }
 
 template <typename RibUpdateFn>
 void RibRouteTables::updateRibMySids(const RibUpdateFn& updateRibFn) {
   auto lockedRouteTables = synchronizedRouteTables_.wlock();
-  RibMySidUpdater::VrfRouteTables routeTables;
-  for (auto& [rid, routeTable] : lockedRouteTables->routerIDToRouteTable) {
-    routeTables.emplace_back(
-        &routeTable.v4NetworkToRoute, &routeTable.v6NetworkToRoute);
-  }
+  auto routeTables =
+      makeVrfRouteTables(lockedRouteTables->routerIDToRouteTable);
   updateRibFn(
       routeTables,
       &lockedRouteTables->mySidTable,
@@ -2304,12 +2319,9 @@ void RibRouteTables::addOrUpdateNamedNextHopGroups(
       }
     }
 
+    auto routeTables =
+        makeVrfRouteTables(lockedRouteTables->routerIDToRouteTable);
     if (!mySidsToReresolve.empty()) {
-      RibMySidUpdater::VrfRouteTables routeTables;
-      for (auto& [_rid, routeTable] : lockedRouteTables->routerIDToRouteTable) {
-        routeTables.emplace_back(
-            &routeTable.v4NetworkToRoute, &routeTable.v6NetworkToRoute);
-      }
       RibMySidUpdater updater(
           routeTables,
           nhIdManager,
@@ -2317,6 +2329,12 @@ void RibRouteTables::addOrUpdateNamedNextHopGroups(
           lockedRouteTables->ecmpWidth);
       updater.resolve(mySidsToReresolve);
     }
+    std::set<std::string> groupNames;
+    for (const auto& [name, _nextHopSet] : groups) {
+      groupNames.insert(name);
+    }
+    resolveNamedNhgs(
+        routeTables, nhIdManager, groupNames, lockedRouteTables->ecmpWidth);
   }
 
   for (auto& [key, routes] : routesToReprogram) {
@@ -2379,15 +2397,24 @@ void RibRouteTables::addOrUpdatePolicies(
             "'");
       }
     };
+    std::set<std::string> names;
     for (const auto& policy : policies) {
       requireNamedNhg(*policy.name(), *policy.defaultNexthopGroup());
+      names.insert(*policy.defaultNexthopGroup());
       for (const auto& [_fc, nhg] : *policy.class2NextHopGroup()) {
-        requireNamedNhg(*policy.name(), nhg.name().value_or(""));
+        const auto nhgName = nhg.name().value_or("");
+        requireNamedNhg(*policy.name(), nhgName);
+        names.insert(nhgName);
       }
     }
     for (const auto& policy : policies) {
       nhIdManager->addOrUpdatePolicy(policy);
     }
+
+    auto routeTables =
+        makeVrfRouteTables(lockedRouteTables->routerIDToRouteTable);
+    resolveNamedNhgs(
+        routeTables, nhIdManager, names, lockedRouteTables->ecmpWidth);
   }
   updateFibNamedNextHopGroups(stateUpdateFn);
 }
@@ -2802,6 +2829,41 @@ RouteNextHopSet resolveNextHopSetFromRib(
     resolved.insert(nhResolved.begin(), nhResolved.end());
   }
   return resolved;
+}
+
+void resolveNamedNhgs(
+    const VrfRouteTables& routeTables,
+    NextHopIDManager* manager,
+    const std::set<std::string>& names,
+    uint32_t ecmpWidth) {
+  for (const auto& name : names) {
+    auto nhops = manager->getNextHopsForName(name);
+    if (!nhops.has_value()) {
+      XLOG(WARN) << "no named next-hop group '" << name
+                 << "'; leaving its normalized id in place";
+      continue;
+    }
+    manager->updateNormalizedNamedNhgId(
+        name,
+        resolveNextHopSetFromRib(routeTables, manager, *nhops, ecmpWidth),
+        ecmpWidth);
+  }
+}
+
+void resolveNamedNhgs(
+    const VrfRouteTables& routeTables,
+    NextHopIDManager* manager,
+    uint32_t ecmpWidth) {
+  // Runs on every route update, so walk the policies rather than every named
+  // group - only groups a policy names carry a normalized id.
+  std::set<std::string> names;
+  for (const auto& [_policyName, policy] : manager->getPbrPolicyToNamedNhg()) {
+    names.insert(policy.defaultNexthopGroup);
+    for (const auto& [_fc, nhgName] : policy.class2NextHopGroup) {
+      names.insert(nhgName);
+    }
+  }
+  resolveNamedNhgs(routeTables, manager, names, ecmpWidth);
 }
 
 } // namespace facebook::fboss

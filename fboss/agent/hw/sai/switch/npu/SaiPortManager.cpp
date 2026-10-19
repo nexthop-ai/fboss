@@ -327,6 +327,17 @@ void SaiPortManager::fillInSupportedStats(PortID port) {
       counterIds.emplace_back(
           SAI_PORT_STAT_OUT_CONFIGURED_DROP_REASONS_0_DROPPED_PKTS);
     }
+// 13.3+: the 13.3 tp2 package propagates SAI_VERSION_13_0_EA_ODP and 13.0 EA
+// is retired from the build matrix, so GTE_13_0 is the operative gate.
+#if defined(BRCM_SAI_SDK_XGS_GTE_13_0)
+    if (platform_->getAsic()->isSupported(
+            HwAsic::Feature::HW_PROTECTION_SWITCHOVER_COUNTERS)) {
+      counterIds.emplace_back(
+          SAI_PORT_STAT_IF_IN_HW_PROTECTION_SWITCHOVER_EVENTS);
+      counterIds.emplace_back(
+          SAI_PORT_STAT_IF_IN_HW_PROTECTION_SWITCHOVER_DROP_PKTS);
+    }
+#endif
     if (platform_->getAsic()->isSupported(
             HwAsic::Feature::SAI_PORT_IN_CONGESTION_DISCARDS)) {
       counterIds.emplace_back(SAI_PORT_STAT_IN_DROPPED_PKTS);
@@ -1070,6 +1081,8 @@ SaiPortTraits::CreateAttributes SaiPortManager::attributesFromSwPort(
   debounceProgrammable =
       swPort->getLinkScanMode() == cfg::LinkScanMode::HARDWARE;
 #endif
+  const bool upHoldoffIsPerPort = !platform_->getAsic()->isSupported(
+      HwAsic::Feature::SWITCH_WIDE_LINK_UP_DEBOUNCE);
   if (platform_->getAsic()->isSupported(HwAsic::Feature::PORT_DEBOUNCE) &&
       debounceProgrammable) {
     // Hold timers (ms) the SDK applies before reporting link up/down events.
@@ -1085,7 +1098,7 @@ SaiPortTraits::CreateAttributes SaiPortManager::attributesFromSwPort(
         static_cast<sai_uint32_t>(swPort->getPortUpHoldoffTimeMs().value_or(
             kSdkDefaultLinkDebouncePeriodMs))};
 #else
-    if (swPort->getPortUpHoldoffTimeMs().has_value()) {
+    if (upHoldoffIsPerPort && swPort->getPortUpHoldoffTimeMs().has_value()) {
       throw FbossError(
           "Per-port link up debounce timer (portUpHoldoffTimeMs) is not "
           "supported by this SAI SDK; cannot apply to port ",
@@ -1103,7 +1116,7 @@ SaiPortTraits::CreateAttributes SaiPortManager::attributesFromSwPort(
                 kSdkDefaultLinkDebouncePeriodMs) *
             kLinkDownDebounceUnitsPerMs)};
   } else if (
-      swPort->getPortUpHoldoffTimeMs().has_value() ||
+      (upHoldoffIsPerPort && swPort->getPortUpHoldoffTimeMs().has_value()) ||
       swPort->getPortDownHoldoffTimeMs().has_value()) {
     if (!platform_->getAsic()->isSupported(HwAsic::Feature::PORT_DEBOUNCE)) {
       throw FbossError(

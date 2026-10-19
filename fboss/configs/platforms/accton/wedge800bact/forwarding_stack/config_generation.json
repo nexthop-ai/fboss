@@ -1,0 +1,17 @@
+{
+  "platform": "PLATFORM_WEDGE800BACT",
+  "serviceToOptions": {
+    "AGENT": [
+      {
+        "profile": "DEFAULT"
+      },
+      {
+        "profile": "HW_TEST"
+      },
+      {
+        "profile": "BENCHMARK",
+        "asicConfigVariant": "default"
+      }
+    ]
+  }
+}

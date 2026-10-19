@@ -101,7 +101,8 @@ RUN if [ "$USE_CLANG" = "true" ]; then \
     rm -rf build
 
 # The following libraries are needed for building SDK
-RUN dnf install -y doxygen aspell aspell-en libyaml-devel vim-common libnsl libnsl2-devel glibc-static libstdc++-static hostname mold
+RUN dnf install -y doxygen aspell aspell-en libyaml-devel vim-common libnsl libnsl2-devel glibc-static libstdc++-static hostname mold \
+    grpc-devel grpc-plugins protobuf-devel protobuf-compiler abseil-cpp-devel
 
 # Install libyaml.a for SDK purposes
 RUN git clone https://github.com/yaml/libyaml.git && \

@@ -2,6 +2,8 @@ load("@fbcode_macros//build_defs:cpp_binary.bzl", "cpp_binary")
 load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")
 load("@fbcode_macros//build_defs:export_files.bzl", "export_file")
 load("@fbcode_macros//build_defs:thrift_library.bzl", "thrift_library")
+load("@fbsource//tools/target_determinator/macros:ci.bzl", "ci")
+load("@fbsource//tools/target_determinator/macros:ci_sandcastle.bzl", "ci_sandcastle")
 load("//fastcli:defs.bzl", "auto_tab_complete")
 
 oncall("fboss_agent_push")
@@ -945,6 +947,7 @@ cpp_library(
         "//configerator/structs/neteng/fboss/push/forwarding_stack:fbpkg_map-cpp2-types",
         "//configerator/structs/neteng/matryoshka/dc_id_comm_registry:dc_fbnet_id_comm_registry-cpp2-types",
         "//configerator/structs/neteng/netwhoami:netwhoami-cpp2-types",
+        "//configerator/structs/neteng/transceiver_properties:transceiver_properties-cpp2-types",
         "//employee/if:thrift-cpp2-services",
         "//employee/if:thrift-cpp2-types",
         "//fboss/agent:address_utils",
@@ -1054,7 +1057,6 @@ cpp_library(
         "//fboss/platform/rackmon/if:rackmonsvc-cpp2-services",
         "//fboss/platform/sensor_service/if:sensor_service-cpp2-services",
         "//fboss/qsfp_service:sdk_dump_path",
-        "//fboss/qsfp_service:transceiver-delay-constants",
         "//fboss/qsfp_service/if:qsfp-cpp2-services",
         "//fboss/qsfp_service/if:transceiver-cpp2-types",
         "//folly:conv",
@@ -1165,7 +1167,6 @@ cpp_library(
         "//fboss/lib/platforms:platform_descriptor",
         "//fboss/lib/platforms:platform_mapping_utils",
         "//folly:file_util",
-        "//folly:string",
         "//folly/json:dynamic",
         "//folly/logging:logging",
         "//thrift/lib/cpp/util:enum_utils",
@@ -1615,6 +1616,46 @@ cpp_binary(
     ],
     external_deps = [
         "CLI11",
+    ],
+)
+
+# @ci-signal-ack
+ci_sandcastle(
+    name = "verify_generated_agent_configs",
+    alias = "fboss-verify-generated-agent-configs-citadel",
+    args = {
+        "skip_if_error_exists_on_base_revision": True,
+        "steps": [
+            {
+                "name": "Verify declaration-generated Agent configs",
+                "shell": "buck2 run --flagfile fbcode//mode/opt fbcode//fboss/cli/fboss2:fboss2 -- config gen agent --fboss-root fbcode/fboss --verify",
+            },
+        ],
+    },
+    capabilities = {
+        "tenant": "default-tenant",
+        "type": "fbcode",
+        "vcs": "full-fbsource",
+    },
+    # This transitively tracks fboss_agent_config_utils and fboss_config_utils,
+    # whose helpers construct the generated switch config.
+    ci_deps = [
+        "fbcode//fboss/cli/fboss2:fboss2-config-gen-lib",
+    ],
+    ci_srcs = [
+        "fbcode/fboss/cli/fboss2/commands/config/gen/**",
+        "fbcode/fboss/configs/platforms/**/asic_config/asic_config.json",
+        "fbcode/fboss/configs/platforms/**/asic_config/generated/**",
+        "fbcode/fboss/configs/platforms/**/forwarding_stack/config_generation.json",
+        "fbcode/fboss/configs/platforms/**/forwarding_stack/generated/agent/**",
+        "fbcode/fboss/configs/platforms/**/platform_mapping/generated/**",
+        "fbcode/fboss/configs/platforms/generic/forwarding_stack/**",
+        "fbcode/fboss/lib/platform_mapping_v2/generated_platform_mappings/**",
+    ],
+    command = "SandcastleUniversalCommand",
+    oncall = "fboss_oss",
+    schedules = [
+        ci.diff,
     ],
 )
 

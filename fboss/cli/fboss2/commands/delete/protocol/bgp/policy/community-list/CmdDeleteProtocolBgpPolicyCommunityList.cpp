@@ -36,6 +36,12 @@ namespace facebook::fboss {
 
 namespace {
 constexpr std::string_view kCommunityKeyword = "community";
+
+void appendUnique(std::vector<std::string>& labels, const std::string& label) {
+  if (std::find(labels.begin(), labels.end(), label) == labels.end()) {
+    labels.push_back(label);
+  }
+}
 } // namespace
 
 // Parse + validate at construction so queryClient stays a thin dispatch.
@@ -94,7 +100,6 @@ CmdDeleteProtocolBgpPolicyCommunityList::queryClient(
   if (it == lists.end()) {
     return absent;
   }
-  auto refs = bgpcli::findTermsReferencingCommunityList(cfg, args.listName());
   if (args.hasCommunity()) {
     // Remove one value from communities; the list itself stays.
     auto& list = *it;
@@ -107,10 +112,13 @@ CmdDeleteProtocolBgpPolicyCommunityList::queryClient(
           // A community action resolves the list's values at daemon load and
           // fails on an empty one ("Missing communities in CommunityList");
           // a match reference tolerates it.
+          const auto refs =
+              bgpcli::findTermsReferencingCommunityList(cfg, args.listName());
           std::vector<std::string> actions;
+          actions.reserve(refs.size());
           for (const auto& ref : refs) {
             if (ref.isAction) {
-              actions.push_back(ref.label);
+              appendUnique(actions, ref.label);
             }
           }
           if (!actions.empty()) {
@@ -148,10 +156,13 @@ CmdDeleteProtocolBgpPolicyCommunityList::queryClient(
   // against this list by name at daemon load; erasing the list while a term
   // still names it would commit a dangling reference and fail the load.
   // Refuse and name the terms instead.
+  const auto refs =
+      bgpcli::findTermsReferencingCommunityList(cfg, args.listName());
   if (!refs.empty()) {
     std::vector<std::string> referrers;
+    referrers.reserve(refs.size());
     for (const auto& ref : refs) {
-      referrers.push_back(ref.label);
+      appendUnique(referrers, ref.label);
     }
     return fmt::format(
         "Error: BGP community-list {} is still referenced by {}; remove those "
