@@ -36,6 +36,9 @@
     ],
     "wedge800cact/leaba-25.11.4210": [
         {
+          "test_name_regex": "ConfigAclRuleTest\\.SetActionMirrorEgress$"
+        },
+        {
           "test_name_regex": "ConfigAclRuleTest\\.SetDestinationMac$"
         },
         {
@@ -49,6 +52,9 @@
         }
     ],
     "wedge800cnhp/leaba-25.11.4210": [
+        {
+          "test_name_regex": "ConfigAclRuleTest\\.SetActionMirrorEgress$"
+        },
         {
           "test_name_regex": "ConfigAclRuleTest\\.SetDestinationMac$"
         },
